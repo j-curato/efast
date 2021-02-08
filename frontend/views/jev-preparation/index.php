@@ -3,7 +3,7 @@
 use app\models\FundClusterCode;
 use app\models\ResponsibilityCenter;
 use yii\helpers\Html;
-use yii\grid\GridView;
+use kartik\grid\GridView;
 use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
@@ -27,11 +27,21 @@ $this->params['breadcrumbs'][] = $this->title;
   <?= GridView::widget([
     'dataProvider' => $dataProvider,
     'filterModel' => $searchModel,
+    'panel' => [
+      'type' => GridView::TYPE_PRIMARY,
+      'heading' => 'List of Areas',
+    ],
+    'floatHeaderOptions' => [
+      'top' => 50,
+      'position' => 'absolute',
+    ],
     'columns' => [
       ['class' => 'yii\grid\SerialColumn'],
 
       'id',
       // 'responsibility_center_id'
+      'jev_number',
+      'dv_number',
       [
         'label' => 'Responsibility Center',
         'attribute' => 'responsibility_center_id',
@@ -59,11 +69,10 @@ $this->params['breadcrumbs'][] = $this->title;
       'reporting_period',
       'date',
 
-      //'jev_number',
-      //'dv_number',
-      //'lddap_number',
-      //'entity_name',
-      //'explaination',
+
+      // 'lddap_number',
+      // 'entity_name',
+      // 'explaination',
 
       ['class' => 'yii\grid\ActionColumn'],
     ],

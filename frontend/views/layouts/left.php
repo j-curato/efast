@@ -89,8 +89,8 @@
                                     ['label' => 'Chart of Accounts', 'icon' => 'circle-o', 'url' => ['/chart-of-accounts'],],
                                     ['label' => 'Major Accounts', 'icon' => 'circle-o', 'url' => ['/major-accounts'],],
                                     ['label' => 'Sub Major Accounts', 'icon' => 'circle-o', 'url' => ['/sub-major-accounts'],],
-                                    
-                                   
+
+
                                 ],
                             ],
                             [
@@ -100,14 +100,14 @@
                                 'items' => [
                                     ['label' => 'Transactions', 'icon' => 'circle-o', 'url' => ['/transaction'],],
                                     ['label' => 'Jev', 'icon' => 'circle-o', 'url' => ['/jev-preparation'],],
-                             
+
                                 ],
                             ],
                         ],
 
 
                     ],
-                    
+
 
 
 

@@ -55,11 +55,11 @@ class JevPreparation extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'responsibility_center_id' => 'Responsibility Center ID',
-            'fund_cluster_code_id' => 'Fund Cluster Code ID',
+            'responsibility_center_id' => 'Responsibility Center ',
+            'fund_cluster_code_id' => 'Fund Cluster Code ',
             'reporting_period' => 'Reporting Period',
             'date' => 'Date',
-            'jev_number' => 'Jev Number',
+            'jev_number' => 'JEV Number',
             'dv_number' => 'Dv Number',
             'lddap_number' => 'Lddap Number',
             'entity_name' => 'Entity Name',

@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+use kartik\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevAccountingEntriesSearch */
@@ -18,17 +18,42 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Create Jev Accounting Entries', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
+
+    <!-- 
+select jev_preparation.fund_cluster_code_id, jev_preparation.jev_number, jev_preparation.reporting_period ,
+jev_accounting_entries.id,jev_accounting_entries.debit,jev_accounting_entries.credit
+
+from jev_preparation,jev_accounting_entries where jev_preparation.id = jev_accounting_entries.jev_preparation_id
+and jev_preparation.fund_cluster_code_id =1 and jev_accounting_entries.chart_of_account_id =1
+GROUP BY jev_preparation.reporting_period
+ -->
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel' => [
+            'type' => GridView::TYPE_PRIMARY,
+            'heading' => 'List of Areas',
+        ],
+        'floatHeaderOptions' => [
+            'top' => 50,
+            'position' => 'absolute',
+        ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'jev_preparation_id',
-            'chart_of_account_id',
+
+            [
+                'label' => 'Particular',
+                'attribute' => 'jev_preparation_id',
+                'value' => 'jevPreparation.explaination'
+            ],
+            [
+                'label' => 'reporting period',
+                'value' => 'jevPreparation.reporting_period'
+            ],
             'debit',
             'credit',
 

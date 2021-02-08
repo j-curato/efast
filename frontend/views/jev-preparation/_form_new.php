@@ -8,6 +8,8 @@ use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
 use wbraganca\dynamicform\DynamicFormWidget;
 use kartik\date\DatePicker;
+use kartik\money\MaskMoney;
+use aryelds\sweetalert\SweetAlertAsset;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\JevPreparation */
@@ -37,7 +39,7 @@ use kartik\date\DatePicker;
 
 
                     <?= $form->field($model, 'date')->widget(DatePicker::class, [
-                        'options' => ['placeholder' => 'Enter  Date'],
+                        'options' => ['placeholder' => 'Enter  Date', 'readonly' => true],
                         'type' => DatePicker::TYPE_INPUT,
                         'pluginOptions' => [
                             'autoclose' => true,
@@ -50,8 +52,9 @@ use kartik\date\DatePicker;
 
 
                     <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
-                        'options' => ['placeholder' => 'Reporting Period'],
+                        'options' => ['placeholder' => 'Reporting Period', 'readonly' => true],
                         'type' => DatePicker::TYPE_INPUT,
+
                         'pluginOptions' => [
 
                             'autoclose' => true,
@@ -70,13 +73,18 @@ use kartik\date\DatePicker;
                 <div class="col-sm-3">
 
 
-                    <?= $form->field($model, 'jev_number')->widget(Select2::class, [
-                        'data' => ['ckdj' => 'a', 'adadj' => 'b', 'c'],
-                        'options' => ['placeholder' => 'Select a Fund Source'],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ]); ?>
+                    <?php
+                    // $form->field($model, 'jev_number')->widget(Select2::class, [
+                    //     'data' => ['CKDJ' => 'CKDJ', 'ADADJ' => 'ADADJ', 'CDJ' => 'CDJ', 'GJ' => 'GJ', 'CRJ' => 'CRJ'],
+                    //     'options' => ['placeholder' => 'Select a Fund Source'],
+                    //     'pluginOptions' => [
+                    //         'allowClear' => true
+                    //     ],
+                    // ]);
+                    ?>
+
+
+                    <?= $form->field($model, 'jev_number')->textInput(['maxlength' => true]) ?>
 
                 </div>
 
@@ -128,7 +136,6 @@ use kartik\date\DatePicker;
 
 
 
-
     <div class="panel panel-default" style="border-radius:1rem;box-shadow:2rem">
         <div class="panel-heading" style="border-radius:1rem 1rem 0 0 ;">
             <h4><i class="glyphicon "></i> JEV Accounting Entries</h4>
@@ -154,10 +161,11 @@ use kartik\date\DatePicker;
 
             <div class="container-items">
                 <!-- widgetContainer -->
+
                 <?php foreach ($modelJevItems as $i => $modelJevItem) : ?>
                     <div class="item panel panel-default">
                         <!-- widgetBody -->
-                        <div class="panel-heading" style="background-color: #6495ED;">
+                        <div class="panel-heading" style="background-color: #99ddff;">
                             <h3 class="panel-title pull-left">Entry</h3>
                             <div class="pull-right">
                                 <button type="button" class="add-item btn btn-success btn-xs"><i class="glyphicon glyphicon-plus"></i></button>
@@ -172,53 +180,159 @@ use kartik\date\DatePicker;
                                 echo Html::activeHiddenInput($modelJevItem, "[{$i}]id");
                             }
                             ?>
-
                             <div class="row">
-
-
                                 <div class="col-sm-4">
                                     <?= $form->field($modelJevItem,  "[{$i}]chart_of_account_id")->widget(Select2::class, [
                                         'data' => ArrayHelper::map($chart, 'id', 'ledger'),
                                         'options' => ['placeholder' => 'Select a Fund Source'],
-
                                     ]); ?>
                                 </div>
 
+                                <div class="col-sm-4">
+                                    <?=
+                                    // $form->field($modelJevItem, "[{$i}]debit")->widget(MaskMoney::class, [
+                                    //     'id' => $i.'_debit',
+                                    //     'pluginOptions' => [
+                                    //         'prefix' => '$ ',
+                                    //         'allowNegative' => false
+                                    //     ],
+                                    //     'class' => 'debit',
+                                    // ])
+                                    $form->field($modelJevItem, "[{$i}]debit")->textInput(['maxlength' => true, 'class' => 'debit'])
+
+                                    ?>
+                                </div>
 
                                 <div class="col-sm-4">
-                                    <?= $form->field($modelJevItem, "[{$i}]credit")->textInput(['maxlength' => true]) ?>
+                                    <?=
+                                    $form->field($modelJevItem, "[{$i}]credit")->textInput(['maxlength' => true, 'class' => 'credit'])
+                                    //  $form->field($modelJevItem, "[{$i}]credit")->widget(MaskMoney::class, [
+                                    //     'id' => $i.'_credit',
+                                    //     'pluginOptions' => [
+                                    //         'prefix' => '$ ',
+                                    //         'allowNegative' => false
+                                    //     ],
+                                    //     'class' => 'credit'
+                                    // ])
+
+                                    ?>
+
+
                                 </div>
-                                <div class="col-sm-4">
-                                    <?= $form->field($modelJevItem, "[{$i}]debit")->textInput(['maxlength' => true]) ?>
-                                </div>
+
                             </div><!-- .row -->
                         </div>
                     </div>
                 <?php endforeach; ?>
+
+            </div>
+
+            <div class="total">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">TOTAL DEBIT</label>
+                        <input disabled type="email" class="form-control" id="d_total" aria-describedby="emailHelp" placeholder="Total Dedit">
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">TOTAL CREDIT</label>
+                        <input disabled type="email" class="form-control" id="c_total" aria-describedby="emailHelp" placeholder="Total Dedit">
+                    </div>
+                </div>
             </div>
             <?php DynamicFormWidget::end(); ?>
         </div>
 
-        <div class="form-group">
-            <?= Html::submitButton('SAVE', ['class' => 'btn btn-success', 'style' => 'width:100%;']) ?>
+        <div class="form-group submit-btn">
+            <?= Html::submitButton('SAVE', ['class' => 'btn save-btn']) ?>
         </div>
 
         <?php ActiveForm::end(); ?>
 
+
     </div>
 
+    <style>
+        .total {
+            width: 100%;
+            height: 100px;
+            border: 1px solid black;
+            padding: 1rem;
+            align-items: center;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .save-btn {
+            background-color: white;
+            color: black;
+            border: 1px solid green;
+            transition-duration: 0.4s;
+            width: 90%;
+        }
+
+        .submit-btn {
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .save-btn:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .credit {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            padding: 6px 24px 6px 12px;
+            border: 1px solid gray;
+        }
+
+        .debit {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            padding: 6px 24px 6px 12px;
+            border: 1px solid gray;
+        }
+
+        .total>div>input {
+            color: red;
+        }
+    </style>
+
     <?php
+    SweetAlertAsset::register($this);
+    $script = <<< JS
+    
+    $(document).on("keyup change", ".credit, .debit", function(){
+         var total_credit = 0.00;
+         var total_debit = 0.00;
+         $(".credit").each(function(){
+            total_credit += +$(this).val()
+         })
+         $("#c_total").val(total_credit)
 
-    $js = "
-        $('#modalButtoncreate').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-        $('.modalButtonedit').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
- 
+         $(".debit").each(function(){
+            total_debit +=+$(this).val()
+         })
+         $("#d_total").val(total_debit)
 
+         if (total_debit == total_credit){
+            $(".btn").removeAttr("disabled");
+         }
 
-";
-    $this->registerJs($js, $this::POS_END);
+         else{
+            $(".btn").attr("disabled", true);
+         }
+         
+        //  console.log(total_debit);
+
+     })
+    JS;
+    $this->registerJs($script);
     ?>

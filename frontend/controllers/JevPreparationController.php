@@ -8,10 +8,12 @@ use app\models\JevPreparation;
 use app\models\JevPreparationSearch;
 use Exception;
 use frontend\models\Model;
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\helpers\VarDumper;
 
 /**
  * JevPreparationController implements the CRUD actions for JevPreparation model.
@@ -25,7 +27,7 @@ class JevPreparationController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -60,6 +62,39 @@ class JevPreparationController extends Controller
             'model' => $this->findModel($id),
         ]);
     }
+    public function actionGeneralLedgerIndex()
+    {
+        // echo "success";
+        $chart = Yii::$app->db->createCommand("SELECT  jev_preparation.explaination, jev_preparation.jev_number, jev_preparation.reporting_period ,
+        jev_accounting_entries.id,jev_accounting_entries.debit,jev_accounting_entries.credit,chart_of_accounts.uacs,
+        chart_of_accounts.general_ledger
+        FROM jev_preparation,jev_accounting_entries,chart_of_accounts where jev_preparation.id = jev_accounting_entries.jev_preparation_id
+        AND jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
+        AND jev_preparation.fund_cluster_code_id =1 AND jev_accounting_entries.chart_of_account_id =1 
+        ORDER BY jev_preparation.reporting_period")->queryAll();
+        return $this->render('general_ledger_view', [
+            'model' => $chart,
+        ]);
+    }
+    public function actionLedger()
+    {
+        $gen = $_POST['gen'] ? 'AND jev_accounting_entries.chart_of_account_id =' . $_POST['gen'] : '';
+        $fund = $_POST['fund'] ? 'AND jev_preparation.fund_cluster_code_id =' . $_POST['fund'] : '';
+        // $reporting_period = $_POST['reporting_period'] ? "'AND jev_preparation.reporting_period ='" .  (String)$_POST['reporting_period'] ."'" : '';
+        $reporting_period = $_POST['reporting_period'] ? "AND jev_preparation.reporting_period ='{$_POST['reporting_period']}'"  : '';
+        $chart = Yii::$app->db->createCommand("SELECT  jev_preparation.explaination, jev_preparation.jev_number, jev_preparation.reporting_period ,
+        jev_accounting_entries.id,jev_accounting_entries.debit,jev_accounting_entries.credit,chart_of_accounts.uacs,
+        chart_of_accounts.general_ledger,jev_accounting_entries.id,(SELECT fund_cluster_code.name from fund_cluster_code where fund_cluster_code.id={$_POST['fund']}) as fund_cluster_code
+        FROM jev_preparation,jev_accounting_entries,chart_of_accounts where jev_preparation.id = jev_accounting_entries.jev_preparation_id
+        AND jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
+        
+      {$gen} {$fund} {$reporting_period}
+        ORDER BY jev_preparation.reporting_period
+
+        ")->queryAll();
+
+        echo json_encode(['results' => $chart]);
+    }
 
     /**
      * Creates a new JevPreparation model.
@@ -71,7 +106,7 @@ class JevPreparationController extends Controller
         $model = new JevPreparation();
 
         $modelJevItems = [new JevAccountingEntries()];
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
             $modelJevItems = Model::createMultiple(JevAccountingEntries::class);
             Model::loadMultiple($modelJevItems, Yii::$app->request->post());
 
@@ -87,26 +122,31 @@ class JevPreparationController extends Controller
             // validate all models
             $valid = $model->validate();
             $valid = Model::validateMultiple($modelJevItems) && $valid;
-            $model->jev_number .='-'. $model->fund_cluster_code_id . '-' . $this->jevNumber();
+            // $model->jev_number .= '-' . $model->fund_cluster_code_id . '-' . $this->jevNumber($model->reporting_period);
 
             if ($valid) {
-                $transaction = \Yii::$app->db->beginTransaction();
-                try {
-                    if ($flag = $model->save(false)) {
-                        foreach ($modelJevItems as $modelJevItem) {
-                            $modelJevItem->jev_preparation_id = $model->id;
-                            if (!($flag = $modelJevItem->save(false))) {
-                                $transaction->rollBack();
-                                break;
+
+
+                if ($this->checkIfBalance($modelJevItems)) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        if ($flag = $model->save(false)) {
+
+                            foreach ($modelJevItems as $modelJevItem) {
+                                $modelJevItem->jev_preparation_id = $model->id;
+                                if (!($flag = $modelJevItem->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
                             }
                         }
+                        if ($flag) {
+                            $transaction->commit();
+                            return $this->redirect(['view', 'id' => $model->id]);
+                        }
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
                     }
-                    if ($flag) {
-                        $transaction->commit();
-                        return $this->redirect(['view', 'id' => $model->id]);
-                    }
-                } catch (Exception $e) {
-                    $transaction->rollBack();
                 }
             }
             // return $this->redirect(['view', 'id' => $model->id]);
@@ -205,18 +245,47 @@ class JevPreparationController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function jevNumber()
+    public function jevNumber($reporting_period)
     {
+
+
         $query = JevPreparation::find()
             ->select('jev_number')
             ->orderBy([
                 'id' => SORT_DESC
             ])->one();
-        $x = explode('-', $query->jev_number);
-        $qwe = '';
-        $qwe = date('Y');
-        $qwe .= '-'. date('m');
+        if (!empty($query)) {
+            $x = explode('-', $query->jev_number)[4] + 1;
+        } else {
+            $x = 1;
+        }
+        $y = null;
+        $len = strlen($x);
 
-        return $qwe;
+        // add zero bag.o mag last number
+        for ($i = $len; $i < 4; $i++) {
+            $y .= 0;
+        }
+        $year = date('Y', strtotime($reporting_period));
+        $year .= '-' . date('m');
+        $year .= '-' . $y . $x;
+
+        VarDumper::dump($year);
+
+        return $year;
+    }
+    public function checkIfBalance($jevItems)
+    {
+        $debit = 0;
+        $credit = 0;
+        foreach ($jevItems as $item) {
+            $debit += $item->debit;
+            $credit += $item->credit;
+        }
+        if ($debit == $credit) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

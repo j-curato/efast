@@ -43,7 +43,7 @@ class JevPreparationSearch extends JevPreparation
         $query = JevPreparation::find();
 
         // add conditions that should always apply here
-
+        // $query->joinWith(['jevAccountingEntries']);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -65,11 +65,14 @@ class JevPreparationSearch extends JevPreparation
         ]);
 
         $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
+
             ->andFilterWhere(['like', 'jev_number', $this->jev_number])
             ->andFilterWhere(['like', 'dv_number', $this->dv_number])
             ->andFilterWhere(['like', 'lddap_number', $this->lddap_number])
             ->andFilterWhere(['like', 'entity_name', $this->entity_name])
-            ->andFilterWhere(['like', 'explaination', $this->explaination]);
+            ->andFilterWhere(['like', 'explaination', $this->explaination])
+            // ->andFilterWhere(['like', 'jev_accounting_entries.chart_of_account_id', 2])
+            ;
 
         return $dataProvider;
     }
