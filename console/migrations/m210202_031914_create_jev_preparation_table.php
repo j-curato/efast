@@ -18,14 +18,15 @@ class m210202_031914_create_jev_preparation_table extends Migration
     {
         $this->createTable('{{%jev_preparation}}', [
             'id' => $this->primaryKey(),
-            'responsibility_center_id' => $this->integer()->notNull(),
-            'fund_cluster_code_id' => $this->integer()->notNull(),
+            'responsibility_center_id' => $this->integer(),
+            'fund_cluster_code_id' => $this->integer(),
             'reporting_period' => $this->string(50)->notNull(),
-            'date' => $this->date()->notNull(),
-            'jev_number' => $this->string(100)->notNull(),
-            'dv_number' => $this->string(100)->notNull(),
-            'lddap_number' => $this->string(100)->notNull(),
-            'entity_name' => $this->string(100)->notNull(),
+            'date' => $this->date(),
+            'jev_number' => $this->string(100),
+            'ref_number'=>$this->string(100),
+            'dv_number' => $this->string(100),
+            'lddap_number' => $this->string(100),
+            'entity_name' => $this->string(100),
             'explaination' => $this->string(255)->notNull(),
         ]);
 

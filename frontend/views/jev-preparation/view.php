@@ -18,6 +18,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <!-- <h1><?= Html::encode($this->title) ?></h1> -->
 
+
+    
+
     <?php $t = yii::$app->request->baseUrl . '/index.php?r=jev-preparation/delete&id=' . $model->id; ?>
     <p class="actions" style="margin-left:50px;">
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -66,41 +69,38 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 
-    <div class="container">
+    <div class="container ">
 
         <div class="form-wrapper">
             <div class="row-1">
                 <div>
-                    <div style=" 
-                text-align:center;
-                ">
+                    <div style="text-align:center; ">
                         <h5>
                             JOURNAL ENTRY VOUCHER
                         </h5>
                     </div>
-                    <div style="padding:2px ;align-items:center;">
+                    <div style="padding:5px ;align-items:center;">
                         <span>
-                            Entity Name:
+                            Entity Name :
                         </span>
                         <span>
-                            <?php echo $model->entity_name ?>
+                            DTI
                         </span>
                     </div>
-                    <div>
+                    <div style="padding:5px ;align-items:center;">
                         <span>
                             Fund Cluster :
                         </span>
                         <span>
-                            <?php echo $model->fundClusterCode->id ?>
+                            <?php echo ($model->fundClusterCode)?$model->fundClusterCode->id:""; ?>
                         </span>
                     </div>
                 </div>
-                <div>
+                <div style="padding: 0;">
                     <div style="border-bottom: 1px solid black; 
-                padding:2px;
-                text-align:center;
-                height:50%;
-                ">
+                        padding:0;
+                        text-align:center;
+                        height:50%; ">
                         <span>
                             JEV #:
                         </span>
@@ -110,7 +110,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </span>
                     </div>
                     <div class="date">
-                        <div style=" border-right:1px solid black;">
+                        <div>
                             <span>
                                 Date:
                             </span>
@@ -135,8 +135,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         Responsibility Center
                     </h5>
                 </div>
-                <div style="flex-grow:1;
-            ">
+                <div style="flex-grow:1; ">
                     <div style="text-align: center;border-bottom:1px solid black;">
                         <h5>
                             ACCOUNTING ENTRIES
@@ -178,11 +177,13 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="row-2">
                 <div>
                     <h6>
-                        <?php echo $model->responsibilityCenter->name ?>
+                        <?php
+                        // echo $model->responsibilityCenter->name 
+                        echo ($model->responsibilityCenter) ? $model->responsibilityCenter->name : '';
+                        ?>
                     </h6>
                 </div>
-                <div style="flex-grow:1;
-            ">
+                <div style="flex-grow:1;">
                     <div class="acc-exp-row">
                         <div style="width: 37.5% ; border-right:1px solid black;">
                             <h6>
@@ -375,11 +376,16 @@ $this->params['breadcrumbs'][] = $this->title;
         .container {
             /* border: 1px solid black; */
             height: auto;
+            background-color: white;
+            box-shadow: 12px;
+            border-radius: 5px;
+            padding: 20px;
         }
 
         .row-2 {
             text-align: center;
             height: auto;
+            border: none;
         }
 
         .date {
@@ -453,7 +459,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         .row-1>div {
             width: 100%;
-            padding: 3px;
+            padding: 0;
             margin: 0;
             border: 1px solid black;
             font-weight: bold;
@@ -481,6 +487,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 margin-top: 20cm;
                 margin-bottom: 5cm;
             }
+
 
 
         }

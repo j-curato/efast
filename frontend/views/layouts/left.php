@@ -100,6 +100,7 @@
                                 'items' => [
                                     ['label' => 'Transactions', 'icon' => 'circle-o', 'url' => ['/transaction'],],
                                     ['label' => 'Jev', 'icon' => 'circle-o', 'url' => ['/jev-preparation'],],
+                                    ['label' => 'General Ledger', 'icon' => 'circle-o', 'url' => ['/jev-preparation/general-ledger-index'],],
 
                                 ],
                             ],

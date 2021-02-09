@@ -22,6 +22,7 @@ class m210201_032647_create_chart_of_accounts_table extends Migration
             'general_ledger' => $this->string(255)->notNull(),
             'major_account_id' => $this->integer()->notNull(),
             'sub_major_account' => $this->integer()->notNull(),
+            'sub_major_account_2_id' => $this->integer()->notNull(),
             'account_group' => $this->string(255)->notNull(),
             'current_noncurrent' => $this->string(255)->notNull(),
             'enable_disable' => $this->string(255)->notNull(),

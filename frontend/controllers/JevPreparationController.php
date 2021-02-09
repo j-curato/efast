@@ -2,18 +2,26 @@
 
 namespace frontend\controllers;
 
+use app\models\ChartOfAccounts;
+use app\models\FundClusterCode;
 use app\models\JevAccountingEntries;
 use Yii;
 use app\models\JevPreparation;
 use app\models\JevPreparationSearch;
+use app\models\MajorAccounts;
+use app\models\SubMajorAccounts;
+use app\models\SubMajorAccounts2;
 use Exception;
 use frontend\models\Model;
+use InvalidArgumentException;
+use PhpOffice\PhpSpreadsheet\Chart\Chart;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\helpers\VarDumper;
+use yii\web\UploadedFile;
 
 /**
  * JevPreparationController implements the CRUD actions for JevPreparation model.
@@ -65,36 +73,42 @@ class JevPreparationController extends Controller
     public function actionGeneralLedgerIndex()
     {
         // echo "success";
-        $chart = Yii::$app->db->createCommand("SELECT  jev_preparation.explaination, jev_preparation.jev_number, jev_preparation.reporting_period ,
-        jev_accounting_entries.id,jev_accounting_entries.debit,jev_accounting_entries.credit,chart_of_accounts.uacs,
-        chart_of_accounts.general_ledger
-        FROM jev_preparation,jev_accounting_entries,chart_of_accounts where jev_preparation.id = jev_accounting_entries.jev_preparation_id
-        AND jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
-        AND jev_preparation.fund_cluster_code_id =1 AND jev_accounting_entries.chart_of_account_id =1 
-        ORDER BY jev_preparation.reporting_period")->queryAll();
+        // $chart = Yii::$app->db->createCommand("SELECT  jev_preparation.explaination, jev_preparation.jev_number, jev_preparation.reporting_period ,
+        // jev_accounting_entries.id,jev_accounting_entries.debit,jev_accounting_entries.credit,chart_of_accounts.uacs,
+        // chart_of_accounts.general_ledger
+        // FROM jev_preparation,jev_accounting_entries,chart_of_accounts where jev_preparation.id = jev_accounting_entries.jev_preparation_id
+        // AND jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
+        // AND jev_preparation.fund_cluster_code_id =1 AND jev_accounting_entries.chart_of_account_id =1 
+        // ORDER BY jev_preparation.reporting_period")->queryAll();
+        $model = new JevPreparation();
         return $this->render('general_ledger_view', [
-            'model' => $chart,
+            'model' => $model,
         ]);
     }
     public function actionLedger()
     {
-        $gen = $_POST['gen'] ? 'AND jev_accounting_entries.chart_of_account_id =' . $_POST['gen'] : '';
-        $fund = $_POST['fund'] ? 'AND jev_preparation.fund_cluster_code_id =' . $_POST['fund'] : '';
+        $gen = (!empty($_POST['gen'])) ? 'AND jev_accounting_entries.chart_of_account_id =' . $_POST['gen'] : '';
+        $fund = (!empty($_POST['fund'])) ? 'AND jev_preparation.fund_cluster_code_id =' . $_POST['fund'] : '';
+
+        $x = explode('-', $_POST['reporting_period']);
         // $reporting_period = $_POST['reporting_period'] ? "'AND jev_preparation.reporting_period ='" .  (String)$_POST['reporting_period'] ."'" : '';
-        $reporting_period = $_POST['reporting_period'] ? "AND jev_preparation.reporting_period ='{$_POST['reporting_period']}'"  : '';
+        $reporting_period = (!empty($_POST['reporting_period'])) ? "AND jev_preparation.reporting_period like '{$x[0]}%' AND jev_preparation.reporting_period <='{$_POST['reporting_period']}'"  : '';
+
         $chart = Yii::$app->db->createCommand("SELECT  jev_preparation.explaination, jev_preparation.jev_number, jev_preparation.reporting_period ,
         jev_accounting_entries.id,jev_accounting_entries.debit,jev_accounting_entries.credit,chart_of_accounts.uacs,
-        chart_of_accounts.general_ledger,jev_accounting_entries.id,(SELECT fund_cluster_code.name from fund_cluster_code where fund_cluster_code.id={$_POST['fund']}) as fund_cluster_code
+        chart_of_accounts.general_ledger,jev_accounting_entries.id,jev_preparation.ref_number
         FROM jev_preparation,jev_accounting_entries,chart_of_accounts where jev_preparation.id = jev_accounting_entries.jev_preparation_id
         AND jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
-        
-      {$gen} {$fund} {$reporting_period}
+      $gen $fund $reporting_period
         ORDER BY jev_preparation.reporting_period
 
         ")->queryAll();
 
-        echo json_encode(['results' => $chart]);
+        // echo json_encode(['results' => $chart]);
+        return json_encode(['results' => $chart]);
     }
+
+
 
     /**
      * Creates a new JevPreparation model.
@@ -288,4 +302,167 @@ class JevPreparationController extends Controller
             return false;
         }
     }
+
+    // public function actionImport()
+
+    // {
+    //     $file = 'sample/jev.xls';
+    //     $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file);
+    //     $worksheet = $spreadsheet->getActiveSheet();
+    //     $rows = [];
+    //     foreach ($worksheet->getRowIterator() as $key => $row) {
+    //         $cellIterator = $row->getCellIterator();
+    //         $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+    //         $cells = [];
+
+    //         if ($key > 2) {
+    //             foreach ($cellIterator as $x => $cell) {
+
+    //                 $cells[] = $cell->getValue();
+    //             }
+    //             $uacs = ChartOfAccounts::find()->where("uacs = :uacs", [
+    //                 'uacs' => $cells[0]
+    //             ])->one();
+
+    //             $fund_cluster = FundClusterCode::find()->where("name= :name", [
+    //                 'name' => $cells[2]
+    //             ])->one();
+    //             if (empty($uacs)) {
+    //                 //MAJOR ACOUNT INSERT IF DLI MA KITA
+    //                 $major = MajorAccounts::find()->where("object_code = :object_code", [
+    //                     'object_code' => $cells[13]
+    //                 ])->one();
+    //                 if (empty($major)) {
+
+
+    //                     try {
+    //                         $maj = new MajorAccounts();
+    //                         $maj->object_code = $cells[13];
+    //                         $maj->name = $cells[14];
+
+
+    //                         if ($maj->save(false)) {
+    //                             $major = $maj;
+    //                         }
+    //                     } catch (Exception $e) {
+    //                         echo '<pre>';
+    //                         var_dump($e);
+    //                         echo '</pre>';
+    //                     }
+    //                 }
+
+
+
+
+
+    //                 // SUB MAJOR FIND
+    //                 $sub_major = SubMajorAccounts::find()->where("object_code=:object_code", [
+    //                     'object_code' => $cells[15]
+    //                 ])->one();
+    //                 if (empty($sub_major)) {
+
+    //                     echo '<pre>';
+    //                     var_dump($cells[15]);
+    //                     echo '</pre>';
+
+    //                     try {
+    //                         $sub_maj = new SubMajorAccounts();
+    //                         $sub_maj->object_code = $cells[15];
+    //                         $sub_maj->name = $cells[16];
+
+
+    //                         if ($sub_maj->save(false)) {
+    //                             $sub_major = $sub_maj;
+    //                         }
+    //                     } catch (Exception $e) {
+    //                         echo '<pre>';
+    //                         var_dump($e);
+    //                         echo '</pre>';
+    //                     }
+    //                 }
+    //                 // SUB MAJOR 2
+    //                 $sub_major2 = SubMajorAccounts2::find()->where("object_code = :object_code", [
+    //                     'object_code' => $cells[17]
+    //                 ])->one();
+    //                 if (empty($sub_major2)) {
+    //                     try {
+    //                         $sub_maj2 = new SubMajorAccounts();
+    //                         $sub_maj2->object_code = $cells[17];
+    //                         $sub_maj2->name = $cells[18];
+
+
+    //                         if ($sub_maj2->save(false)) {
+    //                             $sub_major2 = $sub_maj2;
+    //                         }
+    //                     } catch (Exception $e) {
+    //                         echo '<pre>';
+    //                         var_dump($e);
+    //                         echo '</pre>';
+    //                     }
+    //                 }
+
+    //                 // CHART OF ACCOUNTS 
+    //                 $chart = [];
+    //                 try {
+    //                     $coa = new ChartOfAccounts();
+    //                     $coa->uacs = $cells[0];
+    //                     $coa->general_ledger = $cells[1];
+    //                     $coa->major_account_id = $major->id;
+    //                     $coa->sub_major_account = $sub_major->id;
+    //                     $coa->sub_major_account_2_id = $sub_major2->id;
+    //                     $coa->account_group = $cells[11];
+    //                     $coa->current_noncurrent = $cells[12];
+    //                     $coa->enable_disable = 1;
+    //                     if ($coa->save(false)) {
+    //                         $uacs = $coa->id;
+    //                     }
+    //                 } catch (Exception $e) {
+    //                     echo $e;
+    //                 }
+    //                 // echo '<pre>';
+    //                 // var_dump($sub_major2->id);
+    //                 // echo '</pre>';
+    //             }
+
+
+    //             $reporting_period = date("Y-m", strtotime($cells[3]));
+    //             // echo '<pre>';
+    //             // var_dump($reporting_period);
+    //             // echo '</pre>';
+    //             try {
+
+    //                 $jv = new JevPreparation();
+    //                 $jv->fund_cluster_code_id = (!empty($fund_cluster)) ? $fund_cluster->id : '';
+    //                 $jv->reporting_period = $reporting_period;
+    //                 $jv->date = $cells[4];
+    //                 $jv->explaination = $cells[5];
+    //                 $jv->ref_number = $cells[6];
+    //                 if ($jv->save(false)) {
+    //                     $ja = new JevAccountingEntries();
+    //                     $ja->jev_preparation_id = $jv->id;
+    //                     $ja->chart_of_account_id = $uacs->id;
+    //                     $ja->debit = $cells[8] ? $cells[8] : 0;
+    //                     $ja->credit = ($cells[9]) ? $cells[9] : 0;
+    //                     if ($ja->save(false)) {
+    //                         echo '<pre>';
+    //                         var_dump("Jev Accounting Save Successfully");
+    //                         echo '</pre>';
+    //                     }
+    //                 }
+    //             } catch (InvalidArgumentException $e) {
+    //                 echo  $e->getMessage();;
+    //             }
+    //         }
+    //     }
+
+    //     // echo '<pre>';
+    //     // var_dump($rows);
+    //     // echo '</pre>';
+    //     // unset($rows[0]);
+    //     // unset($rows[1]);
+    //     // echo json_encode(['results' => $major]);
+    // }
+
+
+    
 }

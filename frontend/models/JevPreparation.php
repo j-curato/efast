@@ -15,7 +15,6 @@ use Yii;
  * @property string $jev_number
  * @property string $dv_number
  * @property string $lddap_number
- * @property string $entity_name
  * @property string $explaination
  *
  * @property JevAccountingEntries[] $jevAccountingEntries
@@ -38,11 +37,11 @@ class JevPreparation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['responsibility_center_id', 'fund_cluster_code_id', 'reporting_period', 'date', 'jev_number', 'dv_number', 'lddap_number', 'entity_name', 'explaination'], 'required'],
+            [['responsibility_center_id', 'fund_cluster_code_id', 'reporting_period', 'date', 'jev_number', 'explaination'], 'required'],
             [['responsibility_center_id', 'fund_cluster_code_id'], 'integer'],
             [['date'], 'safe'],
             [['reporting_period'], 'string', 'max' => 50],
-            [['jev_number', 'dv_number', 'lddap_number', 'entity_name', 'explaination'], 'string', 'max' => 100],
+            [['jev_number', 'dv_number', 'lddap_number', 'explaination'], 'string', 'max' => 100],
             [['fund_cluster_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => FundClusterCode::className(), 'targetAttribute' => ['fund_cluster_code_id' => 'id']],
             [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::className(), 'targetAttribute' => ['responsibility_center_id' => 'id']],
         ];
@@ -62,8 +61,7 @@ class JevPreparation extends \yii\db\ActiveRecord
             'jev_number' => 'JEV Number',
             'dv_number' => 'Dv Number',
             'lddap_number' => 'Lddap Number',
-            'entity_name' => 'Entity Name',
-            'explaination' => 'Explaination',
+            'explaination' => 'Particular',
         ];
     }
 

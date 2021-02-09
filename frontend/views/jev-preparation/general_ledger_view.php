@@ -19,7 +19,8 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+
+
     <?php
     $chart = Yii::$app->db->createCommand("SELECT  jev_preparation.explaination, jev_preparation.jev_number, jev_preparation.reporting_period ,
             jev_accounting_entries.id,jev_accounting_entries.debit,jev_accounting_entries.credit,chart_of_accounts.uacs,
@@ -142,7 +143,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td> -->
 
                 </tr>
-                <tr  style="border-top:1px solid black">
+                <tr style="border-top:1px solid black">
                     <td style="border-top:1px solid black">
                         Reporting Period
                     </td>
@@ -233,11 +234,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
             @page {
                 size: auto;
-                margin: 30mm 0 10mm 0;
+                margin: 0;
+                margin-top: 6cm;
             }
 
+
+
             .container {
-                margin-top: 70px;
+                margin: 0;
+                top: 0;
             }
 
             .entity_name {
@@ -257,7 +262,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 border: none;
             }
 
-            /* 
+
             table {
                 page-break-after: auto
             }
@@ -270,7 +275,7 @@ $this->params['breadcrumbs'][] = $this->title;
             td {
                 page-break-inside: avoid;
                 page-break-after: auto
-            } */
+            }
 
             /* thead {
                 display: table-header-group
@@ -318,18 +323,20 @@ $(document).ready(function(){
             url:   window.location.pathname + '?r=jev-preparation/ledger',
             data: {
                 fund:fund?fund:0,
-                gen:gen?gen:0,
+                gen:gen?gen:'',
                 reporting_period:reporting_period?''+reporting_period.toString():'',
             },
             success: function(msg){
                 var data= JSON.parse(msg)
+                console.log(data)
+
                 var result = data.results
                 let table = document.getElementById('ledgerTable');
 
                 console.log(result)
                 var x='';
                 if (result.length>0 &&gen!=null){
-                     document.getElementById('uacs').innerHTML=result[0].uacs+"12312312123"
+                     document.getElementById('uacs').innerHTML=result[0].uacs
                      document.getElementById('ledger').innerHTML=result[0].general_ledger
 
 
@@ -356,10 +363,19 @@ $(document).ready(function(){
 
                    }
                         row+="<td>"+result[i].explaination+ "</td>"
-                        row+="<td>"+result[i].jev_number+"</td>"
+                        row+="<td>"+result[i].ref_number+"</td>"
                         row+="<td>"+result[i].debit+"</td>"
                         row+="<td>"+result[i].credit+"</td>"
-                        row+="<td>"+result[i].credit+"</td>"
+                        
+                        if (result[i].credit!=0){
+                            row+="<td>"+result[i].credit+"</td>"
+                        }
+                        else if (result[i].debit!=0){
+                            row+="<td>"+result[i].debit+"</td>"
+                        }
+                        else{
+                            row+="<td>"+''+"</td>"
+                        }
 
                         
                         row+="</tr>"

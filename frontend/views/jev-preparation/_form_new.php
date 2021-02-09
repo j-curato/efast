@@ -32,14 +32,15 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 
     <div class="card " style="width: full;background-color:white; padding:2rem;margin-bottom:1rem;border-radius:1rem;box-shadow:5rem">
-        <div class="card-body">
+        <div class="card-body"> 
+        
 
             <div class="row ">
                 <div class="col-sm-3">
 
 
                     <?= $form->field($model, 'date')->widget(DatePicker::class, [
-                        'options' => ['placeholder' => 'Enter  Date', 'readonly' => true],
+                        'options' => ['placeholder' => 'Enter  Date', 'readonly' => true, 'id' => 'date'],
                         'type' => DatePicker::TYPE_INPUT,
                         'pluginOptions' => [
                             'autoclose' => true,
@@ -52,8 +53,9 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 
                     <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
-                        'options' => ['placeholder' => 'Reporting Period', 'readonly' => true],
+                        'options' => ['placeholder' => 'Reporting Period', 'id' => 'reporting_period',],
                         'type' => DatePicker::TYPE_INPUT,
+                        'readonly' => true,
 
                         'pluginOptions' => [
 
@@ -66,9 +68,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                 </div>
 
 
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'entity_name')->textInput(['maxlength' => true]) ?>
-                </div>
+
 
                 <div class="col-sm-3">
 
@@ -84,8 +84,14 @@ use aryelds\sweetalert\SweetAlertAsset;
                     ?>
 
 
-                    <?= $form->field($model, 'jev_number')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'jev_number')->textInput(
+                        ['maxlength' => true,'style'=>'border-radius:5px',],
+                    ) ?>
 
+                </div>
+
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'lddap_number')->textInput(['maxlength' => true,'style'=>'border-radius:5px']) ?>
                 </div>
 
             </div>
@@ -113,18 +119,15 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 
                 <div class="col-sm-3">
-                    <?= $form->field($model, 'dv_number')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'dv_number')->textInput(['maxlength' => true,'style'=>'border-radius:5px']) ?>
 
                 </div>
 
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'lddap_number')->textInput(['maxlength' => true]) ?>
-                </div>
 
 
             </div>
 
-            <?= $form->field($model, 'explaination')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'explaination')->textInput(['maxlength' => true,'style'=>'border-radius:5px'],) ?>
         </div>
     </div>
 
@@ -163,10 +166,10 @@ use aryelds\sweetalert\SweetAlertAsset;
                 <!-- widgetContainer -->
 
                 <?php foreach ($modelJevItems as $i => $modelJevItem) : ?>
-                    <div class="item panel panel-default">
+                    <div class="item panel panel-default" style="border:1px solid black">
                         <!-- widgetBody -->
-                        <div class="panel-heading" style="background-color: #99ddff;">
-                            <h3 class="panel-title pull-left">Entry</h3>
+                        <div class="panel-heading" style="background-color: white;border:none">
+                            <!-- <h3 class="panel-title pull-left">Entry</h3> -->
                             <div class="pull-right">
                                 <button type="button" class="add-item btn btn-success btn-xs"><i class="glyphicon glyphicon-plus"></i></button>
                                 <button type="button" class="remove-item btn btn-danger btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
@@ -263,6 +266,18 @@ use aryelds\sweetalert\SweetAlertAsset;
             display: flex;
             justify-content: space-around;
             text-align: center;
+            border-radius: 5px;
+        }
+
+        #reporting_period {
+            background-color: white;
+            border-radius: 5px;
+            color: red;
+        }
+
+        #date {
+            background-color: white;
+            border-radius: 5px;
         }
 
         .save-btn {
@@ -270,10 +285,11 @@ use aryelds\sweetalert\SweetAlertAsset;
             color: black;
             border: 1px solid green;
             transition-duration: 0.4s;
-            width: 90%;
+            width: 95%;
         }
 
         .submit-btn {
+            display: flex;
             align-items: center;
             justify-content: center;
         }
@@ -323,11 +339,11 @@ use aryelds\sweetalert\SweetAlertAsset;
          $("#d_total").val(total_debit)
 
          if (total_debit == total_credit){
-            $(".btn").removeAttr("disabled");
+            $(".save-btn").removeAttr("disabled");
          }
 
          else{
-            $(".btn").attr("disabled", true);
+            $(".save-btn").attr("disabled", true);
          }
          
         //  console.log(total_debit);
