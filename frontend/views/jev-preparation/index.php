@@ -5,6 +5,8 @@ use app\models\ResponsibilityCenter;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\helpers\ArrayHelper;
+use kartik\widgets\FileInput;
+use kartik\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
@@ -19,11 +21,61 @@ $this->params['breadcrumbs'][] = $this->title;
 
   <p>
     <?= Html::a('Create Jev Preparation', ['create'], ['class' => 'btn btn-success']) ?>
+    <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button>
   </p>
+  
+  <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
+        </div>
+        <div class='modal-body'>
+          <center><a href="WFP Template.xlsx">Download Template Here to avoid error during Upload.</a></center>
+          <hr>
+          <?php
+
+
+          $form = ActiveForm::begin([
+            'action' => ['jev-preparation/import'],
+            'method' => 'post',
+            'id' => 'formupload',
+            'options' => [
+              'enctype' => 'multipart/form-data',
+            ], // important
+          ]);
+          // echo '<input type="file">';
+          echo FileInput::widget([
+            'name' => 'file',
+            // 'options' => ['multiple' => true],
+            'id' => 'fileupload',
+            'pluginOptions' => [
+              'showPreview' => true,
+              'showCaption' => true,
+              'showRemove' => true,
+              'showUpload' => true,
+            ]
+          ]);
+
+
+          ActiveForm::end();
+
+
+          ?>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+  
+  
+  </div>
 
   <?php // echo $this->render('_search', ['model' => $searchModel]); 
   ?>
-
+  
   <?= GridView::widget([
     'dataProvider' => $dataProvider,
     'filterModel' => $searchModel,
@@ -40,20 +92,25 @@ $this->params['breadcrumbs'][] = $this->title;
 
       'id',
       // 'responsibility_center_id'
-      'jev_number',
-      'dv_number',
-      [
-        'label' => 'Responsibility Center',
-        'attribute' => 'responsibility_center_id',
-        'value' => 'responsibilityCenter.name',
-        'filter' => Html::activeDropDownList(
-          $searchModel,
-          'responsibility_center_id',
-          ArrayHelper::map(ResponsibilityCenter::find()->asArray()->all(), 'id', 'name'),
-          ['class' => 'form-control', 'prompt' => 'Responsibility Centers']
-        )
+      // 'jev_number',
+      // 'dv_number',
+      // [
+      //   'label' => 'Responsibility Center',
+      //   'attribute' => 'responsibility_center_id',
+      //   'value' => 'responsibilityCenter.name',
+      //   'filter' => Html::activeDropDownList(
+      //     $searchModel,
+      //     'responsibility_center_id',
+      //     ArrayHelper::map(ResponsibilityCenter::find()->asArray()->all(), 'id', 'name'),
+      //     ['class' => 'form-control', 'prompt' => 'Responsibility Centers']
+      //   )
 
+      // ],
+      [
+        'label' => 'Reference Number',
+        'attribute' => 'ref_number',
       ],
+
       [
         'label' => 'Fund Cluster Code',
         'attribute' => 'fund_cluster_code_id',

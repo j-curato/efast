@@ -92,7 +92,7 @@ class JevPreparationController extends Controller
 
         $x = explode('-', $_POST['reporting_period']);
         // $reporting_period = $_POST['reporting_period'] ? "'AND jev_preparation.reporting_period ='" .  (String)$_POST['reporting_period'] ."'" : '';
-        $reporting_period = (!empty($_POST['reporting_period'])) ? "AND jev_preparation.reporting_period like '{$x[0]}%' AND jev_preparation.reporting_period <='{$_POST['reporting_period']}'"  : '';
+        $reporting_period = (!empty($_POST['reporting_period'])) ? " AND jev_preparation.reporting_period like '{$x[0]}%' AND jev_preparation.reporting_period <='{$_POST['reporting_period']}'"  : '';
 
         $chart = Yii::$app->db->createCommand("SELECT  jev_preparation.explaination, jev_preparation.jev_number, jev_preparation.reporting_period ,
         jev_accounting_entries.id,jev_accounting_entries.debit,jev_accounting_entries.credit,chart_of_accounts.uacs,
@@ -103,8 +103,14 @@ class JevPreparationController extends Controller
         ORDER BY jev_preparation.reporting_period
 
         ")->queryAll();
-
+        // $qwe = $x[0] - 1;
+        // $q = "$qwe";
+        // $y= Yii::$app->db->createCommand(" SELECT jev_preparation.explaination, jev_preparation.jev_number, jev_preparation.reporting_period ,
+        // jev_accounting_entries.id,jev_accounting_entries.debit,jev_accounting_entries.credit,chart_of_accounts.uacs,
+        // chart_of_accounts.general_ledger,jev_accounting_entries.id,jev_preparation.ref_number
+        // FROM jev_preparation,jev_accounting_entries,chart_of_accounts  where jev_preparation.reporting_period like  '2020%' ORDER BY jev_preparation.id DESC ")->queryAll();
         // echo json_encode(['results' => $chart]);
+        // array_push($chart,$y);
         return json_encode(['results' => $chart]);
     }
 
@@ -303,166 +309,212 @@ class JevPreparationController extends Controller
         }
     }
 
+    public function actionImport()
+
+    {
+        // $file = 'sample/jev.xls';
+        $name = $_FILES["file"]["name"];
+
+        // $ext = pathinfo($name, PATHINFO_EXTENSION);
+        // $x = "sample/" . "jev" . ".xls";
+        $id = uniqid();
+        $file = "sample/{$name}_{$id}";
+
+        move_uploaded_file($_FILES['file']['tmp_name'], $file);
+        // print_r("sample/".$name);
+        $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+        $excel = $reader->load($file);
+        $worksheet = $excel->getActiveSheet();
+        $rows = [];
+        $jev = [];
+        $jev_entries = [];
+        foreach ($worksheet->getRowIterator() as $key => $row) {
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+            $cells = [];
+
+            if ($key > 2) {
+                foreach ($cellIterator as $x => $cell) {
+
+                    $cells[] = $cell->getValue();
+                }
+                // echo '<pre>';
+                // var_dump($cells);
+                // echo '</pre>';
+                $uacs = ChartOfAccounts::find()->where("uacs = :uacs", [
+                    'uacs' => $cells[0]
+                ])->one();
+
+                $fund_cluster = FundClusterCode::find()->where("name= :name", [
+                    'name' => $cells[2]
+                ])->one();
+                // if (empty($uacs)) {
+                //     //MAJOR ACOUNT INSERT IF DLI MA KITA
+                //     $major = MajorAccounts::find()->where("object_code = :object_code", [
+                //         'object_code' => $cells[13]
+                //     ])->one();
+                //     if (empty($major)) {
+
+
+                //         try {
+                //             $maj = new MajorAccounts();
+                //             $maj->object_code = $cells[13];
+                //             $maj->name = $cells[14];
+
+
+                //             if ($maj->save(false)) {
+                //                 $major = $maj;
+                //             }
+                //         } catch (Exception $e) {
+                //             echo '<pre>';
+                //             var_dump($e);
+                //             echo '</pre>';
+                //         }
+                //     }
+
+
+
+
+
+                //     // SUB MAJOR FIND
+                //     $sub_major = SubMajorAccounts::find()->where("object_code=:object_code", [
+                //         'object_code' => $cells[15]
+                //     ])->one();
+                //     if (empty($sub_major)) {
+
+                //         echo '<pre>';
+                //         var_dump($cells[15]);
+                //         echo '</pre>';
+
+                //         try {
+                //             $sub_maj = new SubMajorAccounts();
+                //             $sub_maj->object_code = $cells[15];
+                //             $sub_maj->name = $cells[16];
+
+
+                //             if ($sub_maj->save(false)) {
+                //                 $sub_major = $sub_maj;
+                //             }
+                //         } catch (Exception $e) {
+                //             echo '<pre>';
+                //             var_dump($e);
+                //             echo '</pre>';
+                //         }
+                //     }
+                //     // SUB MAJOR 2
+                //     $sub_major2 = SubMajorAccounts2::find()->where("object_code = :object_code", [
+                //         'object_code' => $cells[17]
+                //     ])->one();
+                //     if (empty($sub_major2)) {
+                //         try {
+                //             $sub_maj2 = new SubMajorAccounts();
+                //             $sub_maj2->object_code = $cells[17];
+                //             $sub_maj2->name = $cells[18];
+
+
+                //             if ($sub_maj2->save(false)) {
+                //                 $sub_major2 = $sub_maj2;
+                //             }
+                //         } catch (Exception $e) {
+                //             echo '<pre>';
+                //             var_dump($e);
+                //             echo '</pre>';
+                //         }
+                //     }
+
+                //     // CHART OF ACCOUNTS 
+                //     $chart = [];
+                //     try {
+                //         $coa = new ChartOfAccounts();
+                //         $coa->uacs = $cells[0];
+                //         $coa->general_ledger = $cells[1];
+                //         $coa->major_account_id = $major->id;
+                //         $coa->sub_major_account = $sub_major->id;
+                //         $coa->sub_major_account_2_id = $sub_major2->id;
+                //         $coa->account_group = $cells[11];
+                //         $coa->current_noncurrent = $cells[12];
+                //         $coa->enable_disable = 1;
+                //         if ($coa->save(false)) {
+                //             $uacs = $coa->id;
+                //         }
+                //     } catch (Exception $e) {
+                //         echo $e;
+                //     }
+                //     // echo '<pre>';
+                //     // var_dump($sub_major2->id);
+                //     // echo '</pre>';
+                // }
+
+
+                $reporting_period = date("Y-m", strtotime($cells[3]));
+                // echo '<pre>';
+                // var_dump($reporting_period);
+                // echo '</pre>';
+
+                try {
+
+                    $jv = new JevPreparation();
+                    $jv->fund_cluster_code_id = (!empty($fund_cluster)) ? $fund_cluster->id : '';
+                    $jv->reporting_period = $reporting_period;
+                    $jv->date = $cells[4];
+                    $jv->explaination = $cells[5];
+                    $jv->ref_number = $cells[6];
+                    if ($jv->save(false)) {
+                        // $ja = new JevAccountingEntries();
+                        // $ja->jev_preparation_id = $jv->id;
+                        // $ja->chart_of_account_id = $uacs->id;
+                        // $ja->debit = $cells[8] ? $cells[8] : 0;
+                        // $ja->credit = ($cells[9]) ? $cells[9] : 0;
+
+                        $jev_entries[] = [$jv->id, $uacs->id, $cells[8] ? $cells[8] : 0, $cells[9] ? $cells[9] : 0];
+
+                        // if ($ja->save(false)) {
+                        //     echo '<pre>';
+                        //     var_dump("Jev Accounting Save Successfully");
+                        //     echo '</pre>';
+                        // }
+                    }
+                } catch (InvalidArgumentException $e) {
+                    echo  $e->getMessage();;
+                }
+            }
+        }
+
+        $column = ['jev_preparation_id', 'chart_of_account_id', 'debit', 'credit'];
+        $ja = Yii::$app->db->createCommand()->batchInsert('jev_accounting_entries', $column, $jev_entries)->execute();
+
+
+        echo '<pre>';
+        var_dump("SUCCESS");
+        echo '</pre>';
+        // unset($rows[0]);
+        // unset($rows[1]);
+        // echo json_encode(['results' => $major]);
+        return "qwe";
+    }
+
+
     // public function actionImport()
-
     // {
-    //     $file = 'sample/jev.xls';
-    //     $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file);
-    //     $worksheet = $spreadsheet->getActiveSheet();
-    //     $rows = [];
-    //     foreach ($worksheet->getRowIterator() as $key => $row) {
-    //         $cellIterator = $row->getCellIterator();
-    //         $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
-    //         $cells = [];
+    //     $name = $_FILES["file"]["name"];
+    //     $temp = $_FILES["file"]["tmp_name"];
 
-    //         if ($key > 2) {
-    //             foreach ($cellIterator as $x => $cell) {
+    //     print_r($name);
+    //     // return;
+    //     $ext = pathinfo($name, PATHINFO_EXTENSION);
 
-    //                 $cells[] = $cell->getValue();
-    //             }
-    //             $uacs = ChartOfAccounts::find()->where("uacs = :uacs", [
-    //                 'uacs' => $cells[0]
-    //             ])->one();
-
-    //             $fund_cluster = FundClusterCode::find()->where("name= :name", [
-    //                 'name' => $cells[2]
-    //             ])->one();
-    //             if (empty($uacs)) {
-    //                 //MAJOR ACOUNT INSERT IF DLI MA KITA
-    //                 $major = MajorAccounts::find()->where("object_code = :object_code", [
-    //                     'object_code' => $cells[13]
-    //                 ])->one();
-    //                 if (empty($major)) {
-
-
-    //                     try {
-    //                         $maj = new MajorAccounts();
-    //                         $maj->object_code = $cells[13];
-    //                         $maj->name = $cells[14];
-
-
-    //                         if ($maj->save(false)) {
-    //                             $major = $maj;
-    //                         }
-    //                     } catch (Exception $e) {
-    //                         echo '<pre>';
-    //                         var_dump($e);
-    //                         echo '</pre>';
-    //                     }
-    //                 }
-
-
-
-
-
-    //                 // SUB MAJOR FIND
-    //                 $sub_major = SubMajorAccounts::find()->where("object_code=:object_code", [
-    //                     'object_code' => $cells[15]
-    //                 ])->one();
-    //                 if (empty($sub_major)) {
-
-    //                     echo '<pre>';
-    //                     var_dump($cells[15]);
-    //                     echo '</pre>';
-
-    //                     try {
-    //                         $sub_maj = new SubMajorAccounts();
-    //                         $sub_maj->object_code = $cells[15];
-    //                         $sub_maj->name = $cells[16];
-
-
-    //                         if ($sub_maj->save(false)) {
-    //                             $sub_major = $sub_maj;
-    //                         }
-    //                     } catch (Exception $e) {
-    //                         echo '<pre>';
-    //                         var_dump($e);
-    //                         echo '</pre>';
-    //                     }
-    //                 }
-    //                 // SUB MAJOR 2
-    //                 $sub_major2 = SubMajorAccounts2::find()->where("object_code = :object_code", [
-    //                     'object_code' => $cells[17]
-    //                 ])->one();
-    //                 if (empty($sub_major2)) {
-    //                     try {
-    //                         $sub_maj2 = new SubMajorAccounts();
-    //                         $sub_maj2->object_code = $cells[17];
-    //                         $sub_maj2->name = $cells[18];
-
-
-    //                         if ($sub_maj2->save(false)) {
-    //                             $sub_major2 = $sub_maj2;
-    //                         }
-    //                     } catch (Exception $e) {
-    //                         echo '<pre>';
-    //                         var_dump($e);
-    //                         echo '</pre>';
-    //                     }
-    //                 }
-
-    //                 // CHART OF ACCOUNTS 
-    //                 $chart = [];
-    //                 try {
-    //                     $coa = new ChartOfAccounts();
-    //                     $coa->uacs = $cells[0];
-    //                     $coa->general_ledger = $cells[1];
-    //                     $coa->major_account_id = $major->id;
-    //                     $coa->sub_major_account = $sub_major->id;
-    //                     $coa->sub_major_account_2_id = $sub_major2->id;
-    //                     $coa->account_group = $cells[11];
-    //                     $coa->current_noncurrent = $cells[12];
-    //                     $coa->enable_disable = 1;
-    //                     if ($coa->save(false)) {
-    //                         $uacs = $coa->id;
-    //                     }
-    //                 } catch (Exception $e) {
-    //                     echo $e;
-    //                 }
-    //                 // echo '<pre>';
-    //                 // var_dump($sub_major2->id);
-    //                 // echo '</pre>';
-    //             }
-
-
-    //             $reporting_period = date("Y-m", strtotime($cells[3]));
-    //             // echo '<pre>';
-    //             // var_dump($reporting_period);
-    //             // echo '</pre>';
-    //             try {
-
-    //                 $jv = new JevPreparation();
-    //                 $jv->fund_cluster_code_id = (!empty($fund_cluster)) ? $fund_cluster->id : '';
-    //                 $jv->reporting_period = $reporting_period;
-    //                 $jv->date = $cells[4];
-    //                 $jv->explaination = $cells[5];
-    //                 $jv->ref_number = $cells[6];
-    //                 if ($jv->save(false)) {
-    //                     $ja = new JevAccountingEntries();
-    //                     $ja->jev_preparation_id = $jv->id;
-    //                     $ja->chart_of_account_id = $uacs->id;
-    //                     $ja->debit = $cells[8] ? $cells[8] : 0;
-    //                     $ja->credit = ($cells[9]) ? $cells[9] : 0;
-    //                     if ($ja->save(false)) {
-    //                         echo '<pre>';
-    //                         var_dump("Jev Accounting Save Successfully");
-    //                         echo '</pre>';
-    //                     }
-    //                 }
-    //             } catch (InvalidArgumentException $e) {
-    //                 echo  $e->getMessage();;
-    //             }
-    //         }
+    //     $tmp = uniqid();
+    //     $tmpname =  $tmp . $name;
+    //     if (move_uploaded_file($_FILES['file']['tmp_name'], "tmp/" . $tmpname . ".xlsx")) {
+    //     } else {
+    //         return "ERROR 2: MOVING FILES FAILED.";
+    //         die();
     //     }
 
-    //     // echo '<pre>';
-    //     // var_dump($rows);
-    //     // echo '</pre>';
-    //     // unset($rows[0]);
-    //     // unset($rows[1]);
-    //     // echo json_encode(['results' => $major]);
+    //     // var_dump($tmpname );
+    //     $objPHPExcel = \PhpOffice\PhpSpreadsheet\IOFactory::load("tmp/" . $tmpname . ".xlsx");
+    //     $loadedSheetNames = $objPHPExcel->getSheetNames();
+    //     $foundactive = false;
     // }
-
-
-    
 }

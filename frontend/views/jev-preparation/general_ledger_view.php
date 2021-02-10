@@ -363,9 +363,14 @@ $(document).ready(function(){
 
                    }
                         row+="<td>"+result[i].explaination+ "</td>"
-                        row+="<td>"+result[i].ref_number+"</td>"
-                        row+="<td>"+result[i].debit+"</td>"
-                        row+="<td>"+result[i].credit+"</td>"
+                        if (result[i].ref_number ==null){
+                            row+="<td>"+''+"</td>"
+                        }
+                        else{
+                            row+="<td>"+result[i].ref_number+"</td>"
+                        }
+                        row+="<td>"+ thousands_separators(result[i].debit)+"</td>"
+                        row+="<td>"+thousands_separators(result[i].credit)+ "</td>"
                         
                         if (result[i].credit!=0){
                             row+="<td>"+result[i].credit+"</td>"
@@ -388,6 +393,13 @@ $(document).ready(function(){
             }
     });
     }
+    function thousands_separators(num)
+    {
+        var num_parts = num.toString().split(".");
+        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return num_parts.join(".");
+    }
+
 })
 
 JS;
