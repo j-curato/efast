@@ -397,10 +397,20 @@ $(document).ready(function(){
         type:'POST',
         data:{
             reporting_period:reporting_period?''+reporting_period.toString():'',
-            fund:fund?fund:0,
-            
         }});
-
+    //     $.ajax({
+    //         type: "POST",
+    //         url:   window.location.pathname + '?r=jev-preparation/adadj',
+    //         data: {
+    //             fund:fund?fund:0,
+    //             gen:gen?gen:'',
+    //             reporting_period:reporting_period?''+reporting_period.toString():'',
+    //         },
+            
+    //         error: function(xhr){
+    //         alert("failure"+xhr.readyState+this.url)
+    //         }
+    // });
     }
     function thousands_separators(num)
     {

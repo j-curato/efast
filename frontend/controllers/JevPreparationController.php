@@ -586,20 +586,30 @@ class JevPreparationController extends Controller
             'general_journal',
         );
     }
+    public function actionAdadjFilter()
+    {
+        return $this->render('adadj_filter', []);
+    }
     public function actionAdadj()
     {
 
-
-        $data = JevPreparation::find()
+        if (!empty($_POST)) {
+            $reporting_period = $_POST['reporting_period'] ? "{$_POST['reporting_period']}" : '';
+            $fund = $_POST['fund'] ?"->where('fund_cluster_code_id=:fund',[
+                'fund':{$_POST['fund']}
+            ])" : '';
+            $data = JevPreparation::find()
             ->joinWith(['jevAccountingEntries' => function ($query) {
                 $query->joinWith('chartOfAccount')
                     ->orderBy('chart_of_accounts.uacs');
             }])
             ->joinWith('fundClusterCode')
 
-            // ->where("jev_accounting_entries.debit > :debit", [
-            //     "debit" => 0
-            // ])
+            ->where("jev_preparation.reporting_period  =  :reporting_period", [
+                "reporting_period" => $reporting_period
+
+            ])
+
             ->orderBy('id')
             ->all();
 
@@ -608,26 +618,37 @@ class JevPreparationController extends Controller
         from jev_preparation,jev_accounting_entries,chart_of_accounts
         where jev_preparation.id  = jev_accounting_entries.jev_preparation_id
         and jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
+        AND jev_preparation.reporting_period = '$reporting_period'
         AND jev_accounting_entries.credit>0
          ORDER BY chart_of_accounts.uacs
+
         ")->queryAll();
 
         $debit = Yii::$app->db->createCommand("
-        SELECT DISTINCT chart_of_accounts.uacs,chart_of_accounts.general_ledger
+        SELECT DISTINCT chart_of_accounts.uacs,chart_of_accounts.general_ledger,jev_preparation.reporting_period
         from jev_preparation,jev_accounting_entries,chart_of_accounts
         where jev_preparation.id  = jev_accounting_entries.jev_preparation_id
         and jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
+        AND jev_preparation.reporting_period = '$reporting_period'
         AND jev_accounting_entries.debit>0
          ORDER BY chart_of_accounts.uacs
         ")->queryAll();
 
         // echo '<pre>';
-        // var_dump($credit);
+        // var_dump($data);
         // echo '</pre>';
         return $this->render('adadj_view', [
             'data' => $data,
             'credit' => $credit,
             'debit' => $debit,
         ]);
+            
+        }
+        else {
+            return $this->render('adadj_view', [
+     
+            ]);
+        }
+       
     }
 }

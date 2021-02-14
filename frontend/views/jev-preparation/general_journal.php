@@ -117,41 +117,19 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </tr>
 
-                <tr class="header" style="border:none;">
-                    <td colspan="3" style="border: none;">
-                        <span>
-                            Account Title:
-
-                        </span>
-                        <span id="ledger">
-
-                        </span>
-                    </td>
-                    <!-- <td id="ledger" colspan="3">
-
-                    </td> -->
-
-                    <td colspan="3" style="border: none;">
-                        <span>
-                            UACS Object Code:
-
-                        </span>
-                        <span id="uacs">
-                        </span>
-                    </td>
-                    <!-- <td colspan="2" >
-                    </td> -->
-
-                </tr>
+            
                 <tr style="border-top:1px solid black">
                     <td style="border-top:1px solid black">
-                        Reporting Period
+                        Date
+                    </td>
+                    <td style="border-top:1px solid black">
+                        JEV No.
                     </td>
                     <td style="border-top:1px solid black">
                         Particulars
                     </td>
                     <td style="border-top:1px solid black">
-                        Reference
+                        UACS Object Code
                     </td>
                     <td style="border-top:1px solid black">
                         Debit
@@ -159,9 +137,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td style="border-top:1px solid black">
                         Credit
                     </td>
-                    <td style="border-top:1px solid black">
-                        Balance
-                    </td>
+               
                 </tr>
             </thead>
             <tbody id="ledgerTable">
