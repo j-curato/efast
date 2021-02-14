@@ -9,6 +9,7 @@ use kartik\grid\GridView;
 use yii\helpers\ArrayHelper;
 use kartik\select2\Select2;
 use yii\helpers\Url;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
@@ -42,21 +43,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="actions " style="bottom: 20px;">
 
 
-            <div class="col-sm-4">
-                <label for="general_ledger">General Ledger</label>
-                <?php
-                echo Select2::widget([
-                    'id' => 'general_ledger',
-                    'data' => ArrayHelper::map($ledger, 'id', 'name'),
-                    'name' => 'general_ledger',
-                    'options' => ['placeholder' => 'General Ledger Account'],
-                    'pluginOptions' => [
-                        'allowClear' => true
-                    ],
-                ]);
-                ?>
-            </div>
-            <div class="col-sm-4">
+
+            <div class="col-sm-6">
                 <label for="fund"> Fund Cluster Code</label>
                 <?php
                 echo Select2::widget([
@@ -70,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]);
                 ?>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-6">
                 <label for="reporting_period">Reporting Period</label>
                 <?php
                 echo DatePicker::widget([
@@ -90,6 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
 
         </div>
+        <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>
         <table class="table" style="margin-top:30px">
             <thead>
                 <tr class="header" style="border: none;">
@@ -117,7 +106,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </tr>
 
-            
+
                 <tr style="border-top:1px solid black">
                     <td style="border-top:1px solid black">
                         Date
@@ -137,15 +126,51 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td style="border-top:1px solid black">
                         Credit
                     </td>
-               
+
                 </tr>
             </thead>
-            <tbody id="ledgerTable">
 
+            <tbody id="ledgerTable">
+                <?php
+                if (!empty($journal)) {
+                    foreach ($journal as $val) {
+
+
+                        echo "<tr>
+                            <td>
+                            $val->reporting_period
+                            </td>
+                            <td>
+                            $val->jev_number
+                            </td>
+                            <td>
+                            $val->explaination
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+
+                        </tr>";
+                        foreach ($val->jevAccountingEntries as $entry) {
+                            echo "<tr>" .
+                                "<td></td>" .
+                                "<td></td>" .
+                                "<td>" . $entry->chartOfAccount->general_ledger . "</td>" .
+                                "<td>" . $entry->chartOfAccount->uacs . "</td>" .
+                                "<td>" . number_format($entry->debit, 2)  . "</td>" .
+                                "<td>" . number_format($entry->credit, 2) . "</td>"
+
+                                . "</tr>";
+                        }
+                    }
+                }
+                ?>
 
 
             </tbody>
         </table>
+        <?php Pjax::end() ?>
+
     </div>
     <style>
         #reporting_period {
@@ -211,7 +236,7 @@ $this->params['breadcrumbs'][] = $this->title;
             @page {
                 size: auto;
                 margin: 0;
-                margin-top: 6cm;
+                margin-top: 0;
             }
 
 
@@ -274,11 +299,7 @@ $(document).ready(function(){
     let fund = undefined
     let reporting_period=undefined
     var title=""
-    $( "#general_ledger" ).change(function(){
-        gen = $(this).val() 
-        //  title = document.getElementById('title')
-        query()
-    })
+
     $( "#fund" ).on('change keyup', function(){
         fund = $(this).val()
         // console.log(fund)
@@ -292,80 +313,14 @@ $(document).ready(function(){
     function query(){
         // console.log(fund+gen)
         // console.log(fund)
-        $.ajax({
-            type: "POST",
-            url:   window.location.pathname + '?r=jev-preparation/ledger',
-            data: {
-                fund:fund?fund:0,
-                gen:gen?gen:'',
-                reporting_period:reporting_period?''+reporting_period.toString():'',
-            },
-            success: function(msg){
-                var data= JSON.parse(msg)
-                console.log(data)
-
-                var result = data.results
-                let table = document.getElementById('ledgerTable');
-
-                console.log(result)
-                var x='';
-                if (result.length>0 &&gen!=null){
-                     document.getElementById('uacs').innerHTML=result[0].uacs
-                     document.getElementById('ledger').innerHTML=result[0].general_ledger
-
-
-                }
-                if (result.length>0 &&fund!=null){
-                     document.getElementById('fund_cluster').innerHTML=result[0].fund_cluster_code
-                        
-                }
-                for( var i=0;i<result.length;i++){
-                    
-                   var row="<tr>"  
-                   if (i>0){
-                       if (result[i-1].reporting_period !=result[i].reporting_period ){
-                        row+="<td>"+result[i].reporting_period+ "</td>"
-                     
-                       }
-                       else{
-                        row+="<td>"+''+ "</td>"
-                       }
-                   
-
-                   }else if (i==0){
-                    row+="<td>"+result[i].reporting_period+ "</td>"
-
-                   }
-                        row+="<td>"+result[i].explaination+ "</td>"
-                        if (result[i].ref_number ==null){
-                            row+="<td>"+''+"</td>"
-                        }
-                        else{
-                            row+="<td>"+result[i].ref_number+"</td>"
-                        }
-                        row+="<td>"+ thousands_separators(result[i].debit)+"</td>"
-                        row+="<td>"+thousands_separators(result[i].credit)+ "</td>"
-                        
-                        if (result[i].credit!=0){
-                            row+="<td>"+result[i].credit+"</td>"
-                        }
-                        else if (result[i].debit!=0){
-                            row+="<td>"+result[i].debit+"</td>"
-                        }
-                        else{
-                            row+="<td>"+''+"</td>"
-                        }
-
-                        
-                        row+="</tr>"
-                        x+=row
-                }
-                table.innerHTML = x
-                },
-            error: function(xhr){
-            alert("failure"+xhr.readyState+this.url)
-            }
-    });
+        $.pjax({
+        container: "#journal", 
+        url: window.location.pathname + '?r=jev-preparation/general-journal',
+        type:'POST',
+        data:{
+            fund:fund?fund:0,
+            reporting_period:reporting_period?reporting_period:'',
+        }});
     }
     function thousands_separators(num)
     {

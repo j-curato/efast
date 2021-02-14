@@ -582,9 +582,50 @@ class JevPreparationController extends Controller
     {
 
 
-        return $this->render(
-            'general_journal',
-        );
+        if (!empty($_POST)) {
+            $fund = $_POST['fund'] ? $_POST['fund'] : '';
+            $reporting_period = $_POST['reporting_period'] ? "{$_POST['reporting_period']}" : '';
+            $journal = JevPreparation::find()
+                ->joinWith(['jevAccountingEntries', 'jevAccountingEntries.chartOfAccount']);
+
+            if (!empty($fund)) {
+
+                $journal->andwhere("fund_cluster_code_id  = :fund_cluster_code_id", [
+                    'fund_cluster_code_id' => $fund
+                ]);
+
+
+            }
+            if (!empty($reporting_period)) {
+
+                $journal->andwhere("jev_preparation.reporting_period  = :reporting_period", [
+                    'reporting_period' => $reporting_period
+                ]);
+            }
+            // echo '<pre>';
+            // var_dump($reporting_period);
+            // echo '</pre>';
+
+
+            $x = $journal->all();
+
+            // echo '<pre>';
+            // var_dump($fund);
+            // echo '</pre>';
+            return $this->render(
+                'general_journal',
+                [
+                    'journal' => $x
+                ]
+            );
+        } else {
+            return $this->render(
+                'general_journal',
+                [
+                    'journal' => ''
+                ]
+            );
+        }
     }
     public function actionAdadjFilter()
     {
@@ -595,25 +636,31 @@ class JevPreparationController extends Controller
 
         if (!empty($_POST)) {
             $reporting_period = $_POST['reporting_period'] ? "{$_POST['reporting_period']}" : '';
-            $fund = $_POST['fund'] ?"->where('fund_cluster_code_id=:fund',[
-                'fund':{$_POST['fund']}
-            ])" : '';
+            $fund = (!empty($_POST['fund'])) ? "'jev_preparation.fund_cluster_code_id =:fund_cluster_code_id',[
+                'fund_cluster_code_id'=>{$_POST['fund']}
+            ]" : "'jev_preparation.fund_cluster_code_id >:fund_cluster_code_id',[
+                'fund_cluster_code_id'=>0
+            ]";
+            $sa = "'jev_preparation.fund_cluster_code_id >:fund_cluster_code_id',[
+                'fund_cluster_code_id'=>0
+            ]";
             $data = JevPreparation::find()
-            ->joinWith(['jevAccountingEntries' => function ($query) {
-                $query->joinWith('chartOfAccount')
-                    ->orderBy('chart_of_accounts.uacs');
-            }])
-            ->joinWith('fundClusterCode')
+                ->joinWith(['jevAccountingEntries' => function ($query) {
+                    $query->joinWith('chartOfAccount')
+                        ->orderBy('chart_of_accounts.uacs');
+                }])
+                ->joinWith('fundClusterCode')
 
-            ->where("jev_preparation.reporting_period  =  :reporting_period", [
-                "reporting_period" => $reporting_period
+                ->where("jev_preparation.reporting_period  =  :reporting_period", [
+                    "reporting_period" => $reporting_period
 
-            ])
+                ])
+                // ->andWhere($sa)
 
-            ->orderBy('id')
-            ->all();
+                ->orderBy('id')
+                ->all();
 
-        $credit = Yii::$app->db->createCommand("
+            $credit = Yii::$app->db->createCommand("
         SELECT DISTINCT chart_of_accounts.uacs,chart_of_accounts.general_ledger
         from jev_preparation,jev_accounting_entries,chart_of_accounts
         where jev_preparation.id  = jev_accounting_entries.jev_preparation_id
@@ -624,7 +671,7 @@ class JevPreparationController extends Controller
 
         ")->queryAll();
 
-        $debit = Yii::$app->db->createCommand("
+            $debit = Yii::$app->db->createCommand("
         SELECT DISTINCT chart_of_accounts.uacs,chart_of_accounts.general_ledger,jev_preparation.reporting_period
         from jev_preparation,jev_accounting_entries,chart_of_accounts
         where jev_preparation.id  = jev_accounting_entries.jev_preparation_id
@@ -634,21 +681,16 @@ class JevPreparationController extends Controller
          ORDER BY chart_of_accounts.uacs
         ")->queryAll();
 
-        // echo '<pre>';
-        // var_dump($data);
-        // echo '</pre>';
-        return $this->render('adadj_view', [
-            'data' => $data,
-            'credit' => $credit,
-            'debit' => $debit,
-        ]);
-            
-        }
-        else {
+            // echo '<pre>';   
+            // var_dump($data);
+            // echo '</pre>';
             return $this->render('adadj_view', [
-     
+                'data' => $data,
+                'credit' => $credit,
+                'debit' => $debit,
             ]);
+        } else {
+            return $this->render('adadj_view', []);
         }
-       
     }
 }
