@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= Html::a('Create Jev Preparation', ['create'], ['class' => 'btn btn-success']) ?>
     <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button>
   </p>
-  
+
   <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -69,13 +69,13 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
   </div>
   <div>
-  
-  
+
+
   </div>
 
   <?php // echo $this->render('_search', ['model' => $searchModel]); 
   ?>
-  
+
   <?= GridView::widget([
     'dataProvider' => $dataProvider,
     'filterModel' => $searchModel,
@@ -123,6 +123,8 @@ $this->params['breadcrumbs'][] = $this->title;
         )
 
       ],
+   
+
       'reporting_period',
       'date',
 

@@ -326,15 +326,65 @@ $(document).ready(function(){
             },
             success: function(msg){
                 var data= JSON.parse(msg)
-                // console.log(data)
+                console.log(data)
 
                 var result = data.results
-                var balance = data.balance
-
-               
                 let table = document.getElementById('ledgerTable');
-                table.innerHTML =  displayData(balance) +displayData(result)
-               
+
+                console.log(result)
+                var x='';
+                if (result.length>0 &&gen!=null){
+                     document.getElementById('uacs').innerHTML=result[0].uacs
+                     document.getElementById('ledger').innerHTML=result[0].general_ledger
+
+
+                }
+                if (result.length>0 &&fund!=null){
+                     document.getElementById('fund_cluster').innerHTML=result[0].fund_cluster_code
+                        
+                }
+                for( var i=0;i<result.length;i++){
+                    
+                   var row="<tr>"  
+                   if (i>0){
+                       if (result[i-1].reporting_period !=result[i].reporting_period ){
+                        row+="<td>"+result[i].reporting_period+ "</td>"
+                     
+                       }
+                       else{
+                        row+="<td>"+''+ "</td>"
+                       }
+                   
+
+                   }else if (i==0){
+                    row+="<td>"+result[i].reporting_period+ "</td>"
+
+                   }
+                        row+="<td>"+result[i].explaination+ "</td>"
+                        if (result[i].ref_number ==null){
+                            row+="<td>"+''+"</td>"
+                        }
+                        else{
+                            row+="<td>"+result[i].ref_number+"</td>"
+                        }
+                        row+="<td>"+ thousands_separators(result[i].debit)+"</td>"
+                        row+="<td>"+thousands_separators(result[i].credit)+ "</td>"
+                        
+                        if (result[i].credit!=0){
+                            row+="<td>"+result[i].credit+"</td>"
+                        }
+                        else if (result[i].debit!=0){
+                            row+="<td>"+result[i].debit+"</td>"
+                        }
+                        else{
+                            row+="<td>"+''+"</td>"
+                        }
+
+                        
+                        row+="</tr>"
+                        x+=row
+                }
+                table.innerHTML = x
                 },
             error: function(xhr){
             alert("failure"+xhr.readyState+this.url)
@@ -346,66 +396,6 @@ $(document).ready(function(){
         var num_parts = num.toString().split(".");
         num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         return num_parts.join(".");
-    }
-    function displayData(result){
-        console.log(result)
-
-      
-
-        var x='';
-        if (result.length>0 &&gen!=null){
-            document.getElementById('uacs').innerHTML=result[0].uacs
-            document.getElementById('ledger').innerHTML=result[0].general_ledger
-
-
-        }
-        if (result.length>0 &&fund!=null){
-            document.getElementById('fund_cluster').innerHTML=result[0].fund_cluster_code
-                
-        }
-        for( var i=0;i<result.length;i++){
-            
-        var row="<tr>"  
-        if (i>0){
-            if (result[i-1].reporting_period !=result[i].reporting_period ){
-                row+="<td>"+result[i].reporting_period+ "</td>"
-            
-            }
-            else{
-                row+="<td>"+''+ "</td>"
-            }
-        
-
-        }else if (i==0){
-            row+="<td>"+result[i].reporting_period+ "</td>"
-
-        }
-                row+="<td>"+result[i].explaination+ "</td>"
-                if (result[i].ref_number ==null){
-                    row+="<td>"+''+"</td>"
-                }
-                else{
-                    row+="<td>"+result[i].ref_number+"</td>"
-                }
-                row+="<td>"+ thousands_separators(result[i].debit)+"</td>"
-                row+="<td>"+thousands_separators(result[i].credit)+ "</td>"
-                
-                if (result[i].credit!=0){
-                    row+="<td>"+result[i].credit+"</td>"
-                }
-                else if (result[i].debit!=0){
-                    row+="<td>"+result[i].debit+"</td>"
-                }
-                else{
-                    row+="<td>"+''+"</td>"
-                }
-
-                
-                row+="</tr>"
-                x+=row
-        }
-        return x
-        
     }
 
 })

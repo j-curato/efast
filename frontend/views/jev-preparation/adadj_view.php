@@ -8,6 +8,7 @@ use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\helpers\ArrayHelper;
 use kartik\select2\Select2;
+use Mpdf\Tag\Em;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
@@ -92,80 +93,141 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <table class="table" style="margin-top:30px">
             <thead>
-                <tr class="header" style="border: none;">
-                    <td colspan="3" style="border: none;">
-                        <span>
-                            Entity Name:
+                <th>
+                    DATE
+                </th>
+                <th>
+                    JEV No.
+                </th>
+                <th>
+                    DV No.
+                </th>
+                <th>
+                    LDDAP No.
+                </th>
+                <th>
+                    Name of Disbursing Officer
+                </th>
+                <th>
+                    Payee
+                </th>
+                <?php
 
-                        </span>
-                        <span>
-                            DEPARTMENT OF TRADE AND INDUSTRY - CARAGA
-
-                        </span>
-                    </td>
-
-                    <td colspan="3" style="border: none;">
-                        <span>
-                            Fund Cluster:
-
-                        </span>
-                        <span id="fund_cluster">
-
-                        </span>
-                    </td>
+                foreach ($credit as $key => $c) {
 
 
-                </tr>
+                    echo "<th>" . $c["general_ledger"] . '-' . $c["uacs"] . "</th>";
+                    // // echo '<pre>';
+                    // // var_dump($c["uacs"]);
+                    // // echo '</pre>';
+                }
+                echo "<th>" . 'total' . "</th>";
+                foreach ($debit as $key => $c) {
 
-                <tr class="header" style="border:none;">
-                    <td colspan="3" style="border: none;">
-                        <span>
-                            Account Title:
 
-                        </span>
-                        <span id="ledger">
+                    echo "<th>" . $c["general_ledger"] . '-' . $c["uacs"] . "</th>";
+                    // // echo '<pre>';
+                    // // var_dump($c["uacs"]);
+                    // // echo '</pre>';
+                }
 
-                        </span>
-                    </td>
-                    <!-- <td id="ledger" colspan="3">
+                ?>
 
-                    </td> -->
 
-                    <td colspan="3" style="border: none;">
-                        <span>
-                            UACS Object Code:
 
-                        </span>
-                        <span id="uacs">
-                        </span>
-                    </td>
-                    <!-- <td colspan="2" >
-                    </td> -->
-
-                </tr>
-                <tr style="border-top:1px solid black">
-                    <td style="border-top:1px solid black">
-                        Reporting Period
-                    </td>
-                    <td style="border-top:1px solid black">
-                        Particulars
-                    </td>
-                    <td style="border-top:1px solid black">
-                        Reference
-                    </td>
-                    <td style="border-top:1px solid black">
-                        Debit
-                    </td>
-                    <td style="border-top:1px solid black">
-                        Credit
-                    </td>
-                    <td style="border-top:1px solid black">
-                        Balance
-                    </td>
-                </tr>
             </thead>
             <tbody id="ledgerTable">
+                <?php
+                $credit_count = count($credit);
+                $debit_count = count($debit);
+                function addRow($initial, $count)
+                {
+                    for ($initial; $initial <= $count; $initial++) {
 
+                        echo "<td>" . '' . "</td>";
+                    }
+                }
+                foreach ($data as $key => $d) {
+
+                    echo "<tr>"
+
+                        . "<td>{$d->reporting_period}</td>" .
+                        "<td>$d->id </td>" .
+                        "<td>$d->dv_number</td>" .
+                        "<td>CHECK NUMBER</td>" .
+                        "<td>DISBURSING OFFICER</td>" .
+                        "<td>" . "PAYEE" . "</td>";
+
+                    $i = 0;
+                    $y = 0;
+                    foreach ($d->jevAccountingEntries as  $acc) {
+
+                        if (!empty($acc->credit)) {
+                            $x = array_search($acc->chartOfAccount->uacs, array_column($credit, 'uacs'));
+                            for ($i; $i < $credit_count; $i++) {
+                                if ($i == $x) {
+                                    echo "<td> {$acc->chartOfAccount->uacs}  --- {$acc->credit} </td>";
+                                    $i++;
+                                    break;
+                                } else {
+                                    echo "<td>" . '' . "</td>";
+                                }
+                            }
+                            // if ($i != $credit_count) {
+                            //     for ($i; $i <= $credit_count; $i++) {
+                            //         echo "<td>" . '' . "</td>";
+                            //     }
+                            // }
+                            $y++;
+                        }
+                    }
+                    if ($i < $credit_count && $y > 0) {
+
+                        // for ($i; $i <= $credit_count; $i++) {
+                        //     echo "<td>" . '' . "</td>";
+                        // }
+                        addRow($i, $credit_count);
+                    }
+                    if ($y == 0) {
+
+                        addRow($i, $credit_count);
+                    }
+
+
+                    $z = 0;
+                    $f = 0;
+
+                    foreach ($d->jevAccountingEntries as  $acc) {
+                        if (!empty($acc->debit)) {
+                            $x = array_search($acc->chartOfAccount->uacs, array_column($debit, 'uacs'));
+                            for ($z; $z < $debit_count; $z++) {
+                                if ($z == $x) {
+                                    echo "<td> {$acc->chartOfAccount->uacs} -- {$acc->debit}</td>";
+                                    $z++;
+                                    break;
+                                } else {
+                                    echo "<td></td>";
+                                }
+                            }
+
+
+                            $f++;
+                        }
+                    }
+                    if ($z < $debit_count && $f > 0) {
+
+
+                        addRow($z, $debit_count);
+                    }
+                    if ($f == 0) {
+
+                        addRow($z, $debit_count);
+                    }
+
+
+                    echo "</tr>";
+                }
+                ?>
 
 
             </tbody>
@@ -209,6 +271,8 @@ $this->params['breadcrumbs'][] = $this->title;
             margin-top: 5px;
             position: relative;
             padding: 10px;
+            overflow: scroll;
+
 
         }
 
@@ -243,6 +307,7 @@ $this->params['breadcrumbs'][] = $this->title;
             .container {
                 margin: 0;
                 top: 0;
+
             }
 
             .entity_name {
@@ -326,15 +391,65 @@ $(document).ready(function(){
             },
             success: function(msg){
                 var data= JSON.parse(msg)
-                // console.log(data)
+                console.log(data)
 
                 var result = data.results
-                var balance = data.balance
-
-               
                 let table = document.getElementById('ledgerTable');
-                table.innerHTML =  displayData(balance) +displayData(result)
-               
+
+                console.log(result)
+                var x='';
+                if (result.length>0 &&gen!=null){
+                     document.getElementById('uacs').innerHTML=result[0].uacs
+                     document.getElementById('ledger').innerHTML=result[0].general_ledger
+
+
+                }
+                if (result.length>0 &&fund!=null){
+                     document.getElementById('fund_cluster').innerHTML=result[0].fund_cluster_code
+                        
+                }
+                for( var i=0;i<result.length;i++){
+                    
+                   var row="<tr>"  
+                   if (i>0){
+                       if (result[i-1].reporting_period !=result[i].reporting_period ){
+                        row+="<td>"+result[i].reporting_period+ "</td>"
+                     
+                       }
+                       else{
+                        row+="<td>"+''+ "</td>"
+                       }
+                   
+
+                   }else if (i==0){
+                    row+="<td>"+result[i].reporting_period+ "</td>"
+
+                   }
+                        row+="<td>"+result[i].explaination+ "</td>"
+                        if (result[i].ref_number ==null){
+                            row+="<td>"+''+"</td>"
+                        }
+                        else{
+                            row+="<td>"+result[i].ref_number+"</td>"
+                        }
+                        row+="<td>"+ thousands_separators(result[i].debit)+"</td>"
+                        row+="<td>"+thousands_separators(result[i].credit)+ "</td>"
+                        
+                        if (result[i].credit!=0){
+                            row+="<td>"+result[i].credit+"</td>"
+                        }
+                        else if (result[i].debit!=0){
+                            row+="<td>"+result[i].debit+"</td>"
+                        }
+                        else{
+                            row+="<td>"+''+"</td>"
+                        }
+
+                        
+                        row+="</tr>"
+                        x+=row
+                }
+                table.innerHTML = x
                 },
             error: function(xhr){
             alert("failure"+xhr.readyState+this.url)
@@ -346,66 +461,6 @@ $(document).ready(function(){
         var num_parts = num.toString().split(".");
         num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         return num_parts.join(".");
-    }
-    function displayData(result){
-        console.log(result)
-
-      
-
-        var x='';
-        if (result.length>0 &&gen!=null){
-            document.getElementById('uacs').innerHTML=result[0].uacs
-            document.getElementById('ledger').innerHTML=result[0].general_ledger
-
-
-        }
-        if (result.length>0 &&fund!=null){
-            document.getElementById('fund_cluster').innerHTML=result[0].fund_cluster_code
-                
-        }
-        for( var i=0;i<result.length;i++){
-            
-        var row="<tr>"  
-        if (i>0){
-            if (result[i-1].reporting_period !=result[i].reporting_period ){
-                row+="<td>"+result[i].reporting_period+ "</td>"
-            
-            }
-            else{
-                row+="<td>"+''+ "</td>"
-            }
-        
-
-        }else if (i==0){
-            row+="<td>"+result[i].reporting_period+ "</td>"
-
-        }
-                row+="<td>"+result[i].explaination+ "</td>"
-                if (result[i].ref_number ==null){
-                    row+="<td>"+''+"</td>"
-                }
-                else{
-                    row+="<td>"+result[i].ref_number+"</td>"
-                }
-                row+="<td>"+ thousands_separators(result[i].debit)+"</td>"
-                row+="<td>"+thousands_separators(result[i].credit)+ "</td>"
-                
-                if (result[i].credit!=0){
-                    row+="<td>"+result[i].credit+"</td>"
-                }
-                else if (result[i].debit!=0){
-                    row+="<td>"+result[i].debit+"</td>"
-                }
-                else{
-                    row+="<td>"+''+"</td>"
-                }
-
-                
-                row+="</tr>"
-                x+=row
-        }
-        return x
-        
     }
 
 })
