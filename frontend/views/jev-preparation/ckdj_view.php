@@ -44,7 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <button id="print" class="btn btn-success" style="margin-bottom:10px;">Export</button>
 
         <input type="file" id="file1" style="display:none">
-
+        <div class="actions " style="bottom: 20px;">
 
 
 
