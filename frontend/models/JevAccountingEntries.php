@@ -53,7 +53,6 @@ class JevAccountingEntries extends \yii\db\ActiveRecord
             'credit' => 'Credit',
         ];
     }
-
     /**
      * Gets query for [[ChartOfAccount]].
      *
@@ -73,4 +72,5 @@ class JevAccountingEntries extends \yii\db\ActiveRecord
     {
         return $this->hasOne(JevPreparation::className(), ['id' => 'jev_preparation_id']);
     }
+
 }

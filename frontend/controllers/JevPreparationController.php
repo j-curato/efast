@@ -593,8 +593,6 @@ class JevPreparationController extends Controller
                 $journal->andwhere("fund_cluster_code_id  = :fund_cluster_code_id", [
                     'fund_cluster_code_id' => $fund
                 ]);
-
-
             }
             if (!empty($reporting_period)) {
 
@@ -636,56 +634,62 @@ class JevPreparationController extends Controller
 
         if (!empty($_POST)) {
             $reporting_period = $_POST['reporting_period'] ? "{$_POST['reporting_period']}" : '';
-            $fund = (!empty($_POST['fund'])) ? "'jev_preparation.fund_cluster_code_id =:fund_cluster_code_id',[
-                'fund_cluster_code_id'=>{$_POST['fund']}
-            ]" : "'jev_preparation.fund_cluster_code_id >:fund_cluster_code_id',[
-                'fund_cluster_code_id'=>0
-            ]";
-            $sa = "'jev_preparation.fund_cluster_code_id >:fund_cluster_code_id',[
-                'fund_cluster_code_id'=>0
-            ]";
+            $fund = $_POST['fund'];
+
             $data = JevPreparation::find()
                 ->joinWith(['jevAccountingEntries' => function ($query) {
                     $query->joinWith('chartOfAccount')
                         ->orderBy('chart_of_accounts.uacs');
                 }])
-                ->joinWith('fundClusterCode')
+                ->joinWith('fundClusterCode');
+            if (!empty($reporting_period)) {
+                $data->andWhere("jev_preparation.reporting_period =:reporting_period", [
+                    'reporting_period' => $reporting_period
+                ]);
+            }
+            if (!empty($fund)) {
+                $data->andWhere("jev_preparation.fund_cluster_code_id = :fund_cluster_code_id", [
+                    'fund_cluster_code_id' => $fund
+                ]);
+            }
+            // ->andWhere($sa)
 
-                ->where("jev_preparation.reporting_period  =  :reporting_period", [
-                    "reporting_period" => $reporting_period
-
-                ])
-                // ->andWhere($sa)
-
-                ->orderBy('id')
+            $x = $data->orderBy('id')
                 ->all();
 
-            $credit = Yii::$app->db->createCommand("
-        SELECT DISTINCT chart_of_accounts.uacs,chart_of_accounts.general_ledger
-        from jev_preparation,jev_accounting_entries,chart_of_accounts
-        where jev_preparation.id  = jev_accounting_entries.jev_preparation_id
-        and jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
-        AND jev_preparation.reporting_period = '$reporting_period'
-        AND jev_accounting_entries.credit>0
-         ORDER BY chart_of_accounts.uacs
+            $credit = $this->creditDebit('credit', $fund, $reporting_period);
+            $debit = $this->creditDebit('debit', $fund, $reporting_period);
 
-        ")->queryAll();
+            //     $credit = Yii::$app->db->createCommand("
+            // SELECT DISTINCT chart_of_accounts.uacs,chart_of_accounts.general_ledger
+            // from jev_preparation,jev_accounting_entries,chart_of_accounts
+            // where jev_preparation.id  = jev_accounting_entries.jev_preparation_id
+            // and jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
+            // AND jev_preparation.reporting_period = '$reporting_period'
+            // AND jev_accounting_entries.credit>0
+            //  ORDER BY chart_of_accounts.uacs
 
-            $debit = Yii::$app->db->createCommand("
-        SELECT DISTINCT chart_of_accounts.uacs,chart_of_accounts.general_ledger,jev_preparation.reporting_period
-        from jev_preparation,jev_accounting_entries,chart_of_accounts
-        where jev_preparation.id  = jev_accounting_entries.jev_preparation_id
-        and jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
-        AND jev_preparation.reporting_period = '$reporting_period'
-        AND jev_accounting_entries.debit>0
-         ORDER BY chart_of_accounts.uacs
-        ")->queryAll();
+            // ")->queryAll();
+
+            //     $debit = Yii::$app->db->createCommand("
+            // SELECT DISTINCT chart_of_accounts.uacs,chart_of_accounts.general_ledger,jev_preparation.reporting_period
+            // from jev_preparation,jev_accounting_entries,chart_of_accounts
+            // where jev_preparation.id  = jev_accounting_entries.jev_preparation_id
+            // and jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
+            // AND jev_preparation.reporting_period = '$reporting_period'
+            // AND jev_accounting_entries.debit>0
+            //  ORDER BY chart_of_accounts.uacs
+            // ")->queryAll();
 
             // echo '<pre>';   
             // var_dump($data);
             // echo '</pre>';
+            $title = "ADVICE TO DEBIT ACCOUNT DISBURSEMENT JOURNAL";
+            if (!empty($_POST['export'])) {
+                $this->CkdjExcelExport($data, $credit, $debit, $reporting_period, $fund, $title);
+            }
             return $this->render('adadj_view', [
-                'data' => $data,
+                'data' => $x,
                 'credit' => $credit,
                 'debit' => $debit,
             ]);
@@ -693,4 +697,282 @@ class JevPreparationController extends Controller
             return $this->render('adadj_view', []);
         }
     }
+    public function actionCkdj()
+    {
+
+        if (!empty($_POST)) {
+            $reporting_period = $_POST['reporting_period'] ? "{$_POST['reporting_period']}" : '';
+            $fund = $_POST['fund'];
+
+            $data = JevPreparation::find()
+                // ->addSelect([
+                //     'total' => Yii::$app->db->createCommand("SELECT SUM(jev_accounting_entries.debit)
+                //      from jev_accounting_entries where jev_accounting_entries.jev_preparation_id = 4444445")->queryScalar()
+
+                // ])
+                ->joinWith([
+                    'jevAccountingEntries',
+
+                ])
+                ->joinWith(['jevAccountingEntries.chartOfAccount' => function ($query) {
+                    $query->orderBy('uacs');
+                }])
+                ->joinWith('fundClusterCode');
+
+            if (!empty($reporting_period)) {
+                $data->andWhere("jev_preparation.reporting_period =:reporting_period", [
+                    'reporting_period' => $reporting_period
+                ]);
+            }
+            if (!empty($fund)) {
+                $data->andWhere("jev_preparation.fund_cluster_code_id = :fund_cluster_code_id", [
+                    'fund_cluster_code_id' => $fund
+                ]);
+            }
+            // $data->addSelect(['total'=>$query = (new \yii\db\Query())->from('billing')
+            // $sum = $query->sum('amount')]);
+            $x = $data->orderBy('id')->all();
+            $credit = $this->creditDebit('credit', $fund, $reporting_period);
+            $debit = $this->creditDebit('debit', $fund, $reporting_period);
+
+
+            // echo '<pre>';
+            // var_dump($data);
+            // echo '</pre>';
+            $title = "CHECK DISBURSEMENT JOURNAL";
+            if (!empty($_POST['print'])) {
+                $this->CkdjExcelExport($x, $credit, $debit, $reporting_period, $fund, $title);
+            }
+            return $this->render('ckdj_view', [
+                'credit' => $credit,
+                'debit' => $debit,
+                'data' => $x
+            ]);
+        } else {
+            return $this->render('ckdj_view',);
+        }
+    }
+    public function creditDebit($type, $fund, $reporting_period)
+    {
+        $x =  JevPreparation::find()
+            ->joinWith(['jevAccountingEntries', 'jevAccountingEntries.chartOfAccount'])
+            ->select([
+                'chart_of_accounts.id',
+                'chart_of_accounts.uacs',
+                'chart_of_accounts.general_ledger',
+            ]);
+
+        if (!empty($reporting_period)) {
+            $x->andwhere("reporting_period = :reporting_period", [
+                'reporting_period' => $reporting_period
+            ]);
+        }
+        if (!empty($fund)) {
+            $x->andWhere("jev_preparation.fund_cluster_code_id = :fund_cluster_code_id", [
+                'fund_cluster_code_id' => $fund
+            ]);
+        }
+        // ->andWhere("jev_accounting_entries.credit > :credit", [
+        //     'credit' => 0
+        // ]);
+
+
+        if ($type == 'credit') {
+            $x->andWhere("jev_accounting_entries.credit > :credit", [
+                'credit' => 0
+            ]);
+        } else if ($type == 'debit') {
+            $x->andWhere("jev_accounting_entries.debit > :debit", [
+                'debit' => 0
+            ]);
+        }
+        $y = $x->orderBy('chart_of_accounts.uacs')->asArray()->all();
+        return $y;
+    }
+    // use PhpOffice\PhpSpreadsheet\Spreadsheet;
+    // use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+    public function CkdjExcelExport($data, $credit, $debit, $reporting_period, $fund, $title)
+    {
+
+
+        // echo "<pre>";
+        // var_dump($data);
+        // echo "</pre>";
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue('A2', "$title");
+        $sheet->setCellValue('A3', "For the Month of $reporting_period");
+        $sheet->setCellValue('A4', "Entity Name:");
+        $sheet->setCellValue('B4', "DEPARTMENT OF TRADE AND INDUSTRY CARAGA");
+        // $sheet->setCellValue('A5', "Fund Cluster:");
+        // $sheet->setCellValue('B5', "$fund");
+        $sheet->setCellValue('A6', 'DATE');
+        $sheet->setCellValue('B6', 'JEV No,');
+        $sheet->setCellValue('C6', 'DV No.');
+        $sheet->setCellValue('D6', 'LDDAP !');
+        $sheet->setCellValue('E6', 'NAME !');
+        $sheet->setCellValue('F6', 'PAYEE !');
+        $x = 7;
+        $styleArray = array(
+            'borders' => array(
+                'allBorders' => array(
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                    'color' => array('argb' => 'FFFF0000'),
+                ),
+            ),
+        );
+
+        // $sheet->getStyle()->applyFromArray($styleArray);
+
+        foreach ($credit as $val) {
+
+            $sheet->setCellValueByColumnAndRow($x, 6,  $val['general_ledger']);
+
+            // echo "<pre>";
+            // var_dump($val['general_ledger']);
+            // echo "</pre>";
+            $x++;
+        }
+        // $x++;
+        $sheet->setCellValueByColumnAndRow($x, 6,  'TOTAL CREDIT');
+        $x++;
+        foreach ($debit as $val) {
+
+            $sheet->setCellValueByColumnAndRow($x, 6,  $val['general_ledger']);
+
+            // echo "<pre>";
+            // var_dump($val['general_ledger']);
+            // echo "</pre>";
+            $x++;
+        }
+        $sheet->setCellValueByColumnAndRow($x, 6,  'TOTAL DEBIT');
+        $row = 7;
+        $col = 1;
+        foreach ($data as $d) {
+            $sheet->setCellValueByColumnAndRow(1, $row,  $d->reporting_period);
+            $total = 0;
+            foreach ($d->jevAccountingEntries as $ae) {
+
+                if (!empty($ae->credit)) {
+                    $index  = array_search($ae->chartOfAccount->uacs, array_column($credit, 'uacs'));
+
+                    $sheet->setCellValueByColumnAndRow($index + 7, $row,  $ae->credit);
+                    $total += $ae->credit;
+                }
+                if (!empty($ae->debit)) {
+                    $index  = array_search($ae->chartOfAccount->uacs, array_column($debit, 'uacs'));
+
+                    $sheet->setCellValueByColumnAndRow($index + 7 + count($credit) + 1, $row,  $ae->debit);
+                    $total += $ae->debit;
+
+
+                    // echo "<pre>";
+                    // var_dump($ae->chartOfAccount->uacs, $index, $index + 7 + count($credit) + 2);
+                    // echo "</pre>";
+                }
+            }
+            $sheet->setCellValueByColumnAndRow(7 + count($credit), $row, number_format($total));
+            $sheet->setCellValueByColumnAndRow(8 + count($credit) + count($debit), $row,  number_format($total));
+
+            $row++;
+            $col++;
+        }
+
+        $id = uniqid();
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+        $writer->save("ckdj_excel_$id.xlsx");
+    }
+
+    // public function AdadjExcelExport($data, $credit, $debit, $reporting_period, $fund)
+    // {
+
+    //     // echo "<pre>";
+    //     // var_dump($data);
+    //     // echo "</pre>";
+    //     $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    //     $sheet = $spreadsheet->getActiveSheet();
+
+    //     $sheet->setCellValue('A2', 'CHECK DISBURSEMENT JOURNAL');
+    //     $sheet->setCellValue('A3', "For the Month of $reporting_period");
+    //     $sheet->setCellValue('A4', "Entity Name:");
+    //     $sheet->setCellValue('B4', "DEPARTMENT OF TRADE AND INDUSTRY CARAGA");
+    //     // $sheet->setCellValue('A5', "Fund Cluster:");
+    //     // $sheet->setCellValue('B5', "$fund");
+    //     $sheet->setCellValue('A6', 'DATE');
+    //     $sheet->setCellValue('B6', 'JEV No,');
+    //     $sheet->setCellValue('C6', 'DV No.');
+    //     $sheet->setCellValue('D6', 'LDDAP !');
+    //     $sheet->setCellValue('E6', 'NAME !');
+    //     $sheet->setCellValue('F6', 'PAYEE !');
+    //     $x = 7;
+    //     $styleArray = array(
+    //         'borders' => array(
+    //             'allBorders' => array(
+    //                 'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+    //                 'color' => array('argb' => 'FFFF0000'),
+    //             ),
+    //         ),
+    //     );
+
+    //     // $sheet->getStyle()->applyFromArray($styleArray);
+
+    //     foreach ($credit as $val) {
+
+    //         $sheet->setCellValueByColumnAndRow($x, 6,  $val['general_ledger']);
+
+    //         // echo "<pre>";
+    //         // var_dump($val['general_ledger']);
+    //         // echo "</pre>";
+    //         $x++;
+    //     }
+    //     // $x++;
+    //     $sheet->setCellValueByColumnAndRow($x, 6,  'TOTAL CREDIT');
+    //     $x++;
+    //     foreach ($debit as $val) {
+
+    //         $sheet->setCellValueByColumnAndRow($x, 6,  $val['general_ledger']);
+
+    //         // echo "<pre>";
+    //         // var_dump($val['general_ledger']);
+    //         // echo "</pre>";
+    //         $x++;
+    //     }
+    //     $sheet->setCellValueByColumnAndRow($x, 6,  'TOTAL DEBIT');
+    //     $row = 7;
+    //     $col = 1;
+    //     foreach ($data as $d) {
+    //         $sheet->setCellValueByColumnAndRow(1, $row,  $d->reporting_period);
+    //         $total = 0;
+    //         foreach ($d->jevAccountingEntries as $ae) {
+
+    //             if (!empty($ae->credit)) {
+    //                 $index  = array_search($ae->chartOfAccount->uacs, array_column($credit, 'uacs'));
+
+    //                 $sheet->setCellValueByColumnAndRow($index + 7, $row,  $ae->credit);
+    //                 $total += $ae->credit;
+    //             }
+    //             if (!empty($ae->debit)) {
+    //                 $index  = array_search($ae->chartOfAccount->uacs, array_column($debit, 'uacs'));
+
+    //                 $sheet->setCellValueByColumnAndRow($index + 7 + count($credit) + 1, $row,  $ae->debit);
+    //                 $total += $ae->debit;
+
+
+    //                 // echo "<pre>";
+    //                 // var_dump($ae->chartOfAccount->uacs, $index, $index + 7 + count($credit) + 2);
+    //                 // echo "</pre>";
+    //             }
+    //         }
+    //         $sheet->setCellValueByColumnAndRow(7 + count($credit), $row, number_format($total));
+    //         $sheet->setCellValueByColumnAndRow(8 + count($credit) + count($debit), $row,  number_format($total));
+
+    //         $row++;
+    //         $col++;
+    //     }
+
+    //     $id = uniqid();
+    //     $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+    //     $writer->save("C:/Users/Reynan/Downloads/ckdj_excel_$id.xlsx");
+    // }
 }

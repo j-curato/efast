@@ -17,7 +17,7 @@ use yii\widgets\ActiveForm;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'ADADJ';
+$this->title = 'CKDJ';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index">
@@ -37,27 +37,17 @@ $this->params['breadcrumbs'][] = $this->title;
     $fund = Yii::$app->db->createCommand("SELECT fund_cluster_code.id,fund_cluster_code.name FROM fund_cluster_code")->queryAll();
     $t = yii::$app->request->baseUrl . '/index.php?r=jev-preparation/sample';
     ?>
-    <button id="export">export</button>
+
 
 
     <div class="container panel panel-default">
-        <div class="actions " style="bottom: 20px;">
+        <button id="print" class="btn btn-success" style="margin-bottom:10px;">Export</button>
+
+        <input type="file" id="file1" style="display:none">
 
 
-            <!-- <div class="col-sm-4">
-                <label for="general_ledger">General Ledger</label>
-                <?php
-                echo Select2::widget([
-                    'id' => 'general_ledger',
-                    'data' => ArrayHelper::map($ledger, 'id', 'name'),
-                    'name' => 'general_ledger',
-                    'options' => ['placeholder' => 'General Ledger Account'],
-                    'pluginOptions' => [
-                        'allowClear' => true
-                    ],
-                ]);
-                ?>
-            </div> -->
+
+
             <div class="col-sm-6">
                 <label for="fund"> Fund Cluster Code</label>
                 <?php
@@ -114,7 +104,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </th>
 
                 <?php
-                if (!empty($credit) || !empty($debit)) {
+                if (!empty($credit)) {
                     foreach ($credit as $key => $c) {
 
 
@@ -124,6 +114,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         // // echo '</pre>';
                     }
                     echo "<th>" . 'total' . "</th>";
+                }
+                if (!empty($debit)) {
                     foreach ($debit as $key => $c) {
 
 
@@ -132,6 +124,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         // // var_dump($c["uacs"]);
                         // // echo '</pre>';
                     }
+                    echo "<th>" . 'total' . "</th>";
                 }
 
 
@@ -147,7 +140,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $debit_count = count($debit);
                     function addRow($initial, $count)
                     {
-                        for ($initial; $initial <= $count; $initial++) {
+                        for ($initial; $initial < $count; $initial++) {
 
                             echo "<td>" . '' . "</td>";
                         }
@@ -165,6 +158,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         $i = 0;
                         $y = 0;
+                        $total = 0;
                         foreach ($d->jevAccountingEntries as  $acc) {
 
                             if (!empty($acc->credit)) {
@@ -184,6 +178,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 //     }
                                 // }
                                 $y++;
+                                $total += $acc->credit;
                             }
                         }
                         if ($i < $credit_count && $y > 0) {
@@ -198,10 +193,10 @@ $this->params['breadcrumbs'][] = $this->title;
                             addRow($i, $credit_count);
                         }
 
-
+                        echo "<td></td>";
                         $z = 0;
                         $f = 0;
-
+                        // DEBIT
                         foreach ($d->jevAccountingEntries as  $acc) {
                             if (!empty($acc->debit)) {
                                 $x = array_search($acc->chartOfAccount->uacs, array_column($debit, 'uacs'));
@@ -217,6 +212,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
                                 $f++;
+                                $total += $acc->debit;
                             }
                         }
                         if ($z < $debit_count && $f > 0) {
@@ -229,7 +225,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             addRow($z, $debit_count);
                         }
 
-
+                        echo "<td>$total</td>";
                         echo "</tr>";
                     }
                 }
@@ -253,7 +249,6 @@ $this->params['breadcrumbs'][] = $this->title;
             border-bottom: 1px solid black;
         }
 
-
         /* .header{
             border:none;
 
@@ -265,6 +260,10 @@ $this->params['breadcrumbs'][] = $this->title;
         .table {
             position: relative;
             margin-top: 20px;
+        }
+
+        thead {
+            border: 1px solid black;
         }
 
         table,
@@ -312,7 +311,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             @page {
                 size: auto;
-                margin: 0cm;
+                margin: 0;
                 margin-top: 0.5cm;
             }
 
@@ -376,7 +375,8 @@ $(document).ready(function(){
     let gen = undefined
     let fund = undefined
     let reporting_period=undefined
-    let ex=0
+    let print=0;
+
     $( "#general_ledger" ).change(function(){
         gen = $(this).val() 
         //  title = document.getElementById('title')
@@ -391,21 +391,22 @@ $(document).ready(function(){
         reporting_period=$(this).val()
         query()
     })
-    $("#export").click(function(){
-        ex=1
-        query()
-    })
+    // $("#print").click(function(){
+    //     print=1
+    //     query()
+    // })
 
     function query(){
         // console.log(fund+gen)
         // console.log(fund)
         $.pjax({container: "#employee", 
-        url: window.location.pathname + '?r=jev-preparation/adadj',
+        url: window.location.pathname + '?r=jev-preparation/ckdj',
         type:'POST',
         data:{
             reporting_period:reporting_period?''+reporting_period.toString():'',
             fund:fund?fund:0,
-            export:ex,
+            print:print,
+            
         }});
 
     }
@@ -417,6 +418,11 @@ $(document).ready(function(){
     }
 
 })
+    function openFileOption()
+    {
+    document.getElementById("file1").click();
+    }
+
 
 JS;
 $this->registerJs($script);

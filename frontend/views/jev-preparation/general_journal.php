@@ -15,7 +15,7 @@ use yii\widgets\Pjax;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'General Ledger';
+$this->title = 'General Journal';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index">
@@ -236,7 +236,7 @@ $this->params['breadcrumbs'][] = $this->title;
             @page {
                 size: auto;
                 margin: 0;
-                margin-top: 0;
+                margin-top: 0.5cm;
             }
 
 
