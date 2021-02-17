@@ -104,13 +104,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 </th>
 
                 <?php
+
                 if (!empty($credit)) {
                     foreach ($credit as $key => $c) {
 
-
                         echo "<th>" . $c["general_ledger"] . '-' . $c["uacs"] . "</th>";
+                        echo "</div>";
+
                         // // echo '<pre>';
                         // // var_dump($c["uacs"]);
+
                         // // echo '</pre>';
                     }
                     echo "<th>" . 'total' . "</th>";
@@ -150,7 +153,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         echo "<tr>"
 
                             . "<td>{$d->reporting_period}</td>" .
-                            "<td>$d->id </td>" .
+                            "<td>$d->jev_number </td>" .
                             "<td>$d->dv_number</td>" .
                             "<td>CHECK NUMBER</td>" .
                             "<td>DISBURSING OFFICER</td>" .
@@ -165,7 +168,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 $x = array_search($acc->chartOfAccount->uacs, array_column($credit, 'uacs'));
                                 for ($i; $i < $credit_count; $i++) {
                                     if ($i == $x) {
-                                        echo "<td> {$acc->chartOfAccount->uacs}  --- {$acc->credit} </td>";
+                                        echo "<td>" . $acc->chartOfAccount->uacs .  '---' . number_format($acc->credit) . "</td>";
                                         $i++;
                                         break;
                                     } else {
@@ -178,8 +181,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 //     }
                                 // }
                                 $y++;
-                                $total += $acc->credit;
                             }
+                            $total += $acc->credit + $acc->debit;
                         }
                         if ($i < $credit_count && $y > 0) {
 
@@ -193,7 +196,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             addRow($i, $credit_count);
                         }
 
-                        echo "<td></td>";
+                        echo "<td>" . number_format($total) . "</td>";
                         $z = 0;
                         $f = 0;
                         // DEBIT
@@ -202,7 +205,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 $x = array_search($acc->chartOfAccount->uacs, array_column($debit, 'uacs'));
                                 for ($z; $z < $debit_count; $z++) {
                                     if ($z == $x) {
-                                        echo "<td> {$acc->chartOfAccount->uacs} -- {$acc->debit}</td>";
+                                        echo "<td>". $acc->chartOfAccount->uacs. '--'. number_format($acc->debit)."</td>";
                                         $z++;
                                         break;
                                     } else {
@@ -212,7 +215,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
                                 $f++;
-                                $total += $acc->debit;
+                                // $total += $acc->debit;
                             }
                         }
                         if ($z < $debit_count && $f > 0) {
@@ -225,7 +228,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             addRow($z, $debit_count);
                         }
 
-                        echo "<td>$total</td>";
+                        echo "<td>".number_format($total)."</td>";
                         echo "</tr>";
                     }
                 }

@@ -104,6 +104,7 @@
                                     ['label' => 'General Journal', 'icon' => 'circle-o', 'url' => ['/jev-preparation/general-journal'],],
                                     ['label' => 'ADADJ', 'icon' => 'circle-o', 'url' => ['/jev-preparation/adadj'],],
                                     ['label' => 'CKDJ', 'icon' => 'circle-o', 'url' => ['/jev-preparation/ckdj'],],
+                                    ['label' => 'Trial Balance', 'icon' => 'circle-o', 'url' => ['/jev-preparation/trial-balance'],],
 
                                 ],
                             ],

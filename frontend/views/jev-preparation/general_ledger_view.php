@@ -8,13 +8,16 @@ use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\helpers\ArrayHelper;
 use kartik\select2\Select2;
+use Mpdf\Tag\Em;
 use yii\helpers\Url;
+use yii\widgets\Pjax;
+use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'General Ledger';
+$this->title = 'ADADJ';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index">
@@ -34,8 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
     $fund = Yii::$app->db->createCommand("SELECT fund_cluster_code.id,fund_cluster_code.name FROM fund_cluster_code")->queryAll();
     $t = yii::$app->request->baseUrl . '/index.php?r=jev-preparation/sample';
     ?>
-
-
+    <button id="export">export</button>
 
 
     <div class="container panel panel-default">
@@ -78,7 +80,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     'name' => 'dp_1',
                     'type' => DatePicker::TYPE_INPUT,
                     'readonly' => true,
-
                     'pluginOptions' => [
                         'autoclose' => true,
                         'format' => 'yyyy-mm',
@@ -90,92 +91,107 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
 
         </div>
+        <?php Pjax::begin(['id' => 'employee', 'clientOptions' => ['method' => 'POST']]) ?>
         <table class="table" style="margin-top:30px">
             <thead>
-                <tr class="header" style="border: none;">
-                    <td colspan="3" style="border: none;">
-                        <span>
-                            Entity Name:
+                <th>
+                    DATE
+                </th>
+                <th>
+                    Particulars
+                </th>
+                <th>
+                    Reference No.
+                </th>
+                <th>
+                    ledger
+                </th>
+                <th>
+                    Uacs
+                </th>
+                <th>
+                    Credit
+                </th>
+                <th>
+                    Debit
+                </th>
+                <th>
+                    balance
+                </th>
 
-                        </span>
-                        <span>
-                            DEPARTMENT OF TRADE AND INDUSTRY - CARAGA
-
-                        </span>
-                    </td>
-
-                    <td colspan="3" style="border: none;">
-                        <span>
-                            Fund Cluster:
-
-                        </span>
-                        <span id="fund_cluster">
-
-                        </span>
-                    </td>
+                <?php
 
 
-                </tr>
 
-                <tr class="header" style="border:none;">
-                    <td colspan="3" style="border: none;">
-                        <span>
-                            Account Title:
+                ?>
 
-                        </span>
-                        <span id="ledger">
 
-                        </span>
-                    </td>
-                    <!-- <td id="ledger" colspan="3">
 
-                    </td> -->
-
-                    <td colspan="3" style="border: none;">
-                        <span>
-                            UACS Object Code:
-
-                        </span>
-                        <span id="uacs">
-                        </span>
-                    </td>
-                    <!-- <td colspan="2" >
-                    </td> -->
-
-                </tr>
-                <tr style="border-top:1px solid black">
-                    <td style="border-top:1px solid black">
-                        Reporting Period
-                    </td>
-                    <td style="border-top:1px solid black">
-                        Particulars
-                    </td>
-                    <td style="border-top:1px solid black">
-                        Reference
-                    </td>
-                    <td style="border-top:1px solid black">
-                        Debit
-                    </td>
-                    <td style="border-top:1px solid black">
-                        Credit
-                    </td>
-                    <td style="border-top:1px solid black">
-                        Balance
-                    </td>
-                </tr>
             </thead>
             <tbody id="ledgerTable">
-                    
-         
+                <?php
+                $balance = 0;
+                $balance_per_uacs = [];
+                if (!empty($data)) {
+                    foreach ($data as $key => $val) {
+                        $x = array_key_exists($val['uacs'], $balance_per_uacs);
+
+                        if ($x === false) {
+                            if ($val['credit'] > 0) {
+                                // $balance_per_uacs[] =["$val['uacs]"=>{$val['credit']}];
+                                $balance_per_uacs[$val['uacs']] = $val['credit'];
+                            } else {
+                                $balance_per_uacs[$val['uacs']] = $val['debit'];
+                            }
+                        } else {
+                            if ($val['normal_balance'] == 'credit') {
+                                $balance = $balance_per_uacs[$x] + $val['credit'] - $val['debit'];
+                            } else {
+                                $balance = $balance_per_uacs[$x] + $val['debit'] - $val['credit'];
+                            }
+                        }
+
+                        // $credit = $val['credit'] ? number_format($val['credit'], 2) : '';
+                        // $debit = $val['debit'] ? number_format($val['debit'], 2) : '';
+                        // echo "<tr>
+                        //     <td>{$val['reporting_period']}</td>
+                        //     <td>{$val['explaination']}</td>
+                        //     <td>{$val['uacs']}</td>
+                        //     <td>{$val['general_ledger']}</td>
+                        //     <td>{$val['ref_number']}</td>
+                        //     <td>" . $debit . "</td>
+                        //     <td>" . $credit . "</td>
+                        //     <td>" . number_format($balance, 2) . "</td>
+
+                        // </tr>";
+
+                    };
+                    echo '<pre>';
+                    var_dump($balance_per_uacs[1010101000]);
+                    echo '</pre>';
+                }
+
+                // echo '<pre>';
+                // var_dump($data);
+                // echo '</pre>';
+
+                ?>
 
 
             </tbody>
         </table>
+
+
+        <?php Pjax::end() ?>
     </div>
     <style>
         #reporting_period {
             background-color: white;
             border-radius: 3px;
+        }
+
+        .table>thead>tr>th {
+            border-bottom: 1px solid black;
         }
 
 
@@ -210,6 +226,11 @@ $this->params['breadcrumbs'][] = $this->title;
             margin-top: 5px;
             position: relative;
             padding: 10px;
+            /* overflow: scroll; */
+
+            overflow-y: hidden;
+            overflow-x: auto;
+
 
         }
 
@@ -235,8 +256,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
             @page {
                 size: auto;
-                margin: 0;
-                margin-top: 6cm;
+                margin: 0cm;
+                margin-top: 0.5cm;
             }
 
 
@@ -244,6 +265,7 @@ $this->params['breadcrumbs'][] = $this->title;
             .container {
                 margin: 0;
                 top: 0;
+
             }
 
             .entity_name {
@@ -298,7 +320,7 @@ $(document).ready(function(){
     let gen = undefined
     let fund = undefined
     let reporting_period=undefined
-    var title=""
+    let ex=0
     $( "#general_ledger" ).change(function(){
         gen = $(this).val() 
         //  title = document.getElementById('title')
@@ -313,100 +335,30 @@ $(document).ready(function(){
         reporting_period=$(this).val()
         query()
     })
+    $("#export").click(function(){
+        ex=1
+        query()
+    })
 
     function query(){
         // console.log(fund+gen)
         // console.log(fund)
-        $.ajax({
-            type: "POST",
-            url:   window.location.pathname + '?r=jev-preparation/ledger',
-            data: {
-                fund:fund?fund:0,
-                gen:gen?gen:'',
-                reporting_period:reporting_period?''+reporting_period.toString():'',
-            },
-            success: function(msg){
-                var data= JSON.parse(msg)
-                // console.log(data)
+        $.pjax({container: "#employee", 
+        url: window.location.pathname + '?r=jev-preparation/ledger',
+        type:'POST',
+        data:{
+            reporting_period:reporting_period?''+reporting_period.toString():'',
+            fund:fund?fund:0,
+            export:ex,
+            gen:gen?gen:0,
+        }});
 
-                var result = data.results
-                var balance = data.balance
-
-               
-                let table = document.getElementById('ledgerTable');
-                table.innerHTML =  displayData(balance) +displayData(result)
-               
-                },
-            error: function(xhr){
-            alert("failure"+xhr.readyState+this.url)
-            }
-    });
     }
     function thousands_separators(num)
     {
         var num_parts = num.toString().split(".");
         num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         return num_parts.join(".");
-    }
-    function displayData(result){
-        console.log(result)
-
-      
-
-        var x='';
-        if (result.length>0 &&gen!=null){
-            document.getElementById('uacs').innerHTML=result[0].uacs
-            document.getElementById('ledger').innerHTML=result[0].general_ledger
-
-
-        }
-        if (result.length>0 &&fund!=null){
-            document.getElementById('fund_cluster').innerHTML=result[0].fund_cluster_code
-                
-        }
-        for( var i=0;i<result.length;i++){
-            
-        var row="<tr>"  
-        if (i>0){
-            if (result[i-1].reporting_period !=result[i].reporting_period ){
-                row+="<td>"+result[i].reporting_period+ "</td>"
-            
-            }
-            else{
-                row+="<td>"+''+ "</td>"
-            }
-        
-
-        }else if (i==0){
-            row+="<td>"+result[i].reporting_period+ "</td>"
-
-        }
-                row+="<td>"+result[i].explaination+ "</td>"
-                if (result[i].ref_number ==null){
-                    row+="<td>"+''+"</td>"
-                }
-                else{
-                    row+="<td>"+result[i].ref_number+"</td>"
-                }
-                row+="<td>"+ thousands_separators(result[i].debit)+"</td>"
-                row+="<td>"+thousands_separators(result[i].credit)+ "</td>"
-                
-                if (result[i].credit!=0){
-                    row+="<td>"+result[i].credit+"</td>"
-                }
-                else if (result[i].debit!=0){
-                    row+="<td>"+result[i].debit+"</td>"
-                }
-                else{
-                    row+="<td>"+''+"</td>"
-                }
-
-                
-                row+="</tr>"
-                x+=row
-        }
-        return x
-        
     }
 
 })
