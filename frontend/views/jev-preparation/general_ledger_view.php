@@ -131,44 +131,56 @@ $this->params['breadcrumbs'][] = $this->title;
             <tbody id="ledgerTable">
                 <?php
                 $balance = 0;
-                $balance_per_uacs = [];
                 if (!empty($data)) {
                     foreach ($data as $key => $val) {
-                        $x = array_key_exists($val['uacs'], $balance_per_uacs);
 
-                        if ($x === false) {
-                            if ($val['credit'] > 0) {
-                                // $balance_per_uacs[] =["$val['uacs]"=>{$val['credit']}];
-                                $balance_per_uacs[$val['uacs']] = $val['credit'];
+                        if ($key > 0) {
+                            if ($val['normal_balance'] == 'credit') {
+                                $balance = $balance + $val['credit'] - $val['debit'];
                             } else {
-                                $balance_per_uacs[$val['uacs']] = $val['debit'];
+                                $balance = $balance + $val['debit'] - $val['credit'];
                             }
                         } else {
-                            if ($val['normal_balance'] == 'credit') {
-                                $balance = $balance_per_uacs[$x] + $val['credit'] - $val['debit'];
-                            } else {
-                                $balance = $balance_per_uacs[$x] + $val['debit'] - $val['credit'];
-                            }
+                            $balance = $val['credit'] ? $val['credit'] : $val['debit'];
                         }
 
-                        // $credit = $val['credit'] ? number_format($val['credit'], 2) : '';
-                        // $debit = $val['debit'] ? number_format($val['debit'], 2) : '';
-                        // echo "<tr>
-                        //     <td>{$val['reporting_period']}</td>
-                        //     <td>{$val['explaination']}</td>
-                        //     <td>{$val['uacs']}</td>
-                        //     <td>{$val['general_ledger']}</td>
-                        //     <td>{$val['ref_number']}</td>
-                        //     <td>" . $debit . "</td>
-                        //     <td>" . $credit . "</td>
-                        //     <td>" . number_format($balance, 2) . "</td>
+                        // $x = array_key_exists($val['uacs'], $balance_per_uacs);
 
-                        // </tr>";
+                        // if ($x === false) {
+                        //     if ($val['credit'] > 0) {
+                        //         // $balance_per_uacs[] =["$val['uacs]"=>{$val['credit']}];
+                        //         $balance_per_uacs[$val['uacs']] = $val['credit'];
+                        //         $balance = $val['credit'];
+                        //     } else {
+                        //         $balance_per_uacs[$val['uacs']] = $val['debit'];
+                        //         $balance = $val['debit'];
 
+                        //     }
+                        // } else {
+                        //     if ($val['normal_balance'] == 'credit') {
+                        //         $balance = $balance_per_uacs[$val['uacs']] + $val['credit'] - $val['debit'];
+                        //     } else {
+                        //         $balance = $balance_per_uacs[$val['uacs']] + $val['debit'] - $val['credit'];
+                        //     }
+                        // }
+      
+                        $credit = $val['credit']?number_format($val['credit'], 2):'';
+                        $debit = $val['debit']?number_format($val['debit'], 2):'';
+                        echo "<tr>
+                            <td>{$val['reporting_period']}</td>
+                            <td>{$val['explaination']}</td>
+                            <td>{$val['uacs']}</td>
+                            <td>{$val['general_ledger']}</td>
+                            <td>{$val['ref_number']}</td>
+                            <td>" . $debit . "</td>
+                            <td>" . $credit . "</td>
+                            <td>" . number_format($balance, 2) . "</td>
+
+                        </tr>";
                     };
-                    echo '<pre>';
-                    var_dump($balance_per_uacs[1010101000]);
-                    echo '</pre>';
+                    // echo '<pre>';
+                    // var_dump($data);
+                    // echo '</pre>';
                 }
 
                 // echo '<pre>';
