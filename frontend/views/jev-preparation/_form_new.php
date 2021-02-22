@@ -2,6 +2,7 @@
 
 use app\models\ChartOfAccounts;
 use app\models\FundClusterCode;
+use app\models\Payee;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -27,13 +28,14 @@ use aryelds\sweetalert\SweetAlertAsset;
     $f_code = FundClusterCode::find()
         ->all();
     $chart = Yii::$app->db->createCommand("SELECT  ca.id ,CONCAT(ca.uacs,'-',ca.general_ledger) as ledger from chart_of_accounts as ca")->queryAll();
+    $payee = Payee::find()->all();
 
     ?>
 
 
     <div class="card " style="width: full;background-color:white; padding:2rem;margin-bottom:1rem;border-radius:1rem;box-shadow:5rem">
-        <div class="card-body"> 
-        
+        <div class="card-body">
+
 
             <div class="row ">
                 <div class="col-sm-3">
@@ -85,13 +87,13 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 
                     <?= $form->field($model, 'jev_number')->textInput(
-                        ['maxlength' => true,'style'=>'border-radius:5px',],
+                        ['maxlength' => true, 'style' => 'border-radius:5px',],
                     ) ?>
 
                 </div>
 
                 <div class="col-sm-3">
-                    <?= $form->field($model, 'lddap_number')->textInput(['maxlength' => true,'style'=>'border-radius:5px']) ?>
+                    <?= $form->field($model, 'lddap_number')->textInput(['maxlength' => true, 'style' => 'border-radius:5px']) ?>
                 </div>
 
             </div>
@@ -107,6 +109,8 @@ use aryelds\sweetalert\SweetAlertAsset;
                         ],
                     ]); ?>
                 </div>
+
+
                 <div class="col-sm-3">
                     <?= $form->field($model, 'fund_cluster_code_id')->widget(Select2::class, [
                         'data' => ArrayHelper::map($f_code, 'id', 'name'),
@@ -119,7 +123,12 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 
                 <div class="col-sm-3">
-                    <?= $form->field($model, 'dv_number')->textInput(['maxlength' => true,'style'=>'border-radius:5px']) ?>
+                    <?= $form->field($model, 'dv_number')->textInput(['maxlength' => true, 'style' => 'border-radius:5px']) ?>
+
+                </div>
+
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'ref_number')->textInput(['maxlength' => true, 'style' => 'border-radius:5px']) ?>
 
                 </div>
 
@@ -127,7 +136,23 @@ use aryelds\sweetalert\SweetAlertAsset;
 
             </div>
 
-            <?= $form->field($model, 'explaination')->textInput(['maxlength' => true,'style'=>'border-radius:5px'],) ?>
+            <div class="row">
+
+                <div class="col-sm-6">
+                <?= $form->field($model, 'explaination')->textInput(['maxlength' => true, 'style' => 'border-radius:5px'],) ?>
+
+                </div>
+                <div class="col-sm-6">
+                    <?= $form->field($model, 'payee_id')->widget(Select2::class, [
+                        'data' => ArrayHelper::map($payee, 'id', 'account_name'),
+                        'options' => ['placeholder' => 'Select a Payee'],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ]); ?>
+                </div>
+
+            </div>
         </div>
     </div>
 
@@ -272,7 +297,7 @@ use aryelds\sweetalert\SweetAlertAsset;
         #reporting_period {
             background-color: white;
             border-radius: 5px;
-            color: red;
+            color: black;
         }
 
         #date {

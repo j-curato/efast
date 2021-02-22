@@ -1,6 +1,7 @@
 <?php
 
 use app\models\FundClusterCode;
+use app\models\JevPreparation;
 use app\models\ResponsibilityCenter;
 use yii\helpers\Html;
 use kartik\grid\GridView;
@@ -20,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
   <h1><?= Html::encode($this->title) ?></h1>
 
   <p>
-    <?= Html::a('Create Jev Preparation', ['create'], ['class' => 'btn btn-success']) ?>
+    <?= Html::a('Create Jev ', ['create'], ['class' => 'btn btn-success']) ?>
     <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button>
   </p>
 
@@ -74,6 +75,12 @@ $this->params['breadcrumbs'][] = $this->title;
   </div>
 
   <?php // echo $this->render('_search', ['model' => $searchModel]); 
+
+  $ref_number  = JevPreparation::find()->select('ref_number')->distinct()->asArray()->all();
+
+  // echo "<pre>";
+  // var_dump($ref_number);
+  // echo "</pre>";
   ?>
 
   <?= GridView::widget([
@@ -88,9 +95,9 @@ $this->params['breadcrumbs'][] = $this->title;
       'position' => 'absolute',
     ],
     'columns' => [
-      ['class' => 'yii\grid\SerialColumn'],
+      // ['class' => 'yii\grid\SerialColumn'],
 
-      'id',
+      'jev_number',
       // 'responsibility_center_id'
       // 'jev_number',
       // 'dv_number',
@@ -109,6 +116,12 @@ $this->params['breadcrumbs'][] = $this->title;
       [
         'label' => 'Reference Number',
         'attribute' => 'ref_number',
+        // 'filter' => Html::activeDropDownList(
+        //   $searchModel,
+        //   'ref_number',
+        //   ArrayHelper::getColumn($ref_number, 'ref_number'),
+        //   ['class' => 'form-control', 'prompt' => 'Fund Cluster Code']
+        // )
       ],
 
       [
@@ -117,13 +130,13 @@ $this->params['breadcrumbs'][] = $this->title;
         'value' => 'fundClusterCode.name',
         'filter' => Html::activeDropDownList(
           $searchModel,
-          'responsibility_center_id',
+          'fund_cluster_code_id',
           ArrayHelper::map(FundClusterCode::find()->asArray()->all(), 'id', 'name'),
-          ['class' => 'form-control', 'prompt' => 'Responsibility Centers']
+          ['class' => 'form-control', 'prompt' => 'Fund Cluster Code']
         )
 
       ],
-   
+
 
       'reporting_period',
       'date',

@@ -378,7 +378,7 @@ $(document).ready(function(){
     let gen = undefined
     let fund = undefined
     let reporting_period=undefined
-    let print=0;
+    let ex=0;
 
     $( "#general_ledger" ).change(function(){
         gen = $(this).val() 
@@ -394,10 +394,10 @@ $(document).ready(function(){
         reporting_period=$(this).val()
         query()
     })
-    // $("#print").click(function(){
-    //     print=1
-    //     query()
-    // })
+    $("#print").click(function(){
+        ex=1
+        query()
+    })
 
     function query(){
         // console.log(fund+gen)
@@ -408,9 +408,15 @@ $(document).ready(function(){
         data:{
             reporting_period:reporting_period?''+reporting_period.toString():'',
             fund:fund?fund:0,
-            print:print,
+            export:ex,
             
-        }});
+        },
+        success:function(data){
+            console.log(data)
+        }
+        
+        })
+        ;
 
     }
     function thousands_separators(num)

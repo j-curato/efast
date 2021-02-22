@@ -37,11 +37,11 @@ class JevPreparation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['responsibility_center_id', 'fund_cluster_code_id', 'reporting_period', 'date', 'jev_number', 'explaination'], 'required'],
+            [[ 'fund_cluster_code_id', 'reporting_period', 'date', 'jev_number', 'explaination','ref_number','payee_id'], 'required'],
             [['responsibility_center_id', 'fund_cluster_code_id'], 'integer'],
             [['date'], 'safe'],
             [['reporting_period'], 'string', 'max' => 50],
-            [['jev_number', 'dv_number', 'lddap_number', 'explaination'], 'string', 'max' => 100],
+            [['jev_number', 'dv_number', 'lddap_number', 'explaination','ref_number'], 'string', 'max' => 100],
             [['fund_cluster_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => FundClusterCode::className(), 'targetAttribute' => ['fund_cluster_code_id' => 'id']],
             [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::className(), 'targetAttribute' => ['responsibility_center_id' => 'id']],
         ];
@@ -62,6 +62,7 @@ class JevPreparation extends \yii\db\ActiveRecord
             'dv_number' => 'Dv Number',
             'lddap_number' => 'Lddap Number',
             'explaination' => 'Particular',
+            'ref_number' => 'Reference Number',
         ];
     }
 

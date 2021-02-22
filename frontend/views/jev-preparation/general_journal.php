@@ -81,8 +81,17 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>
         <table class="table" style="margin-top:30px">
             <thead>
+                <tr>
+                    <th colspan="6" style="border-bottom: 1px solid black " class="header1">
+                        <h5>GENERAL JOURNAL</h5>
+                        <h6><?php if (!empty($reporting_period)) {
+                                echo date("F Y", strtotime($reporting_period));
+                            }
+                            ?></h6>
+                    </th>
+                </tr>
                 <tr class="header" style="border: none;">
-                    <td colspan="3" style="border: none;">
+                    <th colspan="3" style="border: none;">
                         <span>
                             Entity Name:
 
@@ -91,42 +100,52 @@ $this->params['breadcrumbs'][] = $this->title;
                             DEPARTMENT OF TRADE AND INDUSTRY - CARAGA
 
                         </span>
-                    </td>
+                    </th>
 
-                    <td colspan="3" style="border: none;">
+                    <th colspan="3" style="border-bottom:1px solid black">
                         <span>
                             Fund Cluster:
 
                         </span>
-                        <span id="fund_cluster">
+                        <span id="fund_cluster" style="text-align: center;">
 
+                            <?php if (!empty($fund_cluster_code)) {
+                                echo $fund_cluster_code;
+                            }
+                            ?>
                         </span>
-                    </td>
+                    </th>
 
 
                 </tr>
 
 
-                <tr style="border-top:1px solid black">
-                    <td style="border-top:1px solid black">
-                        Date
-                    </td>
-                    <td style="border-top:1px solid black">
+                <tr style="border-top:1px solid black;border-bottom:1px solid black " ">
+                    <th  rowspan=" 2" class="header2" style="border-top:1px solid black;border-bottom:1px solid black">
+                    Date
+                    </th>
+                    <th rowspan="2" class="header2" style="border-bottom: 1px solid black;">
                         JEV No.
-                    </td>
-                    <td style="border-top:1px solid black">
+                    </th>
+                    <th rowspan="2" class="header2" style="border-bottom: 1px solid black;">
                         Particulars
-                    </td>
-                    <td style="border-top:1px solid black">
+                    </th>
+                    <th rowspan="2" class="header2" style="border-bottom: 1px solid black;">
                         UACS Object Code
-                    </td>
+                    </th>
+                    <th colspan="3" class="header2" style="border-bottom: 1px solid black;">
+                        Amount
+                    </th>
+
+
+                </tr>
+                <tr>
                     <td style="border-top:1px solid black">
                         Debit
                     </td>
                     <td style="border-top:1px solid black">
                         Credit
                     </td>
-
                 </tr>
             </thead>
 
@@ -157,8 +176,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 "<td></td>" .
                                 "<td>" . $entry->chartOfAccount->general_ledger . "</td>" .
                                 "<td>" . $entry->chartOfAccount->uacs . "</td>" .
-                                "<td>" . number_format($entry->debit, 2)  . "</td>" .
-                                "<td>" . number_format($entry->credit, 2) . "</td>"
+                                "<td style='text-align:right;'>" . number_format($entry->debit, 2)  . "</td>" .
+                                "<td style='text-align:right;'>" . number_format($entry->credit, 2) . "</td>"
 
                                 . "</tr>";
                         }
@@ -168,6 +187,31 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             </tbody>
+            <tfoot>
+                <tr class="footer1" style="border:0;">
+                    <td colspan="3" class="br"></td>
+                    <td colspan='2' class="br" style="padding-top:2em">
+                        CERTIFIED CORRECT:
+                    </td>
+                    <td></td>
+                </tr>
+                <tr class="footer2">
+                    <td colspan="3" class="br"></td>
+
+                    <td colspan='2' class="br">
+                        <h5>
+                            JOHN VOLTAIRE S. ANCLA,CPA
+
+                        </h5>
+                        <h6>
+                            Accountant III
+                        </h6>
+                    </td>
+                    <td></td>
+                </tr>
+
+            </tfoot>
+
         </table>
         <?php Pjax::end() ?>
 
@@ -176,6 +220,48 @@ $this->params['breadcrumbs'][] = $this->title;
         #reporting_period {
             background-color: white;
             border-radius: 3px;
+        }
+
+        .header1 {
+            text-align: center;
+            border-bottom: 1px solid black;
+        }
+
+        .header1>h5 {
+            font-weight: bold;
+        }
+
+        tfoot>tr>td {
+            border: 1px solid white;
+        }
+
+
+
+        .header2 {
+            border-bottom: 1px solid black;
+            text-align: center;
+        }
+
+        .footer1>.br {
+            border-bottom: 1px solid white;
+            border-right: 1px solid white;
+        }
+
+        .footer1>td {
+            border-bottom: 1px solid white;
+            margin: 0;
+
+        }
+
+        .footer2>.br {
+            border-right: 1px solid white;
+            text-align: center;
+        }
+
+
+
+        .footer2>td>h5 {
+            font-weight: bold;
         }
 
 
@@ -228,9 +314,37 @@ $this->params['breadcrumbs'][] = $this->title;
             position: relative;
         }
 
+        /* tfoot{
+            display: none;
+        } */
+
         @media print {
             .actions {
                 display: none;
+            }
+
+            /* tfoot{
+                display: inline;
+            } */
+            .br>h5 {
+                font-size: 10px;
+                color: red;
+                margin: 0;
+            }
+
+            /* tfoot>tr,
+            td {
+                border: 0;
+                color: red;
+            }
+
+            tfoot {
+                border: 0;
+            } */
+            table,
+            th,
+            td {
+                font-size: 10px;
             }
 
             @page {

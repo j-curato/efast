@@ -18,7 +18,7 @@ class JevPreparationSearch extends JevPreparation
     {
         return [
             [['id', 'responsibility_center_id', 'fund_cluster_code_id'], 'integer'],
-            [['reporting_period', 'date', 'jev_number', 'dv_number', 'lddap_number', 'entity_name', 'explaination'], 'safe'],
+            [['reporting_period', 'date', 'jev_number', 'dv_number', 'lddap_number', 'entity_name', 'explaination','ref_number'], 'safe'],
         ];
     }
 
@@ -68,6 +68,7 @@ class JevPreparationSearch extends JevPreparation
 
             ->andFilterWhere(['like', 'jev_number', $this->jev_number])
             ->andFilterWhere(['like', 'dv_number', $this->dv_number])
+            ->andFilterWhere(['like', 'ref_number', $this->ref_number])
             ->andFilterWhere(['like', 'lddap_number', $this->lddap_number])
             ->andFilterWhere(['like', 'entity_name', $this->entity_name])
             ->andFilterWhere(['like', 'explaination', $this->explaination])

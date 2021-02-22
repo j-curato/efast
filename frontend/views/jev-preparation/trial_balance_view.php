@@ -10,6 +10,7 @@ use yii\helpers\ArrayHelper;
 use kartik\select2\Select2;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
+use aryelds\sweetalert\SweetAlertAsset;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
@@ -25,13 +26,19 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 
+    <?php
+
+    $fund = Yii::$app->db->createCommand("SELECT fund_cluster_code.id,fund_cluster_code.name FROM fund_cluster_code")->queryAll();
+
+
+    ?>
 
     <div class="container panel panel-default">
         <div class="actions " style="bottom: 20px;">
 
 
 
-            <div class="col-sm-6">
+            <div class="col-sm-5">
                 <label for="reporting_period">Reporting Period</label>
                 <?php
                 echo DatePicker::widget([
@@ -49,11 +56,53 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]);
                 ?>
             </div>
+            <div class="col-sm-5">
+                <label for="fund"> Fund Cluster Code</label>
+                <?php
+                echo Select2::widget([
+                    'data' => ArrayHelper::map($fund, 'id', 'name'),
+                    'id' => 'fund',
+                    'name' => 'fund',
+                    'options' => ['placeholder' => 'Select a Fund Cluster Code'],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                ]);
+                ?>
+            </div>
+            <div class="col-sm-2">
+
+                <button class="generate">generate</button>
+            </div>
 
         </div>
         <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>
         <table class="table" style="margin-top:30px">
             <thead>
+                <tr class="header" style="border: none;">
+
+                    <td colspan="5">
+
+
+                        <div style="width: 100%; display:flex;align-items:center; justify-content: center;">
+                            <div style="margin-right: 20px;left:-10px">
+                                <?= Html::img('@web/dti.jpg', ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width: 100px;height:100px;']); ?>
+                            </div>
+                            <div style="text-align:center;" class="headerItems">
+                                <h6>DEPARTMENT OF TRADE AND INDUSTRY</h6>
+                                <h6>CARAGA REGIONAL OFFICE</h6>
+                                <h6>TRIAL BALANCE FUND </h6>
+                                <h6>As of <?php if (!empty($reporting_period)) {
+                                                echo $reporting_period;
+                                            } ?> </h6>
+                            </div>
+
+                        </div>
+
+                    </td>
+
+
+                </tr>
                 <tr class="header" style="border: none;">
                     <td colspan="3" style="border: none;">
                         <span>
@@ -104,10 +153,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <tbody id="ledgerTable">
                 <?php
+                $ttl = 0;
                 if (!empty($t_balance)) {
                     foreach ($t_balance as $val) {
 
-
+                        $ttl += $val['total_debit'];
                         echo "<tr>
                         <td>
                         {$val['reporting_period']}
@@ -119,13 +169,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             {$val['uacs']}
 
                             </td>
+ 
+                            <td style='text-align:right'>"
+                            . number_format($val['total_debit']) .
 
-                            <td>"
-                            .number_format($val['total_debit']).
-                           
-                           " </td>
-                            <td>"
-                            .number_format($val['total_credit']).
+                            " </td>
+                            <td  style='text-align:right'>"
+                            . number_format($val['total_credit']) .
 
                             "</td>
 
@@ -145,7 +195,20 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
                 ?>
 
-
+                <tr>
+                    <td>TOTAL</td>
+                    <td></td>
+                    <td class="total_amount">
+                        <?php if (!empty($debit_total)) {
+                            echo $debit_total;
+                        }  ?>
+                    </td>
+                    <td class="total_amount"> 
+                        <?php if (!empty($credit_total)) {
+                            echo $credit_total;
+                        }  ?>
+                    </td>
+                </tr>
             </tbody>
         </table>
         <?php Pjax::end() ?>
@@ -155,6 +218,13 @@ $this->params['breadcrumbs'][] = $this->title;
         #reporting_period {
             background-color: white;
             border-radius: 3px;
+        }
+
+        .headerItems>h6 {
+            font-weight: bold;
+        }
+        .total_amount{
+            text-align: right;
         }
 
 
@@ -210,6 +280,14 @@ $this->params['breadcrumbs'][] = $this->title;
         @media print {
             .actions {
                 display: none;
+            }
+
+            table,
+            th,
+            td {
+                border: 1px solid black;
+                padding: 5px;
+                font-size: 10px;
             }
 
             @page {
@@ -271,6 +349,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 <?php
+SweetAlertAsset::register($this);
 $script = <<< JS
 
 $(document).ready(function(){
@@ -282,11 +361,24 @@ $(document).ready(function(){
     $( "#fund" ).on('change keyup', function(){
         fund = $(this).val()
         // console.log(fund)
-        query()
     })
     $("#reporting_period").change(function(){
         reporting_period=$(this).val()
-        query()
+    })
+    $(".generate").click(function(){
+        if (reporting_period!=null && fund!=null){
+            query()
+
+        }
+        else{
+            swal( {
+                title: " Reporting Period and Fund Cluster Code are Required",
+                type: "error",
+                timer:3000,
+                closeOnConfirm: false,
+                closeOnCancel: false
+            })
+        }
     })
 
     function query(){
@@ -298,6 +390,7 @@ $(document).ready(function(){
         type:'POST',
         data:{
             reporting_period:reporting_period?reporting_period:'',
+            fund:fund?fund:'',
         }});
     }
     function thousands_separators(num)
