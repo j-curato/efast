@@ -153,7 +153,7 @@ class ChartOfAccountsController extends Controller
             $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
             $excel = $reader->load($file);
-            $excel->setActiveSheetIndexByName('Sheet1');
+            // $excel->setActiveSheetIndexByName('Chart of Accounts - Final');
             $worksheet = $excel->getActiveSheet();
             // print_r($excel->getSheetNames());
 

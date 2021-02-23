@@ -113,7 +113,7 @@ class JevPreparationController extends Controller
                     ->select('jev_preparation.reporting_period')
                     ->where("jev_preparation.reporting_period LIKE :reporting_period", [
                         'reporting_period' => "$q%"
-                    ])->orderBy('reporting_period DESC')->one()->reporting_period;
+                    ])->orderBy('date DESC')->one()->reporting_period;
             }
             // echo '<pre>';
             // var_dump($begin_balance);
@@ -123,7 +123,7 @@ class JevPreparationController extends Controller
                 'jev_preparation.reporting_period', 'jev_preparation.explaination',
                 'chart_of_accounts.uacs', 'chart_of_accounts.general_ledger', 'jev_preparation.ref_number',
                 'jev_accounting_entries.credit', 'jev_accounting_entries.debit',
-                'chart_of_accounts.normal_balance'
+                'chart_of_accounts.normal_balance', 'jev_preparation.date'
             ])
                 ->from('jev_accounting_entries')
                 ->join('LEFT JOIN', 'jev_preparation', 'jev_accounting_entries.jev_preparation_id=jev_preparation.id')
@@ -131,7 +131,7 @@ class JevPreparationController extends Controller
             if (!empty($reporting_period)) {
 
 
-                // KUHAAON ANG MGA DATA BETWEEN
+                // KUHAAON ANG MGA DATA BETWEEN 
                 $general_ledger->andwhere(['between', 'jev_preparation.reporting_period', $begin_balance, $reporting_period]);
             }
             if (!empty($gen)) {
@@ -158,10 +158,11 @@ class JevPreparationController extends Controller
                 $x = array_key_exists($val['uacs'], $balance_per_uacs);
 
                 if ($x === false) {
-                    if ($val['credit'] > 0) {
-                        $balance_per_uacs[$val['uacs']] = $val['credit'];
+
+                    if ($val['normal_balance'] =='credit' )  {
+                        $balance_per_uacs[$val['uacs']] = $val['credit'] - $val['debit'];
                     } else {
-                        $balance_per_uacs[$val['uacs']] = $val['debit'];
+                        $balance_per_uacs[$val['uacs']] =  $val['debit'] - $val['credit'];
                     }
                 } else {
                     if ($val['normal_balance'] == 'credit') {
@@ -186,6 +187,7 @@ class JevPreparationController extends Controller
                     'ref_number' =>  $val['ref_number'],
                     'debit' => $val['debit'],
                     'credit' => $val['credit'],
+                    'date' => $val['date'],
                     'balance' => $balance_per_uacs[$val['uacs']],
                 ];
             }
@@ -196,7 +198,7 @@ class JevPreparationController extends Controller
             //     return $element['reporting_period'];
             // }, '']);
 
-            // array_push($chart,['balance'=>$balance]);
+            // array_push($chart,['balance'=>$balance])
             // return json_encode(['results' => $chart,]);
             // return json_encode(['results' => $balance_per_uacs, ]);
 
@@ -576,6 +578,7 @@ class JevPreparationController extends Controller
             $excel = $reader->load($file);
             $excel->setActiveSheetIndexByName('Conso-For upload');
             $worksheet = $excel->getActiveSheet();
+            $reader->setReadDataOnly(FALSE);
             // print_r($excel->getSheetNames());
             $rows = [];
             $jev = [];
@@ -589,116 +592,142 @@ class JevPreparationController extends Controller
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
                 $cells = [];
-
+                $y = 0;
                 if ($key > 2) {
                     foreach ($cellIterator as $x => $cell) {
 
-                        $cells[] =   $cell->getValue();
+                        // $cells[] =   $cell->getValue()->getCalculatedValue();
+                        $qwe = 0;
+                        if ($y == 4) {
+                            $cells[] =   $cell->getFormattedValue();
+                            // echo '<pre>';
+                            // var_dump('qwe');
+                            // echo '</pre>';
+
+                            // $rows[] =  $cell->getCalculatedValue();
+                        } elseif ($y == 8) {
+                            $qwe = $cell->getCalculatedValue();
+                            $cells[] = $qwe;
+                        } elseif ($y == 9) {
+                            $qwe = $cell->getCalculatedValue();
+                            $cells[] = $qwe;
+                        } else {
+                            $cells[] = $cell->getValue();
+                        }
+
+                        $y++;
                     }
                     // echo '<pre>';
                     // var_dump($cells);
                     // echo '</pre>';
 
+                    // if ($key > 2483) {
+                    //     echo '<pre>';
+                    //     var_dump($cells, $key);
+                    //     echo '</pre>';
+                    // }
                     if (!empty($cells[0])) {
                         $uacs = ChartOfAccounts::find()->where("uacs = :uacs", [
                             'uacs' => $cells[0]
                         ])->one();
-                        // if (empty($uacs)) {
-                        //     //MAJOR ACOUNT INSERT IF DLI MA KITA
-                        //     $major = MajorAccounts::find()->where("object_code = :object_code", [
-                        //         'object_code' => $cells[13]
-                        //     ])->one();
-                        //     if (empty($major)) {
+                        if (empty($uacs)) {
+                            //MAJOR ACOUNT INSERT IF DLI MA KITA
 
 
-                        //         try {
-                        //             $maj = new MajorAccounts();
-                        //             $maj->object_code = $cells[13];
-                        //             $maj->name = $cells[14];
+                            // $major = MajorAccounts::find()->where("object_code = :object_code", [
+                            //     'object_code' => $cells[13]
+                            // ])->one();
+                            // if (empty($major)) {
 
 
-                        //             if ($maj->save(false)) {
-                        //                 $major = $maj;
-                        //             }
-                        //         } catch (Exception $e) {
-                        //             echo '<pre>';
-                        //             var_dump($e);
-                        //             echo '</pre>';
-                        //         }
-                        //     }
+                            //     try {
+                            //         $maj = new MajorAccounts();
+                            //         $maj->object_code = $cells[13];
+                            //         $maj->name = $cells[14];
+
+
+                            //         if ($maj->save(false)) {
+                            //             $major = $maj;
+                            //         }
+                            //     } catch (Exception $e) {
+                            //         echo '<pre>';
+                            //         var_dump($e);
+                            //         echo '</pre>';
+                            //     }
+                            // }
 
 
 
 
 
-                        //     // SUB MAJOR FIND
-                        //     $sub_major = SubMajorAccounts::find()->where("object_code=:object_code", [
-                        //         'object_code' => $cells[15]
-                        //     ])->one();
-                        //     if (empty($sub_major)) {
+                            // // SUB MAJOR FIND
+                            // $sub_major = SubMajorAccounts::find()->where("object_code=:object_code", [
+                            //     'object_code' => $cells[15]
+                            // ])->one();
+                            // if (empty($sub_major)) {
 
-                        //         echo '<pre>';
-                        //         var_dump($cells[15]);
-                        //         echo '</pre>';
+                            //     echo '<pre>';
+                            //     var_dump($cells[15]);
+                            //     echo '</pre>';
 
-                        //         try {
-                        //             $sub_maj = new SubMajorAccounts();
-                        //             $sub_maj->object_code = $cells[15];
-                        //             $sub_maj->name = $cells[16];
-
-
-                        //             if ($sub_maj->save(false)) {
-                        //                 $sub_major = $sub_maj;
-                        //             }
-                        //         } catch (Exception $e) {
-                        //             echo '<pre>';
-                        //             var_dump($e);
-                        //             echo '</pre>';
-                        //         }
-                        //     }
-                        //     // SUB MAJOR 2
-                        //     $sub_major2 = SubMajorAccounts2::find()->where("object_code = :object_code", [
-                        //         'object_code' => $cells[17]
-                        //     ])->one();
-                        //     if (empty($sub_major2)) {
-                        //         try {
-                        //             $sub_maj2 = new SubMajorAccounts();
-                        //             $sub_maj2->object_code = $cells[17];
-                        //             $sub_maj2->name = $cells[18];
+                            //     try {
+                            //         $sub_maj = new SubMajorAccounts();
+                            //         $sub_maj->object_code = $cells[15];
+                            //         $sub_maj->name = $cells[16];
 
 
-                        //             if ($sub_maj2->save(false)) {
-                        //                 $sub_major2 = $sub_maj2;
-                        //             }
-                        //         } catch (Exception $e) {
-                        //             echo '<pre>';
-                        //             var_dump($e);
-                        //             echo '</pre>';
-                        //         }
-                        //     }
+                            //         if ($sub_maj->save(false)) {
+                            //             $sub_major = $sub_maj;
+                            //         }
+                            //     } catch (Exception $e) {
+                            //         echo '<pre>';
+                            //         var_dump($e);
+                            //         echo '</pre>';
+                            //     }
+                            // }
+                            // // SUB MAJOR 2
+                            // $sub_major2 = SubMajorAccounts2::find()->where("object_code = :object_code", [
+                            //     'object_code' => $cells[17]
+                            // ])->one();
+                            // if (empty($sub_major2)) {
+                            //     try {
+                            //         $sub_maj2 = new SubMajorAccounts();
+                            //         $sub_maj2->object_code = $cells[17];
+                            //         $sub_maj2->name = $cells[18];
 
-                        //     // CHART OF ACCOUNTS 
-                        //     $chart = [];
-                        //     try {
-                        //         $coa = new ChartOfAccounts();
-                        //         $coa->uacs = $cells[0];
-                        //         $coa->general_ledger = $cells[1];
-                        //         $coa->major_account_id = $major->id;
-                        //         $coa->sub_major_account = $sub_major->id;
-                        //         $coa->sub_major_account_2_id = $sub_major2->id;
-                        //         $coa->account_group = $cells[11];
-                        //         $coa->current_noncurrent = $cells[12];
-                        //         $coa->enable_disable = 1;
-                        //         if ($coa->save(false)) {
-                        //             $uacs = $coa;
-                        //         }
-                        //     } catch (Exception $e) {
-                        //         echo $e;
-                        //     }
-                        //     // echo '<pre>';
-                        //     // var_dump($sub_major2->id);
-                        //     // echo '</pre>';
-                        // }
+
+                            //         if ($sub_maj2->save(false)) {
+                            //             $sub_major2 = $sub_maj2;
+                            //         }
+                            //     } catch (Exception $e) {
+                            //         echo '<pre>';
+                            //         var_dump($e);
+                            //         echo '</pre>';
+                            //     }
+                            // }
+
+                            // // CHART OF ACCOUNTS 
+                            // $chart = [];
+                            // try {
+                            //     $coa = new ChartOfAccounts();
+                            //     $coa->uacs = $cells[0];
+                            //     $coa->general_ledger = $cells[1];
+                            //     $coa->major_account_id = $major->id;
+                            //     $coa->sub_major_account = $sub_major->id;
+                            //     $coa->sub_major_account_2_id = $sub_major2->id;
+                            //     $coa->account_group = $cells[11];
+                            //     $coa->current_noncurrent = $cells[12];
+                            //     $coa->enable_disable = 1;
+                            //     if ($coa->save(false)) {
+                            //         $uacs = $coa;
+                            //     }
+                            // } catch (Exception $e) {
+                            //     echo $e;
+                            // }
+                            // echo '<pre>';
+                            // var_dump($sub_major2->id);
+                            // echo '</pre>';
+                        }
                     }
 
                     $fund_cluster = FundClusterCode::find()->where("name= :name", [
@@ -708,9 +737,9 @@ class JevPreparationController extends Controller
 
 
                     $reporting_period = date("Y-m", strtotime($cells[3]));
-                    $date = date("Y-m-d", strtotime($cells[4]));
+                    $date = $cells[4] ? date("Y-m-d", strtotime($cells[4])) : '';
                     // echo '<pre>';
-                    // var_dump($reporting_period);
+                    // var_dump($cells[4], $key);
                     // echo '</pre>';
 
                     if ($cells[7] != null) {
@@ -759,8 +788,8 @@ class JevPreparationController extends Controller
                             $jev_entries[] = [
                                 $id,
                                 $uacs->id,
-                                $cells[8] ? $cells[8] : 0, //debit amount
-                                $cells[9] ? $cells[9] : 0, //credit amount
+                                $cells[8], //debit amount
+                                $cells[9], //credit amount
                                 $cells[10] ? $cells[10] : '', //current/noncurrent
                                 $cells[11] ? $cells[11] : '', //closing nonclosing
                                 $cells[12] ? $cells[12] : '', //cash flow transaction

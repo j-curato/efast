@@ -21,7 +21,7 @@ class m210202_031914_create_jev_preparation_table extends Migration
             'responsibility_center_id' => $this->integer(),
             'fund_cluster_code_id' => $this->integer(),
             'reporting_period' => $this->string(50)->notNull(),
-            'date' => $this->date(),
+            'date' => $this->string(50),
             'jev_number' => $this->string(100),
             'ref_number'=>$this->string(100),
             'dv_number' => $this->string(100),

@@ -182,6 +182,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr class="head">
 
                     <th rowspan="3">
+                        reporting period
+                    </th>
+                    <th rowspan="3">
                         Date
                     </th>
                     <th rowspan="3">
@@ -223,7 +226,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         $debit = $val['debit'] ? number_format($val['debit'], 2) : '';
                         $balance = $val['balance'] ? number_format($val['balance'], 2) : '';
                         echo "<tr>
+                            <td>{$key}</td>
                             <td>{$val['reporting_period']}</td>
+                            <td>{$val['date']}</td>
                             <td>{$val['explaination']}</td>
                             <td>{$val['ref_number']}</td>
                             <td>$debit </td>
