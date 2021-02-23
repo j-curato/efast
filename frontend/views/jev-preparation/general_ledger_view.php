@@ -531,18 +531,18 @@ $(document).ready(function(){
                 mywindow.document.write("</tr>");
                 
                 mywindow.document.write("<tr class='document_header1'>");
-                mywindow.document.write(" <th>Entity Name:</th>");
-                mywindow.document.write(" <th colspan='1'>DEPARTMENT OF TRADE AND INDUSTRY</th>");
-                mywindow.document.write(" <th colspan='2'>Fund Cluster:</th>");
+                mywindow.document.write(" <th style='text-align:center;'>Entity Name:</th>");
+                mywindow.document.write(" <th colspan='1' style='text-align:center;'>DEPARTMENT OF TRADE AND INDUSTRY</th>");
+                mywindow.document.write(" <th colspan='2' style='text-align:center;'>Fund Cluster:</th>");
                 mywindow.document.write(" <th colspan='2' style='text-align:center;'>"+fund_cluster_code+"</th>");
                 mywindow.document.write("</tr>");
 
 
                 mywindow.document.write("<tr class='document_header1'>");
-                mywindow.document.write(" <th>Account Title:</th>");
-                mywindow.document.write(" <th>"+data[object[i]][0]['general_ledger']+"</th>");
-                mywindow.document.write(" <th colspan='2'>UACS Object Code</th>");
-                mywindow.document.write(" <th colspan='2'>"+object[i]+"</th>");
+                mywindow.document.write(" <th style='text-align:center;'>Account Title:</th>");
+                mywindow.document.write(" <th style='text-align:center;'>"+data[object[i]][0]['general_ledger']+"</th>");
+                mywindow.document.write(" <th colspan='2' style='text-align:center;'>UACS Object Code</th>");
+                mywindow.document.write(" <th colspan='2' style='text-align:center;'>"+object[i]+"</th>");
                 mywindow.document.write("</tr>");
 
 
