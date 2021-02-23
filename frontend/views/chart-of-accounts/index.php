@@ -5,6 +5,8 @@ use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
+use kartik\widgets\FileInput;
+use kartik\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\ChartOfAccountsSearch */
@@ -19,7 +21,53 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Add New', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=chart-of-accounts/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button>
     </p>
+
+    <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
+                </div>
+                <div class='modal-body'>
+                    <center><a href="WFP Template.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                    <hr>
+                    <?php
+
+
+                    $form = ActiveForm::begin([
+                        'action' => ['chart-of-accounts/import'],
+                        'method' => 'post',
+                        'id' => 'formupload',
+                        'options' => [
+                            'enctype' => 'multipart/form-data',
+                        ], // important
+                    ]);
+                    // echo '<input type="file">';
+                    echo FileInput::widget([
+                        'name' => 'file',
+                        // 'options' => ['multiple' => true],
+                        'id' => 'fileupload',
+                        'pluginOptions' => [
+                            'showPreview' => true,
+                            'showCaption' => true,
+                            'showRemove' => true,
+                            'showUpload' => true,
+                        ]
+                    ]);
+
+
+                    ActiveForm::end();
+
+
+                    ?>
+
+                </div>
+            </div>
+        </div>
+    </div>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>

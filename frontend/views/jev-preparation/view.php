@@ -62,7 +62,8 @@ $this->params['breadcrumbs'][] = $this->title;
     //         'explaination',
     //     ],
     // ]) 
-
+    $total_debit = 0;
+    $total_credit = 0;
     ?>
 
 
@@ -243,8 +244,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
                 </div>
                 <?php
-                $total_debit = 0;
-                $total_credit = 0;
+        
                 $total_credit += $value->credit;
 
                 $total_debit += $value->debit;
@@ -473,20 +473,20 @@ $this->params['breadcrumbs'][] = $this->title;
             .actions {
                 display: none;
             }
-
+/* 
             .form-wrapper {
                 margin-top: 20px;
                 background-color: red;
-            }
+            } */
 
             .print {
                 display: none;
             }
 
-            @page {
+            /* @page {
                 margin-top: 20cm;
                 margin-bottom: 5cm;
-            }
+            } */
 
 
 

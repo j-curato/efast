@@ -44,6 +44,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     <?= $form->field($model, 'date')->widget(DatePicker::class, [
                         'options' => ['placeholder' => 'Enter  Date', 'readonly' => true, 'id' => 'date'],
                         'type' => DatePicker::TYPE_INPUT,
+                        'value'=> date(''),
                         'pluginOptions' => [
                             'autoclose' => true,
                             'format' => 'yyyy-mm-dd',
@@ -126,10 +127,14 @@ use aryelds\sweetalert\SweetAlertAsset;
                     <?= $form->field($model, 'dv_number')->textInput(['maxlength' => true, 'style' => 'border-radius:5px']) ?>
 
                 </div>
-
                 <div class="col-sm-3">
-                    <?= $form->field($model, 'ref_number')->textInput(['maxlength' => true, 'style' => 'border-radius:5px']) ?>
-
+                    <?= $form->field($model, 'ref_number')->widget(Select2::class, [
+                        'data' => [1 => "ADADJ", 2 => "CDJ", 3 => "CKDJ", 4 => "CRJ", 5 => "GJ"],
+                        'options' => ['placeholder' => 'Select a Reference'],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ]); ?>
                 </div>
 
 
@@ -138,11 +143,11 @@ use aryelds\sweetalert\SweetAlertAsset;
 
             <div class="row">
 
-                <div class="col-sm-6">
-                <?= $form->field($model, 'explaination')->textInput(['maxlength' => true, 'style' => 'border-radius:5px'],) ?>
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'explaination')->textInput(['maxlength' => true, 'style' => 'border-radius:5px'],) ?>
 
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-3">
                     <?= $form->field($model, 'payee_id')->widget(Select2::class, [
                         'data' => ArrayHelper::map($payee, 'id', 'account_name'),
                         'options' => ['placeholder' => 'Select a Payee'],
@@ -151,6 +156,8 @@ use aryelds\sweetalert\SweetAlertAsset;
                         ],
                     ]); ?>
                 </div>
+
+
 
             </div>
         </div>
@@ -173,7 +180,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                 'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                 'widgetBody' => '.container-items', // required: css class selector
                 'widgetItem' => '.item', // required: css class
-                'limit' => 4, // the maximum times, an element can be cloned (default 999)
+                'limit' => 10, // the maximum times, an element can be cloned (default 999)
                 'min' => 1, // 0 or 1 (default 1)
                 'insertButton' => '.add-item', // css class
                 'deleteButton' => '.remove-item', // css class
@@ -183,6 +190,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     'chart_of_account_id',
                     'debit',
                     'credit',
+                    'current_noncurrent',
 
                 ],
             ]); ?>
@@ -212,20 +220,16 @@ use aryelds\sweetalert\SweetAlertAsset;
                                 <div class="col-sm-4">
                                     <?= $form->field($modelJevItem,  "[{$i}]chart_of_account_id")->widget(Select2::class, [
                                         'data' => ArrayHelper::map($chart, 'id', 'ledger'),
-                                        'options' => ['placeholder' => 'Select a Fund Source'],
+                                        'options' => ['placeholder' => 'Select a Fund Source','class'=>"{$i}",],
+                                        'pluginEvents' => [
+                                            "select2:select" => "function() { console.log($i) }",
+                                        ]
                                     ]); ?>
                                 </div>
 
                                 <div class="col-sm-4">
                                     <?=
-                                    // $form->field($modelJevItem, "[{$i}]debit")->widget(MaskMoney::class, [
-                                    //     'id' => $i.'_debit',
-                                    //     'pluginOptions' => [
-                                    //         'prefix' => '$ ',
-                                    //         'allowNegative' => false
-                                    //     ],
-                                    //     'class' => 'debit',
-                                    // ])
+
                                     $form->field($modelJevItem, "[{$i}]debit")->textInput(['maxlength' => true, 'class' => 'debit'])
 
                                     ?>
@@ -234,20 +238,25 @@ use aryelds\sweetalert\SweetAlertAsset;
                                 <div class="col-sm-4">
                                     <?=
                                     $form->field($modelJevItem, "[{$i}]credit")->textInput(['maxlength' => true, 'class' => 'credit'])
-                                    //  $form->field($modelJevItem, "[{$i}]credit")->widget(MaskMoney::class, [
-                                    //     'id' => $i.'_credit',
-                                    //     'pluginOptions' => [
-                                    //         'prefix' => '$ ',
-                                    //         'allowNegative' => false
-                                    //     ],
-                                    //     'class' => 'credit'
-                                    // ])
-
                                     ?>
 
 
                                 </div>
 
+
+                            </div><!-- .row -->
+                            <div class="row">
+
+                                <div class="col-sm-4">
+                                    <?=
+
+                                    $form->field($modelJevItem, "[{$i}]current_noncurrent")->textInput(['maxlength' => true, 'id' => "$i",])
+
+                                    ?>
+                                </div>
+
+                                <div class="col-sm-4">
+                                </div>
                             </div><!-- .row -->
                         </div>
                     </div>
@@ -266,6 +275,12 @@ use aryelds\sweetalert\SweetAlertAsset;
                     <div class="form-group">
                         <label for="exampleInputEmail1">TOTAL CREDIT</label>
                         <input disabled type="email" class="form-control" id="c_total" aria-describedby="emailHelp" placeholder="Total Dedit">
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Current/NonCurrent</label>
+                        <input disabled type="email" class="form-control" id="cur_non" aria-describedby="emailHelp" placeholder="Total Dedit">
                     </div>
                 </div>
             </div>
@@ -374,6 +389,9 @@ use aryelds\sweetalert\SweetAlertAsset;
         //  console.log(total_debit);
 
      })
+    //  $(document).change(".sample",function(){
+    //      console.log($(this).val())
+    //  })
     JS;
     $this->registerJs($script);
     ?>

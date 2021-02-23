@@ -462,7 +462,7 @@ $(document).ready(function(){
         // console.log(fund+gen)
         // console.log(fund)
         $.pjax({container: "#employee", 
-        url: window.location.pathname + '?r=jev-preparation/ledger',
+        url: window.location.pathname + '?r=jev-preparation/general-ledger',
         type:'POST',
         data:{
             reporting_period:reporting_period?''+reporting_period.toString():'',
@@ -486,7 +486,7 @@ $(document).ready(function(){
 
     function printData(){
         $.ajax({
-        url: window.location.pathname + '?r=jev-preparation/ledger',
+        url: window.location.pathname + '?r=jev-preparation/general-ledger',
         type:'POST',
         data:{
             reporting_period:reporting_period?''+reporting_period.toString():'',
@@ -524,7 +524,7 @@ $(document).ready(function(){
 
                 mywindow.document.write("<tr class='header_logo' style='margin-bottom:5px;'>");
                 mywindow.document.write(" <th></th>");
-                mywindow.document.write(" <th colspan='2'> <div style='display:flex'><img src='../web/dti.jpg' style='width:80px;height:80px;margin-left:auto;margin-right:10px''><div style='margin-top:10px;'><h4 style='margin-top:13px'>Department of Trade and Industry</h4><h4>General Ledger</h4><h4>2020</h4></div></div></th>");
+                mywindow.document.write(" <th colspan='2'> <div style='display:flex'><img src='../web/dti.jpg' style='width:80px;height:80px;margin-left:auto;margin-right:10px''><div style='margin-top:10px; text-align:center;'><h4 style='margin-top:13px'>Department of Trade and Industry</h4><h4>General Ledger</h4><h4>2020</h4></div></div></th>");
                 // mywindow.document.write(" <th colspan='2'><h4>Department of Trade and Industry</h4><h4>General Ledger</h4><h4>2020</h4></th>");
                
                 mywindow.document.write(" <th colspan='2' style='text-align:center;'>"+''+"</th>");

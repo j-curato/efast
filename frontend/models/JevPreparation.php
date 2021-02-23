@@ -37,13 +37,13 @@ class JevPreparation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [[ 'fund_cluster_code_id', 'reporting_period', 'date', 'jev_number', 'explaination','ref_number','payee_id'], 'required'],
-            [['responsibility_center_id', 'fund_cluster_code_id'], 'integer'],
+            [[ 'fund_cluster_code_id', 'reporting_period', 'date', 'jev_number', 'explaination','ref_number',], 'required'],
+            [['responsibility_center_id', 'fund_cluster_code_id','cash_flow_id','payee_id'], 'integer'],
             [['date'], 'safe'],
             [['reporting_period'], 'string', 'max' => 50],
             [['jev_number', 'dv_number', 'lddap_number', 'explaination','ref_number'], 'string', 'max' => 100],
-            [['fund_cluster_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => FundClusterCode::className(), 'targetAttribute' => ['fund_cluster_code_id' => 'id']],
-            [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::className(), 'targetAttribute' => ['responsibility_center_id' => 'id']],
+            [['fund_cluster_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => FundClusterCode::class, 'targetAttribute' => ['fund_cluster_code_id' => 'id']],
+            [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
         ];
     }
 
@@ -63,6 +63,9 @@ class JevPreparation extends \yii\db\ActiveRecord
             'lddap_number' => 'Lddap Number',
             'explaination' => 'Particular',
             'ref_number' => 'Reference Number',
+            'cash_flow_id' => 'Cash Flow Transaction',
+            'payee_id' => 'Payee',
+            'mrd_classification_id' => 'MRD Classifcation',
         ];
     }
 
@@ -73,7 +76,7 @@ class JevPreparation extends \yii\db\ActiveRecord
      */
     public function getJevAccountingEntries()
     {
-        return $this->hasMany(JevAccountingEntries::className(), ['jev_preparation_id' => 'id']);
+        return $this->hasMany(JevAccountingEntries::class, ['jev_preparation_id' => 'id']);
     }
 
     /**
@@ -83,7 +86,7 @@ class JevPreparation extends \yii\db\ActiveRecord
      */
     public function getFundClusterCode()
     {
-        return $this->hasOne(FundClusterCode::className(), ['id' => 'fund_cluster_code_id']);
+        return $this->hasOne(FundClusterCode::class, ['id' => 'fund_cluster_code_id']);
     }
 
     /**
@@ -93,6 +96,6 @@ class JevPreparation extends \yii\db\ActiveRecord
      */
     public function getResponsibilityCenter()
     {
-        return $this->hasOne(ResponsibilityCenter::className(), ['id' => 'responsibility_center_id']);
+        return $this->hasOne(ResponsibilityCenter::class, ['id' => 'responsibility_center_id']);
     }
 }

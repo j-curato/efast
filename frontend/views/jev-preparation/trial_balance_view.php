@@ -91,7 +91,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <div style="text-align:center;" class="headerItems">
                                 <h6>DEPARTMENT OF TRADE AND INDUSTRY</h6>
                                 <h6>CARAGA REGIONAL OFFICE</h6>
-                                <h6>TRIAL BALANCE FUND </h6>
+                                <h6>TRIAL BALANCE FUND <?php if(!empty($fund_cluster_code)){echo $fund_cluster_code;}?></h6>
                                 <h6>As of <?php if (!empty($reporting_period)) {
                                                 echo $reporting_period;
                                             } ?> </h6>
@@ -121,7 +121,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         </span>
                         <span id="fund_cluster">
-
+                            <?php if (!empty($fund_cluster_code)) {
+                                echo $fund_cluster_code;
+                            }
+                            ?>
                         </span>
                     </td>
 
@@ -131,9 +134,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <tr style="border-top:1px solid black">
 
-                    <td style="border-top:1px solid black">
-                        Reporting Period
-                    </td>
+
                     <td style="border-top:1px solid black">
                         Account Name
                     </td>
@@ -157,11 +158,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 if (!empty($t_balance)) {
                     foreach ($t_balance as $val) {
 
-                        $ttl += $val['total_debit'];
+                        $debit = $val['total_debit'] ? number_format($val['total_debit']) : '';
+                        $credit = $val['total_credit'] ? number_format($val['total_credit']) : '';
                         echo "<tr>
-                        <td>
-                        {$val['reporting_period']}
-                        </td>
+              
                             <td>
                             {$val['general_ledger']}
                             </td>
@@ -171,11 +171,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             </td>
  
                             <td style='text-align:right'>"
-                            . number_format($val['total_debit']) .
+                            . $debit .
 
                             " </td>
                             <td  style='text-align:right'>"
-                            . number_format($val['total_credit']) .
+                            . $credit .
 
                             "</td>
 
@@ -200,12 +200,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td></td>
                     <td class="total_amount">
                         <?php if (!empty($debit_total)) {
-                            echo $debit_total;
+                            echo number_format($debit_total,2);
                         }  ?>
                     </td>
-                    <td class="total_amount"> 
+                    <td class="total_amount">
                         <?php if (!empty($credit_total)) {
-                            echo $credit_total;
+                            echo number_format($credit_total,2);
                         }  ?>
                     </td>
                 </tr>
@@ -223,7 +223,8 @@ $this->params['breadcrumbs'][] = $this->title;
         .headerItems>h6 {
             font-weight: bold;
         }
-        .total_amount{
+
+        .total_amount {
             text-align: right;
         }
 

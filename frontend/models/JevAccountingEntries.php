@@ -32,11 +32,12 @@ class JevAccountingEntries extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [[ 'chart_of_account_id', 'debit', 'credit'], 'required'],
+            [['chart_of_account_id', 'debit', 'credit', 'current_noncurrent'], 'required'],
             [['jev_preparation_id', 'chart_of_account_id'], 'integer'],
+            [['current_noncurrent'], 'string'],
             [['debit', 'credit'], 'number'],
-            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::className(), 'targetAttribute' => ['chart_of_account_id' => 'id']],
-            [['jev_preparation_id'], 'exist', 'skipOnError' => true, 'targetClass' => JevPreparation::className(), 'targetAttribute' => ['jev_preparation_id' => 'id']],
+            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
+            [['jev_preparation_id'], 'exist', 'skipOnError' => true, 'targetClass' => JevPreparation::class, 'targetAttribute' => ['jev_preparation_id' => 'id']],
         ];
     }
 
@@ -51,6 +52,7 @@ class JevAccountingEntries extends \yii\db\ActiveRecord
             'chart_of_account_id' => 'Chart Of Account ID',
             'debit' => 'Debit',
             'credit' => 'Credit',
+            'current_noncurrent' => 'Current/NonCurrent',
         ];
     }
     /**
@@ -60,7 +62,7 @@ class JevAccountingEntries extends \yii\db\ActiveRecord
      */
     public function getChartOfAccount()
     {
-        return $this->hasOne(ChartOfAccounts::className(), ['id' => 'chart_of_account_id']);
+        return $this->hasOne(ChartOfAccounts::class, ['id' => 'chart_of_account_id']);
     }
 
     /**
@@ -70,7 +72,6 @@ class JevAccountingEntries extends \yii\db\ActiveRecord
      */
     public function getJevPreparation()
     {
-        return $this->hasOne(JevPreparation::className(), ['id' => 'jev_preparation_id']);
+        return $this->hasOne(JevPreparation::class, ['id' => 'jev_preparation_id']);
     }
-
 }

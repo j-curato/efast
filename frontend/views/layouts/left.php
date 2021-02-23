@@ -100,11 +100,12 @@
                                 'items' => [
                                     ['label' => 'Transactions', 'icon' => 'circle-o', 'url' => ['/transaction'],],
                                     ['label' => 'Jev', 'icon' => 'circle-o', 'url' => ['/jev-preparation'],],
-                                    ['label' => 'General Ledger', 'icon' => 'circle-o', 'url' => ['/jev-preparation/general-ledger-index'],],
+                                    ['label' => 'General Ledger', 'icon' => 'circle-o', 'url' => ['/jev-preparation/general-ledger'],],
                                     ['label' => 'General Journal', 'icon' => 'circle-o', 'url' => ['/jev-preparation/general-journal'],],
                                     ['label' => 'ADADJ', 'icon' => 'circle-o', 'url' => ['/jev-preparation/adadj'],],
                                     ['label' => 'CKDJ', 'icon' => 'circle-o', 'url' => ['/jev-preparation/ckdj'],],
                                     ['label' => 'Trial Balance', 'icon' => 'circle-o', 'url' => ['/jev-preparation/trial-balance'],],
+                                    ['label' => 'Subsidiary Ledger', 'icon' => 'circle-o', 'url' => ['/jev-preparation/subsidiary-ledger'],],
 
                                 ],
                             ],

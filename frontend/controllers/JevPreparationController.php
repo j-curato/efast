@@ -79,7 +79,7 @@ class JevPreparationController extends Controller
         ]);
     }
 
-    public function actionLedger()
+    public function actionGeneralLedger()
     {
 
         if (!empty($_POST)) {
@@ -571,14 +571,10 @@ class JevPreparationController extends Controller
                 die();
             }
 
-
             $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
-
-
-
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
             $excel = $reader->load($file);
-            $excel->setActiveSheetIndexByName('Conso-Final');
+            $excel->setActiveSheetIndexByName('Conso-For upload');
             $worksheet = $excel->getActiveSheet();
             // print_r($excel->getSheetNames());
             $rows = [];
@@ -694,7 +690,7 @@ class JevPreparationController extends Controller
                         //         $coa->current_noncurrent = $cells[12];
                         //         $coa->enable_disable = 1;
                         //         if ($coa->save(false)) {
-                        //             $uacs = $coa->id;
+                        //             $uacs = $coa;
                         //         }
                         //     } catch (Exception $e) {
                         //         echo $e;
@@ -746,8 +742,11 @@ class JevPreparationController extends Controller
 
 
                         // BATCH INSERRRRRRRRRRRRRRT
+                        //cell[7] jev number
                         $s = array_search($cells[7], array_column($temp_data, 6));
-
+                        // echo '<pre>';
+                        // var_dump($s, $cells[7]);
+                        // echo '</pre>';
                         if ($s === false) {
                             $temp_data[] = [
                                 $id,
@@ -756,13 +755,34 @@ class JevPreparationController extends Controller
 
                             ];
 
-                            // echo '<pre>';
-                            // var_dump($s, $cells[7]);
-                            // echo '</pre>';
-                            $jev_entries[] = [$id, $uacs->id, $cells[8] ? $cells[8] : 0, $cells[9] ? $cells[9] : 0];
-                        } else {
-                            $jev_entries[] = [$temp_data[$s][0], $uacs->id, $cells[8] ? $cells[8] : 0, $cells[9] ? $cells[9] : 0];
 
+                            $jev_entries[] = [
+                                $id,
+                                $uacs->id,
+                                $cells[8] ? $cells[8] : 0, //debit amount
+                                $cells[9] ? $cells[9] : 0, //credit amount
+                                $cells[10] ? $cells[10] : '', //current/noncurrent
+                                $cells[11] ? $cells[11] : '', //closing nonclosing
+                                $cells[12] ? $cells[12] : '', //cash flow transaction
+
+                            ];
+                        } else {
+                            // $jev_entries[] = [
+                            //     $uacs->id,
+                            //     $cells[8] ? $cells[8] : 0,
+                            //     $cells[9] ? $cells[9] : 0
+                            // ];
+
+                            $jev_entries[] = [
+                                $temp_data[$s][0],
+                                $uacs->id,
+                                $cells[8] ? $cells[8] : 0, //debit amount
+                                $cells[9] ? $cells[9] : 0, //credit amount
+                                $cells[10] ? $cells[10] : '', //current/noncurrent
+                                $cells[11] ? $cells[11] : '', //closing nonclosing
+                                $cells[12] ? $cells[12] : '', //cash flow transaction
+
+                            ];
                             // echo '<pre>';
                             // var_dump($s,$temp_data[$s]);
                             // echo '</pre>';
@@ -781,12 +801,30 @@ class JevPreparationController extends Controller
                             ];
 
 
-                            echo '<pre>';
-                            var_dump($id);
-                            echo '</pre>';
-                            $jev_entries[] = [$id, $uacs->id, $cells[8] ? $cells[8] : 0, $cells[9] ? $cells[9] : 0];
+                            // echo '<pre>';
+                            // var_dump($id);
+                            // echo '</pre>';
+                            $jev_entries[] = [
+                                $id,
+                                $uacs->id,
+                                $cells[8] ? $cells[8] : 0, //debit amount
+                                $cells[9] ? $cells[9] : 0, //credit amount
+                                $cells[10] ? $cells[10] : '', //current/noncurrent
+                                $cells[11] ? $cells[11] : '', //closing nonclosing
+                                $cells[12] ? $cells[12] : '', //cash flow transaction
+
+                            ];
                         } else {
-                            $jev_entries[] = [$temp_data[$s][0], $uacs->id, $cells[8] ? $cells[8] : 0, $cells[9] ? $cells[9] : 0];
+                            $jev_entries[] = [
+                                $id,
+                                $uacs->id,
+                                $cells[8] ? $cells[8] : 0, //debit amount
+                                $cells[9] ? $cells[9] : 0, //credit amount
+                                $cells[10] ? $cells[10] : '', //current/noncurrent
+                                $cells[11] ? $cells[11] : '', //closing nonclosing
+                                $cells[12] ? $cells[12] : '', //cash flow transaction
+
+                            ];
                         }
                     }
                     // if ($key == 50) {
@@ -822,24 +860,35 @@ class JevPreparationController extends Controller
 
                 }
             }
-            // $jv->fund_cluster_code_id = (!empty($fund_cluster)) ? $fund_cluster->id : '';
-            //         $jv->reporting_period = $reporting_period;
-            //         $jv->date = $cells[4];
-            //         $jv->explaination = $cells[5];
-            //         $jv->ref_number = $cells[6];
-            //         $jv->jev_number = $cells[7];
 
-            $column = ['jev_preparation_id', 'chart_of_account_id', 'debit', 'credit'];
-            $jev_column = ['id', 'fund_cluster_code_id', 'reporting_period', 'date', 'explaination', 'ref_number', 'jev_number'];
+
+            $column = [
+                'jev_preparation_id',
+                'chart_of_account_id',
+                'debit',
+                'credit',
+                'current_noncurrent',
+                'closing_nonclosing',
+                'cash_flow_transaction',
+            ];
+            $jev_column = [
+                'id',
+                'fund_cluster_code_id',
+                'reporting_period',
+                'date',
+                'explaination',
+                'ref_number',
+                'jev_number'
+            ];
             $ja = Yii::$app->db->createCommand()->batchInsert('jev_accounting_entries', $column, $jev_entries)->execute();
             $qwe = Yii::$app->db->createCommand()->batchInsert('jev_preparation', $jev_column, $temp_data)->execute();
 
             // echo '<pre>';
-            // var_dump($temp_data[0]);
+            // var_dump($jev_entries);
             // echo '</pre>';
-            echo '<pre>';
-            var_dump($entry2, $no_jev_number);
-            echo '</pre>';
+            // echo '<pre>';
+            // var_dump($entry2, $no_jev_number);
+            // echo '</pre>';
             // unset($rows[0]);
             // unset($rows[1]);
             // echo json_encode(['results' => $major]);
@@ -1230,6 +1279,10 @@ class JevPreparationController extends Controller
 
             $total_debit = array_sum(array_column($t_balance, 'total_debit'));
             $total_credit = array_sum(array_column($t_balance, 'total_credit'));
+            $fund_cluster_code = '';
+            if (!empty($fund)) {
+                $fund_cluster_code = $this->getFundClusterCode($fund);
+            }
             // echo "<pre>";
             // var_dump($total_credit,$total_debit);
             // echo "</pre>";
@@ -1240,6 +1293,7 @@ class JevPreparationController extends Controller
                 'reporting_period' => date('F Y', strtotime($reporting_period)),
                 'debit_total' => $total_debit,
                 'credit_total' => $total_credit,
+                'fund_cluster_code' => $fund_cluster_code
             ]);
         } else {
             return $this->render('trial_balance_view');
@@ -1282,5 +1336,10 @@ class JevPreparationController extends Controller
     {
         $fund_cluster_code = FundClusterCode::find()->where("id=:id", ['id' => $fund])->one()->name;
         return $fund_cluster_code;
+    }
+
+    public function actionSubsidiaryLedger()
+    {
+        return $this->render('subsidiary_ledger_view');
     }
 }
