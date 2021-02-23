@@ -158,14 +158,14 @@ class JevPreparationController extends Controller
                 $x = array_key_exists($val['uacs'], $balance_per_uacs);
 
                 if ($x === false) {
-
-                    if ($val['normal_balance'] =='credit' )  {
+                    
+                    if ($val['normal_balance'] =='Credit' )  {
                         $balance_per_uacs[$val['uacs']] = $val['credit'] - $val['debit'];
                     } else {
                         $balance_per_uacs[$val['uacs']] =  $val['debit'] - $val['credit'];
                     }
                 } else {
-                    if ($val['normal_balance'] == 'credit') {
+                    if ($val['normal_balance'] == 'Credit') {
                         $balance_per_uacs[$val['uacs']] = $balance_per_uacs[$val['uacs']] + $val['credit'] - $val['debit'];
                     } else {
                         $balance_per_uacs[$val['uacs']] = $balance_per_uacs[$val['uacs']] + $val['debit'] - $val['credit'];
