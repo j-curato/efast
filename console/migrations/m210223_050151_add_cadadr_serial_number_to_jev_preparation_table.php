@@ -15,7 +15,7 @@ class m210223_050151_add_cadadr_serial_number_to_jev_preparation_table extends M
         $this->addColumn('jev_preparation', 'cadadr_serial_number', $this->string(255));
         $this->addColumn('jev_preparation', 'check_ada', $this->string(255));
         $this->addColumn('jev_preparation', 'check_ada_number', $this->string(255));
-        $this->addColumn('jev_preparation', 'chek_ada_date', $this->string(255));
+        $this->addColumn('jev_preparation', 'check_ada_date', $this->string(255));
     }
 
     /**
@@ -26,7 +26,7 @@ class m210223_050151_add_cadadr_serial_number_to_jev_preparation_table extends M
         $this->dropColumn('jev_preparation', 'cadadr_serial_number');
         $this->dropColumn('jev_preparation', 'check_ada');
         $this->dropColumn('jev_preparation', 'check_ada_number');
-        $this->dropColumn('jev_preparation', 'chek_ada_date');
+        $this->dropColumn('jev_preparation', 'check_ada_date');
     }
 
     /*

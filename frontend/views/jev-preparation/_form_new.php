@@ -42,14 +42,13 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 
                     <?= $form->field($model, 'date')->widget(DatePicker::class, [
-                        'options' => ['placeholder' => 'Enter  Date', 'readonly' => true, 'id' => 'date'],
-                        'type' => DatePicker::TYPE_INPUT,
-                        'value'=> date(''),
+                        'name' => 'birth_date',
+                        'value' => '12-31-2010',
                         'pluginOptions' => [
                             'autoclose' => true,
-                            'format' => 'yyyy-mm-dd',
+                            'format' => 'mm-dd-yyyy'
+                        ],
 
-                        ]
                     ]); ?>
                 </div>
                 <div class="col-sm-3">
@@ -159,6 +158,41 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 
 
+
+            </div>
+            <div class="row">
+
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'cadadr_serial_number')->textInput(['maxlength' => true, 'style' => 'border-radius:5px'],) ?>
+
+                </div>
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'check_ada')->textInput(['maxlength' => true, 'style' => 'border-radius:5px'],) ?>
+
+                </div>
+                <div class="col-sm-3">
+
+
+                    <?= $form->field($model, 'check_ada_date')->widget(DatePicker::class, [
+                        'name' => 'birth_date',
+                        'value' => '12-31-2010',
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'format' => 'mm-dd-yyyy'
+                        ],
+
+                    ]); ?>
+                </div>
+
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'check_ada_number')->widget(Select2::class, [
+                        'data' => [1 => "ADADJ", 2 => "CDJ", 3 => "CKDJ", 4 => "CRJ", 5 => "GJ"],
+                        'options' => ['placeholder' => 'Select a Reference'],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ]); ?>
+                </div>
             </div>
         </div>
     </div>
@@ -198,7 +232,7 @@ use aryelds\sweetalert\SweetAlertAsset;
             <div class="container-items">
                 <!-- widgetContainer -->
 
-                <?php foreach ($modelJevItems as $i => $modelJevItem) : ?>
+                <?php $x = 0;foreach ($modelJevItems as $i => $modelJevItem) : ?>
                     <div class="item panel panel-default" style="border:1px solid black">
                         <!-- widgetBody -->
                         <div class="panel-heading" style="background-color: white;border:none">
@@ -220,12 +254,16 @@ use aryelds\sweetalert\SweetAlertAsset;
                                 <div class="col-sm-4">
                                     <?= $form->field($modelJevItem,  "[{$i}]chart_of_account_id")->widget(Select2::class, [
                                         'data' => ArrayHelper::map($chart, 'id', 'ledger'),
-                                        'options' => ['placeholder' => 'Select a Fund Source','class'=>"{$i}",],
+                                        'options' => ['placeholder' => 'Select a Fund Source',],
                                         'pluginEvents' => [
-                                            "select2:select" => "function() { console.log($i) }",
-                                        ]
-                                    ]); ?>
+                                            "select2:select" => "function() { console.log('qwe') }",
+                                        ],
+                                        
+                                    ]); 
+                                    $x++;
+                                    ?>
                                 </div>
+
 
                                 <div class="col-sm-4">
                                     <?=
@@ -268,21 +306,16 @@ use aryelds\sweetalert\SweetAlertAsset;
                 <div class="col-sm-4">
                     <div class="form-group">
                         <label for="exampleInputEmail1">TOTAL DEBIT</label>
-                        <input disabled type="email" class="form-control" id="d_total" aria-describedby="emailHelp" placeholder="Total Dedit">
+                        <input disabled type="email" style="background-color:white" class="form-control" id="d_total" aria-describedby="emailHelp" placeholder="Total Dedit">
                     </div>
                 </div>
                 <div class="col-sm-4">
                     <div class="form-group">
                         <label for="exampleInputEmail1">TOTAL CREDIT</label>
-                        <input disabled type="email" class="form-control" id="c_total" aria-describedby="emailHelp" placeholder="Total Dedit">
+                        <input disabled type="email" style="background-color:white" class="form-control" id="c_total" aria-describedby="emailHelp" placeholder="Total Dedit">
                     </div>
                 </div>
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Current/NonCurrent</label>
-                        <input disabled type="email" class="form-control" id="cur_non" aria-describedby="emailHelp" placeholder="Total Dedit">
-                    </div>
-                </div>
+
             </div>
             <?php DynamicFormWidget::end(); ?>
         </div>
@@ -307,6 +340,10 @@ use aryelds\sweetalert\SweetAlertAsset;
             justify-content: space-around;
             text-align: center;
             border-radius: 5px;
+        }
+
+        input {
+            background-color: white;
         }
 
         #reporting_period {

@@ -32,7 +32,7 @@ class JevAccountingEntries extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['chart_of_account_id', 'debit', 'credit', 'current_noncurrent'], 'required'],
+            [['chart_of_account_id', ], 'required'],
             [['jev_preparation_id', 'chart_of_account_id'], 'integer'],
             [['current_noncurrent'], 'string'],
             [['debit', 'credit'], 'number'],

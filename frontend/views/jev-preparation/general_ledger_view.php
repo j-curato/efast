@@ -132,7 +132,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
                 <tr class="document_header1">
-                    <th>
+                    <th colspan="2">
                         Entity Name:
                     </th>
                     <th>
@@ -151,10 +151,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         ?>
                     </th>
                 </tr>
-              
 
-                <tr class="document_header1" >
-                    <th>
+
+                <tr class="document_header1">
+                    <th colspan="2">
                         Account Title:
                     </th>
                     <th>
@@ -225,9 +225,21 @@ $this->params['breadcrumbs'][] = $this->title;
                         $credit = $val['credit'] ? number_format($val['credit'], 2) : '';
                         $debit = $val['debit'] ? number_format($val['debit'], 2) : '';
                         $balance = $val['balance'] ? number_format($val['balance'], 2) : '';
-                        echo "<tr>
-                            <td>{$key}</td>
+                        // $reporting_period = $val['reporting_period']?date('F Y',strtotime($val['reporting_period'])):'';
+                        if (!empty($val['reporting_period'])) {
+                            echo "<tr>
                             <td>{$val['reporting_period']}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td> </td>
+                            <td></td>
+                            <td></td>
+
+                        </tr>";
+                        }
+                        echo "<tr>
+                            <td></td>
                             <td>{$val['date']}</td>
                             <td>{$val['explaination']}</td>
                             <td>{$val['ref_number']}</td>
@@ -333,9 +345,9 @@ $this->params['breadcrumbs'][] = $this->title;
             position: relative;
         }
 
-        .document_header>th {}
+        /* .document_header>th {}
 
-        .document_header {}
+        .document_header {} */
 
         .document_header1>th {
 
@@ -343,7 +355,7 @@ $this->params['breadcrumbs'][] = $this->title;
         }
 
         .document_header1>th {
-            border:0;
+            border: 0;
         }
 
         @media print {
@@ -483,10 +495,14 @@ $(document).ready(function(){
     }
     function thousands_separators(num)
     {
-        var number= Number(Math.round(num+'e2')+'e-2')
-        var num_parts = number.toString().split(".");
-        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        return num_parts.join(".");
+  
+                var number= Number(Math.round(num+'e2')+'e-2')
+            var num_parts = number.toString().split(".");
+            num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return num_parts.join(".");
+            console.log(num)
+  
+    
     }
 
     function printData(){
@@ -504,7 +520,7 @@ $(document).ready(function(){
             data = JSON.parse(result).results
             fund_cluster_code = JSON.parse(result).fund_cluster_code
             var object= Object.keys(data)
-            console.log(data[1010101000])
+            console.log(data)
             var mywindow = window.open('?r=jev-preparation/ledger', 'new div', 'height=700,width=1300');
             mywindow.document.write('<html><head><title></title>');
             mywindow.document.write('<link rel="stylesheet" href="../web/print.css" type="text/css" media="all" />');
@@ -536,7 +552,7 @@ $(document).ready(function(){
                 mywindow.document.write("</tr>");
                 
                 mywindow.document.write("<tr class='document_header1'>");
-                mywindow.document.write(" <th style='text-align:center;'>Entity Name:</th>");
+                mywindow.document.write(" <th colspan='1' style='text-align:center;white-space:nowrap'>Entity Name:</th>");
                 mywindow.document.write(" <th colspan='1' style='text-align:center;'>DEPARTMENT OF TRADE AND INDUSTRY</th>");
                 mywindow.document.write(" <th colspan='2' style='text-align:center;'>Fund Cluster:</th>");
                 mywindow.document.write(" <th colspan='2' style='text-align:center;'>"+fund_cluster_code+"</th>");
@@ -544,7 +560,7 @@ $(document).ready(function(){
 
 
                 mywindow.document.write("<tr class='document_header1'>");
-                mywindow.document.write(" <th style='text-align:center;'>Account Title:</th>");
+                mywindow.document.write(" <th colspan='1' style='text-align:center; white-space:nowrap'>Account Title:</th>");
                 mywindow.document.write(" <th style='text-align:center;'>"+data[object[i]][0]['general_ledger']+"</th>");
                 mywindow.document.write(" <th colspan='2' style='text-align:center;'>UACS Object Code</th>");
                 mywindow.document.write(" <th colspan='2' style='text-align:center;'>"+object[i]+"</th>");
@@ -552,6 +568,7 @@ $(document).ready(function(){
 
 
                 mywindow.document.write("<tr>");
+                // mywindow.document.write("<th>Reporting Period</th>");
                 mywindow.document.write("<th>Date</th>");
                 mywindow.document.write("<th>Particular:</th>");
                 mywindow.document.write("<th>Reference No</th>");
@@ -573,18 +590,24 @@ $(document).ready(function(){
 
                     // var y= Number(Math.round(data[object[i]][x]['balance']+'e2')+'e-2')
                     var bal = thousands_separators(data[object[i]][x]['balance'])
+                    var y 
+                    if (bal == 'NaN'){  
+                        bal = 0;
+                        console.log(bal)
+                    }
                     var debit =data[object[i]][x]['debit']>0? thousands_separators(data[object[i]][x]['debit']):''
                     var credit = data[object[i]][x]['credit']>0?thousands_separators(data[object[i]][x]['credit']):''
                  
-                    
+                    // console.log(data[object[i]][x]['balance'])
                     mywindow.document.write("<tr> ");
                     // mywindow.document.write("<td>"+data[object[i]][x]['reporting_period']+"</td>");
-                    mywindow.document.write("<td></td>");
+                    // mywindow.document.write("<td>"+data[object[i]][x]['reporting_period']+"</td>");
+                    mywindow.document.write("<td>"+data[object[i]][x]['date']+"</td>");
                     mywindow.document.write("<td>"+data[object[i]][x]['explaination']+"</td>");
-                    mywindow.document.write("<td>"+data[object[i]][x]['uacs']+"</td>");
+                    mywindow.document.write("<td>"+data[object[i]][x]['ref_number']+"</td>");
                     mywindow.document.write("<td style='text-align:right;' >"+debit+"</td>");
                     mywindow.document.write("<td style='text-align:right;'>"+credit+"</td>");
-                    mywindow.document.write("<td style='text-align:right;'>"+bal +"</td>");
+                    mywindow.document.write("<td style='text-align:right;'>"+ bal +"</td>");
                     mywindow.document.write("</tr>");
 
 

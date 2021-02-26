@@ -39,9 +39,9 @@ if (Yii::$app->controller->action->id === 'login') {
         <?php $this->head() ?>
 
         <style>
-            .modal-wide {
+            /* .modal-wide {
                 width: 90%;
-            }
+            } */
         </style>
 
         <?php
@@ -65,6 +65,32 @@ if (Yii::$app->controller->action->id === 'login') {
 
     <body class="hold-transition skin-blue sidebar-mini ">
         <?php $this->beginBody() ?>
+        <div class="page-loader-wrapper">
+            <div class="loader">
+                <div class="preloader">
+                    <div class="spinner-layer pl-red">
+                        <div class="circle-clipper left">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
+                    </div>
+                </div>
+                <p>Please wait...</p>
+            </div>
+        </div>
+
+        <!-- <div class="col-sm-2">
+            <div id="bars1">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <h5>bars1</h5>
+        </div> -->
         <div class="wrapper">
 
             <?= $this->render(
@@ -87,6 +113,16 @@ if (Yii::$app->controller->action->id === 'login') {
 
         <?php $this->endBody() ?>
     </body>
+
+    <?php
+    $js = <<<JS
+    setTimeout(function () {
+        $('.page-loader-wrapper').fadeOut();
+    }, 50);
+    JS;
+    $this->registerJs($js, \yii\web\View::POS_READY);
+
+    ?>
 
     </html>
     <?php $this->endPage() ?>

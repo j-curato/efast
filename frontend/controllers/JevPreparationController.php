@@ -145,7 +145,9 @@ class JevPreparationController extends Controller
                 ]);
             }
             // $general_ledger->orderBy('jev_preparation.reporting_period');
-            $chart = $general_ledger->orderBy('jev_preparation.reporting_period')->all();
+            $chart = $general_ledger->orderBy('jev_accounting_entries.chart_of_account_id')
+                ->orderBy('jev_preparation.date')
+                ->all();
 
 
 
@@ -158,8 +160,8 @@ class JevPreparationController extends Controller
                 $x = array_key_exists($val['uacs'], $balance_per_uacs);
 
                 if ($x === false) {
-                    
-                    if ($val['normal_balance'] =='Credit' )  {
+
+                    if ($val['normal_balance'] == 'Credit') {
                         $balance_per_uacs[$val['uacs']] = $val['credit'] - $val['debit'];
                     } else {
                         $balance_per_uacs[$val['uacs']] =  $val['debit'] - $val['credit'];
@@ -177,7 +179,7 @@ class JevPreparationController extends Controller
                 if ($key > 0 && $chart[$key - 1]['reporting_period'] == $val['reporting_period']) {
                     $reporting_period = '';
                 } else {
-                    $reporting_period = $val['reporting_period'];
+                    $reporting_period = date('F Y', strtotime($val['reporting_period']));
                 }
                 $qwe[] = [
                     'reporting_period' => $reporting_period,
@@ -193,7 +195,8 @@ class JevPreparationController extends Controller
             }
 
             $result = ArrayHelper::index($qwe, null, 'uacs');
-            // $q = ArrayHelper::multisort($result, ['reporting_period'], [SORT_ASC, SORT_DESC]);
+
+            // $q = ArrayHelper::multisort(array_column($result,'date'), 'date', [SORT_ASC,]);
             // $result = ArrayHelper::index($qwe, 'reporting_period', [function ($element) {
             //     return $element['reporting_period'];
             // }, '']);
@@ -202,8 +205,9 @@ class JevPreparationController extends Controller
             // return json_encode(['results' => $chart,]);
             // return json_encode(['results' => $balance_per_uacs, ]);
 
-
-
+            // echo "<pre>";
+            // var_dump(ksort($result));
+            // echo "</pre>";
             $object_code = '';
             $ledger = '';
             if (!empty($qwe)) {
@@ -211,9 +215,7 @@ class JevPreparationController extends Controller
                 $object_code = $gen ? $qwe[0]['uacs'] : '';
                 $ledger = $gen ? $qwe[0]['general_ledger'] : '';
             }
-            // echo "<pre>";
-            // var_dump($result);
-            // echo "</pre>";
+
             $fund_cluster_code = '';
             if ($fund) {
                 $fund_cluster_code = FundClusterCode::find()->where("id = :id", [
@@ -780,7 +782,11 @@ class JevPreparationController extends Controller
                             $temp_data[] = [
                                 $id,
                                 (!empty($fund_cluster)) ? $fund_cluster->id : '',
-                                $reporting_period, $date, $cells[5], $cells[6], $cells[7]
+                                $reporting_period,
+                                $date,
+                                $cells[5],
+                                $cells[6],
+                                $cells[7]
 
                             ];
 
@@ -1255,25 +1261,15 @@ class JevPreparationController extends Controller
         if (!empty($_POST)) {
             $reporting_period = $_POST['reporting_period'];
             $fund = $_POST['fund'] ? $_POST['fund'] : '';
-            // $t_balance = Yii::$app->db->createCommand("SELECT jev_preparation.reporting_period,y.total_credit,y.total_debit,
-            // chart_of_accounts.uacs,chart_of_accounts.general_ledger
-            // FROM jev_preparation,
-            // (SELECT jev_accounting_entries.*, SUM(jev_accounting_entries.credit) as total_credit  ,
-            // SUM(jev_accounting_entries.debit) as total_debit  
-            // FROM jev_accounting_entries
-            // GROUP BY jev_accounting_entries.chart_of_account_id) as y,
-            // chart_of_accounts
-            // where jev_preparation.id = y.jev_preparation_id and y.chart_of_account_id = chart_of_accounts.id
-            // AND jev_preparation.reporting_period = '$reporting_period'
 
-            // ")->queryAll();
-            // $t_balance = JevAccountingEntries::find()
-            //     ->joinWith(["jevPreparation"])
-            //     ->select('SUM(jev_accounting_entries.debit)')
-            //     ->where("jev_preparation.reporting_period = :reporting_period", [
-            //         'reporting_period' =>'2020-07'
-            //     ])->groupBy('chart_of_account_id')->all();
+            $x = explode('-', $reporting_period);
+            $q = $x[0] - 1;
 
+            $begin_balance = JevPreparation::find()
+                ->select('jev_preparation.reporting_period')
+                ->where("jev_preparation.reporting_period LIKE :reporting_period", [
+                    'reporting_period' => "$q%"
+                ])->orderBy('date DESC')->one()->reporting_period;
             $t_balance = (new \yii\db\Query())
                 ->select([
                     'SUM(jev_accounting_entries.credit) as total_credit',
@@ -1286,17 +1282,7 @@ class JevPreparationController extends Controller
                 ->from(['jev_accounting_entries',])
                 ->join('LEFT JOIN', 'chart_of_accounts', 'jev_accounting_entries.chart_of_account_id =chart_of_accounts.id ')
                 ->join('LEFT JOIN', "jev_preparation", 'jev_accounting_entries.jev_preparation_id=jev_preparation.id  ')
-
-
-                // ->where("jev_accounting_entries.jev_preparation_id = :jev_preparation_id", [
-                //     'jev_preparation_id' => 'jev_accounting_entries.id'
-                // ])
-                // ->andWhere("jev_accounting_entries.chart_of_account_id = :chart_of_account_id", [
-                //     'chart_of_account_id' => 'chart_of_accounts.id'
-                // ])
-                ->where("jev_preparation.reporting_period = :reporting_period", [
-                    'reporting_period' => $reporting_period
-                ])
+                ->where(['between', 'jev_preparation.reporting_period', $begin_balance, $reporting_period])
                 ->andwhere("jev_preparation.fund_cluster_code_id = :fund_cluster_code_id", [
                     'fund_cluster_code_id' => $fund
                 ])
@@ -1306,22 +1292,57 @@ class JevPreparationController extends Controller
                 // ->limit(10)
                 ->all();
 
-            $total_debit = array_sum(array_column($t_balance, 'total_debit'));
-            $total_credit = array_sum(array_column($t_balance, 'total_credit'));
+            // $total_debit = array_sum(array_column($t_balance, 'total_debit'));
+            // $total_credit = array_sum(array_column($t_balance, 'total_credit'));
+
             $fund_cluster_code = '';
             if (!empty($fund)) {
                 $fund_cluster_code = $this->getFundClusterCode($fund);
             }
-            // echo "<pre>";
-            // var_dump($total_credit,$total_debit);
-            // echo "</pre>";
+            $total_debit_balance = 0;
+            $total_credit_balance = 0;
+            $trial_balance_final = [];
+            $credit_bal_per_uacs = 0;
+            $debit_bal_per_uacs = 0;
+            //    ob_start();
+            foreach ($t_balance as $val) {
+                $credit_bal_per_uacs = 0;
+                $debit_bal_per_uacs = 0;
+                if ($val['total_debit'] > $val['total_credit']) {
+                    $debit_bal_per_uacs = $val['total_debit'] - $val['total_credit'];
+                    $total_debit_balance += $debit_bal_per_uacs;
+                } else if ($val['total_credit'] > $val['total_debit']) {
+                    $credit_bal_per_uacs =  $val['total_credit'] - $val['total_debit'];
+                    $total_credit_balance += $credit_bal_per_uacs;
+                }
+                // echo "<pre>";
+                // var_dump($val);
+                // echo "</pre>";
 
+                $trial_balance_final[] = [
+                    'general_ledger' => $val['general_ledger'],
+                    'uacs' => $val['uacs'],
+                    'debit' => $debit_bal_per_uacs >= 0.01 ? number_format($debit_bal_per_uacs, 2) : '',
+                    'credit' => $credit_bal_per_uacs >= 0.01 ? number_format($credit_bal_per_uacs, 2) : ''
+                ];
+            }
+            // echo "<pre>";
+            // var_dump($total_debit_balance);
+            // echo "</pre>";
+            // ob_end_clean();
+
+
+            // ob_start();
+            // echo "<pre>";
+            // var_dump($qwe);
+            // echo "</pre>";
+            // return ob_get_clean();
 
             return $this->render('trial_balance_view', [
-                't_balance' => $t_balance,
+                't_balance' => $trial_balance_final,
                 'reporting_period' => date('F Y', strtotime($reporting_period)),
-                'debit_total' => $total_debit,
-                'credit_total' => $total_credit,
+                'debit_total' => $total_debit_balance,
+                'credit_total' => $total_credit_balance,
                 'fund_cluster_code' => $fund_cluster_code
             ]);
         } else {
@@ -1370,5 +1391,13 @@ class JevPreparationController extends Controller
     public function actionSubsidiaryLedger()
     {
         return $this->render('subsidiary_ledger_view');
+    }
+
+    public function actionSample()
+    {
+        // echo "<pre>";
+        // var_dump($_POST['name']);
+        // echo "</pre>";
+        return json_encode($_POST['x']) ;
     }
 }

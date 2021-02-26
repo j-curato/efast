@@ -17,7 +17,7 @@ use yii\widgets\ActiveForm;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'General Ledger';
+$this->title = 'Subsidiary Ledger';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index">
@@ -151,34 +151,48 @@ $this->params['breadcrumbs'][] = $this->title;
                         ?>
                     </th>
                 </tr>
-              
 
-                <tr class="document_header1" >
-                    <th>
-                        Account Title:
+
+                <tr>
+                    <th colspan="3" class="head">
+
+                        <div>
+                            <span> Account Of:</span>
+                            <span> PD , DTI</span>
+                        </div>
+                        <div>
+                            <span> Office/Address:</span>
+                            <span> PD , DTI</span>
+                        </div>
+                        <div>
+                            <span> Contact Number:</span>
+                            <span> PD , DTI</span>
+                        </div>
                     </th>
-                    <th>
-                        <?php
-                        if (!empty($account_title)) {
-                            echo $account_title;
-                        }
-                        ?>
-                    </th>
-                    <th colspan="2">
-                        UACS Object Code:
-                    </th>
-                    <!-- <th>
-                    </th> -->
-                    <th colspan="2">
+
+                    <th colspan="3">
                         <?php
                         if (!empty($object_code)) {
                             echo $object_code;
                         }
                         ?>
-
+                        <div>
+                            <span>Account Code </span>
+                        </div>
+                        <div>
+                            <span> GL</span>
+                            <span> PD , DTI</span>
+                        </div>
+                        <div>
+                            <span>SL</span>
+                            <span> PD , DTI</span>
+                        </div>
 
                     </th>
                 </tr>
+
+
+
                 <tr class="head">
 
                     <th rowspan="3">
@@ -207,9 +221,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </th>
 
                 </tr>
-                <?php
 
-                ?>
             </thead>
             <tbody id="ledgerTable">
                 <?php
@@ -254,6 +266,10 @@ $this->params['breadcrumbs'][] = $this->title;
         #reporting_period {
             background-color: white;
             border-radius: 3px;
+        }
+
+        .head {
+            text-align: left;
         }
 
         .table>thead>tr>th {
@@ -338,7 +354,7 @@ $this->params['breadcrumbs'][] = $this->title;
         }
 
         .document_header1>th {
-            border:0;
+            border: 0;
         }
 
         @media print {

@@ -16,15 +16,10 @@ use aryelds\sweetalert\SweetAlertAsset;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'General Journal';
+$this->title = 'Trial Balance';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index">
-
-
-
-
-
 
     <?php
 
@@ -77,6 +72,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
         </div>
         <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>
+        <div class="col-sm-2">
+            <div id="bars1">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
         <table class="table" style="margin-top:30px">
             <thead>
                 <tr class="header" style="border: none;">
@@ -91,10 +95,14 @@ $this->params['breadcrumbs'][] = $this->title;
                             <div style="text-align:center;" class="headerItems">
                                 <h6>DEPARTMENT OF TRADE AND INDUSTRY</h6>
                                 <h6>CARAGA REGIONAL OFFICE</h6>
-                                <h6>TRIAL BALANCE FUND <?php if(!empty($fund_cluster_code)){echo $fund_cluster_code;}?></h6>
-                                <h6>As of <?php if (!empty($reporting_period)) {
-                                                echo $reporting_period;
-                                            } ?> </h6>
+                                <h6>TRIAL BALANCE FUND
+                                    <?php if (!empty($fund_cluster_code)) {
+                                        echo $fund_cluster_code;
+                                    } ?></h6>
+                                <h6>As of
+                                    <?php if (!empty($reporting_period)) {
+                                        echo $reporting_period;
+                                    } ?> </h6>
                             </div>
 
                         </div>
@@ -153,44 +161,50 @@ $this->params['breadcrumbs'][] = $this->title;
             </thead>
 
             <tbody id="ledgerTable">
+
                 <?php
                 $ttl = 0;
+                $d = 0;
+                $f = 0;
+                $qqq = 0;
                 if (!empty($t_balance)) {
                     foreach ($t_balance as $val) {
+                        $debit_balance = '';
+                        $credit_balance = '';
+                        // $debit = $val['total_debit'] ? number_format($val['total_debit']) : '';
+                        // $credit = $val['total_credit'] ? number_format($val['total_credit']) : '';
 
-                        $debit = $val['total_debit'] ? number_format($val['total_debit']) : '';
-                        $credit = $val['total_credit'] ? number_format($val['total_credit']) : '';
-                        echo "<tr>
+                        // if ($val['total_debit'] > $val['total_credit']) {
+
+                        //     $x = $val['total_debit'] - $val['total_credit'];
+
+                        //     if ($x < 0.00) {
+                        //         $debit_balance = number_format($x, 2);
+                        //         $qqq=$x;
+                        //     }
+                        //     $d += $x;
+                        // } else if ($val['total_credit'] > $val['total_debit']) {
+                        //     $y = $val['total_credit'] - $val['total_debit'];
+                        //     $credit_balance = number_format($y, 2);
+                        //     $f += $y;
+                        // }
+                        echo
+                        "<tr>
               
                             <td>
                             {$val['general_ledger']}
                             </td>
                             <td>
                             {$val['uacs']}
-
                             </td>
- 
-                            <td style='text-align:right'>"
-                            . $debit .
-
-                            " </td>
-                            <td  style='text-align:right'>"
-                            . $credit .
-
-                            "</td>
+                            <td style='text-align:right'>
+                            {$val['debit']}
+                            </td>
+                            <td  style='text-align:right'>
+                            {$val['credit']}
+                            </td>
 
                         </tr>";
-                        // foreach ($val->jevAccountingEntries as $entry) {
-                        //     echo "<tr>" .
-                        //         "<td></td>" .
-                        //         "<td></td>" .
-                        //         "<td>" . $entry->chartOfAccount->general_ledger . "</td>" .
-                        //         "<td>" . $entry->chartOfAccount->uacs . "</td>" .
-                        //         "<td>" . number_format($entry->debit, 2)  . "</td>" .
-                        //         "<td>" . number_format($entry->credit, 2) . "</td>"
-
-                        //         . "</tr>";
-                        // }
                     }
                 }
                 ?>
@@ -199,14 +213,20 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>TOTAL</td>
                     <td></td>
                     <td class="total_amount">
-                        <?php if (!empty($debit_total)) {
-                            echo number_format($debit_total,2);
-                        }  ?>
+                        <?php
+                        if (!empty($debit_total)) {
+                            echo number_format($debit_total, 2);
+                        }
+                        // echo $d;
+                        ?>
                     </td>
                     <td class="total_amount">
-                        <?php if (!empty($credit_total)) {
-                            echo number_format($credit_total,2);
-                        }  ?>
+                        <?php
+                        if (!empty($credit_total)) {
+                            echo number_format($credit_total, 2);
+                        }
+                        // echo $f;
+                        ?>
                     </td>
                 </tr>
             </tbody>
@@ -215,6 +235,119 @@ $this->params['breadcrumbs'][] = $this->title;
 
     </div>
     <style>
+        #bars1 {
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            height: 50px;
+            width: 50px;
+            margin: -25px 0 0 -25px;
+        }
+
+        #bars1 span {
+            position: absolute;
+            display: block;
+            bottom: 10px;
+            width: 9px;
+            height: 5px;
+            background: rgba(0, 0, 0, 0.25);
+            -webkit-animation: bars1 1.5s infinite ease-in-out;
+            animation: bars1 1.5s infinite ease-in-out;
+        }
+
+        #bars1 span:nth-child(2) {
+            left: 11px;
+            -webkit-animation-delay: 0.2s;
+            animation-delay: 0.2s;
+        }
+
+        #bars1 span:nth-child(3) {
+            left: 22px;
+            -webkit-animation-delay: 0.4s;
+            animation-delay: 0.4s;
+        }
+
+        #bars1 span:nth-child(4) {
+            left: 33px;
+            -webkit-animation-delay: 0.6s;
+            animation-delay: 0.6s;
+        }
+
+        #bars1 span:nth-child(5) {
+            left: 44px;
+            -webkit-animation-delay: 0.8s;
+            animation-delay: 0.8s;
+        }
+
+        @keyframes bars1 {
+            0% {
+                height: 5px;
+                -webkit-transform: translateY(0px);
+                transform: translateY(0px);
+                -webkit-transform: translateY(0px);
+                transform: translateY(0px);
+                background: rgba(0, 0, 0, 0.25);
+            }
+
+            25% {
+                height: 30px;
+                -webkit-transform: translateY(15px);
+                transform: translateY(15px);
+                -webkit-transform: translateY(15px);
+                transform: translateY(15px);
+                background: #000000;
+            }
+
+            50% {
+                height: 5px;
+                -webkit-transform: translateY(0px);
+                transform: translateY(0px);
+                -webkit-transform: translateY(0px);
+                transform: translateY(0px);
+                background: rgba(0, 0, 0, 0.25);
+            }
+
+            100% {
+                height: 5px;
+                -webkit-transform: translateY(0px);
+                transform: translateY(0px);
+                -webkit-transform: translateY(0px);
+                transform: translateY(0px);
+                background: rgba(0, 0, 0, 0.25);
+            }
+        }
+
+        @-webkit-keyframes bars1 {
+            0% {
+                height: 5px;
+                -webkit-transform: translateY(0px);
+                transform: translateY(0px);
+                background: rgba(0, 0, 0, 0.25);
+            }
+
+            25% {
+                height: 30px;
+                -webkit-transform: translateY(15px);
+                transform: translateY(15px);
+                background: #000000;
+            }
+
+            50% {
+                height: 5px;
+                -webkit-transform: translateY(0px);
+                transform: translateY(0px);
+                background: rgba(0, 0, 0, 0.25);
+            }
+
+            100% {
+                height: 5px;
+                -webkit-transform: translateY(0px);
+                transform: translateY(0px);
+                background: rgba(0, 0, 0, 0.25);
+            }
+        }
+
         #reporting_period {
             background-color: white;
             border-radius: 3px;
@@ -344,6 +477,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 display: none;
             }
         }
+
+        #bars1 {
+            display: none;
+        }
+
+        .table {
+            display: none;
+        }
     </style>
 
 </div>
@@ -352,7 +493,14 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 SweetAlertAsset::register($this);
 $script = <<< JS
-
+$(document).on("pjax:beforeSend",function(){
+    $('#bars1').show();
+    
+//    setTimeout(  $('#bars1').show(),10000)
+});
+$(document).on('ready pjax:success', function(){
+    $('.table').show();
+});
 $(document).ready(function(){
     let gen = undefined
     let fund = undefined
@@ -393,6 +541,8 @@ $(document).ready(function(){
             reporting_period:reporting_period?reporting_period:'',
             fund:fund?fund:'',
         }});
+       
+
     }
     function thousands_separators(num)
     {

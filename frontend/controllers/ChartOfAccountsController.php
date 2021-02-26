@@ -6,6 +6,7 @@ use Yii;
 use app\models\ChartOfAccounts;
 use app\models\ChartOfAccountsSearch;
 use app\models\MajorAccounts;
+use app\models\SubAccounts1;
 use app\models\SubMajorAccounts;
 use app\models\SubMajorAccounts2;
 use Exception;
@@ -163,10 +164,10 @@ class ChartOfAccountsController extends Controller
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
                 $cells = [];
-
+                $y = 0;
                 if ($key > 2) {
                     foreach ($cellIterator as $x => $cell) {
-
+                        $q = '';
                         $cells[] =   $cell->getValue();
                     }
 
@@ -183,10 +184,8 @@ class ChartOfAccountsController extends Controller
                             if (empty($major)) {
                                 try {
                                     $maj = new MajorAccounts();
-                                    $maj->object_code = $cells[13];
-                                    $maj->name = $cells[14];
-
-
+                                    $maj->object_code = $cells[6];
+                                    $maj->name = $cells[7];
                                     if ($maj->save(false)) {
                                         $major = $maj;
                                     }
@@ -203,7 +202,7 @@ class ChartOfAccountsController extends Controller
 
                             // SUB MAJOR FIND
                             $sub_major = SubMajorAccounts::find()->where("object_code=:object_code", [
-                                'object_code' => $cells[9]
+                                'object_code' => $cells[8]
                             ])->one();
                             if (empty($sub_major)) {
 
@@ -228,7 +227,7 @@ class ChartOfAccountsController extends Controller
                             }
                             // SUB MAJOR 2
                             $sub_major2 = SubMajorAccounts2::find()->where("object_code = :object_code", [
-                                'object_code' => $cells[17]
+                                'object_code' => $cells[10]
                             ])->one();
                             if (empty($sub_major2)) {
                                 try {
@@ -284,8 +283,6 @@ class ChartOfAccountsController extends Controller
                             ];
                         }
                     }
-
-            
                 }
             }
             $column = [
@@ -305,6 +302,40 @@ class ChartOfAccountsController extends Controller
             echo '<pre>';
             var_dump('data');
             echo '</pre>';
+        }
+    }
+
+    public function subAccountUacs()
+    {
+    }
+    public function actionCreateSubAccount()
+    {
+
+        // if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+        // }
+        if ($_POST) {
+            $model = new SubAccounts1();
+            $account_title = $_POST['account_title'];
+            $id = $_POST['id'];
+
+            $chart_uacs = ChartOfAccounts::find()
+                ->where("id = :id", ['id' => $id])->one()->uacs;
+            $last_id = SubAccounts1::find()->orderBy('id DESC')->one()->id + 1;
+
+            $uacs = $chart_uacs . '_';
+            for ($i = strlen($last_id); $i <= 4; $i++) {
+                $uacs .= 0;
+            }
+            if ($account_title) {
+                $model->chart_of_account_id = $id;
+                $model->object_code = $uacs . $last_id;
+                $model->name = $account_title;
+                if ($model->save()) {
+                    return 'success';
+                }
+            }
+            return $this->redirect(['view', 'id' => $model->id]);
         }
     }
 }

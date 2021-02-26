@@ -20,8 +20,8 @@ class m210202_032341_create_jev_accounting_entries_table extends Migration
             'id' => $this->primaryKey(),
             'jev_preparation_id' => $this->integer()->notNull(),
             'chart_of_account_id' => $this->integer()->notNull(),
-            'debit' => $this->double()->notNull(),
-            'credit' => $this->double()->notNull(),
+            'debit' => $this->double(),
+            'credit' => $this->double(),
         ]);
 
         // creates index for column `jev_preparation_id`

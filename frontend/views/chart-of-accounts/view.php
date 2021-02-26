@@ -4,7 +4,9 @@ use app\models\MajorAccounts;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
-
+use yii\helpers\Url;
+use yii\widgets\DetailView;
+use aryelds\sweetalert\SweetAlertAsset;
 /* @var $this yii\web\View */
 /* @var $model app\models\ChartOfAccounts */
 
@@ -26,68 +28,109 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
+        <?php
+        $t = yii::$app->request->baseUrl . '/index.php?r=sub-accounts1/create&id=' . $model->id;
+
+
+        ?>
+        <?= Html::button('<span class="fa fa-pencil-square-o"></span>', ['value' => Url::to($t), 'class' => 'btn btn-primary btn-xs modalButtoncreate']); ?>
+
     </p>
+    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
 
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'options' => ['id' => 'stafflist'],
-        'formatter' => ['class' => 'yii\i18n\Formatter', 'nullDisplay' => '-'],
-        'panel' => [
-            'type' => GridView::TYPE_PRIMARY,
-            // 'heading' => 'Memo list',
-            //'after'=>$after,0
-            // 'before'=> $add ,
-        ],
-        // 'toolbar'=> false,
-        // 'pjax'=>true,
-        'floatHeaderOptions' => [
-            'top' => 50,
-            'position' => 'absolute',
-        ],
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+    <!-- Modal -->
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
 
+            <!-- Modal content-->
+
+            <div class="modal-content">
+                <input type="text" hidden value="<?php echo $model->id; ?>" id="chart_id">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Modal Header</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="account_title">Account Title:</label>
+                        <input type="account_title" class="form-control" id="account_title">
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="save"> Submit</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <?= DetailView::widget([
+        'model' => $model,
+        'attributes' => [
+            'id',
             'uacs',
             'general_ledger',
-            'account_group',
-
-            [
-                'label' => 'Object Code',
-                'attribute' => 'major_id',
-                'value' => function ($model) {
-                    return $model->majorAccount->object_code;
-                },
-                'filter'=>ArrayHelper::map(MajorAccounts::find()->select('name,id')->asArray()->all(), 'id','name')
-            ],
-            [
-                'label' => 'Major Account',
-                'attribute' => 'major_id',
-                'value' => function ($model) {
-                    return $model->majorAccount->name;
-                }
-            ],
-            [
-                'label' => 'Object Code',
-                'attribute' => 'sub_major_id',
-                'value' => function ($model) {
-                    return $model->subMajorAccount->object_code;
-                }
-            ],
-            [
-                'label' => 'Sub Major Account',
-                'attribute' => 'sub_major_id',
-                'value' => function ($model) {
-                    return $model->subMajorAccount->name;
-                }
-            ],
-            'enable_disable',
-            'current_noncurrent',
-
-            // ['class' => 'yii\grid\ActionColumn'],
         ],
-    ]);
-    ?>
+    ]) ?>
 
 
 </div>
+<?php
+SweetAlertAsset::register($this);
+$script = <<<JS
+        $('.modalButtoncreate').click(function(){
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+        });
+        $('.modalButtonedit').click(function(){
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+        });
+
+        $(document).ready(function(){
+            var at =''
+            var id=''
+            $('#save').click(function(){
+             at = document.getElementById('account_title').value
+             id = document.getElementById('chart_id').value
+            console.log (at)
+            $.ajax({
+                type:'POST',
+                url:window.location.pathname + '?r=chart-of-accounts/create-sub-account' ,
+                data:{
+                    account_title:at,
+                    id:id,
+                },
+                success:function(data){
+                    console.log(data)
+                    $('#myModal').modal('hide');
+       
+                        swal( {
+                        position: 'top-end',
+                        icon: 'success',
+                        title: " Reporting Period and Fund Cluster Code are Required",
+                        type: "success",
+                        timer:3000,
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    })
+                },
+                beforeSend: function(){
+                   setTimeout(() => {
+                   console.log('loading');
+                       
+                   }, 5000);
+                },
+                complete: function(){
+                    $('#loading').hide();
+                }
+                
+
+            })
+        })
+        })
+
+
+JS;
+$this->registerJs($script);
+?>

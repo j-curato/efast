@@ -89,6 +89,8 @@
                                     ['label' => 'Chart of Accounts', 'icon' => 'circle-o', 'url' => ['/chart-of-accounts'],],
                                     ['label' => 'Major Accounts', 'icon' => 'circle-o', 'url' => ['/major-accounts'],],
                                     ['label' => 'Sub Major Accounts', 'icon' => 'circle-o', 'url' => ['/sub-major-accounts'],],
+                                    ['label' => 'Sub Account 1', 'icon' => 'circle-o', 'url' => ['/sub-accounts1'],],
+                                    ['label' => 'Sub Account 2', 'icon' => 'circle-o', 'url' => ['/sub-accounts2'],],
 
 
                                 ],
