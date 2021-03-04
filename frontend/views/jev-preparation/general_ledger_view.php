@@ -54,7 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             ?>
-            <button id="print">print</button>
+            <button id="print"><i class="glyphicon glyphicon-print"></i></button>
 
         </div>
         <br>

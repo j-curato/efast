@@ -124,4 +124,10 @@ class FundClusterCodeController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
+    public function actionGetAllCluster()
+    {
+        $fc = Yii::$app->db->createCommand("SELECT * FROM fund_cluster_code")->queryAll();
+        return json_encode($fc);
+    }
 }

@@ -65,7 +65,7 @@ if (Yii::$app->controller->action->id === 'login') {
 
     <body class="hold-transition skin-blue sidebar-mini ">
         <?php $this->beginBody() ?>
-        <div class="page-loader-wrapper">
+        <!-- <div class="page-loader-wrapper">
             <div class="loader">
                 <div class="preloader">
                     <div class="spinner-layer pl-red">
@@ -79,7 +79,7 @@ if (Yii::$app->controller->action->id === 'login') {
                 </div>
                 <p>Please wait...</p>
             </div>
-        </div>
+        </div> -->
 
         <!-- <div class="col-sm-2">
             <div id="bars1">
@@ -116,9 +116,9 @@ if (Yii::$app->controller->action->id === 'login') {
 
     <?php
     $js = <<<JS
-    setTimeout(function () {
-        $('.page-loader-wrapper').fadeOut();
-    }, 50);
+        // setTimeout(function () {
+        //     $('.page-loader-wrapper').fadeOut();
+        // }, 300);
     JS;
     $this->registerJs($js, \yii\web\View::POS_READY);
 

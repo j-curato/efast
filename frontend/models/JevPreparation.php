@@ -21,7 +21,7 @@ use Yii;
  * @property FundClusterCode $fundClusterCode
  * @property ResponsibilityCenter $responsibilityCenter
  */
-class JevPreparation extends \yii\db\ActiveRecord
+class JevPreparation extends \yii\db\ActiveRecord   
 {
     /**
      * {@inheritdoc}
@@ -103,4 +103,5 @@ class JevPreparation extends \yii\db\ActiveRecord
     {
         return $this->hasOne(ResponsibilityCenter::class, ['id' => 'responsibility_center_id']);
     }
+
 }

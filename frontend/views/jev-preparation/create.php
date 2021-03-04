@@ -13,33 +13,12 @@ $this->params['breadcrumbs'][] = ['label' => 'Jev Preparations', 'url' => ['inde
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-create">
-
-
-
-    <?= $this->render('_form_new', [
+    <?= $this->render('_form', [
         'model' => $model,
         'modelJevItems' => $modelJevItems
     ]) ?>
-
-
-
-
 </div>
 
 <?php
-
-$js = "
-        $('#modalButtoncreate').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-        $('.modalButtonedit').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-
-
-        
-
-
-";
-$this->registerJs($js, $this::POS_END);
+// $this->registerJs($js, $this::POS_END);
 ?>

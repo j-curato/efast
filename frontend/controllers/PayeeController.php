@@ -196,4 +196,9 @@ class PayeeController extends Controller
             // return ob_get_clean();
         }
     }
+    public function actionGetPayee()
+    {
+            $p = Yii::$app->db->createCommand("SELECT * FROM payee ")->queryAll();
+            return json_encode($p);
+    }
 }

@@ -12,7 +12,7 @@ class m210223_024550_add_cash_flow_transaction_to_jev_accounting_entries_table e
      */
     public function safeUp()
     {
-        $this->addColumn('jev_accounting_entries', 'cash_flow_transaction', $this->string(255));
+        $this->addColumn('jev_accounting_entries', 'cash_flow_transaction_id', $this->integer());
     }
 
     /**
@@ -20,7 +20,7 @@ class m210223_024550_add_cash_flow_transaction_to_jev_accounting_entries_table e
      */
     public function safeDown()
     {
-        $this->dropColumn('jev_accounting_entries', 'cash_flow_transaction');
+        $this->dropColumn('jev_accounting_entries', 'cash_flow_transaction_id');
     }
 
     /*

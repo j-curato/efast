@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
     $ledger = Yii::$app->db->createCommand("SELECT chart_of_accounts.id, CONCAT(chart_of_accounts.uacs,' - ',chart_of_accounts.general_ledger) as name FROM chart_of_accounts")->queryAll();
     $fund = Yii::$app->db->createCommand("SELECT fund_cluster_code.id,fund_cluster_code.name FROM fund_cluster_code")->queryAll();
     $t = yii::$app->request->baseUrl . '/index.php?r=jev-preparation/sample';
-
+    $sub1 = (new \yii\db\Query())->select('*')->from('sub_accounts1')->all();
 
     ?>
 
@@ -55,6 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             ?>
             <button id="print">print</button>
+            <button id="submit">generate</button>
 
         </div>
         <br>
@@ -63,13 +64,13 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="actions " style="bottom: 20px;">
 
 
-            <div class="col-sm-4">
-                <label for="general_ledger">General Ledger</label>
+            <div class="col-sm-3">
+                <label for="sub_account">General Ledger</label>
                 <?php
                 echo Select2::widget([
-                    'id' => 'general_ledger',
-                    'data' => ArrayHelper::map($ledger, 'id', 'name'),
-                    'name' => 'general_ledger',
+                    'id' => 'sub_account',
+                    'data' => ArrayHelper::map($sub1, 'object_code', 'object_code'),
+                    'name' => 'sub_account',
                     'options' => ['placeholder' => 'General Ledger Account'],
                     'pluginOptions' => [
                         'allowClear' => true
@@ -77,7 +78,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]);
                 ?>
             </div>
-            <div class="col-sm-4">
+
+            <div class="col-sm-3">
                 <label for="fund"> Fund Cluster Code</label>
                 <?php
                 echo Select2::widget([
@@ -91,7 +93,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]);
                 ?>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <label for="reporting_period">Reporting Period</label>
                 <?php
                 echo DatePicker::widget([
@@ -144,11 +146,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         Fund Cluster Code:
                     </th>
                     <th colspan="2">
-                        <?php
-                        if (!empty($fund_cluster_code)) {
-                            echo $fund_cluster_code;
-                        }
-                        ?>
+                        <?php echo  !empty($fund_cluster) ? $fund_cluster : '' ?>
                     </th>
                 </tr>
 
@@ -180,12 +178,14 @@ $this->params['breadcrumbs'][] = $this->title;
                             <span>Account Code </span>
                         </div>
                         <div>
-                            <span> GL</span>
-                            <span> PD , DTI</span>
+                            <span> GL :</span>
+                            <span> <?php echo !empty($general_ledger) ? $general_ledger : '' ?></span>
                         </div>
                         <div>
-                            <span>SL</span>
-                            <span> PD , DTI</span>
+                            <span>SL :</span>
+                            <span>
+                                <span> <?php echo  !empty($sl_name) ? $sl_name : '' ?></span>
+                            </span>
                         </div>
 
                     </th>
@@ -235,7 +235,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         $debit = $val['debit'] ? number_format($val['debit'], 2) : '';
                         $balance = $val['balance'] ? number_format($val['balance'], 2) : '';
                         echo "<tr>
-                            <td>{$val['reporting_period']}</td>
+                            <td>{$val['date']}</td>
                             <td>{$val['explaination']}</td>
                             <td>{$val['ref_number']}</td>
                             <td>$debit </td>
@@ -441,21 +441,28 @@ $(document).ready(function(){
     let gen = undefined
     let fund = undefined
     let reporting_period=undefined
+    let sub_account=undefined
     let ex=0
     $( "#general_ledger" ).change(function(){
         gen = $(this).val() 
         //  title = document.getElementById('title')
-        query()
+        // query()
     })
     $( "#fund" ).on('change keyup', function(){
         fund = $(this).val()
         // console.log(fund)
-        query()
+        // query()
     })
     $("#reporting_period").change(function(){
         reporting_period=$(this).val()
-        query()
+        // query()
     })
+    $("#sub_account").change(function(){
+        sub_account=$(this).val()
+        // query()
+    })
+
+
     $("#export").click(function(){
         ex=1
         query()
@@ -473,18 +480,22 @@ $(document).ready(function(){
             printData()
 
     })
+    $('#submit').click(function(){
+        
+        query()
+    })
 
     function query(){
         // console.log(fund+gen)
         // console.log(fund)
         $.pjax({container: "#employee", 
-        url: window.location.pathname + '?r=jev-preparation/ledger',
+        url: window.location.pathname + '?r=jev-preparation/get-subsidiary-ledger',
         type:'POST',
         data:{
             reporting_period:reporting_period?''+reporting_period.toString():'',
             fund:fund?fund:0,
             export:ex,
-            gen:gen?gen:0,
+            sub_account:sub_account?sub_account:0,
             print:print
         },
   

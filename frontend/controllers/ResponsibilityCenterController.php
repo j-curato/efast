@@ -124,4 +124,10 @@ class ResponsibilityCenterController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
+    public function actionGetResponsibilityCenter()
+    {
+        $rc = Yii::$app->db->createCommand("SELECT * FROM responsibility_center ")->queryAll();
+        return json_encode($rc);
+    }
 }

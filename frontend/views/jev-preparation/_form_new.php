@@ -16,6 +16,7 @@ use aryelds\sweetalert\SweetAlertAsset;
 /* @var $model app\models\JevPreparation */
 /* @var $form yii\widgets\ActiveForm */
 ?>
+<link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
 
 <div class="jev-preparation-form">
 
@@ -56,8 +57,7 @@ use aryelds\sweetalert\SweetAlertAsset;
 
                     <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
                         'options' => ['placeholder' => 'Reporting Period', 'id' => 'reporting_period',],
-                        'type' => DatePicker::TYPE_INPUT,
-                        'readonly' => true,
+                        // 'type' => DatePicker::TYPE_INPUT,
 
                         'pluginOptions' => [
 
@@ -68,33 +68,33 @@ use aryelds\sweetalert\SweetAlertAsset;
                         ]
                     ]); ?>
                 </div>
-
-
-
-
                 <div class="col-sm-3">
 
 
-                    <?php
-                    // $form->field($model, 'jev_number')->widget(Select2::class, [
-                    //     'data' => ['CKDJ' => 'CKDJ', 'ADADJ' => 'ADADJ', 'CDJ' => 'CDJ', 'GJ' => 'GJ', 'CRJ' => 'CRJ'],
-                    //     'options' => ['placeholder' => 'Select a Fund Source'],
-                    //     'pluginOptions' => [
-                    //         'allowClear' => true
-                    //     ],
-                    // ]);
-                    ?>
+                    <?= $form->field($model, 'check_ada_date')->widget(DatePicker::class, [
+                        'name' => 'birth_date',
+                        'value' => '12-31-2010',
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'format' => 'mm-dd-yyyy'
+                        ],
 
-
-                    <?= $form->field($model, 'jev_number')->textInput(
-                        ['maxlength' => true, 'style' => 'border-radius:5px',],
-                    ) ?>
-
+                    ]); ?>
                 </div>
+
 
                 <div class="col-sm-3">
-                    <?= $form->field($model, 'lddap_number')->textInput(['maxlength' => true, 'style' => 'border-radius:5px']) ?>
+                    <?= $form->field($model, 'ref_number')->widget(Select2::class, [
+                        'data' => [1 => "ADADJ", 2 => "CDJ", 3 => "CKDJ", 4 => "CRJ", 5 => "GJ"],
+                        'options' => ['placeholder' => 'Select a Reference'],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ]); ?>
                 </div>
+
+
+     
 
             </div>
 
@@ -126,17 +126,14 @@ use aryelds\sweetalert\SweetAlertAsset;
                     <?= $form->field($model, 'dv_number')->textInput(['maxlength' => true, 'style' => 'border-radius:5px']) ?>
 
                 </div>
+           
                 <div class="col-sm-3">
-                    <?= $form->field($model, 'ref_number')->widget(Select2::class, [
-                        'data' => [1 => "ADADJ", 2 => "CDJ", 3 => "CKDJ", 4 => "CRJ", 5 => "GJ"],
-                        'options' => ['placeholder' => 'Select a Reference'],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ]); ?>
+                    <?= $form->field($model, 'lddap_number')->textInput(['maxlength' => true, 'style' => 'border-radius:5px']) ?>
                 </div>
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'cadadr_serial_number')->textInput(['maxlength' => true, 'style' => 'border-radius:5px'],) ?>
 
-
+                </div>
 
             </div>
 
@@ -162,27 +159,12 @@ use aryelds\sweetalert\SweetAlertAsset;
             </div>
             <div class="row">
 
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'cadadr_serial_number')->textInput(['maxlength' => true, 'style' => 'border-radius:5px'],) ?>
-
-                </div>
+               
                 <div class="col-sm-3">
                     <?= $form->field($model, 'check_ada')->textInput(['maxlength' => true, 'style' => 'border-radius:5px'],) ?>
 
                 </div>
-                <div class="col-sm-3">
 
-
-                    <?= $form->field($model, 'check_ada_date')->widget(DatePicker::class, [
-                        'name' => 'birth_date',
-                        'value' => '12-31-2010',
-                        'pluginOptions' => [
-                            'autoclose' => true,
-                            'format' => 'mm-dd-yyyy'
-                        ],
-
-                    ]); ?>
-                </div>
 
                 <div class="col-sm-3">
                     <?= $form->field($model, 'check_ada_number')->widget(Select2::class, [
@@ -232,7 +214,8 @@ use aryelds\sweetalert\SweetAlertAsset;
             <div class="container-items">
                 <!-- widgetContainer -->
 
-                <?php $x = 0;foreach ($modelJevItems as $i => $modelJevItem) : ?>
+                <?php $x = 0;
+                foreach ($modelJevItems as $i => $modelJevItem) : ?>
                     <div class="item panel panel-default" style="border:1px solid black">
                         <!-- widgetBody -->
                         <div class="panel-heading" style="background-color: white;border:none">
@@ -256,11 +239,9 @@ use aryelds\sweetalert\SweetAlertAsset;
                                         'data' => ArrayHelper::map($chart, 'id', 'ledger'),
                                         'options' => ['placeholder' => 'Select a Fund Source',],
                                         'pluginEvents' => [
-                                            "select2:select" => "function() { console.log('qwe') }",
+                                            "select2:select" => "function() { console.log({$i})  }",
                                         ],
-                                        
-                                    ]); 
-                                    $x++;
+                                    ]);
                                     ?>
                                 </div>
 
@@ -268,7 +249,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                                 <div class="col-sm-4">
                                     <?=
 
-                                    $form->field($modelJevItem, "[{$i}]debit")->textInput(['maxlength' => true, 'class' => 'debit'])
+                                    $form->field($modelJevItem, "[{$i}]debit")->textInput(['maxlength' => true, 'class' => 'debit',])
 
                                     ?>
                                 </div>
@@ -302,6 +283,7 @@ use aryelds\sweetalert\SweetAlertAsset;
 
             </div>
 
+
             <div class="total">
                 <div class="col-sm-4">
                     <div class="form-group">
@@ -325,8 +307,6 @@ use aryelds\sweetalert\SweetAlertAsset;
         </div>
 
         <?php ActiveForm::end(); ?>
-
-
     </div>
 
     <style>
@@ -398,9 +378,33 @@ use aryelds\sweetalert\SweetAlertAsset;
         }
     </style>
 
+    <script src="/dti-afms-2/frontend/web/js/jquery.min.js"></script>
+    <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#chart_acc_0').select2({
+                ajax: {
+                    url: '/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-all-account',
+                    dataType: 'json',
+                    type: 'get',
+                    processResults: function(data) {
+                        // Transforms the top-level key of the response object from 'items' to 'results'
+                        console.table(data)
+                        return {
+                            id: data.id,
+                            text: data.uacs
+                        };
+                    }
+                }
+            });
+        })
+    </script>
+
     <?php
     SweetAlertAsset::register($this);
     $script = <<< JS
+    // console.table('haha')
+    
     
     $(document).on("keyup change", ".credit, .debit", function(){
          var total_credit = 0.00;

@@ -338,4 +338,30 @@ class ChartOfAccountsController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
     }
+
+    public function actionGetAllAccount()
+    {
+        $res = Yii::$app->db->createCommand('SELECT id,uacs as object_code, general_ledger as title FROM chart_of_accounts')->queryAll();
+        $sub1 = (new \yii\db\Query())->select(['id', 'object_code', 'name as title'])->from('sub_accounts1')->all();
+        $sub2 = (new \yii\db\Query())->select(['id', 'object_code', 'name as title'])->from('sub_accounts2')->all();
+        $x = [];
+
+        foreach ($res as $val) {
+            $val['lvl'] = 1;
+            $x[] = $val;
+        }
+        foreach ($sub1 as $val) {
+            $val['lvl'] = 2;
+            $x[] = $val;
+        }
+        foreach ($sub2 as $val) {
+            $val['lvl'] = 2;
+            $x[] = $val;
+        }
+        // $x= $res->push($sub1);
+        // echo "<pre>";
+        // var_dump($x);
+        // echo "</pre>";
+        return json_encode($x);
+    }
 }

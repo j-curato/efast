@@ -14,6 +14,7 @@ use app\models\SubMajorAccounts2;
 use Exception;
 use frontend\models\Model;
 use InvalidArgumentException;
+use phpDocumentor\Reflection\Types\Nullable;
 use PhpOffice\PhpSpreadsheet\Chart\Chart;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
@@ -1393,11 +1394,343 @@ class JevPreparationController extends Controller
         return $this->render('subsidiary_ledger_view');
     }
 
-    public function actionSample()
+    public function actionGetA()
     {
         // echo "<pre>";
         // var_dump($_POST['name']);
         // echo "</pre>";
-        return json_encode($_POST['x']) ;
+        return json_encode($_POST['x']);
+    }
+
+    public function actionInsertJev()
+    {
+
+        if (!empty($_POST)) {
+
+
+
+            $reporting_period = $_POST['reporting_period'];
+            $check_ada_date = !empty($_POST['check_ada_date']) ? $_POST['check_ada_date'] : '';
+            $date = !empty($_POST['date']) ? $_POST['date'] : '';
+            $fund_cluster_code = $_POST['fund_cluster_code'];
+            $r_center_id = !empty($_POST['r_center_id']) ? $_POST['r_center_id'] : '';
+            $reference = !empty($_POST['reference']) ? $_POST['reference'] : '';
+            $check_ada = !empty($_POST['check_ada']) ? $_POST['check_ada'] : '';
+            $payee = !empty($_POST['payee']) ? $_POST['payee'] : '';
+            $lddap = !empty($_POST['lddap']) ? $_POST['lddap'] : '';
+            $cadadr_number = !empty($_POST['cadadr_number']) ? $_POST['cadadr_number'] : '';
+            $dv_number = !empty($_POST['dv_number']) ? $_POST['dv_number'] : '';
+            $explanation = !empty($_POST['particular']) ? $_POST['particular'] : '';
+            $payee_id = !empty($_POST['payee_id']) ? $_POST['payee_id'] : '';
+            $ref_number = !empty($_POST['reference']) ? $_POST['reference'] : '';
+
+            $total_debit = array_sum($_POST['debit']);
+            $total_credit = array_sum($_POST['credit']);
+            // if (
+            //     $reporting_period != null
+            //     && $fund_cluster_code != null
+            //     && $date != null
+            //     && $explanation != null
+            //     && $total_debit == $total_credit
+            // ) {
+            try {
+                $jev_preparation = new JevPreparation();
+                $jev_preparation->reporting_period = $reporting_period;
+                $jev_preparation->responsibility_center_id = $r_center_id;
+                $jev_preparation->fund_cluster_code_id = $fund_cluster_code;
+                $jev_preparation->date = $date;
+                $jev_preparation->jev_number = $reference;
+                $jev_preparation->ref_number = $ref_number;
+                $jev_preparation->dv_number = $dv_number;
+                $jev_preparation->lddap_number = $lddap;
+                $jev_preparation->explaination = $explanation;
+                $jev_preparation->payee_id = $payee_id;
+                // $jev_preparation->cash_flow_id =$reporting_period;
+                // $jev_preparation->mrd_classification_id =$reporting_period;
+                $jev_preparation->cadadr_serial_number = $cadadr_number;
+                $jev_preparation->check_ada = $check_ada;
+                $jev_preparation->check_ada_number = 'adaNumber';
+                $jev_preparation->check_ada_date = $check_ada_date;
+
+
+                if ($jev_preparation->validate()) {
+
+                    if ($jev_preparation->save(false)) {
+                        // return json_encode($jev_preparation->id);
+                        $jev_preparation_id = $jev_preparation->id;
+                    }
+                } else {
+                    // validation failed: $errors is an array containing error messages
+                    $errors = $jev_preparation->errors;
+                    return json_encode($errors);
+                }
+
+
+                $account_entries = count($_POST['chart_of_account_id']);
+                //     $s = [];
+                for ($i = 0; $i < $account_entries; $i++) {
+                    $x = explode('-', $_POST['chart_of_account_id'][$i]);
+                    $chart_id = 0;
+                    if ($x[2] == 2) {
+                        $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
+                            ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+                            ->where('sub_accounts1.id =:id', ['id' => intval($x[0])])->one()['id'];
+                    } else if ($x[2] == 3) {
+                        $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
+                            ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+                            ->where('sub_accounts1.id =:id', ['id' => intval($x[0])])->one()['id'];
+                    } else {
+                        $chart_id = $x[0];
+                    }
+
+                    $jv = new JevAccountingEntries();
+                    $jv->jev_preparation_id = $jev_preparation_id;
+                    $jv->chart_of_account_id = intval($chart_id);
+                    $jv->debit = !empty($_POST['debit'][$i]) ? $_POST['debit'][$i] : 0;
+                    $jv->credit = !empty($_POST['credit'][$i]) ? $_POST['credit'][$i] : 0;
+                    // $jv->current_noncurrent=$jev_preparation->id;
+                    $jv->cash_flow_transaction = $_POST['cash_flow_id'][$i] != 'null' ? $_POST['cash_flow_id'][$i] : '';
+                    $jv->net_asset_equity_id = $_POST['isEquity'][$i] != 'null' ? $_POST['isEquity'][$i] : '';
+                    $jv->closing_nonclosing = 'nonclosing';
+                    $jv->lvl = $x[2];
+                    $jv->object_code = $x[1];
+
+                    if ($jv->save(false)) {
+                        //  return json_encode();
+                        $s[] =  $jv->cash_flow_transaction;
+                        // echo "<pre>";
+                        // var_dump($jv->id);
+                        // echo "</pre>";
+                    }
+                    // echo "<pre>";
+                    // var_dump($chart_id);
+                    // echo "</pre>";
+
+                }
+                return json_encode('success');
+            } catch (Exception $e) {
+                return json_encode($e);
+            }
+
+            // }
+            // else {}
+            // echo "<pre>";
+            // var_dump($x);
+            // echo "</pre>";
+        }
+    }
+
+    public function actionIsCurrent()
+    {
+        $chart = (new \yii\db\Query())
+            ->select(['chart_of_accounts.current_noncurrent', 'chart_of_accounts.account_group', 'major_accounts.object_code'])
+            ->from('chart_of_accounts')
+            ->join('LEFT JOIN', 'major_accounts', 'chart_of_accounts.major_account_id=major_accounts.id')
+            ->where("chart_of_accounts.id = :id", ['id' => $_POST['chart_id']])
+            ->one();
+        $res = Yii::$app->db->createCommand("SELECT  current_noncurrent,account_group FROM chart_of_accounts where id = {$_POST['chart_id']}")->queryOne();
+
+        //   print_r($chart);
+        // $chart = (new \yii\db\Query());
+        // $chart->select(['current_noncurrent'])
+        //     ->from('chart_of_accounts')
+        //     ->where("chart_of_accounts.id = :id", [
+        //         'id' => $_POST['chart_id']
+        //     ])->one();
+
+        $isEquity = false;
+        $isCashEquivalent = false;
+        if ($chart['object_code'] == 1010000000) {
+            $isCashEquivalent = true;
+        }
+        if ($chart['account_group'] == 'Equity') {
+            $isEquity = true;
+        }
+
+        return json_encode(['result' => $chart, 'isEquity' => $isEquity, 'isCashEquivalent' => $isCashEquivalent]);
+        // echo "<pre>";
+        // var_dump($chart['']);
+        // echo "</pre>";
+    }
+
+
+
+    public function actionGetSubsidiaryLedger()
+    {
+
+        if ($_POST) {
+            // echo "<pre>";
+            // var_dump($_POST['sub_account']);
+            // echo "</pre>";
+
+            $sl = (new \yii\db\Query())
+                ->select([
+                    'jev_preparation.date', 'jev_preparation.explaination',
+                    'jev_preparation.ref_number', 'jev_accounting_entries.debit', 'jev_accounting_entries.credit',
+                    'chart_of_accounts.normal_balance', 'chart_of_accounts.general_ledger'
+
+                ])
+                ->from('jev_accounting_entries')
+                ->join("LEFT JOIN",  "jev_preparation", "jev_accounting_entries.jev_preparation_id = jev_preparation.id")
+                ->join("LEFT JOIN",  "chart_of_accounts", "jev_accounting_entries.chart_of_account_id = chart_of_accounts.id")
+                ->where("jev_accounting_entries.lvl = :lvl", [
+                    'lvl' => 2
+                ])
+                ->andWhere("jev_accounting_entries.object_code = :object_code", [
+                    'object_code' => $_POST['sub_account']
+                ])
+                ->andWhere("jev_preparation.fund_cluster_code_id = :fund_cluster_code_id", [
+                    'fund_cluster_code_id' => $_POST['fund']
+                ])
+                // ->groupBy('object_code')
+                ->orderBy('jev_preparation.date')
+                ->all();
+            $fund_cluster = FundClusterCode::find()->where("id =:id", ['id' => $_POST['fund']])->one()->name;
+            $sl_name = (new \yii\db\Query())->select(['name'])->from('sub_accounts1')->where("object_code =:object_code", ['object_code' => $_POST['sub_account']])->one()['name'];
+            $sl_final = [];
+            $balance = 0;
+
+            foreach ($sl as $val) {
+
+                if (strtolower($val['normal_balance']) == 'credit') {
+
+                    $balance += $val['credit'] - $val['debit'];
+                } else {
+                    $balance += $val['debit'] - $val['credit'];
+                }
+                $val['balance'] = $balance;
+                $sl_final[] = $val;
+                // echo "<pre>";
+                // var_dump($val);
+                // echo "</pre>";
+            }
+            // echo "<pre>";
+            // var_dump($sl_name);
+            // echo "</pre>";
+            return $this->render('subsidiary_ledger_view', [
+                'data' => $sl_final,
+                'fund_cluster' => $fund_cluster,
+                'general_ledger' => $sl_final[0]['general_ledger'],
+                'sl_name' => $sl_name
+            ]);
+        }
+
+
+        // return json_encode($sl);
+    }
+
+    public function actionDetailedFinancialPosition()
+    {
+        // SELECT * from 
+        // (SELECT chart_of_accounts.account_group,chart_of_accounts.uacs,chart_of_accounts.general_ledger,
+        // chart_of_accounts.current_noncurrent,major_accounts.name,
+        // jev_preparation.reporting_period,
+        // SUM(jev_accounting_entries.debit) as total_debit, SUM(jev_accounting_entries.credit) as total_credit
+        // FROM jev_accounting_entries,jev_preparation,chart_of_accounts,major_accounts
+        
+        // WHERE jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
+        // AND jev_accounting_entries.jev_preparation_id = jev_preparation.id
+        
+        // AND chart_of_accounts.major_account_id = major_accounts.id
+        
+        // AND chart_of_accounts.account_group IN ('Assets','Liabilities','Equity')
+        // AND jev_preparation.reporting_period BETWEEN '2019-12' AND '2020-12'
+        // GROUP BY chart_of_accounts.account_group,chart_of_accounts.major_account_id,chart_of_accounts.uacs
+        // ORDER BY chart_of_accounts.account_group,chart_of_accounts.current_noncurrent,chart_of_accounts.major_account_id) as r1
+        
+        // LEFT JOIN
+        // (SELECT chart_of_accounts.uacs,
+        // SUM(jev_accounting_entries.debit) as last_year_total_debit, SUM(jev_accounting_entries.credit) as last_year_total_credit
+        // FROM jev_accounting_entries,jev_preparation,chart_of_accounts,major_accounts
+        
+        // WHERE jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
+        // AND jev_accounting_entries.jev_preparation_id = jev_preparation.id
+        
+        // AND chart_of_accounts.major_account_id = major_accounts.id
+        
+        // AND chart_of_accounts.account_group IN ('Assets','Liabilities','Equity')
+        // AND jev_preparation.reporting_period ='2019-12'
+        // GROUP BY chart_of_accounts.account_group,chart_of_accounts.major_account_id,chart_of_accounts.uacs
+        // ORDER BY chart_of_accounts.account_group,chart_of_accounts.current_noncurrent,chart_of_accounts.major_account_id) as r2
+        
+        // ON (r1.uacs = r2.uacs)
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $fund_cluster = $_POST['fund'];
+
+            $x = explode('-', $reporting_period);
+            $last_year = $x[0]-1;
+            $begin_balance = JevPreparation::find()
+                ->select('jev_preparation.reporting_period')
+                ->where("jev_preparation.reporting_period LIKE :reporting_period", [
+                    'reporting_period' => "$last_year%"
+                ])->orderBy('date DESC')->one()->reporting_period;
+            $q = (new \yii\db\Query())
+                ->select([
+                    'chart_of_accounts.account_group', 'chart_of_accounts.uacs', 'chart_of_accounts.general_ledger',
+                    'chart_of_accounts.current_noncurrent', 'major_accounts.name as major_account',
+                    'SUM(jev_accounting_entries.debit) as total_debit', 'SUM(jev_accounting_entries.credit) as total_credit',
+                    'SUM(jev_accounting_entries.debit) - SUM(jev_accounting_entries.credit) as balance'
+                ])
+                ->from('jev_accounting_entries')
+                ->join('LEFT JOIN', 'chart_of_accounts', "jev_accounting_entries.chart_of_account_id = chart_of_accounts.id")
+                ->join('LEFT JOIN', 'major_accounts', "chart_of_accounts.major_account_id = major_accounts.id")
+                ->join('LEFT JOIN', 'jev_preparation', "jev_accounting_entries.jev_preparation_id = jev_preparation.id")
+                ->where(array('in', 'chart_of_accounts.account_group', array('Assets', 'Liabilities', 'Equity')))
+                ->andWhere(['between', 'jev_preparation.reporting_period', $begin_balance, $reporting_period])
+                ->andWhere("jev_preparation.fund_cluster_code_id = :fund_cluster_code_id", ['fund_cluster_code_id' => $fund_cluster])
+                ->groupBy('chart_of_accounts.account_group')
+                ->groupBy('chart_of_accounts.major_account_id')
+                ->groupBy('chart_of_accounts.uacs')
+                ->orderBy('chart_of_accounts.account_group')
+                ->orderBy('chart_of_accounts.current_noncurrent')
+                ->orderBy('chart_of_accounts.major_account_id')
+                ->all();
+            $result = ArrayHelper::index($q, null, [function ($element) {
+                return $element['account_group'];
+            }, 'current_noncurrent', 'major_account']);
+
+            // echo "<pre>";
+            // var_dump($begin_balance,$reporting_period);
+            // echo "</pre>";
+            return $this->render('detailed_financial_position_view', [
+                'data' => $result
+            ]);
+        } else {
+            return $this->render('detailed_financial_position_view', []);
+        }
+    }
+    public function actionSampleDfp()
+    {
+        $q = (new \yii\db\Query())
+            ->select([
+                'chart_of_accounts.account_group', 'chart_of_accounts.uacs', 'chart_of_accounts.general_ledger',
+                'chart_of_accounts.current_noncurrent', 'major_accounts.name as major_account',
+                'SUM(jev_accounting_entries.debit) as total_debit', 'SUM(jev_accounting_entries.credit) as total_credit',
+                'SUM(jev_accounting_entries.debit) - SUM(jev_accounting_entries.credit) as balance'
+            ])
+            ->from('jev_accounting_entries')
+            ->join('LEFT JOIN', 'chart_of_accounts', "jev_accounting_entries.chart_of_account_id = chart_of_accounts.id")
+            ->join('LEFT JOIN', 'major_accounts', "chart_of_accounts.major_account_id = major_accounts.id")
+            ->join('LEFT JOIN', 'jev_preparation', "jev_accounting_entries.jev_preparation_id = jev_preparation.id")
+            ->where(array('in', 'chart_of_accounts.account_group', array('Assets', 'Liabilities', 'Equity')))
+            ->andWhere(['between', 'jev_preparation.reporting_period', '2019-12', '2020-12'])
+            ->andWhere("jev_preparation.fund_cluster_code_id = :fund_cluster_code_id", ['fund_cluster_code_id' => 3])
+            ->groupBy('chart_of_accounts.account_group')
+            ->groupBy('chart_of_accounts.major_account_id')
+            ->groupBy('chart_of_accounts.uacs')
+            ->orderBy('chart_of_accounts.account_group')
+            ->orderBy('chart_of_accounts.current_noncurrent')
+            ->orderBy('chart_of_accounts.major_account_id')
+            ->all();
+        $result = ArrayHelper::index($q, null, [function ($element) {
+            return $element['account_group'];
+        }, 'current_noncurrent', 'major_account']);
+
+        ob_start();
+        echo "<pre>";
+        var_dump($result);
+        echo "</pre>";
+        return ob_get_clean();
     }
 }
