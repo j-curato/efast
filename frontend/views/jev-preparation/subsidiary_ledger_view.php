@@ -54,7 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             ?>
-            <button id="print">print</button>
+            <button id="print" onclick="print()">print</button>
             <button id="submit">generate</button>
 
         </div>
@@ -69,7 +69,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
                 echo Select2::widget([
                     'id' => 'sub_account',
-                    'data' => ArrayHelper::map($sub1, 'object_code', 'object_code'),
+                    'data' => ArrayHelper::map($sub1, 'object_code', 'name'),
                     'name' => 'sub_account',
                     'options' => ['placeholder' => 'General Ledger Account'],
                     'pluginOptions' => [
@@ -156,7 +156,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <div>
                             <span> Account Of:</span>
-                            <span> PD , DTI</span>
+                            <span><?php echo  !empty($sl_name) ? $sl_name : '' ?></span>
                         </div>
                         <div>
                             <span> Office/Address:</span>
@@ -369,6 +369,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 font-size: 10px;
             }
 
+            #print{
+                display: none;
+            }
+            #submit{
+                display: none;
+            }
+
             thead>tr>td {
                 border: 1px solid black;
                 padding: 5px;
@@ -472,14 +479,14 @@ $(document).ready(function(){
         console.log(y)
     })
     let print=0
-    $("#print").click(function(){
-        var x = $(this).val()
+    // $("#print").click(function(){
+    //     var x = $(this).val()
 
-        //  var y= JSON.parse(x)
-        print=1
-            printData()
+    //     //  var y= JSON.parse(x)
+    //     print=1
+    //         printData()
 
-    })
+    // })
     $('#submit').click(function(){
         
         query()
@@ -511,119 +518,119 @@ $(document).ready(function(){
         return num_parts.join(".");
     }
 
-    function printData(){
-        $.ajax({
-        url: window.location.pathname + '?r=jev-preparation/ledger',
-        type:'POST',
-        data:{
-            reporting_period:reporting_period?''+reporting_period.toString():'',
-            fund:fund?fund:0,
-            export:ex,
-            gen:gen?gen:0,
-            print:print
-        },
-        success:function(result){
-            data = JSON.parse(result).results
-            fund_cluster_code = JSON.parse(result).fund_cluster_code
-            var object= Object.keys(data)
-            console.log(data[1010101000])
-            var mywindow = window.open('?r=jev-preparation/ledger', 'new div', 'height=700,width=1300');
-            mywindow.document.write('<html><head><title></title>');
-            mywindow.document.write('<link rel="stylesheet" href="../web/print.css" type="text/css" media="all" />');
+    // function printData(){
+    //     $.ajax({
+    //     url: window.location.pathname + '?r=jev-preparation/ledger',
+    //     type:'POST',
+    //     data:{
+    //         reporting_period:reporting_period?''+reporting_period.toString():'',
+    //         fund:fund?fund:0,
+    //         export:ex,
+    //         gen:gen?gen:0,
+    //         print:print
+    //     },
+    //     success:function(result){
+    //         data = JSON.parse(result).results
+    //         fund_cluster_code = JSON.parse(result).fund_cluster_code
+    //         var object= Object.keys(data)
+    //         console.log(data[1010101000])
+    //         var mywindow = window.open('?r=jev-preparation/ledger', 'new div', 'height=700,width=1300');
+    //         mywindow.document.write('<html><head><title></title>');
+    //         mywindow.document.write('<link rel="stylesheet" href="../web/print.css" type="text/css" media="all" />');
 
-            // mywindow.document.write('<style>');
-            // mywindow.document.write('.style1 {font-size:11px; font-weight:bold; color:red; border:1px solid black}');
-            // mywindow.document.write('@media print{ .table{page-break-after:auto;} @page{margin:0.3cm;} td{padding:4px;font-size:12px}th{padding:1;font-size:12px}} ');
-            // mywindow.document.write('th,td {border: 1px solid black;padding: 10px;background-color: white;margin:0;gap:0;}');
-            // mywindow.document.write('table {border-spacing:0;border-collapse: collapse;}');
-            // mywindow.document.write('.document_header1 >th {border:0;}');
-            // mywindow.document.write('h4 {padding:0;margin:0;}');
-            // mywindow.document.write('</style>');
-            mywindow.document.write('</head><body >');
-            // mywindow.document.write('<img src="../web/dti.jpg" style="width:100px;height:100px;">');
+    //         // mywindow.document.write('<style>');
+    //         // mywindow.document.write('.style1 {font-size:11px; font-weight:bold; color:red; border:1px solid black}');
+    //         // mywindow.document.write('@media print{ .table{page-break-after:auto;} @page{margin:0.3cm;} td{padding:4px;font-size:12px}th{padding:1;font-size:12px}} ');
+    //         // mywindow.document.write('th,td {border: 1px solid black;padding: 10px;background-color: white;margin:0;gap:0;}');
+    //         // mywindow.document.write('table {border-spacing:0;border-collapse: collapse;}');
+    //         // mywindow.document.write('.document_header1 >th {border:0;}');
+    //         // mywindow.document.write('h4 {padding:0;margin:0;}');
+    //         // mywindow.document.write('</style>');
+    //         mywindow.document.write('</head><body >');
+    //         // mywindow.document.write('<img src="../web/dti.jpg" style="width:100px;height:100px;">');
 
             
-            for (var i=0;i<object.length;i++){
+    //         for (var i=0;i<object.length;i++){
 
-                mywindow.document.write("<table class='table' cellspacing='0'><tbody>");
-                mywindow.document.write("<thead>");
+    //             mywindow.document.write("<table class='table' cellspacing='0'><tbody>");
+    //             mywindow.document.write("<thead>");
 
 
-                mywindow.document.write("<tr class='header_logo' style='margin-bottom:5px;'>");
-                mywindow.document.write(" <th></th>");
-                mywindow.document.write(" <th colspan='2'> <div style='display:flex'><img src='../web/dti.jpg' style='width:80px;height:80px;margin-left:auto;margin-right:10px''><div style='margin-top:10px;'><h4 style='margin-top:13px'>Department of Trade and Industry</h4><h4>General Ledger</h4><h4>2020</h4></div></div></th>");
-                // mywindow.document.write(" <th colspan='2'><h4>Department of Trade and Industry</h4><h4>General Ledger</h4><h4>2020</h4></th>");
+    //             mywindow.document.write("<tr class='header_logo' style='margin-bottom:5px;'>");
+    //             mywindow.document.write(" <th></th>");
+    //             mywindow.document.write(" <th colspan='2'> <div style='display:flex'><img src='../web/dti.jpg' style='width:80px;height:80px;margin-left:auto;margin-right:10px''><div style='margin-top:10px;'><h4 style='margin-top:13px'>Department of Trade and Industry</h4><h4>General Ledger</h4><h4>2020</h4></div></div></th>");
+    //             // mywindow.document.write(" <th colspan='2'><h4>Department of Trade and Industry</h4><h4>General Ledger</h4><h4>2020</h4></th>");
                
-                mywindow.document.write(" <th colspan='2' style='text-align:center;'>"+''+"</th>");
-                mywindow.document.write("</tr>");
+    //             mywindow.document.write(" <th colspan='2' style='text-align:center;'>"+''+"</th>");
+    //             mywindow.document.write("</tr>");
                 
-                mywindow.document.write("<tr class='document_header1'>");
-                mywindow.document.write(" <th>Entity Name:</th>");
-                mywindow.document.write(" <th colspan='1'>DEPARTMENT OF TRADE AND INDUSTRY</th>");
-                mywindow.document.write(" <th colspan='2'>Fund Cluster:</th>");
-                mywindow.document.write(" <th colspan='2' style='text-align:center;'>"+fund_cluster_code+"</th>");
-                mywindow.document.write("</tr>");
+    //             mywindow.document.write("<tr class='document_header1'>");
+    //             mywindow.document.write(" <th>Entity Name:</th>");
+    //             mywindow.document.write(" <th colspan='1'>DEPARTMENT OF TRADE AND INDUSTRY</th>");
+    //             mywindow.document.write(" <th colspan='2'>Fund Cluster:</th>");
+    //             mywindow.document.write(" <th colspan='2' style='text-align:center;'>"+fund_cluster_code+"</th>");
+    //             mywindow.document.write("</tr>");
 
 
-                mywindow.document.write("<tr class='document_header1'>");
-                mywindow.document.write(" <th>Account Title:</th>");
-                mywindow.document.write(" <th>"+data[object[i]][0]['general_ledger']+"</th>");
-                mywindow.document.write(" <th colspan='2'>UACS Object Code</th>");
-                mywindow.document.write(" <th colspan='2'>"+object[i]+"</th>");
-                mywindow.document.write("</tr>");
+    //             mywindow.document.write("<tr class='document_header1'>");
+    //             mywindow.document.write(" <th>Account Title:</th>");
+    //             mywindow.document.write(" <th>"+data[object[i]][0]['general_ledger']+"</th>");
+    //             mywindow.document.write(" <th colspan='2'>UACS Object Code</th>");
+    //             mywindow.document.write(" <th colspan='2'>"+object[i]+"</th>");
+    //             mywindow.document.write("</tr>");
 
 
-                mywindow.document.write("<tr>");
-                mywindow.document.write("<th>Date</th>");
-                mywindow.document.write("<th>Particular:</th>");
-                mywindow.document.write("<th>Reference No</th>");
-                // mywindow.document.write("<th>Amount</th>");
-                mywindow.document.write("<th>Debit</th>");
-                mywindow.document.write("<th>Credit</th>");
-                mywindow.document.write("<th>Balance</th>");
-                mywindow.document.write("</tr>");
+    //             mywindow.document.write("<tr>");
+    //             mywindow.document.write("<th>Date</th>");
+    //             mywindow.document.write("<th>Particular:</th>");
+    //             mywindow.document.write("<th>Reference No</th>");
+    //             // mywindow.document.write("<th>Amount</th>");
+    //             mywindow.document.write("<th>Debit</th>");
+    //             mywindow.document.write("<th>Credit</th>");
+    //             mywindow.document.write("<th>Balance</th>");
+    //             mywindow.document.write("</tr>");
 
               
-                mywindow.document.write("</thead>");
-                // mywindow.document.write(object[i]);
-                // mywindow.document.write('<br>');
-                for(var x=0;x<data[object[i]].length;x++){
-                    // mywindow.document.write(data[object[i]][x]['reporting_period']);
-                    // mywindow.document.write('<br>');
-                    // mywindow.document.write(object[i]);
-                    // var bal= roundOff(data[object[i]][x]['balance'],2)
+    //             mywindow.document.write("</thead>");
+    //             // mywindow.document.write(object[i]);
+    //             // mywindow.document.write('<br>');
+    //             for(var x=0;x<data[object[i]].length;x++){
+    //                 // mywindow.document.write(data[object[i]][x]['reporting_period']);
+    //                 // mywindow.document.write('<br>');
+    //                 // mywindow.document.write(object[i]);
+    //                 // var bal= roundOff(data[object[i]][x]['balance'],2)
 
-                    // var y= Number(Math.round(data[object[i]][x]['balance']+'e2')+'e-2')
-                    var bal = thousands_separators(data[object[i]][x]['balance'])
-                    var debit =data[object[i]][x]['debit']>0? thousands_separators(data[object[i]][x]['debit']):''
-                    var credit = data[object[i]][x]['credit']>0?thousands_separators(data[object[i]][x]['credit']):''
+    //                 // var y= Number(Math.round(data[object[i]][x]['balance']+'e2')+'e-2')
+    //                 var bal = thousands_separators(data[object[i]][x]['balance'])
+    //                 var debit =data[object[i]][x]['debit']>0? thousands_separators(data[object[i]][x]['debit']):''
+    //                 var credit = data[object[i]][x]['credit']>0?thousands_separators(data[object[i]][x]['credit']):''
                  
                     
-                    mywindow.document.write("<tr> ");
-                    // mywindow.document.write("<td>"+data[object[i]][x]['reporting_period']+"</td>");
-                    mywindow.document.write("<td></td>");
-                    mywindow.document.write("<td>"+data[object[i]][x]['explaination']+"</td>");
-                    mywindow.document.write("<td>"+data[object[i]][x]['uacs']+"</td>");
-                    mywindow.document.write("<td style='text-align:right;' >"+debit+"</td>");
-                    mywindow.document.write("<td style='text-align:right;'>"+credit+"</td>");
-                    mywindow.document.write("<td style='text-align:right;'>"+bal +"</td>");
-                    mywindow.document.write("</tr>");
+    //                 mywindow.document.write("<tr> ");
+    //                 // mywindow.document.write("<td>"+data[object[i]][x]['reporting_period']+"</td>");
+    //                 mywindow.document.write("<td></td>");
+    //                 mywindow.document.write("<td>"+data[object[i]][x]['explaination']+"</td>");
+    //                 mywindow.document.write("<td>"+data[object[i]][x]['uacs']+"</td>");
+    //                 mywindow.document.write("<td style='text-align:right;' >"+debit+"</td>");
+    //                 mywindow.document.write("<td style='text-align:right;'>"+credit+"</td>");
+    //                 mywindow.document.write("<td style='text-align:right;'>"+bal +"</td>");
+    //                 mywindow.document.write("</tr>");
 
 
-                }
-                mywindow.document.write("</tbody></table>");
-                mywindow.document.write("<p style='page-break-after:always;'></p>");
+    //             }
+    //             mywindow.document.write("</tbody></table>");
+    //             mywindow.document.write("<p style='page-break-after:always;'></p>");
 
-            }
-            mywindow.document.write('</body></html>');
-            mywindow.document.close();
-            mywindow.focus();
-            setTimeout(function(){ mywindow.print(); mywindow.close(); },1000);
-            // mywindow.print()
-            print=0
-        }
-    });
-    }
+    //         }
+    //         mywindow.document.write('</body></html>');
+    //         mywindow.document.close();
+    //         mywindow.focus();
+    //         setTimeout(function(){ mywindow.print(); mywindow.close(); },1000);
+    //         // mywindow.print()
+    //         print=0
+    //     }
+    // });
+    // }
 
 
 

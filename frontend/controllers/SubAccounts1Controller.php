@@ -141,17 +141,21 @@ class SubAccounts1Controller extends Controller
             $last_id = SubAccounts1::find()->orderBy('id DESC')->one()->id + 1;
 
             $uacs = $sub_acc1_ojc_code . '_';
-            echo $uacs;
+            // echo $uacs;
             for ($i = strlen($last_id); $i <= 4; $i++) {
                 $uacs .= 0;
             }
-            if ($account_title) {
-                $model->sub_accounts1_id = $id;
-                $model->object_code = $uacs . $last_id;
-                $model->name = $account_title;
+            $model->sub_accounts1_id = $id;
+            $model->object_code = $uacs . $last_id;
+            $model->name = $account_title;
+            if ($model->validate()) {
+
                 if ($model->save()) {
                     return 'success';
                 }
+            } else {
+                $errors = $model->errors;
+                return json_encode($errors);
             }
             // return $this->redirect(['view', 'id' => $model->id]);
         }

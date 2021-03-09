@@ -129,7 +129,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => 'Object Code',
                 'attribute' => 'subMajorAccount.object_code',
-                'value' => 'subMajorAccount.name'
+                'value' => 'subMajorAccount.object_code'
 
             ],
             [
@@ -144,7 +144,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function ($model) {
                     // $t = yii::$app->request->baseUrl . '/index.php?r=chart-of-accounts/update&id=' .
                     return ' ' . Html::button('<span class="">Add</span>', [
-                        'data-toggle' => "modal", 'class' => '"btn btn-info btn-lg add-sub',
+                        'data-toggle' => "modal", 'class' => '"btn btn-info btn-xs add-sub',
                         'data-toggle' => "modal", 'data-target' => "#myModal",
                         'value' => $model->id,
                     ]);
@@ -172,7 +172,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="form-group">
                         <label for="account_title">Account Title:</label>
                         <input type="account_title" class="form-control" id="account_title">
-                        <input type="text" class="form-control" id="chart_id">
+                        <input type="text" class="form-control " id="chart_id" >
                     </div>
 
                 </div>
@@ -185,6 +185,12 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
 </div>
+<style>
+
+    #chart_id{
+        display: none;
+    }
+</style>
 
 <?php
 SweetAlertAsset::register($this);
@@ -210,18 +216,32 @@ $script = <<<JS
                     id:id,
                 },
                 success:function(data){
+                    // var res = JSON.parse(data)
                     console.log(data)
+
+    
+                    if (data=='success'){
                     $('#myModal').modal('hide');
-       
+   
                         swal( {
-                        position: 'top-end',
                         icon: 'success',
-                        title: " Reporting Period and Fund Cluster Code are Required",
+                        title: "Successfuly Added",
                         type: "success",
                         timer:3000,
                         closeOnConfirm: false,
                         closeOnCancel: false
                     })
+                    }
+                    else{
+                        swal( {
+                        icon: 'error',
+                        title:  res.name,
+                        type: "error",
+                        timer:3000,
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    })
+                    }
                 },
                 beforeSend: function(){
                    setTimeout(() => {

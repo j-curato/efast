@@ -153,7 +153,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         $total_current = 0;
                         $total_last_year = 0;
                         echo "<tr>
-                            <td  class='right-border' style='font-weight:bold'>{$key}</td>
+                            <td  class='right-border'>{$key}</td>
                             <td colspan='3'></td>
                             <td ></td>
                             <td ></td>
@@ -161,11 +161,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         foreach ($val1 as $key2 => $val2) {
                             echo "<tr>
-                                    <td colspan='2' class='right-border' >{$key2}</td>
-                                    <td colspan='2'></td>
-                                    <td ></td>
-                                    <td ></td>
-                                </tr>";
+                        <td colspan='2' class='right-border' >{$key2}</td>
+                        <td colspan='2'></td>
+                        <td ></td>
+                        <td ></td>
+                     </tr>";
                             foreach ($val2 as $key3 => $val3) {
 
                                 echo "<tr>
@@ -182,7 +182,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     echo "<tr >
                             <td colspan='2' class='right-border'> </td>
                             <td  style='text-align:left' colspan='2'>{$val4['general_ledger']}</td>
-                            <td>" . number_format($val4['current_bal'], 2) . "</td>
+                            <td>" . number_format($val4['total_debit'], 2) . "</td>
                             <td> " . number_format($val4['last_year_bal'], 2) . "</td>
                         </tr>";
                                 }
@@ -439,7 +439,7 @@ $(document).ready(function(){
         // console.log(fund+gen)
         // console.log(fund)
         $.pjax({container: "#employee", 
-        url: window.location.pathname + '?r=jev-preparation/detailed-financial-position',
+        url: window.location.pathname + '?r=jev-preparation/detailed-financial-performance',
         type:'POST',
         data:{
             reporting_period:reporting_period?''+reporting_period.toString():'',

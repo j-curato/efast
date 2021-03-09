@@ -1,5 +1,6 @@
 <?php
 
+use app\models\FundClusterCode;
 use aryelds\sweetalert\SweetAlertAsset;
 use yii\helpers\Url;
 use yii\helpers\Html;
@@ -14,12 +15,12 @@ $this->params['breadcrumbs'][] = ['label' => 'Jev Preparations', 'url' => ['inde
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="jev-preparation-view">
+<div class="jev-preparation-view" style="box-shadow: none;border:none">
 
     <!-- <h1><?= Html::encode($this->title) ?></h1> -->
 
 
-    
+
 
     <?php $t = yii::$app->request->baseUrl . '/index.php?r=jev-preparation/delete&id=' . $model->id; ?>
     <p class="actions" style="margin-left:50px;">
@@ -72,36 +73,38 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="container ">
 
-        <div class="form-wrapper">
-            <div class="row-1">
-                <div>
-                    <div style="text-align:center; ">
-                        <h5>
-                            JOURNAL ENTRY VOUCHER
-                        </h5>
-                    </div>
-                    <div style="padding:5px ;align-items:center;">
-                        <span>
-                            Entity Name :
-                        </span>
-                        <span>
-                            DTI
-                        </span>
-                    </div>
-                    <div style="padding:5px ;align-items:center;">
-                        <span>
-                            Fund Cluster :
-                        </span>
-                        <span>
-                            <?php echo ($model->fundClusterCode)?$model->fundClusterCode->id:""; ?>
-                        </span>
-                    </div>
-                </div>
-                <div style="padding: 0;">
-                    <div style="border-bottom: 1px solid black; 
-                        padding:0;
-                        text-align:center;
-                        height:50%; ">
+        <table>
+
+            <thead>
+                <tr>
+
+                    <th rowspan="2" colspan="2">
+                        <div style="text-align:center; ">
+                            <h5>
+                                JOURNAL ENTRY VOUCHER
+                            </h5>
+                        </div>
+                        <div style="padding:5px ;align-items:center;">
+                            <span>
+                                Entity Name :
+                            </span>
+                            <span>
+                                Department of Trade and Industry
+                            </span>
+                        </div>
+                        <div style="padding:5px ;align-items:center;">
+                            <span>
+                                Fund Cluster :
+                            </span>
+                            <span>
+                                <?php echo ($model->fundClusterCode) ? $model->fundClusterCode->name : "";
+
+                                ?>
+                            </span>
+                        </div>
+                    </th>
+
+                    <th rowspan="1" colspan="3">
                         <span>
                             JEV #:
                         </span>
@@ -109,8 +112,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?php echo $model->jev_number ?>
 
                         </span>
-                    </div>
-                    <div class="date">
+                    </th>
+
+                </tr>
+                <tr>
+                    <th rowspan="1" colspan="4">
                         <div>
                             <span>
                                 Date:
@@ -127,249 +133,131 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <?php echo $model->reporting_period ?>
                             </span>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row-2">
-                <div style="text-align: center;">
-                    <h5>
-                        Responsibility Center
-                    </h5>
-                </div>
-                <div style="flex-grow:1; ">
-                    <div style="text-align: center;border-bottom:1px solid black;">
-                        <h5>
-                            ACCOUNTING ENTRIES
-                        </h5>
-                    </div>
-                    <div class="acc-exp-row">
-                        <div style="width: 37.5% ;
-                    border-right:1px solid black; 
-                    text-align:center;">
-                            <h5>
-                                Accounts and Explanation
-                            </h5>
-                        </div>
-                        <div style=" border-right:1px solid black">
-                            <h5>
-                                UACS Object Code
+                    </th>
 
-                            </h5>
-                        </div>
-                        <div style="flex-grow: 1;">
-                            <div style="border-bottom:1px solid black;text-align:center;
-                        padding:0">
-                                <h5>
-                                    Amount
-                                </h5>
-                            </div>
-                            <div class="h-debit-credit">
-                                <div style="border-right:1px solid black;">
-                                    Debit
-                                </div>
-                                <div>
-                                    Credit
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row-2">
-                <div>
-                    <h6>
+                </tr>
+                <tr>
+                    <th rowspan="3" style="text-align: center;">
+                        Responsibility Center
+                    </th>
+                    <th rowspan="1" colspan="4" style="text-align: center;">
+                        ACCOUNTING ENTRIES
+                    </th>
+                </tr>
+                <tr>
+                    <th rowspan="2" style="text-align: center;">
+                        Accounts and Explanation
+                    </th>
+                    <th rowspan="2">
+                        UACS Object Code
+                    </th>
+                    <th colspan="2">
+                        Amount
+                    </th>
+
+                </tr>
+                <tr>
+                    <th>
+                        Debit
+                    </th>
+                    <th>
+                        Credit
+                    </th>
+                </tr>
+
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
                         <?php
-                        // echo $model->responsibilityCenter->name 
                         echo ($model->responsibilityCenter) ? $model->responsibilityCenter->name : '';
                         ?>
-                    </h6>
-                </div>
-                <div style="flex-grow:1;">
-                    <div class="acc-exp-row">
-                        <div style="width: 37.5% ; border-right:1px solid black;">
+                    </td>
+                    <td style="word-wrap:break-word;width:400px"><?php echo $model->explaination ?></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <?php foreach ($model->jevAccountingEntries as $key => $value) : ?>
+                    <tr>
+                        <td> </td>
+                        <td> <?php echo $value->chartOfAccount->general_ledger ?> </td>
+                        <td><?php echo $value->chartOfAccount->uacs ?> </td>
+                        <td class="amount"><?php echo number_format($value->debit, 2) ?> </td>
+                        <td class="amount"><?php echo number_format($value->credit, 2) ?> </td>
+                    </tr>
+
+                    <?php
+
+                    $total_credit += $value->credit;
+
+                    $total_debit += $value->debit;
+                    ?>
+                <?php endforeach; ?>
+                <tr>
+                    <td>DV#</td>
+                    <td><?php echo $model->dv_number ?></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td> LDDAP#</td>
+                    <td> <?php echo $model->lddap_number ?></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+
+
+
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>Total</td>
+                    <td class="amount"><?php echo number_format($total_debit, 2); ?></td>
+                    <td class="amount"><?php echo number_format($total_credit, 2); ?></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+
+                        <div>
                             <h6>
-                                <?php echo $model->explaination ?>
+                                Prepared By:
                             </h6>
                         </div>
-                        <div style="border-right:1px solid black;">
-                        </div>
-                        <div style="flex-grow: 1;">
-
-                            <div class="h-debit-credit">
-                                <div style="border-right:1px solid black;height:100%">
-                                </div>
-                                <div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- ANG MGA ACCOUNT ENTRIES -->
-            <?php foreach ($model->jevAccountingEntries as $key => $value) : ?>
-                <div class="row-2">
-                    <div>
-                        <h6>
-                        </h6>
-                    </div>
-                    <div style="flex-grow:1;
-            ">
-                        <div class="acc-exp-row">
-                            <div style="width: 37.5% ; border-right:1px solid black;">
-                                <h6>
-                                    <?php echo $value->chartOfAccount->general_ledger ?>
-                                </h6>
-                            </div>
-                            <div style="border-right:1px solid black">
-                                <h6>
-                                    <?php echo $value->chartOfAccount->uacs ?>
-                                </h6>
-                            </div>
-                            <div style="flex-grow: 1;">
-
-                                <div class="h-debit-credit">
-                                    <div style="border-right:1px solid black;height:100%">
-                                        <h6>
-                                            <?php echo number_format($value->debit, 2) ?>
-                                        </h6>
-                                    </div>
-                                    <div>
-                                        <h6>
-                                            <?php echo number_format($value->credit, 2) ?>
-                                        </h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php
-        
-                $total_credit += $value->credit;
-
-                $total_debit += $value->debit;
-                ?>
-            <?php endforeach; ?>
-
-            <!-- DV ROW -->
-            <div class="row-2">
-                <div>
-                    DV#
-                </div>
-                <div style="flex-grow:1;">
-                    <div class="acc-exp-row">
-                        <div style="width: 37.5% ; border-right:1px solid black">
-                            <?php echo $model->dv_number ?>
-                        </div>
-                        <div style="border-right: 1px solid black;">
-                        </div>
-                        <div style="flex-grow: 1;">
-
-                            <div class="h-debit-credit">
-                                <div style="border-right:1px solid black">
-
-                                </div>
-                                <div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- LDDAP -->
-            <div class="row-2">
-                <div>
-                    LDDAP#
-                </div>
-                <div style="flex-grow:1;">
-                    <div class="acc-exp-row">
-                        <div style="width: 37.5% ; border-right:1px solid black">
-                            <?php echo $model->lddap_number ?>
-                        </div>
-                        <div style="border-right:1px solid black">
-                        </div>
-                        <div style="flex-grow: 1;">
-
-                            <div class="h-debit-credit">
-                                <div style="border-right:1px solid black">
-                                </div>
-                                <div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- TOTAL -->
-            <div class="row-2">
-                <div>
-                </div>
-                <div style="flex-grow:1;
-            ">
-
-                    <div class="acc-exp-row">
-                        <div style="width: 37.5% ; border-right:1px solid black">
-                        </div>
-                        <div style="border-right:1px solid black;">
-                            <h5>Total</h5>
-                        </div>
-                        <div style="flex-grow: 1;">
-
-                            <div class="h-debit-credit">
-                                <div style="border-right:1px solid black">
-                                    <h6>
-                                        <?php echo number_format($total_debit, 2) ?>
-
-                                    </h6>
-                                </div>
-                                <div>
-                                    <h6>
-                                        <?php echo number_format($total_credit, 2) ?>
-
-                                    </h6>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row-1">
-                <div>
-                    <div>
-                        <h6>
-                            Prepared By:
-                        </h6>
-                    </div>
-                    <div style="text-align: center;
+                        <div style="text-align: center;
                 ">
-                        <h5>
-                            CHARLIE C. DECHOS, CPA
-                        </h5>
-                        <h6>
-                            Accountant II
-                        </h6>
-                    </div>
-                </div>
-                <div>
-                    <div>
-                        <h6>
-                            Certified Correct:
-                        </h6>
-                    </div>
-                    <div style="text-align: center;
-                ">
-                        <h5>
-                            JHON VOLTAIRE S. ANCLA, CPA
-                        </h5>
-                        <h6>
-                            Accountant III
-                        </h6>
-                    </div>
-                </div>
-            </div>
+                            <h5>
+                                CHARLIE C. DECHOS, CPA
+                            </h5>
+                            <h6>
+                                Accountant II
+                            </h6>
+                        </div>
+                    </td>
+                    <td colspan="3">
 
-        </div>
+                        <div>
+                            <h6>
+                                Certified Correct:
+                            </h6>
+                        </div>
+                        <div style="text-align: center;">
+                            <h5>
+                                JOHN VOLTAIRE S. ANCLA, CPA
+                            </h5>
+                            <h6>
+                                Accountant III
+                            </h6>
+                        </div>
+                    </td>
+
+                </tr>
+            </tbody>
+            </th>
+        </table>
+
 
     </div>
     <style>
@@ -377,9 +265,20 @@ $this->params['breadcrumbs'][] = $this->title;
             /* border: 1px solid black; */
             height: auto;
             background-color: white;
-            box-shadow: 12px;
+            /* box-shadow: 12px; */
             border-radius: 5px;
             padding: 20px;
+        }
+
+        .amount {
+            text-align: right;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 7px;
+
         }
 
         .row-2 {
@@ -469,11 +368,33 @@ $this->params['breadcrumbs'][] = $this->title;
             font-weight: bold;
         }
 
+        table {
+            width: 100%;
+        }
+
         @media print {
             .actions {
                 display: none;
             }
-/* 
+
+            h5 {
+                font-size: 10px;
+            }
+
+            td,
+            th {
+                font-size: 10px;
+            }
+
+            h6 {
+                font-size: 10px;
+            }
+
+            span {
+                font-size: 10px;
+            }
+
+            /* 
             .form-wrapper {
                 margin-top: 20px;
                 background-color: red;
@@ -507,7 +428,7 @@ $script = <<< JS
                     showCancelButton: true,
                     confirmButtonColor: '#DD6B55',
                     confirmButtonText: 'Delete',
-                    cancelButtonText: "Cancer",
+                    cancelButtonText: "Cancel",
                     closeOnConfirm: true,
                     closeOnCancel: true,
                     timer: 2000,

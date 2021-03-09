@@ -40,7 +40,7 @@ class JevPreparationSearch extends JevPreparation
      */
     public function search($params)
     {
-        $query = JevPreparation::find();
+        $query = JevPreparation::find()->orderBy('id DESC');
 
         // add conditions that should always apply here
         // $query->joinWith(['jevAccountingEntries']);

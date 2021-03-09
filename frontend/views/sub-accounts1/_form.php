@@ -12,7 +12,7 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'chart_of_account_id')->textInput(['value'=>$id]) ?>
+    <?= $form->field($model, 'chart_of_account_id')->textInput() ?>
 
     <?= $form->field($model, 'object_code')->textInput(['maxlength' => true]) ?>
 

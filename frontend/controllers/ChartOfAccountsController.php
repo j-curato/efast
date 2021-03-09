@@ -327,15 +327,24 @@ class ChartOfAccountsController extends Controller
             for ($i = strlen($last_id); $i <= 4; $i++) {
                 $uacs .= 0;
             }
-            if ($account_title) {
-                $model->chart_of_account_id = $id;
-                $model->object_code = $uacs . $last_id;
-                $model->name = $account_title;
+            // if ($account_title) {
+
+
+            $model->chart_of_account_id = $id;
+            $model->object_code = $uacs . $last_id;
+            $model->name = $account_title;
+            if ($model->validate()) {
                 if ($model->save()) {
                     return 'success';
                 }
+            } else {
+                // validation failed: $errors is an array containing error messages
+                $errors = $model->errors;
+                return json_encode($errors);
             }
-            return $this->redirect(['view', 'id' => $model->id]);
+
+            // }
+            // return $this->redirect(['view', 'id' => $model->id]);
         }
     }
 
@@ -363,5 +372,15 @@ class ChartOfAccountsController extends Controller
         // var_dump($x);
         // echo "</pre>";
         return json_encode($x);
+    }
+    public function actionSampleIndex()
+    {
+
+        $searchModel = new ChartOfAccountsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('sample-index', [
+            'dataProvider' => $dataProvider,
+        ]);
     }
 }

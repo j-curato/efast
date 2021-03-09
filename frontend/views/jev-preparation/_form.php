@@ -10,10 +10,18 @@ use aryelds\sweetalert\SweetAlertAsset;
 ?>
 <div class="test">
 
+
     <div id="container" class="container">
 
         <form name="add_data" id="add_data">
+            <?php
+            $q = 0;
+            if (!empty($model)) {
 
+                $q = $model;
+            }
+            echo " <input type='text' id='update_id' name='update_id' placeholder='DV NUMBER' value='$q' style='display:none'>";
+            ?>
             <div class="row">
 
                 <div class="col-sm-3">
@@ -67,7 +75,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                 <div class="col-sm-3">
                     <label for="reference">Reference</label>
 
-                    <select id="reference" name="reference" class="reference select" style="width: 100%" required>
+                    <select id="reference" name="reference" class="reference select" style="width: 100% ;margin-top:50px" required>
                         <option></option>
                     </select>
                 </div>
@@ -76,8 +84,8 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 
                 <div class="col-sm-3" style="height:60x">
-                    <label for="fund_cluster_code">Func Cluster Code</label>
-                    <select id="fund_cluster_code" name="fund_cluster_code" class="fund_cluster_code select" style="width: 100%;">
+                    <label for="fund_cluster_code">Fund Cluster Code</label>
+                    <select id="fund_cluster_code" name="fund_cluster_code" class="fund_cluster_code select" style="width: 100%; margin-top:50px" required>
                         <option></option>
                     </select>
                 </div>
@@ -106,26 +114,31 @@ use aryelds\sweetalert\SweetAlertAsset;
             <div class=" row">
 
 
-                <div class="col-sm-4">
+                <div class="col-sm-3">
                     <label for="lddap">LDDAP</label>
 
                     <input type="text" name="lddap" placeholder="LDDAP">
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-3">
                     <label for="dv_number">DV Number</label>
 
                     <input type="text" name="dv_number" placeholder="DV NUMBER">
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-3">
                     <label for="cadadr_number">CADADR </label>
 
                     <input type="text" name="cadadr_number" placeholder="CADADR NUMBER">
+                </div>
+                <div class="col-sm-3">
+                    <label for="ada_number">Check/ADA Number </label>
+
+                    <input type="text" name="ada_number" placeholder="Check/ADA Number NUMBER">
                 </div>
 
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <input type="text" name="particular" placeholder="PARTICULAR" required>
+                    <input type="text" name="particular" id="particular" placeholder="PARTICULAR" required>
                 </div>
             </div>
             <!-- BUTTON -->
@@ -138,13 +151,13 @@ use aryelds\sweetalert\SweetAlertAsset;
                     <div class="col-sm-4">
                         <label for="isCurrent">Current/NonCurrent </label>
 
-                        <input type="text" name="isCurrent[]" placeholder="isCurrent" id="isCurrent-0" />
+                        <input type="text" name="isCurrent[]" placeholder="Current/NonCurrent" id="isCurrent-0" />
                     </div>
-                    <div class="col-sm-3" style="">
+                    <div class="col-sm-3">
                         <label for="cadadr_number">Cash Flow </label>
 
                         <select id="cash_flow_id-0" name="cash_flow_id[]" style="width: 100% ;display:none">
-                            <option></option>
+                            <option value="null"></option>
                         </select>
                     </div>
                     <div class="col-sm-3">
@@ -155,21 +168,47 @@ use aryelds\sweetalert\SweetAlertAsset;
                         </select>
                     </div>
                 </div>
-                <div style="display: flex; gap: 2rem; margin-top: 1rem">
-                    <div style="width: 500px">
-                        <select id="chart-0" required name="chart_of_account_id[]" class="chart-of-account" style="width: 100%" onchange="isCurrent(this,0)">
-                            <option></option>
-                        </select>
+
+                <div class="row gap-1">
+
+                    <div class="col-sm-5 ">
+                        <div>
+                            <select id="chart-0" required name="chart_of_account_id[]" class="chart-of-account" style="width: 100%" onchange="isCurrent(this,0)">
+                                <option></option>
+                            </select>
+                        </div>
                     </div>
-                    <!-- debit -->
-                    <input type="text" name="debit[]" placeholder="Debit">
 
-                    <!-- credit -->
-                    <input type="text" name="credit[]" placeholder="Credit">
-
-
-
+                    <div class="col-sm-3">
+                        <input type="text" id="debit-0" name="debit[]" class="debit" placeholder="Debit">
+                    </div>
+                    <div class="col-sm-3">
+                        <input type="text" id="credit-0" name="credit[]" class="credit" placeholder="Credit">
+                    </div>
                 </div>
+            </div>
+            <div class="total row">
+
+                <div class="col-sm-3 col-md-offset-5">
+                    <!-- <div class="form-group">
+                        <label for="exampleInputEmail1">TOTAL DEBIT</label>
+                        <input disabled type="text" style="background-color:white" class="form-control" id="d_total"  aria-describedby="emailHelp" placeholder="Total Dedit">
+                    </div> -->
+                    <div>
+                        <label for="d_total"> Total Debit</label>
+                        <div id="d_total">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+
+                        <label for="c_total"> Total Debit</label>
+                        <div id="c_total">
+                        </div>
+                    </div>
+                </div>
+
             </div>
             <input type="submit" name="submit" id="submit" class="btn btn-info" value="Submit" />
 
@@ -222,7 +261,6 @@ use aryelds\sweetalert\SweetAlertAsset;
             text-align: center;
             color: #61534e;
         }
-        
     </style>
 
     <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script> -->
@@ -241,6 +279,7 @@ use aryelds\sweetalert\SweetAlertAsset;
         var arr_form = [0];
         var vacant = 0;
         var i = 1;
+        var update_id = undefined;
 
         function removeItem(index) {
             // $(`#form-${index}`).remove();
@@ -254,7 +293,7 @@ use aryelds\sweetalert\SweetAlertAsset;
         }
 
         function isCurrent(index, i) {
-
+            // console.log(i)
             // var chart_id = document.getElementById('chart-0').val()
             // console.log(index)
             $.ajax({
@@ -266,6 +305,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                 dataType: 'json',
                 success: function(data) {
                     $('#isCurrent-' + i).val(data.result.current_noncurrent)
+                    console.log(data)
                     // data.isCashEquivalent ? : $('#cash_flow_id-' + i).hide()
                     data.isEquity ? $('#isEquity-' + i).show() : $('#isEquity-' + i).hide()
                     // console.log(data)
@@ -287,7 +327,8 @@ use aryelds\sweetalert\SweetAlertAsset;
                     if (data.isEquity == true) {
                         $('#isEquity-' + i).select2({
                             data: net_asset,
-                            placeholder: 'Net Asset'
+                            placeholder: 'Select Net Asset'
+
                         })
 
                         $('#isEquity-' + i).show()
@@ -302,6 +343,69 @@ use aryelds\sweetalert\SweetAlertAsset;
                 }
             })
         }
+
+        function add() {
+            var latest = arr_form[arr_form.length - 1]
+            // console.log('index: '+latest)
+            $(`#form-${latest}`)
+                .after(`<div id="form-${i}" style="border: 1px solid gray;width:100%; padding: 2rem; margin-top: 1rem;background-color:white;border-radius:5px" class="control-group input-group" class="accounting_entries">
+                    <!-- chart of accounts -->
+                    <div class="row"  >
+                        <div>
+                            <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(${i})"><i class="glyphicon glyphicon-minus"></i></button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label for="isCurrent">Current/NonCurrent </label>
+                            <input type="text" name="isCurrent[]" id="isCurrent-${i}" placeholder="Current/NonCurrent"/>
+                         </div>
+                        <div class="col-sm-3" style="">
+                            <label for="isCurrent">Cash Flow </label>
+                            <select id="cash_flow_id-${i}" name="cash_flow_id[]" style="width: 100% ;display:none" >
+                                <option></option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3" >
+                            <label for="isCurrent">Changes in Net Asset and Equity </label>
+                                <select id="isEquity-${i}" name="isEquity[]" style="width: 100% ;display:none" >
+                                    <option value="null"></option>
+                                </select>
+                        </div>
+                     </div>
+               
+                     <div class="row gap-1">
+                            <div class="col-sm-5 ">
+                                <select id="chart-${i}" name="chart_of_account_id[]" required class="chart-of-accounts" onchange=isCurrent(this,${i}) style="width: 100%">
+                                <option></option>
+                                </select>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <div >  <input type="text" id="debit-${i}"  name="debit[]" class="debit"  placeholder="Debit"></div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div >  <input type="text"   id="credit-${i}" name="credit[]" class="credit" placeholder="Credit"></div>
+                        </div>
+                    </div>
+
+                        
+                </div>
+                `)
+            $(`#chart-${i}`).select2({
+                data: accounts,
+                placeholder: "Select Chart of Account",
+
+            })
+            var deb = document.getElementsByName('debit[]');
+            // arr_form.splice(latest, 0, latest + 1)
+            // deb[1].value = 123
+            // console.log(deb[1].value)
+            i++
+            // console.log(i)
+
+        }
+
 
 
 
@@ -339,7 +443,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     fund_clusters = array
                     $('#fund_cluster_code').select2({
                         data: fund_clusters,
-                        placeholder: "Select a state",
+                        placeholder: "Select Fund Cluster Code",
                         containerCssClass: function(e) {
                             return $(e).attr('required') ? 'required' : '';
                         }
@@ -359,6 +463,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     r_center = array
                     $('#r_center_id').select2({
                         data: r_center,
+
                         placeholder: 'Select Responsibility Center'
                     })
                 })
@@ -391,7 +496,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     $.each(data, function(key, val) {
                         array.push({
                             id: val.id,
-                            text: val.major_cashflow
+                            text: val.specific_cashflow
                         })
                     })
                     cashflow = array
@@ -433,82 +538,14 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 
             $('#add-btn').click(function() {
-                var latest = arr_form[arr_form.length - 1]
-                // console.log('index: '+latest)
-                $(`#form-${latest}`)
-                    .after(`<div id="form-${i}" style="border: 1px solid gray;width:100%; padding: 2rem; margin-top: 1rem;background-color:white;border-radius:5px" class="control-group input-group" class="accounting_entries">
-                    <!-- chart of accounts -->
-                    <div class="row"  >
-                        <div>
-                            <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(${i})"><i class="glyphicon glyphicon-minus"></i></button>
-                        
-                            </div>
-                    </div>
-                    <div class="row">
-                    <div class="col-sm-4">
-                    <label for="isCurrent">Current/NonCurrent </label>
-
-                    <input type="text" name="isCurrent[]" id="isCurrent-${i}" placeholder="isCurrent"/>
-                    </div>
-                    <div class="col-sm-3" style="">
-                    <label for="isCurrent">Cash Flow </label>
-
-                        <select id="cash_flow_id-${i}" name="cash_flow_id[]" style="width: 100% ;display:none" >
-                        <option></option>
-                        </select>
-                    </div>
-                    <div class="col-sm-3" >
-                    <label for="isCurrent">Changes in Net Asset and Equity </label>
-
-                            <select id="isEquity-${i}" name="isEquity[]" style="width: 100% ;display:none" >
-                            <option value="null"></option>
-                            </select>
-                    </div>
-             
-                     </div>
-                    <div style="display: flex; gap: 2rem; margin-top: 1rem">
-                        <div style="width: 500px">
-                            <select id="chart-${i}" name="chart_of_account_id[]" required class="chart-of-accounts" onchange=isCurrent(this,${i}) style="width: 100%">
-                            <option></option>
-                            </select>
-                        </div>
-                            <!-- debit -->
-                        <div style="flex-grow: 1;">  <input type="text" style=" width: 100%;font-size: 15px;padding: 5px;border-radius: 5px;border: 1px solid black;" name="debit[]" placeholder="Debit"></div>
-                        <!-- credit -->
-                        <div style="flex-grow: 1;">  <input type="text" name="credit[]" placeholder="Debit"></div>
-                        
-                        </div>
-                </div>`)
-                $(`#chart-${i}`).select2({
-                    data: accounts,
-                    placeholder: "Select Chart of Account",
-
-                })
-
-                // arr_form.splice(latest, 0, latest + 1)
-                i++
-                // console.log(i)
+                add()
 
             })
 
             // SUBMIT DATA
-            // $('#submit').click(function() {
-            //     $.ajax({
-            //         url: window.location.pathname + '?r=jev-preparation/insert-jev',
-            //         method: "POST",
-            //         data: $('#add_data').serialize(),
-            //         success: function(data) {
-            //             //  alert(data);  
-            //             //  $('#add_name')[0].reset();  
-            //             console.log(data)
-            //             $('#add_data')[0].reset();
-            //         }
-            //     });
-            // });
 
-            // function insertData() {
 
-            // }
+            // INSERT DATA TO DATABASE
             $('#add_data').submit(function(e) {
                 e.preventDefault();
                 $.ajax({
@@ -517,38 +554,46 @@ use aryelds\sweetalert\SweetAlertAsset;
                     data: $('#add_data').serialize(),
                     success: function(data) {
                         //  alert(data);  
-                        //  $('#add_name')[0].reset();  
+                        console.log(data)
+                        // //  $('#add_name')[0].reset();  
                         var res = JSON.parse(data)
-                        // console.log(JSON.parse(data))
+                        // console.log(data)
+                        // // console.log(JSON.parse(data))
 
-                        if (res == "success") {
-                            console.log(data)
+                        if (res.isSuccess == "success") {
+                            // console.log(data)
                             swal({
                                 title: "Success",
                                 // text: "You will not be able to undo this action!",
                                 type: "success",
-                                timer:3000,
-                                button:false
+                                timer: 3000,
+                                button: false
                                 // confirmButtonText: "Yes, delete it!",
                             }, function() {
-                               console.log('qwe')
-                               window.location.href = window.location.pathname + '?r=jev-preparation/create'
+                                console.log('qwe')
+                                window.location.href = window.location.pathname + '?r=jev-preparation/view&id=' + res.id
                             });
+                            $('#add_data')[0].reset();
 
-                        } else {
-                            // var date = JSON.parse(data).date;
-                            // var reporting_period = JSON.parse(data).reporting_period;
-                            console.log(reporting_period)
-                            // swal({
-                            //     title:date?+date:''+' ' +reporting_period?reporting_period:'',
-                            //     type: "error",
-                            //     timer: 5000,
-                            //     closeOnConfirm: false,
-                            //     closeOnCancel: false
-                            // })
+
                         }
+                        // else {
+                        //     // var date = JSON.parse(data).date;
+                        //     // var reporting_period = JSON.parse(data).reporting_period;
+                        //     // for (var i = 0;i<res.error;i++){
+                        //     //     console.log(res.data)
+
+                        //     // }
+                        //     console.log(res)
+                        //     swal({
+                        //         title: res.error,
+                        //         type: "error",
+                        //         timer: 5000,
+                        //         closeOnConfirm: false,
+                        //         closeOnCancel: false
+                        //     })
+                        // }
                         // console.log(JSON.parse(data).)
-                        $('#add_data')[0].reset();
                         // setTimeout(function () {
                         //     window.location.href = window.location.pathname + '?r=jev-preparation/create'
                         // }, 300);
@@ -563,13 +608,121 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 
 <?php
-$this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::className()]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 
 <?php
 
 $script = <<< JS
-  
+      
+      function addComma(i){
+          consol.log(i)
+      }
+        // ADD COMMA IN NUMBER
+
+      function thousands_separators(num) {
+
+        var number = Number(Math.round(num + 'e2') + 'e-2')
+        var num_parts = number.toString().split(".");
+        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return num_parts.join(".");
+        console.log(num)
+        }
+    // GET TOTAL OF DEBIT AND CREDIT
+    function getTotal(){
+        var total_credit = 0.00;
+         var total_debit = 0.00;
+         $(".credit").each(function(){
+            total_credit += Number($(this).val());
+         })
+         $(".debit").each(function(){
+            total_debit += Number($(this).val());
+         })
+         
+        // console.log(total_debit);
+        document.getElementById("d_total").innerHTML = "<h4>" + thousands_separators(total_debit) + "</h4>";
+        document.getElementById("c_total").innerHTML = "<h4>" + thousands_separators(total_credit) + "</h4>";
+        //  $(".debit").change(function(){
+        //     $(this).val() =  thousands_separators(total_debit)
+        //  })
+        // $(this).val().replact
+    }
+      $(document).on("keyup change", ".credit, .debit", function(){
+        getTotal()
+     })
+    
+     $(document).ready(function() {
+        update_id = $('#update_id').val();
+
+            if (update_id > 0) {
+                // console.log(update_id)
+                $.ajax({
+                    url: window.location.pathname + '?r=jev-preparation/update-jev',
+                    method: 'POST',
+                    data: {
+                        update_id: update_id
+                    },
+                    success: function(data) {
+                        var jev = JSON.parse(data).jev_preparation
+                        var jev_accounting_entries = JSON.parse(data).jev_accounting_entries
+                        var d = "2020-12-01"
+                        // document.querySelector("#reporting_period").value=jev['reporting_period']
+                        $('#reporting_period').val(jev['reporting_period'])
+                        $('#check_ada_date').val(jev['check_ada_date'])
+                        $('#particular').val(jev['explaination'])
+                        $('#date').val(jev['date'])
+                        // $('#reference').val(jev['reference'])
+                        // console.log(jev_accounting_entries)
+                        $('#reference').val(jev['ref_number']); // Select the option with a value of 'US'
+                        $('#reference').trigger('change');
+                        $('#fund_cluster_code').val(jev['fund_cluster_code_id'])
+                        $('#fund_cluster_code').trigger('change')
+                        $('#r_center_id').val(jev['responsibility_center_id'])
+                        $('#r_center_id').trigger('change')
+                        $('#check_ada').val(jev['check_ada'])
+                        $('#check_ada').trigger('change')
+                        $('#payee').val(jev['payee_id'])
+                        $('#payee').trigger('change')
+                        var x=0
+                        // console.log(jev_accounting_entries[0])
+                        // for (i; i < jev_accounting_entries.length;) {
+                        // }
+                        for (x; x<jev_accounting_entries.length;x++){
+                            $("#debit-"+x).val(jev_accounting_entries[x]['debit'])
+                            $("#credit-"+x).val(jev_accounting_entries[x]['credit'])
+                            var chart = jev_accounting_entries[x]['id'] +"-" +jev_accounting_entries[x]['object_code']+"-"+jev_accounting_entries[x]['lvl']
+                           console.log(chart)
+                            $("#chart-"+x).val(chart)
+                            $("#chart-"+x).trigger('change')
+                            $("#isEquity-"+x).val(jev_accounting_entries[x]['net_asset_equity_id'])
+                            $("#isEquity-"+x).trigger('change')
+                            $("#cash_flow_id-"+x).val(jev_accounting_entries[x]['cash_flow_transaction'])
+                            $("#cash_flow_id-"+x).trigger('change')
+                            // console.log(chart)
+                            if (x < jev_accounting_entries.length -1){
+                                add()
+                            }
+                        }
+                        getTotal()
+
+
+                        // $('#reporting_period').val(jev['reporting_period'])
+                        // $('#reporting_period').val(jev['reporting_period'])
+                        // $('#reporting_period').val(jev['reporting_period'])
+                        // $('#reporting_period').val(jev['reporting_period'])
+                        // $('#reporting_period').val(jev['reporting_period'])
+                        // $('#reporting_period').val(jev['reporting_period'])
+                        // $('#reporting_period').val(jev['reporting_period'])
+                        // $('#reporting_period').val(jev['reporting_period'])
+                        // $('#reporting_period').val(jev['reporting_period'])
+
+
+                    }
+                })
+            }
+
+        })
+
     JS;
 $this->registerJs($script);
 ?>

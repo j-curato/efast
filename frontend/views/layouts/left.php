@@ -102,12 +102,26 @@
                                 'items' => [
                                     ['label' => 'Transactions', 'icon' => 'circle-o', 'url' => ['/transaction'],],
                                     ['label' => 'Jev', 'icon' => 'circle-o', 'url' => ['/jev-preparation'],],
+                                  
+
+                                ],
+                            ],
+                            [
+                                'label' => 'Reports',
+                                'icon' => 'circle-o',
+                                'url' => '#',
+                                'items' => [
+                               
                                     ['label' => 'General Ledger', 'icon' => 'circle-o', 'url' => ['/jev-preparation/general-ledger'],],
                                     ['label' => 'General Journal', 'icon' => 'circle-o', 'url' => ['/jev-preparation/general-journal'],],
                                     ['label' => 'ADADJ', 'icon' => 'circle-o', 'url' => ['/jev-preparation/adadj'],],
                                     ['label' => 'CKDJ', 'icon' => 'circle-o', 'url' => ['/jev-preparation/ckdj'],],
                                     ['label' => 'Trial Balance', 'icon' => 'circle-o', 'url' => ['/jev-preparation/trial-balance'],],
-                                    ['label' => 'Subsidiary Ledger', 'icon' => 'circle-o', 'url' => ['/jev-preparation/subsidiary-ledger'],],
+                                    ['label' => 'Subsidiary Ledger', 'icon' => 'circle-o', 'url' => ['/jev-preparation/get-subsidiary-ledger'],],
+                                    ['label' => 'Detailed Financial Position', 'icon' => 'circle-o', 'url' => ['/jev-preparation/detailed-financial-position'],],
+                                    ['label' => 'Consolidated Financial Position', 'icon' => 'circle-o', 'url' => ['/jev-preparation/consolidated-financial-position'],],
+                                    ['label' => 'Detailed F Performance', 'icon' => 'circle-o', 'url' => ['/jev-preparation/detailed-financial-performance'],],
+                                    ['label' => 'Consolidated F Performance', 'icon' => 'circle-o', 'url' => ['/jev-preparation/consolidated-financial-performance'],],
 
                                 ],
                             ],

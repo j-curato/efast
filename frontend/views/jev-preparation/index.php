@@ -93,10 +93,12 @@ $this->params['breadcrumbs'][] = $this->title;
     'floatHeaderOptions' => [
       'top' => 50,
       'position' => 'absolute',
+      
     ],
     'columns' => [
       // ['class' => 'yii\grid\SerialColumn'],
 
+      'id',
       'jev_number',
       // 'responsibility_center_id'
       // 'jev_number',

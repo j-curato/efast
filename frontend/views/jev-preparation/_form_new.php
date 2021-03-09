@@ -196,7 +196,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                 'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                 'widgetBody' => '.container-items', // required: css class selector
                 'widgetItem' => '.item', // required: css class
-                'limit' => 10, // the maximum times, an element can be cloned (default 999)
+                'limit' => 50, // the maximum times, an element can be cloned (default 999)
                 'min' => 1, // 0 or 1 (default 1)
                 'insertButton' => '.add-item', // css class
                 'deleteButton' => '.remove-item', // css class
@@ -238,9 +238,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                                     <?= $form->field($modelJevItem,  "[{$i}]chart_of_account_id")->widget(Select2::class, [
                                         'data' => ArrayHelper::map($chart, 'id', 'ledger'),
                                         'options' => ['placeholder' => 'Select a Fund Source',],
-                                        'pluginEvents' => [
-                                            "select2:select" => "function() { console.log({$i})  }",
-                                        ],
+                                   
                                     ]);
                                     ?>
                                 </div>

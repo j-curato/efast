@@ -119,26 +119,23 @@ $this->params['breadcrumbs'][] = $this->title;
             <thead>
 
                 <tr>
-                    <th colspan="4">
-
+                    <th>
+                        Debit
                     </th>
                     <th>
-                        <?php
-                        if (!empty($reporting_period)) {
-                            echo $reporting_period;
-                        } else {
-                            echo 'Year';
-                        }
-                        ?>
+                        Credit
                     </th>
                     <th>
-                        <?php
-                        if (!empty($prev_year)) {
-                            echo $prev_year;
-                        } else {
-                            echo 'Previous Year';
-                        }
-                        ?>
+                        Balance
+                    </th>
+                    <th>
+                        Balance
+                    </th>
+                    <th>
+                        qwe
+                    </th>
+                    <th>
+                        e
                     </th>
 
                 </tr>
@@ -153,27 +150,21 @@ $this->params['breadcrumbs'][] = $this->title;
                         $total_current = 0;
                         $total_last_year = 0;
                         echo "<tr>
-                            <td  class='right-border' style='font-weight:bold'>{$key}</td>
-                            <td colspan='3'></td>
-                            <td ></td>
-                            <td ></td>
+                            <td  class='right-border'>{$key}</td>
+                            <td colspan='5'></td>
                          </tr>";
 
                         foreach ($val1 as $key2 => $val2) {
                             echo "<tr>
-                                    <td colspan='2' class='right-border' >{$key2}</td>
-                                    <td colspan='2'></td>
-                                    <td ></td>
-                                    <td ></td>
-                                </tr>";
+                        <td colspan='2' class='right-border' >{$key2}</td>
+                        <td colspan='4'></td>
+                     </tr>";
                             foreach ($val2 as $key3 => $val3) {
 
                                 echo "<tr>
                                 <td class='right-border'></td>
                                 <td colspan='2' class='right-border' style='text-align:left' >{$key3}</td>
-                                <td colspan='1'></td>
-                                <td ></td>
-                                <td ></td>
+                                <td colspan='3'></td>
                              </tr>";
 
                                 foreach ($val3 as $key4 => $val4) {
@@ -182,7 +173,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     echo "<tr >
                             <td colspan='2' class='right-border'> </td>
                             <td  style='text-align:left' colspan='2'>{$val4['general_ledger']}</td>
-                            <td>" . number_format($val4['current_bal'], 2) . "</td>
+                            <td>" . number_format($val4['total_debit'], 2) . "</td>
                             <td> " . number_format($val4['last_year_bal'], 2) . "</td>
                         </tr>";
                                 }
@@ -210,7 +201,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <style>
         .right-border {
             border-right: 1px solid transparent;
-            font-weight: bold;
         }
 
         #reporting_period {
@@ -439,7 +429,7 @@ $(document).ready(function(){
         // console.log(fund+gen)
         // console.log(fund)
         $.pjax({container: "#employee", 
-        url: window.location.pathname + '?r=jev-preparation/detailed-financial-position',
+        url: window.location.pathname + '?r=jev-preparation/detailed-financial-performance',
         type:'POST',
         data:{
             reporting_period:reporting_period?''+reporting_period.toString():'',

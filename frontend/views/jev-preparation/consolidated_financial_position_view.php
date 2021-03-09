@@ -17,7 +17,7 @@ use yii\widgets\ActiveForm;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Detailed Financial Position';
+$this->title = 'Consolidated Financial Position';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index">
@@ -153,7 +153,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         $total_current = 0;
                         $total_last_year = 0;
                         echo "<tr>
-                            <td  class='right-border' style='font-weight:bold'>{$key}</td>
+                            <td  class='right-border'>{$key}</td>
                             <td colspan='3'></td>
                             <td ></td>
                             <td ></td>
@@ -161,32 +161,30 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         foreach ($val1 as $key2 => $val2) {
                             echo "<tr>
-                                    <td colspan='2' class='right-border' >{$key2}</td>
-                                    <td colspan='2'></td>
-                                    <td ></td>
-                                    <td ></td>
-                                </tr>";
-                            foreach ($val2 as $key3 => $val3) {
+                        <td colspan='2' class='right-border' >{$key2}</td>
+                        <td colspan='2'></td>
+                        <td ></td>
+                        <td ></td>
+                     </tr>";
+                            // foreach ($val2 as $key3 => $val3) {
 
-                                echo "<tr>
-                                <td class='right-border'></td>
-                                <td colspan='2' class='right-border' style='text-align:left' >{$key3}</td>
-                                <td colspan='1'></td>
-                                <td ></td>
-                                <td ></td>
-                             </tr>";
+                            //     echo "<tr>
+                            //     <td class='right-border'></td>
+                            //     <td colspan='2' class='right-border' style='text-align:left' >{$key3}</td>
+                            //     <td colspan='3'></td>
+                            //  </tr>";
 
-                                foreach ($val3 as $key4 => $val4) {
-                                    $total_current += $val4['current_bal'];
-                                    $total_last_year += $val4['last_year_bal'];
-                                    echo "<tr >
+                            foreach ($val2 as $key4 => $val4) {
+                                $total_current += $val4['current_bal'];
+                                $total_last_year += $val4['last_year_bal'];
+                                echo "<tr >
                             <td colspan='2' class='right-border'> </td>
                             <td  style='text-align:left' colspan='2'>{$val4['general_ledger']}</td>
                             <td>" . number_format($val4['current_bal'], 2) . "</td>
                             <td> " . number_format($val4['last_year_bal'], 2) . "</td>
                         </tr>";
-                                }
                             }
+                            // }
                         }
                         echo "<tr>
                     <td colspan='1' class='right-border'></td>
@@ -210,7 +208,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <style>
         .right-border {
             border-right: 1px solid transparent;
-            font-weight: bold;
         }
 
         #reporting_period {
@@ -439,7 +436,7 @@ $(document).ready(function(){
         // console.log(fund+gen)
         // console.log(fund)
         $.pjax({container: "#employee", 
-        url: window.location.pathname + '?r=jev-preparation/detailed-financial-position',
+        url: window.location.pathname + '?r=jev-preparation/consolidated-financial-position',
         type:'POST',
         data:{
             reporting_period:reporting_period?''+reporting_period.toString():'',
