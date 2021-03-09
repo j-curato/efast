@@ -696,8 +696,8 @@ $script = <<< JS
                             $("#chart-"+x).trigger('change')
                             $("#isEquity-"+x).val(jev_accounting_entries[x]['net_asset_equity_id'])
                             $("#isEquity-"+x).trigger('change')
-                            $("#cash_flow_id-"+x).val(jev_accounting_entries[x]['cash_flow_transaction'])
-                            $("#cash_flow_id-"+x).trigger('change')
+                            $("#cash_flow_id-0").val(2)
+                            $("#cash_flow_id-0").trigger('change')
                             // console.log(chart)
                             if (x < jev_accounting_entries.length -1){
                                 add()

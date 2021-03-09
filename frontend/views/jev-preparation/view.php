@@ -1,6 +1,8 @@
 <?php
 
 use app\models\FundClusterCode;
+use app\models\SubAccounts1;
+use app\models\SubAccounts2;
 use aryelds\sweetalert\SweetAlertAsset;
 use yii\helpers\Url;
 use yii\helpers\Html;
@@ -181,8 +183,29 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php foreach ($model->jevAccountingEntries as $key => $value) : ?>
                     <tr>
                         <td> </td>
-                        <td> <?php echo $value->chartOfAccount->general_ledger ?> </td>
-                        <td><?php echo $value->chartOfAccount->uacs ?> </td>
+                        <td> <?php
+                                if ($value->lvl === 1) {
+                                    echo $value->chartOfAccount->general_ledger;
+                                } else if ($value->lvl === 2) {
+                                    $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
+                                    echo $q->name;
+                                } else if ($value->lvl === 3) {
+                                    $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
+                                    echo $q->name;
+                                }
+                                ?> </td>
+                        <td><?php
+                            if ($value->lvl === 1) {
+                                echo $value->chartOfAccount->uacs;
+                            } else if ($value->lvl === 2) {
+                                $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
+                                echo $q->object_code;
+                            } else if ($value->lvl === 3) {
+                                $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
+                                echo $q->object_code;
+                            }
+
+                            ?> </td>
                         <td class="amount"><?php echo number_format($value->debit, 2) ?> </td>
                         <td class="amount"><?php echo number_format($value->credit, 2) ?> </td>
                     </tr>

@@ -1485,8 +1485,8 @@ class JevPreparationController extends Controller
                                 $jv->debit = !empty($_POST['debit'][$i]) ? $_POST['debit'][$i] : 0;
                                 $jv->credit = !empty($_POST['credit'][$i]) ? $_POST['credit'][$i] : 0;
                                 // $jv->current_noncurrent=$jev_preparation->id;
-                                $jv->cash_flow_transaction = $_POST['cash_flow_id'][$i] != 'null' ? $_POST['cash_flow_id'][$i] : '';
-                                $jv->net_asset_equity_id = $_POST['isEquity'][$i] != 'null' ? $_POST['isEquity'][$i] : '';
+                                $jv->cash_flow_transaction = $_POST['cash_flow_id'][$i] != null ? $_POST['cash_flow_id'][$i] : '';
+                                $jv->net_asset_equity_id = $_POST['isEquity'][$i] != null ? $_POST['isEquity'][$i] : '';
                                 $jv->closing_nonclosing = $isClosing;
                                 $jv->lvl = $x[2];
                                 $jv->object_code = $x[1];
