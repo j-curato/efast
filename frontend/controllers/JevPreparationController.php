@@ -1423,6 +1423,8 @@ class JevPreparationController extends Controller
                 // }
 
                 // }
+                $transaction = \Yii::$app->db->beginTransaction();
+
                 if ($_POST['update_id'] > 0) {
                     $jev_preparation = JevPreparation::findOne($_POST['update_id']);
                     if (!empty($jev_preparation->jevAccountingEntries)) {
@@ -1453,7 +1455,6 @@ class JevPreparationController extends Controller
 
 
                 if ($jev_preparation->validate()) {
-                    $transaction = \Yii::$app->db->beginTransaction();
                     try {
                         if ($flag = $jev_preparation->save(false)) {
                             // return json_encode($jev_preparation->id);
@@ -1485,8 +1486,8 @@ class JevPreparationController extends Controller
                                 $jv->debit = !empty($_POST['debit'][$i]) ? $_POST['debit'][$i] : 0;
                                 $jv->credit = !empty($_POST['credit'][$i]) ? $_POST['credit'][$i] : 0;
                                 // $jv->current_noncurrent=$jev_preparation->id;
-                                $jv->cash_flow_transaction = $_POST['cash_flow_id'][$i] != null ? $_POST['cash_flow_id'][$i] : '';
-                                $jv->net_asset_equity_id = $_POST['isEquity'][$i] != null ? $_POST['isEquity'][$i] : '';
+                                $jv->cash_flow_transaction =  !empty($_POST['cash_flow_id'][$i]) ? $_POST['cash_flow_id'][$i] : '';
+                                $jv->net_asset_equity_id =  !empty($_POST['isEquity'][$i]) ? $_POST['isEquity'][$i] : '';
                                 $jv->closing_nonclosing = $isClosing;
                                 $jv->lvl = $x[2];
                                 $jv->object_code = $x[1];
@@ -1502,16 +1503,17 @@ class JevPreparationController extends Controller
                                 }
                             }
                         } else {
-                            return json_encode('error');
+                            return json_encode('w');
                         }
                         if ($flag) {
+
                             $transaction->commit();
                             // return $this->redirect(['view', 'id' => $model->id]);
-                            return json_encode(['isSuccess'=>'success','id'=>$jev_preparation_id]);
+                            return json_encode(['isSuccess' => 'success', 'id' => $jev_preparation_id]);
                         }
                     } catch (Exception $e) {
                         $transaction->rollBack();
-                        return json_encode($e);
+                        return json_encode("q");
                     }
                 } else {
                     // validation failed: $errors is an array containing error messages
@@ -1605,7 +1607,7 @@ class JevPreparationController extends Controller
     AND chart_of_accounts.major_account_id = major_accounts.id
 
     AND chart_of_accounts.account_group IN ('Assets','Liabilities','Equity')
-    AND jev_preparation.reporting_period = :reporting_period
+    AND jev_preparation.reporting_period BETWEEN '2019-12' AND :reporting_period
     AND jev_preparation.fund_cluster_code_id = :fund_cluster    
     GROUP BY chart_of_accounts.account_group,chart_of_accounts.major_account_id,chart_of_accounts.uacs
     ORDER BY chart_of_accounts.account_group,chart_of_accounts.current_noncurrent,chart_of_accounts.major_account_id) as r1
@@ -1621,7 +1623,7 @@ class JevPreparationController extends Controller
     AND chart_of_accounts.major_account_id = major_accounts.id
 
     AND chart_of_accounts.account_group IN ('Assets','Liabilities','Equity')
-    AND jev_preparation.reporting_period =:reporting_period_last_year
+    AND jev_preparation.reporting_period BETWEEN  '2019-12' AND :reporting_period_last_year
     AND jev_preparation.fund_cluster_code_id = :fund_cluster
     GROUP BY chart_of_accounts.account_group,chart_of_accounts.major_account_id,chart_of_accounts.uacs
     ORDER BY chart_of_accounts.account_group,chart_of_accounts.current_noncurrent,chart_of_accounts.major_account_id) as r2
@@ -1731,12 +1733,80 @@ class JevPreparationController extends Controller
             return $this->render('consolidated_financial_position_view', []);
         }
     }
+    // GET SUSIDIARY LEDGER
+    public function actionGetSubsidiaryLedger()
+    {
+
+        if ($_POST) {
+            // echo "<pre>";
+            // var_dump($_POST['sub_account']);
+            // echo "</pre>";
+
+            $sl = (new \yii\db\Query())
+                ->select([
+                    'jev_preparation.date', 'jev_preparation.explaination',
+                    'jev_preparation.ref_number', 'jev_accounting_entries.debit', 'jev_accounting_entries.credit',
+                    'chart_of_accounts.normal_balance', 'chart_of_accounts.general_ledger'
+
+                ])
+                ->from('jev_accounting_entries')
+                ->join("LEFT JOIN",  "jev_preparation", "jev_accounting_entries.jev_preparation_id = jev_preparation.id")
+                ->join("LEFT JOIN",  "chart_of_accounts", "jev_accounting_entries.chart_of_account_id = chart_of_accounts.id")
+                ->where("jev_accounting_entries.lvl = :lvl", [
+                    'lvl' => 2
+                ])
+                ->andWhere("jev_accounting_entries.object_code = :object_code", [
+                    'object_code' => $_POST['sub_account']
+                ])
+                ->andWhere("jev_preparation.fund_cluster_code_id = :fund_cluster_code_id", [
+                    'fund_cluster_code_id' => $_POST['fund']
+                ])
+                // ->groupBy('object_code')
+                ->orderBy('jev_preparation.date')
+                ->all();
+            $fund_cluster = FundClusterCode::find()->where("id =:id", ['id' => $_POST['fund']])->one()->name;
+            $sl_name = (new \yii\db\Query())->select(['name'])->from('sub_accounts1')->where("object_code =:object_code", ['object_code' => $_POST['sub_account']])->one()['name'];
+            $sl_final = [];
+            $balance = 0;
+
+            foreach ($sl as $val) {
+
+                if (strtolower($val['normal_balance']) == 'credit') {
+
+                    $balance += $val['credit'] - $val['debit'];
+                } else {
+                    $balance += $val['debit'] - $val['credit'];
+                }
+                $val['balance'] = $balance;
+                $sl_final[] = $val;
+                // echo "<pre>";
+                // var_dump($val);
+                // echo "</pre>";
+            }
+            // echo "<pre>";
+            // var_dump($sl_name);
+            // echo "</pre>";
+            return $this->render('subsidiary_ledger_view', [
+                'data' => $sl_final,
+                'fund_cluster' => $fund_cluster,
+                'general_ledger' => $sl_final[0]['general_ledger'],
+                'sl_name' => $sl_name
+            ]);
+        } else {
+            return $this->render('subsidiary_ledger_view',);
+        }
+
+
+        // return json_encode($sl);
+    }
 
     // DETAILED STATEMENT OF FINANCIAL PERFORMANCE
     public function getFinancialPerformance($reporting_period, $fund_cluster)
     {
 
         $x = explode('-', $reporting_period);
+        $reporting_period_begin_month = $x[0] . '-' . '01';
+        $prev_year_begin_month =  $x[0] - 1 . '-' . '01';
         $reporting_period_last_year =  $x[0] - 1 . '-' . $x[1];
         $q = Yii::$app->db->createCommand("SELECT * from 
     (SELECT chart_of_accounts.account_group,chart_of_accounts.uacs,chart_of_accounts.general_ledger,
@@ -1965,7 +2035,7 @@ class JevPreparationController extends Controller
                 'debit' => $val->debit,
                 'credit' => $val->credit,
                 'current_noncurrent' => $val->current_noncurrent,
-                'cash_flow_transaction' => $val->cash_flow_transaction,
+                'cash_flow_transaction' => intval($val->cash_flow_transaction),
                 'net_asset_equity_id' => $val->net_asset_equity_id,
                 'object_code' => $val->object_code,
                 'lvl' => $val->lvl,
@@ -1977,4 +2047,6 @@ class JevPreparationController extends Controller
         // echo "</pre>";
         return json_encode(['jev_preparation' => $jev, 'jev_accounting_entries' => $jev_ae]);
     }
+
+
 }

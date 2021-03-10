@@ -157,7 +157,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                         <label for="cadadr_number">Cash Flow </label>
 
                         <select id="cash_flow_id-0" name="cash_flow_id[]" style="width: 100% ;display:none">
-                            <option value="null"></option>
+                            <option></option>
                         </select>
                     </div>
                     <div class="col-sm-3">
@@ -363,13 +363,13 @@ use aryelds\sweetalert\SweetAlertAsset;
                         <div class="col-sm-3" style="">
                             <label for="isCurrent">Cash Flow </label>
                             <select id="cash_flow_id-${i}" name="cash_flow_id[]" style="width: 100% ;display:none" >
-                                <option></option>
+                                <option ></option>
                             </select>
                         </div>
                         <div class="col-sm-3" >
                             <label for="isCurrent">Changes in Net Asset and Equity </label>
                                 <select id="isEquity-${i}" name="isEquity[]" style="width: 100% ;display:none" >
-                                    <option value="null"></option>
+                                    <option ></option>
                                 </select>
                         </div>
                      </div>
@@ -673,32 +673,29 @@ $script = <<< JS
                         $('#date').val(jev['date'])
                         // $('#reference').val(jev['reference'])
                         // console.log(jev_accounting_entries)
-                        $('#reference').val(jev['ref_number']); // Select the option with a value of 'US'
-                        $('#reference').trigger('change');
-                        $('#fund_cluster_code').val(jev['fund_cluster_code_id'])
-                        $('#fund_cluster_code').trigger('change')
-                        $('#r_center_id').val(jev['responsibility_center_id'])
-                        $('#r_center_id').trigger('change')
+                        $('#reference').val(jev['ref_number']).trigger('change');
+                        $('#fund_cluster_code').val(jev['fund_cluster_code_id']).trigger('change')
+                        $('#r_center_id').val(jev['responsibility_center_id']).trigger('change')
                         $('#check_ada').val(jev['check_ada'])
                         $('#check_ada').trigger('change')
                         $('#payee').val(jev['payee_id'])
                         $('#payee').trigger('change')
                         var x=0
-                        // console.log(jev_accounting_entries[0])
+                        console.log(jev_accounting_entries)
                         // for (i; i < jev_accounting_entries.length;) {
                         // }
                         for (x; x<jev_accounting_entries.length;x++){
                             $("#debit-"+x).val(jev_accounting_entries[x]['debit'])
                             $("#credit-"+x).val(jev_accounting_entries[x]['credit'])
                             var chart = jev_accounting_entries[x]['id'] +"-" +jev_accounting_entries[x]['object_code']+"-"+jev_accounting_entries[x]['lvl']
-                           console.log(chart)
-                            $("#chart-"+x).val(chart)
-                            $("#chart-"+x).trigger('change')
+                            
+                            var cashflow = jev_accounting_entries[x]['cash_flow_transaction'];
+                            $("#chart-"+x).val(chart).trigger('change')
                             $("#isEquity-"+x).val(jev_accounting_entries[x]['net_asset_equity_id'])
                             $("#isEquity-"+x).trigger('change')
-                            $("#cash_flow_id-0").val(2)
-                            $("#cash_flow_id-0").trigger('change')
-                            // console.log(chart)
+                            $("#cash_flow_id-"+x).val(jev_accounting_entries[x]['cash_flow_transaction'])
+                            $("#cash_flow_id-"+x).trigger('change')
+                            console.log(jev_accounting_entries[x]['cash_flow_transaction'])
                             if (x < jev_accounting_entries.length -1){
                                 add()
                             }
