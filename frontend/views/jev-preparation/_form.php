@@ -156,7 +156,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     <div class="col-sm-3">
                         <label for="cadadr_number">Cash Flow </label>
 
-                        <select id="cash_flow_id-0" name="cash_flow_id[]" style="width: 100% ;display:none">
+                        <select id="cashflow-0" name="cash_flow_id[]" style="width: 100% ;display:none">
                             <option></option>
                         </select>
                     </div>
@@ -171,9 +171,10 @@ use aryelds\sweetalert\SweetAlertAsset;
 
                 <div class="row gap-1">
 
-                    <div class="col-sm-5 ">
+                    <div class="col-sm-5 "> 
+                     
                         <div>
-                            <select id="chart-0" required name="chart_of_account_id[]" class="chart-of-account" style="width: 100%" onchange="isCurrent(this,0)">
+                            <select id="chart-0" required name="chart_of_account_id[]" class="chart-of-account" onchange=isCurrent(this,0) style="width: 100%">
                                 <option></option>
                             </select>
                         </div>
@@ -305,22 +306,22 @@ use aryelds\sweetalert\SweetAlertAsset;
                 dataType: 'json',
                 success: function(data) {
                     $('#isCurrent-' + i).val(data.result.current_noncurrent)
-                    console.log(data)
+                    // console.log(data)
                     // data.isCashEquivalent ? : $('#cash_flow_id-' + i).hide()
                     data.isEquity ? $('#isEquity-' + i).show() : $('#isEquity-' + i).hide()
                     // console.log(data)
                     if (data.isCashEquivalent == true) {
-                        $('#cash_flow_id-' + i).select2({
+                        $('#cashflow-' + i).select2({
                             data: cashflow,
                             placeholder: 'Select Cash Flow'
                         })
-
-                        $('#cash_flow_id-' + i).show()
+                        // $('#cashflow-' + i).val(2).trigger('change');
+                        $('#cashflow-' + i).show()
                     } else {
 
-                        $('#cash_flow_id-' + i).val(null).trigger('change');
-                        document.getElementById('isEquity-' + i).value = 'null'
-                        $('#cash_flow_id-' + i).select2().next().hide();
+                        $('#cashflow-' + i).val(null).trigger('change');
+                        // document.getElementById('isEquity-' + i).value = 'null'
+                        $('#cashflow-' + i).select2().next().hide();
 
 
                     }
@@ -362,7 +363,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                          </div>
                         <div class="col-sm-3" style="">
                             <label for="isCurrent">Cash Flow </label>
-                            <select id="cash_flow_id-${i}" name="cash_flow_id[]" style="width: 100% ;display:none" >
+                            <select id="cashflow-${i}" name="cash_flow_id[]" style="width: 100% ;display:none" >
                                 <option ></option>
                             </select>
                         </div>
@@ -681,7 +682,7 @@ $script = <<< JS
                         $('#payee').val(jev['payee_id'])
                         $('#payee').trigger('change')
                         var x=0
-                        console.log(jev_accounting_entries)
+                        // console.log(jev_accounting_entries)
                         // for (i; i < jev_accounting_entries.length;) {
                         // }
                         for (x; x<jev_accounting_entries.length;x++){
@@ -689,13 +690,18 @@ $script = <<< JS
                             $("#credit-"+x).val(jev_accounting_entries[x]['credit'])
                             var chart = jev_accounting_entries[x]['id'] +"-" +jev_accounting_entries[x]['object_code']+"-"+jev_accounting_entries[x]['lvl']
                             
-                            var cashflow = jev_accounting_entries[x]['cash_flow_transaction'];
-                            $("#chart-"+x).val(chart).trigger('change')
-                            $("#isEquity-"+x).val(jev_accounting_entries[x]['net_asset_equity_id'])
-                            $("#isEquity-"+x).trigger('change')
-                            $("#cash_flow_id-"+x).val(jev_accounting_entries[x]['cash_flow_transaction'])
-                            $("#cash_flow_id-"+x).trigger('change')
-                            console.log(jev_accounting_entries[x]['cash_flow_transaction'])
+                            var cashflow = jev_accounting_entries[x]['cashflow_id'];
+                            $("#chart-"+x).val(chart).trigger('change');
+                            $("#isEquity-"+x).val(jev_accounting_entries[x]['net_asset_equity_id']).trigger('change');
+                            // $("#cashflow-"+x).val(jev_accounting_entries[x]['cash_flow_transaction']).trigger('change')
+                            console.log(cashflow);
+                            if ($( "#cashflow-"+x ).length ){
+                                // console.log(x)
+                            }
+                            else{
+                                // console.log('false')
+                            }
+                            // console.log(chart)
                             if (x < jev_accounting_entries.length -1){
                                 add()
                             }

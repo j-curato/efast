@@ -139,7 +139,7 @@ class SubAccounts1Controller extends Controller
             $sub_acc1_ojc_code = SubAccounts1::find()
                 ->where("id = :id", ['id' => $id])->one()->object_code;
             $last_id = SubAccounts1::find()->orderBy('id DESC')->one()->id + 1;
-
+            
             $uacs = $sub_acc1_ojc_code . '_';
             // echo $uacs;
             for ($i = strlen($last_id); $i <= 4; $i++) {

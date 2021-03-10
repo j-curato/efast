@@ -85,28 +85,11 @@ class JevPreparationController extends Controller
     {
 
         if (!empty($_POST)) {
-            // $gen = (!empty($_POST['gen'])) ? 'AND jev_accounting_entries.chart_of_account_id =' . $_POST['gen'] : '';
-            // $fund = (!empty($_POST['fund'])) ? 'AND jev_preparation.fund_cluster_code_id =' . $_POST['fund'] : '';
-            // $y = (!empty($_POST['reporting_period'])) ?  $_POST['reporting_period'] : '';
+
             $gen = $_POST['gen'];
             $fund = $_POST['fund'];
             $reporting_period = $_POST['reporting_period'];
-
             $x = explode('-', $reporting_period);
-            // $reporting_period = $_POST['reporting_period'] ? "'AND jev_preparation.reporting_period ='" .  (String)$_POST['reporting_period'] ."'" : '';
-            // $reporting_period = (!empty($y)) ? " AND jev_preparation.reporting_period like '{$x[0]}%' AND jev_preparation.reporting_period <='{$y}'"  : '';
-
-            // $chart = Yii::$app->db->createCommand("SELECT  jev_preparation.explaination, jev_preparation.jev_number, jev_preparation.reporting_period ,
-            // jev_accounting_entries.id,jev_accounting_entries.debit,jev_accounting_entries.credit,chart_of_accounts.uacs,
-            // chart_of_accounts.general_ledger,jev_accounting_entries.id,jev_preparation.ref_number
-            // FROM jev_preparation,jev_accounting_entries,chart_of_accounts where jev_preparation.id = jev_accounting_entries.jev_preparation_id
-            // AND jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
-            //  $gen $fund $reporting_period
-
-            // ORDER BY jev_preparation.reporting_period
-
-            // ")->queryAll();
-
             // GET THE BEGINNING BALANCE OF THE LAST YEAR OF INPUTED REPORTING PERIOD
             if ($reporting_period > 0) {
                 $q = $x[0] - 1;
@@ -120,6 +103,8 @@ class JevPreparationController extends Controller
             // echo '<pre>';
             // var_dump($begin_balance);
             // echo '</pre>';
+
+            $begin_month = $x[0].'-01';
             $general_ledger = (new \yii\db\Query());
             $general_ledger->select([
                 'jev_preparation.reporting_period', 'jev_preparation.explaination',
@@ -134,7 +119,7 @@ class JevPreparationController extends Controller
 
 
                 // KUHAAON ANG MGA DATA BETWEEN 
-                $general_ledger->andwhere(['between', 'jev_preparation.reporting_period', $begin_balance, $reporting_period]);
+                $general_ledger->andwhere(['between', 'jev_preparation.reporting_period', $begin_month, $reporting_period]);
             }
             if (!empty($gen)) {
                 $general_ledger->andWhere("jev_accounting_entries.chart_of_account_id = :chart_of_account_id", [
@@ -147,11 +132,57 @@ class JevPreparationController extends Controller
                 ]);
             }
             // $general_ledger->orderBy('jev_preparation.reporting_period');
-            $chart = $general_ledger->orderBy('jev_accounting_entries.chart_of_account_id')
-                ->orderBy('jev_preparation.date')
-                ->all();
+            // $chart = $general_ledger->orderBy('jev_accounting_entries.chart_of_account_id')
+            //     ->orderBy('jev_preparation.date')
+            //     ->all();
+             $xxx=$general_ledger->orderBy('jev_accounting_entries.chart_of_account_id')
+                ->orderBy('jev_preparation.date');
+
+            // QUERY  FOR BALNCE LAST YEAR
+            $prev_begin_month='';
+            $prev_end_month = $x[0]-1 . '-12';
+            if ($x[0]==2021){
+                $prev_begin_month = '2019-12';
+            }
+            else{
+                $prev_begin_month = $x[0]-1 .'-01';
+            }
+            $query1 = (new \yii\db\Query());
+            $query1->select([
+                'jev_preparation.reporting_period', 'jev_preparation.explaination',
+                'chart_of_accounts.uacs', 'chart_of_accounts.general_ledger', 'jev_preparation.ref_number',
+                ' SUM(jev_accounting_entries.credit) as credit', 'SUM(jev_accounting_entries.debit) as debit',
+                'chart_of_accounts.normal_balance', 'jev_preparation.date'
+            ])
+                ->from('jev_accounting_entries')
+                ->join('LEFT JOIN', 'jev_preparation', 'jev_accounting_entries.jev_preparation_id=jev_preparation.id')
+                ->join('LEFT JOIN', 'chart_of_accounts', 'jev_accounting_entries.chart_of_account_id=chart_of_accounts.id');
+            if (!empty($reporting_period)) {
 
 
+                // KUHAAON ANG MGA DATA BETWEEN 
+                $query1->andwhere(['between', 'jev_preparation.reporting_period', $prev_begin_month, $prev_end_month]);
+            }
+            if (!empty($gen)) {
+                $query1->andWhere("jev_accounting_entries.chart_of_account_id = :chart_of_account_id", [
+                    'chart_of_account_id' => $gen
+                ]);
+            }
+            if (!empty($fund)) {
+                $query1->andWhere("jev_preparation.fund_cluster_code_id = :fund_cluster_code_id", [
+                    'fund_cluster_code_id' => $fund
+                ]);
+            }
+            // $query1->orderBy('jev_preparation.reporting_period');
+          $wew=  $query1
+                ->groupBy('jev_accounting_entries.chart_of_account_id')
+                // ->orderBy('jev_accounting_entries.chart_of_account_id')
+                // ->orderBy('jev_preparation.date')
+                ;
+
+
+
+            $chart = $query1->union($general_ledger,true)->all();
 
             $balance_per_uacs = [];
             $qwe = [];
@@ -231,6 +262,12 @@ class JevPreparationController extends Controller
                     'reporting_period' => date('F Y', strtotime($reporting_period))
                 ]);
             }
+
+            // ob_start();
+            // echo "<pre>";
+            // var_dump($chart);
+            // echo "</pre>";
+            // return ob_get_clean();
 
             return $this->render('general_ledger_view', [
                 'data' => $qwe,
@@ -1486,7 +1523,7 @@ class JevPreparationController extends Controller
                                 $jv->debit = !empty($_POST['debit'][$i]) ? $_POST['debit'][$i] : 0;
                                 $jv->credit = !empty($_POST['credit'][$i]) ? $_POST['credit'][$i] : 0;
                                 // $jv->current_noncurrent=$jev_preparation->id;
-                                $jv->cash_flow_transaction =  !empty($_POST['cash_flow_id'][$i]) ? $_POST['cash_flow_id'][$i] : '';
+                                $jv->cashflow_id =  !empty($_POST['cash_flow_id'][$i]) ? $_POST['cash_flow_id'][$i] : '';
                                 $jv->net_asset_equity_id =  !empty($_POST['isEquity'][$i]) ? $_POST['isEquity'][$i] : '';
                                 $jv->closing_nonclosing = $isClosing;
                                 $jv->lvl = $x[2];
@@ -2039,6 +2076,7 @@ class JevPreparationController extends Controller
                 'net_asset_equity_id' => $val->net_asset_equity_id,
                 'object_code' => $val->object_code,
                 'lvl' => $val->lvl,
+                'cashflow_id' => $val->cashflow_id,
             ];
         }
 
@@ -2049,4 +2087,8 @@ class JevPreparationController extends Controller
     }
 
 
+    public function actionDetailedCashflow()
+    {
+        return $this->render('detailed_cashflow');
+    }
 }

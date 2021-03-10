@@ -622,6 +622,7 @@ $(document).ready(function(){
             setTimeout(function(){ mywindow.print(); mywindow.close(); },1000);
             // mywindow.print()
             print=0
+            
         }
     });
     }
