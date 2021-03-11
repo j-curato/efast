@@ -17,7 +17,7 @@ use yii\widgets\ActiveForm;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Detailed Financial Position';
+$this->title = 'Statement of Changes in NET Assets/Equity ';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index">
@@ -55,6 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             ?>
             <button id="print" onclick="window.print()"><i class="glyphicon glyphicon-print"></i></button>
+
 
         </div>
         <br>
@@ -131,13 +132,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                     DEPARTMENT OF TRADE AND INDUSTRY -CARAGA
                                 </h5>
                                 <h5>
-                                    DETAILED STATEMENT OF FINANCIAL POSITION
+                                    STATEMENT OF FINANCIAL POSITION
                                 </h5>
                                 <h5>
                                     FUND CLUSTER
                                 </h5>
                                 <h5>
-                                    AS OF <?php echo !empty($reporting_period) ? $reporting_period : ''; ?>
+                                    AS OF
                                 </h5>
                             </div>
                         </div>
@@ -150,7 +151,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th>
                         <?php
                         if (!empty($reporting_period)) {
-                            echo  date('Y', strtotime($reporting_period));
+                            echo $reporting_period;
                         } else {
                             echo 'Year';
                         }
@@ -186,38 +187,36 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         foreach ($val1 as $key2 => $val2) {
                             echo "<tr>
-                                    <td colspan='2' class='right-border' >{$key2}</td>
-                                    <td colspan='2'></td>
-                                    <td ></td>
-                                    <td ></td>
-                                </tr>";
-                            foreach ($val2 as $key3 => $val3) {
+                        <td colspan='2' class='right-border' style='font-weight:bold'>{$key2}</td>
+                        <td colspan='2'></td>
+                        <td ></td>
+                        <td ></td>
+                     </tr>";
+                            // foreach ($val2 as $key3 => $val3) {
 
-                                echo "<tr>
-                                <td class='right-border'></td>
-                                <td colspan='2' class='right-border' style='text-align:left' >{$key3}</td>
-                                <td colspan='1'></td>
-                                <td ></td>
-                                <td ></td>
-                             </tr>";
+                            //     echo "<tr>
+                            //     <td class='right-border'></td>
+                            //     <td colspan='2' class='right-border' style='text-align:left' >{$key3}</td>
+                            //     <td colspan='3'></td>
+                            //  </tr>";
 
-                                foreach ($val3 as $key4 => $val4) {
-                                    $total_current += $val4['current_bal'];
-                                    $total_last_year += $val4['last_year_bal'];
-                                    echo "<tr >
-                            <td colspan='2' class='right-border'> </td>
-                            <td  style='text-align:left' colspan='2'>{$val4['general_ledger']}</td>
-                            <td>" . number_format($val4['current_bal'], 2) . "</td>
-                            <td> " . number_format($val4['last_year_bal'], 2) . "</td>
+                            foreach ($val2 as $key4 => $val4) {
+                                $total_current += $val4['current_bal'];
+                                $total_last_year += $val4['last_year_bal'];
+                                echo "<tr >
+                            <td colspan='2' class='right-border' > </td>
+                            <td  style='text-align:left' colspan='2'>{$val4['specific_change']}</td>
+                            <td style='text-align:right'> " . number_format($val4['current_bal'], 2) . "</td>
+                            <td style='text-align:right'> " . number_format($val4['last_year_bal'], 2) . "</td>
                         </tr>";
-                                }
                             }
+                            // }
                         }
                         echo "<tr>
                     <td colspan='1' class='right-border'></td>
                     <td colspan='3'  >Total {$key}</td>
-                    <td colspan='1'>" . number_format($total_current, 2) . "</td>
-                    <td colspan='1'>" . number_format($total_last_year, 2) . "</td>
+                    <td colspan='1' style='text-align:right'>" . number_format($total_current, 2) . "</td>
+                    <td colspan='1' style='text-align:right'>" . number_format($total_last_year, 2) . "</td>
                  </tr>";
                     }
                 }
@@ -235,7 +234,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <style>
         .right-border {
             border-right: 1px solid transparent;
-            font-weight: bold;
+            padding: 0;
         }
 
         #reporting_period {
@@ -356,9 +355,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 margin-top: 0.5cm;
             }
 
-            #print {
-                display: none;
-            }
 
 
             .container {
@@ -459,7 +455,6 @@ $(document).ready(function(){
 
     })
     $('#submit').click(function(){
-        
         query()
     })
 
@@ -467,7 +462,7 @@ $(document).ready(function(){
         // console.log(fund+gen)
         // console.log(fund)
         $.pjax({container: "#employee", 
-        url: window.location.pathname + '?r=jev-preparation/detailed-financial-position',
+        url: window.location.pathname + '?r=jev-preparation/changes-netasset-equity',
         type:'POST',
         data:{
             reporting_period:reporting_period?''+reporting_period.toString():'',
@@ -487,7 +482,14 @@ $(document).ready(function(){
         return num_parts.join(".");
     }
 
+
+
+
 });
+
+
+
+
 
 JS;
 $this->registerJs($script);

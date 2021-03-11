@@ -164,15 +164,15 @@ use aryelds\sweetalert\SweetAlertAsset;
                         <label for="cadadr_number">Changes in Net Asset and Equity </label>
 
                         <select id="isEquity-0" name="isEquity[]" style="width: 100% ;display:none">
-                            <option value="null"></option>
+                            <option ></option>
                         </select>
                     </div>
                 </div>
 
                 <div class="row gap-1">
 
-                    <div class="col-sm-5 "> 
-                     
+                    <div class="col-sm-5 ">
+
                         <div>
                             <select id="chart-0" required name="chart_of_account_id[]" class="chart-of-account" onchange=isCurrent(this,0) style="width: 100%">
                                 <option></option>
@@ -311,12 +311,12 @@ use aryelds\sweetalert\SweetAlertAsset;
                     data.isEquity ? $('#isEquity-' + i).show() : $('#isEquity-' + i).hide()
                     // console.log(data)
                     if (data.isCashEquivalent == true) {
-                        $('#cashflow-' + i).select2({
-                            data: cashflow,
-                            placeholder: 'Select Cash Flow'
-                        })
+                        // $('#cashflow-' + i).select2({
+                        //     data: cashflow,
+                        //     placeholder: 'Select Cash Flow'
+                        // })
                         // $('#cashflow-' + i).val(2).trigger('change');
-                        $('#cashflow-' + i).show()
+                        $('#cashflow-' + i).next().show()
                     } else {
 
                         $('#cashflow-' + i).val(null).trigger('change');
@@ -326,17 +326,17 @@ use aryelds\sweetalert\SweetAlertAsset;
 
                     }
                     if (data.isEquity == true) {
-                        $('#isEquity-' + i).select2({
-                            data: net_asset,
-                            placeholder: 'Select Net Asset'
+                        // $('#isEquity-' + i).select2({
+                        //     data: net_asset,
+                        //     placeholder: 'Select Net Asset'
 
-                        })
+                        // })
 
-                        $('#isEquity-' + i).show()
+                        $('#isEquity-' + i).next().show()
                     } else {
 
                         $('#isEquity-' + i).val(null).trigger('change');
-                        document.getElementById('isEquity-' + i).value = 'null'
+                        // document.getElementById('isEquity-' + i).value = 'null'
                         $('#isEquity-' + i).select2().next().hide();
 
 
@@ -397,7 +397,16 @@ use aryelds\sweetalert\SweetAlertAsset;
                 data: accounts,
                 placeholder: "Select Chart of Account",
 
-            })
+            });
+            $(`#cashflow-${i}`).select2({
+                data: cashflow,
+                placeholder: 'Select Cash Flow'
+            }).next().hide()
+            $(`#isEquity-${i}`).select2({
+                data: net_asset,
+                placeholder: 'Select Net Asset'
+
+            }).next().hide();
             var deb = document.getElementsByName('debit[]');
             // arr_form.splice(latest, 0, latest + 1)
             // deb[1].value = 123
@@ -411,6 +420,7 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 
         $(document).ready(function() {
+
 
             // GET ALL CHART OF accounts
             $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-all-account')
@@ -501,6 +511,10 @@ use aryelds\sweetalert\SweetAlertAsset;
                         })
                     })
                     cashflow = array
+                    $('#cashflow-0').select2({
+                        data: cashflow,
+                        placeholder: 'Select Cash Flow'
+                    }).next().hide()
 
 
                 })
@@ -516,6 +530,11 @@ use aryelds\sweetalert\SweetAlertAsset;
                         })
                     })
                     net_asset = array
+                    $('#isEquity-0').select2({
+                        data: net_asset,
+                        placeholder: 'Select Net Asset'
+
+                    }).next().hide();
 
 
                 })
@@ -691,10 +710,11 @@ $script = <<< JS
                             var chart = jev_accounting_entries[x]['id'] +"-" +jev_accounting_entries[x]['object_code']+"-"+jev_accounting_entries[x]['lvl']
                             
                             var cashflow = jev_accounting_entries[x]['cashflow_id'];
+                            var net_asset= jev_accounting_entries[x]['net_asset_equity_id'];
                             $("#chart-"+x).val(chart).trigger('change');
                             $("#isEquity-"+x).val(jev_accounting_entries[x]['net_asset_equity_id']).trigger('change');
-                            // $("#cashflow-"+x).val(jev_accounting_entries[x]['cash_flow_transaction']).trigger('change')
-                            console.log(cashflow);
+                            $("#cashflow-"+x).val(cashflow).trigger('change');
+                            console.log(net_asset);
                             if ($( "#cashflow-"+x ).length ){
                                 // console.log(x)
                             }
@@ -706,6 +726,7 @@ $script = <<< JS
                                 add()
                             }
                         }
+                        // $('#cashflow-0' ).val(2).trigger('change'); 
                         getTotal()
 
 

@@ -122,6 +122,9 @@
                                     ['label' => 'Consolidated Financial Position', 'icon' => 'circle-o', 'url' => ['/jev-preparation/consolidated-financial-position'],],
                                     ['label' => 'Detailed F Performance', 'icon' => 'circle-o', 'url' => ['/jev-preparation/detailed-financial-performance'],],
                                     ['label' => 'Consolidated F Performance', 'icon' => 'circle-o', 'url' => ['/jev-preparation/consolidated-financial-performance'],],
+                                    ['label' => 'Detailed Cashflow', 'icon' => 'circle-o', 'url' => ['/jev-preparation/detailed-cashflow'],],
+                                    ['label' => 'Consolidated Cashflow', 'icon' => 'circle-o', 'url' => ['/jev-preparation/consolidated-cashflow'],],
+                                    ['label' => 'Net Asset Changes', 'icon' => 'circle-o', 'url' => ['/jev-preparation/changes-netasset-equity'],],
 
                                 ],
                             ],

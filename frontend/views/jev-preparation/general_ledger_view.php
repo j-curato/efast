@@ -63,7 +63,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="actions " style="bottom: 20px;">
 
 
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <label for="general_ledger">General Ledger</label>
                 <?php
                 echo Select2::widget([
@@ -77,7 +77,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]);
                 ?>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <label for="fund"> Fund Cluster Code</label>
                 <?php
                 echo Select2::widget([
@@ -91,7 +91,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]);
                 ?>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <label for="reporting_period">Reporting Period</label>
                 <?php
                 echo DatePicker::widget([
@@ -107,6 +107,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]
                 ]);
                 ?>
+            </div>
+            <div class="cols-sm-3" style="padding-top:25px">
+                <button class="btn btn-success" id="generate">Generate</button>
             </div>
 
         </div>
@@ -182,7 +185,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr class="head">
 
                     <th rowspan="3">
-                        reporting period
+                        Reporting Period
                     </th>
                     <th rowspan="3">
                         Date
@@ -446,25 +449,29 @@ $(document).ready(function(){
     $( "#general_ledger" ).change(function(){
         gen = $(this).val() 
         //  title = document.getElementById('title')
-        query()
+        // query()
     })
     $( "#fund" ).on('change keyup', function(){
         fund = $(this).val()
         // console.log(fund)
-        query()
+        // query()
     })
     $("#reporting_period").change(function(){
         reporting_period=$(this).val()
-        query()
+        // query()
     })
     $("#export").click(function(){
         ex=1
-        query()
+        // query()
     })
     $('.printData').click(function(){
         var y = $(this).val()
         console.log(y)
     })
+    $("#generate").click(function(){
+        query()
+    })
+    
     let print=0
     $("#print").click(function(){
         var x = $(this).val()
