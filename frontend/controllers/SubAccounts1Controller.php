@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\models\ChartOfAccounts;
 use Yii;
 use app\models\SubAccounts1;
 use app\models\SubAccounts1Search;
@@ -139,7 +140,7 @@ class SubAccounts1Controller extends Controller
             $sub_acc1_ojc_code = SubAccounts1::find()
                 ->where("id = :id", ['id' => $id])->one()->object_code;
             $last_id = SubAccounts1::find()->orderBy('id DESC')->one()->id + 1;
-            
+
             $uacs = $sub_acc1_ojc_code . '_';
             // echo $uacs;
             for ($i = strlen($last_id); $i <= 4; $i++) {
@@ -158,6 +159,71 @@ class SubAccounts1Controller extends Controller
                 return json_encode($errors);
             }
             // return $this->redirect(['view', 'id' => $model->id]);
+        }
+    }
+
+
+    public function actionImport()
+
+    {
+        if (!empty($_POST)) {
+            $chart_id = $_POST['chart_id'];
+            $name = $_FILES["file"]["name"];
+            $id = uniqid();
+            $file = "jev/{$id}_{$name}";;
+            if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
+            } else {
+                return "ERROR 2: MOVING FILES FAILED.";
+                die();
+            }
+            $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+            $excel = $reader->load($file);
+            // $excel->setActiveSheetIndexByName('Chart of Accounts - Final');
+            $worksheet = $excel->getActiveSheet();
+            // print_r($excel->getSheetNames());
+
+            $data = [];
+            $chart_uacs = ChartOfAccounts::find()->where("id = :id", ['id' => $chart_id])->one()->uacs;
+            $last_id = SubAccounts1::find()->orderBy('id DESC')->one()->id + 1;
+            $uacs = $chart_uacs . '_';
+            for ($i = strlen($last_id); $i <= 4; $i++) {
+                $uacs .= 0;
+            }
+
+            foreach ($worksheet->getRowIterator() as $key => $row) {
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                $cells = [];
+                $y = 0;
+                foreach ($cellIterator as $x => $cell) {
+                    $q = '';
+                    $cells[] =   $cell->getValue();
+                }
+                $object_code = '';
+                $object_code = $uacs . $last_id;
+                if (!empty($cells[0])) {
+
+                    $data[] = [
+                        'chart_of_account_id' => $chart_id,
+                        'object_code' => $object_code,
+                        'name' => $cells[0]
+                    ];
+                }
+
+                $last_id++;
+            }
+            $column = [
+                'chart_of_account_id',
+                'object_code',
+                'name',
+            ];
+            $ja = Yii::$app->db->createCommand()->batchInsert('sub_accounts1', $column, $data)->execute();
+            // echo '<pre>';
+            // var_dump('success');
+            // echo '</pre>';
+            return $this->redirect(['index']);
+            
         }
     }
 }

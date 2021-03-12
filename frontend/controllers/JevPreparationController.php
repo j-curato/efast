@@ -985,12 +985,12 @@ class JevPreparationController extends Controller
 
             $x = $journal->all();
             $book_name = '';
-            if (!empty($book_id)) {
+            if (!empty($fund)) {
                 // $fund_cluster_code = $this->getFundClusterCode($fund);
                 $book_name = $this->getBookName($book_id);
             }
             // echo '<pre>';
-            // var_dump($book_name);
+            // var_dump($fund);
             // echo '</pre>';
             return $this->render(
                 'general_journal',
@@ -1089,7 +1089,7 @@ class JevPreparationController extends Controller
 
         if (!empty($_POST)) {
             $reporting_period = $_POST['reporting_period'] ? "{$_POST['reporting_period']}" : '';
-            $fund = $_POST['fund'];
+            $book_id = $_POST['book_id'];
 
             $data = JevPreparation::find()
 
@@ -1111,15 +1111,15 @@ class JevPreparationController extends Controller
                 ]);
             }
             if (!empty($fund)) {
-                $data->andWhere("jev_preparation.fund_cluster_code_id = :fund_cluster_code_id", [
-                    'fund_cluster_code_id' => $fund
+                $data->andWhere("jev_preparation.book_id = :book_id", [
+                    'book_id' => $book_id
                 ]);
             }
             // $data->addSelect(['total'=>$query = (new \yii\db\Query())->from('billing')
             // $sum = $query->sum('amount')]);
             $x = $data->orderBy('id')->all();
-            $credit = $this->creditDebit('credit', $fund, $reporting_period, 'CKDJ');
-            $debit = $this->creditDebit('debit', $fund, $reporting_period, 'CKDJ');
+            $credit = $this->creditDebit('credit', $book_id, $reporting_period, 'CKDJ');
+            $debit = $this->creditDebit('debit', $book_id, $reporting_period, 'CKDJ');
 
 
             // echo '<pre>';
@@ -1127,7 +1127,7 @@ class JevPreparationController extends Controller
             // echo '</pre>';
             $title = "CHECK DISBURSEMENT JOURNAL";
             if ($_POST['export'] > 0) {
-                $this->ExcelExport($x, $credit, $debit, $reporting_period, $fund, $title);
+                $this->ExcelExport($x, $credit, $debit, $reporting_period, $book_id, $title);
             }
             return $this->render('ckdj_view', [
                 'credit' => $credit,
@@ -1140,7 +1140,7 @@ class JevPreparationController extends Controller
     }
 
     // PAG KUHA SA MGA  CREDIT/DEBIT HEADER SA ADADJ OG SA CKDJ
-    public function creditDebit($type, $fund, $reporting_period, $jev_type)
+    public function creditDebit($type, $book_id, $reporting_period, $jev_type)
     {
         $x =  JevPreparation::find()
             ->joinWith(['jevAccountingEntries', 'jevAccountingEntries.chartOfAccount'])
@@ -1158,9 +1158,9 @@ class JevPreparationController extends Controller
                 'reporting_period' => $reporting_period
             ]);
         }
-        if (!empty($fund)) {
-            $x->andWhere("jev_preparation.fund_cluster_code_id = :fund_cluster_code_id", [
-                'fund_cluster_code_id' => $fund
+        if (!empty($book_id)) {
+            $x->andWhere("jev_preparation.book_id = :book_id", [
+                'book_id' => $book_id
             ]);
         }
         // ->andWhere("jev_accounting_entries.credit > :credit", [
@@ -1182,7 +1182,7 @@ class JevPreparationController extends Controller
     }
     // use PhpOffice\PhpSpreadsheet\Spreadsheet;
     // use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-    public function ExcelExport($data, $credit, $debit, $reporting_period, $fund, $title)
+    public function ExcelExport($data, $credit, $debit, $reporting_period, $book_id, $title)
     {
 
 

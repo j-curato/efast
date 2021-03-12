@@ -40,7 +40,7 @@ class SubAccounts1Search extends SubAccounts1
      */
     public function search($params)
     {
-        $query = SubAccounts1::find();
+        $query = SubAccounts1::find()->orderBy('id DESC');
 
         // add conditions that should always apply here
 
