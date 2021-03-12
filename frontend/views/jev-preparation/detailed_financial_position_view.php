@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ORDER BY jev_preparation.reporting_period
             ")->queryAll();
     $ledger = Yii::$app->db->createCommand("SELECT chart_of_accounts.id, CONCAT(chart_of_accounts.uacs,' - ',chart_of_accounts.general_ledger) as name FROM chart_of_accounts")->queryAll();
-    $fund = Yii::$app->db->createCommand("SELECT fund_cluster_code.id,fund_cluster_code.name FROM fund_cluster_code")->queryAll();
+    $books = Yii::$app->db->createCommand("SELECT books.id,books.name FROM books")->queryAll();
     $t = yii::$app->request->baseUrl . '/index.php?r=jev-preparation/sample';
     $sub1 = (new \yii\db\Query())->select('*')->from('sub_accounts1')->all();
 
@@ -65,13 +65,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             <div class="col-sm-3">
-                <label for="fund"> Fund Cluster Code</label>
+                <label for="book"> Books</label>
                 <?php
                 echo Select2::widget([
-                    'data' => ArrayHelper::map($fund, 'id', 'name'),
-                    'id' => 'fund',
-                    'name' => 'fund',
-                    'options' => ['placeholder' => 'Select a Fund Cluster Code'],
+                    'data' => ArrayHelper::map($books, 'id', 'name'),
+                    'id' => 'book',
+                    'name' => 'book',
+                    'options' => ['placeholder' => 'Select a Book'],
                     'pluginOptions' => [
                         'allowClear' => true
                     ],
@@ -121,8 +121,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <thead>
                 <tr class="main_header">
                     <th colspan="6">
-
-                        <div style="display:flex;width:100%;align-items:center;">
+                        <div style="display:flex;width:100%;align-items:center;" class="main_head">
                             <div style="padding:12px;">
                                 <img src='../web/dti.jpg' style='width:80px;height:80px;margin-left:auto;margin-right:10px'>
                             </div>
@@ -134,10 +133,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                     DETAILED STATEMENT OF FINANCIAL POSITION
                                 </h5>
                                 <h5>
-                                    FUND CLUSTER
+                                    FUND CLUSTER <?php echo !empty($book_name)? strtoupper($book_name):''?>
                                 </h5>
                                 <h5>
-                                    AS OF <?php echo !empty($reporting_period) ? $reporting_period : ''; ?>
+                                    AS OF <?php echo !empty($reporting_period) ?strtoupper($reporting_period)  : ''; ?>
                                 </h5>
                             </div>
                         </div>
@@ -235,6 +234,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <style>
         .right-border {
             border-right: 1px solid transparent;
+            font-weight: bold;
+        }
+        .main_head > div >h5{
             font-weight: bold;
         }
 
@@ -417,7 +419,7 @@ $script = <<< JS
 
 $(document).ready(function(){
     let gen = undefined
-    let fund = undefined
+    let book_id = undefined
     let reporting_period=undefined
     let sub_account=undefined
     let ex=0
@@ -426,9 +428,9 @@ $(document).ready(function(){
         //  title = document.getElementById('title')
         // query()
     })
-    $( "#fund" ).on('change keyup', function(){
-        fund = $(this).val()
-        // console.log(fund)
+    $( "#book" ).on('change keyup', function(){
+        book_id = $(this).val()
+        // console.log(book_id)
         // query()
     })
     $("#reporting_period").change(function(){
@@ -464,14 +466,14 @@ $(document).ready(function(){
     })
 
     function query(){
-        // console.log(fund+gen)
-        // console.log(fund)
+        // console.log(book_id+gen)
+        // console.log(book_id)
         $.pjax({container: "#employee", 
         url: window.location.pathname + '?r=jev-preparation/detailed-financial-position',
         type:'POST',
         data:{
             reporting_period:reporting_period?''+reporting_period.toString():'',
-            fund:fund?fund:0,
+            book_id:book_id?book_id:0,
         
         },
   

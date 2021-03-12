@@ -17,7 +17,7 @@ class JevPreparationSearch extends JevPreparation
     public function rules()
     {
         return [
-            [['id', 'responsibility_center_id', 'fund_cluster_code_id'], 'integer'],
+            [['id', 'responsibility_center_id', 'fund_cluster_code_id','book_id'], 'integer'],
             [['reporting_period', 'date', 'jev_number', 'dv_number', 'lddap_number', 'entity_name', 'explaination','ref_number'], 'safe'],
         ];
     }
@@ -61,6 +61,7 @@ class JevPreparationSearch extends JevPreparation
             'id' => $this->id,
             'responsibility_center_id' => $this->responsibility_center_id,
             'fund_cluster_code_id' => $this->fund_cluster_code_id,
+            'book_id' => $this->book_id,
             'date' => $this->date,
         ]);
 

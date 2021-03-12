@@ -20,6 +20,7 @@ use Yii;
  * @property JevAccountingEntries[] $jevAccountingEntries
  * @property FundClusterCode $fundClusterCode
  * @property ResponsibilityCenter $responsibilityCenter
+ * @property Books $books
  */
 class JevPreparation extends \yii\db\ActiveRecord   
 {
@@ -37,8 +38,8 @@ class JevPreparation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fund_cluster_code_id', 'reporting_period', 'date', 'jev_number', 'explaination', 'ref_number'], 'required'],
-            [['responsibility_center_id', 'fund_cluster_code_id', 'cash_flow_id', 'payee_id'], 'integer'],
+            [['book_id', 'reporting_period', 'date', 'jev_number', 'explaination', 'ref_number'], 'required'],
+            [['responsibility_center_id', 'fund_cluster_code_id', 'cash_flow_id', 'payee_id','book_id'], 'integer'],
             [['date'], 'safe'],
             [['reporting_period'], 'string', 'max' => 50],
             [['jev_number', 'dv_number', 'lddap_number', 'ref_number'], 'string', 'max' => 100],
@@ -46,6 +47,7 @@ class JevPreparation extends \yii\db\ActiveRecord
             [['cadadr_serial_number', 'check_ada'], 'string', 'max' => 255],
             [['fund_cluster_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => FundClusterCode::class, 'targetAttribute' => ['fund_cluster_code_id' => 'id']],
             [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
+            [['book_id'], 'exist', 'skipOnError' => true, 'targetClass' => Books::class, 'targetAttribute' => ['book_id' => 'id']],
         ];
     }
 
@@ -72,6 +74,7 @@ class JevPreparation extends \yii\db\ActiveRecord
             'cadadr_serial_number' => 'CADADR Serial Number',
             'check_ada_number' => 'Check/ADA Number',
             'chek_ada_date' => 'Check/ADA Date',
+            'book_id' => 'Book',
         ];
     }
 
@@ -103,6 +106,10 @@ class JevPreparation extends \yii\db\ActiveRecord
     public function getResponsibilityCenter()
     {
         return $this->hasOne(ResponsibilityCenter::class, ['id' => 'responsibility_center_id']);
+    }
+    public function getBooks()
+    {
+        return $this->hasOne(Books::class, ['id' => 'book_id']);
     }
 
 }

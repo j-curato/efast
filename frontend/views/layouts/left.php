@@ -91,6 +91,7 @@
                                     ['label' => 'Sub Major Accounts', 'icon' => 'circle-o', 'url' => ['/sub-major-accounts'],],
                                     ['label' => 'Sub Account 1', 'icon' => 'circle-o', 'url' => ['/sub-accounts1'],],
                                     ['label' => 'Sub Account 2', 'icon' => 'circle-o', 'url' => ['/sub-accounts2'],],
+                                    ['label' => 'Books', 'icon' => 'circle-o', 'url' => ['/books'],],
 
 
                                 ],

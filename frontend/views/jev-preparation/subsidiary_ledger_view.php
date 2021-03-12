@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ORDER BY jev_preparation.reporting_period
             ")->queryAll();
     $ledger = Yii::$app->db->createCommand("SELECT chart_of_accounts.id, CONCAT(chart_of_accounts.uacs,' - ',chart_of_accounts.general_ledger) as name FROM chart_of_accounts")->queryAll();
-    $fund = Yii::$app->db->createCommand("SELECT fund_cluster_code.id,fund_cluster_code.name FROM fund_cluster_code")->queryAll();
+    $book = Yii::$app->db->createCommand("SELECT books.id,books.name FROM books")->queryAll();
     $t = yii::$app->request->baseUrl . '/index.php?r=jev-preparation/sample';
     $sub1 = (new \yii\db\Query())->select('*')->from('sub_accounts1')->all();
 
@@ -65,13 +65,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             <div class="col-sm-3">
-                <label for="sub_account">General Ledger</label>
+                <label for="sub_account">Sub Account 1</label>
                 <?php
                 echo Select2::widget([
                     'id' => 'sub_account',
                     'data' => ArrayHelper::map($sub1, 'object_code', 'name'),
                     'name' => 'sub_account',
-                    'options' => ['placeholder' => 'General Ledger Account'],
+                    'options' => ['placeholder' => 'Sub Account 1'],
                     'pluginOptions' => [
                         'allowClear' => true
                     ],
@@ -83,10 +83,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 <label for="fund"> Fund Cluster Code</label>
                 <?php
                 echo Select2::widget([
-                    'data' => ArrayHelper::map($fund, 'id', 'name'),
-                    'id' => 'fund',
-                    'name' => 'fund',
-                    'options' => ['placeholder' => 'Select a Fund Cluster Code'],
+                    'data' => ArrayHelper::map($book, 'id', 'name'),
+                    'id' => 'book',
+                    'name' => 'book',
+                    'options' => ['placeholder' => 'Select a Book '],
                     'pluginOptions' => [
                         'allowClear' => true
                     ],
@@ -446,7 +446,7 @@ $script = <<< JS
 
 $(document).ready(function(){
     let gen = undefined
-    let fund = undefined
+    let book_id = undefined
     let reporting_period=undefined
     let sub_account=undefined
     let ex=0
@@ -455,9 +455,9 @@ $(document).ready(function(){
         //  title = document.getElementById('title')
         // query()
     })
-    $( "#fund" ).on('change keyup', function(){
-        fund = $(this).val()
-        // console.log(fund)
+    $( "#book" ).on('change keyup', function(){
+        book_id = $(this).val()
+        // console.log(book_id)
         // query()
     })
     $("#reporting_period").change(function(){
@@ -500,7 +500,7 @@ $(document).ready(function(){
         type:'POST',
         data:{
             reporting_period:reporting_period?''+reporting_period.toString():'',
-            fund:fund?fund:0,
+            book_id:book_id?book_id:0,
             export:ex,
             sub_account:sub_account?sub_account:0,
             print:print

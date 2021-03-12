@@ -4,6 +4,7 @@ use app\models\FundClusterCode;
 use app\models\SubAccounts1;
 use app\models\SubAccounts2;
 use aryelds\sweetalert\SweetAlertAsset;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\helpers\VarDumper;
@@ -180,10 +181,21 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td></td>
                     <td></td>
                 </tr>
-                <?php foreach ($model->jevAccountingEntries as $key => $value) : ?>
-                    <tr>
-                        <td> </td>
-                        <td> <?php
+
+                <?php
+                //   $model->jevAccountingEntries->orderBy('debit DESC');
+                $arr = [];
+                ?>
+                <?php
+                foreach ($model->jevAccountingEntries as $key => $value) : ?>
+
+                    <?php if ($value->debit > 0) :
+                    ?>
+                        <tr>
+                            <td> </td>
+                            <td>
+                                <?php
+                                $arr[] = $value->toArray();
                                 if ($value->lvl === 1) {
                                     echo $value->chartOfAccount->general_ledger;
                                 } else if ($value->lvl === 2) {
@@ -193,29 +205,76 @@ $this->params['breadcrumbs'][] = $this->title;
                                     $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
                                     echo $q->name;
                                 }
+
                                 ?> </td>
-                        <td><?php
-                            if ($value->lvl === 1) {
-                                echo $value->chartOfAccount->uacs;
-                            } else if ($value->lvl === 2) {
-                                $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
-                                echo $q->object_code;
-                            } else if ($value->lvl === 3) {
-                                $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
-                                echo $q->object_code;
-                            }
+                            <td><?php
+                                if ($value->lvl === 1) {
+                                    echo $value->chartOfAccount->uacs;
+                                } else if ($value->lvl === 2) {
+                                    $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
+                                    echo $q->object_code;
+                                } else if ($value->lvl === 3) {
+                                    $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
+                                    echo $q->object_code;
+                                }
 
-                            ?> </td>
-                        <td class="amount"><?php echo number_format($value->debit, 2) ?> </td>
-                        <td class="amount"><?php echo number_format($value->credit, 2) ?> </td>
-                    </tr>
+                                ?> </td>
+                            <td class="amount"><?php echo $value->debit > 0 ? number_format($value->debit, 2) : ''; ?> </td>
+                            <td class="amount"><?php echo $value->credit > 0 ? number_format($value->credit, 2) : '' ?> </td>
+                        </tr>
 
-                    <?php
+                        <?php
 
-                    $total_credit += $value->credit;
+                        $total_credit += $value->credit;
 
-                    $total_debit += $value->debit;
+                        $total_debit += $value->debit;
+                        ?>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+                <?php
+                foreach ($model->jevAccountingEntries as $key => $value) : ?>
+
+                    <?php if ($value->credit > 0) :
                     ?>
+                        <tr>
+                            <td> </td>
+                            <td>
+                                <?php
+                                $arr[] = $value->toArray();
+                                if ($value->lvl === 1) {
+                                    echo $value->chartOfAccount->general_ledger;
+                                } else if ($value->lvl === 2) {
+                                    $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
+                                    echo $q->name;
+                                } else if ($value->lvl === 3) {
+                                    $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
+                                    echo $q->name;
+                                }
+
+                                ?> </td>
+                            <td><?php
+                                if ($value->lvl === 1) {
+                                    echo $value->chartOfAccount->uacs;
+                                } else if ($value->lvl === 2) {
+                                    $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
+                                    echo $q->object_code;
+                                } else if ($value->lvl === 3) {
+                                    $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
+                                    echo $q->object_code;
+                                }
+
+                                ?> </td>
+                            <td class="amount"><?php echo $value->debit>0?number_format($value->debit, 2):'' ?> </td>
+                            <td class="amount"><?php echo $value->credit>0?number_format($value->credit, 2):'' ?> </td>
+                        </tr>
+
+                        <?php
+
+                        $total_credit += $value->credit;
+
+                        $total_debit += $value->debit;
+                        ?>
+                    <?php endif; ?>
                 <?php endforeach; ?>
                 <tr>
                     <td>DV#</td>
@@ -249,8 +308,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 Prepared By:
                             </h6>
                         </div>
-                        <div style="text-align: center;
-                ">
+                        <div style="text-align: center;">
                             <h5>
                                 CHARLIE C. DECHOS, CPA
                             </h5>
@@ -280,7 +338,16 @@ $this->params['breadcrumbs'][] = $this->title;
             </tbody>
             </th>
         </table>
-
+        <?php
+        $qwe = ArrayHelper::multisort($arr, ['debit', [SORT_DESC]]);
+        // ob_start();
+        // $wew = json_encode($arr);
+        // // ArrayHelper::multisort($wew,['debit',[SORT_DESC]]);
+        // echo "<pre>";
+        // var_dump($wew);
+        // echo "</pre>";
+        // return ob_get_clean();
+        ?>
 
     </div>
     <style>

@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\models\Books;
 use app\models\ChartOfAccounts;
 use app\models\FundClusterCode;
 use app\models\JevAccountingEntries;
@@ -87,7 +88,7 @@ class JevPreparationController extends Controller
         if (!empty($_POST)) {
 
             $gen = $_POST['gen'];
-            $fund = $_POST['fund'];
+            $book_id = $_POST['book_id'];
             $reporting_period = $_POST['reporting_period'];
             $x = explode('-', $reporting_period);
             // GET THE BEGINNING BALANCE OF THE LAST YEAR OF INPUTED REPORTING PERIOD
@@ -126,9 +127,9 @@ class JevPreparationController extends Controller
                     'chart_of_account_id' => $gen
                 ]);
             }
-            if (!empty($fund)) {
-                $general_ledger->andWhere("jev_preparation.fund_cluster_code_id = :fund_cluster_code_id", [
-                    'fund_cluster_code_id' => $fund
+            if (!empty($book_id)) {
+                $general_ledger->andWhere("jev_preparation.book_id = :book_id", [
+                    'book_id' => $book_id
                 ]);
             }
             // $general_ledger->orderBy('jev_preparation.reporting_period');
@@ -169,8 +170,8 @@ class JevPreparationController extends Controller
                 ]);
             }
             if (!empty($fund)) {
-                $query1->andWhere("jev_preparation.fund_cluster_code_id = :fund_cluster_code_id", [
-                    'fund_cluster_code_id' => $fund
+                $query1->andWhere("jev_preparation.book_id = :book_id", [
+                    'book_id' => $book_id
                 ]);
             }
             // $query1->orderBy('jev_preparation.reporting_period');
@@ -251,16 +252,16 @@ class JevPreparationController extends Controller
                 $ledger = $gen ? $final_ledger[0]['general_ledger'] : '';
             }
 
-            $fund_cluster_code = '';
-            if ($fund) {
-                $fund_cluster_code = FundClusterCode::find()->where("id = :id", [
-                    'id' => $fund
+            $book_name = '';
+            if ($book_id) {
+                $fund_cluster_code = Books::find()->where("id = :id", [
+                    'id' => $book_id
                 ])->one()->name;
             }
             if ($_POST['print'] == 1) {
                 return json_encode([
                     'results' => $result,
-                    'fund_cluster_code' => $fund_cluster_code,
+                    'fund_cluster_code' => $book_name,
                     'reporting_period' => date('F Y', strtotime($reporting_period))
                 ]);
             }
@@ -443,7 +444,7 @@ class JevPreparationController extends Controller
     {
         if (($model = JevPreparation::findOne($id)) !== null) {
 
-            $fund_cluster = FundClusterCode::findOne($model->fund_cluster_code_id)->name;
+            // $fund_cluster = FundClusterCode::findOne($model->fund_cluster_code_id)->name;
             return $model;
         }
 
@@ -960,15 +961,15 @@ class JevPreparationController extends Controller
 
 
         if (!empty($_POST)) {
-            $fund = $_POST['fund'] ? $_POST['fund'] : '';
+            $book_id = $_POST['book_id'] ? $_POST['book_id'] : '';
             $reporting_period = $_POST['reporting_period'] ? "{$_POST['reporting_period']}" : '';
             $journal = JevPreparation::find()
                 ->joinWith(['jevAccountingEntries', 'jevAccountingEntries.chartOfAccount']);
 
-            if (!empty($fund)) {
+            if (!empty($book_id)) {
 
-                $journal->andwhere("fund_cluster_code_id  = :fund_cluster_code_id", [
-                    'fund_cluster_code_id' => $fund
+                $journal->andwhere("book_id  = :book_id", [
+                    'book_id' => $book_id
                 ]);
             }
             if (!empty($reporting_period)) {
@@ -983,18 +984,19 @@ class JevPreparationController extends Controller
 
 
             $x = $journal->all();
-            $fund_cluster_code = '';
-            if (!empty($fund)) {
-                $fund_cluster_code = $this->getFundClusterCode($fund);
+            $book_name = '';
+            if (!empty($book_id)) {
+                // $fund_cluster_code = $this->getFundClusterCode($fund);
+                $book_name = $this->getBookName($book_id);
             }
             // echo '<pre>';
-            // var_dump($fund);
+            // var_dump($book_name);
             // echo '</pre>';
             return $this->render(
                 'general_journal',
                 [
                     'journal' => $x,
-                    'fund_cluster_code' => $fund_cluster_code,
+                    'fund_cluster_code' => $book_name,
                     'reporting_period' => $reporting_period
                 ]
             );
@@ -1411,10 +1413,7 @@ class JevPreparationController extends Controller
         return $fund_cluster_code;
     }
 
-    public function actionSubsidiaryLedger()
-    {
-        return $this->render('subsidiary_ledger_view');
-    }
+
 
     public function actionGetA()
     {
@@ -1434,7 +1433,7 @@ class JevPreparationController extends Controller
             $reporting_period = $_POST['reporting_period'];
             $check_ada_date = !empty($_POST['check_ada_date']) ? $_POST['check_ada_date'] : '';
             $date = !empty($_POST['date']) ? $_POST['date'] : '';
-            $fund_cluster_code = $_POST['fund_cluster_code'] ? $_POST['fund_cluster_code'] : '';
+            // $fund_cluster_code = $_POST['fund_cluster_code'] ? $_POST['fund_cluster_code'] : '';
             $r_center_id = !empty($_POST['r_center_id']) ? $_POST['r_center_id'] : '';
             $reference = !empty($_POST['reference']) ? $_POST['reference'] : '';
             $check_ada = !empty($_POST['check_ada']) ? $_POST['check_ada'] : '';
@@ -1446,6 +1445,7 @@ class JevPreparationController extends Controller
             $payee_id = !empty($_POST['payee_id']) ? $_POST['payee_id'] : '';
             $ref_number = !empty($_POST['reference']) ? $_POST['reference'] : '';
             $ada_number = !empty($_POST['ada_number']) ? $_POST['ada_number'] : '';
+            $book_id = !empty($_POST['book']) ? $_POST['book'] : '';
 
             $total_debit = round(array_sum($_POST['debit']), 2);
             $total_credit = round(array_sum($_POST['credit']), 2);
@@ -1459,7 +1459,7 @@ class JevPreparationController extends Controller
 
                 // if (!empty($reporting_period) && !empty($fund_cluster_code)) {
                 $jev_number = $reference;
-                $jev_number .= '-' . $this->getJevNumber($fund_cluster_code, $reporting_period);
+                $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period);
                 // for($x=0;$x<count($_POST['debit']);$x++){
                 //      $amount = floatval(preg_replace('/[^\d.]/', '', $_POST['debit'][$x]));
                 //      $tt+=$amount;
@@ -1482,7 +1482,7 @@ class JevPreparationController extends Controller
                 }
                 $jev_preparation->reporting_period = $reporting_period;
                 $jev_preparation->responsibility_center_id = $r_center_id;
-                $jev_preparation->fund_cluster_code_id = $fund_cluster_code;
+                // $jev_preparation->fund_cluster_code_id = $fund_cluster_code;
                 $jev_preparation->date = $date;
                 $jev_preparation->jev_number = $jev_number;
                 $jev_preparation->ref_number = $ref_number;
@@ -1496,6 +1496,7 @@ class JevPreparationController extends Controller
                 $jev_preparation->check_ada = $check_ada;
                 $jev_preparation->check_ada_number = $ada_number;
                 $jev_preparation->check_ada_date = $check_ada_date;
+                $jev_preparation->book_id = $book_id;
 
 
                 if ($jev_preparation->validate()) {
@@ -1632,7 +1633,7 @@ class JevPreparationController extends Controller
 
 
 
-    public function getFinancialPosition($reporting_period, $fund_cluster)
+    public function getFinancialPosition($reporting_period, $book_id)
     {
 
         $x = explode('-', $reporting_period);
@@ -1654,29 +1655,27 @@ class JevPreparationController extends Controller
 
     AND chart_of_accounts.account_group IN ('Assets','Liabilities','Equity')
     AND jev_preparation.reporting_period BETWEEN :begining_month AND :reporting_period
-    AND jev_preparation.fund_cluster_code_id = :fund_cluster    
+    AND jev_preparation.book_id = :book_id    
     GROUP BY chart_of_accounts.account_group,chart_of_accounts.major_account_id,chart_of_accounts.uacs
     ORDER BY chart_of_accounts.account_group,chart_of_accounts.current_noncurrent,chart_of_accounts.major_account_id) as r1
 
     LEFT JOIN
+    
     (SELECT chart_of_accounts.uacs,
     SUM(jev_accounting_entries.debit) as last_year_total_debit, SUM(jev_accounting_entries.credit) as last_year_total_credit
     FROM jev_accounting_entries,jev_preparation,chart_of_accounts,major_accounts
-
     WHERE jev_accounting_entries.chart_of_account_id = chart_of_accounts.id 
     AND jev_accounting_entries.jev_preparation_id = jev_preparation.id
-
     AND chart_of_accounts.major_account_id = major_accounts.id
-
     AND chart_of_accounts.account_group IN ('Assets','Liabilities','Equity')
     AND jev_preparation.reporting_period BETWEEN  :begining_reporting_period AND :reporting_period
-    AND jev_preparation.fund_cluster_code_id = :fund_cluster
+    AND jev_preparation.book_id = :book_id
     GROUP BY chart_of_accounts.account_group,chart_of_accounts.major_account_id,chart_of_accounts.uacs
     ORDER BY chart_of_accounts.account_group,chart_of_accounts.current_noncurrent,chart_of_accounts.major_account_id) as r2
 
     ON (r1.uacs = r2.uacs)
     ")
-            ->bindValue(':fund_cluster', intval($fund_cluster))
+            ->bindValue(':book_id', intval($book_id))
             ->bindValue(':reporting_period', $reporting_period)
             ->bindValue(':reporting_period_last_year', $reporting_period_last_year)
             ->bindValue(':begining_reporting_period', $begining_reporting_period)
@@ -1709,30 +1708,8 @@ class JevPreparationController extends Controller
 
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
-            $fund_cluster = $_POST['fund'];
-
-
-            // GET THE BEGINNING BALANCE OF THE LAST YEAR OF INPUTED REPORTING PERIOD
-            $q = '';
-
-            // if ($reporting_period > 0) {
-            //     $q = $x[0] - 1;
-
-            //     $begin_balance = JevPreparation::find()
-            //         ->select('jev_preparation.reporting_period')
-            //         ->where("jev_preparation.reporting_period LIKE :reporting_period", [
-            //             'reporting_period' => "$q%"
-            //         ])->orderBy('date DESC')->one()->reporting_period;
-            //     $y = $q - 1;
-
-            //     // $begin_balance_last_year = JevPreparation::find()
-            //     //     ->select('jev_preparation.reporting_period')
-            //     //     ->where("jev_preparation.reporting_period LIKE :reporting_period", [
-            //     //         'reporting_period' => "$y%"
-            //     //     ])->orderBy('date DESC')->one()->reporting_period;
-            // }
-
-            $with_bal = $this->getFinancialPosition($reporting_period, $fund_cluster);
+            $book_id = $_POST['book_id'];
+            $with_bal = $this->getFinancialPosition($reporting_period, $book_id);
             $result = ArrayHelper::index($with_bal, null, [function ($element) {
                 return $element['account_group'];
             }, 'current_noncurrent', 'name']);
@@ -1742,26 +1719,26 @@ class JevPreparationController extends Controller
             // var_dump($reporting_period_last_year,$y);
             // echo "</pre>";
             // return ob_get_clean();
-            $x = explode('-', $reporting_period);
-
-            $reporting_period_last_year =  $x[0] - 1 . '-' . $x[1];
+            $year = $this->getCurYearAndPrevYear($reporting_period);
+            $book_name = $this->getBookName($book_id);
             return $this->render('detailed_financial_position_view', [
                 'data' => $result,
-                'reporting_period' =>  date('F Y', strtotime($reporting_period)),
-                'prev_year' =>  date('Y', strtotime($reporting_period_last_year))
+                'reporting_period' => $year['cur_year'],
+                'prev_year' => $year['prev_year'],
+                'book_name' => $book_name
             ]);
         } else {
             return $this->render('detailed_financial_position_view', []);
         }
     }
 
-    // CONSOLIDATED FINANCIAL STATEMENTS
+    // CONSOLIDATED FINANCIAL STATEMENTS POSITION
     public function actionConsolidatedFinancialPosition()
     {
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
-            $fund_cluster = $_POST['fund'];
-            $with_bal = $this->getFinancialPosition($reporting_period, $fund_cluster);
+            $book_id = $_POST['book_id'];
+            $with_bal = $this->getFinancialPosition($reporting_period, $book_id);
             $result = ArrayHelper::index($with_bal, null, [function ($element) {
                 return $element['account_group'];
             }, 'current_noncurrent',]);
@@ -1771,12 +1748,16 @@ class JevPreparationController extends Controller
             // var_dump($reporting_period_last_year,$y);
             // echo "</pre>";
             // return ob_get_clean();
+            $book_name = $this->getBookName($book_id);
             $x = explode('-', $reporting_period);
             $reporting_period_last_year =  $x[0] - 1 . '-' . $x[1];
+
+            $year = $this->getCurYearAndPrevYear($reporting_period);
             return $this->render('consolidated_financial_position_view', [
                 'data' => $result,
-                'reporting_period' =>  date('F Y', strtotime($reporting_period)),
-                'prev_year' =>  date('Y', strtotime($reporting_period_last_year))
+                'reporting_period' => $year['cur_year'],
+                'prev_year' => $year['prev_year'],
+                'book_name' => $book_name
             ]);
         } else {
             return $this->render('consolidated_financial_position_view', []);
@@ -1807,13 +1788,13 @@ class JevPreparationController extends Controller
                 ->andWhere("jev_accounting_entries.object_code = :object_code", [
                     'object_code' => $_POST['sub_account']
                 ])
-                ->andWhere("jev_preparation.fund_cluster_code_id = :fund_cluster_code_id", [
-                    'fund_cluster_code_id' => $_POST['fund']
+                ->andWhere("jev_preparation.book_id = :book_id", [
+                    'book_id' => $_POST['book_id']
                 ])
                 // ->groupBy('object_code')
                 ->orderBy('jev_preparation.date')
                 ->all();
-            $fund_cluster = FundClusterCode::find()->where("id =:id", ['id' => $_POST['fund']])->one()->name;
+            $book_name = Books::find()->where("id =:id", ['id' => $_POST['book_id']])->one()->name;
             $sl_name = (new \yii\db\Query())->select(['name'])->from('sub_accounts1')->where("object_code =:object_code", ['object_code' => $_POST['sub_account']])->one()['name'];
             $sl_final = [];
             $balance = 0;
@@ -1837,7 +1818,7 @@ class JevPreparationController extends Controller
             // echo "</pre>";
             return $this->render('subsidiary_ledger_view', [
                 'data' => $sl_final,
-                'fund_cluster' => $fund_cluster,
+                'fund_cluster' => $book_name,
                 'general_ledger' => $sl_final[0]['general_ledger'],
                 'sl_name' => $sl_name
             ]);
@@ -1850,7 +1831,7 @@ class JevPreparationController extends Controller
     }
 
     // DETAILED STATEMENT OF FINANCIAL PERFORMANCE
-    public function getFinancialPerformance($reporting_period, $fund_cluster)
+    public function getFinancialPerformance($reporting_period, $book_id)
     {
 
         $x = explode('-', $reporting_period);
@@ -1858,46 +1839,46 @@ class JevPreparationController extends Controller
         $prev_year_begin_month =  $x[0] - 1 . '-' . '01';
         $reporting_period_last_year =  $x[0] - 1 . '-' . $x[1];
         $q = Yii::$app->db->createCommand("SELECT * from 
-    (SELECT chart_of_accounts.account_group,chart_of_accounts.uacs,chart_of_accounts.general_ledger,
-    chart_of_accounts.current_noncurrent,major_accounts.name,chart_of_accounts.normal_balance,
-    
-    jev_preparation.reporting_period,
-    SUM(jev_accounting_entries.debit) as total_debit, SUM(jev_accounting_entries.credit) as total_credit
-    FROM jev_accounting_entries,jev_preparation,chart_of_accounts,major_accounts
+            (SELECT chart_of_accounts.account_group,chart_of_accounts.uacs,chart_of_accounts.general_ledger,
+            chart_of_accounts.current_noncurrent,major_accounts.name,chart_of_accounts.normal_balance,
+            
+            jev_preparation.reporting_period,
+            SUM(jev_accounting_entries.debit) as total_debit, SUM(jev_accounting_entries.credit) as total_credit
+            FROM jev_accounting_entries,jev_preparation,chart_of_accounts,major_accounts
 
-    WHERE jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
-    AND jev_accounting_entries.jev_preparation_id = jev_preparation.id
+            WHERE jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
+            AND jev_accounting_entries.jev_preparation_id = jev_preparation.id
 
-    AND chart_of_accounts.major_account_id = major_accounts.id
+            AND chart_of_accounts.major_account_id = major_accounts.id
 
-    AND chart_of_accounts.account_group IN ('Expenses','Income')
-    AND jev_preparation.reporting_period BETWEEN :reporting_period_begin_month AND :reporting_period
-    AND jev_preparation.fund_cluster_code_id = :fund_cluster
-    AND jev_accounting_entries.closing_nonclosing='Non-closing'
-    GROUP BY chart_of_accounts.account_group,chart_of_accounts.major_account_id,chart_of_accounts.uacs
-    ORDER BY chart_of_accounts.account_group,chart_of_accounts.current_noncurrent,chart_of_accounts.major_account_id) as r1
+            AND chart_of_accounts.account_group IN ('Expenses','Income')
+            AND jev_preparation.reporting_period BETWEEN :reporting_period_begin_month AND :reporting_period
+            AND jev_preparation.book_id = :book_id
+            AND jev_accounting_entries.closing_nonclosing='Non-closing'
+            GROUP BY chart_of_accounts.account_group,chart_of_accounts.major_account_id,chart_of_accounts.uacs
+            ORDER BY chart_of_accounts.account_group,chart_of_accounts.current_noncurrent,chart_of_accounts.major_account_id) as r1
 
-    LEFT JOIN
-    (SELECT chart_of_accounts.uacs,
-    SUM(jev_accounting_entries.debit) as last_year_total_debit, SUM(jev_accounting_entries.credit) as last_year_total_credit
-    FROM jev_accounting_entries,jev_preparation,chart_of_accounts,major_accounts
+            LEFT JOIN
+            (SELECT chart_of_accounts.uacs,
+            SUM(jev_accounting_entries.debit) as last_year_total_debit, SUM(jev_accounting_entries.credit) as last_year_total_credit
+            FROM jev_accounting_entries,jev_preparation,chart_of_accounts,major_accounts
 
-    WHERE jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
-    AND jev_accounting_entries.jev_preparation_id = jev_preparation.id
+            WHERE jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
+            AND jev_accounting_entries.jev_preparation_id = jev_preparation.id
 
-    AND chart_of_accounts.major_account_id = major_accounts.id
+            AND chart_of_accounts.major_account_id = major_accounts.id
 
-    AND chart_of_accounts.account_group IN ('Expenses','Income')
-    AND jev_preparation.reporting_period BETWEEN :prev_year_begin_month AND :reporting_period_last_year
-    AND jev_preparation.fund_cluster_code_id = :fund_cluster
-    AND jev_accounting_entries.closing_nonclosing='Non-closing'
-    GROUP BY chart_of_accounts.account_group,chart_of_accounts.major_account_id,chart_of_accounts.uacs
-    ORDER BY chart_of_accounts.account_group,chart_of_accounts.current_noncurrent,chart_of_accounts.major_account_id) as r2
+            AND chart_of_accounts.account_group IN ('Expenses','Income')
+            AND jev_preparation.reporting_period BETWEEN :prev_year_begin_month AND :reporting_period_last_year
+            AND jev_preparation.book_id = :book_id
+            AND jev_accounting_entries.closing_nonclosing='Non-closing'
+            GROUP BY chart_of_accounts.account_group,chart_of_accounts.major_account_id,chart_of_accounts.uacs
+            ORDER BY chart_of_accounts.account_group,chart_of_accounts.current_noncurrent,chart_of_accounts.major_account_id) as r2
 
-    ON (r1.uacs = r2.uacs)
-    ")
+            ON (r1.uacs = r2.uacs)
+            ")
             ->bindValue(':reporting_period', $reporting_period)
-            ->bindValue(':fund_cluster', $fund_cluster)
+            ->bindValue(':book_id', $book_id)
             ->bindValue(':reporting_period_last_year', $reporting_period_last_year)
             ->bindValue(':reporting_period_begin_month', $reporting_period_begin_month)
             ->bindValue(':prev_year_begin_month', $prev_year_begin_month)
@@ -1923,13 +1904,14 @@ class JevPreparationController extends Controller
         }
         return $with_bal;
     }
+    // DETAILED FINANCIAL STATEMENT PERFORMANCE
     public function actionDetailedFinancialPerformance()
     {
 
         if ($_POST) {
             $reporting_period =  $_POST['reporting_period'];
-            $fund_cluster = $_POST['fund'];
-            $with_bal = $this->getFinancialPerformance($reporting_period, $fund_cluster);
+            $book_id = $_POST['book_id'];
+            $with_bal = $this->getFinancialPerformance($reporting_period, $book_id);
             $result = ArrayHelper::index($with_bal, null, [function ($element) {
                 return $element['account_group'];
             }, 'current_noncurrent', 'name']);
@@ -1938,42 +1920,54 @@ class JevPreparationController extends Controller
             // var_dump($result);
             // echo "</pre>";
             // return ob_get_clean();
+            $book_name = $this->getBookName($book_id);;
             $x = explode('-', $reporting_period);
             $reporting_period_last_year =  $x[0] - 1 . '-' . $x[1];
+            $year = $this->getCurYearAndPrevYear($reporting_period);
             return $this->render('detailed_financial_performance_view', [
                 'data' => $result,
-                'reporting_period' =>  date('F Y', strtotime($reporting_period)),
-                'prev_year' =>  date('Y', strtotime($reporting_period_last_year))
+                'reporting_period' =>  $year['cur_year'],
+                'prev_year' =>  $year['prev_year'],
+                'book_name' => $book_name
 
             ]);
         } else {
             return $this->render('detailed_financial_performance_view');
         }
     }
+    // GET BOOK NAME
+    public function getBookName($book_id)
+    {
+        $book_name = Books::findOne($book_id)->name;
+        return $book_name;
+    }
     // CONSOLIDATED STATEMENT OF FINANCIAL PERFORMANCE
     public function actionConsolidatedFinancialPerformance()
     {
         if ($_POST) {
             $reporting_period =  $_POST['reporting_period'];
-            $fund_cluster = $_POST['fund'];
-            $with_bal = $this->getFinancialPerformance($reporting_period, $fund_cluster);
+            $book_id = $_POST['book_id'];
+            $with_bal = $this->getFinancialPerformance($reporting_period, $book_id);
 
 
             $result = ArrayHelper::index($with_bal, null, [function ($element) {
                 return $element['account_group'];
             }, 'current_noncurrent',]);
-
+            $book_name = $this->getBookName($book_id);
             // ob_start();
             // echo "<pre>";
             // var_dump($isClosing);
             // echo "</pre>";
             // return ob_get_clean();
+
             $x = explode('-', $reporting_period);
             $reporting_period_last_year =  $x[0] - 1 . '-' . $x[1];
+            $year = $this->getCurYearAndPrevYear($reporting_period);
             return $this->render('consolidated_financial_performance_view', [
                 'data' => $result,
-                'reporting_period' =>  date('F Y', strtotime($reporting_period)),
-                'prev_year' =>  date('Y', strtotime($reporting_period_last_year))
+                'reporting_period' =>  $year['cur_year'],
+                'prev_year' =>  $year['prev_year'],
+                'book_name' => $book_name
 
             ]);
         } else {
@@ -1981,7 +1975,7 @@ class JevPreparationController extends Controller
         }
     }
     // MAG ASSIGN OG JEV NUMBER 
-    public function getJevNumber($fund_cluster_code, $reporting_period)
+    public function getJevNumber($book_id, $reporting_period)
     {
         // $reporting_period = "2021-12";
         $q = date("Y", strtotime($reporting_period));
@@ -1992,9 +1986,9 @@ class JevPreparationController extends Controller
             ->orderBy([
                 'id' => SORT_DESC
             ])->one();
-        $ff = FundClusterCode::find()
+        $ff = Books::find()
             ->where("id = :id", [
-                'id' => $fund_cluster_code
+                'id' => $book_id
             ])->one()->name;
         if (!empty($query)) {
             $x = explode('-', $query->jev_number)[4] + 1;
@@ -2027,19 +2021,6 @@ class JevPreparationController extends Controller
     public function actionUpdateJev()
     {
 
-        // $model  = JevPreparation::find()->where("id = :id", [
-        //     'id' => $_POST['update_id']
-        // ])->all();
-        // $model = JevPreparation::findOne($_POST['update_id']);
-        // $model = (new \yii\db\Query())
-        //     ->select('*')
-        //     ->from('jev_preparation')
-        //     ->join("LEFT JOIN", "jev_accounting_entries", "jev_preparation.id=jev_accounting_entries.jev_preparation_id")
-        //     ->where("jev_preparation.id =:id", [
-        //         'id' => $_POST['update_id']
-        //     ])
-        //     ->all();
-        // $result = ArrayHelper::index($model, null, 'jev_preparation_id');
         $model = JevPreparation::findOne($_POST['update_id']);
 
         $res = [];
@@ -2065,6 +2046,7 @@ class JevPreparationController extends Controller
             'check_ada' => $model->check_ada,
             'check_ada_number' => $model->check_ada_number,
             'check_ada_date' => $model->check_ada_date,
+            'book_id' => $model->book_id,
         ];
         $jev_ae = [];
         foreach ($model->jevAccountingEntries as $val) {
@@ -2101,40 +2083,45 @@ class JevPreparationController extends Controller
         return json_encode(['jev_preparation' => $jev, 'jev_accounting_entries' => $jev_ae]);
     }
 
-    public function getCashflow($reporting_period, $fund_cluster)
+    public function getCashflow($reporting_period, $book_id)
     {
         $x = explode('-', $reporting_period);
         $reporting_period_begin_month = $x[0] . '-01';
-        $pre_year_reporting_period = $x[0] - 1 . '-' . $x[1];
+        $prev_year_reporting_period = $x[0] - 1 . '-' . $x[1];
         $prev_year_begin_month = $x[0] - 1 . '-' . $x[1];
 
         $q = Yii::$app->db->createCommand(
             "SELECT * from 
-             ( SELECT cash_flow.major_cashflow,cash_flow.sub_cashflow1,cash_flow.specific_cashflow ,
-            SUM(debit) as total_debit,SUM(credit)as total_credit,
-            chart_of_accounts.normal_balance,cash_flow.sub_cashflow2,cash_flow.id
-            
-            FROM jev_accounting_entries,cash_flow,jev_preparation,chart_of_accounts
-            WHERE  jev_accounting_entries.cashflow_id=cash_flow.id
-            AND jev_accounting_entries.chart_of_account_id=chart_of_accounts.id
-            AND jev_accounting_entries.jev_preparation_id = jev_preparation.id
-            AND jev_accounting_entries.cashflow_id IS NOT NULL
-            AND jev_preparation.reporting_period BETWEEN '2021-01' AND '2021-12'
-            GROUP BY jev_accounting_entries.cashflow_id  ) as r1
-        LEFT JOIN
-        (SELECT SUM(debit) as prev_year_total_debit,SUM(credit)as prev_year_total_credit ,cash_flow.id
-            FROM jev_accounting_entries,cash_flow,jev_preparation,chart_of_accounts
-            WHERE  jev_accounting_entries.cashflow_id=cash_flow.id
-            AND jev_accounting_entries.chart_of_account_id=chart_of_accounts.id
-            AND jev_accounting_entries.jev_preparation_id = jev_preparation.id
-            AND jev_accounting_entries.cashflow_id IS NOT NULL
-            AND jev_preparation.reporting_period BETWEEN '2020-01' AND '2020-12'
-            GROUP BY jev_accounting_entries.cashflow_id  )  as r2
-        ON (r1.id = r2.id)
-        "
+                ( SELECT cash_flow.major_cashflow,cash_flow.sub_cashflow1,cash_flow.specific_cashflow ,
+                SUM(debit) as total_debit,SUM(credit)as total_credit,
+                chart_of_accounts.normal_balance,cash_flow.sub_cashflow2,cash_flow.id
+                
+                FROM jev_accounting_entries,cash_flow,jev_preparation,chart_of_accounts
+                WHERE  jev_accounting_entries.cashflow_id=cash_flow.id
+                AND jev_accounting_entries.chart_of_account_id=chart_of_accounts.id
+                AND jev_accounting_entries.jev_preparation_id = jev_preparation.id
+                AND jev_accounting_entries.cashflow_id IS NOT NULL
+                AND jev_preparation.reporting_period BETWEEN :reporting_period_begin_month AND :reporting_period
+                AND jev_preparation.book_id = :book_id
+                GROUP BY jev_accounting_entries.cashflow_id  ) as r1
+            LEFT JOIN
+            (SELECT SUM(debit) as prev_year_total_debit,SUM(credit)as prev_year_total_credit ,cash_flow.id
+                FROM jev_accounting_entries,cash_flow,jev_preparation,chart_of_accounts
+                WHERE  jev_accounting_entries.cashflow_id=cash_flow.id
+                AND jev_accounting_entries.chart_of_account_id=chart_of_accounts.id
+                AND jev_accounting_entries.jev_preparation_id = jev_preparation.id
+                AND jev_accounting_entries.cashflow_id IS NOT NULL
+                AND jev_preparation.reporting_period BETWEEN :prev_year_begin_month AND :prev_year_reporting_period
+                AND jev_preparation.book_id = :book_id
+                GROUP BY jev_accounting_entries.cashflow_id  )  as r2
+            ON (r1.id = r2.id)
+            "
         )
             ->bindValue(':reporting_period', $reporting_period)
             ->bindValue(':reporting_period_begin_month', $reporting_period_begin_month)
+            ->bindValue(':prev_year_reporting_period', $prev_year_reporting_period)
+            ->bindValue(':prev_year_begin_month', $prev_year_begin_month)
+            ->bindValue(':book_id', $book_id)
             ->queryAll();
         $with_bal = [];
 
@@ -2156,37 +2143,49 @@ class JevPreparationController extends Controller
         }
         return $with_bal;
     }
+    public function getCurYearAndPrevYear($reporting_period)
+    {
+        $x = explode('-', $reporting_period);
+        $reporting_period_last_year =  $x[0] - 1 . '-' . $x[1];
+
+        $cur_year = date('F Y', strtotime($reporting_period));
+        $prev_year = date('Y', strtotime($reporting_period_last_year));
+        return ['cur_year' => $cur_year, 'prev_year' => $prev_year];
+    }
+    // GET DETAILED CASHFLOW
     public function actionDetailedCashflow()
     {
 
         if ($_POST) {
 
             $reporting_period = $_POST['reporting_period'];
-            $fund_cluster = $_POST['fund'];
-            $with_bal = $this->getCashflow($reporting_period, $fund_cluster);
+            $book_id = $_POST['book_id'];
+            $with_bal = $this->getCashflow($reporting_period, $book_id);
 
             $result = ArrayHelper::index($with_bal, null, [function ($element) {
                 return $element['major_cashflow'];
             }, 'sub_cashflow1', 'sub_cashflow2']);
             $x = explode('-', $reporting_period);
 
-            $reporting_period_last_year =  $x[0] - 1 . '-' . $x[1];
+
+            $year = $this->getCurYearAndPrevYear($reporting_period);
+            $book_name = $this->getBookName($book_id);
             //   ob_start();
             // echo "<pre>";
             // var_dump($with_bal);
             // echo "</pre>";
             // return ob_get_clean();
-            $cur_year = date('F Y', strtotime($reporting_period));
 
             return $this->render('detailed_cashflow_view', [
                 'data' => $result,
-                'reporting_period' => $cur_year,
-                'prev_year' => date('Y', strtotime($reporting_period_last_year))
+                'reporting_period' => $year['cur_year'],
+                'prev_year' => $year['prev_year'],
+                'book_name' => $book_name
             ]);
 
             // ob_start();
             // echo "<pre>";
-            // var_dump($cur_year);
+            // var_dump($q['prev_year']);
             // echo "</pre>";
             // return ob_get_clean();
         } else {
@@ -2197,16 +2196,18 @@ class JevPreparationController extends Controller
     {
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
-            $fund_cluster = $_POST['fund'];
-            $with_bal = $this->getCashflow($reporting_period, $fund_cluster);
+            $book_id = $_POST['book_id'];
+            $with_bal = $this->getCashflow($reporting_period, $book_id);
             $result = ArrayHelper::index($with_bal, null, [function ($element) {
                 return $element['major_cashflow'];
             }, 'sub_cashflow1']);
-            $prev_year = date('Y', strtotime($reporting_period)) - 1;
+            $year = $this->getCurYearAndPrevYear($reporting_period);
+            $book_name = $this->getBookName($book_id);
             return $this->render('consolidated_cashflow_view', [
                 'data' => $result,
-                'reporting_period' => date('F Y', strtotime($reporting_period)),
-                'prev_year' => $prev_year
+                'reporting_period' => $year['cur_year'],
+                'prev_year' => $year['prev_year'],
+                'book_name' => $book_name
             ]);
             // ob_start();
             // echo "<pre>";
@@ -2218,12 +2219,13 @@ class JevPreparationController extends Controller
             return $this->render("consolidated_cashflow_view");
         }
     }
+
+
     public function actionChangesNetassetEquity()
     {
-
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
-            $fund_cluster = $_POST['fund'];
+            $book_id = $_POST['book_id'];
             $x = explode('-', $reporting_period);
             $reporting_period_begin_month = $x[0] . '-01';
             $prev_year = $x[0] - 1 . '-' . $x[1];
@@ -2238,24 +2240,23 @@ class JevPreparationController extends Controller
             AND jev_accounting_entries.chart_of_account_id=chart_of_accounts.id
             AND jev_accounting_entries.net_asset_equity_id IS NOT NULL
             AND jev_preparation.reporting_period BETWEEN :reporting_period_begin_month AND :reporting_period
-            AND jev_preparation.fund_cluster_code_id = :fund_cluster
+            AND jev_preparation.book_id = :book_id
             GROUP BY jev_accounting_entries.net_asset_equity_id) as q1
             LEFT JOIN
             (SELECT   SUM(jev_accounting_entries.debit) as prev_year_total_debit,
             SUM(jev_accounting_entries.credit) as prev_year_total_credit,net_asset_equity.id as prev_id
-            
             FROM jev_accounting_entries,jev_preparation,chart_of_accounts,net_asset_equity
             WHERE jev_accounting_entries.jev_preparation_id=jev_preparation.id
             AND jev_accounting_entries.net_asset_equity_id = net_asset_equity.id
             AND jev_accounting_entries.chart_of_account_id=chart_of_accounts.id
             AND jev_accounting_entries.net_asset_equity_id IS NOT NULL
             AND jev_preparation.reporting_period BETWEEN :prev_year_begin_month AND :prev_year
-            AND jev_preparation.fund_cluster_code_id = :fund_cluster
+            AND jev_preparation.book_id = :book_id
             GROUP BY jev_accounting_entries.net_asset_equity_id) as q2
             ON (q1.id=q2.prev_id)")
                 ->bindValue(':reporting_period', $reporting_period)
                 ->bindValue(':reporting_period_begin_month', $reporting_period_begin_month)
-                ->bindValue(':fund_cluster', $fund_cluster)
+                ->bindValue(':book_id', $book_id)
                 ->bindValue(':prev_year', $prev_year)
                 ->bindValue(':prev_year_begin_month', $prev_year_begin_month)
                 ->queryAll();
@@ -2285,7 +2286,14 @@ class JevPreparationController extends Controller
             // var_dump($result);
             // echo "</pre>";
             // return ob_get_clean();
-            return $this->render('changes_in_netasset_equity_view', ['data' => $result]);
+            $book_name = $this->getBookName($book_id);
+            $year = $this->getCurYearAndPrevYear($reporting_period);
+            return $this->render('changes_in_netasset_equity_view', [
+                'data' => $result,
+                'reporting_period' => $year['cur_year'],
+                'prev_year' => $year['prev_year'],
+                'book_name' => $book_name
+            ]);
         } else {
             return $this->render('changes_in_netasset_equity_view');
         }

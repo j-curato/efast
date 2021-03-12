@@ -25,16 +25,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <?php
-    $chart = Yii::$app->db->createCommand("SELECT  jev_preparation.explaination, jev_preparation.jev_number, jev_preparation.reporting_period ,
-            jev_accounting_entries.id,jev_accounting_entries.debit,jev_accounting_entries.credit,chart_of_accounts.uacs,
-            chart_of_accounts.general_ledger
-            FROM jev_preparation,jev_accounting_entries,chart_of_accounts where jev_preparation.id = jev_accounting_entries.jev_preparation_id
-            AND jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
-            AND jev_preparation.fund_cluster_code_id =1 AND jev_accounting_entries.chart_of_account_id =1 
-            ORDER BY jev_preparation.reporting_period
-            ")->queryAll();
+
     $ledger = Yii::$app->db->createCommand("SELECT chart_of_accounts.id, CONCAT(chart_of_accounts.uacs,' - ',chart_of_accounts.general_ledger) as name FROM chart_of_accounts")->queryAll();
-    $fund = Yii::$app->db->createCommand("SELECT fund_cluster_code.id,fund_cluster_code.name FROM fund_cluster_code")->queryAll();
+    $books = Yii::$app->db->createCommand("SELECT books.id,books.name FROM books")->queryAll();
     $t = yii::$app->request->baseUrl . '/index.php?r=jev-preparation/sample';
     $sub1 = (new \yii\db\Query())->select('*')->from('sub_accounts1')->all();
 
@@ -50,9 +43,6 @@ $this->params['breadcrumbs'][] = $this->title;
             if (!empty($print)) {
                 $q = $print;
             }
-
-
-
             ?>
             <div class="action">
                 <button id="print" onclick="window.print()"><i class="glyphicon glyphicon-print"></i></button>
@@ -67,13 +57,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             <div class="col-sm-3">
-                <label for="fund"> Fund Cluster Code</label>
+                <label for="book"> Books</label>
                 <?php
                 echo Select2::widget([
-                    'data' => ArrayHelper::map($fund, 'id', 'name'),
-                    'id' => 'fund',
-                    'name' => 'fund',
-                    'options' => ['placeholder' => 'Select a Fund Cluster Code'],
+                    'data' => ArrayHelper::map($books, 'id', 'name'),
+                    'id' => 'book',
+                    'name' => 'book',
+                    'options' => ['placeholder' => 'Select a Books'],
                     'pluginOptions' => [
                         'allowClear' => true
                     ],
@@ -136,7 +126,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     STATEMENT OF FINANCIAL PERFORMANCE
                                 </h5>
                                 <h5>
-                                    FUND CLUSTER
+                                    FUND CLUSTER <?php echo !empty($book_name)?strtoupper($book_name):''?>
                                 </h5>
                                 <h5>
                                     As of <?php echo !empty($reporting_period) ? $reporting_period : '' ?>
@@ -152,7 +142,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th>
                         <?php
                         if (!empty($reporting_period)) {
-                            echo date('y',strtotime($reporting_period));
+                            echo date('Y',strtotime($reporting_period));
                         } else {
                             echo 'Year';
                         }
@@ -234,6 +224,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <style>
         .right-border {
             border-right: 1px solid transparent;
+        }
+        h5{
+            font-weight: bold;
         }
 
         #reporting_period {
@@ -416,7 +409,7 @@ $script = <<< JS
 
 $(document).ready(function(){
     let gen = undefined
-    let fund = undefined
+    let book_id = undefined
     let reporting_period=undefined
     let sub_account=undefined
     let ex=0
@@ -425,9 +418,9 @@ $(document).ready(function(){
         //  title = document.getElementById('title')
         // query()
     })
-    $( "#fund" ).on('change keyup', function(){
-        fund = $(this).val()
-        // console.log(fund)
+    $( "#book" ).on('change keyup', function(){
+        book_id = $(this).val()
+        // console.log(book_id)
         // query()
     })
     $("#reporting_period").change(function(){
@@ -463,14 +456,14 @@ $(document).ready(function(){
     })
 
     function query(){
-        // console.log(fund+gen)
-        // console.log(fund)
+        // console.log(book_id+gen)
+        // console.log(book_id)
         $.pjax({container: "#employee", 
         url: window.location.pathname + '?r=jev-preparation/consolidated-financial-performance',
         type:'POST',
         data:{
             reporting_period:reporting_period?''+reporting_period.toString():'',
-            fund:fund?fund:0,
+            book_id:book_id?book_id:0,
         
         },
   

@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Books;
 use app\models\FundClusterCode;
 use app\models\JevPreparation;
 use app\models\ResponsibilityCenter;
@@ -93,7 +94,7 @@ $this->params['breadcrumbs'][] = $this->title;
     'floatHeaderOptions' => [
       'top' => 50,
       'position' => 'absolute',
-      
+
     ],
     'columns' => [
       // ['class' => 'yii\grid\SerialColumn'],
@@ -128,13 +129,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
       [
         'label' => 'Fund Cluster Code',
-        'attribute' => 'fund_cluster_code_id',
-        'value' => 'fundClusterCode.name',
+        'attribute' => 'book_id',
+        'value' => 'books.name',
         'filter' => Html::activeDropDownList(
           $searchModel,
-          'fund_cluster_code_id',
-          ArrayHelper::map(FundClusterCode::find()->asArray()->all(), 'id', 'name'),
-          ['class' => 'form-control', 'prompt' => 'Fund Cluster Code']
+          'book_id',
+          ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
+          ['class' => 'form-control', 'prompt' => 'Books']
         )
 
       ],

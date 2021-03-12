@@ -83,9 +83,15 @@ use aryelds\sweetalert\SweetAlertAsset;
             <div class="row">
 
 
-                <div class="col-sm-3" style="height:60x">
+                <!-- <div class="col-sm-2" style="height:60x">
                     <label for="fund_cluster_code">Fund Cluster Code</label>
-                    <select id="fund_cluster_code" name="fund_cluster_code" class="fund_cluster_code select" style="width: 100%; margin-top:50px" required>
+                    <select id="fund_cluster_code" name="fund_cluster_code" class="fund_cluster_code select" style="width: 100%; margin-top:50px" >
+                        <option></option>
+                    </select>
+                </div> -->
+                <div class="col-sm-3" style="height:60x">
+                    <label for="book">Book</label>
+                    <select id="book" name="book" class="book select" style="width: 100%; margin-top:50px" required>
                         <option></option>
                     </select>
                 </div>
@@ -142,11 +148,20 @@ use aryelds\sweetalert\SweetAlertAsset;
                 </div>
             </div>
             <!-- BUTTON -->
-            <div style="width: 100%; margin-bottom:50px;margin-right:25px;">
-                <button type="button" id="add-btn" class="btn btn-success btn-md" style="float:right;margin-right:20px"><i class="glyphicon glyphicon-plus"></i></button>
-            </div>
+            <!-- <div style="width: 100%; margin-bottom:50px;margin-right:25px;">
+
+                <button type="button" class=" add-btn btn btn-success btn-md" style="float:right;margin-right:20px"><i class="glyphicon glyphicon-plus"></i></button>
+                <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(0)"><i class="glyphicon glyphicon-minus"></i></button>
+            </div> -->
             <div id="form-0" class="accounting_entries">
                 <!-- chart of accounts -->
+
+                <div class="row">
+                    <div>
+                        <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(0)"><i class="glyphicon glyphicon-minus"></i></button>
+                        <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="glyphicon glyphicon-plus"></i></button>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-sm-4">
                         <label for="isCurrent">Current/NonCurrent </label>
@@ -164,7 +179,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                         <label for="cadadr_number">Changes in Net Asset and Equity </label>
 
                         <select id="isEquity-0" name="isEquity[]" style="width: 100% ;display:none">
-                            <option ></option>
+                            <option></option>
                         </select>
                     </div>
                 </div>
@@ -278,8 +293,11 @@ use aryelds\sweetalert\SweetAlertAsset;
         var cashflow = [];
         var net_asset = [];
         var arr_form = [0];
+        var books = [0];
         var vacant = 0;
         var i = 1;
+        var x = [0];
+
         var update_id = undefined;
 
         function removeItem(index) {
@@ -290,6 +308,15 @@ use aryelds\sweetalert\SweetAlertAsset;
 
             document.getElementById(`form-${index}`).remove()
             // console.log(index)
+            for (var y = 0; y < x.length; y++) {
+                if (x[y] === index) {
+                    delete x[y]
+                    x.splice(y, 1)
+                }
+            }
+            console.log(x, Math.max.apply(null, x))
+            getTotal()
+
 
         }
 
@@ -345,8 +372,14 @@ use aryelds\sweetalert\SweetAlertAsset;
             })
         }
 
+        function q(q) {
+            console.log(q)
+            // add()
+        }
+
         function add() {
-            var latest = arr_form[arr_form.length - 1]
+
+            var latest = Math.max.apply(null, x)
             // console.log('index: '+latest)
             $(`#form-${latest}`)
                 .after(`<div id="form-${i}" style="border: 1px solid gray;width:100%; padding: 2rem; margin-top: 1rem;background-color:white;border-radius:5px" class="control-group input-group" class="accounting_entries">
@@ -354,6 +387,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     <div class="row"  >
                         <div>
                             <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(${i})"><i class="glyphicon glyphicon-minus"></i></button>
+                            <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="glyphicon glyphicon-plus"></i></button>
                         </div>
                     </div>
                     <div class="row">
@@ -411,6 +445,8 @@ use aryelds\sweetalert\SweetAlertAsset;
             // arr_form.splice(latest, 0, latest + 1)
             // deb[1].value = 123
             // console.log(deb[1].value)
+            x.push(i)
+
             i++
             // console.log(i)
 
@@ -442,25 +478,25 @@ use aryelds\sweetalert\SweetAlertAsset;
                 })
 
             // GET ALL FUND CLUSTER CODES
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=fund-cluster-code/get-all-cluster')
-                .then(function(data) {
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.name
-                        })
-                    })
-                    fund_clusters = array
-                    $('#fund_cluster_code').select2({
-                        data: fund_clusters,
-                        placeholder: "Select Fund Cluster Code",
-                        containerCssClass: function(e) {
-                            return $(e).attr('required') ? 'required' : '';
-                        }
+            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=fund-cluster-code/get-all-cluster')
+            // .then(function(data) {
+            //     var array = []
+            //     $.each(data, function(key, val) {
+            //         array.push({
+            //             id: val.id,
+            //             text: val.name
+            //         })
+            //     })
+            //     fund_clusters = array
+            //     $('#fund_cluster_code').select2({
+            //         data: fund_clusters,
+            //         placeholder: "Select Fund Cluster Code",
+            //         containerCssClass: function(e) {
+            //             return $(e).attr('required') ? 'required' : '';
+            //         }
 
-                    })
-                })
+            //     })
+            // })
             // GET ALL RESPONSIBILITY CENTERS
             $.getJSON('/dti-afms-2/frontend/web/index.php?r=responsibility-center/get-responsibility-center')
                 .then(function(data) {
@@ -538,6 +574,26 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 
                 })
+            // GET ALL BOOKS WITH SELECT2 DROPDOWN
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
+                .then(function(data) {
+
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.name
+                        })
+                    })
+                    books = array
+                    $('#book').select2({
+                        data: books,
+                        placeholder: 'Select Book'
+
+                    });
+
+
+                })
             // REFERENCE
             reference = ["ADADJ", "CDJ", "CKDJ", "CRJ", "GJ"]
             $('#reference').select2({
@@ -556,10 +612,9 @@ use aryelds\sweetalert\SweetAlertAsset;
             })
 
 
-
-            $('#add-btn').click(function() {
+            // ADD ENTRY
+            $('.add-btn').click(function() {
                 add()
-
             })
 
             // SUBMIT DATA
@@ -623,6 +678,37 @@ use aryelds\sweetalert\SweetAlertAsset;
             })
 
         })
+
+        function getTotal() {
+            var total_credit = 0.00;
+            var total_debit = 0.00;
+            $(".credit").each(function() {
+                total_credit += Number($(this).val());
+            })
+            $(".debit").each(function() {
+                total_debit += Number($(this).val());
+            })
+
+            // console.log(total_debit);
+            document.getElementById("d_total").innerHTML = "<h4>" + thousands_separators(total_debit) + "</h4>";
+            document.getElementById("c_total").innerHTML = "<h4>" + thousands_separators(total_credit) + "</h4>";
+            //  $(".debit").change(function(){
+            //     $(this).val() =  thousands_separators(total_debit)
+            //  })
+            // $(this).val().replact
+        }
+        $(document).on("keyup change", ".credit, .debit", function() {
+            getTotal()
+        })
+
+        function thousands_separators(num) {
+
+            var number = Number(Math.round(num + 'e2') + 'e-2')
+            var num_parts = number.toString().split(".");
+            num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return num_parts.join(".");
+            console.log(num)
+        }
     </script>
 </div>
 
@@ -649,27 +735,7 @@ $script = <<< JS
         console.log(num)
         }
     // GET TOTAL OF DEBIT AND CREDIT
-    function getTotal(){
-        var total_credit = 0.00;
-         var total_debit = 0.00;
-         $(".credit").each(function(){
-            total_credit += Number($(this).val());
-         })
-         $(".debit").each(function(){
-            total_debit += Number($(this).val());
-         })
-         
-        // console.log(total_debit);
-        document.getElementById("d_total").innerHTML = "<h4>" + thousands_separators(total_debit) + "</h4>";
-        document.getElementById("c_total").innerHTML = "<h4>" + thousands_separators(total_credit) + "</h4>";
-        //  $(".debit").change(function(){
-        //     $(this).val() =  thousands_separators(total_debit)
-        //  })
-        // $(this).val().replact
-    }
-      $(document).on("keyup change", ".credit, .debit", function(){
-        getTotal()
-     })
+
     
      $(document).ready(function() {
         update_id = $('#update_id').val();
@@ -694,7 +760,7 @@ $script = <<< JS
                         // $('#reference').val(jev['reference'])
                         // console.log(jev_accounting_entries)
                         $('#reference').val(jev['ref_number']).trigger('change');
-                        $('#fund_cluster_code').val(jev['fund_cluster_code_id']).trigger('change')
+                        $('#book').val(jev['book_id']).trigger('change')
                         $('#r_center_id').val(jev['responsibility_center_id']).trigger('change')
                         $('#check_ada').val(jev['check_ada'])
                         $('#check_ada').trigger('change')
