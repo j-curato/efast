@@ -61,14 +61,8 @@
                                 'icon' => 'circle-o',
                                 'url' => '#',
                                 'items' => [
-                                    ['label' => 'Responsibility Center', 'icon' => 'circle-o', 'url' => ['/responsibility-center'],],
-                                    ['label' => 'Documet Recieve', 'icon' => 'circle-o', 'url' => ['/document-recieve'],],
-                                    ['label' => 'Fund Cluster Code', 'icon' => 'circle-o', 'url' => ['/fund-cluster-code'],],
-                                    ['label' => 'Financing Source Code', 'icon' => 'circle-o', 'url' => ['/financing-source-code'],],
-                                    ['label' => 'Authorization Code', 'icon' => 'circle-o', 'url' => ['/authorization-code'],],
-                                    ['label' => 'Fund Classification Code', 'icon' => 'circle-o', 'url' => ['/fund-category-and-classification-code'], 'options' => ['style' => 'color:red;']],
-                                    ['label' => 'MFO/PAP Codes', 'icon' => 'circle-o', 'url' => ['/mfo-pap-code'],],
-                                    ['label' => 'Fund Source', 'icon' => 'circle-o', 'url' => ['/fund-source'],],
+                                    ['label' => 'Record Allotments', 'icon' => 'circle-o', 'url' => ['/record-allotments'],],
+                             
                                 ],
                             ],
                         ],
@@ -92,6 +86,7 @@
                                     ['label' => 'Sub Account 1', 'icon' => 'circle-o', 'url' => ['/sub-accounts1'],],
                                     ['label' => 'Sub Account 2', 'icon' => 'circle-o', 'url' => ['/sub-accounts2'],],
                                     ['label' => 'Books', 'icon' => 'circle-o', 'url' => ['/books'],],
+                                    ['label' => 'CashFlow', 'icon' => 'circle-o', 'url' => ['/cash-flow'],],
 
 
                                 ],

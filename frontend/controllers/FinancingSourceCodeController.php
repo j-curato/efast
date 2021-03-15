@@ -125,4 +125,9 @@ class FinancingSourceCodeController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+    public function actionGetFinancingSourceCodes()
+    {
+        $na = (new \yii\db\Query())->select('*')->from('financing_source_code')->all();
+        return json_encode($na);
+    }
 }

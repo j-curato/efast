@@ -124,4 +124,10 @@ class DocumentRecieveController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
+    public function actionGetDocumentRecieves()
+    {
+        $na = (new \yii\db\Query())->select('*')->from('document_recieve')->all();
+        return json_encode($na);
+    }
 }

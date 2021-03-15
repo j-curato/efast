@@ -91,4 +91,8 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
     {
         return $this->hasMany(JevPreparation::className(), ['chart_of_accounts_id' => 'id']);
     }
+    public function getSubAccounts1()
+    {
+        return $this->hasMany(SubAccounts1::className(), ['chart_of_account_id' => 'id']);
+    }
 }

@@ -124,4 +124,9 @@ class FundSourceController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+    public function actionGetFundSources()
+    {
+        $na = (new \yii\db\Query())->select('*')->from('fund_source')->all();
+        return json_encode($na);
+    }
 }

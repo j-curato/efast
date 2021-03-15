@@ -20,17 +20,17 @@ use aryelds\sweetalert\SweetAlertAsset;
 
                 $q = $model;
             }
-            echo " <input type='text' id='update_id' name='update_id' placeholder='DV NUMBER' value='$q' style='display:none'>";
+            echo " <input type='text' id='update_id' name='update_id'  style='display:none'>";
             ?>
             <div class="row">
 
                 <div class="col-sm-3">
-                    <label for="check_ada_date">Check/ADA Date</label>
+                    <label for="date_issued">Date Issued</label>
 
                     <?php
                     echo DatePicker::widget([
-                        'name' => 'check_ada_date',
-                        'id' => 'check_ada_date',
+                        'name' => 'date_issued',
+                        'id' => 'date_issued',
                         // 'value' => '12/31/2010',
                         'pluginOptions' => [
                             'autoclose' => true,
@@ -40,12 +40,11 @@ use aryelds\sweetalert\SweetAlertAsset;
                     ?>
                 </div>
                 <div class="col-sm-3">
-                    <label for="date">Date</label>
-
+                    <label for="valid_until">Valid Until</label>
                     <?php
                     echo DatePicker::widget([
-                        'name' => 'date',
-                        'id' => 'date',
+                        'name' => 'valid_until',
+                        'id' => 'valid_until',
                         // 'value' => '12/31/2010',
                         'pluginOptions' => [
                             'autoclose' => true,
@@ -96,55 +95,45 @@ use aryelds\sweetalert\SweetAlertAsset;
                     </select>
                 </div>
                 <div class="col-sm-3">
-                    <label for="r_center_id">Responisibility Center</label>
-                    <select id="r_center_id" name="r_center" class="r_center_id select" style="width: 100%">
+                    <label for="document_recieve">Document Recieve</label>
+                    <select id="document_recieve" name="r_center" class="document_recieve select" style="width: 100%">
                         <option></option>
                     </select>
                 </div>
 
                 <div class="col-sm-3">
-                    <label for="check_ada">Check ADA</label>
-
-                    <select id="check_ada" name="check_ada" class="check_ada select" style="width: 100%">
+                    <label for="financing_source_code">Financing Source Codes</label>
+                    <select id="financing_source_code" name="financing_source_code" class="financing_source_code select" style="width: 100%">
                         <option></option>
                     </select>
                 </div>
                 <div class="col-sm-3">
-                    <label for="payee">Payee</label>
-                    <select id="payee" name="payee_id" class="payee select" style="width: 100%">
+                    <label for="authorization_code">Authorization Codes</label>
+                    <select id="authorization_code" name="authorization_code" class="authorization_code select" style="width: 100%">
                         <option></option>
                     </select>
                 </div>
             </div>
 
             <div class=" row">
-
-
                 <div class="col-sm-3">
-                    <label for="lddap">LDDAP</label>
-
-                    <input type="text" name="lddap" placeholder="LDDAP">
+                    <label for="mfo_pap_code">MFO/PAP Code</label>
+                    <select id="mfo_pap_code" name="mfo_pap_code" class="mfo_pap_code select" style="width: 100%">
+                        <option></option>
+                    </select>
                 </div>
                 <div class="col-sm-3">
-                    <label for="dv_number">DV Number</label>
+                    <label for="fund_source">Fund Source</label>
+                    <select id="fund_source" name="fund_source" class="fund_source select" style="width: 100%">
+                        <option></option>
+                    </select>
+                </div>
 
-                    <input type="text" name="dv_number" placeholder="DV NUMBER">
-                </div>
-                <div class="col-sm-3">
-                    <label for="cadadr_number">CADADR </label>
-
-                    <input type="text" name="cadadr_number" placeholder="CADADR NUMBER">
-                </div>
-                <div class="col-sm-3">
-                    <label for="ada_number">Check/ADA Number </label>
-                    <input type="text" name="ada_number" placeholder="Check/ADA Number NUMBER">
-                </div>
 
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <!-- <input type="text" name="particular" id="particular" placeholder="PARTICULAR" required> -->
-                    <textarea name="particular" name="particular" id="particular" placeholder="PARTICULAR" required cols="151" rows="3"></textarea>
+                    <textarea name="particular" id="particular" placeholder="PARTICULAR" cols="151" rows="3"></textarea>
                 </div>
             </div>
             <!-- BUTTON -->
@@ -162,32 +151,9 @@ use aryelds\sweetalert\SweetAlertAsset;
                         <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="glyphicon glyphicon-plus"></i></button>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label for="isCurrent">Current/NonCurrent </label>
-
-                        <input type="text" name="isCurrent[]" placeholder="Current/NonCurrent" id="isCurrent-0" />
-                    </div>
-                    <div class="col-sm-3">
-                        <label for="cadadr_number">Cash Flow </label>
-
-                        <select id="cashflow-0" name="cash_flow_id[]" style="width: 100% ;display:none">
-                            <option></option>
-                        </select>
-                    </div>
-                    <div class="col-sm-3">
-                        <label for="cadadr_number">Changes in Net Asset and Equity </label>
-
-                        <select id="isEquity-0" name="isEquity[]" style="width: 100% ;display:none">
-                            <option></option>
-                        </select>
-                    </div>
-                </div>
 
                 <div class="row gap-1">
-
                     <div class="col-sm-5 ">
-
                         <div>
                             <select id="chart-0" required name="chart_of_account_id[]" class="chart-of-account" onchange=isCurrent(this,0) style="width: 100%">
                                 <option></option>
@@ -195,11 +161,9 @@ use aryelds\sweetalert\SweetAlertAsset;
                         </div>
                     </div>
 
+        
                     <div class="col-sm-3">
-                        <input type="text" id="debit-0" name="debit[]" class="debit" placeholder="Debit">
-                    </div>
-                    <div class="col-sm-3">
-                        <input type="text" id="credit-0" name="credit[]" class="credit" placeholder="Credit">
+                        <input type="text" id="amount-0" name="amount[]" class="amount" placeholder="amount">
                     </div>
                 </div>
             </div>
@@ -288,10 +252,11 @@ use aryelds\sweetalert\SweetAlertAsset;
         // global variable
         var accounts = [];
         var fund_clusters = [];
-        var r_center = [];
-        var payee = [];
-        var cashflow = [];
-        var net_asset = [];
+        var document_recieve = [];
+        var financing_source_code = [];
+        var authorization_code = [];
+        var fund_source = [];
+        var mfo_pap_code = [];
         var arr_form = [0];
         var books = [0];
         var vacant = 0;
@@ -390,24 +355,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                             <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="glyphicon glyphicon-plus"></i></button>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <label for="isCurrent">Current/NonCurrent </label>
-                            <input type="text" name="isCurrent[]" id="isCurrent-${i}" placeholder="Current/NonCurrent"/>
-                         </div>
-                        <div class="col-sm-3" style="">
-                            <label for="isCurrent">Cash Flow </label>
-                            <select id="cashflow-${i}" name="cash_flow_id[]" style="width: 100% ;display:none" >
-                                <option ></option>
-                            </select>
-                        </div>
-                        <div class="col-sm-3" >
-                            <label for="isCurrent">Changes in Net Asset and Equity </label>
-                                <select id="isEquity-${i}" name="isEquity[]" style="width: 100% ;display:none" >
-                                    <option ></option>
-                                </select>
-                        </div>
-                     </div>
+
                
                      <div class="row gap-1">
                             <div class="col-sm-5 ">
@@ -416,11 +364,9 @@ use aryelds\sweetalert\SweetAlertAsset;
                                 </select>
                         </div>
 
+                    
                         <div class="col-sm-3">
-                            <div >  <input type="text" id="debit-${i}"  name="debit[]" class="debit"  placeholder="Debit"></div>
-                        </div>
-                        <div class="col-sm-3">
-                            <div >  <input type="text"   id="credit-${i}" name="credit[]" class="credit" placeholder="Credit"></div>
+                            <div >  <input type="text"   id="amount-${i}" name="amount[]" class="amount" placeholder="amount"></div>
                         </div>
                     </div>
 
@@ -497,8 +443,8 @@ use aryelds\sweetalert\SweetAlertAsset;
 
             //     })
             // })
-            // GET ALL RESPONSIBILITY CENTERS
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=responsibility-center/get-responsibility-center')
+            // GET ALL DOCUMENT RECIEVES
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=document-recieve/get-document-recieves')
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {
@@ -507,15 +453,15 @@ use aryelds\sweetalert\SweetAlertAsset;
                             text: val.name
                         })
                     })
-                    r_center = array
-                    $('#r_center_id').select2({
-                        data: r_center,
+                    document_recieve = array
+                    $('#document_recieve').select2({
+                        data: document_recieve,
 
-                        placeholder: 'Select Responsibility Center'
+                        placeholder: 'Select Document Recieve'
                     })
                 })
-            // GET ALL PAYEE
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=payee/get-payee')
+            // GET FINANCING SOURCE CODES
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=financing-source-code/get-financing-source-codes')
 
                 .then(function(data) {
 
@@ -523,39 +469,39 @@ use aryelds\sweetalert\SweetAlertAsset;
                     $.each(data, function(key, val) {
                         array.push({
                             id: val.id,
-                            text: val.account_name
+                            text: val.name
                         })
                     })
-                    payee = array
-                    $('#payee').select2({
-                        data: payee,
-                        placeholder: "Select Payee",
+                    financing_source_code = array
+                    $('#financing_source_code').select2({
+                        data: financing_source_code,
+                        placeholder: "Select Financing Source Code",
 
                     })
 
                 })
 
-            // GET ALL CASHFLOW
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=cash-flow/get-all-cashflow')
+            // GET ALL AUTHORIZATION CODES
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=authorization-code/get-authorization-codes')
                 .then(function(data) {
 
                     var array = []
                     $.each(data, function(key, val) {
                         array.push({
                             id: val.id,
-                            text: val.specific_cashflow
+                            text: val.name
                         })
                     })
-                    cashflow = array
-                    $('#cashflow-0').select2({
-                        data: cashflow,
-                        placeholder: 'Select Cash Flow'
-                    }).next().hide()
+                    authorization_code = array
+                    $('#authorization_code').select2({
+                        data: authorization_code,
+                        placeholder: 'Select Authorization Codes'
+                    })
 
 
                 })
-            // GET ALL NETASSETS
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=net-asset-equity/get-all-netasset')
+            // GET ALL FUND SOURCE
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=fund-source/get-fund-sources')
                 .then(function(data) {
 
                     var array = []
@@ -565,13 +511,31 @@ use aryelds\sweetalert\SweetAlertAsset;
                             text: val.specific_change
                         })
                     })
-                    net_asset = array
-                    $('#isEquity-0').select2({
-                        data: net_asset,
-                        placeholder: 'Select Net Asset'
+                    fund_source = array
+                    $('#fund_source').select2({
+                        data: fund_source,
+                        placeholder: 'Select Fund Source'
 
-                    }).next().hide();
+                    });
 
+                })
+            // GET ALL MFO/PAP CODES
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=mfo-pap-code/get-mfo-pap-codes')
+                .then(function(data) {
+
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.name
+                        })
+                    })
+                    mfo_pap_code = array
+                    $('#mfo_pap_code').select2({
+                        data: mfo_pap_code,
+                        placeholder: 'Select Fund Source'
+
+                    });
 
                 })
             // GET ALL BOOKS WITH SELECT2 DROPDOWN

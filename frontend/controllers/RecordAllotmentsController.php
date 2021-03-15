@@ -3,16 +3,16 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\MfoPapCode;
-use app\models\MfoPapCodeSearch;
+use app\models\RecordAllotments;
+use app\models\RecordAllotmentsSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * MfoPapCodeController implements the CRUD actions for MfoPapCode model.
+ * RecordAllotmentsController implements the CRUD actions for RecordAllotments model.
  */
-class MfoPapCodeController extends Controller
+class RecordAllotmentsController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -30,12 +30,12 @@ class MfoPapCodeController extends Controller
     }
 
     /**
-     * Lists all MfoPapCode models.
+     * Lists all RecordAllotments models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new MfoPapCodeSearch();
+        $searchModel = new RecordAllotmentsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -45,7 +45,7 @@ class MfoPapCodeController extends Controller
     }
 
     /**
-     * Displays a single MfoPapCode model.
+     * Displays a single RecordAllotments model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -58,13 +58,13 @@ class MfoPapCodeController extends Controller
     }
 
     /**
-     * Creates a new MfoPapCode model.
+     * Creates a new RecordAllotments model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new MfoPapCode();
+        $model = new RecordAllotments();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -76,7 +76,7 @@ class MfoPapCodeController extends Controller
     }
 
     /**
-     * Updates an existing MfoPapCode model.
+     * Updates an existing RecordAllotments model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -96,7 +96,7 @@ class MfoPapCodeController extends Controller
     }
 
     /**
-     * Deletes an existing MfoPapCode model.
+     * Deletes an existing RecordAllotments model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -110,23 +110,18 @@ class MfoPapCodeController extends Controller
     }
 
     /**
-     * Finds the MfoPapCode model based on its primary key value.
+     * Finds the RecordAllotments model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return MfoPapCode the loaded model
+     * @return RecordAllotments the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = MfoPapCode::findOne($id)) !== null) {
+        if (($model = RecordAllotments::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
-    }
-    public function actionGetMfoPapCodes()
-    {
-        $na = (new \yii\db\Query())->select('*')->from('mfo_pap_code')->all();
-        return json_encode($na);
     }
 }

@@ -125,4 +125,9 @@ class AuthorizationCodeController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+    public function actionGetAuthorizationCodes()
+    {
+        $na = (new \yii\db\Query())->select('*')->from('authorization_code')->all();
+        return json_encode($na);
+    }
 }
