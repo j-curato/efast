@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+use kartik\grid\GridView;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\widgets\ActiveForm;
 use kartik\widgets\FileInput;
@@ -89,13 +89,26 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel' => [
+            'type' => GridView::TYPE_PRIMARY,
+            'heading' => 'List of Areas',
+        ],
+        'floatHeaderOptions' => [
+            'top' => 50,
+            'position' => 'absolute',
+        ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
             'id',
-            'chart_of_account_id',
+            // 'chart_of_account_id',
             'object_code',
-            'name',
+            [
+
+                'label' => 'Object Code',
+                'attribute' => 'name',
+                'options' => [
+                    'style' => 'word-wrap: break-word; width: 100px'
+                ]
+            ],
             [
                 'label' => 'Actions',
                 'format' => 'raw',
@@ -112,6 +125,12 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
+
+
+
+
+
+
     <div id="myModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
 
@@ -127,7 +146,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="form-group">
                         <label for="account_title">Account Title:</label>
                         <input type="account_title" class="form-control" id="account_title">
-                        <input type="text" class="form-control" id="chart_id">
+                        <input type="text" class="form-control" id="sub_account1_id" style="display: none;">
                     </div>
 
                 </div>
@@ -151,7 +170,7 @@ $script = <<<JS
             var id=''
           
             $('.add-sub').click(function(){
-              id =  document.getElementById('chart_id').value=$(this).val()
+              id =  document.getElementById('sub_account1_id').value=$(this).val()
             })
             $('#save').click(function(){
              at = document.getElementById('account_title').value
@@ -167,25 +186,22 @@ $script = <<<JS
                 success:function(data){
                     var res = JSON.parse(data)
                     console.log(res)
-
-    
-                    if (res.result=='success'){
-   
+                    if (res=='success'){
+                        console.log("qweqweqw")
                         swal( {
                         icon: 'success',
-                        title: " Reporting Period and Fund Cluster Code are Required",
+                        title: "Successfuly Added",
                         type: "success",
                         timer:3000,
                         closeOnConfirm: false,
                         closeOnCancel: false
                     })
                     $('#myModal').modal('hide');
-
                     }
                     else{
                         swal( {
                         icon: 'success',
-                        title:  res.name,
+                        title:  "error",
                         type: "error",
                         timer:3000,
                         closeOnConfirm: false,

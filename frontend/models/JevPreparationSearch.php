@@ -18,7 +18,7 @@ class JevPreparationSearch extends JevPreparation
     {
         return [
             [['id', 'responsibility_center_id', 'fund_cluster_code_id','book_id'], 'integer'],
-            [['reporting_period', 'date', 'jev_number', 'dv_number', 'lddap_number', 'entity_name', 'explaination','ref_number'], 'safe'],
+            [['reporting_period', 'date', 'jev_number', 'dv_number', 'lddap_number' , 'explaination','ref_number'], 'safe'],
         ];
     }
 
@@ -71,7 +71,6 @@ class JevPreparationSearch extends JevPreparation
             ->andFilterWhere(['like', 'dv_number', $this->dv_number])
             ->andFilterWhere(['like', 'ref_number', $this->ref_number])
             ->andFilterWhere(['like', 'lddap_number', $this->lddap_number])
-            ->andFilterWhere(['like', 'entity_name', $this->entity_name])
             ->andFilterWhere(['like', 'explaination', $this->explaination])
             // ->andFilterWhere(['like', 'jev_accounting_entries.chart_of_account_id', 2])
             ;

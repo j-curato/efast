@@ -6,9 +6,10 @@ use yii\db\Migration;
  * Handles the creation of table `{{%record_allotment_entries}}`.
  * Has foreign keys to the tables:
  *
+ * - `{{%record_allotmens}}`
  * - `{{%chart_of_accounts}}`
  */
-class m210315_030028_create_record_allotment_entries_table extends Migration
+class m210317_055115_create_record_allotment_entries_table extends Migration
 {
     /**
      * {@inheritdoc}
@@ -17,9 +18,28 @@ class m210315_030028_create_record_allotment_entries_table extends Migration
     {
         $this->createTable('{{%record_allotment_entries}}', [
             'id' => $this->primaryKey(),
-            'chart_of_account_id' => $this->integer()->notNulll(),
-            'amount' => $this->float()->notNull(),
+            'record_allotment_id' => $this->integer()->notNull(),
+            'chart_of_account_id' => $this->integer()->notNull(),
+            'amount'=>$this->float(11)
+            
         ]);
+
+        // creates index for column `record_allotment_id`
+        $this->createIndex(
+            '{{%idx-record_allotment_entries-record_allotment_id}}',
+            '{{%record_allotment_entries}}',
+            'record_allotment_id'
+        );
+
+        // add foreign key for table `{{%record_allotmens}}`
+        $this->addForeignKey(
+            '{{%fk-record_allotment_entries-record_allotment_id}}',
+            '{{%record_allotment_entries}}',
+            'record_allotment_id',
+            '{{%record_allotmens}}',
+            'id',
+            'CASCADE'
+        );
 
         // creates index for column `chart_of_account_id`
         $this->createIndex(
@@ -44,6 +64,18 @@ class m210315_030028_create_record_allotment_entries_table extends Migration
      */
     public function safeDown()
     {
+        // drops foreign key for table `{{%record_allotmens}}`
+        $this->dropForeignKey(
+            '{{%fk-record_allotment_entries-record_allotment_id}}',
+            '{{%record_allotment_entries}}'
+        );
+
+        // drops index for column `record_allotment_id`
+        $this->dropIndex(
+            '{{%idx-record_allotment_entries-record_allotment_id}}',
+            '{{%record_allotment_entries}}'
+        );
+
         // drops foreign key for table `{{%chart_of_accounts}}`
         $this->dropForeignKey(
             '{{%fk-record_allotment_entries-chart_of_account_id}}',

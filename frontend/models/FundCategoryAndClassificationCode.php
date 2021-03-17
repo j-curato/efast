@@ -29,6 +29,7 @@ class FundCategoryAndClassificationCode extends \yii\db\ActiveRecord
         return [
             [['name', 'description'], 'required'],
             [['name', 'description'], 'string', 'max' => 255],
+            [['from', 'to'], 'integer'],
         ];
     }
 
@@ -41,6 +42,8 @@ class FundCategoryAndClassificationCode extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Name',
             'description' => 'Description',
+            'from' => 'From',
+            'to' => 'To',
         ];
     }
 }

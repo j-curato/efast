@@ -472,122 +472,7 @@ class JevPreparationController extends Controller
     }
 
 
-    public function actionReport()
-
-    {
-        // $x = Yii::$app->request->post('gen');
-        $x = $_POST['gen'];
-
-        echo $x;
-        // return json_encode($x);
-
-        // $gen = $_POST['gen'];
-        // $gen = (!empty($_POST['gen'])) ? 'AND jev_accounting_entries.chart_of_account_id =' . $_POST['gen'] : '';
-        // $fund = (!empty($_POST['fund'])) ? 'AND jev_preparation.fund_cluster_code_id =' . $_POST['fund'] : '';
-        // $yawa =$_POST['report'];
-        // $x = explode('-', $_POST['reporting_period']);
-        // $reporting_period = $_POST['reporting_period'] ? "'AND jev_preparation.reporting_period ='" .  (String)$_POST['reporting_period'] ."'" : '';
-        // $reporting_period = (!empty($_POST['reporting_period'])) ? " AND jev_preparation.reporting_period like '{$x[0]}%' AND jev_preparation.reporting_period <='{$_POST['reporting_period']}'"  : '';
-
-        //     $chart = Yii::$app->db->createCommand("SELECT  jev_preparation.explaination, jev_preparation.jev_number, jev_preparation.reporting_period ,
-        //     jev_accounting_entries.id,jev_accounting_entries.debit,jev_accounting_entries.credit,chart_of_accounts.uacs,
-        //     chart_of_accounts.general_ledger,jev_accounting_entries.id,jev_preparation.ref_number
-        //     FROM jev_preparation,jev_accounting_entries,chart_of_accounts where jev_preparation.id = jev_accounting_entries.jev_preparation_id
-        //     AND jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
-        //   $gen $fund $reporting_period
-        //     ORDER BY jev_preparation.reporting_period
-
-        //     ")->queryAll();
-        // $q = "$qwe";
-        // $r = $x[0] - 1;
-
-        // $qwe = Yii::$app->db->createCommand("SELECT MAX( jev_preparation.reporting_period ) as reporting_period from jev_preparation where   jev_preparation.reporting_period like '{$r}%' ")->queryAll();
-        // jev_accounting_entries.id,jev_accounting_entries.debit,jev_accounting_entries.credit,chart_of_accounts.uacs,
-        // chart_of_accounts.general_ledger,jev_accounting_entries.id,jev_preparation.ref_number
-        // FROM jev_preparation,jev_accounting_entries,chart_of_accounts  where jev_preparation.reporting_period like  '2020%' ORDER BY jev_preparation.id DESC ")->queryAll();
-        // echo json_encode(['results' => $chart]);
-        // array_push($chart,$y);
-
-        // $chart = Yii::$app->db->createCommand("SELECT  jev_preparation.explaination, jev_preparation.jev_number, jev_preparation.reporting_period ,
-        // jev_accounting_entries.id,jev_accounting_entries.debit,jev_accounting_entries.credit,chart_of_accounts.uacs,
-        // chart_of_accounts.general_ledger,jev_accounting_entries.id,jev_preparation.ref_number
-        // FROM jev_preparation,jev_accounting_entries,chart_of_accounts where jev_preparation.id = jev_accounting_entries.jev_preparation_id
-        // AND jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
-        // -- AND jev_preparation.reporting_period like '{$qwe}%'
-        // ORDER BY jev_preparation.reporting_period
-
-        //   ")->queryAll();
-        // print_r("$qwe") ;
-        // return json_encode(['results' => $reporting_period]);
-    }
-    // public function actionJevImport()
-    // {
-    //     if (!empty($_POST)) {
-
-    //         $name = $_FILES["file"]["name"];
-
-    //         $id = uniqid();
-    //         $file_name = "payee/{$id}_{$name}";
-
-    //         if (move_uploaded_file($_FILES["file"]["tmp_name"], $file_name)) {
-    //         } else {
-    //             return "ERROR 2: MOVING FILES FAILED.";
-    //             die();
-    //         }
-
-    //         $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file_name);
-    //         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
-    //         $file = $reader->load($file_name);
-    //         $sheetName = $file->getSheetNames();
-    //         $file->setActiveSheetIndexByName('CKDJ');
-    //         $worksheet = $file->getActiveSheet();
-    //         $hRow = $worksheet->getHighestDataRow();
-
-    //         $payee_data = [];
-
-    //         foreach ($worksheet->getRowIterator(14) as $key => $row) {
-
-    //             $cellIterator = $row->getCellIterator('G', 'G');
-    //             $cellIterator->setIterateOnlyExistingCells(true);
-    //             $rowData = [];
-
-    //             foreach ($cellIterator as $cell) {
-    //                 $rowData[] = $cell->getValue();
-    //             }
-    //             // $payee = Payee::find()->where("account_name = :account_name", [
-    //             //     'account_name' => $rowData[6]
-    //             // ]);
-    //             // if (!empty($payee)) {
-    //             //     $payee_data[] = $rowData[6];
-    //             // }
-    //             if (!empty($rowData[0])) {
-
-    //                 $payee_exist = Payee::find()->where("account_name= :account_name", [
-    //                     'account_name' => $rowData[0]
-    //                 ])->one();
-    //                 if (empty($payee_exist)) {
-
-    //                     $payee_data[] = $rowData;
-    //                 }
-    //             }
-
-    //             // if ($key == 30) {
-    //             //     break;
-    //             // }
-    //         }
-    //         $array = array_values(array_unique($payee_data, SORT_REGULAR));
-    //         Yii::$app->db->createCommand()->batchInsert('payee', ['account_name'], $array)->execute();
-    //         // echo "<pre>";
-    //         // var_dump($payee_data);
-    //         // echo "</pre>";
-    //         // ob_start();
-
-    //         // echo "<pre>";
-    //         // var_dump($payee_data);
-    //         // echo "</pre>";
-    //         // return ob_get_clean();
-    //     }
-    // }
+    //    IMPORT DATA FROM EXCEL
     public function actionImport()
 
     {
@@ -617,6 +502,7 @@ class JevPreparationController extends Controller
             $temp_data = [];
             $no_jev_number = [];
             $entry2 = [];
+            $i = 1;
             $id = (!empty($w = JevPreparation::find()->orderBy('id DESC')->one())) ? $w->id : 0;
             $number_container = [];
 
@@ -630,24 +516,25 @@ class JevPreparationController extends Controller
 
                         // $cells[] =   $cell->getValue()->getCalculatedValue();
                         $qwe = 0;
-                        // if ($y == 4) {
-                        $cells[] =   $cell->getValue();
-                        // echo '<pre>';y
-                        // var_dump('qwe');
-                        // echo '</pre>';
+                        if ($y == 4) {
+                            $cells[] =   $cell->getFormattedValue();
+                            // echo '<pre>';y
+                            // var_dump('qwe');
+                            // echo '</pre>';
 
-                        // $rows[] =  $cell->getCalculatedValue();
-                        // } elseif ($y == 8) {
-                        //     $qwe = $cell->getCalculatedValue();
-                        //     $cells[] = $qwe;
-                        // } elseif ($y == 9) {
-                        //     $qwe = $cell->getCalculatedValue();
-                        //     $cells[] = $qwe;
-                        // } else {
-                        //     $cells[] = $cell->getValue();
-                        // }
-
+                            $rows[] =  $cell->getCalculatedValue();
+                        } elseif ($y == 8) {
+                            $qwe = $cell->getCalculatedValue();
+                            $cells[] = $qwe;
+                        } elseif ($y == 9) {
+                            $qwe = $cell->getCalculatedValue();
+                            $cells[] = $qwe;
+                        } else {
+                            $cells[] = $cell->getValue();
+                        }
                         $y++;
+                    }
+                    if (!empty($cells)) {
                     }
 
                     // ob_start();
@@ -661,6 +548,7 @@ class JevPreparationController extends Controller
                     //     var_dump($cells, $key);
                     //     echo '</pre>';
                     // }
+
                     $uacs = '';
                     $lvl = 0;
                     $object_code = '';
@@ -695,7 +583,6 @@ class JevPreparationController extends Controller
                             $object_code = $uacs->uacs;
                             $chart_of_account_id = $uacs->id;
                         }
-
                         if (empty($uacs)) {
                             //MAJOR ACOUNT INSERT IF DLI MA KITA
 
@@ -794,85 +681,105 @@ class JevPreparationController extends Controller
                             // var_dump($sub_major2->id);
                             // echo '</pre>';
                         }
-                    }
-                    $book = Books::find()->where("name= :name", [
-                        'name' => $cells[3]
-                    ])->one();
-                    $cash_flow = '';
-                    if (!empty($cells[16])) {
-                        $cash_flow = CashFlow::find()->where("specific_cashflow = :specific_cashflow", ['specific_cashflow' => $cells[16]])->one()->id;
-                    }
-                    $net_asset = '';
-                    if (!empty($cells[17])) {
-                        $net_asset = NetAssetEquity::find()->where("specific_change = :specific_change", ['specific_change' => $cells[17]])->one()->id;
-                    }
-                    $payee = '';
-                    if (!empty($cells[14])) {
-                        $payee = Payee::find()->where("account_name =:account_name", [
-                            'account_name' => $cells[14]
-                        ])->one()->id;
-                    }
+                        $book = Books::find()->where("name= :name", [
+                            'name' => $cells[3]
+                        ])->one();
+                        $cash_flow = '';
+                        if (!empty($cells[16])) {
+                            $cash_flow = CashFlow::find()->where("specific_cashflow = :specific_cashflow", ['specific_cashflow' => $cells[16]])->one()->id;
+                        }
+                        $net_asset = '';
+                        if (!empty($cells[17])) {
+                            $net_asset = NetAssetEquity::find()->where("specific_change = :specific_change", ['specific_change' => $cells[17]])->one()->id;
+                        }
+                        $payee = '';
+                        if (!empty($cells[14])) {
+                            $payee = Payee::find()->where("account_name =:account_name", [
+                                'account_name' => $cells[14]
+                            ])->one()->id;
+                        }
 
 
 
-                    $reporting_period = date("Y-m", strtotime($cells[4]));
-                    $date = $cells[4] ? date("Y-m-d", strtotime($cells[5])) : '';
-                    // echo '<pre>';
-                    // var_dump($cells[4], $key);
-                    // echo '</pre>';
-
-                    if ($cells[0] != null) {
-                        $id++;
-                        // BATCH INSERRRRRRRRRRRRRRT
-                        //cell[7] jev number
-                        $s = array_search($cells[0],  array_column($number_container, 'no'));
+                        $reporting_period = date("Y-m", strtotime($cells[4]));
+                        $date = $cells[4] ? date("Y-m-d", strtotime($cells[5])) : '';
                         // echo '<pre>';
-                        // var_dump($s, $cells[7]);
+                        // var_dump($cells[4], $key);
                         // echo '</pre>';
-                        if ($s === false) {
-                            $jev_number = $cells[7] . '-' . $this->getJevNumber($book->id, $reporting_period);
-                            $number_container[] =  ['id' => $id, 'no' => $cells[0]];
-                            $temp_data[] = [
-                                $id,
-                                (!empty($book)) ? $book->id : '',
-                                $reporting_period,
-                                $date,
-                                $cells[6], //PARTICULAR 
-                                $cells[7], //REFERENCE 
-                                $jev_number,
-                                $cells[11] ? $cells[11] : '', //DV NUMBER
-                                $cells[12] ? $cells[12] : '', //CHECK/ADA/Noncash
-                                $cells[13] ? $cells[13] : '', //CHECK ADA NUMBER3
-                                $payee ? $payee : '', //PAYEE
 
-                            ];
-                            $jev_entries[] = [
-                                $id, //JEV PREPARATION ID
-                                $chart_of_account_id,
-                                $cells[8] ? $cells[8] : 0, //debit amount
-                                $cells[9] ? $cells[9] : 0, //credit amount
-                                $cells[15] ? $cells[15] : '', //Current/Noncurrent
-                                $cells[10] ? $cells[10] : '', //CLOSsING OR NONCLOSSING
-                                $cash_flow,
-                                $net_asset,
-                                $object_code,
-                                $lvl, //CHART OF ACCOUNTS LVL
-                            ];
-                        } else {
+                        if ($cells[0] != null) {
+                            $id++;
+                            // BATCH INSERRRRRRRRRRRRRRT
+                            //cell[7] jev number
+                            $s = array_search($cells[0],  array_column($number_container, 'no'));
+                            // echo '<pre>';
+                            // var_dump($s, $cells[7]);
+                            // echo '</pre>';
+                            if ($s === false) {
+                                $jv = $this->getJevNumber($book->id, $reporting_period, $cells[7], 1);
+                                $jev_number = $cells[7] . '-' . $jv;
+                                $i++;
 
-                            $jev_entries[] = [
-                                $number_container[$s]['id'], //JEV PREPARATION ID
-                                $chart_of_account_id,
-                                $cells[8] ? $cells[8] : 0, //debit amount
-                                $cells[9] ? $cells[9] : 0, //credit amount
-                                $cells[15] ? $cells[15] : '', //Current/Noncurrent
-                                $cells[10] ? $cells[10] : '', //CLOSsING OR NONCLOSSING
-                                $cash_flow,
-                                $net_asset,
-                                $object_code,
-                                $lvl, //CHART OF ACCOUNTS LVL
+                                $temp_data[] = [
+                                    $id,
+                                    (!empty($book)) ? $book->id : '',
+                                    $reporting_period,
+                                    $date,
+                                    $cells[6], //PARTICULAR 
+                                    $cells[7], //REFERENCE 
+                                    $jev_number,
+                                    $cells[11] ? $cells[11] : '', //DV NUMBER
+                                    $cells[12] ? $cells[12] : '', //CHECK/ADA/Noncash
+                                    $cells[13] ? $cells[13] : '', //CHECK ADA NUMBER3
+                                    $payee ? $payee : '', //PAYEE
 
-                            ];
+                                ];
+                                $jev = new JevPreparation();
+                                $jev->book_id = $book->id;
+                                $jev->reporting_period = $reporting_period;
+                                $jev->date = $date;
+                                $jev->explaination = $cells[6];
+                                $jev->ref_number = $cells[7];
+                                $jev->jev_number = $jev_number;
+                                $jev->dv_number = $cells[11];
+                                $jev->check_ada = $cells[12];
+                                $jev->check_ada_number = $cells[13];
+                                $jev->payee_id = $payee;
+                                if ($jev->save(false)) {
+                                }
+                                $jev_entries[] = [
+                                    $jev->id, //JEV PREPARATION ID
+                                    $chart_of_account_id,
+                                    $cells[8] ? $cells[8] : 0, //debit amount
+                                    $cells[9] ? $cells[9] : 0, //credit amount
+                                    $cells[15] ? $cells[15] : '', //Current/Noncurrent
+                                    $cells[10] ? $cells[10] : '', //CLOSsING OR NONCLOSSING
+                                    $cash_flow,
+                                    $net_asset,
+                                    $object_code,
+                                    $lvl, //CHART OF ACCOUNTS LVL
+                                ];
+                                $number_container[] =  ['id' =>  $jev->id, 'no' => $cells[0]];
+
+                                // $jev_entries= new JevAccountingEntries();
+                                // $jev_entries->jev_preparation_id;
+
+                            } else {
+
+                                $jev_entries[] = [
+                                    $number_container[$s]['id'], //JEV PREPARATION ID
+                                    $chart_of_account_id,
+                                    $cells[8] ? $cells[8] : 0, //debit amount
+                                    $cells[9] ? $cells[9] : 0, //credit amount
+                                    $cells[15] ? $cells[15] : '', //Current/Noncurrent
+                                    $cells[10] ? $cells[10] : '', //CLOSsING OR NONCLOSSING
+                                    $cash_flow,
+                                    $net_asset,
+                                    $object_code,
+                                    $lvl, //CHART OF ACCOUNTS LVL
+
+                                ];
+                            }
                         }
                     }
                 }
@@ -907,7 +814,7 @@ class JevPreparationController extends Controller
                 'payee_id'
 
             ];
-            Yii::$app->db->createCommand()->batchInsert('jev_preparation', $jev_column, $temp_data)->execute();
+            // Yii::$app->db->createCommand()->batchInsert('jev_preparation', $jev_column, $temp_data)->execute();
             Yii::$app->db->createCommand()->batchInsert('jev_accounting_entries', $column, $jev_entries)->execute();
 
             echo '<pre>';
@@ -1240,22 +1147,19 @@ class JevPreparationController extends Controller
         return "SUCCESS";
     }
 
-
     public function actionTrialBalance()
     {
 
         if (!empty($_POST)) {
             $reporting_period = $_POST['reporting_period'];
-            $fund = $_POST['fund'] ? $_POST['fund'] : '';
+            $book_id = $_POST['book_id'] ? $_POST['book_id'] : '';
 
             $x = explode('-', $reporting_period);
             $q = $x[0] - 1;
 
             $begin_balance = JevPreparation::find()
                 ->select('jev_preparation.reporting_period')
-                ->where("jev_preparation.reporting_period LIKE :reporting_period", [
-                    'reporting_period' => "$q%"
-                ])->orderBy('date DESC')->one()->reporting_period;
+                ->orderBy('reporting_period ASC')->one()->reporting_period;
             $t_balance = (new \yii\db\Query())
                 ->select([
                     'SUM(jev_accounting_entries.credit) as total_credit',
@@ -1263,16 +1167,14 @@ class JevPreparationController extends Controller
                     'jev_accounting_entries.chart_of_account_id',
                     'chart_of_accounts.uacs', 'chart_of_accounts.general_ledger',
                     'jev_preparation.reporting_period'
-
                 ])
                 ->from(['jev_accounting_entries',])
                 ->join('LEFT JOIN', 'chart_of_accounts', 'jev_accounting_entries.chart_of_account_id =chart_of_accounts.id ')
                 ->join('LEFT JOIN', "jev_preparation", 'jev_accounting_entries.jev_preparation_id=jev_preparation.id  ')
                 ->where(['between', 'jev_preparation.reporting_period', $begin_balance, $reporting_period])
-                ->andwhere("jev_preparation.fund_cluster_code_id = :fund_cluster_code_id", [
-                    'fund_cluster_code_id' => $fund
+                ->andwhere("jev_preparation.book_id = :book_id", [
+                    'book_id' => $book_id
                 ])
-
                 ->groupBy('chart_of_account_id')
                 ->orderBy('chart_of_accounts.uacs')
                 // ->limit(10)
@@ -1281,9 +1183,9 @@ class JevPreparationController extends Controller
             // $total_debit = array_sum(array_column($t_balance, 'total_debit'));
             // $total_credit = array_sum(array_column($t_balance, 'total_credit'));
 
-            $fund_cluster_code = '';
-            if (!empty($fund)) {
-                $fund_cluster_code = $this->getFundClusterCode($fund);
+            $book_name = '';
+            if (!empty($book_id)) {
+                $fund_cluster_code = $this->getFundClusterCode($book_id);
             }
             $total_debit_balance = 0;
             $total_credit_balance = 0;
@@ -1368,10 +1270,10 @@ class JevPreparationController extends Controller
 
     }
 
-    public function getFundClusterCode($fund)
+    public function getFundClusterCode($book_id)
     {
-        $fund_cluster_code = FundClusterCode::find()->where("id=:id", ['id' => $fund])->one()->name;
-        return $fund_cluster_code;
+        $book_name = Books::find()->where("id=:id", ['id' => $book_id])->one()->name;
+        return $book_name;
     }
 
 
@@ -1420,7 +1322,7 @@ class JevPreparationController extends Controller
 
                 // if (!empty($reporting_period) && !empty($fund_cluster_code)) {
                 $jev_number = $reference;
-                $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period);
+                $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
                 // for($x=0;$x<count($_POST['debit']);$x++){
                 //      $amount = floatval(preg_replace('/[^\d.]/', '', $_POST['debit'][$x]));
                 //      $tt+=$amount;
@@ -1509,7 +1411,7 @@ class JevPreparationController extends Controller
                                 }
                             }
                         } else {
-                            return json_encode('w');
+                            // return json_encode('w');
                         }
                         if ($flag) {
 
@@ -1519,7 +1421,7 @@ class JevPreparationController extends Controller
                         }
                     } catch (Exception $e) {
                         $transaction->rollBack();
-                        return json_encode("q");
+                        // return json_encode("q");
                     }
                 } else {
                     // validation failed: $errors is an array containing error messages
@@ -1533,8 +1435,6 @@ class JevPreparationController extends Controller
                         'debit' => $tt,
                         'credit' => $total_credit = $_POST['credit'],
                     ]
-
-
                 );
             }
 
@@ -1936,13 +1836,19 @@ class JevPreparationController extends Controller
         }
     }
     // MAG ASSIGN OG JEV NUMBER 
-    public function getJevNumber($book_id, $reporting_period)
+    public function getJevNumber($book_id, $reporting_period, $reference, $i)
     {
         // $reporting_period = "2021-12";
         $q = date("Y", strtotime($reporting_period));
         $query = JevPreparation::find()
             ->where("reporting_period LIKE :reporting_period", [
                 'reporting_period' => "$q%"
+            ])
+            ->andWhere("book_id = :book_id", [
+                'book_id' => $book_id
+            ])
+            ->andWhere("ref_number = :ref_number", [
+                'ref_number' => $reference
             ])
             ->orderBy([
                 'id' => SORT_DESC
@@ -1952,9 +1858,14 @@ class JevPreparationController extends Controller
                 'id' => $book_id
             ])->one()->name;
         if (!empty($query)) {
-            $x = explode('-', $query->jev_number)[4] + 1;
+            // echo "<pre>";
+            // var_dump($query->toArray());
+            // echo "</pre>";
+            // $x=1;
+            // echo "<br> $i";
+            $x = explode('-', $query->jev_number)[4] + $i;
         } else {
-            $x = 1;
+            $x = $i;
         }
         $y = null;
         $len = strlen($x);
@@ -1978,7 +1889,7 @@ class JevPreparationController extends Controller
         // return ob_get_clean();
     }
 
-
+    // KUHAON ANG DATA SA E UPDATE NA JEV
     public function actionUpdateJev()
     {
 
@@ -1998,7 +1909,7 @@ class JevPreparationController extends Controller
             'ref_number' => $model->ref_number,
             'dv_number' => $model->dv_number,
             'lddap_number' => $model->lddap_number,
-            'entity_name' => $model->entity_name,
+            // 'entity_name' => $model->entity_name,
             'explaination' => $model->explaination,
             'payee_id' => $model->payee_id,
             'cash_flow_id' => $model->cash_flow_id,
@@ -2030,7 +1941,7 @@ class JevPreparationController extends Controller
                 'debit' => $val->debit,
                 'credit' => $val->credit,
                 'current_noncurrent' => $val->current_noncurrent,
-                'cash_flow_transaction' => intval($val->cash_flow_transaction),
+                // 'cash_flow_transaction' => intval($val->cash_flow_transaction),
                 'net_asset_equity_id' => $val->net_asset_equity_id,
                 'object_code' => $val->object_code,
                 'lvl' => $val->lvl,

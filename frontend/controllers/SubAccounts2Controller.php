@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\models\SubAccounts1;
 use Yii;
 use app\models\SubAccounts2;
 use app\models\SubAccounts2Search;
@@ -122,5 +123,69 @@ class SubAccounts2Controller extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    public function actionImport()
+
+    {
+        if (!empty($_POST)) {
+            $sub_account1 = $_POST['sub_account1'];
+            $name = $_FILES["file"]["name"];
+            $id = uniqid();
+            $file = "jev/{$id}_{$name}";;
+            if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
+            } else {
+                return "ERROR 2: MOVING FILES FAILED.";
+                die();
+            }
+            $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+            $excel = $reader->load($file);
+            // $excel->setActiveSheetIndexByName('Chart of Accounts - Final');
+            $worksheet = $excel->getActiveSheet();
+            // print_r($excel->getSheetNames());
+            $data = [];
+            $last_id = 0;
+            $sub_account1_object_code = SubAccounts1::find()->where("id = :id", ['id' => $sub_account1])->one()->object_code;
+            $x = SubAccounts2::find()->orderBy('id DESC')->one();
+            if (!empty($x)) {
+                $last_id = $x->id + 1;
+            } else {
+                $last_id = 1;
+            }
+            $uacs = $sub_account1_object_code . '_';
+            for ($i = strlen($last_id); $i <= 4; $i++) {
+                $uacs .= 0;
+            }
+            foreach ($worksheet->getRowIterator() as $key => $row) {
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                $cells = [];
+                $y = 0;
+                foreach ($cellIterator as $x => $cell) {
+                    $q = '';
+                    $cells[] =   $cell->getValue();
+                }
+                $object_code = '';
+                $object_code = $uacs . $last_id;
+                if (!empty($cells[0])) {
+                    $data[] = [
+                        'sub_accounts1_id' => $sub_account1,
+                        'object_code' => $object_code,
+                        'name' => $cells[0]
+                    ];
+                }
+                $last_id++;
+            }
+            $column = [
+                'sub_accounts1_id',
+                'object_code',
+                'name',
+            ];
+            $ja = Yii::$app->db->createCommand()->batchInsert('sub_accounts2', $column, $data)->execute();
+            // echo '<pre>';
+            // var_dump('success');
+            // echo '</pre>';
+            return $this->redirect(['index']);
+        }
     }
 }

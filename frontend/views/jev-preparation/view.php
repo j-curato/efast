@@ -21,10 +21,6 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="jev-preparation-view" style="box-shadow: none;border:none">
 
     <!-- <h1><?= Html::encode($this->title) ?></h1> -->
-
-
-
-
     <?php $t = yii::$app->request->baseUrl . '/index.php?r=jev-preparation/delete&id=' . $model->id; ?>
     <p class="actions" style="margin-left:50px;">
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -80,7 +76,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <thead>
                 <tr>
-
                     <th rowspan="2" colspan="2">
                         <div style="text-align:center; ">
                             <h5>
@@ -100,7 +95,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 Fund Cluster :
                             </span>
                             <span>
-                                <?php echo ($model->fundClusterCode) ? $model->fundClusterCode->name : "";
+                                <?php echo ($model->books) ? $model->books->name : "";
 
                                 ?>
                             </span>
@@ -173,7 +168,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <td>
                         <?php
-                        echo ($model->responsibilityCenter) ? $model->responsibilityCenter->name : '';
+                        // echo ($model->responsibilityCenter) ? $model->responsibilityCenter->name : '';
                         ?>
                     </td>
                     <td style="word-wrap:break-word;width:400px"><?php echo $model->explaination ?></td>
@@ -193,7 +188,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     $general_ledger = '';
                     $object_code = '';
                     if ($value->lvl === 1) {
-                        echo $value->chartOfAccount->general_ledger;
                         $general_ledger = $value->chartOfAccount->general_ledger;
                         $object_code = $value->chartOfAccount->uacs;
                     } else if ($value->lvl === 2) {
@@ -227,8 +221,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td></td>
                             <td>{$val['general_ledger']}</td>
                             <td>{$val['object_code']}</td>
-                            <td>$debit </td>
-                            <td> $credit</td>         
+                            <td style='text-align:right'>$debit </td>
+                            <td style='text-align:right'> $credit</td>         
                         </tr>";
                 }
                 ?>
@@ -293,7 +287,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </tr>
             </tbody>
-            </th>
         </table>
 
 

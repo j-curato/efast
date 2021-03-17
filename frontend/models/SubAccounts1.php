@@ -34,7 +34,7 @@ class SubAccounts1 extends \yii\db\ActiveRecord
             [['chart_of_account_id', 'object_code', 'name'], 'required'],
             [['chart_of_account_id'], 'integer'],
             [['object_code', 'name'], 'string', 'max' => 255],
-            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::className(), 'targetAttribute' => ['chart_of_account_id' => 'id']],
+            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
         ];
     }
 

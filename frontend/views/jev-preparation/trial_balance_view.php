@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php
 
     $fund = Yii::$app->db->createCommand("SELECT fund_cluster_code.id,fund_cluster_code.name FROM fund_cluster_code")->queryAll();
-
+    $books = Yii::$app->db->createCommand("SELECT books.id,books.name FROM books")->queryAll();
 
     ?>
 
@@ -52,12 +52,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
             </div>
             <div class="col-sm-5">
-                <label for="fund"> Fund Cluster Code</label>
+                <label for="book"> Books</label>
                 <?php
                 echo Select2::widget([
-                    'data' => ArrayHelper::map($fund, 'id', 'name'),
-                    'id' => 'fund',
-                    'name' => 'fund',
+                    'data' => ArrayHelper::map($books, 'id', 'name'),
+                    'id' => 'book',
+                    'name' => 'book',
                     'options' => ['placeholder' => 'Select a Fund Cluster Code'],
                     'pluginOptions' => [
                         'allowClear' => true
@@ -66,8 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
             </div>
             <div class="col-sm-2">
-
-                <button class="generate">generate</button>
+                <button class="generate btn btn-success" style="margin-top: 25px;">Generate</button>
             </div>
 
         </div>
@@ -95,10 +94,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             <div style="text-align:center;" class="headerItems">
                                 <h6>DEPARTMENT OF TRADE AND INDUSTRY</h6>
                                 <h6>CARAGA REGIONAL OFFICE</h6>
-                                <h6>TRIAL BALANCE FUND
+                                <h6>TRIAL BALANCE
                                     <?php if (!empty($fund_cluster_code)) {
-                                        echo $fund_cluster_code;
-                                    } ?></h6>
+                                        echo strtoupper($fund_cluster_code);
+                                    } ?>
+                                </h6>
                                 <h6>As of
                                     <?php if (!empty($reporting_period)) {
                                         echo $reporting_period;
@@ -188,8 +188,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         //     $credit_balance = number_format($y, 2);
                         //     $f += $y;
                         // }
-                        echo
-                        "<tr>
+                        if (!empty($val['debit']) || !empty($val['credit'])) {
+
+                            echo
+                            "<tr>
               
                             <td>
                             {$val['general_ledger']}
@@ -205,6 +207,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             </td>
 
                         </tr>";
+                        }
                     }
                 }
                 ?>
@@ -503,25 +506,25 @@ $(document).on('ready pjax:success', function(){
 });
 $(document).ready(function(){
     let gen = undefined
-    let fund = undefined
+    let book_id = undefined
     let reporting_period=undefined
     var title=""
 
-    $( "#fund" ).on('change keyup', function(){
-        fund = $(this).val()
-        // console.log(fund)
+    $( "#book" ).on('change keyup', function(){
+        book_id = $(this).val()
+        // console.log(book_id)
     })
     $("#reporting_period").change(function(){
         reporting_period=$(this).val()
     })
     $(".generate").click(function(){
-        if (reporting_period!=null && fund!=null){
+        if (reporting_period!=null && book_id!=null){
             query()
 
         }
         else{
             swal( {
-                title: " Reporting Period and Fund Cluster Code are Required",
+                title: " Reporting Period and book_id Cluster Code are Required",
                 type: "error",
                 timer:3000,
                 closeOnConfirm: false,
@@ -531,15 +534,15 @@ $(document).ready(function(){
     })
 
     function query(){
-        // console.log(fund+gen)
-        // console.log(fund)
+        // console.log(book_id+gen)
+        // console.log(book_id)
         $.pjax({
         container: "#journal", 
         url: window.location.pathname + '?r=jev-preparation/trial-balance',
         type:'POST',
         data:{
             reporting_period:reporting_period?reporting_period:'',
-            fund:fund?fund:'',
+            book_id:book_id?book_id:'',
         }});
        
 

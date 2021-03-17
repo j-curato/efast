@@ -89,14 +89,14 @@ use aryelds\sweetalert\SweetAlertAsset;
                     </select>
                 </div> -->
                 <div class="col-sm-3" style="height:60x">
-                    <label for="book">Book</label>
-                    <select id="book" name="book" class="book select" style="width: 100%; margin-top:50px" required>
+                    <label for="fund_cluster_code_id">fund_cluster_code_id</label>
+                    <select id="fund_cluster_code_id" name="fund_cluster_code_id" class="fund_cluster_code_id select" style="width: 100%; margin-top:50px" required>
                         <option></option>
                     </select>
                 </div>
                 <div class="col-sm-3">
                     <label for="document_recieve">Document Recieve</label>
-                    <select id="document_recieve" name="r_center" class="document_recieve select" style="width: 100%">
+                    <select id="document_recieve" name="document_recieve" class="document_recieve select" style="width: 100%">
                         <option></option>
                     </select>
                 </div>
@@ -128,6 +128,10 @@ use aryelds\sweetalert\SweetAlertAsset;
                         <option></option>
                     </select>
                 </div>
+                <div class="col-sm-3">
+                    <label for="fund_classification_code">Fund Classification Code</label>
+                    <input type="text" id="fund_classification_code" name="fund_classification_code" placeholder="Fund Classification Code">
+                </div>
 
 
             </div>
@@ -155,13 +159,13 @@ use aryelds\sweetalert\SweetAlertAsset;
                 <div class="row gap-1">
                     <div class="col-sm-5 ">
                         <div>
-                            <select id="chart-0" required name="chart_of_account_id[]" class="chart-of-account" onchange=isCurrent(this,0) style="width: 100%">
+                            <select id="chart-0" required name="chart_of_account_id[]" class="chart-of-account" style="width: 100%">
                                 <option></option>
                             </select>
                         </div>
                     </div>
 
-        
+
                     <div class="col-sm-3">
                         <input type="text" id="amount-0" name="amount[]" class="amount" placeholder="amount">
                     </div>
@@ -285,57 +289,57 @@ use aryelds\sweetalert\SweetAlertAsset;
 
         }
 
-        function isCurrent(index, i) {
-            // console.log(i)
-            // var chart_id = document.getElementById('chart-0').val()
-            // console.log(index)
-            $.ajax({
-                type: 'POST',
-                url: window.location.pathname + '?r=jev-preparation/is-current',
-                data: {
-                    chart_id: index.value
-                },
-                dataType: 'json',
-                success: function(data) {
-                    $('#isCurrent-' + i).val(data.result.current_noncurrent)
-                    // console.log(data)
-                    // data.isCashEquivalent ? : $('#cash_flow_id-' + i).hide()
-                    data.isEquity ? $('#isEquity-' + i).show() : $('#isEquity-' + i).hide()
-                    // console.log(data)
-                    if (data.isCashEquivalent == true) {
-                        // $('#cashflow-' + i).select2({
-                        //     data: cashflow,
-                        //     placeholder: 'Select Cash Flow'
-                        // })
-                        // $('#cashflow-' + i).val(2).trigger('change');
-                        $('#cashflow-' + i).next().show()
-                    } else {
+        // function isCurrent(index, i) {
+        //     // console.log(i)
+        //     // var chart_id = document.getElementById('chart-0').val()
+        //     // console.log(index)
+        //     $.ajax({
+        //         type: 'POST',
+        //         url: window.location.pathname + '?r=jev-preparation/is-current',
+        //         data: {
+        //             chart_id: index.value
+        //         },
+        //         dataType: 'json',
+        //         success: function(data) {
+        //             $('#isCurrent-' + i).val(data.result.current_noncurrent)
+        //             // console.log(data)
+        //             // data.isCashEquivalent ? : $('#cash_flow_id-' + i).hide()
+        //             data.isEquity ? $('#isEquity-' + i).show() : $('#isEquity-' + i).hide()
+        //             // console.log(data)
+        //             if (data.isCashEquivalent == true) {
+        //                 // $('#cashflow-' + i).select2({
+        //                 //     data: cashflow,
+        //                 //     placeholder: 'Select Cash Flow'
+        //                 // })
+        //                 // $('#cashflow-' + i).val(2).trigger('change');
+        //                 $('#cashflow-' + i).next().show()
+        //             } else {
 
-                        $('#cashflow-' + i).val(null).trigger('change');
-                        // document.getElementById('isEquity-' + i).value = 'null'
-                        $('#cashflow-' + i).select2().next().hide();
-
-
-                    }
-                    if (data.isEquity == true) {
-                        // $('#isEquity-' + i).select2({
-                        //     data: net_asset,
-                        //     placeholder: 'Select Net Asset'
-
-                        // })
-
-                        $('#isEquity-' + i).next().show()
-                    } else {
-
-                        $('#isEquity-' + i).val(null).trigger('change');
-                        // document.getElementById('isEquity-' + i).value = 'null'
-                        $('#isEquity-' + i).select2().next().hide();
+        //                 $('#cashflow-' + i).val(null).trigger('change');
+        //                 // document.getElementById('isEquity-' + i).value = 'null'
+        //                 $('#cashflow-' + i).select2().next().hide();
 
 
-                    }
-                }
-            })
-        }
+        //             }
+        //             if (data.isEquity == true) {
+        //                 // $('#isEquity-' + i).select2({
+        //                 //     data: net_asset,
+        //                 //     placeholder: 'Select Net Asset'
+
+        //                 // })
+
+        //                 $('#isEquity-' + i).next().show()
+        //             } else {
+
+        //                 $('#isEquity-' + i).val(null).trigger('change');
+        //                 // document.getElementById('isEquity-' + i).value = 'null'
+        //                 $('#isEquity-' + i).select2().next().hide();
+
+
+        //             }
+        //         }
+        //     })
+        // }
 
         function q(q) {
             console.log(q)
@@ -359,7 +363,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                
                      <div class="row gap-1">
                             <div class="col-sm-5 ">
-                                <select id="chart-${i}" name="chart_of_account_id[]" required class="chart-of-accounts" onchange=isCurrent(this,${i}) style="width: 100%">
+                                <select id="chart-${i}" name="chart_of_account_id[]" required class="chart-of-accounts" style="width: 100%">
                                 <option></option>
                                 </select>
                         </div>
@@ -378,15 +382,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                 placeholder: "Select Chart of Account",
 
             });
-            $(`#cashflow-${i}`).select2({
-                data: cashflow,
-                placeholder: 'Select Cash Flow'
-            }).next().hide()
-            $(`#isEquity-${i}`).select2({
-                data: net_asset,
-                placeholder: 'Select Net Asset'
-
-            }).next().hide();
+    
             var deb = document.getElementsByName('debit[]');
             // arr_form.splice(latest, 0, latest + 1)
             // deb[1].value = 123
@@ -539,7 +535,7 @@ use aryelds\sweetalert\SweetAlertAsset;
 
                 })
             // GET ALL BOOKS WITH SELECT2 DROPDOWN
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=fund-cluster-code/get-all-cluster')
                 .then(function(data) {
 
                     var array = []
@@ -550,7 +546,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                         })
                     })
                     books = array
-                    $('#book').select2({
+                    $('#fund_cluster_code_id').select2({
                         data: books,
                         placeholder: 'Select Book'
 
@@ -588,34 +584,33 @@ use aryelds\sweetalert\SweetAlertAsset;
             $('#add_data').submit(function(e) {
                 e.preventDefault();
                 $.ajax({
-                    url: window.location.pathname + '?r=jev-preparation/insert-jev',
+                    url: window.location.pathname + '?r=record-allotments/create-record-allotments',
                     method: "POST",
                     data: $('#add_data').serialize(),
                     success: function(data) {
                         //  alert(data);  
-                        console.log(data)
                         // //  $('#add_name')[0].reset();  
-                        var res = JSON.parse(data)
-                        // console.log(data)
+                        // var res = JSON.parse(data)
+                        console.log(data)
                         // // console.log(JSON.parse(data))
 
-                        if (res.isSuccess == "success") {
+                        // if (res.isSuccess == "success") {
                             // console.log(data)
-                            swal({
-                                title: "Success",
-                                // text: "You will not be able to undo this action!",
-                                type: "success",
-                                timer: 3000,
-                                button: false
-                                // confirmButtonText: "Yes, delete it!",
-                            }, function() {
-                                console.log('qwe')
-                                window.location.href = window.location.pathname + '?r=jev-preparation/view&id=' + res.id
-                            });
-                            $('#add_data')[0].reset();
+                            // swal({
+                            //     title: "Success",
+                            //     // text: "You will not be able to undo this action!",
+                            //     type: "success",
+                            //     timer: 3000,
+                            //     button: false
+                            //     // confirmButtonText: "Yes, delete it!",
+                            // }, function() {
+                            //     console.log('qwe')
+                            //     window.location.href = window.location.pathname + '?r=jev-preparation/view&id=' + res.id
+                            // });
+                            // $('#add_data')[0].reset();
 
 
-                        }
+                        // }
                         // else {
                         //     // var date = JSON.parse(data).date;
                         //     // var reporting_period = JSON.parse(data).reporting_period;

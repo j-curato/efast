@@ -139,7 +139,7 @@ class SubAccounts1Controller extends Controller
 
             $sub_acc1_ojc_code = SubAccounts1::find()
                 ->where("id = :id", ['id' => $id])->one()->object_code;
-            $last_id = SubAccounts1::find()->orderBy('id DESC')->one()->id + 1;
+            $last_id = SubAccounts2::find()->orderBy('id DESC')->one()->id + 1;
 
             $uacs = $sub_acc1_ojc_code . '_';
             // echo $uacs;
@@ -152,7 +152,7 @@ class SubAccounts1Controller extends Controller
             if ($model->validate()) {
 
                 if ($model->save()) {
-                    return 'success';
+                    return json_encode('success');
                 }
             } else {
                 $errors = $model->errors;
@@ -185,7 +185,12 @@ class SubAccounts1Controller extends Controller
 
             $data = [];
             $chart_uacs = ChartOfAccounts::find()->where("id = :id", ['id' => $chart_id])->one()->uacs;
-            $last_id = SubAccounts1::find()->orderBy('id DESC')->one()->id + 1;
+            $x = SubAccounts2::find()->orderBy('id DESC')->one();
+            if (!empty($x)) {
+                $last_id = $x->id + 1;
+            } else {
+                $last_id = 1;
+            }
             $uacs = $chart_uacs . '_';
             for ($i = strlen($last_id); $i <= 4; $i++) {
                 $uacs .= 0;
@@ -223,7 +228,6 @@ class SubAccounts1Controller extends Controller
             // var_dump('success');
             // echo '</pre>';
             return $this->redirect(['index']);
-            
         }
     }
 }

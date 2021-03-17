@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
           <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
         </div>
         <div class='modal-body'>
-          <center><a href="WFP Template.xlsx">Download Template Here to avoid error during Upload.</a></center>
+          <center><a href="jev/jev_format.xlsx">Download Template Here to avoid error during Upload.</a></center>
           <hr>
           <?php
 

@@ -20,7 +20,7 @@ use aryelds\sweetalert\SweetAlertAsset;
 
                 $q = $model;
             }
-            echo " <input type='text' id='update_id' name='update_id' placeholder='DV NUMBER' value='$q' style='display:none'>";
+            echo " <input type='text' id='update_id' name='update_id'  value='$q' style='display:none'>";
             ?>
             <div class="row">
 
@@ -219,7 +219,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                 <div class="col-sm-3">
                     <div class="form-group">
 
-                        <label for="c_total"> Total Debit</label>
+                        <label for="c_total"> Total Credit</label>
                         <div id="c_total">
                         </div>
                     </div>
@@ -645,7 +645,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                                 button: false
                                 // confirmButtonText: "Yes, delete it!",
                             }, function() {
-                                console.log('qwe')
+                                // console.log('qwe')
                                 window.location.href = window.location.pathname + '?r=jev-preparation/view&id=' + res.id
                             });
                             $('#add_data')[0].reset();
@@ -760,12 +760,13 @@ $script = <<< JS
                         // $('#reference').val(jev['reference'])
                         // console.log(jev_accounting_entries)
                         $('#reference').val(jev['ref_number']).trigger('change');
-                        $('#book').val(jev['book_id']).trigger('change')
-                        $('#r_center_id').val(jev['responsibility_center_id']).trigger('change')
-                        $('#check_ada').val(jev['check_ada'])
-                        $('#check_ada').trigger('change')
-                        $('#payee').val(jev['payee_id'])
-                        $('#payee').trigger('change')
+                        console.log(jev['book_id']);
+                        $('#r_center_id').val(jev['responsibility_center_id']).trigger('change');
+                        $('#check_ada').val(jev['check_ada']);
+                        $('#check_ada').trigger('change');
+                        $('#payee').val(jev['payee_id']);
+                        $('#payee').trigger('change');
+                        $('#book').val(jev['book_id']).trigger('change');
                         var x=0
                         // console.log(jev_accounting_entries)
                         // for (i; i < jev_accounting_entries.length;) {
@@ -792,21 +793,7 @@ $script = <<< JS
                                 add()
                             }
                         }
-                        // $('#cashflow-0' ).val(2).trigger('change'); 
                         getTotal()
-
-
-                        // $('#reporting_period').val(jev['reporting_period'])
-                        // $('#reporting_period').val(jev['reporting_period'])
-                        // $('#reporting_period').val(jev['reporting_period'])
-                        // $('#reporting_period').val(jev['reporting_period'])
-                        // $('#reporting_period').val(jev['reporting_period'])
-                        // $('#reporting_period').val(jev['reporting_period'])
-                        // $('#reporting_period').val(jev['reporting_period'])
-                        // $('#reporting_period').val(jev['reporting_period'])
-                        // $('#reporting_period').val(jev['reporting_period'])
-
-
                     }
                 })
             }

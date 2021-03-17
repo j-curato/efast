@@ -2,9 +2,15 @@
 
 namespace frontend\controllers;
 
+use app\models\BudgetEntries;
+use app\models\RaoudEntries;
+use app\models\Raouds;
+use app\models\RecordAllotmentEntries;
 use Yii;
 use app\models\RecordAllotments;
 use app\models\RecordAllotmentsSearch;
+use app\models\Transaction;
+use Exception;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -21,7 +27,7 @@ class RecordAllotmentsController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -38,7 +44,7 @@ class RecordAllotmentsController extends Controller
         $searchModel = new RecordAllotmentsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('index', [
+        return $this->render('index2', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
@@ -123,5 +129,94 @@ class RecordAllotmentsController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionCreateRecordAllotments()
+    {
+        $date_issued = $_POST['date_issued'];
+        $valid_until = $_POST['valid_until'];
+        $reporting_period = $_POST['reporting_period'];
+        $particulars = $_POST['particular'];
+        $fund_cluster_code_id = $_POST['fund_cluster_code_id'];
+        $document_recieve_id = $_POST['document_recieve'];
+        $financing_source_code_id = $_POST['financing_source_code'];
+        $authorization_code_id = $_POST['authorization_code'];
+        $mfo_pap_code_id = $_POST['mfo_pap_code'];
+        $fund_source_id = $_POST['fund_source'];
+
+
+        $transaction = \Yii::$app->db->beginTransaction();
+        $fund_category_and_classification_code_id = Yii::$app->db->createCommand("SELECT * FROM `fund_category_and_classification_code` WHERE  {$_POST['fund_classification_code']}>=`fund_category_and_classification_code`.from  and {$_POST['fund_classification_code']} <= `fund_category_and_classification_code`.to LIMIT 1 ")->queryOne();
+        //    return  json_encode($fund_category_and_classification_code_id['id']);
+        $recordAllotment = new RecordAllotments();
+        $recordAllotment->date_issued = $date_issued;
+        $recordAllotment->serial_number = '123';
+        $recordAllotment->valid_until = $valid_until;
+        $recordAllotment->reporting_period = $reporting_period;
+        $recordAllotment->particulars = $particulars;
+        $recordAllotment->fund_cluster_code_id = $fund_cluster_code_id;
+        $recordAllotment->document_recieve_id = $document_recieve_id;
+        $recordAllotment->authorization_code_id = $authorization_code_id;
+        $recordAllotment->financing_source_code_id = $financing_source_code_id;
+        $recordAllotment->mfo_pap_code_id = $mfo_pap_code_id;
+        $recordAllotment->fund_source_id = $fund_source_id;
+        $recordAllotment->fund_category_and_classification_code_id = $fund_category_and_classification_code_id['id'];
+        // echo $fund_category_and_classification_code_id['id'];3
+        // echo json_encode($_POST['chart_of_account_id'] );
+        if ($recordAllotment->validate()) {
+            try {
+                if ($flag = $recordAllotment->save(false)) {
+
+
+
+                    for ($x = 0; $x < count($_POST['chart_of_account_id']); $x++) {
+
+                        // echo $_POST['chart_of_account_id'];
+                        $y = explode('-', $_POST['chart_of_account_id'][$x]);
+                        $raoud = new Raouds();
+                        $raoud->record_allotment_id = $recordAllotment->id;
+                        $raoud->serial_number = "$x";
+                        $raoud->reporting_period = $reporting_period;
+
+                        if ($raoud->validate()) {
+
+                            if ($raoud->save(false)) {
+                                $raoudEntry = new RaoudEntries();
+                                $raoudEntry->chart_of_account_id = $y[0];
+                                $raoudEntry->raoud_id = $raoud->id;
+                                $raoudEntry->amount = $_POST['amount'][$x];
+                                if ($raoudEntry->validate()) {
+                                    if ($raoudEntry->save(false)) {
+                                        echo $raoudEntry->id;
+                                    } else echo 'qwe';
+                                }
+                                // else{
+                                //   $raoudEntry->errors;
+                                // }
+                            }
+                        } else {
+                            return  json_encode($raoud->errors);
+                        }
+                        $ra_entries = new RecordAllotmentEntries();
+                        $ra_entries->chart_of_account_id = $y[0];
+                        $ra_entries->record_allotment_id = $recordAllotment->id;
+                        $ra_entries->amount = $_POST['amount'][$x];
+                        if ($ra_entries->validate()) {
+                            if ($ra_entries->save()) {
+                            }
+                        }
+                    }
+                }
+                if ($flag) {
+                    $transaction->commit();
+                    // return json_encode(["success"]);
+                }
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                return json_encode(['yawas']);
+            }
+        } else {
+            return  json_encode($recordAllotment->errors);
+        }
     }
 }
