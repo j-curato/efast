@@ -1868,7 +1868,8 @@ class JevPreparationController extends Controller
                     ->where('sub_accounts1.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
             } else if ($val->lvl === 3) {
                 $chart_id = (new \yii\db\Query())->select(['sub_accounts2.id'])->from('sub_accounts2')
-                    ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+                    // ->join("LEFT JOIN", 'sub_accounst1', 'sub_accounts2.sub_accounts1_id = sub_accounts1.id')
+                    // ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
                     ->where('sub_accounts2.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
             } else {
                 $chart_id =  $val->chart_of_account_id;
