@@ -167,10 +167,10 @@ class SubAccounts1Controller extends Controller
 
     {
         if (!empty($_POST)) {
-            $chart_id = $_POST['chart_id'];
+            // $chart_id = $_POST['chart_id'];
             $name = $_FILES["file"]["name"];
             $id = uniqid();
-            $file = "jev/{$id}_{$name}";;
+            $file = "sub_account1/{$id}_{$name}";;
             if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
             } else {
                 return "ERROR 2: MOVING FILES FAILED.";
@@ -184,19 +184,18 @@ class SubAccounts1Controller extends Controller
             // print_r($excel->getSheetNames());
 
             $data = [];
-            $chart_uacs = ChartOfAccounts::find()->where("id = :id", ['id' => $chart_id])->one()->uacs;
-            $x = SubAccounts2::find()->orderBy('id DESC')->one();
+            // $chart_uacs = ChartOfAccounts::find()->where("id = :id", ['id' => $chart_id])->one()->uacs;
+            $x = SubAccounts1::find()->orderBy('id DESC')->one();
             if (!empty($x)) {
                 $last_id = $x->id + 1;
             } else {
                 $last_id = 1;
             }
-            $uacs = $chart_uacs . '_';
-            for ($i = strlen($last_id); $i <= 4; $i++) {
-                $uacs .= 0;
-            }
 
-            foreach ($worksheet->getRowIterator() as $key => $row) {
+            // 
+
+            $uacs_storage = [];
+            foreach ($worksheet->getRowIterator(2) as $key => $row) {
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
                 $cells = [];
@@ -205,28 +204,44 @@ class SubAccounts1Controller extends Controller
                     $q = '';
                     $cells[] =   $cell->getValue();
                 }
-                $object_code = '';
-                $object_code = $uacs . $last_id;
-                if (!empty($cells[0])) {
+                $obj_code = $cells[0];
+                $name = $cells[1];
+                if (!empty($cells[0] )) {
+
+                    // if (in_array($obj_code, $uacs_storage, true)) {
+
+                    $chart_of_account = ChartOfAccounts::find()
+                        ->where("uacs = :uacs", [
+                            'uacs' => $obj_code
+                        ])
+                        ->one();
+                    $uacs = $chart_of_account->uacs . '_';
+                    for ($i = strlen($last_id); $i <= 4; $i++) {
+                        $uacs .= 0;
+                    }
+                    $object_code = '';
+                    $object_code = $uacs . $last_id;
+                    // } else {
+                    //     $uacs_storage[] = $obj_code;
+                    // }
+
 
                     $data[] = [
-                        'chart_of_account_id' => $chart_id,
+                        'chart_of_account_id' => $chart_of_account->id,
                         'object_code' => $object_code,
-                        'name' => $cells[0]
+                        'name' => $name
                     ];
+                    $last_id++;
                 }
-
-                $last_id++;
             }
+
             $column = [
                 'chart_of_account_id',
                 'object_code',
                 'name',
             ];
             $ja = Yii::$app->db->createCommand()->batchInsert('sub_accounts1', $column, $data)->execute();
-            // echo '<pre>';
-            // var_dump('success');
-            // echo '</pre>';
+
             return $this->redirect(['index']);
         }
     }

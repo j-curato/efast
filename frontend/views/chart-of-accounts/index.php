@@ -172,7 +172,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="form-group">
                         <label for="account_title">Account Title:</label>
                         <input type="account_title" class="form-control" id="account_title">
-                        <input type="text" class="form-control " id="chart_id" >
+                        <input type="text" class="form-control " id="chart_id">
                     </div>
 
                 </div>
@@ -186,8 +186,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 <style>
-
-    #chart_id{
+    #chart_id {
         display: none;
     }
 </style>

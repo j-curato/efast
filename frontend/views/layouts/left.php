@@ -62,6 +62,7 @@
                                 'url' => '#',
                                 'items' => [
                                     ['label' => 'Record Allotments', 'icon' => 'circle-o', 'url' => ['/record-allotments'],],
+                                    ['label' => 'Process Ors', 'icon' => 'circle-o', 'url' => ['/process-ors'],],
                              
                                 ],
                             ],

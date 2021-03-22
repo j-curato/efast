@@ -141,7 +141,7 @@ class JevPreparationController extends Controller
             // $chart = $general_ledger->orderBy('jev_accounting_entries.chart_of_account_id')
             //     ->orderBy('jev_preparation.date')
             //     ->all();
-            $xxx = $general_ledger->orderBy('jev_accounting_entries.chart_of_account_id')
+            $general_ledger->orderBy('jev_accounting_entries.chart_of_account_id')
                 ->orderBy('jev_preparation.date');
 
             // QUERY  FOR BALNCE LAST YEAR
@@ -196,7 +196,7 @@ class JevPreparationController extends Controller
             $final_ledger = [];
 
             // MANIPULATE  THE DATA THEN SAVE TO A TEMPORARY ARRAY WITH ITS TOTAL BALANCE
-            $reporting_period = '';
+
             foreach ($chart as $key => $val) {
                 $x = array_key_exists($val['uacs'], $balance_per_uacs);
 
@@ -516,7 +516,7 @@ class JevPreparationController extends Controller
 
                         // $cells[] =   $cell->getValue()->getCalculatedValue();
                         $qwe = 0;
-                        if ($y == 4) {
+                        if ($y == 4 || $y === 5) {
                             $cells[] =   $cell->getFormattedValue();
                             // echo '<pre>';y
                             // var_dump('qwe');
@@ -553,20 +553,20 @@ class JevPreparationController extends Controller
                     $lvl = 0;
                     $object_code = '';
                     $chart_of_account_id = 0;
-
+                    $uacs_id = str_replace(' ', '', $cells[1]);
                     if (!empty($cells[1])) {
                         $uacs = ChartOfAccounts::find()
                             ->select(['uacs', 'id'])
                             ->where("uacs = :uacs", [
-                                'uacs' => $cells[1]
+                                'uacs' => $uacs_id
                             ])->one();
                         if (empty($uacs)) {
                             $uacs = SubAccounts1::find()->where("object_code = :object_code", [
-                                'object_code' => $cells[1]
+                                'object_code' => $uacs_id
                             ])->one();
                             if (empty($uacs)) {
                                 $uacs = SubAccounts2::find()->where("object_code = :object_code", [
-                                    'object_code' => $cells[1]
+                                    'object_code' => $uacs_id
                                 ])->one();
                                 if (!empty($uacs)) {
                                     $lvl = 3;
@@ -583,103 +583,7 @@ class JevPreparationController extends Controller
                             $object_code = $uacs->uacs;
                             $chart_of_account_id = $uacs->id;
                         }
-                        if (empty($uacs)) {
-                            //MAJOR ACOUNT INSERT IF DLI MA KITA
-
-
-                            // $major = MajorAccounts::find()->where("object_code = :object_code", [
-                            //     'object_code' => $cells[13]
-                            // ])->one();
-                            // if (empty($major)) {
-
-
-                            //     try {
-                            //         $maj = new MajorAccounts();
-                            //         $maj->object_code = $cells[13];
-                            //         $maj->name = $cells[14];
-
-
-                            //         if ($maj->save(false)) {
-                            //             $major = $maj;
-                            //         }
-                            //     } catch (Exception $e) {
-                            //         echo '<pre>';
-                            //         var_dump($e);
-                            //         echo '</pre>';
-                            //     }
-                            // }
-
-
-
-
-
-                            // // SUB MAJOR FIND
-                            // $sub_major = SubMajorAccounts::find()->where("object_code=:object_code", [
-                            //     'object_code' => $cells[15]
-                            // ])->one();
-                            // if (empty($sub_major)) {
-
-                            //     echo '<pre>';
-                            //     var_dump($cells[15]);
-                            //     echo '</pre>';
-
-                            //     try {
-                            //         $sub_maj = new SubMajorAccounts();
-                            //         $sub_maj->object_code = $cells[15];
-                            //         $sub_maj->name = $cells[16];
-
-
-                            //         if ($sub_maj->save(false)) {
-                            //             $sub_major = $sub_maj;
-                            //         }
-                            //     } catch (Exception $e) {
-                            //         echo '<pre>';
-                            //         var_dump($e);
-                            //         echo '</pre>';
-                            //     }
-                            // }
-                            // // SUB MAJOR 2
-                            // $sub_major2 = SubMajorAccounts2::find()->where("object_code = :object_code", [
-                            //     'object_code' => $cells[17]
-                            // ])->one();
-                            // if (empty($sub_major2)) {
-                            //     try {
-                            //         $sub_maj2 = new SubMajorAccounts();
-                            //         $sub_maj2->object_code = $cells[17];
-                            //         $sub_maj2->name = $cells[18];
-
-
-                            //         if ($sub_maj2->save(false)) {
-                            //             $sub_major2 = $sub_maj2;
-                            //         }
-                            //     } catch (Exception $e) {
-                            //         echo '<pre>';
-                            //         var_dump($e);
-                            //         echo '</pre>';
-                            //     }
-                            // }
-
-                            // // CHART OF ACCOUNTS 
-                            // $chart = [];
-                            // try {
-                            //     $coa = new ChartOfAccounts();
-                            //     $coa->uacs = $cells[0];
-                            //     $coa->general_ledger = $cells[1];
-                            //     $coa->major_account_id = $major->id;
-                            //     $coa->sub_major_account = $sub_major->id;
-                            //     $coa->sub_major_account_2_id = $sub_major2->id;
-                            //     $coa->account_group = $cells[11];
-                            //     $coa->current_noncurrent = $cells[12];
-                            //     $coa->enable_disable = 1;
-                            //     if ($coa->save(false)) {
-                            //         $uacs = $coa;
-                            //     }
-                            // } catch (Exception $e) {
-                            //     echo $e;
-                            // }
-                            // echo '<pre>';
-                            // var_dump($sub_major2->id);
-                            // echo '</pre>';
+                        if (!empty($uacs)) {
                         }
                         $book = Books::find()->where("name= :name", [
                             'name' => $cells[3]
@@ -734,6 +638,7 @@ class JevPreparationController extends Controller
                                     $payee ? $payee : '', //PAYEE
 
                                 ];
+
                                 $jev = new JevPreparation();
                                 $jev->book_id = $book->id;
                                 $jev->reporting_period = $reporting_period;
@@ -816,10 +721,18 @@ class JevPreparationController extends Controller
             ];
             // Yii::$app->db->createCommand()->batchInsert('jev_preparation', $jev_column, $temp_data)->execute();
             Yii::$app->db->createCommand()->batchInsert('jev_accounting_entries', $column, $jev_entries)->execute();
-
+            // ob_clean();
             echo '<pre>';
-            var_dump('success');
+            var_dump("Success");
             echo '</pre>';
+            // return ob_get_clean();
+            // foreach ($jev_entries as $x => $val) {
+            //     if ($x > 420) {
+            //         echo '<pre>';
+            //         var_dump($val);
+            //         echo '</pre>';
+            //     }
+            // }
         }
     }
 
@@ -854,7 +767,7 @@ class JevPreparationController extends Controller
             $x = $journal->all();
             $book_name = '';
             if (!empty($fund)) {
-                // $fund_cluster_code = $this->getFundClusterCode($fund);
+                // $fund_cluster_code = $this->getBook($fund);
                 $book_name = $this->getBookName($book_id);
             }
             // echo '<pre>';
@@ -1185,7 +1098,7 @@ class JevPreparationController extends Controller
 
             $book_name = '';
             if (!empty($book_id)) {
-                $fund_cluster_code = $this->getFundClusterCode($book_id);
+                $fund_cluster_code = $this->getBook($book_id);
             }
             $total_debit_balance = 0;
             $total_credit_balance = 0;
@@ -1270,7 +1183,7 @@ class JevPreparationController extends Controller
 
     }
 
-    public function getFundClusterCode($book_id)
+    public function getBook($book_id)
     {
         $book_name = Books::find()->where("id=:id", ['id' => $book_id])->one()->name;
         return $book_name;
@@ -1321,8 +1234,7 @@ class JevPreparationController extends Controller
 
 
                 // if (!empty($reporting_period) && !empty($fund_cluster_code)) {
-                $jev_number = $reference;
-                $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
+
                 // for($x=0;$x<count($_POST['debit']);$x++){
                 //      $amount = floatval(preg_replace('/[^\d.]/', '', $_POST['debit'][$x]));
                 //      $tt+=$amount;
@@ -1332,17 +1244,23 @@ class JevPreparationController extends Controller
                 // }
                 $transaction = \Yii::$app->db->beginTransaction();
 
+                $jev_preparation = new JevPreparation();
                 if ($_POST['update_id'] > 0) {
-                    $jev_preparation = JevPreparation::findOne($_POST['update_id']);
-                    if (!empty($jev_preparation->jevAccountingEntries)) {
-                        foreach ($jev_preparation->jevAccountingEntries as $val) {
+                    $jv = JevPreparation::findOne($_POST['update_id']);
+                    if (!empty($jv->jevAccountingEntries)) {
+                        foreach ($jv->jevAccountingEntries as $val) {
                             $val->delete();
                         }
                     }
-                } else {
-
-                    $jev_preparation = new JevPreparation();
+                    $q = explode('-', $jv->jev_number);
+                    $r = explode('-', $reporting_period);
+                    $jev_preparation->id = $jv->id;
+                    $jv->delete();
                 }
+
+                $jev_number = $reference;
+                $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
+
                 $jev_preparation->reporting_period = $reporting_period;
                 $jev_preparation->responsibility_center_id = $r_center_id;
                 // $jev_preparation->fund_cluster_code_id = $fund_cluster_code;
@@ -1374,7 +1292,23 @@ class JevPreparationController extends Controller
                             $account_entries = count($_POST['chart_of_account_id']);
                             //     $s = [];
                             for ($i = 0; $i < $account_entries; $i++) {
+
                                 $x = explode('-', $_POST['chart_of_account_id'][$i]);
+                                $credit_decimal_places = 0;
+                                $debit_decimal_places = 0;
+                                // if (floor($_POST['credit']) != $_POST['credit'] ? true : false) {
+                                //     $c = explode('.', $_POST['credit'][$i])[1];
+                                //     $credit_decimal_places = strlen($c);
+                                // }
+                                // if (floor($_POST['debit']) != $_POST['debit'] ? true : false) {
+                                //     $d = explode('.', $_POST['debit'][$i])[1];
+                                //     $debit_decimal_places = strlen($d);
+                                // }
+
+                                // if ($credit_decimal_places <= 2 || $debit_decimal_places <= 2) {
+
+
+
                                 $chart_id = 0;
                                 if ($x[2] == 2) {
                                     $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
@@ -1409,6 +1343,11 @@ class JevPreparationController extends Controller
                                     $transaction->rollBack();
                                     break;
                                 }
+                                // } else {
+                                //     return json_encode("more than 1 decimals");
+                                //     $transaction->rollBack();
+                                //     break;
+                                // }
                             }
                         } else {
                             // return json_encode('w');

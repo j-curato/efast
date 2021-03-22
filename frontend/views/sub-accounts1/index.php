@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
                 </div>
                 <div class='modal-body'>
-                    <center><a href="jev/604b22cad30a6_sample_sub_account1_import.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                    <center><a href="sub_account1/sub_account1_format.xlsx">Download Template Here to avoid error during Upload.</a></center>
                     <hr>
                     <label for="ledger"> SELECT GENERAL LEDGER</label>
                     <?php
@@ -49,15 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'enctype' => 'multipart/form-data',
                         ], // important
                     ]);
-                    echo Select2::widget([
-                        'data' => ArrayHelper::map($ledger, 'id', 'name'),
-                        'id' => 'chart_id',
-                        'name' => 'chart_id',
-                        'options' => ['placeholder' => 'Select a ledger'],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ]);
+          
                     // echo '<input type="file">';
                     echo "<br>";
                     echo FileInput::widget([
@@ -119,10 +111,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         'data-toggle' => "modal", 'data-target' => "#myModal",
                         'value' => $model->id,
                     ]);
-                }
+                },
+                'hiddenFromExport' => true,
             ],
 
-            ['class' => 'yii\grid\ActionColumn'],
+            ['class' => 'yii\grid\ActionColumn',],
         ],
     ]); ?>
 

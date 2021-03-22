@@ -101,6 +101,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
       'id',
       'jev_number',
+      'explaination',
+      
       // 'responsibility_center_id'
       // 'jev_number',
       // 'dv_number',
@@ -147,9 +149,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
       // 'lddap_number',
       // 'entity_name',
-      // 'explaination',
+   
 
       ['class' => 'yii\grid\ActionColumn'],
+
     ],
   ]); ?>
 

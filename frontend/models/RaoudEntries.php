@@ -33,8 +33,8 @@ class RaoudEntries extends \yii\db\ActiveRecord
         return [
             [['raoud_id', 'chart_of_account_id'], 'integer'],
             [['amount'], 'number'],
-            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::className(), 'targetAttribute' => ['chart_of_account_id' => 'id']],
-            [['raoud_id'], 'exist', 'skipOnError' => true, 'targetClass' => Raouds::className(), 'targetAttribute' => ['raoud_id' => 'id']],
+            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
+            [['raoud_id'], 'exist', 'skipOnError' => true, 'targetClass' => Raouds::class, 'targetAttribute' => ['raoud_id' => 'id']],
         ];
     }
 
@@ -58,7 +58,7 @@ class RaoudEntries extends \yii\db\ActiveRecord
      */
     public function getChartOfAccount()
     {
-        return $this->hasOne(ChartOfAccounts::className(), ['id' => 'chart_of_account_id']);
+        return $this->hasOne(ChartOfAccounts::class, ['id' => 'chart_of_account_id']);
     }
 
     /**
@@ -68,6 +68,6 @@ class RaoudEntries extends \yii\db\ActiveRecord
      */
     public function getRaoud()
     {
-        return $this->hasOne(Raouds::className(), ['id' => 'raoud_id']);
+        return $this->hasOne(Raouds::class, ['id' => 'raoud_id']);
     }
 }

@@ -6,10 +6,10 @@ use yii\db\Migration;
  * Handles the creation of table `{{%record_allotment_entries}}`.
  * Has foreign keys to the tables:
  *
- * - `{{%record_allotmens}}`
+ * - `{{%record_allotments}}`
  * - `{{%chart_of_accounts}}`
  */
-class m210317_055115_create_record_allotment_entries_table extends Migration
+class m210318_010423_create_record_allotment_entries_table extends Migration
 {
     /**
      * {@inheritdoc}
@@ -20,8 +20,7 @@ class m210317_055115_create_record_allotment_entries_table extends Migration
             'id' => $this->primaryKey(),
             'record_allotment_id' => $this->integer()->notNull(),
             'chart_of_account_id' => $this->integer()->notNull(),
-            'amount'=>$this->float(11)
-            
+            'amount' => $this->float()->notNull(),
         ]);
 
         // creates index for column `record_allotment_id`
@@ -31,12 +30,12 @@ class m210317_055115_create_record_allotment_entries_table extends Migration
             'record_allotment_id'
         );
 
-        // add foreign key for table `{{%record_allotmens}}`
+        // add foreign key for table `{{%record_allotments}}`
         $this->addForeignKey(
             '{{%fk-record_allotment_entries-record_allotment_id}}',
             '{{%record_allotment_entries}}',
             'record_allotment_id',
-            '{{%record_allotmens}}',
+            '{{%record_allotments}}',
             'id',
             'CASCADE'
         );
@@ -64,7 +63,7 @@ class m210317_055115_create_record_allotment_entries_table extends Migration
      */
     public function safeDown()
     {
-        // drops foreign key for table `{{%record_allotmens}}`
+        // drops foreign key for table `{{%record_allotments}}`
         $this->dropForeignKey(
             '{{%fk-record_allotment_entries-record_allotment_id}}',
             '{{%record_allotment_entries}}'

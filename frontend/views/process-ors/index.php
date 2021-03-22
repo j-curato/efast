@@ -27,10 +27,17 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'transaction_id',
-            'reporting_period',
-            'serial_number',
-            'obligation_number',
+            
+            [
+                'label' => 'Serial Number',
+                'attribute' => 'processOrs.reporting_period',
+                'value' => 'processOrs.reporting_period'
+
+            ],
+            'amount',
+                      
+
+            
             //'funding_code',
             //'document_recieve_id',
             //'mfo_pap_code_id',

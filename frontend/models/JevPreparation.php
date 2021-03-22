@@ -111,6 +111,10 @@ class JevPreparation extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Books::class, ['id' => 'book_id']);
     }
+    public function getPayee()
+    {
+        return $this->hasOne(Payee::class, ['id' => 'payee_id']);
+    }
 
 
 }

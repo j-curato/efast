@@ -18,7 +18,7 @@ class TransactionSearch extends Transaction
     {
         return [
             [['id', 'responsibility_center_id', 'payee_id'], 'integer'],
-            [['particular', 'tracking_number', 'earnark_no', 'payroll_number', 'transaction_date', 'transaction_time'], 'safe'],
+            [['particular', 'tracking_number', 'earmark_no', 'payroll_number', 'transaction_date', 'transaction_time'], 'safe'],
             [['gross_amount'], 'number'],
         ];
     }
@@ -67,7 +67,7 @@ class TransactionSearch extends Transaction
 
         $query->andFilterWhere(['like', 'particular', $this->particular])
             ->andFilterWhere(['like', 'tracking_number', $this->tracking_number])
-            ->andFilterWhere(['like', 'earnark_no', $this->earnark_no])
+            ->andFilterWhere(['like', 'earmark_no', $this->earmark_no])
             ->andFilterWhere(['like', 'payroll_number', $this->payroll_number])
             ->andFilterWhere(['like', 'transaction_date', $this->transaction_date])
             ->andFilterWhere(['like', 'transaction_time', $this->transaction_time]);

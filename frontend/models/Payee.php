@@ -67,4 +67,9 @@ class Payee extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Transaction::className(), ['payee_id' => 'id']);
     }
+    public function getPayee()
+    {
+        return $this->hasMany(JevPreparation::className(), ['payee_id' => 'id']);
+    }
+    
 }

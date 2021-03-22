@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'particular',
             'gross_amount',
             'tracking_number',
-            'earnark_no',
+            'earmark_no',
             'payroll_number',
             'transaction_date',
             'transaction_time',

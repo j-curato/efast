@@ -137,7 +137,7 @@ use aryelds\sweetalert\SweetAlertAsset;
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <textarea name="particular" id="particular" placeholder="PARTICULAR" cols="151" rows="3"></textarea>
+                    <textarea name="particular" id="particular" placeholder="PARTICULAR" cols="151" rows="3" style="max-width:100%"></textarea>
                 </div>
             </div>
             <!-- BUTTON -->
@@ -382,7 +382,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                 placeholder: "Select Chart of Account",
 
             });
-    
+
             var deb = document.getElementsByName('debit[]');
             // arr_form.splice(latest, 0, latest + 1)
             // deb[1].value = 123
@@ -395,10 +395,42 @@ use aryelds\sweetalert\SweetAlertAsset;
         }
 
 
+        function amountComma(val) {
+        if (event.which >= 37 && event.which <= 40) {
+            event.preventDefault();
+        }
+        // console.log($id)
+        // var x = document.getElementById('' + $id)
+        // console.log(x.value)
+        // var $this = $(this);
+        var num = val.replace(/,/gi, "").split("").reverse().join("");
 
+        var num2 = RemoveRougeChar(num.replace(/(.{3})/g, "$1,").split("").reverse().join(""));
+
+        console.log(num2);
+        // @this.set(''+$id, x.value)
+
+        // the following line has been simplified. Revision history contains original.
+    }
+
+
+    function RemoveRougeChar(convertString) {
+
+
+        if (convertString.substring(0, 1) == ",") {
+
+            return convertString.substring(1, convertString.length)
+
+        }
+        return convertString;
+    }
 
         $(document).ready(function() {
-
+            $('.amount').keyup(function() {
+                var qwe = amountComma($(this).val())
+                console.log(qwe)
+            //   $(this).val(qwe)
+            })
 
             // GET ALL CHART OF accounts
             $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-all-account')
@@ -595,19 +627,19 @@ use aryelds\sweetalert\SweetAlertAsset;
                         // // console.log(JSON.parse(data))
 
                         // if (res.isSuccess == "success") {
-                            // console.log(data)
-                            // swal({
-                            //     title: "Success",
-                            //     // text: "You will not be able to undo this action!",
-                            //     type: "success",
-                            //     timer: 3000,
-                            //     button: false
-                            //     // confirmButtonText: "Yes, delete it!",
-                            // }, function() {
-                            //     console.log('qwe')
-                            //     window.location.href = window.location.pathname + '?r=jev-preparation/view&id=' + res.id
-                            // });
-                            // $('#add_data')[0].reset();
+                        // console.log(data)
+                        // swal({
+                        //     title: "Success",
+                        //     // text: "You will not be able to undo this action!",
+                        //     type: "success",
+                        //     timer: 3000,
+                        //     button: false
+                        //     // confirmButtonText: "Yes, delete it!",
+                        // }, function() {
+                        //     console.log('qwe')
+                        //     window.location.href = window.location.pathname + '?r=jev-preparation/view&id=' + res.id
+                        // });
+                        // $('#add_data')[0].reset();
 
 
                         // }

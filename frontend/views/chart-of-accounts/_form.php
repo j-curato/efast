@@ -16,12 +16,19 @@ use yii\helpers\ArrayHelper;
 
     <?php
     $major = Yii::$app->db->createCommand("SELECT * from major_accounts")->queryAll();
-    $sub_major = Yii::$app->db->createCommand("SELECT * from sub_major_accounts");
+    $sub_major = Yii::$app->db->createCommand("SELECT * from sub_major_accounts")->queryAll();
     ?>
 
 
     <?= $form->field($model, 'major_account_id')->widget(Select2::class, [
         'data' => ArrayHelper::map($major, 'id', 'name'),
+        'options' => ['placeholder' => 'Select  Major Account'],
+        'pluginOptions' => [
+            'allowClear' => true
+        ],
+    ]); ?>
+    <?= $form->field($model, 'sub_major_account')->widget(Select2::class, [
+        'data' => ArrayHelper::map($sub_major, 'id', 'name'),
         'options' => ['placeholder' => 'Select a Fund Source'],
         'pluginOptions' => [
             'allowClear' => true
@@ -32,15 +39,12 @@ use yii\helpers\ArrayHelper;
 
     <?= $form->field($model, 'general_ledger')->textInput(['maxlength' => true]) ?>
 
-    <!-- <?= $form->field($model, 'major_account_id')->textInput() ?> -->
-
-    <?= $form->field($model, 'sub_major_account')->textInput() ?>
 
     <?= $form->field($model, 'account_group')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'current_noncurrent')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'enable_disable')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'enable_disable')->textInput(['maxlength' => true,'value'=>'Enable',]) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

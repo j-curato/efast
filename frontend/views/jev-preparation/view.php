@@ -83,11 +83,17 @@ $this->params['breadcrumbs'][] = $this->title;
                             </h5>
                         </div>
                         <div style="padding:5px ;align-items:center;">
+
                             <span>
-                                Entity Name :
-                            </span>
-                            <span>
-                                Department of Trade and Industry
+                                <?php if (!empty($model->payee_id)) {
+                                    echo "<span>Payee :</span>";
+                                    echo "<span>{$model->payee->account_name}</span>";
+                                } else {
+                                    echo   "<span>Entity Name :</span>";
+                                    echo   "<span>Department of Trade and Industry</span>";
+                                }
+
+                                ?>
                             </span>
                         </div>
                         <div style="padding:5px ;align-items:center;">
@@ -228,15 +234,27 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
 
                 <tr>
-                    <td>DV#</td>
+                    <td>DV# </td>
                     <td><?php echo $model->dv_number ?></td>
                     <td></td>
                     <td></td>
                     <td></td>
                 </tr>
                 <tr>
-                    <td> LDDAP#</td>
-                    <td> <?php echo $model->lddap_number ?></td>
+                    <?php
+                    if (strtolower($model->check_ada) == 'ada') {
+                        echo "LDDAP#";
+                        echo "<td>LDDAP#</td>";
+                        echo "<td>{$model->lddap_number}</td>";
+                    } else if (strtolower($model->check_ada) == 'check') {
+                        echo "<td>CHECK#</td>";
+                        echo "<td>{$model->check_ada_number}</td>";
+                    } else {
+                        echo "<td></td>";
+                        echo "<td></td>";
+                    }
+                    ?>
+
                     <td></td>
                     <td></td>
                     <td></td>

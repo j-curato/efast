@@ -67,10 +67,14 @@ Modal::end();
             'id',
             'responsibility_center_id',
             'payee_id',
+            [
+                'label' => 'Payee',
+                'attribute' => 'payee.account_name'
+            ],
             'particular',
             'gross_amount',
             'tracking_number',
-            'earnark_no',
+            'earmark_no',
             'payroll_number',
             'transaction_date',
             //'transaction_time',

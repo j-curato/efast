@@ -144,7 +144,6 @@ class RecordAllotmentsController extends Controller
         $mfo_pap_code_id = $_POST['mfo_pap_code'];
         $fund_source_id = $_POST['fund_source'];
 
-
         $transaction = \Yii::$app->db->beginTransaction();
         $fund_category_and_classification_code_id = Yii::$app->db->createCommand("SELECT * FROM `fund_category_and_classification_code` WHERE  {$_POST['fund_classification_code']}>=`fund_category_and_classification_code`.from  and {$_POST['fund_classification_code']} <= `fund_category_and_classification_code`.to LIMIT 1 ")->queryOne();
         //    return  json_encode($fund_category_and_classification_code_id['id']);
@@ -166,50 +165,47 @@ class RecordAllotmentsController extends Controller
         if ($recordAllotment->validate()) {
             try {
                 if ($flag = $recordAllotment->save(false)) {
-
-
-
                     for ($x = 0; $x < count($_POST['chart_of_account_id']); $x++) {
-
-                        // echo $_POST['chart_of_account_id'];
                         $y = explode('-', $_POST['chart_of_account_id'][$x]);
-                        $raoud = new Raouds();
-                        $raoud->record_allotment_id = $recordAllotment->id;
-                        $raoud->serial_number = "$x";
-                        $raoud->reporting_period = $reporting_period;
-
-                        if ($raoud->validate()) {
-
-                            if ($raoud->save(false)) {
-                                $raoudEntry = new RaoudEntries();
-                                $raoudEntry->chart_of_account_id = $y[0];
-                                $raoudEntry->raoud_id = $raoud->id;
-                                $raoudEntry->amount = $_POST['amount'][$x];
-                                if ($raoudEntry->validate()) {
-                                    if ($raoudEntry->save(false)) {
-                                        echo $raoudEntry->id;
-                                    } else echo 'qwe';
-                                }
-                                // else{
-                                //   $raoudEntry->errors;
-                                // }
-                            }
-                        } else {
-                            return  json_encode($raoud->errors);
-                        }
                         $ra_entries = new RecordAllotmentEntries();
                         $ra_entries->chart_of_account_id = $y[0];
                         $ra_entries->record_allotment_id = $recordAllotment->id;
                         $ra_entries->amount = $_POST['amount'][$x];
                         if ($ra_entries->validate()) {
                             if ($ra_entries->save()) {
+                                $y = explode('-', $_POST['chart_of_account_id'][$x]);
+                                $raoud = new Raouds();
+                                $raoud->record_allotment_id = $recordAllotment->id;
+                                $raoud->serial_number = "$x";
+                                $raoud->reporting_period = $reporting_period;
+                                $raoud->record_allotment_entries_id = $ra_entries->id;
+
+                                if ($raoud->validate()) {
+
+                                    if ($raoud->save(false)) {
+                                        $raoudEntry = new RaoudEntries();
+                                        $raoudEntry->chart_of_account_id = $y[0];
+                                        $raoudEntry->raoud_id = $raoud->id;
+                                        $raoudEntry->amount = $_POST['amount'][$x];
+                                        if ($raoudEntry->validate()) {
+                                            if ($raoudEntry->save(false)) {
+                                                echo $raoudEntry->id;
+                                            } else echo 'qwe';
+                                        }
+                                        // else{
+                                        //   $raoudEntry->errors;
+                                        // }
+                                    }
+                                } else {
+                                    return  json_encode($raoud->errors);
+                                }
                             }
                         }
                     }
                 }
                 if ($flag) {
                     $transaction->commit();
-                    // return json_encode(["success"]);
+                    return json_encode(["success"]);
                 }
             } catch (Exception $e) {
                 $transaction->rollBack();

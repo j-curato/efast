@@ -1,8 +1,8 @@
-<link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
+<!-- <link href="/dti-afms-2/frontend/web/js/select2.min.js" rel="stylesheet" />
+<link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" /> -->
 <!-- <link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre.min.css">
 <link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre-exp.min.css">
 <link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre-icons.min.css"> -->
-
 <?php
 
 use kartik\date\DatePicker;
@@ -153,7 +153,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                 <button type="button" class=" add-btn btn btn-success btn-md" style="float:right;margin-right:20px"><i class="glyphicon glyphicon-plus"></i></button>
                 <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(0)"><i class="glyphicon glyphicon-minus"></i></button>
             </div> -->
-            <div id="form-0" class="accounting_entries">
+            <div id="form-0" class="accounting_entries" style="max-width: 100%;">
                 <!-- chart of accounts -->
 
                 <div class="row">
@@ -230,6 +230,17 @@ use aryelds\sweetalert\SweetAlertAsset;
 
         </form>
 
+
+    </div>
+
+    <div class="" id="loader" style="display:none">
+        <div id="bars5">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </div>
     <style>
         .select {
@@ -281,6 +292,8 @@ use aryelds\sweetalert\SweetAlertAsset;
 
     <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" />
 
     <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
     <script>
@@ -382,7 +395,7 @@ use aryelds\sweetalert\SweetAlertAsset;
             var latest = Math.max.apply(null, x)
             // console.log('index: '+latest)
             $(`#form-${latest}`)
-                .after(`<div id="form-${i}" style="border: 1px solid gray;width:100%; padding: 2rem; margin-top: 1rem;background-color:white;border-radius:5px" class="control-group input-group" class="accounting_entries">
+                .after(`<div id="form-${i}" style="max-width:100%;border: 1px solid gray;width:100%; padding: 2rem; margin-top: 1rem;background-color:white;border-radius:5px" class="control-group input-group" class="accounting_entries">
                     <!-- chart of accounts -->
                     <div class="row"  >
                         <div>
@@ -709,6 +722,14 @@ use aryelds\sweetalert\SweetAlertAsset;
             return num_parts.join(".");
             console.log(num)
         }
+
+        function sample() {
+            console.log("sample")
+            // $("#loader").show()
+            // setTimeout(() => {
+            //     $('#loader').show();
+            // }, 10000);
+        }
     </script>
 </div>
 
@@ -721,9 +742,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depe
 
 $script = <<< JS
       
-      function addComma(i){
-          consol.log(i)
-      }
+
         // ADD COMMA IN NUMBER
 
       function thousands_separators(num) {
@@ -741,6 +760,8 @@ $script = <<< JS
         update_id = $('#update_id').val();
 
             if (update_id > 0) {
+        $('#container').hide();
+
                 // console.log(update_id)
                 $.ajax({
                     url: window.location.pathname + '?r=jev-preparation/update-jev',
@@ -748,7 +769,11 @@ $script = <<< JS
                     data: {
                         update_id: update_id
                     },
+                    beforeSend: function () {
+                 
+                    },
                     success: function(data) {
+
                         var jev = JSON.parse(data).jev_preparation
                         var jev_accounting_entries = JSON.parse(data).jev_accounting_entries
                         var d = "2020-12-01"
@@ -781,7 +806,7 @@ $script = <<< JS
                             $("#chart-"+x).val(chart).trigger('change');
                             $("#isEquity-"+x).val(jev_accounting_entries[x]['net_asset_equity_id']).trigger('change');
                             $("#cashflow-"+x).val(cashflow).trigger('change');
-                            console.log(net_asset);
+                            // console.log(net_asset); 
                             if ($( "#cashflow-"+x ).length ){
                                 // console.log(x)
                             }
@@ -793,8 +818,15 @@ $script = <<< JS
                                 add()
                             }
                         }
+
+                    },
+                    complete: function(){
+                        $('#container').show();
+                        $('#loader').hide();
+                        console.log()
                         getTotal()
-                    }
+                    },
+        
                 })
             }
 

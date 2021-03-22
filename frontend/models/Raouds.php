@@ -35,8 +35,8 @@ class Raouds extends \yii\db\ActiveRecord
             [['record_allotment_id', 'process_ors_id'], 'integer'],
             [['serial_number'], 'string', 'max' => 50],
             [['reporting_period'], 'string', 'max' => 30],
-            [['process_ors_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProcessOrs::className(), 'targetAttribute' => ['process_ors_id' => 'id']],
-            [['record_allotment_id'], 'exist', 'skipOnError' => true, 'targetClass' => RecordAllotments::className(), 'targetAttribute' => ['record_allotment_id' => 'id']],
+            [['process_ors_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProcessOrs::class, 'targetAttribute' => ['process_ors_id' => 'id']],
+            [['record_allotment_id'], 'exist', 'skipOnError' => true, 'targetClass' => RecordAllotments::class, 'targetAttribute' => ['record_allotment_id' => 'id']],
         ];
     }
 
@@ -61,7 +61,7 @@ class Raouds extends \yii\db\ActiveRecord
      */
     public function getProcessOrs()
     {
-        return $this->hasOne(ProcessOrs::className(), ['id' => 'process_ors_id']);
+        return $this->hasOne(ProcessOrs::class, ['id' => 'process_ors_id']);
     }
 
     /**
@@ -71,6 +71,10 @@ class Raouds extends \yii\db\ActiveRecord
      */
     public function getRecordAllotment()
     {
-        return $this->hasOne(RecordAllotments::className(), ['id' => 'record_allotment_id']);
+        return $this->hasOne(RecordAllotments::class, ['id' => 'record_allotment_id']);
+    }
+    public function getRaoudEntries()
+    {
+        return $this->hasOne(RaoudEntries::class, ['raoud_id' => 'id']);
     }
 }

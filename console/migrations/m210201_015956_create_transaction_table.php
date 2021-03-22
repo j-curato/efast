@@ -23,7 +23,7 @@ class m210201_015956_create_transaction_table extends Migration
             'particular' => $this->string(255)->notNull(),
             'gross_amount' => $this->double()->notNull(),
             'tracking_number' => $this->string(255),
-            'earnark_no' => $this->string(255),
+            'earmark_no' => $this->string(255),
             'payroll_number' => $this->string(255),
             'transaction_date' => $this->string(50),
             'transaction_time' => $this->string(20),

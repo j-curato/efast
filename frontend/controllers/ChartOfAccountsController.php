@@ -364,7 +364,7 @@ class ChartOfAccountsController extends Controller
             $x[] = $val;
         }
         foreach ($sub2 as $val) {
-            $val['lvl'] = 2;
+            $val['lvl'] = 3;
             $x[] = $val;
         }
         // $x= $res->push($sub1);

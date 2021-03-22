@@ -13,7 +13,7 @@ use Yii;
  * @property string $particular
  * @property float $gross_amount
  * @property string|null $tracking_number
- * @property string|null $earnark_no
+ * @property string|null $earmark_no
  * @property string|null $payroll_number
  * @property string|null $transaction_date
  * @property string|null $transaction_time
@@ -40,7 +40,7 @@ class Transaction extends \yii\db\ActiveRecord
             [['responsibility_center_id', 'payee_id', 'particular', 'gross_amount'], 'required'],
             [['responsibility_center_id', 'payee_id'], 'integer'],
             [['gross_amount'], 'number'],
-            [['particular', 'tracking_number', 'earnark_no', 'payroll_number'], 'string', 'max' => 255],
+            [['particular', 'tracking_number', 'earmark_no', 'payroll_number'], 'string', 'max' => 255],
             [['transaction_date'], 'string', 'max' => 50],
             [['transaction_time'], 'string', 'max' => 20],
             [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::className(), 'targetAttribute' => ['payee_id' => 'id']],
@@ -60,7 +60,7 @@ class Transaction extends \yii\db\ActiveRecord
             'particular' => 'Particular',
             'gross_amount' => 'Gross Amount',
             'tracking_number' => 'Tracking Number',
-            'earnark_no' => 'Earnark No',
+            'earmark_no' => 'Earmark No',
             'payroll_number' => 'Payroll Number',
             'transaction_date' => 'Transaction Date',
             'transaction_time' => 'Transaction Time',

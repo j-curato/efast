@@ -68,7 +68,7 @@ class ProcessOrs extends \yii\db\ActiveRecord
      */
     public function getTransaction()
     {
-        return $this->hasOne(Transaction::className(), ['id' => 'transaction_id']);
+        return $this->hasOne(Transaction::class, ['id' => 'transaction_id']);
     }
 
     /**
@@ -78,6 +78,10 @@ class ProcessOrs extends \yii\db\ActiveRecord
      */
     public function getRaouds()
     {
-        return $this->hasMany(Raouds::className(), ['process_ors_id' => 'id']);
+        return $this->hasMany(Raouds::class, ['process_ors_id' => 'id']);
+    }
+    public function getProcessOrsEntries()
+    {
+        return $this->hasMany(ProcessOrsEntries::class, ['process_ors_id' => 'id']);
     }
 }

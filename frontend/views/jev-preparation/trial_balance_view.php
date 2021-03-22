@@ -68,7 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-sm-2">
                 <button class="generate btn btn-success" style="margin-top: 25px;">Generate</button>
             </div>
-
+-
         </div>
         <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>
         <div class="col-sm-2">

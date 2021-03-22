@@ -54,8 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             ?>
-            <button id="print" onclick="print()">print</button>
-            <button id="submit">generate</button>
+            <button id="print" onclick="print()"><i class="glyphicon glyphicon-print"></i></button>
 
         </div>
         <br>
@@ -109,6 +108,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]
                 ]);
                 ?>
+            </div>
+            <div class="col-sm-3" style="margin-top:25px;">
+                <button id="submit" class="btn btn-success">Generate</button>
+
             </div>
 
         </div>
@@ -369,10 +372,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 font-size: 10px;
             }
 
-            #print{
+            #print {
                 display: none;
             }
-            #submit{
+
+            #submit {
                 display: none;
             }
 
