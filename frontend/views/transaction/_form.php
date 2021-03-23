@@ -72,7 +72,7 @@ use kartik\select2\Select2;
         </div>
     </div>
 
-    <?= $form->field($model, 'particular')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'particular')->textarea(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'gross_amount')->widget(MaskMoney::class, [
         'options' => [

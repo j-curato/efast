@@ -101,8 +101,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
       'id',
       'jev_number',
-      'explaination',
-      
+      [
+        'label' => 'Particular',
+        'attribute' => 'explaination',
+        'options' => [
+          'width' => '50',
+        ]
+      ],
+
+
       // 'responsibility_center_id'
       // 'jev_number',
       // 'dv_number',
@@ -149,16 +156,47 @@ $this->params['breadcrumbs'][] = $this->title;
 
       // 'lddap_number',
       // 'entity_name',
-   
+
 
       ['class' => 'yii\grid\ActionColumn'],
 
     ],
   ]); ?>
 
+  <style>
+    .grid-view td {
+      white-space: normal;
+      width: 5rem;
+      padding: 0;
+    }
+  </style>
+
 
 </div>
+<?php
 
+$script = <<< JS
+      
+
+
+
+    
+     $(document).ready(function() {
+      // $("#formupload").submit(function(){
+      //   $.ajax({
+      //     url:window.location.pathname +'jev-preparation/import',
+      //     method:'POST',
+      //     success:function(data){
+      //       console.log(data)
+      //     }
+      //   })
+      // })
+      
+        })
+
+    JS;
+$this->registerJs($script);
+?>
 
 <?php
 

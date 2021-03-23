@@ -1,7 +1,9 @@
 <?php
 
+use app\models\FundClusterCode;
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\RecordAllotmentsSearch */
@@ -31,6 +33,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 'id',
                 'document_recieve_id',
                 'fund_cluster_code_id',
+                // [
+                //     'label' => 'Fund Cluster Code',
+                //     'attribute' => 'fundClusterCode.name',
+                //     'filter' => Html::activeDropDownList(
+                //         $searchModel,
+                //         'fund_cluster_code_id',
+                //         ArrayHelper::map(FundClusterCode::find()->asArray()->all(), 'id', 'name'),
+                //         ['class' => 'form-control', 'prompt' => 'Major Accounts']
+                //     )
+                // ],
                 'financing_source_code_id',
                 'fund_category_and_classification_code_id',
                 //'authorization_code_id',

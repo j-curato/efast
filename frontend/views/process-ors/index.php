@@ -18,8 +18,9 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Create Process Ors', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
+    <!-- ANG MODEL ANI KAY SA PROCESS ORS ENTRIES -->
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -27,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            
+
             [
                 'label' => 'Serial Number',
                 'attribute' => 'processOrs.reporting_period',
@@ -35,9 +36,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
             ],
             'amount',
-                      
 
-            
+
+
             //'funding_code',
             //'document_recieve_id',
             //'mfo_pap_code_id',

@@ -194,7 +194,7 @@ class ProcessOrsController extends Controller
 
                 // return json_encode($q);
                 // $raoud = new Raouds();
-
+                
                 foreach ($_POST['chart_of_account_id'] as $index => $value) {
 
                     $q = Raouds::find()->where("id =:id", ['id' => $_POST['raoud_id'][$index]])->one();

@@ -1,4 +1,4 @@
-<link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
+<!-- <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" /> -->
 <!-- <link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre.min.css">
 <link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre-exp.min.css">
 <link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre-icons.min.css"> -->
@@ -20,7 +20,7 @@ use aryelds\sweetalert\SweetAlertAsset;
 
                 $q = $model;
             }
-            echo " <input type='text' id='update_id' name='update_id'  style='display:none'>";
+            echo " <input type='text' id='update_id' name='update_id'  value='$q' >";
             ?>
             <div class="row">
 
@@ -81,13 +81,6 @@ use aryelds\sweetalert\SweetAlertAsset;
             </div>
             <div class="row">
 
-
-                <!-- <div class="col-sm-2" style="height:60x">
-                    <label for="fund_cluster_code">Fund Cluster Code</label>
-                    <select id="fund_cluster_code" name="fund_cluster_code" class="fund_cluster_code select" style="width: 100%; margin-top:50px" >
-                        <option></option>
-                    </select>
-                </div> -->
                 <div class="col-sm-3" style="height:60x">
                     <label for="fund_cluster_code_id">fund_cluster_code_id</label>
                     <select id="fund_cluster_code_id" name="fund_cluster_code_id" class="fund_cluster_code_id select" style="width: 100%; margin-top:50px" required>
@@ -140,16 +133,13 @@ use aryelds\sweetalert\SweetAlertAsset;
                     <textarea name="particular" id="particular" placeholder="PARTICULAR" cols="151" rows="3" style="max-width:100%"></textarea>
                 </div>
             </div>
-            <!-- BUTTON -->
-            <!-- <div style="width: 100%; margin-bottom:50px;margin-right:25px;">
 
-                <button type="button" class=" add-btn btn btn-success btn-md" style="float:right;margin-right:20px"><i class="glyphicon glyphicon-plus"></i></button>
-                <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(0)"><i class="glyphicon glyphicon-minus"></i></button>
-            </div> -->
             <div id="form-0" class="accounting_entries">
                 <!-- chart of accounts -->
 
                 <div class="row">
+                    <!--ADD AND REMOVE  BUTTON -->
+
                     <div>
                         <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(0)"><i class="glyphicon glyphicon-minus"></i></button>
                         <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="glyphicon glyphicon-plus"></i></button>
@@ -171,29 +161,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     </div>
                 </div>
             </div>
-            <div class="total row">
-
-                <div class="col-sm-3 col-md-offset-5">
-                    <!-- <div class="form-group">
-                        <label for="exampleInputEmail1">TOTAL DEBIT</label>
-                        <input disabled type="text" style="background-color:white" class="form-control" id="d_total"  aria-describedby="emailHelp" placeholder="Total Dedit">
-                    </div> -->
-                    <div>
-                        <label for="d_total"> Total Debit</label>
-                        <div id="d_total">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="form-group">
-
-                        <label for="c_total"> Total Debit</label>
-                        <div id="c_total">
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+            <!-- total row -->
             <input type="submit" name="submit" id="submit" class="btn btn-info" value="Submit" />
 
         </form>
@@ -247,8 +215,10 @@ use aryelds\sweetalert\SweetAlertAsset;
         }
     </style>
 
-    <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script> -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+    <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
+    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
 
     <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
     <script>
@@ -289,62 +259,8 @@ use aryelds\sweetalert\SweetAlertAsset;
 
         }
 
-        // function isCurrent(index, i) {
-        //     // console.log(i)
-        //     // var chart_id = document.getElementById('chart-0').val()
-        //     // console.log(index)
-        //     $.ajax({
-        //         type: 'POST',
-        //         url: window.location.pathname + '?r=jev-preparation/is-current',
-        //         data: {
-        //             chart_id: index.value
-        //         },
-        //         dataType: 'json',
-        //         success: function(data) {
-        //             $('#isCurrent-' + i).val(data.result.current_noncurrent)
-        //             // console.log(data)
-        //             // data.isCashEquivalent ? : $('#cash_flow_id-' + i).hide()
-        //             data.isEquity ? $('#isEquity-' + i).show() : $('#isEquity-' + i).hide()
-        //             // console.log(data)
-        //             if (data.isCashEquivalent == true) {
-        //                 // $('#cashflow-' + i).select2({
-        //                 //     data: cashflow,
-        //                 //     placeholder: 'Select Cash Flow'
-        //                 // })
-        //                 // $('#cashflow-' + i).val(2).trigger('change');
-        //                 $('#cashflow-' + i).next().show()
-        //             } else {
-
-        //                 $('#cashflow-' + i).val(null).trigger('change');
-        //                 // document.getElementById('isEquity-' + i).value = 'null'
-        //                 $('#cashflow-' + i).select2().next().hide();
 
 
-        //             }
-        //             if (data.isEquity == true) {
-        //                 // $('#isEquity-' + i).select2({
-        //                 //     data: net_asset,
-        //                 //     placeholder: 'Select Net Asset'
-
-        //                 // })
-
-        //                 $('#isEquity-' + i).next().show()
-        //             } else {
-
-        //                 $('#isEquity-' + i).val(null).trigger('change');
-        //                 // document.getElementById('isEquity-' + i).value = 'null'
-        //                 $('#isEquity-' + i).select2().next().hide();
-
-
-        //             }
-        //         }
-        //     })
-        // }
-
-        function q(q) {
-            console.log(q)
-            // add()
-        }
 
         function add() {
 
@@ -359,8 +275,6 @@ use aryelds\sweetalert\SweetAlertAsset;
                             <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="glyphicon glyphicon-plus"></i></button>
                         </div>
                     </div>
-
-               
                      <div class="row gap-1">
                             <div class="col-sm-5 ">
                                 <select id="chart-${i}" name="chart_of_account_id[]" required class="chart-of-accounts" style="width: 100%">
@@ -393,43 +307,11 @@ use aryelds\sweetalert\SweetAlertAsset;
             // console.log(i)
 
         }
-
-
-        function amountComma(val) {
-        if (event.which >= 37 && event.which <= 40) {
-            event.preventDefault();
-        }
-        // console.log($id)
-        // var x = document.getElementById('' + $id)
-        // console.log(x.value)
-        // var $this = $(this);
-        var num = val.replace(/,/gi, "").split("").reverse().join("");
-
-        var num2 = RemoveRougeChar(num.replace(/(.{3})/g, "$1,").split("").reverse().join(""));
-
-        console.log(num2);
-        // @this.set(''+$id, x.value)
-
-        // the following line has been simplified. Revision history contains original.
-    }
-
-
-    function RemoveRougeChar(convertString) {
-
-
-        if (convertString.substring(0, 1) == ",") {
-
-            return convertString.substring(1, convertString.length)
-
-        }
-        return convertString;
-    }
-
         $(document).ready(function() {
             $('.amount').keyup(function() {
                 var qwe = amountComma($(this).val())
                 console.log(qwe)
-            //   $(this).val(qwe)
+                //   $(this).val(qwe)
             })
 
             // GET ALL CHART OF accounts
@@ -729,79 +611,50 @@ $script = <<< JS
 
     
      $(document).ready(function() {
-        update_id = $('#update_id').val();
-
-            if (update_id > 0) {
-                // console.log(update_id)
-                $.ajax({
-                    url: window.location.pathname + '?r=jev-preparation/update-jev',
-                    method: 'POST',
-                    data: {
-                        update_id: update_id
-                    },
+        update_id = $('#update_id').val()
+        if (update_id > 0) {
+            
+            // console.log(update_id)
+        
+            $.ajax({
+                url: window.location.pathname + '?r=record-allotments/update-record-allotment',
+                method: 'POST',
+                data: {
+                    update_id: update_id
+                },
                     success: function(data) {
-                        var jev = JSON.parse(data).jev_preparation
-                        var jev_accounting_entries = JSON.parse(data).jev_accounting_entries
-                        var d = "2020-12-01"
-                        // document.querySelector("#reporting_period").value=jev['reporting_period']
-                        $('#reporting_period').val(jev['reporting_period'])
-                        $('#check_ada_date').val(jev['check_ada_date'])
-                        $('#particular').val(jev['explaination'])
-                        $('#date').val(jev['date'])
-                        // $('#reference').val(jev['reference'])
-                        // console.log(jev_accounting_entries)
-                        $('#reference').val(jev['ref_number']).trigger('change');
-                        $('#book').val(jev['book_id']).trigger('change')
-                        $('#r_center_id').val(jev['responsibility_center_id']).trigger('change')
-                        $('#check_ada').val(jev['check_ada'])
-                        $('#check_ada').trigger('change')
-                        $('#payee').val(jev['payee_id'])
-                        $('#payee').trigger('change')
-                        var x=0
-                        // console.log(jev_accounting_entries)
-                        // for (i; i < jev_accounting_entries.length;) {
-                        // }
-                        for (x; x<jev_accounting_entries.length;x++){
-                            $("#debit-"+x).val(jev_accounting_entries[x]['debit'])
-                            $("#credit-"+x).val(jev_accounting_entries[x]['credit'])
-                            var chart = jev_accounting_entries[x]['id'] +"-" +jev_accounting_entries[x]['object_code']+"-"+jev_accounting_entries[x]['lvl']
+                        var res = JSON.parse(data)
+                        var record_allotment = res.record_allotments
+                        var record_allotment_entries = res.record_allotment_entries
+                        // console.log(record_allotment_entries)
+                        
+                        $('#reporting_period').val(record_allotment['reporting_period'])
+                        $('#date_issued').val(record_allotment['date_issued']);
+                        $('#valid_until').val(record_allotment['valid_until']);
+                        $('#fund_classification_code').val(record_allotment['fund_classification']);
+                        $('#fund_cluster_code_id').val(record_allotment['fund_cluster_code_id']).trigger('change');
+                        $('#document_recieve').val(record_allotment['document_recieve_id']).trigger('change');
+                        $('#financing_source_code').val(record_allotment['financing_source_code_id']).trigger('change');
+                        $('#authorization_code').val(record_allotment['authorization_code_id']).trigger('change');
+                        $('#mfo_pap_code').val(record_allotment['mfo_pap_code_id']).trigger('change');
+                        $('#fund_source').val(record_allotment['fund_source_id']).trigger('change');
+                        $('#particular').val(record_allotment['particulars']);
+                        // console.log(record_allotment_entries) 
+                        for (var y=0; y<record_allotment_entries.length;y++){
+                            if (y>0){
+                                add();
+                            }
+                            $("#amount-"+y).val(record_allotment_entries[y]['amount']);
+                            // console.log(record_allotment_entries[y]['id'])
+                            // $("#credit-"+x).val(jev_accounting_entries[x]['credit'])
+                            var chart = record_allotment_entries[y]['id'] +"-" +record_allotment_entries[y]['object_code']+"-"+record_allotment_entries[y]['lvl']
                             
-                            var cashflow = jev_accounting_entries[x]['cashflow_id'];
-                            var net_asset= jev_accounting_entries[x]['net_asset_equity_id'];
-                            $("#chart-"+x).val(chart).trigger('change');
-                            $("#isEquity-"+x).val(jev_accounting_entries[x]['net_asset_equity_id']).trigger('change');
-                            $("#cashflow-"+x).val(cashflow).trigger('change');
-                            console.log(net_asset);
-                            if ($( "#cashflow-"+x ).length ){
-                                // console.log(x)
-                            }
-                            else{
-                                // console.log('false')
-                            }
-                            // console.log(chart)
-                            if (x < jev_accounting_entries.length -1){
-                                add()
-                            }
+                            $("#chart-"+y).val(chart).trigger('change');
                         }
-                        // $('#cashflow-0' ).val(2).trigger('change'); 
-                        getTotal()
-
-
-                        // $('#reporting_period').val(jev['reporting_period'])
-                        // $('#reporting_period').val(jev['reporting_period'])
-                        // $('#reporting_period').val(jev['reporting_period'])
-                        // $('#reporting_period').val(jev['reporting_period'])
-                        // $('#reporting_period').val(jev['reporting_period'])
-                        // $('#reporting_period').val(jev['reporting_period'])
-                        // $('#reporting_period').val(jev['reporting_period'])
-                        // $('#reporting_period').val(jev['reporting_period'])
-                        // $('#reporting_period').val(jev['reporting_period'])
-
 
                     }
                 })
             }
-
         })
 
     JS;

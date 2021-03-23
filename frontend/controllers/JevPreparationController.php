@@ -1226,146 +1226,152 @@ class JevPreparationController extends Controller
             $total_debit = round(array_sum($_POST['debit']), 2);
             $total_credit = round(array_sum($_POST['credit']), 2);
             $tt = 0;
+            $account_entries = count($_POST['chart_of_account_id']);
 
-            if (
-                $total_debit == $total_credit
-            ) {
+            if ($total_debit == $total_credit) {
+
+                $year = date('Y', strtotime($reporting_period));
+                if ($year != 2020) {
 
 
 
-                // if (!empty($reporting_period) && !empty($fund_cluster_code)) {
+                    // if (!empty($reporting_period) && !empty($fund_cluster_code)) {
 
-                // for($x=0;$x<count($_POST['debit']);$x++){
-                //      $amount = floatval(preg_replace('/[^\d.]/', '', $_POST['debit'][$x]));
-                //      $tt+=$amount;
-                //      echo $amount;
-                // }
+                    // for($x=0;$x<count($_POST['debit']);$x++){
+                    //      $amount = floatval(preg_replace('/[^\d.]/', '', $_POST['debit'][$x]));
+                    //      $tt+=$amount;
+                    //      echo $amount;
+                    // }
 
-                // }
-                $transaction = \Yii::$app->db->beginTransaction();
+                    // }
+                    $transaction = \Yii::$app->db->beginTransaction();
 
-                $jev_preparation = new JevPreparation();
-                if ($_POST['update_id'] > 0) {
-                    $jv = JevPreparation::findOne($_POST['update_id']);
-                    if (!empty($jv->jevAccountingEntries)) {
-                        foreach ($jv->jevAccountingEntries as $val) {
-                            $val->delete();
+                    $jev_preparation = new JevPreparation();
+                    if ($_POST['update_id'] > 0) {
+                        $jv = JevPreparation::findOne($_POST['update_id']);
+                        if (!empty($jv->jevAccountingEntries)) {
+                            foreach ($jv->jevAccountingEntries as $val) {
+                                $val->delete();
+                            }
                         }
+                        $q = explode('-', $jv->jev_number);
+                        $r = explode('-', $reporting_period);
+                        $jev_preparation->id = $jv->id;
+                        $jv->delete();
                     }
-                    $q = explode('-', $jv->jev_number);
-                    $r = explode('-', $reporting_period);
-                    $jev_preparation->id = $jv->id;
-                    $jv->delete();
-                }
 
-                $jev_number = $reference;
-                $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
+                    $jev_number = $reference;
+                    $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
 
-                $jev_preparation->reporting_period = $reporting_period;
-                $jev_preparation->responsibility_center_id = $r_center_id;
-                // $jev_preparation->fund_cluster_code_id = $fund_cluster_code;
-                $jev_preparation->date = $date;
-                $jev_preparation->jev_number = $jev_number;
-                $jev_preparation->ref_number = $ref_number;
-                $jev_preparation->dv_number = $dv_number;
-                $jev_preparation->lddap_number = $lddap;
-                $jev_preparation->explaination = $explanation;
-                $jev_preparation->payee_id = $payee_id;
-                // $jev_preparation->cash_flow_id =$reporting_period;
-                // $jev_preparation->mrd_classification_id =$reporting_period;
-                $jev_preparation->cadadr_serial_number = $cadadr_number;
-                $jev_preparation->check_ada = $check_ada;
-                $jev_preparation->check_ada_number = $ada_number;
-                $jev_preparation->check_ada_date = $check_ada_date;
-                $jev_preparation->book_id = $book_id;
+                    $jev_preparation->reporting_period = $reporting_period;
+                    $jev_preparation->responsibility_center_id = $r_center_id;
+                    // $jev_preparation->fund_cluster_code_id = $fund_cluster_code;
+                    $jev_preparation->date = $date;
+                    $jev_preparation->jev_number = $jev_number;
+                    $jev_preparation->ref_number = $ref_number;
+                    $jev_preparation->dv_number = $dv_number;
+                    $jev_preparation->lddap_number = $lddap;
+                    $jev_preparation->explaination = $explanation;
+                    $jev_preparation->payee_id = $payee_id;
+                    // $jev_preparation->cash_flow_id =$reporting_period;
+                    // $jev_preparation->mrd_classification_id =$reporting_period;
+                    $jev_preparation->cadadr_serial_number = $cadadr_number;
+                    $jev_preparation->check_ada = $check_ada;
+                    $jev_preparation->check_ada_number = $ada_number;
+                    $jev_preparation->check_ada_date = $check_ada_date;
+                    $jev_preparation->book_id = $book_id;
 
 
-                if ($jev_preparation->validate()) {
-                    try {
-                        if ($flag = $jev_preparation->save(false)) {
-                            // return json_encode($jev_preparation->id);
-                            $jev_preparation_id = $jev_preparation->id;
-                            $isClosing = 'Non-closing';
-                            if (explode('-', $reporting_period)[1] == 12) {
-                                $isClosing == 'Closing';
-                            }
-                            $account_entries = count($_POST['chart_of_account_id']);
-                            //     $s = [];
-                            for ($i = 0; $i < $account_entries; $i++) {
-
-                                $x = explode('-', $_POST['chart_of_account_id'][$i]);
-                                $credit_decimal_places = 0;
-                                $debit_decimal_places = 0;
-                                // if (floor($_POST['credit']) != $_POST['credit'] ? true : false) {
-                                //     $c = explode('.', $_POST['credit'][$i])[1];
-                                //     $credit_decimal_places = strlen($c);
-                                // }
-                                // if (floor($_POST['debit']) != $_POST['debit'] ? true : false) {
-                                //     $d = explode('.', $_POST['debit'][$i])[1];
-                                //     $debit_decimal_places = strlen($d);
-                                // }
-
-                                // if ($credit_decimal_places <= 2 || $debit_decimal_places <= 2) {
-
-
-
-                                $chart_id = 0;
-                                if ($x[2] == 2) {
-                                    $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
-                                        ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
-                                        ->where('sub_accounts1.id =:id', ['id' => intval($x[0])])->one()['id'];
-                                } else if ($x[2] == 3) {
-                                    $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
-                                        ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
-                                        ->where('sub_accounts1.id =:id', ['id' => intval($x[0])])->one()['id'];
-                                } else {
-                                    $chart_id = $x[0];
+                    if ($jev_preparation->validate()) {
+                        try {
+                            if ($flag = $jev_preparation->save(false)) {
+                                // return json_encode($jev_preparation->id);
+                                $jev_preparation_id = $jev_preparation->id;
+                                $isClosing = 'Non-closing';
+                                if (explode('-', $reporting_period)[1] == 12) {
+                                    $isClosing == 'Closing';
                                 }
+                                $account_entries = count($_POST['chart_of_account_id']);
+                                //     $s = [];
+                                for ($i = 0; $i < $account_entries; $i++) {
 
-                                $jv = new JevAccountingEntries();
-                                $jv->jev_preparation_id = $jev_preparation_id;
-                                $jv->chart_of_account_id = intval($chart_id);
-                                $jv->debit = !empty($_POST['debit'][$i]) ? $_POST['debit'][$i] : 0;
-                                $jv->credit = !empty($_POST['credit'][$i]) ? $_POST['credit'][$i] : 0;
-                                // $jv->current_noncurrent=$jev_preparation->id;
-                                $jv->cashflow_id =  !empty($_POST['cash_flow_id'][$i]) ? $_POST['cash_flow_id'][$i] : '';
-                                $jv->net_asset_equity_id =  !empty($_POST['isEquity'][$i]) ? $_POST['isEquity'][$i] : '';
-                                $jv->closing_nonclosing = $isClosing;
-                                $jv->lvl = $x[2];
-                                $jv->object_code = $x[1];
+                                    $x = explode('-', $_POST['chart_of_account_id'][$i]);
+                                    $credit_decimal_places = 0;
+                                    $debit_decimal_places = 0;
+                                    // if (floor($_POST['credit']) != $_POST['credit'] ? true : false) {
+                                    //     $c = explode('.', $_POST['credit'][$i])[1];
+                                    //     $credit_decimal_places = strlen($c);
+                                    // }
+                                    // if (floor($_POST['debit']) != $_POST['debit'] ? true : false) {
+                                    //     $d = explode('.', $_POST['debit'][$i])[1];
+                                    //     $debit_decimal_places = strlen($d);
+                                    // }
 
-                                if (!($flag = $jv->save(false))) {
-                                    //  return json_encode();
-                                    $s[] =  $jv->cash_flow_transaction;
-                                    // echo "<pre>";
-                                    // var_dump($jv->id);
-                                    // echo "</pre>";
-                                    $transaction->rollBack();
-                                    break;
+                                    // if ($credit_decimal_places <= 2 || $debit_decimal_places <= 2) {
+
+
+
+                                    $chart_id = 0;
+                                    if ($x[2] == 2) {
+                                        $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
+                                            ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+                                            ->where('sub_accounts1.id =:id', ['id' => intval($x[0])])->one()['id'];
+                                    } else if ($x[2] == 3) {
+                                        // $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
+                                        //     ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+                                        //     ->where('sub_accounts1.id =:id', ['id' => intval($x[0])])->one()['id'];
+                                        $chart_id = SubAccounts2::findOne(intval($x[0]))->subAccounts1->chart_of_account_id;
+                                    } else {
+                                        $chart_id = $x[0];
+                                    }
+
+                                    $jv = new JevAccountingEntries();
+                                    $jv->jev_preparation_id = $jev_preparation_id;
+                                    $jv->chart_of_account_id = intval($chart_id);
+                                    $jv->debit = !empty($_POST['debit'][$i]) ? $_POST['debit'][$i] : 0;
+                                    $jv->credit = !empty($_POST['credit'][$i]) ? $_POST['credit'][$i] : 0;
+                                    // $jv->current_noncurrent=$jev_preparation->id;
+                                    $jv->cashflow_id =  !empty($_POST['cash_flow_id'][$i]) ? $_POST['cash_flow_id'][$i] : '';
+                                    $jv->net_asset_equity_id =  !empty($_POST['isEquity'][$i]) ? $_POST['isEquity'][$i] : '';
+                                    $jv->closing_nonclosing = $isClosing;
+                                    $jv->lvl = $x[2];
+                                    $jv->object_code = $x[1];
+
+                                    if (!($flag = $jv->save(false))) {
+                                        //  return json_encode();
+                                        $s[] =  $jv->cash_flow_transaction;
+                                        // echo "<pre>";
+                                        // var_dump($jv->id);
+                                        // echo "</pre>";
+                                        $transaction->rollBack();
+                                        break;
+                                    }
+                                    // } else {
+                                    //     return json_encode("more than 1 decimals");
+                                    //     $transaction->rollBack();
+                                    //     break;
+                                    // }
                                 }
-                                // } else {
-                                //     return json_encode("more than 1 decimals");
-                                //     $transaction->rollBack();
-                                //     break;
-                                // }
+                            } else {
+                                // return json_encode('w');
                             }
-                        } else {
-                            // return json_encode('w');
-                        }
-                        if ($flag) {
+                            if ($flag) {
 
-                            $transaction->commit();
-                            // return $this->redirect(['view', 'id' => $model->id]);
-                            return json_encode(['isSuccess' => 'success', 'id' => $jev_preparation_id]);
+                                $transaction->commit();
+                                // return $this->redirect(['view', 'id' => $model->id]);
+                                return json_encode(['isSuccess' => 'success', 'id' => $jev_preparation_id]);
+                            }
+                        } catch (Exception $e) {
+                            $transaction->rollBack();
+                            // return json_encode("q");
                         }
-                    } catch (Exception $e) {
-                        $transaction->rollBack();
-                        // return json_encode("q");
+                    } else {
+                        // validation failed: $errors is an array containing error messages
+                        $errors = $jev_preparation->errors;
+                        return json_encode(['error' => $errors]);
                     }
                 } else {
-                    // validation failed: $errors is an array containing error messages
-                    $errors = $jev_preparation->errors;
-                    return json_encode(['error' => $errors]);
+                    return json_encode(['isSuccess' => false,'error'=>'Reporting Period Must be 2021']);
                 }
             } else {
                 return json_encode(
@@ -1397,11 +1403,11 @@ class JevPreparationController extends Controller
 
 
 
-        if ($x[2] == 1) {
+        if ($x[2] === 1) {
             $chart->where("chart_of_accounts.id = :id", ['id' => $chart_id]);
-        } else if ($x[2] == 2) {
+        } else if ($x[2] === 2) {
             $chart->where("sub_accounts1.id = :id", ['id' => $chart_id]);
-        } else if ($x[2] == 3) {
+        } else if ($x[2] === 3) {
             $chart->where("sub_accounts2.id = :id", ['id' => $chart_id]);
         }
 

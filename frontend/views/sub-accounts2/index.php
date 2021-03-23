@@ -97,7 +97,9 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
 
+            'id',
             'sub_accounts1_id',
+
             'object_code',
             'name',
             // [

@@ -72,7 +72,7 @@ use yii\helpers\Html;
                     ],
                     [
                         'label' => 'General Ledger',
-                        'attribute' => 'processOrs.id'
+                        'attribute' => 'raoudEntries.chartOfAccount.general_ledger'
                     ],
 
                     [
@@ -80,7 +80,7 @@ use yii\helpers\Html;
                         'value' => function ($model) {
                             $query = (new \yii\db\Query())
                                 ->select([
-                                   
+
                                     'entry.obligation_total', 'record_allotment_entries.amount', '(record_allotment_entries.amount - entry.obligation_total) AS remain'
                                 ])
                                 ->from('raouds')
@@ -103,7 +103,7 @@ use yii\helpers\Html;
 
 
                     [
-                        'class' => 'yii\grid\CheckboxColumn',
+                        'class' => '\kartik\grid\CheckboxColumn',
                         'checkboxOptions' => function ($model, $key, $index, $column) {
                             return ['value' => $model->id, 'onchange' => 'enableDisable(this)', 'style' => 'width:20px;', 'class' => 'checkbox'];
                         }
@@ -182,6 +182,10 @@ use yii\helpers\Html;
 
     </div>
     <style>
+        .grid-view td {
+            white-space: normal;
+        }
+
         .select {
             width: 500px;
             height: 2rem;

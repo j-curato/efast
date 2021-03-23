@@ -34,7 +34,7 @@ class Payee extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['account_name', 'registered_name', 'contact_person', 'registered_address', 'contact', 'remark', 'tin_number'], 'required'],
+            [['account_name',], 'required'],
             [['account_name', 'registered_name', 'contact_person', 'registered_address', 'remark'], 'string', 'max' => 255],
             [['contact'], 'string', 'max' => 20],
             [['tin_number'], 'string', 'max' => 30],

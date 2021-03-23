@@ -123,21 +123,21 @@ use aryelds\sweetalert\SweetAlertAsset;
                 <div class="col-sm-3">
                     <label for="lddap">LDDAP</label>
 
-                    <input type="text" name="lddap" placeholder="LDDAP">
+                    <input type="text" name="lddap" id="lddap" placeholder="LDDAP">
                 </div>
                 <div class="col-sm-3">
                     <label for="dv_number">DV Number</label>
 
-                    <input type="text" name="dv_number" placeholder="DV NUMBER">
+                    <input type="text" name="dv_number" id="dv_number" placeholder="DV NUMBER">
                 </div>
                 <div class="col-sm-3">
                     <label for="cadadr_number">CADADR </label>
 
-                    <input type="text" name="cadadr_number" placeholder="CADADR NUMBER">
+                    <input type="text" name="cadadr_number" id="cadadr_number" placeholder="CADADR NUMBER">
                 </div>
                 <div class="col-sm-3">
                     <label for="ada_number">Check/ADA Number </label>
-                    <input type="text" name="ada_number" placeholder="Check/ADA Number NUMBER">
+                    <input type="text" name="ada_number" id="ada_number" placeholder="Check/ADA Number NUMBER">
                 </div>
 
             </div>
@@ -290,11 +290,12 @@ use aryelds\sweetalert\SweetAlertAsset;
         }
     </style>
 
-    <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script> -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" />
-
+    <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
+    <link href="/dti-afms-2/frontend/web/js/select2.min.js"  />
+    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
     <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
     <script>
         <?php SweetAlertAsset::register($this); ?>
@@ -665,26 +666,18 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 
                         }
-                        // else {
-                        //     // var date = JSON.parse(data).date;
-                        //     // var reporting_period = JSON.parse(data).reporting_period;
-                        //     // for (var i = 0;i<res.error;i++){
-                        //     //     console.log(res.data)
-
-                        //     // }
-                        //     console.log(res)
-                        //     swal({
-                        //         title: res.error,
-                        //         type: "error",
-                        //         timer: 5000,
-                        //         closeOnConfirm: false,
-                        //         closeOnCancel: false
-                        //     })
-                        // }
-                        // console.log(JSON.parse(data).)
-                        // setTimeout(function () {
-                        //     window.location.href = window.location.pathname + '?r=jev-preparation/create'
-                        // }, 300);
+                        else if (res.isSuccess == false){
+                            swal({
+                                title: res.error,
+                                // text: "You will not be able to undo this action!",
+                                type: "error",
+                                timer: 3000,
+                                button: false
+                                // confirmButtonText: "Yes, delete it!",
+                            }, function() {
+                                // console.log('qwe')
+                            });
+                        }
 
                     }
                 });
@@ -776,12 +769,17 @@ $script = <<< JS
 
                         var jev = JSON.parse(data).jev_preparation
                         var jev_accounting_entries = JSON.parse(data).jev_accounting_entries
+                        // console.log(jev)
                         var d = "2020-12-01"
                         // document.querySelector("#reporting_period").value=jev['reporting_period']
                         $('#reporting_period').val(jev['reporting_period'])
                         $('#check_ada_date').val(jev['check_ada_date'])
                         $('#particular').val(jev['explaination'])
                         $('#date').val(jev['date'])
+                        $('#ada_number').val(jev['check_ada_number'])
+                        $('#lddap').val(jev['lddap_number'])
+                        $('#dv_number').val(jev['dv_number'])
+                        $('#cadadr_number').val(jev['cadadr_serial_number'])
                         // $('#reference').val(jev['reference'])
                         // console.log(jev_accounting_entries)
                         $('#reference').val(jev['ref_number']).trigger('change');
