@@ -40,8 +40,8 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
             [['major_account_id', 'sub_major_account'], 'integer'],
             [['uacs'], 'string', 'max' => 30],
             [['general_ledger', 'account_group', 'current_noncurrent', 'enable_disable'], 'string', 'max' => 255],
-            [['major_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => MajorAccounts::className(), 'targetAttribute' => ['major_account_id' => 'id']],
-            [['sub_major_account'], 'exist', 'skipOnError' => true, 'targetClass' => SubMajorAccounts::className(), 'targetAttribute' => ['sub_major_account' => 'id']],
+            [['major_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => MajorAccounts::class, 'targetAttribute' => ['major_account_id' => 'id']],
+            [['sub_major_account'], 'exist', 'skipOnError' => true, 'targetClass' => SubMajorAccounts::class, 'targetAttribute' => ['sub_major_account' => 'id']],
         ];
     }
 
@@ -69,7 +69,7 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
      */
     public function getMajorAccount()
     {
-        return $this->hasOne(MajorAccounts::className(), ['id' => 'major_account_id']);
+        return $this->hasOne(MajorAccounts::class, ['id' => 'major_account_id']);
     }
 
     /**
@@ -79,7 +79,7 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
      */
     public function getSubMajorAccount()
     {
-        return $this->hasOne(SubMajorAccounts::className(), ['id' => 'sub_major_account']);
+        return $this->hasOne(SubMajorAccounts::class, ['id' => 'sub_major_account']);
     }
 
     /**
@@ -89,10 +89,14 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
      */
     public function getJevPreparations()
     {
-        return $this->hasMany(JevPreparation::className(), ['chart_of_accounts_id' => 'id']);
+        return $this->hasMany(JevPreparation::class, ['chart_of_accounts_id' => 'id']);
     }
     public function getSubAccounts1()
     {
-        return $this->hasMany(SubAccounts1::className(), ['chart_of_account_id' => 'id']);
+        return $this->hasMany(SubAccounts1::class, ['chart_of_account_id' => 'id']);
+    }
+    public function getRecordAllotmentEntries()
+    {
+        return $this->hasMany(RecordAllotmentEntries::class, ['chart_of_account_id' => 'id']);
     }
 }

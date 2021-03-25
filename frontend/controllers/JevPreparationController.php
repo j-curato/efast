@@ -1255,14 +1255,23 @@ class JevPreparationController extends Controller
                             }
                         }
                         $q = explode('-', $jv->jev_number);
-                        $r = explode('-', $reporting_period);
+                        $jev_number_serial = $q[4];
                         $jev_preparation->id = $jv->id;
+
+                        $x = $reference;
+                        $x .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
+                        $y = explode('-', $x);
+                        $jev_number = $y[0] . '-' . $y[1] . '-' . $y[2] . '-' . $y[3] . '-' . $jev_number_serial;
                         $jv->delete();
+                    } else {
+                        $jev_number = $reference;
+                        $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
                     }
 
-                    $jev_number = $reference;
-                    $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
-
+                    // $jev_number = $reference;
+                    // $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
+                    // $x = explode('-', $jev_number);
+                    // $y = $x[0] . '-' . $x[1] . '-' . $x[2] . '-' . $x[3] . '-' . $jev_number_serial;
                     $jev_preparation->reporting_period = $reporting_period;
                     $jev_preparation->responsibility_center_id = $r_center_id;
                     // $jev_preparation->fund_cluster_code_id = $fund_cluster_code;
@@ -1371,7 +1380,7 @@ class JevPreparationController extends Controller
                         return json_encode(['error' => $errors]);
                     }
                 } else {
-                    return json_encode(['isSuccess' => false,'error'=>'Reporting Period Must be 2021']);
+                    return json_encode(['isSuccess' => false, 'error' => 'Reporting Period Must be 2021']);
                 }
             } else {
                 return json_encode(
@@ -1456,9 +1465,7 @@ class JevPreparationController extends Controller
 
     WHERE jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
     AND jev_accounting_entries.jev_preparation_id = jev_preparation.id
-
     AND chart_of_accounts.major_account_id = major_accounts.id
-
     AND chart_of_accounts.account_group IN ('Assets','Liabilities','Equity')
     AND jev_preparation.reporting_period BETWEEN :begining_month AND :reporting_period
     AND jev_preparation.book_id = :book_id    
@@ -1581,8 +1588,10 @@ class JevPreparationController extends Controller
             $sl = (new \yii\db\Query())
                 ->select([
                     'jev_preparation.date', 'jev_preparation.explaination',
-                    'jev_preparation.ref_number', 'jev_accounting_entries.debit', 'jev_accounting_entries.credit',
-                    'chart_of_accounts.normal_balance', 'chart_of_accounts.general_ledger'
+                    'jev_preparation.ref_number', 'jev_accounting_entries.debit',
+                     'jev_accounting_entries.credit',
+                    'chart_of_accounts.normal_balance', 'chart_of_accounts.general_ledger',
+                    'jev_preparation.jev_number'
 
                 ])
                 ->from('jev_accounting_entries')
@@ -1601,7 +1610,8 @@ class JevPreparationController extends Controller
                 ->orderBy('jev_preparation.date')
                 ->all();
             $book_name = Books::find()->where("id =:id", ['id' => $_POST['book_id']])->one()->name;
-            $sl_name = (new \yii\db\Query())->select(['name'])->from('sub_accounts1')->where("object_code =:object_code", ['object_code' => $_POST['sub_account']])->one()['name'];
+            $sl_name = (new \yii\db\Query())->select(['name'])->from('sub_accounts1')
+            ->where("object_code =:object_code", ['object_code' => $_POST['sub_account']])->one()['name'];
             $sl_final = [];
             $balance = 0;
 

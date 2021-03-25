@@ -145,20 +145,34 @@ class RecordAllotmentsController extends Controller
         $mfo_pap_code_id = $_POST['mfo_pap_code'];
         $fund_source_id = $_POST['fund_source'];
         $transaction = \Yii::$app->db->beginTransaction();
-        $recordAllotment = new RecordAllotments();
-        if (!empty($_POST['update_id'])){
-            $ra = RecordAllotments::findOne(intval($_POST['update_id']));
-            foreach($ra->recordAllotmentEntries as $val){
-                $val->delete();
+        $x = 0;
+        if (!empty($_POST['update_id'])) {
+            $recordAllotment = RecordAllotments::findOne(intval($_POST['update_id']));
+
+            foreach ($recordAllotment->recordAllotmentEntries as $val) {
+
+                $chart_id = $_POST['chart_of_account_id'][$x];
+
+                $ra_entries = RecordAllotmentEntries::findOne($val->id);
+                $ra_entries->chart_of_account_id = $chart_id;
+                $ra_entries->record_allotment_id = $recordAllotment->id;
+                $ra_entries->amount = $_POST['amount'][$x];
+                if ($ra_entries->save(false)) {
+                }   
+                $x++;
             }
-            $recordAllotment->id=$ra->id;
-            $ra->delete();
+            // foreach ($ra->recordAllotmentEntries as $val) {
+            //     $val->delete();
+            // }
+            // $recordAllotment->id = $ra->id;
+            // $ra->delete();
             // return json_encode($_POST['update_id']);
-            
+
+        } else {
+            $recordAllotment = new RecordAllotments();
         }
 
         $fund_category_and_classification_code_id = Yii::$app->db->createCommand("SELECT * FROM `fund_category_and_classification_code` WHERE  {$_POST['fund_classification_code']}>=`fund_category_and_classification_code`.from  and {$_POST['fund_classification_code']} <= `fund_category_and_classification_code`.to LIMIT 1 ")->queryOne();
-        //return  json_encode($fund_category_and_classification_code_id['id']);
         $recordAllotment->date_issued = $date_issued;
         $recordAllotment->fund_classification = $_POST['fund_classification_code'];
         $recordAllotment->serial_number = '123';
@@ -172,37 +186,20 @@ class RecordAllotmentsController extends Controller
         $recordAllotment->mfo_pap_code_id = $mfo_pap_code_id;
         $recordAllotment->fund_source_id = $fund_source_id;
         $recordAllotment->fund_category_and_classification_code_id = $fund_category_and_classification_code_id['id'];
-        // echo $fund_category_and_classification_code_id['id'];3
-        // echo json_encode($_POST['chart_of_account_id'] );
         if ($recordAllotment->validate()) {
             try {
                 if ($flag = $recordAllotment->save(false)) {
-                    for ($x = 0; $x < count($_POST['chart_of_account_id']); $x++) {
-                        $y = explode('-', $_POST['chart_of_account_id'][$x]);
-                        $chart_id = 0;
-                        if ($y[2] == 2) {
-                            $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
-                                ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
-                                ->where('sub_accounts1.id =:id', ['id' => intval($y[0])])->one()['id'];
-                        } else if ($y[2] == 3) {
-                            // $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
-                            //     ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
-                            //     ->where('sub_accounts1.id =:id', ['id' => intval($y[0])])->one()['id'];
-                                $chart_id = SubAccounts2::findOne(intval($y[0]))->subAccounts1->chart_of_account_id;
-                        } else {
-                            $chart_id = $y[0];
-                        }
+                    for ($x; $x < count($_POST['chart_of_account_id']); $x++) {
+                        $chart_id = $_POST['chart_of_account_id'][$x];
+
                         $ra_entries = new RecordAllotmentEntries();
                         $ra_entries->chart_of_account_id = $chart_id;
-                        $ra_entries->lvl = $y[2];
-                        $ra_entries->object_code = $y[1];
                         $ra_entries->record_allotment_id = $recordAllotment->id;
                         $ra_entries->amount = $_POST['amount'][$x];
                         if ($ra_entries->validate()) {
                             if ($ra_entries->save()) {
-                                $y = explode('-', $_POST['chart_of_account_id'][$x]);
                                 $raoud = new Raouds();
-                                $raoud->record_allotment_id = $recordAllotment->id;
+                                // $raoud->record_allotment_id = $recordAllotment->id;
                                 $raoud->serial_number = "$x";
                                 $raoud->reporting_period = $reporting_period;
                                 $raoud->record_allotment_entries_id = $ra_entries->id;
@@ -212,13 +209,10 @@ class RecordAllotmentsController extends Controller
                                     if ($raoud->save(false)) {
                                         $raoudEntry = new RaoudEntries();
                                         $raoudEntry->chart_of_account_id = $chart_id;
-                                        $raoudEntry->lvl = $y[2];
-                                        $raoudEntry->object_code = $y[1];
                                         $raoudEntry->raoud_id = $raoud->id;
                                         $raoudEntry->amount = $_POST['amount'][$x];
                                         if ($raoudEntry->validate()) {
                                             if ($raoudEntry->save(false)) {
-                                                echo $raoudEntry->id;
                                             } else echo 'qwe';
                                         }
                                         // else{
@@ -226,7 +220,7 @@ class RecordAllotmentsController extends Controller
                                         // }
                                     }
                                 } else {
-                                    return  json_encode($raoud->errors);
+                                    return  json_encode(['isSuccess' => false, 'error' => $raoud->errors]);
                                 }
                             }
                         }
@@ -234,14 +228,19 @@ class RecordAllotmentsController extends Controller
                 }
                 if ($flag) {
                     $transaction->commit();
-                    return json_encode(["success"]);
+                    return json_encode(['isSuccess' => true,'view_id'=>$recordAllotment->id]);
+                    return $this->render('view', [
+                        'model' => $this->findModel($recordAllotment->id),
+                    ]);
+
                 }
             } catch (Exception $e) {
                 $transaction->rollBack();
-                return json_encode(['yawas', $e]);
+                return json_encode(['isSuccess' => false, 'error' => $e]);
+
             }
         } else {
-            return  json_encode($recordAllotment->errors);
+            return  json_encode(['isSuccess' => false, 'error' => $recordAllotment->errors]);
         }
     }
 
@@ -276,23 +275,12 @@ class RecordAllotmentsController extends Controller
             ];
             $record_allotment_entries = [];
             foreach ($model->recordAllotmentEntries as $val) {
-                if ($val->lvl === 2) {
-                    $chart_id = (new \yii\db\Query())->select(['sub_accounts1.id'])->from('sub_accounts1')
-                        ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
-                        ->where('sub_accounts1.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
-                } else if ($val->lvl === 3) {
-                    $chart_id = (new \yii\db\Query())->select(['sub_accounts2.id'])->from('sub_accounts2')
-                        ->where('sub_accounts2.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
-                } else {
-                    $chart_id =  $val->chart_of_account_id;
-                }
 
                 $record_allotment_entries[] = [
                     'chart_of_account_id' => $val->chart_of_account_id,
                     'amount' => $val->amount,
                     'object_code' => $val->object_code,
                     'lvl' => $val->lvl,
-                    'id' => $chart_id
                 ];
             }
             // echo "<pre>";

@@ -240,7 +240,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         echo "<tr>
                             <td>{$val['date']}</td>
                             <td>{$val['explaination']}</td>
-                            <td>{$val['ref_number']}</td>
+                            <td>{$val['jev_number']}</td>
                             <td>$debit </td>
                             <td>$credit</td>
                             <td>$balance</td>

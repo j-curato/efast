@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\ProccessOrsSearch */
@@ -28,22 +29,21 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-
             [
                 'label' => 'Serial Number',
                 'attribute' => 'processOrs.reporting_period',
                 'value' => 'processOrs.reporting_period'
-
             ],
             'amount',
 
-
-
-            //'funding_code',
-            //'document_recieve_id',
-            //'mfo_pap_code_id',
-            //'fund_source_id',
-
+            [
+                'label' => 'Adjust',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/create";
+                    return ' ' . Html::a('', $t, ['class' => 'btn btn-success fa fa-pencil-square-o']);
+                }
+            ],
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

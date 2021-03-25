@@ -46,4 +46,18 @@ class RecordAllotmentEntries extends \yii\db\ActiveRecord
             'amount' => 'Amount',
         ];
     }
+
+    public function getChartOfAccount()
+    {
+        return $this->hasOne(ChartOfAccounts::class, ['id' => 'chart_of_account_id']);
+    }
+    public function getRecordAllotment()
+    {
+        return $this->hasOne(RecordAllotments::class, ['id' => 'record_allotment_id']);
+    }
+
+    public function getRaouds()
+    {
+        return $this->hasMany(Raouds::class, ['record_allotment_entries_id' => 'id']);
+    }
 }

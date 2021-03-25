@@ -25,25 +25,29 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
     </p>
+    <div class="container">
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'document_recieve_id',
-            'fund_cluster_code_id',
-            'financing_source_code_id',
-            'fund_category_and_classification_code_id',
-            'authorization_code_id',
-            'mfo_pap_code_id',
-            'fund_source_id',
-            'reporting_period',
-            'serial_number',
-            'allotment_number',
-            'date_issued',
-            'valid_until',
-            'particulars',
-        ],
-    ]) ?>
+        <table class="table table-striped">
+
+            <thead>
+                <th>
+                    General Ledger
+                </th>
+                <th>
+                    Amount
+                </th>
+            </thead>
+            <tbody>
+                <?php
+                foreach ($model->recordAllotmentEntries as $val) {
+                    echo "<tr>
+                    <td>{$val->chartOfAccount->general_ledger}</td>
+                    <td>" . number_format($val->amount, 2) . "</td>
+                </tr>";
+                }
+                ?>
+            </tbody>
+        </table>
+    </div>
 
 </div>

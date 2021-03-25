@@ -146,8 +146,8 @@ class ProcessOrsController extends Controller
 
             $query = (new \yii\db\Query())
                 ->select([
-                    'mfo_pap_code.code', 'mfo_pap_code.name', 'fund_source.name',
-                    'chart_of_accounts.uacs', 'chart_of_accounts.general_ledger', 'major_accounts.name',
+                    'mfo_pap_code.code AS mfo_pap_code_code', 'mfo_pap_code.name AS mfo_pap_name', 'fund_source.name AS fund_source_name',
+                    'chart_of_accounts.uacs as object_code', 'chart_of_accounts.general_ledger', 'major_accounts.name',
                     'chart_of_accounts.id as chart_of_account_id', 'raouds.id AS raoud_id',
                     'entry.total', 'record_allotment_entries.amount', '(record_allotment_entries.amount - entry.total) AS remain'
                 ])
@@ -157,7 +157,7 @@ class ProcessOrsController extends Controller
                 ->join("LEFT JOIN", "chart_of_accounts", "record_allotment_entries.chart_of_account_id=chart_of_accounts.id")
                 ->join("LEFT JOIN", "major_accounts", "chart_of_accounts.major_account_id=major_accounts.id")
                 ->join("LEFT JOIN", "fund_source", "record_allotments.fund_source_id=fund_source.id")
-                ->join("LEFT JOIN", "mfo_pap_code", "record_allotments.mfo_pap_code_id=record_allotments.id")
+                ->join("LEFT JOIN", "mfo_pap_code", "record_allotments.mfo_pap_code_id=mfo_pap_code.id")
                 ->join("LEFT JOIN", "raoud_entries", "raouds.id=raoud_entries.raoud_id")
                 ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount) as total,
                 raouds.id, raouds.record_allotment_id,raouds.process_ors_id,
@@ -194,12 +194,15 @@ class ProcessOrsController extends Controller
 
                 // return json_encode($q);
                 // $raoud = new Raouds();
-                
+
                 foreach ($_POST['chart_of_account_id'] as $index => $value) {
 
                     $q = Raouds::find()->where("id =:id", ['id' => $_POST['raoud_id'][$index]])->one();
+                    $q->isActive = 0;
+                    $q->save();
                     $raoud = new Raouds();
                     $raoud->record_allotment_id = $q->record_allotment_id;
+                    $raoud->record_allotment_entries_id = $q->record_allotment_entries_id;
                     $raoud->process_ors_id = $ors->id;
                     $raoud->reporting_period = $ors->reporting_period;
                     $raoud->obligated_amount = $_POST['final_amount'][$index];

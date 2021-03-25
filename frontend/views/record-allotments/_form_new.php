@@ -17,10 +17,9 @@ use aryelds\sweetalert\SweetAlertAsset;
             <?php
             $q = 0;
             if (!empty($model)) {
-
-                $q = $model;
+                $q = $model; 
             }
-            echo " <input type='text' id='update_id' name='update_id'  value='$q' >";
+            echo " <input type='text' id='update_id' name='update_id'  value='$q' style='display:none;'>";
             ?>
             <div class="row">
 
@@ -72,11 +71,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     ?>
                 </div>
                 <div class="col-sm-3">
-                    <label for="reference">Reference</label>
 
-                    <select id="reference" name="reference" class="reference select" style="width: 100% ;margin-top:50px" required>
-                        <option></option>
-                    </select>
                 </div>
             </div>
             <div class="row">
@@ -240,11 +235,6 @@ use aryelds\sweetalert\SweetAlertAsset;
         var update_id = undefined;
 
         function removeItem(index) {
-            // $(`#form-${index}`).remove();
-            // arr_form.splice(index, 1);
-            // vacant = index
-            // $('#form' + index + '').remove();
-
             document.getElementById(`form-${index}`).remove()
             // console.log(index)
             for (var y = 0; y < x.length; y++) {
@@ -254,9 +244,6 @@ use aryelds\sweetalert\SweetAlertAsset;
                 }
             }
             console.log(x, Math.max.apply(null, x))
-            getTotal()
-
-
         }
 
 
@@ -308,51 +295,9 @@ use aryelds\sweetalert\SweetAlertAsset;
 
         }
         $(document).ready(function() {
-            $('.amount').keyup(function() {
-                var qwe = amountComma($(this).val())
-                console.log(qwe)
-                //   $(this).val(qwe)
-            })
 
-            // GET ALL CHART OF accounts
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-all-account')
-                .then(function(data) {
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id + '-' + val.object_code + '-' + val.lvl,
-                            text: val.object_code + ' ' + val.title
-                        })
-                    })
-                    accounts = array
-                    $('#chart-0').select2({
 
-                        data: accounts,
-                        placeholder: "Select Chart of Account",
 
-                    })
-                })
-
-            // GET ALL FUND CLUSTER CODES
-            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=fund-cluster-code/get-all-cluster')
-            // .then(function(data) {
-            //     var array = []
-            //     $.each(data, function(key, val) {
-            //         array.push({
-            //             id: val.id,
-            //             text: val.name
-            //         })
-            //     })
-            //     fund_clusters = array
-            //     $('#fund_cluster_code').select2({
-            //         data: fund_clusters,
-            //         placeholder: "Select Fund Cluster Code",
-            //         containerCssClass: function(e) {
-            //             return $(e).attr('required') ? 'required' : '';
-            //         }
-
-            //     })
-            // })
             // GET ALL DOCUMENT RECIEVES
             $.getJSON('/dti-afms-2/frontend/web/index.php?r=document-recieve/get-document-recieves')
                 .then(function(data) {
@@ -370,26 +315,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                         placeholder: 'Select Document Recieve'
                     })
                 })
-            // GET FINANCING SOURCE CODES
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=financing-source-code/get-financing-source-codes')
 
-                .then(function(data) {
-
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.name
-                        })
-                    })
-                    financing_source_code = array
-                    $('#financing_source_code').select2({
-                        data: financing_source_code,
-                        placeholder: "Select Financing Source Code",
-
-                    })
-
-                })
 
             // GET ALL AUTHORIZATION CODES
             $.getJSON('/dti-afms-2/frontend/web/index.php?r=authorization-code/get-authorization-codes')
@@ -468,22 +394,8 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 
                 })
-            // REFERENCE
-            reference = ["ADADJ", "CDJ", "CKDJ", "CRJ", "GJ"]
-            $('#reference').select2({
-                data: reference,
-                placeholder: "Select Reference",
-
-            })
 
 
-            // CHECK ADA NUMBER 
-            ada_number = ['Check', 'ADA', 'Non Cash']
-            $('#check_ada').select2({
-                data: ada_number,
-                placeholder: 'Select CHECK/ADA'
-
-            })
 
 
             // ADD ENTRY
@@ -494,7 +406,7 @@ use aryelds\sweetalert\SweetAlertAsset;
             // SUBMIT DATA
 
 
-            // INSERT DATA TO DATABASE
+            // INSERT DATA TO DATABASE SA RECORD ALLOTMENTS
             $('#add_data').submit(function(e) {
                 e.preventDefault();
                 $.ajax({
@@ -502,86 +414,28 @@ use aryelds\sweetalert\SweetAlertAsset;
                     method: "POST",
                     data: $('#add_data').serialize(),
                     success: function(data) {
-                        //  alert(data);  
                         // //  $('#add_name')[0].reset();  
-                        // var res = JSON.parse(data)
-                        console.log(data)
-                        // // console.log(JSON.parse(data))
-
-                        // if (res.isSuccess == "success") {
-                        // console.log(data)
-                        // swal({
-                        //     title: "Success",
-                        //     // text: "You will not be able to undo this action!",
-                        //     type: "success",
-                        //     timer: 3000,
-                        //     button: false
-                        //     // confirmButtonText: "Yes, delete it!",
-                        // }, function() {
-                        //     console.log('qwe')
-                        //     window.location.href = window.location.pathname + '?r=jev-preparation/view&id=' + res.id
-                        // });
-                        // $('#add_data')[0].reset();
-
-
-                        // }
-                        // else {
-                        //     // var date = JSON.parse(data).date;
-                        //     // var reporting_period = JSON.parse(data).reporting_period;
-                        //     // for (var i = 0;i<res.error;i++){
-                        //     //     console.log(res.data)
-
-                        //     // }
-                        //     console.log(res)
-                        //     swal({
-                        //         title: res.error,
-                        //         type: "error",
-                        //         timer: 5000,
-                        //         closeOnConfirm: false,
-                        //         closeOnCancel: false
-                        //     })
-                        // }
-                        // console.log(JSON.parse(data).)
-                        // setTimeout(function () {
-                        //     window.location.href = window.location.pathname + '?r=jev-preparation/create'
-                        // }, 300);
+                        var res = JSON.parse(data)
+                        console.log(res)
+                        if (res.isSuccess) {
+                            swal({
+                                title: "Success",
+                                // text: "You will not be able to undo this action!",
+                                type: "success",
+                                timer: 3000,
+                                button: false
+                                // confirmButtonText: "Yes, delete it!",
+                            }, function() {
+                                window.location.href = window.location.pathname + '?r=record-allotments/view&id=' + res.view_id
+                            });
+                            $('#add_data')[0].reset();
+                        }
 
                     }
                 });
             })
 
         })
-
-        function getTotal() {
-            var total_credit = 0.00;
-            var total_debit = 0.00;
-            $(".credit").each(function() {
-                total_credit += Number($(this).val());
-            })
-            $(".debit").each(function() {
-                total_debit += Number($(this).val());
-            })
-
-            // console.log(total_debit);
-            document.getElementById("d_total").innerHTML = "<h4>" + thousands_separators(total_debit) + "</h4>";
-            document.getElementById("c_total").innerHTML = "<h4>" + thousands_separators(total_credit) + "</h4>";
-            //  $(".debit").change(function(){
-            //     $(this).val() =  thousands_separators(total_debit)
-            //  })
-            // $(this).val().replact
-        }
-        $(document).on("keyup change", ".credit, .debit", function() {
-            getTotal()
-        })
-
-        function thousands_separators(num) {
-
-            var number = Number(Math.round(num + 'e2') + 'e-2')
-            var num_parts = number.toString().split(".");
-            num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            return num_parts.join(".");
-            console.log(num)
-        }
     </script>
 </div>
 
@@ -594,24 +448,51 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depe
 
 $script = <<< JS
       
-      function addComma(i){
-          consol.log(i)
-      }
-        // ADD COMMA IN NUMBER
 
-      function thousands_separators(num) {
 
-        var number = Number(Math.round(num + 'e2') + 'e-2')
-        var num_parts = number.toString().split(".");
-        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        return num_parts.join(".");
-        console.log(num)
-        }
-    // GET TOTAL OF DEBIT AND CREDIT
-
-    
      $(document).ready(function() {
+         $('#financing_source_code').change(function(){
+             console.log($(this).val())
+         })
+             // GET ALL CHART OF accounts
+             $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
+                .then(function(data) {
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.object_code + ' ' + val.title
+                        })
+                    })
+                    accounts = array
+                    $('#chart-0').select2({
+                        data: accounts,
+                        placeholder: "Select Chart of Account",
+
+                    })
+                });
+            // GET FINANCING SOURCE CODES
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=financing-source-code/get-financing-source-codes')
+            .then(function(data) {
+
+                var array = []
+                $.each(data, function(key, val) {
+                    array.push({
+                        id: val.id,
+                        text: val.name
+                    })
+                })
+                financing_source_code = array
+                $('#financing_source_code').select2({
+                    data: financing_source_code,
+                    placeholder: "Select Financing Source Code",
+
+                })
+
+            });
         update_id = $('#update_id').val()
+ 
+    // MAG API REQUEST KUNG NAAY SULOD ANG UPDATE_ID
         if (update_id > 0) {
             
             // console.log(update_id)
@@ -626,8 +507,7 @@ $script = <<< JS
                         var res = JSON.parse(data)
                         var record_allotment = res.record_allotments
                         var record_allotment_entries = res.record_allotment_entries
-                        // console.log(record_allotment_entries)
-                        
+                        console.log(record_allotment)
                         $('#reporting_period').val(record_allotment['reporting_period'])
                         $('#date_issued').val(record_allotment['date_issued']);
                         $('#valid_until').val(record_allotment['valid_until']);
@@ -639,17 +519,18 @@ $script = <<< JS
                         $('#mfo_pap_code').val(record_allotment['mfo_pap_code_id']).trigger('change');
                         $('#fund_source').val(record_allotment['fund_source_id']).trigger('change');
                         $('#particular').val(record_allotment['particulars']);
-                        // console.log(record_allotment_entries) 
+
+                        // console.log(record_allotment['particulars']) 
                         for (var y=0; y<record_allotment_entries.length;y++){
                             if (y>0){
                                 add();
                             }
                             $("#amount-"+y).val(record_allotment_entries[y]['amount']);
-                            // console.log(record_allotment_entries[y]['id'])
+                            console.log(record_allotment_entries[y]['chart_of_account_id'])
                             // $("#credit-"+x).val(jev_accounting_entries[x]['credit'])
-                            var chart = record_allotment_entries[y]['id'] +"-" +record_allotment_entries[y]['object_code']+"-"+record_allotment_entries[y]['lvl']
+                           
                             
-                            $("#chart-"+y).val(chart).trigger('change');
+                            $("#chart-"+y).val(record_allotment_entries[y]['chart_of_account_id']).trigger('change');
                         }
 
                     }

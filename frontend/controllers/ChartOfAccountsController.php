@@ -383,4 +383,14 @@ class ChartOfAccountsController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
+    public function actionGetGeneralLedger()
+    {
+        // 	Personnel Services, Maintenance and Other Operating Expenses ,Capital Outlays
+        $res = Yii::$app->db->createCommand('SELECT chart_of_accounts.id,uacs as object_code, general_ledger as title 
+        FROM chart_of_accounts,major_accounts
+        WHERE chart_of_accounts.major_account_id = major_accounts.id
+        AND major_accounts.name IN ("Personnel Services","Maintenance and Other Operating Expenses","Capital Outlays")
+        ')->queryAll();
+        return json_encode($res);
+    }
 }

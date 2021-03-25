@@ -22,14 +22,7 @@ use yii\helpers\Html;
     <div id="container" class="container">
 
         <form name="add_data" id="add_data">
-            <?php
-            $q = 0;
-            if (!empty($model)) {
 
-                $q = $model;
-            }
-            echo " <input type='text' id='update_id' name='update_id'  style='display:none'>";
-            ?>
 
             <!-- RAOUDS ANG MODEL ANI -->
 
@@ -37,7 +30,7 @@ use yii\helpers\Html;
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
                 'panel' => [
-                    'type' => GridView::TYPE_PRIMARY,
+                    // 'type' => GridView::TYPE_PRIMARY,
                     'heading' => 'List of Areas',
                 ],
                 'floatHeaderOptions' => [
@@ -49,7 +42,7 @@ use yii\helpers\Html;
                     'id',
                     [
                         'label' => 'MFO/PAP Code',
-                        'attribute' => 'recordAllotment.mfoPapCode.code',
+                        'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.code',
                         // 'filter' => Html::activeDropDownList(
                         //     $searchModel,
                         //     'recordAllotment.fund_cluster_code_id',
@@ -60,42 +53,71 @@ use yii\helpers\Html;
                     ],
                     [
                         'label' => 'MFO/PAP Code Name',
-                        'attribute' => 'recordAllotment.mfoPapCode.name'
+                        'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.name'
                     ],
+
                     [
                         'label' => 'Fund Source Code',
-                        'attribute' => 'recordAllotment.fundSource.name'
+                        'attribute' => 'recordAllotmentEntries.recordAllotment.fundSource.name'
                     ],
                     [
                         'label' => 'Object Code',
-                        'attribute' => 'raoudEntries.chartOfAccount.uacs'
+                        'value' => function ($model) {
+                            if ($model->process_ors_id != null) {
+                                return $model->raoudEntries->chartOfAccount->uacs;
+                            } else {
+                                return $model->recordAllotmentEntries->chartOfAccount->uacs;
+                            }
+                        }
                     ],
                     [
                         'label' => 'General Ledger',
-                        'attribute' => 'raoudEntries.chartOfAccount.general_ledger'
+                        // 'attribute' => 'recordAllotmentEntries.chartOfAccount.general_ledger'
+                        'value' => function ($model) {
+                            if ($model->process_ors_id != null) {
+                                return $model->raoudEntries->chartOfAccount->general_ledger;
+                            } else {
+                                return $model->recordAllotmentEntries->chartOfAccount->general_ledger;
+                            }
+                        }
+                    ],
+                    [
+                        'label' => 'Amount',
+                        'attribute' => 'recordAllotmentEntries.amount'
                     ],
 
                     [
                         'label' => 'Balance',
                         'value' => function ($model) {
-                            $query = (new \yii\db\Query())
-                                ->select([
+                            // $query = (new \yii\db\Query())
+                            //     ->select([
 
-                                    'entry.obligation_total', 'record_allotment_entries.amount', '(record_allotment_entries.amount - entry.obligation_total) AS remain'
-                                ])
-                                ->from('raouds')
-                                ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
-                                ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount) as obligation_total,
-                                        raouds.id, raouds.record_allotment_id,raouds.process_ors_id,
-                                        raouds.record_allotment_entries_id
-                                        FROM raouds,raoud_entries,process_ors
-                                        WHERE raouds.process_ors_id= process_ors.id
-                                        AND raouds.id = raoud_entries.raoud_id
-                                        AND raouds.process_ors_id IS NOT NULL 
-                                        GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
-                                ->where("raouds.id = :id", ['id' => $model->id])->one();
+                            //         'entry.obligation_total', 'record_allotment_entries.amount', 'entry.remain'
+                            //     ])
+                            //     ->from('raouds')
+                            //     ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
+                            //     ->join("LEFT JOIN", "(SELECT SUM(raouds.obligated_amount) as obligation_total,
+                            //     raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain
+                            //      From raouds,record_allotment_entries
+                            //      WHERE 
+                            //     raouds.record_allotment_entries_id = record_allotment_entries.id
+                            //     AND raouds.process_ors_id IS NOT NULL
+                            //     GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
+                            //     ->where("raouds.id = :id", ['id' => $model->id])->one();
+                            $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as obligated_amount,
+                            raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain
+                            From raouds,record_allotment_entries,raoud_entries
+                            WHERE raouds.record_allotment_entries_id = record_allotment_entries.id
+                           AND raouds.id = raoud_entries.raoud_id
+                            AND raouds.process_ors_id IS NOT NULL
+                           AND raouds.record_allotment_entries_id=$model->record_allotment_entries_id
+                            ")->queryOne();
                             return $query['remain'];
                         }
+                    ],
+                    [
+                        'label' => 'Obligated Amount',
+                        'attribute' => 'obligated_amount'
                     ],
                     [
                         'class' => '\kartik\grid\CheckboxColumn',
@@ -127,6 +149,14 @@ use yii\helpers\Html;
             <button type="submit" class="btn btn-primary" name="submit" style="width: 100%;"> ADD</button>
         </form>
         <form id='save_data' method='POST'>
+            <?php
+            $q = 0;
+            if (!empty($update_id)) {
+
+                $q = $update_id;
+            }
+            echo " <input type='text' id='update_id' name='update_id' value='$q' style='display:none' >";
+            ?>
             <div class="row">
 
                 <div class="col-sm-3">
@@ -224,7 +254,13 @@ use yii\helpers\Html;
     </style>
 
     <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script> -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+    <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
+    <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
+    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
 
     <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
     <script>
@@ -249,6 +285,7 @@ use yii\helpers\Html;
         function remove(i) {
             i.closest("tr").remove()
         }
+        var select_id = 0;
         $(document).ready(function() {
 
 
@@ -257,7 +294,7 @@ use yii\helpers\Html;
 
                 e.preventDefault();
                 $.ajax({
-                    url: window.location.pathname + '?r=process-ors/sample',
+                    url: window.location.pathname + '?r=process-ors-entries/sample',
                     method: "POST",
                     data: $('#add_data').serialize(),
                     success: function(data) {
@@ -273,10 +310,22 @@ use yii\helpers\Html;
                             <td> ${result[i]['mfo_pap_name']}</td>
                             <td> ${result[i]['fund_source_name']}</td>
                             <td> ${result[i]['object_code']}</td>
-                            <td> <input value='${result[i]['general_ledger']}' type='text' name='general_ledger[]'/></td>
-                            <td> ${result[i]['obligation_amount']}</td>
-                            <td><button id='remove' class='btn btn-danger' onclick='remove(this)'>remove</button></td></tr>`
+                            <td> 
+                                <div>
+                                    <select id="chart-${select_id}" required name="chart_of_account_id[]" class="chart-of-account" style="width: 100%">
+                                        <option></option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td> <input value='${result[i]['obligation_amount']}' type='text' name='obligation_amount[]'/></td>
+                            <td><button  class='btn btn-danger' onclick='remove(this)'>remove</button></td></tr>`
                             $('#transaction_table').append(row);
+                            $(`#chart-${select_id}`).select2({
+                                data: accounts,
+                                placeholder: "Select Chart of Account",
+
+                            }).val(`${result[i]['chart_of_account_id']}`).trigger('change');
+                            select_id++;
                         }
                     }
                 });
@@ -299,23 +348,34 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depe
 $script = <<< JS
         var reporting_period = '';
       $(document).ready(function() {
-          $("#reporting_period").change(function(){
-              reporting_periiod =$(this).val()
-              console.log($())
-          })
+        $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
+                .then(function(data) {
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.object_code + ' ' + val.title
+                        })
+                    })
+                    accounts = array
+       
+                })
         $('#save_data').submit(function(e) {
   
 
             e.preventDefault();
+
+
                 $.ajax({
-                    url: window.location.pathname + '?r=process-ors/insert-process-ors',
+                    url: window.location.pathname + '?r=process-ors-entries/insert-process-ors',
                     method: "POST",
                     data: $('#save_data').serialize(),
                     success: function(data) {
                         console.log(data)
                     }
                 });
-            })
+      
+        })
     })
     JS;
 $this->registerJs($script);
