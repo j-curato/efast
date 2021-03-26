@@ -3,16 +3,16 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\Transaction;
-use app\models\TransactionSearch;
+use app\models\Raouds;
+use app\models\Raouds2Search;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * TransactionController implements the CRUD actions for Transaction model.
+ * Raouds2Controller implements the CRUD actions for Raouds model.
  */
-class TransactionController extends Controller
+class Raouds2Controller extends Controller
 {
     /**
      * {@inheritdoc}
@@ -21,7 +21,7 @@ class TransactionController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::class,
+                'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -30,12 +30,12 @@ class TransactionController extends Controller
     }
 
     /**
-     * Lists all Transaction models.
+     * Lists all Raouds models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new TransactionSearch();
+        $searchModel = new Raouds2Search();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -45,7 +45,7 @@ class TransactionController extends Controller
     }
 
     /**
-     * Displays a single Transaction model.
+     * Displays a single Raouds model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -58,25 +58,25 @@ class TransactionController extends Controller
     }
 
     /**
-     * Creates a new Transaction model.
+     * Creates a new Raouds model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Transaction();
+        $model = new Raouds();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->renderAjax('create', [
+        return $this->render('create', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Updates an existing Transaction model.
+     * Updates an existing Raouds model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -96,7 +96,7 @@ class TransactionController extends Controller
     }
 
     /**
-     * Deletes an existing Transaction model.
+     * Deletes an existing Raouds model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -110,22 +110,18 @@ class TransactionController extends Controller
     }
 
     /**
-     * Finds the Transaction model based on its primary key value.
+     * Finds the Raouds model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Transaction the loaded model
+     * @return Raouds the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Transaction::findOne($id)) !== null) {
+        if (($model = Raouds::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
-    }
-    public function actionOrsForm()
-    {
-        return $this->render('ors_form');
     }
 }

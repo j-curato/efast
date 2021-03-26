@@ -62,6 +62,10 @@ class Raouds extends \yii\db\ActiveRecord
     {
         return $this->hasOne(ProcessOrs::class, ['id' => 'process_ors_id']);
     }
+    public function getProcessBurs()
+    {
+        return $this->hasOne(ProcessBurs::class, ['id' => 'process_burs_id']);
+    }
 
     /**
      * Gets query for [[RecordAllotment]].

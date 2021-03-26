@@ -2,26 +2,21 @@
 
 namespace frontend\controllers;
 
-use app\models\ProcessOrs;
 use Yii;
-use app\models\ProcessOrsEntries;
-use app\models\ProcessOrsEntriesSearch;
+use app\models\ProcessBurs;
+use app\models\ProcessBursSearch;
 use app\models\RaoudEntries;
 use app\models\Raouds;
 use app\models\Raouds2Search;
-use app\models\RaoudsSearch;
-use app\models\RaoudsSearch2;
-use app\models\RecordAllotmentEntries;
 use ErrorException;
-use Exception;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * ProcessOrsEntriesController implements the CRUD actions for ProcessOrsEntries model.
+ * ProcessBursController implements the CRUD actions for ProcessBurs model.
  */
-class ProcessOrsEntriesController extends Controller
+class ProcessBursController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -30,7 +25,7 @@ class ProcessOrsEntriesController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::class,
+                'class' => VerbFilter::class ,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -39,12 +34,12 @@ class ProcessOrsEntriesController extends Controller
     }
 
     /**
-     * Lists all ProcessOrsEntries models.
+     * Lists all ProcessBurs models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new ProcessOrsEntriesSearch();
+        $searchModel = new ProcessBursSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -54,7 +49,7 @@ class ProcessOrsEntriesController extends Controller
     }
 
     /**
-     * Displays a single ProcessOrsEntries model.
+     * Displays a single ProcessBurs model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -67,21 +62,18 @@ class ProcessOrsEntriesController extends Controller
     }
 
     /**
-     * Creates a new ProcessOrsEntries model.
+     * Creates a new ProcessBurs model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        // $model = new ProcessOrsEntries();
+        // $model = new ProcessBurs();
 
-        // if ($model->load(Yii::$app->request->post()) && $model->save()) {p
+        // if ($model->load(Yii::$app->request->post()) && $model->save()) {
         //     return $this->redirect(['view', 'id' => $model->id]);
         // }
 
-        // return $this->render('create', [
-        //     'model' => $model,
-        // ]);
         $searchModel = new Raouds2Search();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -93,13 +85,12 @@ class ProcessOrsEntriesController extends Controller
     }
 
     /**
-     * Updates an existing ProcessOrsEntries model.
+     * Updates an existing ProcessBurs model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-
     public function actionUpdate($id)
     {
         // $model = $this->findModel($id);
@@ -121,7 +112,7 @@ class ProcessOrsEntriesController extends Controller
     }
 
     /**
-     * Deletes an existing ProcessOrsEntries model.
+     * Deletes an existing ProcessBurs model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -135,22 +126,21 @@ class ProcessOrsEntriesController extends Controller
     }
 
     /**
-     * Finds the ProcessOrsEntries model based on its primary key value.
+     * Finds the ProcessBurs model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return ProcessOrsEntries the loaded model
+     * @return ProcessBurs the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = ProcessOrsEntries::findOne($id)) !== null) {
+        if (($model = ProcessBurs::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    // PAG KUHA SA RAOUDS DATA NGA BUHATAN OG OBLIGATION
-    public function actionSample()
+    public function actionGetRaoud()
     {
         $x = [];
         foreach ($_POST['selection'] as $val) {
@@ -191,7 +181,7 @@ class ProcessOrsEntriesController extends Controller
         return json_encode(['results' => $x]);
     }
 
-    public function actionInsertProcessOrs()
+    public function actionInsertProcessBurs()
     {
         // return json_encode($_POST['reporting_period']);
         if (!empty($_POST)) {
@@ -207,6 +197,7 @@ class ProcessOrsEntriesController extends Controller
                    
                    
                     $total_amount= array_sum($_POST['obligation_amount']);
+                    return json_encode(['error'=>$raoud_to_adjust->id]);
                     if ($raoud_to_adjust->raoudEntries->amount >$total_amount){
                         
                     $raoud_to_adjust->isActive = false;
@@ -224,20 +215,20 @@ class ProcessOrsEntriesController extends Controller
                             // $raoud->record_allotment_id = $raoud_to_charge_adjustment->record_allotment_id;
                             $amount = 0;
                             if ($i === 0) {
-                                $amount = -$_POST['obligation_amount'][$index];
+                                $amount = -$_POST['burs_amount'][$index];
                                 $chart_of_account_id= $raoud_to_adjust->raoudEntries->chart_of_account_id;
                                 $record_allotment_entries_id=$raoud_to_adjust->record_allotment_entries_id;
                             } else {
-                                $amount = $_POST['obligation_amount'][$index];
+                                $amount = $_POST['burs_amount'][$index];
                                 $chart_of_account_id=$value;
                                 $record_allotment_entries_id=$raoud_to_charge_adjustment->record_allotment_entries_id;
                             }
                             $raoud->record_allotment_entries_id = $record_allotment_entries_id;
                             $raoud->is_parent = false;
                             $raoud->isActive = $i;
-                            $raoud->process_ors_id = $raoud_to_adjust->process_ors_id;
+                            $raoud->process_burs_id = $raoud_to_adjust->process_burs_id;
                             $raoud->reporting_period = $_POST['reporting_period'];
-                            $raoud->obligated_amount = $amount;
+                            $raoud->burs_amount = $amount;
                             if ($flag = $raoud->validate()) {
                                 if ($raoud->save()) {
                                     
@@ -255,6 +246,9 @@ class ProcessOrsEntriesController extends Controller
                                         return json_encode(['error' => 'yawa sa raoud entry']);
                                     }
                                 }
+                                else{
+                                    return json_encode(['error'=>'wla na save']);
+                                }
                             } else {
 
                                 $transaction->rollBack();
@@ -266,47 +260,48 @@ class ProcessOrsEntriesController extends Controller
                         $transaction->commit();
                         return json_encode(['error' => 'walay error di success']);
                     }
+                    
 
                 }
                 else{
-                    return json_encode(['error'=>'yawa']);
+                    return json_encode(['error'=>' amount is greater than  burs amount']);
                 }
 
 
 
                     
                 } catch (ErrorException $e) {
-                    return json_encode(["error" => $e]);
+                    // return json_encode(["error" => $e]);
+                    throw new ErrorException($e);
                 }
             } 
             // KUNG WLAY SULOD ANG UPDATE_ID DRI MO SULOD MAG BUHAT OG BAG.O NA DATA
             else {
                 try {
-                    $ors = new ProcessOrs();
-                    $ors->reporting_period = $reporting_period;
-                    if ($ors->validate()) {
+                    $burs = new ProcessBurs();
+                    $burs->reporting_period = $reporting_period;
+                    if ($burs->validate()) {
 
-
-                        if ($flag = $ors->save()) {
+                        if ($flag = $burs->save()) {
                             // echo $reporting_period;
                             foreach ($_POST['chart_of_account_id'] as $index => $value) {
 
                                 $q = Raouds::find()->where("id =:id", ['id' => $_POST['raoud_id'][$index]])->one();
                                 $q->isActive = 0;
-                                $q->save();
+                                $q->save(); 
                                 $raoud = new Raouds();
                                 // $raoud->record_allotment_id = $q->record_allotment_id;
                                 $raoud->record_allotment_entries_id = $q->record_allotment_entries_id;
                                 $raoud->is_parent = false;
-                                $raoud->process_ors_id = $ors->id;
-                                $raoud->reporting_period = $ors->reporting_period;
-                                $raoud->obligated_amount = $_POST['obligation_amount'][$index];
+                                $raoud->process_burs_id = $burs->id;
+                                $raoud->reporting_period = $burs->reporting_period;
+                                $raoud->burs_amount = $_POST['burs_amount'][$index];
                                 if ($raoud->validate()) {
                                     if ($raoud->save()) {
                                         $raoud_entry = new RaoudEntries();
                                         $raoud_entry->raoud_id = $raoud->id;
                                         $raoud_entry->chart_of_account_id = $value;
-                                        $raoud_entry->amount = $_POST['obligation_amount'][$index];
+                                        $raoud_entry->amount = $_POST['burs_amount'][$index];
                                         if ($raoud_entry->validate()) {
                                             if ($raoud_entry->save()) {
                                             }
@@ -318,22 +313,22 @@ class ProcessOrsEntriesController extends Controller
                                 } else {
 
                                     $transaction->rollBack();
-                                    return json_encode(["error" => 'yawa sa raoud']);
+                                    return json_encode(["error" => $raoud->obligated_amount]);
                                 }
 
 
-                                $ors_entry = new ProcessOrsEntries();
-                                $ors_entry->chart_of_account_id = $value;
-                                $ors_entry->process_ors_id = $ors->id;
-                                $ors_entry->amount = $_POST['obligation_amount'][$index];
-                                if ($ors_entry->validate()) {
+                                // $ors_entry = new ProcessOrsEntries();
+                                // $ors_entry->chart_of_account_id = $value;
+                                // $ors_entry->process_ors_id = $ors->id;
+                                // $ors_entry->amount = $_POST['burs_amount'][$index];
+                                // if ($ors_entry->validate()) {
 
-                                    if ($ors_entry->save()) {
-                                    }
-                                } else {
-                                    $transaction->rollBack();
-                                    return json_encode(["error" => 'yawa sa ors entry']);
-                                }
+                                //     if ($ors_entry->save()) {
+                                //     }
+                                // } else {
+                                //     $transaction->rollBack();
+                                //     return json_encode(["error" => 'yawa sa ors entry']);
+                                // }
                             }
                         }
                         if ($flag) {
@@ -341,7 +336,7 @@ class ProcessOrsEntriesController extends Controller
                             return json_encode(['error' => 'walay error di success']);
                         }
                     } else {
-                        return json_encode(['error' => $ors->error]);
+                        return json_encode(['error' => $burs->error]);
                     }
                 } catch (ErrorException $e) {
                     return json_encode(["error" => $e]);
@@ -352,15 +347,4 @@ class ProcessOrsEntriesController extends Controller
 
         }
     }
-    public function actionQwe()
-    {
-        $query = (new \yii\db\Query())
-            ->select('*')
-            ->from('raouds')
-            ->where("id= :id", ['id' => 44])
-            ->one();
-        return $query['id'];
-    }
-
-    
 }

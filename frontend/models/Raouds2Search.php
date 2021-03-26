@@ -7,9 +7,9 @@ use yii\data\ActiveDataProvider;
 use app\models\Raouds;
 
 /**
- * RaoudsSearch represents the model behind the search form of `app\models\Raouds`.
+ * Raouds2Search represents the model behind the search form of `app\models\Raouds`.
  */
-class RaoudsSearch extends Raouds
+class Raouds2Search extends Raouds
 {
     /**
      * {@inheritdoc}
@@ -17,8 +17,9 @@ class RaoudsSearch extends Raouds
     public function rules()
     {
         return [
-            [['id',  'process_ors_id'], 'integer'],
+            [['id', 'process_ors_id', 'record_allotment_entries_id', 'isActive', 'is_parent'], 'integer'],
             [['serial_number', 'reporting_period'], 'safe'],
+            [['obligated_amount'], 'number'],
         ];
     }
 
@@ -40,10 +41,7 @@ class RaoudsSearch extends Raouds
      */
     public function search($params)
     {
-        $query = Raouds::find()
-        // ->where("isActive =:isActive", ['isActive' => 1])
-        // ->andWhere('obligated_amount >:obligated_amount',['obligated_amount'=>0])
-        ;
+        $query = Raouds::find()->where("isActive =:isActive",['isActive'=>true]);
 
         // add conditions that should always apply here
 
@@ -63,6 +61,10 @@ class RaoudsSearch extends Raouds
         $query->andFilterWhere([
             'id' => $this->id,
             'process_ors_id' => $this->process_ors_id,
+            'record_allotment_entries_id' => $this->record_allotment_entries_id,
+            'obligated_amount' => $this->obligated_amount,
+            'isActive' => $this->isActive,
+            'is_parent' => $this->is_parent,
         ]);
 
         $query->andFilterWhere(['like', 'serial_number', $this->serial_number])

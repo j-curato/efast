@@ -295,7 +295,7 @@ use yii\helpers\Html;
 
                 e.preventDefault();
                 $.ajax({
-                    url: window.location.pathname + '?r=process-ors-entries/sample',
+                    url: window.location.pathname + '?r=process-burs/get-raoud',
                     method: "POST",
                     data: $('#add_data').serialize(),
                     success: function(data) {
@@ -318,7 +318,7 @@ use yii\helpers\Html;
                                     </select>
                                 </div>
                             </td>
-                            <td> <input value='${result[i]['obligation_amount']}' type='text' name='obligation_amount[]'/></td>
+                            <td> <input value='${result[i]['obligation_amount']}' type='text' name='burs_amount[]'/></td>
                             <td><button  class='btn btn-danger' onclick='remove(this)'>remove</button></td></tr>`
                             $('#transaction_table').append(row);
                             $(`#chart-${select_id}`).select2({
@@ -368,7 +368,7 @@ $script = <<< JS
 
 
                 $.ajax({
-                    url: window.location.pathname + '?r=process-ors-entries/insert-process-ors',
+                    url: window.location.pathname + '?r=process-burs/insert-process-burs ',
                     method: "POST",
                     data: $('#save_data').serialize(),
                     success: function(data) {

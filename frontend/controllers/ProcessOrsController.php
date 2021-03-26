@@ -9,6 +9,7 @@ use app\models\ProcessOrsEntries;
 use app\models\ProcessOrsEntriesSearch;
 use app\models\RaoudEntries;
 use app\models\Raouds;
+use app\models\Raouds2Search;
 use app\models\RaoudsSearch;
 use yii\db\ForeignKeyConstraint;
 use yii\web\Controller;

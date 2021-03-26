@@ -4,24 +4,21 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\ProcessOrsEntriesSearch */
+/* @var $searchModel app\models\ProcessBursSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Process Ors Entries';
+$this->title = 'Process Burs';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="process-ors-entries-index">
+<div class="process-burs-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Process Ors Entries', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Process Burs', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); 
-    ?>
-    <!-- RAOUDS ANG MODEL ANI. TRIP KO LANG -->
-    <!-- NAA SA PROCESS ORS ENTRIES SEARCH NAKO GE CHANGE -->
+    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
