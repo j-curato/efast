@@ -2,7 +2,9 @@
 
 namespace frontend\controllers;
 
+use app\models\Books;
 use app\models\BudgetEntries;
+use app\models\FundClusterCode;
 use app\models\RaoudEntries;
 use app\models\Raouds;
 use app\models\RecordAllotmentEntries;
@@ -12,6 +14,7 @@ use app\models\RecordAllotmentsSearch;
 use app\models\SubAccounts2;
 use app\models\Transaction;
 use Exception;
+use Mpdf\Tag\Em;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -144,7 +147,9 @@ class RecordAllotmentsController extends Controller
         $authorization_code_id = $_POST['authorization_code'];
         $mfo_pap_code_id = $_POST['mfo_pap_code'];
         $fund_source_id = $_POST['fund_source'];
+        $book_id = $_POST['book'];
         $transaction = \Yii::$app->db->beginTransaction();
+        // COUNTER NI SIYA KUN ASA DAPIT NA CHART_OF_ACCOUNT_ID IYA I UPDATE OG E INSERT KUNG MAG DUNGAG KAG ENTRIES
         $x = 0;
         if (!empty($_POST['update_id'])) {
             $recordAllotment = RecordAllotments::findOne(intval($_POST['update_id']));
@@ -158,7 +163,7 @@ class RecordAllotmentsController extends Controller
                 $ra_entries->record_allotment_id = $recordAllotment->id;
                 $ra_entries->amount = $_POST['amount'][$x];
                 if ($ra_entries->save(false)) {
-                }   
+                }
                 $x++;
             }
             // foreach ($ra->recordAllotmentEntries as $val) {
@@ -175,7 +180,7 @@ class RecordAllotmentsController extends Controller
         $fund_category_and_classification_code_id = Yii::$app->db->createCommand("SELECT * FROM `fund_category_and_classification_code` WHERE  {$_POST['fund_classification_code']}>=`fund_category_and_classification_code`.from  and {$_POST['fund_classification_code']} <= `fund_category_and_classification_code`.to LIMIT 1 ")->queryOne();
         $recordAllotment->date_issued = $date_issued;
         $recordAllotment->fund_classification = $_POST['fund_classification_code'];
-        $recordAllotment->serial_number = '123';
+        $recordAllotment->serial_number = $this->getSerialNumber($reporting_period, $book_id, $_POST['update_id']);
         $recordAllotment->valid_until = $valid_until;
         $recordAllotment->reporting_period = $reporting_period;
         $recordAllotment->particulars = $particulars;
@@ -184,6 +189,7 @@ class RecordAllotmentsController extends Controller
         $recordAllotment->authorization_code_id = $authorization_code_id;
         $recordAllotment->financing_source_code_id = $financing_source_code_id;
         $recordAllotment->mfo_pap_code_id = $mfo_pap_code_id;
+        $recordAllotment->book_id = $book_id;
         $recordAllotment->fund_source_id = $fund_source_id;
         $recordAllotment->fund_category_and_classification_code_id = $fund_category_and_classification_code_id['id'];
         if ($recordAllotment->validate()) {
@@ -228,18 +234,16 @@ class RecordAllotmentsController extends Controller
                 }
                 if ($flag) {
                     $transaction->commit();
-                    return json_encode(['isSuccess' => true,'view_id'=>$recordAllotment->id]);
+                    return json_encode(['isSuccess' => true, 'view_id' => $recordAllotment->id]);
                     return $this->render('view', [
-                        'model' => $this->findModel($recordAllotment->id), 
+                        'model' => $this->findModel($recordAllotment->id),
                     ]);
-
                 }
             } catch (Exception $e) {
                 $transaction->rollBack();
-                
-     
-                return json_encode(['isSuccess' => false, 'error' => $e]);
 
+
+                return json_encode(['isSuccess' => false, 'error' => $e]);
             }
         } else {
             return  json_encode(['isSuccess' => false, 'error' => $recordAllotment->errors]);
@@ -274,6 +278,7 @@ class RecordAllotmentsController extends Controller
                 'valid_until' => $model->valid_until,
                 'particulars' => $model->particulars,
                 'fund_classification' => $model->fund_classification,
+                'book_id'=>$model->book_id,
             ];
             $record_allotment_entries = [];
             foreach ($model->recordAllotmentEntries as $val) {
@@ -290,5 +295,56 @@ class RecordAllotmentsController extends Controller
             // echo "</pre>";   
             return  json_encode(['record_allotments' => $record_allotment, 'record_allotment_entries' => $record_allotment_entries]);
         }
+    }
+
+    public function actionQwe()
+    {
+
+        $book = Books::find()->where("id =:id", ['id' => 5])->one();
+        $jev_number = "GJ-Fund 01-2021-01-0018";
+        $q = explode('-', $jev_number);
+        $jev_number_serial = $q[4];
+        $jev_referenece = $q[0];
+        $jev_book = $q[1];
+        $q = '';
+        if ($book->name === $jev_book) {
+            $q = 'qqq';
+        }
+
+        echo "<pre>";
+        var_dump($q);
+        echo "</pre>";
+    }
+    public function getSerialNumber($reporting_period, $book_id, $update_id)
+    {
+
+
+        $book_name = Books::findOne($book_id);
+
+        // $q = RecordAllotments::find()
+        // ->orderBy(['id' => SORT_DESC])
+        // ->one();
+
+        // KUHAAON ANG SERIAL NUMBER SA LAST ID OR SA GE UPDATE NA ID
+        $f = (new \yii\db\Query())
+            ->select('serial_number')
+            ->from('record_allotments');
+            !empty($update_id) ? $f->where("id =:id", ['id' => $update_id]) : $f->orderBy("id DESC");
+        $q = $f->one();
+
+
+        if (!empty($q)) {
+            $x = explode('-', $q['serial_number']);
+            $y = 1;
+            if (!empty($update_id)) {
+                $y = 0;
+            }
+            $last_number = $x[3] + $y;
+        } else {
+            $last_number = 1;
+        }
+
+        $serial_number = $book_name->name . '-' . $reporting_period . '-' . $last_number;
+        return  $serial_number;
     }
 }

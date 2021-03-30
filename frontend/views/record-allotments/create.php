@@ -10,9 +10,6 @@ $this->params['breadcrumbs'][] = ['label' => 'Record Allotments', 'url' => ['ind
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="record-allotments-create">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
     <?= $this->render('_form_new', [
         'model' => $model,
     ]) ?>

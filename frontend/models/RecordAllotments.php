@@ -153,6 +153,10 @@ class RecordAllotments extends \yii\db\ActiveRecord
     {
         return $this->hasOne(MfoPapCode::class, ['id' => 'mfo_pap_code_id']);
     }
+    public function getBook()
+    {
+        return $this->hasOne(Books::class, ['id' => 'book_id']);
+    }
     public function getRecordAllotmentEntries()
     {
         return $this->hasMany(RecordAllotmentEntries::class, ['record_allotment_id' => 'id']);

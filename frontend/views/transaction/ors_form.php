@@ -32,21 +32,21 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>
 
-        <table  style="margin-top:30px">
+        <table style="margin-top:30px">
             <tbody>
 
                 <tr>
 
-                    <td colspan="5">
-                        <h6>
+                    <td colspan="5" style="text-align: center;">
+                        <h4 class="head">
                             OBLIGATION REQUEST AND STATUS
-                        </h6>
+                        </h4>
                         <div>
-                            _________
+                            _____________________________
                         </div>
-                        <h6>
+                        <h5 class="head">
                             entity name
-                        </h6>
+                        </h5>
 
                     </td>
                     <td colspan="3">
@@ -105,30 +105,91 @@ $this->params['breadcrumbs'][] = $this->title;
                         Amount
                     </td>
                 </tr>
+                <tr>
+                    <td colspan="2">
+                    </td>
+                    <td colspan="3">
+                    </td>
+                    <td colspan="1">
+                    </td>
+                    <td colspan="1">
+                    </td>
+                    <td colspan="1">
+                    </td>
+                </tr>
 
 
                 <tr style="border-top:1px solid black">
                     <td colspan="4">
-                        A
+                        <div>
+                            <span class="head">A. Certified: </span>
+                            Charges to appropriation/alloment arenecessary,
+                            lawful and under my direct supervision;and supporting documents
+                            valid, proper and legal
+
+                        </div>
+                        <div>
+                            <span>Signature:</span>
+                            <span>______________</span>
+                        </div>
+                        <div>
+                            <span>Printed Name:</span>
+                            <span>______________</span>
+                        </div>
+                        <div>
+                            <span>Position:</span>
+                            <span>______________</span>
+                            <h6>Head, Budget Division/Unit/Authorized Representative</h6>
+                        </div>
+                        <div>
+                            <span>Date:</span>
+                            <span>______________</span>
+                        </div>
+
                     </td>
                     <td colspan="4">
-                        B
+
+                        <div>
+                            <span class="head"> B. Certified:</span>
+                            Allotment available and obligated
+                            for the purpose/adjustment necessary as
+                            indicated above
+                        </div>
+                        <div>
+                            <span>Signature:</span>
+                            <span>______________</span>
+                        </div>
+                        <div>
+                            <span>Printed Name:</span>
+                            <span>______________</span>
+                        </div>
+                        <div>
+                            <span>Position:</span>
+                            <span>______________</span>
+                            <h6>Head, Budget Division/Unit/Authorized Representative</h6>
+                        </div>
+                        <div>
+                            <span>Date:</span>
+                            <span>______________</span>
+                        </div>
+
                     </td>
 
 
                 </tr>
                 <tr>
                     <td colspan="8">
-                        STATUS OF OBLIGATION
-
+                        <h6 class="head">
+                            STATUS OF OBLIGATION
+                        </h6>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="4">
+                    <td colspan="4" class="head">
                         REFERENCE
 
                     </td>
-                    <td colspan="4">
+                    <td colspan="4" class="head">
                         AMOUNT
                     </td>
                 </tr>
@@ -149,6 +210,16 @@ $this->params['breadcrumbs'][] = $this->title;
                         Due and Demandable
                     </td>
                 </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
 
 
 
@@ -158,17 +229,23 @@ $this->params['breadcrumbs'][] = $this->title;
 
     </div>
     <style>
-       
+        .head {
+            text-align: center;
+            font-weight: bold;
+        }
+
         td {
             border: 1px solid black;
             padding: 1rem;
         }
-        table{
+
+        table {
             margin: 12px;
             margin-left: auto;
             margin-right: auto;
             width: 100%;
         }
+
         @media print {
             .actions {
                 display: none;
@@ -235,7 +312,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 display: none;
             }
         }
-
     </style>
 
 </div>

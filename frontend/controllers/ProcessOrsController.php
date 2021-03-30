@@ -42,10 +42,10 @@ class ProcessOrsController extends Controller
      */
     public function actionIndex()
     {
-        // $searchModel = new ProccessOrsSearch();
-        // $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $searchModel = new ProcessOrsEntriesSearch();
+        $searchModel = new ProccessOrsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        // $searchModel = new ProcessOrsEntriesSearch();
+        // $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'searchModel' => $searchModel,

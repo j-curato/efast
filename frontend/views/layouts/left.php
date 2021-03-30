@@ -34,7 +34,7 @@
             [
                 'options' => ['class' => 'sidebar-menu tree text-truncate', 'data-widget' => 'tree', 'style' => 'width: inherit'],
                 'items' => [
-                    ['label' => 'Gii', 'icon' => 'book', 'url' => ['/responsibility-center'],],
+                    ['label' => 'Gii', 'icon' => 'book', 'url' => ['/gii'],],
 
                     [
                         'label' => 'Budget',
@@ -64,6 +64,8 @@
                                     ['label' => 'Record Allotments', 'icon' => 'circle-o', 'url' => ['/record-allotments'],],
                                     ['label' => 'Process Ors', 'icon' => 'circle-o', 'url' => ['/process-ors-entries'],],
                                     ['label' => 'Process BURS', 'icon' => 'circle-o', 'url' => ['/process-burs'],],
+                                    ['label' => 'Raouds', 'icon' => 'circle-o', 'url' => ['/raouds'],],
+                                    ['label' => 'Process Dv', 'icon' => 'circle-o', 'url' => ['/dv-aucs'],],
                              
                                 ],
                             ],

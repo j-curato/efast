@@ -1,5 +1,7 @@
 <?php
 
+use app\models\JevAccountingEntriesSearch;
+use kartik\export\ExportMenu;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 
@@ -19,6 +21,18 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    $q = new JevAccountingEntriesSearch();
+    $w = $q->search(Yii::$app->request->queryParams);
+    $gridColumn = [
+        'id',
+        'jevPreparation.explaination',
+
+    ];
+
+    echo ExportMenu::widget([
+        'dataProvider' => $w,
+        'columns' => $gridColumn
+    ]);
     ?>
 
 

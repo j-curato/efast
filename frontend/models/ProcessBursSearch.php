@@ -40,8 +40,8 @@ class ProcessBursSearch extends ProcessBurs
      */
     public function search($params)
     {
-        // $query = ProcessBurs::find();
-        $query= Raouds::find()->where("process_burs_id IS NOT NULL");
+        $query = ProcessBurs::find();
+        // $query= Raouds::find()->where("process_burs_id IS NOT NULL");
 
         // add conditions that should always apply here
 

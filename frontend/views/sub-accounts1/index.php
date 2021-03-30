@@ -91,7 +91,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
             'id',
-            // 'chart_of_account_id',
+            'chart_of_account_id',
             'object_code',
             [
 

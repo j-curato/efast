@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use Yii;
 use app\models\ProcessBurs;
+use app\models\ProcessBursRaoudsSearch;
 use app\models\ProcessBursSearch;
 use app\models\RaoudEntries;
 use app\models\Raouds;
@@ -25,7 +26,7 @@ class ProcessBursController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::class ,
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -39,7 +40,7 @@ class ProcessBursController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new ProcessBursSearch();
+        $searchModel = new ProcessBursRaoudsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -194,87 +195,86 @@ class ProcessBursController extends Controller
                     // KUHAON ANG PARENT NA RAOUD NA E ADJUST
                     $raoud_to_adjust = Raouds::find()->where("id =:id", ['id' => $_POST['update_id']])->one();
                     // $ors_id = ::find($_POST['update_id'])->recordAllotment->id;
-                   
-                   
-                    $total_amount= array_sum($_POST['obligation_amount']);
-                    return json_encode(['error'=>$raoud_to_adjust->id]);
-                    if ($raoud_to_adjust->raoudEntries->amount >$total_amount){
-                        
-                    $raoud_to_adjust->isActive = false;
-                    $raoud_to_adjust->save();
+                    $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total_adjustment
+                    FROM `raouds`,raoud_entries
+                    WHERE raouds.id=raoud_entries.raoud_id
+                    AND raoud_entries.amount >0
+                    AND raoud_entries.parent_id_from_raoud = :raoud_id
+                     ")
+                     ->bindValue(":raoud_id",$raoud_to_adjust->id)
+                     ->queryOne();
+                    
+                    $total_amount = array_sum($_POST['burs_amount']);
+                    $adjust_total = $total_amount + $query['total_adjustment'];
+                    $remaining_balance= $raoud_to_adjust->raoudEntries->amount -  $query['total_adjustment'];
+                    $total_amount = array_sum($_POST['burs_amount']);
+                    if ($raoud_to_adjust->raoudEntries->amount >= $adjust_total) {
 
-                    // echo $reporting_period;
-                    foreach ($_POST['chart_of_account_id'] as $index => $value) {
-                        // KANI MAO NI ANG RAOUDS KUNG ASA E CHARGE ANG GE ADJUST
-                        $raoud_to_charge_adjustment = Raouds::find()->where("id =:id", ['id' => $_POST['raoud_id'][$index]])->one();
-                        $raoud_to_charge_adjustment->isActive = 0;
-                        $raoud_to_charge_adjustment->save();
+                        $raoud_to_adjust->isActive = false;
+                        $raoud_to_adjust->save();
+                            foreach ($_POST['chart_of_account_id'] as $index => $value) {
+                                // KANI MAO NI ANG RAOUDS KUNG ASA E CHARGE ANG GE ADJUST
+                                $raoud_to_charge_adjustment = Raouds::find()->where("id =:id", ['id' => $_POST['raoud_id'][$index]])->one();
+                                // $raoud_to_charge_adjustment->isActive = 0;
+                                // $raoud_to_charge_adjustment->save();
 
-                        for ($i = 0; $i < 2; $i++) {
-                            $raoud = new Raouds();
-                            // $raoud->record_allotment_id = $raoud_to_charge_adjustment->record_allotment_id;
-                            $amount = 0;
-                            if ($i === 0) {
-                                $amount = -$_POST['burs_amount'][$index];
-                                $chart_of_account_id= $raoud_to_adjust->raoudEntries->chart_of_account_id;
-                                $record_allotment_entries_id=$raoud_to_adjust->record_allotment_entries_id;
-                            } else {
-                                $amount = $_POST['burs_amount'][$index];
-                                $chart_of_account_id=$value;
-                                $record_allotment_entries_id=$raoud_to_charge_adjustment->record_allotment_entries_id;
-                            }
-                            $raoud->record_allotment_entries_id = $record_allotment_entries_id;
-                            $raoud->is_parent = false;
-                            $raoud->isActive = $i;
-                            $raoud->process_burs_id = $raoud_to_adjust->process_burs_id;
-                            $raoud->reporting_period = $_POST['reporting_period'];
-                            $raoud->burs_amount = $amount;
-                            if ($flag = $raoud->validate()) {
-                                if ($raoud->save()) {
-                                    
-                                    $raoud_entry = new RaoudEntries();
-                                    $raoud_entry->raoud_id = $raoud->id;
-                                    $raoud_entry->chart_of_account_id = $chart_of_account_id;
-                                    $raoud_entry->amount = $amount;
-                                    $raoud_entry->parent_id_from_raoud = $raoud_to_adjust->id;
+                                for ($i = 0; $i < 2; $i++) {
+                                    $raoud = new Raouds();
+                                    // $raoud->record_allotment_id = $raoud_to_charge_adjustment->record_allotment_id;
+                                    $amount = 0;
+                                    if ($i === 0) {
+                                        $amount = -$_POST['burs_amount'][$index];
+                                        $chart_of_account_id = $raoud_to_adjust->raoudEntries->chart_of_account_id;
+                                        $record_allotment_entries_id = $raoud_to_adjust->record_allotment_entries_id;
+                                    } else {
+                                        $amount = $_POST['burs_amount'][$index];
+                                        $chart_of_account_id = $value;
+                                        $record_allotment_entries_id = $raoud_to_charge_adjustment->record_allotment_entries_id;
+                                    }
+                                    $raoud->record_allotment_entries_id = $record_allotment_entries_id;
+                                    $raoud->is_parent = false;
+                                    $raoud->isActive = false;
+                                    $raoud->process_burs_id = $raoud_to_adjust->process_burs_id;
+                                    $raoud->reporting_period = $_POST['reporting_period'];
+                                    $raoud->burs_amount = $amount;
+                                    if ($flag = $raoud->validate()) {
+                                        if ($raoud->save()) {
 
-                                    if ($raoud_entry->validate()) {
-                                        if ($raoud_entry->save()) {
+                                            $raoud_entry = new RaoudEntries();
+                                            $raoud_entry->raoud_id = $raoud->id;
+                                            $raoud_entry->chart_of_account_id = $chart_of_account_id;
+                                            $raoud_entry->amount = $amount;
+                                            $raoud_entry->parent_id_from_raoud = $raoud_to_adjust->id;
+
+                                            if ($raoud_entry->validate()) {
+                                                if ($raoud_entry->save()) {
+                                                }
+                                            } else {
+                                                $transaction->rollBack();
+                                                return json_encode(['error' => 'yawa sa raoud entry']);
+                                            }
+                                        } else {
+                                            return json_encode(['error' => 'wla na save']);
                                         }
                                     } else {
+
                                         $transaction->rollBack();
-                                        return json_encode(['error' => 'yawa sa raoud entry']);
+                                        return json_encode(["error" => 'yawa sa raoud']);
                                     }
                                 }
-                                else{
-                                    return json_encode(['error'=>'wla na save']);
-                                }
-                            } else {
-
-                                $transaction->rollBack();
-                                return json_encode(["error" => 'yawa sa raoud']);
                             }
-                        }
+                            if ($flag) {
+                                $transaction->commit();
+                                return json_encode(['isSuccess'=>true,'error' => 'walay error yawa']);
+                            }
+                    } else {
+                        return json_encode(['error' => ' amount is greater than  burs amount']);
                     }
-                    if ($flag) {
-                        $transaction->commit();
-                        return json_encode(['error' => 'walay error di success']);
-                    }
-                    
-
-                }
-                else{
-                    return json_encode(['error'=>' amount is greater than  burs amount']);
-                }
-
-
-
-                    
                 } catch (ErrorException $e) {
-                    // return json_encode(["error" => $e]);
-                    throw new ErrorException($e);
+                    return json_encode(["error" => 'yawa']);
+                    // throw new ErrorException($e);
                 }
-            } 
+            }
             // KUNG WLAY SULOD ANG UPDATE_ID DRI MO SULOD MAG BUHAT OG BAG.O NA DATA
             else {
                 try {
@@ -287,12 +287,13 @@ class ProcessBursController extends Controller
                             foreach ($_POST['chart_of_account_id'] as $index => $value) {
 
                                 $q = Raouds::find()->where("id =:id", ['id' => $_POST['raoud_id'][$index]])->one();
-                                $q->isActive = 0;
-                                $q->save(); 
+                                // $q->isActive = 0;
+                                // $q->save();
                                 $raoud = new Raouds();
                                 // $raoud->record_allotment_id = $q->record_allotment_id;
                                 $raoud->record_allotment_entries_id = $q->record_allotment_entries_id;
                                 $raoud->is_parent = false;
+                                $raoud->isActive = false;
                                 $raoud->process_burs_id = $burs->id;
                                 $raoud->reporting_period = $burs->reporting_period;
                                 $raoud->burs_amount = $_POST['burs_amount'][$index];
@@ -333,7 +334,7 @@ class ProcessBursController extends Controller
                         }
                         if ($flag) {
                             $transaction->commit();
-                            return json_encode(['error' => 'walay error di success']);
+                            return json_encode(['isSuccess'=>true,'error' => 'walay error di success']);
                         }
                     } else {
                         return json_encode(['error' => $burs->error]);

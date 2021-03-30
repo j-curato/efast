@@ -246,7 +246,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td></td>
                             <td>{$val['date']}</td>
                             <td>{$val['explaination']}</td>
-                            <td>{$val['ref_number']}</td>
+                            <td>{$val['jev_number']}</td>
                             <td>$debit </td>
                             <td>$credit</td>
                             <td>$balance</td>
@@ -486,6 +486,9 @@ $(document).ready(function(){
     function query(){
         // console.log(fund+gen)
         // console.log(fund)
+        $("#employee").on("pjax:success", function(data) {
+            console.log(data)
+        });
         $.pjax({container: "#employee", 
         url: window.location.pathname + '?r=jev-preparation/general-ledger',
         type:'POST',
@@ -496,6 +499,7 @@ $(document).ready(function(){
             gen:gen?gen:0,
             print:print
         },
+     
   
     });
 

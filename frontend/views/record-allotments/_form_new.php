@@ -17,7 +17,7 @@ use aryelds\sweetalert\SweetAlertAsset;
             <?php
             $q = 0;
             if (!empty($model)) {
-                $q = $model; 
+                $q = $model;
             }
             echo " <input type='text' id='update_id' name='update_id'  value='$q' style='display:none;'>";
             ?>
@@ -60,7 +60,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                         'name' => 'reporting_period',
                         'id' => 'reporting_period',
                         // 'value' => '12/31/2010',
-                        'options' => ['required' => true],
+                        // 'options' => ['required' => true],
                         'pluginOptions' => [
                             'autoclose' => true,
                             'format' => 'yyyy-mm',
@@ -120,6 +120,12 @@ use aryelds\sweetalert\SweetAlertAsset;
                     <label for="fund_classification_code">Fund Classification Code</label>
                     <input type="text" id="fund_classification_code" name="fund_classification_code" placeholder="Fund Classification Code">
                 </div>
+                <div class="col-sm-3">
+                    <label for="book">Fund Source</label>
+                    <select id="book" name="book" class="book select" style="width: 100%">
+                        <option></option>
+                    </select>
+                </div>
 
 
             </div>
@@ -157,7 +163,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                 </div>
             </div>
             <!-- total row -->
-            <input type="submit" name="submit" id="submit" class="btn btn-info" value="Submit" />
+            <input type="submit" name="submit" id="submit" class="btn btn-info submit-btn" value="Submit" />
 
         </form>
 
@@ -169,8 +175,11 @@ use aryelds\sweetalert\SweetAlertAsset;
         }
 
         #submit {
-            margin: 10px;
+            margin-top: 10px;
+
         }
+
+
 
         input {
             width: 100%;
@@ -197,6 +206,9 @@ use aryelds\sweetalert\SweetAlertAsset;
             padding: 2rem;
             border: 1px solid black;
             border-radius: 5px;
+            width: 96%;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .swal-text {
@@ -254,7 +266,9 @@ use aryelds\sweetalert\SweetAlertAsset;
             var latest = Math.max.apply(null, x)
             // console.log('index: '+latest)
             $(`#form-${latest}`)
-                .after(`<div id="form-${i}" style="border: 1px solid gray;width:100%; padding: 2rem; margin-top: 1rem;background-color:white;border-radius:5px" class="control-group input-group" class="accounting_entries">
+                .after(`<div id="form-${i}" style="border: 1px solid gray;width:100%; padding: 2rem; margin-top: 1rem;background-color:white;border-radius:5px;width: 96%;
+            margin-left: auto;
+            margin-right: auto;" class="control-group input-group" class="accounting_entries">
                     <!-- chart of accounts -->
                     <div class="row"  >
                         <div>
@@ -429,6 +443,17 @@ use aryelds\sweetalert\SweetAlertAsset;
                                 window.location.href = window.location.pathname + '?r=record-allotments/view&id=' + res.view_id
                             });
                             $('#add_data')[0].reset();
+                        } else {
+                            swal({
+                                title: "Error",
+                                // text:[res.error.reporting_period[0],res.error.serial_number[0]],
+                                type: "error",
+                                timer: 3000,
+                                button: false
+                                // confirmButtonText: "Yes, delete it!",
+                            }, function() {
+                                // window.location.href = window.location.pathname + '?r=record-allotments/view&id=' + res.view_id
+                            });
                         }
 
                     }
@@ -490,6 +515,26 @@ $script = <<< JS
                 })
 
             });
+            // GET BOOKS
+            var books=[];
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
+            .then(function(data) {
+
+                var array = []
+                $.each(data, function(key, val) {
+                    array.push({
+                        id: val.id,
+                        text: val.name
+                    })
+                })
+                books = array
+                $('#book').select2({
+                    data: books,
+                    placeholder: "Select Books",
+
+                })
+
+            });
         update_id = $('#update_id').val()
  
     // MAG API REQUEST KUNG NAAY SULOD ANG UPDATE_ID
@@ -518,6 +563,7 @@ $script = <<< JS
                         $('#authorization_code').val(record_allotment['authorization_code_id']).trigger('change');
                         $('#mfo_pap_code').val(record_allotment['mfo_pap_code_id']).trigger('change');
                         $('#fund_source').val(record_allotment['fund_source_id']).trigger('change');
+                        $('#book').val(record_allotment['book_id']).trigger('change');
                         $('#particular').val(record_allotment['particulars']);
 
                         // console.log(record_allotment['particulars']) 

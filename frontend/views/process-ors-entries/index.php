@@ -1,7 +1,8 @@
 <?php
 
+use kartik\export\ExportMenu;
+use kartik\grid\GridView;
 use yii\helpers\Html;
-use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\ProcessOrsEntriesSearch */
@@ -13,23 +14,40 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="process-ors-entries-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-
+<!-- 
     <p>
         <?= Html::a('Create Process Ors Entries', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+    </p> -->
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>
     <!-- RAOUDS ANG MODEL ANI. TRIP KO LANG -->
-    <!-- NAA SA PROCESS ORS ENTRIES SEARCH NAKO GE CHANGE -->
+    <!-- NAA SA PROCESS ORS ENTRIES CONTROLLER SA INDEX NAKO GE CHANGE -->
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel' => [
+            'heading'=>'<h3 class="panel-title"> Process Ors</h3>',
+            'type'=>'primary',
+            'before'=>Html::a('<i class="glyphicon glyphicon-plus"></i>Create Process Ors', ['create'], ['class' => 'btn btn-success']),
+            'exportConfig' => [
+                ExportMenu::FORMAT_TEXT => false,
+                ExportMenu::FORMAT_PDF => false
+            ],
+        ],
+   
+        
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'raoudEntries.chartOfAccount.general_ledger',
+            'reporting_period',
+            // 'raoudEntries.chartOfAccount.general_ledger',
+            [
+                'label' => 'General Ledger',
+                'value' => 'raoudEntries.chartOfAccount.general_ledger',
+                // 'value' => 'processOrs.reporting_period'
+            ],
             [
                 'label' => 'Serial Number',
                 'attribute' => 'processOrs.reporting_period',
@@ -48,11 +66,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     AND raoud_entries.amount >0
                     AND raoud_entries.parent_id_from_raoud = $model->id
                      ")->queryOne();
-                    if (!empty($query['total'])){
+                    if (!empty($query['total'])) {
                         return $query['total'];
-
-                    }
-                    else{
+                    } else {
                         return '';
                     }
                 }
@@ -70,19 +86,32 @@ $this->params['breadcrumbs'][] = $this->title;
                     AND raoud_entries.parent_id_from_raoud = $model->id
                      ")->queryOne();
                     $amount = $model->raoudEntries->amount;
-                    if ( $query['total'] <$amount  && $amount >0) {
+                    if ($query['total'] < $amount  && $amount > 0) {
 
                         $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/update&id=$model->id";
-                        return ' ' . Html::a('', $t, ['class' => 'btn btn-success fa fa-pencil-square-o']);
+                        return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-secondary fa fa-pencil-square-o']);
+                    } else {
+                        return "";
                     }
-                    else{
-                        return ""  ;
-                    }
-                        // return $query['total'];
+                    // return $query['total'];
                 }
             ],
+            // [
+            //     'label' => 'Adjust',
+            //     'format' => 'raw',
+            //     'value' => function ($model) {
 
-            ['class' => 'yii\grid\ActionColumn'],
+
+
+            //             $t = yii::$app->request->baseUrl . "/index.php?r=process-ors/view&id=$model->process_ors_id";
+            //             return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-success fa fa-pencil-square-o']);
+
+            //             // return $query['total'];
+            //     }
+            // ],
+
+
+            // ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 

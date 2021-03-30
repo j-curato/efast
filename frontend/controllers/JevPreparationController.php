@@ -114,7 +114,7 @@ class JevPreparationController extends Controller
             $general_ledger = (new \yii\db\Query());
             $general_ledger->select([
                 'jev_preparation.reporting_period', 'jev_preparation.explaination',
-                'chart_of_accounts.uacs', 'chart_of_accounts.general_ledger', 'jev_preparation.ref_number',
+                'chart_of_accounts.uacs', 'chart_of_accounts.general_ledger', 'jev_preparation.ref_number', 'jev_preparation.jev_number',
                 'jev_accounting_entries.credit', 'jev_accounting_entries.debit',
                 'chart_of_accounts.normal_balance', 'jev_preparation.date'
             ])
@@ -155,7 +155,7 @@ class JevPreparationController extends Controller
             $query1 = (new \yii\db\Query());
             $query1->select([
                 'jev_preparation.reporting_period', 'jev_preparation.explaination',
-                'chart_of_accounts.uacs', 'chart_of_accounts.general_ledger', 'jev_preparation.ref_number',
+                'chart_of_accounts.uacs', 'chart_of_accounts.general_ledger', 'jev_preparation.ref_number', 'jev_preparation.jev_number',
                 ' SUM(jev_accounting_entries.credit) as credit', 'SUM(jev_accounting_entries.debit) as debit',
                 'chart_of_accounts.normal_balance', 'jev_preparation.date'
             ])
@@ -187,8 +187,6 @@ class JevPreparationController extends Controller
 
                 // ->orderBy('jev_accounting_entries.chart_of_account_id')
             ;
-
-
             // E UNION AND DUHA KA RESULT SA QUERY SA  
             $chart = $query1->union($general_ledger, true)->all();
 
@@ -225,6 +223,7 @@ class JevPreparationController extends Controller
                 $final_ledger[] = [
                     'reporting_period' => $reporting_period,
                     'explaination' => $val['explaination'],
+                    'jev_number' => $val['jev_number'],
                     'uacs' => $val['uacs'],
                     'general_ledger' => $val['general_ledger'],
                     'ref_number' =>  $val['ref_number'],
@@ -1243,7 +1242,7 @@ class JevPreparationController extends Controller
                     //      echo $amount;
                     // }
 
-                    // }
+                    // }     
                     $transaction = \Yii::$app->db->beginTransaction();
 
                     $jev_preparation = new JevPreparation();
@@ -1255,13 +1254,41 @@ class JevPreparationController extends Controller
                             }
                         }
                         $q = explode('-', $jv->jev_number);
+
                         $jev_number_serial = $q[4];
+
                         $jev_preparation->id = $jv->id;
 
-                        $x = $reference;
-                        $x .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
-                        $y = explode('-', $x);
-                        $jev_number = $y[0] . '-' . $y[1] . '-' . $y[2] . '-' . $y[3] . '-' . $jev_number_serial;
+                        $jev_referenece = $q[0];
+
+                        $jev_book = $q[1];
+                        $book = Books::find()->where("id =:id", ['id' => $book_id])->one();
+                        // $x
+
+                        // if ($jev_book===$book->name){}
+
+                        if ($jev_referenece === $reference ) {
+                            $x = $reference;
+                            $x .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
+                            $y = explode('-', $x);
+                            $jev_number = $y[0] . '-' . $y[1] . '-' . $y[2] . '-' . $y[3] . '-' . $jev_number_serial;
+                            
+                        } else {
+                            $jev_number = $reference;
+                            $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
+                        }
+                        if ($jev_book === $book->name ) {
+                            $x = $reference;
+                            $x .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
+                            $y = explode('-', $x);
+                            $jev_number = $y[0] . '-' . $y[1] . '-' . $y[2] . '-' . $y[3] . '-' . $jev_number_serial;
+                            
+                        } else {
+                            $jev_number = $reference;
+                            $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
+                        }
+                        
+  
                         $jv->delete();
                     } else {
                         $jev_number = $reference;
@@ -1589,7 +1616,7 @@ class JevPreparationController extends Controller
                 ->select([
                     'jev_preparation.date', 'jev_preparation.explaination',
                     'jev_preparation.ref_number', 'jev_accounting_entries.debit',
-                     'jev_accounting_entries.credit',
+                    'jev_accounting_entries.credit',
                     'chart_of_accounts.normal_balance', 'chart_of_accounts.general_ledger',
                     'jev_preparation.jev_number'
 
@@ -1611,7 +1638,7 @@ class JevPreparationController extends Controller
                 ->all();
             $book_name = Books::find()->where("id =:id", ['id' => $_POST['book_id']])->one()->name;
             $sl_name = (new \yii\db\Query())->select(['name'])->from('sub_accounts1')
-            ->where("object_code =:object_code", ['object_code' => $_POST['sub_account']])->one()['name'];
+                ->where("object_code =:object_code", ['object_code' => $_POST['sub_account']])->one()['name'];
             $sl_final = [];
             $balance = 0;
 
@@ -1632,10 +1659,14 @@ class JevPreparationController extends Controller
             // echo "<pre>";
             // var_dump($sl_name);
             // echo "</pre>";
+            $general_ledger='';
+            if (!empty($sl_final[0]['general_ledger'])){
+                $general_ledger=$sl_final[0]['general_ledger'];
+            }
             return $this->render('subsidiary_ledger_view', [
                 'data' => $sl_final,
                 'fund_cluster' => $book_name,
-                'general_ledger' => $sl_final[0]['general_ledger'],
+                'general_ledger' => $general_ledger,
                 'sl_name' => $sl_name
             ]);
         } else {

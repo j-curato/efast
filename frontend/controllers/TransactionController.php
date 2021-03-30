@@ -128,4 +128,66 @@ class TransactionController extends Controller
     {
         return $this->render('ors_form');
     }
+    public function actionVoucher()
+    {
+        return $this->render('disbursement_voucher');
+    }
+    public function actionGetTransaction()
+    {
+        $query = (new \yii\db\Query())
+            ->select('*')
+            ->from('transaction')
+            ->all();
+        return json_encode($query);
+    }
+    public function actionImportTransaction()
+    {
+        if (!empty($_POST)) {
+            // $chart_id = $_POST['chart_id'];
+            $name = $_FILES["file"]["name"];
+            $id = uniqid();
+            $file = "transaction/{$id}_{$name}";
+            if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
+            } else {
+                return "ERROR 2: MOVING FILES FAILED.";
+                die();
+            }
+            $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+            $excel = $reader->load($file);
+            // $excel->setActiveSheetIndexByName('Chart of Accounts - Final');
+            $worksheet = $excel->getActiveSheet();
+            // print_r($excel->getSheetNames());
+
+            $data = [];
+            // $chart_uacs = ChartOfAccounts::find()->where("id = :id", ['id' => $chart_id])->one()->uacs;
+
+
+            // 
+
+            foreach ($worksheet->getRowIterator(2) as $key => $row) {
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                $cells = [];
+                $y = 0;
+                foreach ($cellIterator as $x => $cell) {
+                    $q = '';
+                    $cells[] =   $cell->getValue();
+                }
+                $obj_code = $cells[0];
+                $name = $cells[1];
+                if (!empty($cells[0])) {
+                }
+            }
+
+            $column = [
+                'chart_of_account_id',
+                'object_code',
+                'name',
+            ];
+            $ja = Yii::$app->db->createCommand()->batchInsert('sub_accounts1', $column, $data)->execute();
+
+            return $this->redirect(['index']);
+        }
+    }
 }

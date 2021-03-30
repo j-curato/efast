@@ -19,6 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <!-- AND MODEL ANI NAA KAY SA RAOUDS NAA SA CONROLLER INDEX NAKO GE CHANGE -->
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -69,17 +70,17 @@ $this->params['breadcrumbs'][] = $this->title;
                     $amount = $model->raoudEntries->amount;
                     if ( $query['total'] <$amount  && $amount >0) {
 
-                        $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/update&id=$model->id";
+                        $t = yii::$app->request->baseUrl . "/index.php?r=process-burs/update&id=$model->id";
                         return ' ' . Html::a('', $t, ['class' => 'btn btn-success fa fa-pencil-square-o']);
                     }
                     else{
                         return ""  ;
                     }
-                        // return $query['total'];
+                        // return $query['total']; 
                 }
             ],
 
-            ['class' => 'yii\grid\ActionColumn'],
+            // ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 

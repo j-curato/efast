@@ -40,8 +40,8 @@ class ProcessOrsEntriesSearch extends ProcessOrsEntries
      */
     public function search($params)
     {
-        // $query = ProcessOrsEntries::find();
-        $query= Raouds::find()->where("process_ors_id IS NOT NULL");
+        $query = ProcessOrsEntries::find();
+        // $query= Raouds::find()->where("process_ors_id IS NOT NULL");
 
         // add conditions that should always apply here
 

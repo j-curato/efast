@@ -1,8 +1,8 @@
 <?php
 
 use app\models\FundClusterCode;
-use yii\helpers\Html;
 use kartik\grid\GridView;
+use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
@@ -16,9 +16,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
+    <!-- <p>
         <?= Html::a('Create Record Allotments', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+    </p> -->
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>
@@ -26,6 +26,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel' => [
+            'heading'=>'<h3 class="panel-title"> Record Allotments</h3>',
+            'type'=>'primary',
+            'before'=>Html::a('<i class="glyphicon glyphicon-plus"></i>Create Record Allotment', ['create'], ['class' => 'btn btn-success']),
+        ],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 

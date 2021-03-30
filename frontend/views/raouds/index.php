@@ -1,5 +1,6 @@
 <?php
 
+use kartik\export\ExportMenu;
 use yii\helpers\Html;
 use yii\grid\GridView;
 
@@ -18,7 +19,22 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Create Raouds', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php
+    $gridColum=[
+        'id',
+        'record_allotment_id',
+        'process_ors_id',
+        'serial_number',
+        'reporting_period',
+        'obligated_amount',
+        'burs_amount',
+        'raoudEntries.chartOfAccount.general_ledger'
+    ];
+    echo ExportMenu::widget([
+        'dataProvider'=>$dataProvider,
+        'columns'=>$gridColum
+    ]);
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -31,6 +47,9 @@ $this->params['breadcrumbs'][] = $this->title;
             'process_ors_id',
             'serial_number',
             'reporting_period',
+            'obligated_amount',
+            'burs_amount',
+            'raoudEntries.chartOfAccount.general_ledger',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

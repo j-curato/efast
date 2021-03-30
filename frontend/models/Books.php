@@ -45,4 +45,8 @@ class Books extends \yii\db\ActiveRecord
     {
         return $this->hasMany(JevPreparation::class, ['book_id' => 'id']);
     }
+    public function getRecordAllotment()
+    {
+        return $this->hasMany(RecordAllotments::class, ['book_id' => 'id']);
+    }
 }

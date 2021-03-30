@@ -2,8 +2,11 @@
 
 use app\models\Books;
 use app\models\FundClusterCode;
+use app\models\JevAccountingEntries;
+use app\models\JevAccountingEntriesSearch;
 use app\models\JevPreparation;
 use app\models\ResponsibilityCenter;
+use kartik\export\ExportMenu;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\helpers\ArrayHelper;
@@ -82,15 +85,38 @@ $this->params['breadcrumbs'][] = $this->title;
   // echo "<pre>";
   // var_dump($ref_number);
   // echo "</pre>";
+  $q = new JevAccountingEntriesSearch();
+  $w = $q->search(Yii::$app->request->queryParams);
+  $gridColumn = [
+    'jevPreparation.jev_number',
+    'chartOfAccount.uacs',
+    'chartOfAccount.general_ledger',
+    'jevPreparation.reporting_period',
+    'jevPreparation.date',
+    'jevPreparation.explaination',
+    'debit',
+    'credit',
+    'jevPreparation.ref_number'
+
+  ];
+
+  echo ExportMenu::widget([
+    'dataProvider' => $w,
+    'columns' => $gridColumn,
+    'filename'=>'Jev'
+  ]);
   ?>
+
+
 
   <?= GridView::widget([
     'dataProvider' => $dataProvider,
     'filterModel' => $searchModel,
     'panel' => [
       'type' => GridView::TYPE_PRIMARY,
-      'heading' => 'List of Areas',
+      // 'heading' => 'List of Areas',
     ],
+    'export' => false,
     'floatHeaderOptions' => [
       'top' => 50,
       'position' => 'absolute',
@@ -152,6 +178,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
       'reporting_period',
       'date',
+      // 'check_ada_number',
+      'dv_number',
+      'lddap_number',
+      'check_ada_number',
+
 
 
       // 'lddap_number',

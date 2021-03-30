@@ -9,8 +9,8 @@ use app\models\FundClusterCode;
 use kartik\date\DatePicker;
 use aryelds\sweetalert\SweetAlertAsset;
 use GuzzleHttp\Psr7\Query;
-use kartik\money\MaskMoney;
 use kartik\grid\GridView;
+use kartik\money\MaskMoney;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 ?>
@@ -30,10 +30,7 @@ use yii\helpers\Html;
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
-                'panel' => [
-                    // 'type' => GridView::TYPE_PRIMARY,
-                    'heading' => 'List of Areas',
-                ],
+       
                 'floatHeaderOptions' => [
                     'top' => 50,
                     'position' => 'absolute',
@@ -105,21 +102,21 @@ use yii\helpers\Html;
                             //     AND raouds.process_ors_id IS NOT NULL
                             //     GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
                             //     ->where("raouds.id = :id", ['id' => $model->id])->one();
-                            $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as obligated_amount,
-                            raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain
+                            $query = Yii::$app->db->createCommand("SELECT SUM(raouds.obligated_amount) as obligated_amount,
+                            SUM(raouds.burs_amount) as burs_amount,
+                            raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain,
+                            record_allotment_entries.amount as record_allotment_amount
                             From raouds,record_allotment_entries,raoud_entries
                             WHERE raouds.record_allotment_entries_id = record_allotment_entries.id
-                           AND raouds.id = raoud_entries.raoud_id
-                            AND raouds.process_ors_id IS NOT NULL
-                           AND raouds.record_allotment_entries_id=$model->record_allotment_entries_id
+                            AND raouds.id = raoud_entries.raoud_id
+                            AND raouds.record_allotment_entries_id=$model->record_allotment_entries_id
                             ")->queryOne();
-                            return $query['remain'];
+                            $burs_ors_amount= $query['obligated_amount']+$query['burs_amount'];
+                            $remain = $query['record_allotment_amount'] -$burs_ors_amount ;
+                            return $remain;
                         }
                     ],
-                    [
-                        'label' => 'Obligated Amount',
-                        'attribute' => 'obligated_amount'
-                    ],
+
                     [
                         'class' => '\kartik\grid\CheckboxColumn',
                         'checkboxOptions' => function ($model, $key, $index, $column) {
@@ -138,7 +135,7 @@ use yii\helpers\Html;
                                     'class' => 'amounts',
                                 ],
                                 'pluginOptions' => [
-                                    'prefix' => 'PHP ',
+                                    'prefix' => '₱ ',
                                     'allowNegative' => true
                                 ],
                             ]);
@@ -176,6 +173,12 @@ use yii\helpers\Html;
                         ]
                     ]);
                     ?>
+                </div>
+                <div class="col-sm-3" style="height:60x">
+                    <label for="transaction_id">Transactions</label>
+                    <select id="transaction_id" name="transaction_id" class="transaction_id select" style="width: 100%; margin-top:50px" required>
+                        <option></option>
+                    </select>
                 </div>
 
             </div>
@@ -343,11 +346,12 @@ use yii\helpers\Html;
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
-
+<?php SweetAlertAsset::register($this); ?>
 <?php
 
 $script = <<< JS
         var reporting_period = '';
+        var transactions=[];
       $(document).ready(function() {
         $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
                 .then(function(data) {
@@ -361,6 +365,25 @@ $script = <<< JS
                     accounts = array
        
                 })
+                    // GET FINANCING SOURCE CODES
+        $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-transaction')
+            .then(function(data) {
+
+                var array = []
+                $.each(data, function(key, val) {
+                    array.push({
+                        id: val.id,
+                        text: val.tracking_number
+                    })
+                })
+                transaction = array
+                $('#transaction_id').select2({
+                    data: transaction,
+                    placeholder: "Select Transaction",
+
+                })
+
+            });        
         $('#save_data').submit(function(e) {
   
 
@@ -372,7 +395,32 @@ $script = <<< JS
                     method: "POST",
                     data: $('#save_data').serialize(),
                     success: function(data) {
+                        var res=JSON.parse(data)
                         console.log(data)
+                        if (res.isSuccess) {
+                            swal({
+                                title: "Success",
+                                // text: "You will not be able to undo this action!",
+                                type: "success",
+                                timer: 3000,
+                                button: false
+                                // confirmButtonText: "Yes, delete it!",
+                            }, function() {
+                                window.location.href = window.location.pathname + '?r=process-ors-entries/index'
+                            });
+                            $('#add_data')[0].reset();
+                        }
+                        else{
+                            swal({
+                                title: "Error",
+                                text: res.error,
+                                type: "error",
+                                timer: 3000,
+                                button: false
+                                // confirmButtonText: "Yes, delete it!",
+                            }, function() {
+                            });
+                        }
                     }
                 });
       
