@@ -5,9 +5,11 @@ namespace frontend\controllers;
 use Yii;
 use app\models\Transaction;
 use app\models\TransactionSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\ForbiddenHttpException;
 
 /**
  * TransactionController implements the CRUD actions for Transaction model.
@@ -20,6 +22,26 @@ class TransactionController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['index'],
+                'rules' => [
+                    [
+                        'actions' => ['index'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                    // [
+                    //     'actions' => ['create'],
+                    //     'allow' => true,
+                    //     'roles' => ['accounting'],
+                    // ],
+
+
+                ],
+
+
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -64,15 +86,20 @@ class TransactionController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Transaction();
+        // if (Yii::$app->user->can('create-transaction')) {
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+            $model = new Transaction();
 
-        return $this->renderAjax('create', [
-            'model' => $model,
-        ]);
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+
+            return $this->renderAjax('create', [
+                'model' => $model,
+            ]);
+        // } else {
+        //     throw new ForbiddenHttpException();
+        // }
     }
 
     /**
@@ -84,15 +111,20 @@ class TransactionController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        if (Yii::$app->user->can('update-transaction')) {
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            $model = $this->findModel($id);
+
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+
+            return $this->render('update', [
+                'model' => $model,
+            ]);
+        } else {
+            throw new ForbiddenHttpException();
         }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
     }
 
     /**
@@ -104,9 +136,15 @@ class TransactionController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        if (Yii::$app->user->can('delete-transaction')) {
 
-        return $this->redirect(['index']);
+            $this->findModel($id)->delete();
+
+            return $this->redirect(['index']);
+        } else {
+
+            throw new ForbiddenHttpException();
+        }
     }
 
     /**

@@ -28,7 +28,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup'],
+                'only' => ['logout', 'signup','index'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -36,10 +36,15 @@ class SiteController extends Controller
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout','index'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
+                    // [
+                    //     'actions' => [],
+                    //     'allow' => true,
+                    //     'roles' => ['@'],
+                    // ],
                 ],
             ],
             'verbs' => [
@@ -76,7 +81,6 @@ class SiteController extends Controller
     {
         return $this->render('index');
     }
-
     /**
      * Logs in a user.
      *
@@ -90,7 +94,8 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+            // return $this->goBack();
+            return $this->redirect('');
         } else {
             $model->password = '';
 
@@ -152,6 +157,7 @@ class SiteController extends Controller
      */
     public function actionSignup()
     {
+        $this->layout='register';
         $model = new SignupForm();
         if ($model->load(Yii::$app->request->post()) && $model->signup()) {
             Yii::$app->session->setFlash('success', 'Thank you for registration. Please check your inbox for verification email.');

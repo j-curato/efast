@@ -39,6 +39,10 @@ return [
         'assetManager'=>[
             'appendTimestamp'=>true,
         ],
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+            'defaultROles'=>['guest'],
+        ],
         /*
         'urlManager' => [
             'enablePrettyUrl' => true,

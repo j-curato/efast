@@ -23,11 +23,13 @@ use InvalidArgumentException;
 use phpDocumentor\Reflection\Types\Nullable;
 use PhpOffice\PhpSpreadsheet\Chart\Chart;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\helpers\VarDumper;
+use yii\web\ForbiddenHttpException;
 use yii\web\UploadedFile;
 
 /**
@@ -41,6 +43,27 @@ class JevPreparationController extends Controller
     public function behaviors()
     {
         return [
+
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['logout', 'signup', 'index'],
+                'rules' => [
+                    [
+                        'actions' => ['index'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                    // [
+                    //     'actions' => ['create'],
+                    //     'allow' => true,
+                    //     'roles' => ['accounting'],
+                    // ],
+
+
+                ],
+
+
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -355,9 +378,13 @@ class JevPreparationController extends Controller
         //     'model' => $model,
         //     'modelJevItems' => (empty($modelJevItems)) ? [new JevAccountingEntries] : $modelJevItems
         // ]);
-        return $this->render('create', [
-            'model' => ''
-        ]);
+        if (Yii::$app->user->can('create-jev')) {
+            return $this->render('create', [
+                'model' => ''
+            ]);
+        } else {
+            throw new ForbiddenHttpException();
+        }
     }
 
     /**
@@ -371,51 +398,55 @@ class JevPreparationController extends Controller
     {
         // $modelCustomer = $this->findModel($id);
         // $modelsAddress = $modelCustomer->addresses;
+        if (Yii::$app->user->can('update-jev')) {
 
-        $model = $this->findModel($id);
-        $modelJevItems = $model->jevAccountingEntries;
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $oldIDs = ArrayHelper::map($modelJevItems, 'id', 'id');
-            $modelJevItems = Model::createMultiple(JevAccountingEntries::class, $modelJevItems);
-            Model::loadMultiple($modelJevItems, Yii::$app->request->post());
-            $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelJevItems, 'id', 'id')));
+            $model = $this->findModel($id);
+            $modelJevItems = $model->jevAccountingEntries;
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                $oldIDs = ArrayHelper::map($modelJevItems, 'id', 'id');
+                $modelJevItems = Model::createMultiple(JevAccountingEntries::class, $modelJevItems);
+                Model::loadMultiple($modelJevItems, Yii::$app->request->post());
+                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelJevItems, 'id', 'id')));
 
 
-            // validate all models
-            $valid = $model->validate();
-            $valid = Model::validateMultiple($modelJevItems);
+                // validate all models
+                $valid = $model->validate();
+                $valid = Model::validateMultiple($modelJevItems);
 
-            if ($valid) {
-                $transaction = \Yii::$app->db->beginTransaction();
-                try {
-                    if ($flag = $model->save(false)) {
-                        if (!empty($deletedIDs)) {
-                            JevAccountingEntries::deleteAll(['id' => $deletedIDs]);
-                        }
-                        foreach ($modelJevItems as $modelAddress) {
-                            $modelAddress->jev_preparation_id = $model->id;
-                            if (!($flag = $modelAddress->save(false))) {
-                                $transaction->rollBack();
-                                break;
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        if ($flag = $model->save(false)) {
+                            if (!empty($deletedIDs)) {
+                                JevAccountingEntries::deleteAll(['id' => $deletedIDs]);
+                            }
+                            foreach ($modelJevItems as $modelAddress) {
+                                $modelAddress->jev_preparation_id = $model->id;
+                                if (!($flag = $modelAddress->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
                             }
                         }
+                        if ($flag) {
+                            $transaction->commit();
+                            return $this->redirect(['view', 'id' => $model->id]);
+                        }
+                    } catch (Exception $e) {
+                        // var_dump($e);
+                        $transaction->rollBack();
                     }
-                    if ($flag) {
-                        $transaction->commit();
-                        return $this->redirect(['view', 'id' => $model->id]);
-                    }
-                } catch (Exception $e) {
-                    // var_dump($e);
-                    $transaction->rollBack();
                 }
+                // return $this->redirect(['view', 'id' => $model->id]);
             }
-            // return $this->redirect(['view', 'id' => $model->id]);
-        }
 
-        return $this->render('_form', [
-            'model' => $id,
-            // 'modelJevItems' => (empty($modelJevItems)) ? [new JevAccountingEntries] : $modelJevItems
-        ]);
+            return $this->render('_form', [
+                'model' => $id,
+                // 'modelJevItems' => (empty($modelJevItems)) ? [new JevAccountingEntries] : $modelJevItems
+            ]);
+        } else {
+            throw new ForbiddenHttpException();
+        }
     }
 
     /**
@@ -427,14 +458,20 @@ class JevPreparationController extends Controller
      */
     public function actionDelete($id)
     {
-        $q =  $this->findModel($id);
-        foreach ($q->jevAccountingEntries as $val) {
-            $val->delete();
+
+        if (Yii::$app->user->can('delete-jev')) {
+
+            $q =  $this->findModel($id);
+            foreach ($q->jevAccountingEntries as $val) {
+                $val->delete();
+            }
+
+            $q->delete();
+
+            return $this->redirect(['index']);
+        } else {
+            throw new ForbiddenHttpException();
         }
-
-        $q->delete();
-
-        return $this->redirect(['index']);
     }
 
     /**
@@ -475,263 +512,267 @@ class JevPreparationController extends Controller
     public function actionImport()
 
     {
+        if (Yii::$app->user->can('import-jev')) {
 
-        if (!empty($_POST)) {
-            $name = $_FILES["file"]["name"];
+            if (!empty($_POST)) {
+                $name = $_FILES["file"]["name"];
 
 
-            $id = uniqid();
-            $file = "jev/{$id}_{$name}";;
-            if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
-            } else {
-                return "ERROR 2: MOVING FILES FAILED.";
-                die();
-            }
+                $id = uniqid();
+                $file = "jev/{$id}_{$name}";;
+                if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
+                } else {
+                    return "ERROR 2: MOVING FILES FAILED.";
+                    die();
+                }
 
-            $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
-            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
-            $excel = $reader->load($file);
-            // $excel->setActiveSheetIndexByName('Conso-For upload');
-            $worksheet = $excel->getActiveSheet();
-            $reader->setReadDataOnly(FALSE);
-            // print_r($excel->getSheetNames());
-            $rows = [];
-            $jev = [];
-            $jev_entries = [];
-            $temp_data = [];
-            $no_jev_number = [];
-            $entry2 = [];
-            $i = 1;
-            $id = (!empty($w = JevPreparation::find()->orderBy('id DESC')->one())) ? $w->id : 0;
-            $number_container = [];
+                $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+                $excel = $reader->load($file);
+                // $excel->setActiveSheetIndexByName('Conso-For upload');
+                $worksheet = $excel->getActiveSheet();
+                $reader->setReadDataOnly(FALSE);
+                // print_r($excel->getSheetNames());
+                $rows = [];
+                $jev = [];
+                $jev_entries = [];
+                $temp_data = [];
+                $no_jev_number = [];
+                $entry2 = [];
+                $i = 1;
+                $id = (!empty($w = JevPreparation::find()->orderBy('id DESC')->one())) ? $w->id : 0;
+                $number_container = [];
 
-            foreach ($worksheet->getRowIterator() as $key => $row) {
-                $cellIterator = $row->getCellIterator();
-                $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
-                $cells = [];
-                $y = 0;
-                if ($key > 2) {
-                    foreach ($cellIterator as $x => $cell) {
+                foreach ($worksheet->getRowIterator() as $key => $row) {
+                    $cellIterator = $row->getCellIterator();
+                    $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                    $cells = [];
+                    $y = 0;
+                    if ($key > 2) {
+                        foreach ($cellIterator as $x => $cell) {
 
-                        // $cells[] =   $cell->getValue()->getCalculatedValue();
-                        $qwe = 0;
-                        if ($y == 4 || $y === 5) {
-                            $cells[] =   $cell->getFormattedValue();
-                            // echo '<pre>';y
-                            // var_dump('qwe');
-                            // echo '</pre>';
+                            // $cells[] =   $cell->getValue()->getCalculatedValue();
+                            $qwe = 0;
+                            if ($y == 4 || $y === 5) {
+                                $cells[] =   $cell->getFormattedValue();
+                                // echo '<pre>';y
+                                // var_dump('qwe');
+                                // echo '</pre>';
 
-                            $rows[] =  $cell->getCalculatedValue();
-                        } elseif ($y == 8) {
-                            $qwe = $cell->getCalculatedValue();
-                            $cells[] = $qwe;
-                        } elseif ($y == 9) {
-                            $qwe = $cell->getCalculatedValue();
-                            $cells[] = $qwe;
-                        } else {
-                            $cells[] = $cell->getValue();
+                                $rows[] =  $cell->getCalculatedValue();
+                            } elseif ($y == 8) {
+                                $qwe = $cell->getCalculatedValue();
+                                $cells[] = $qwe;
+                            } elseif ($y == 9) {
+                                $qwe = $cell->getCalculatedValue();
+                                $cells[] = $qwe;
+                            } else {
+                                $cells[] = $cell->getValue();
+                            }
+                            $y++;
                         }
-                        $y++;
-                    }
-                    if (!empty($cells)) {
-                    }
+                        if (!empty($cells)) {
+                        }
 
-                    // ob_start();
-                    // echo '<pre>';
-                    // var_dump($cells);
-                    // echo '</pre>';
-                    // return ob_get_clean();
+                        // ob_start();
+                        // echo '<pre>';
+                        // var_dump($cells);
+                        // echo '</pre>';
+                        // return ob_get_clean();
 
-                    // if ($key > 2483) {
-                    //     echo '<pre>';
-                    //     var_dump($cells, $key);
-                    //     echo '</pre>';
-                    // }
+                        // if ($key > 2483) {
+                        //     echo '<pre>';
+                        //     var_dump($cells, $key);
+                        //     echo '</pre>';
+                        // }
 
-                    $uacs = '';
-                    $lvl = 0;
-                    $object_code = '';
-                    $chart_of_account_id = 0;
-                    $uacs_id = str_replace(' ', '', $cells[1]);
-                    if (!empty($cells[1])) {
-                        $uacs = ChartOfAccounts::find()
-                            ->select(['uacs', 'id'])
-                            ->where("uacs = :uacs", [
-                                'uacs' => $uacs_id
-                            ])->one();
-                        if (empty($uacs)) {
-                            $uacs = SubAccounts1::find()->where("object_code = :object_code", [
-                                'object_code' => $uacs_id
-                            ])->one();
+                        $uacs = '';
+                        $lvl = 0;
+                        $object_code = '';
+                        $chart_of_account_id = 0;
+                        $uacs_id = str_replace(' ', '', $cells[1]);
+                        if (!empty($cells[1])) {
+                            $uacs = ChartOfAccounts::find()
+                                ->select(['uacs', 'id'])
+                                ->where("uacs = :uacs", [
+                                    'uacs' => $uacs_id
+                                ])->one();
                             if (empty($uacs)) {
-                                $uacs = SubAccounts2::find()->where("object_code = :object_code", [
+                                $uacs = SubAccounts1::find()->where("object_code = :object_code", [
                                     'object_code' => $uacs_id
                                 ])->one();
-                                if (!empty($uacs)) {
-                                    $lvl = 3;
+                                if (empty($uacs)) {
+                                    $uacs = SubAccounts2::find()->where("object_code = :object_code", [
+                                        'object_code' => $uacs_id
+                                    ])->one();
+                                    if (!empty($uacs)) {
+                                        $lvl = 3;
+                                        $object_code = $uacs->object_code;
+                                        $chart_of_account_id = $uacs->subAccount1->chartOfAccount->id;
+                                    }
+                                } else {
+                                    $lvl = 2;
                                     $object_code = $uacs->object_code;
-                                    $chart_of_account_id = $uacs->subAccount1->chartOfAccount->id;
+                                    $chart_of_account_id = $uacs->chartOfAccount->id;
                                 }
                             } else {
-                                $lvl = 2;
-                                $object_code = $uacs->object_code;
-                                $chart_of_account_id = $uacs->chartOfAccount->id;
+                                $lvl = 1;
+                                $object_code = $uacs->uacs;
+                                $chart_of_account_id = $uacs->id;
                             }
-                        } else {
-                            $lvl = 1;
-                            $object_code = $uacs->uacs;
-                            $chart_of_account_id = $uacs->id;
-                        }
-                        if (!empty($uacs)) {
-                        }
-                        $book = Books::find()->where("name= :name", [
-                            'name' => $cells[3]
-                        ])->one();
-                        $cash_flow = '';
-                        if (!empty($cells[16])) {
-                            $cash_flow = CashFlow::find()->where("specific_cashflow = :specific_cashflow", ['specific_cashflow' => $cells[16]])->one()->id;
-                        }
-                        $net_asset = '';
-                        if (!empty($cells[17])) {
-                            $net_asset = NetAssetEquity::find()->where("specific_change = :specific_change", ['specific_change' => $cells[17]])->one()->id;
-                        }
-                        $payee = '';
-                        if (!empty($cells[14])) {
-                            $payee = Payee::find()->where("account_name =:account_name", [
-                                'account_name' => $cells[14]
-                            ])->one()->id;
-                        }
+                            if (!empty($uacs)) {
+                            }
+                            $book = Books::find()->where("name= :name", [
+                                'name' => $cells[3]
+                            ])->one();
+                            $cash_flow = '';
+                            if (!empty($cells[16])) {
+                                $cash_flow = CashFlow::find()->where("specific_cashflow = :specific_cashflow", ['specific_cashflow' => $cells[16]])->one()->id;
+                            }
+                            $net_asset = '';
+                            if (!empty($cells[17])) {
+                                $net_asset = NetAssetEquity::find()->where("specific_change = :specific_change", ['specific_change' => $cells[17]])->one()->id;
+                            }
+                            $payee = '';
+                            if (!empty($cells[14])) {
+                                $payee = Payee::find()->where("account_name =:account_name", [
+                                    'account_name' => $cells[14]
+                                ])->one()->id;
+                            }
 
 
 
-                        $reporting_period = date("Y-m", strtotime($cells[4]));
-                        $date = $cells[4] ? date("Y-m-d", strtotime($cells[5])) : '';
-                        // echo '<pre>';
-                        // var_dump($cells[4], $key);
-                        // echo '</pre>';
-
-                        if ($cells[0] != null) {
-                            $id++;
-                            // BATCH INSERRRRRRRRRRRRRRT
-                            //cell[7] jev number
-                            $s = array_search($cells[0],  array_column($number_container, 'no'));
+                            $reporting_period = date("Y-m", strtotime($cells[4]));
+                            $date = $cells[4] ? date("Y-m-d", strtotime($cells[5])) : '';
                             // echo '<pre>';
-                            // var_dump($s, $cells[7]);
+                            // var_dump($cells[4], $key);
                             // echo '</pre>';
-                            if ($s === false) {
-                                $jv = $this->getJevNumber($book->id, $reporting_period, $cells[7], 1);
-                                $jev_number = $cells[7] . '-' . $jv;
-                                $i++;
 
-                                $temp_data[] = [
-                                    $id,
-                                    (!empty($book)) ? $book->id : '',
-                                    $reporting_period,
-                                    $date,
-                                    $cells[6], //PARTICULAR 
-                                    $cells[7], //REFERENCE 
-                                    $jev_number,
-                                    $cells[11] ? $cells[11] : '', //DV NUMBER
-                                    $cells[12] ? $cells[12] : '', //CHECK/ADA/Noncash
-                                    $cells[13] ? $cells[13] : '', //CHECK ADA NUMBER3
-                                    $payee ? $payee : '', //PAYEE
+                            if ($cells[0] != null) {
+                                $id++;
+                                // BATCH INSERRRRRRRRRRRRRRT
+                                //cell[7] jev number
+                                $s = array_search($cells[0],  array_column($number_container, 'no'));
+                                // echo '<pre>';
+                                // var_dump($s, $cells[7]);
+                                // echo '</pre>';
+                                if ($s === false) {
+                                    $jv = $this->getJevNumber($book->id, $reporting_period, $cells[7], 1);
+                                    $jev_number = $cells[7] . '-' . $jv;
+                                    $i++;
 
-                                ];
+                                    $temp_data[] = [
+                                        $id,
+                                        (!empty($book)) ? $book->id : '',
+                                        $reporting_period,
+                                        $date,
+                                        $cells[6], //PARTICULAR 
+                                        $cells[7], //REFERENCE 
+                                        $jev_number,
+                                        $cells[11] ? $cells[11] : '', //DV NUMBER
+                                        $cells[12] ? $cells[12] : '', //CHECK/ADA/Noncash
+                                        $cells[13] ? $cells[13] : '', //CHECK ADA NUMBER3
+                                        $payee ? $payee : '', //PAYEE
 
-                                $jev = new JevPreparation();
-                                $jev->book_id = $book->id;
-                                $jev->reporting_period = $reporting_period;
-                                $jev->date = $date;
-                                $jev->explaination = $cells[6];
-                                $jev->ref_number = $cells[7];
-                                $jev->jev_number = $jev_number;
-                                $jev->dv_number = $cells[11];
-                                $jev->check_ada = $cells[12];
-                                $jev->check_ada_number = $cells[13];
-                                $jev->payee_id = $payee;
-                                if ($jev->save(false)) {
+                                    ];
+
+                                    $jev = new JevPreparation();
+                                    $jev->book_id = $book->id;
+                                    $jev->reporting_period = $reporting_period;
+                                    $jev->date = $date;
+                                    $jev->explaination = $cells[6];
+                                    $jev->ref_number = $cells[7];
+                                    $jev->jev_number = $jev_number;
+                                    $jev->dv_number = $cells[11];
+                                    $jev->check_ada = $cells[12];
+                                    $jev->check_ada_number = $cells[13];
+                                    $jev->payee_id = $payee;
+                                    if ($jev->save(false)) {
+                                    }
+                                    $jev_entries[] = [
+                                        $jev->id, //JEV PREPARATION ID
+                                        $chart_of_account_id,
+                                        $cells[8] ? $cells[8] : 0, //debit amount
+                                        $cells[9] ? $cells[9] : 0, //credit amount
+                                        $cells[15] ? $cells[15] : '', //Current/Noncurrent
+                                        $cells[10] ? $cells[10] : '', //CLOSsING OR NONCLOSSING
+                                        $cash_flow,
+                                        $net_asset,
+                                        $object_code,
+                                        $lvl, //CHART OF ACCOUNTS LVL
+                                    ];
+                                    $number_container[] =  ['id' =>  $jev->id, 'no' => $cells[0]];
+
+                                    // $jev_entries= new JevAccountingEntries();
+                                    // $jev_entries->jev_preparation_id;
+
+                                } else {
+
+                                    $jev_entries[] = [
+                                        $number_container[$s]['id'], //JEV PREPARATION ID
+                                        $chart_of_account_id,
+                                        $cells[8] ? $cells[8] : 0, //debit amount
+                                        $cells[9] ? $cells[9] : 0, //credit amount
+                                        $cells[15] ? $cells[15] : '', //Current/Noncurrent
+                                        $cells[10] ? $cells[10] : '', //CLOSsING OR NONCLOSSING
+                                        $cash_flow,
+                                        $net_asset,
+                                        $object_code,
+                                        $lvl, //CHART OF ACCOUNTS LVL
+
+                                    ];
                                 }
-                                $jev_entries[] = [
-                                    $jev->id, //JEV PREPARATION ID
-                                    $chart_of_account_id,
-                                    $cells[8] ? $cells[8] : 0, //debit amount
-                                    $cells[9] ? $cells[9] : 0, //credit amount
-                                    $cells[15] ? $cells[15] : '', //Current/Noncurrent
-                                    $cells[10] ? $cells[10] : '', //CLOSsING OR NONCLOSSING
-                                    $cash_flow,
-                                    $net_asset,
-                                    $object_code,
-                                    $lvl, //CHART OF ACCOUNTS LVL
-                                ];
-                                $number_container[] =  ['id' =>  $jev->id, 'no' => $cells[0]];
-
-                                // $jev_entries= new JevAccountingEntries();
-                                // $jev_entries->jev_preparation_id;
-
-                            } else {
-
-                                $jev_entries[] = [
-                                    $number_container[$s]['id'], //JEV PREPARATION ID
-                                    $chart_of_account_id,
-                                    $cells[8] ? $cells[8] : 0, //debit amount
-                                    $cells[9] ? $cells[9] : 0, //credit amount
-                                    $cells[15] ? $cells[15] : '', //Current/Noncurrent
-                                    $cells[10] ? $cells[10] : '', //CLOSsING OR NONCLOSSING
-                                    $cash_flow,
-                                    $net_asset,
-                                    $object_code,
-                                    $lvl, //CHART OF ACCOUNTS LVL
-
-                                ];
                             }
                         }
                     }
                 }
+
+                // JEV ACCOUNTING ENTRIES COLUMNS
+                $column = [
+                    'jev_preparation_id',
+                    'chart_of_account_id',
+                    'debit',
+                    'credit',
+                    'current_noncurrent',
+                    'closing_nonclosing',
+                    'cashflow_id',
+                    'net_asset_equity_id',
+                    'object_code',
+                    'lvl',
+
+                ];
+                // JEV PREPARATION COLUMN
+                $jev_column = [
+                    'id',
+                    'book_id',
+                    'reporting_period',
+                    'date',
+                    'explaination',
+                    'ref_number',
+                    'jev_number',
+                    'dv_number',
+                    'check_ada',
+                    'check_ada_number',
+                    'payee_id'
+
+                ];
+                // Yii::$app->db->createCommand()->batchInsert('jev_preparation', $jev_column, $temp_data)->execute();
+                Yii::$app->db->createCommand()->batchInsert('jev_accounting_entries', $column, $jev_entries)->execute();
+                // ob_clean();
+                echo '<pre>';
+                var_dump("Success");
+                echo '</pre>';
+                // return ob_get_clean();
+                // foreach ($jev_entries as $x => $val) {
+                //     if ($x > 420) {
+                //         echo '<pre>';
+                //         var_dump($val);
+                //         echo '</pre>';
+                //     }
+                // }
             }
-
-            // JEV ACCOUNTING ENTRIES COLUMNS
-            $column = [
-                'jev_preparation_id',
-                'chart_of_account_id',
-                'debit',
-                'credit',
-                'current_noncurrent',
-                'closing_nonclosing',
-                'cashflow_id',
-                'net_asset_equity_id',
-                'object_code',
-                'lvl',
-
-            ];
-            // JEV PREPARATION COLUMN
-            $jev_column = [
-                'id',
-                'book_id',
-                'reporting_period',
-                'date',
-                'explaination',
-                'ref_number',
-                'jev_number',
-                'dv_number',
-                'check_ada',
-                'check_ada_number',
-                'payee_id'
-
-            ];
-            // Yii::$app->db->createCommand()->batchInsert('jev_preparation', $jev_column, $temp_data)->execute();
-            Yii::$app->db->createCommand()->batchInsert('jev_accounting_entries', $column, $jev_entries)->execute();
-            // ob_clean();
-            echo '<pre>';
-            var_dump("Success");
-            echo '</pre>';
-            // return ob_get_clean();
-            // foreach ($jev_entries as $x => $val) {
-            //     if ($x > 420) {
-            //         echo '<pre>';
-            //         var_dump($val);
-            //         echo '</pre>';
-            //     }
-            // }
+        } else {
+            throw new ForbiddenHttpException();
         }
     }
 
@@ -1267,28 +1308,26 @@ class JevPreparationController extends Controller
 
                         // if ($jev_book===$book->name){}
 
-                        if ($jev_referenece === $reference ) {
+                        if ($jev_referenece === $reference) {
                             $x = $reference;
                             $x .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
                             $y = explode('-', $x);
                             $jev_number = $y[0] . '-' . $y[1] . '-' . $y[2] . '-' . $y[3] . '-' . $jev_number_serial;
-                            
                         } else {
                             $jev_number = $reference;
                             $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
                         }
-                        if ($jev_book === $book->name ) {
+                        if ($jev_book === $book->name) {
                             $x = $reference;
                             $x .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
                             $y = explode('-', $x);
                             $jev_number = $y[0] . '-' . $y[1] . '-' . $y[2] . '-' . $y[3] . '-' . $jev_number_serial;
-                            
                         } else {
                             $jev_number = $reference;
                             $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
                         }
-                        
-  
+
+
                         $jv->delete();
                     } else {
                         $jev_number = $reference;
@@ -1659,9 +1698,9 @@ class JevPreparationController extends Controller
             // echo "<pre>";
             // var_dump($sl_name);
             // echo "</pre>";
-            $general_ledger='';
-            if (!empty($sl_final[0]['general_ledger'])){
-                $general_ledger=$sl_final[0]['general_ledger'];
+            $general_ledger = '';
+            if (!empty($sl_final[0]['general_ledger'])) {
+                $general_ledger = $sl_final[0]['general_ledger'];
             }
             return $this->render('subsidiary_ledger_view', [
                 'data' => $sl_final,

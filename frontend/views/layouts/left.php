@@ -35,7 +35,7 @@
                 'options' => ['class' => 'sidebar-menu tree text-truncate', 'data-widget' => 'tree', 'style' => 'width: inherit'],
                 'items' => [
                     ['label' => 'Gii', 'icon' => 'book', 'url' => ['/gii'],],
-
+                    
                     [
                         'label' => 'Budget',
                         'icon' => 'share',
@@ -66,13 +66,12 @@
                                     ['label' => 'Process BURS', 'icon' => 'circle-o', 'url' => ['/process-burs'],],
                                     ['label' => 'Raouds', 'icon' => 'circle-o', 'url' => ['/raouds'],],
                                     ['label' => 'Process Dv', 'icon' => 'circle-o', 'url' => ['/dv-aucs'],],
-                             
+
                                 ],
                             ],
                         ],
-
-
                     ],
+
                     [
                         'label' => 'Accounting',
                         'icon' => 'share',
@@ -102,7 +101,7 @@
                                 'items' => [
                                     ['label' => 'Transactions', 'icon' => 'circle-o', 'url' => ['/transaction'],],
                                     ['label' => 'Jev', 'icon' => 'circle-o', 'url' => ['/jev-preparation'],],
-                                  
+
 
                                 ],
                             ],
@@ -111,7 +110,7 @@
                                 'icon' => 'circle-o',
                                 'url' => '#',
                                 'items' => [
-                               
+
                                     ['label' => 'General Ledger', 'icon' => 'circle-o', 'url' => ['/jev-preparation/general-ledger'],],
                                     ['label' => 'General Journal', 'icon' => 'circle-o', 'url' => ['/jev-preparation/general-journal'],],
                                     ['label' => 'ADADJ', 'icon' => 'circle-o', 'url' => ['/jev-preparation/adadj'],],
