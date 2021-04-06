@@ -17,10 +17,10 @@ use aryelds\sweetalert\SweetAlertAsset;
             <?php
             $q = 0;
             if (!empty($model)) {
-
                 $q = $model;
             }
             echo " <input type='text' id='update_id' name='update_id'  value='$q' style='display:none'>";
+            // echo " <input type='text' id='duplicate' name='duplicate'  value='$duplicate' style='display:none'>";
             ?>
             <div class="row">
 
@@ -347,7 +347,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                 dataType: 'json',
                 success: function(data) {
                     $('#isCurrent-' + i).val(data.result.current_noncurrent)
-                    // console.log(data)
+                    console.log(data)
                     // data.isCashEquivalent ? : $('#cash_flow_id-' + i).hide()
                     data.isEquity ? $('#isEquity-' + i).show() : $('#isEquity-' + i).hide()
                     // console.log(data)
@@ -751,8 +751,8 @@ $script = <<< JS
     
      $(document).ready(function() {
         update_id = $('#update_id').val();
-
-            if (update_id > 0) {
+        // KUNG NAAY SULOD ANG UPDATE ID KUHAON ANG IYANG MGA DATA
+        if (update_id > 0) {
         $('#container').hide();
 
                 // console.log(update_id)

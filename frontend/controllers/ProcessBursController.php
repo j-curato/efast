@@ -203,7 +203,6 @@ class ProcessBursController extends Controller
                      ")
                      ->bindValue(":raoud_id",$raoud_to_adjust->id)
                      ->queryOne();
-                    
                     $total_amount = array_sum($_POST['burs_amount']);
                     $adjust_total = $total_amount + $query['total_adjustment'];
                     $remaining_balance= $raoud_to_adjust->raoudEntries->amount -  $query['total_adjustment'];
@@ -239,13 +238,11 @@ class ProcessBursController extends Controller
                                     $raoud->burs_amount = $amount;
                                     if ($flag = $raoud->validate()) {
                                         if ($raoud->save()) {
-
                                             $raoud_entry = new RaoudEntries();
                                             $raoud_entry->raoud_id = $raoud->id;
                                             $raoud_entry->chart_of_account_id = $chart_of_account_id;
                                             $raoud_entry->amount = $amount;
                                             $raoud_entry->parent_id_from_raoud = $raoud_to_adjust->id;
-
                                             if ($raoud_entry->validate()) {
                                                 if ($raoud_entry->save()) {
                                                 }

@@ -51,6 +51,9 @@ return [
             ],
         ],
         */
+        'memem' => [
+            'class' => 'frontend\components\MyComponent'
+        ],
     ],
     'params' => $params,
     'modules' => [

@@ -2,6 +2,9 @@
 
 namespace frontend\controllers;
 
+use app\models\Payee;
+use app\models\ResponsibilityCenter;
+use app\models\SubAccounts1;
 use Yii;
 use app\models\Transaction;
 use app\models\TransactionSearch;
@@ -88,15 +91,15 @@ class TransactionController extends Controller
     {
         // if (Yii::$app->user->can('create-transaction')) {
 
-            $model = new Transaction();
+        $model = new Transaction();
 
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
 
-            return $this->renderAjax('create', [
-                'model' => $model,
-            ]);
+        return $this->renderAjax('create', [
+            'model' => $model,
+        ]);
         // } else {
         //     throw new ForbiddenHttpException();
         // }
@@ -111,20 +114,20 @@ class TransactionController extends Controller
      */
     public function actionUpdate($id)
     {
-        if (Yii::$app->user->can('update-transaction')) {
+        // if (Yii::$app->user->can('update-transaction')) {
 
-            $model = $this->findModel($id);
+        $model = $this->findModel($id);
 
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
-
-            return $this->render('update', [
-                'model' => $model,
-            ]);
-        } else {
-            throw new ForbiddenHttpException();
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
         }
+
+        return $this->render('update', [
+            'model' => $model,
+        ]);
+        // } else {
+        //     throw new ForbiddenHttpException();
+        // }
     }
 
     /**
@@ -136,15 +139,15 @@ class TransactionController extends Controller
      */
     public function actionDelete($id)
     {
-        if (Yii::$app->user->can('delete-transaction')) {
+        // if (Yii::$app->user->can('delete-transaction')) {
 
-            $this->findModel($id)->delete();
+        $this->findModel($id)->delete();
 
-            return $this->redirect(['index']);
-        } else {
+        return $this->redirect(['index']);
+        // } else {
 
-            throw new ForbiddenHttpException();
-        }
+        //     throw new ForbiddenHttpException();
+        // }
     }
 
     /**
@@ -183,6 +186,8 @@ class TransactionController extends Controller
         if (!empty($_POST)) {
             // $chart_id = $_POST['chart_id'];
             $name = $_FILES["file"]["name"];
+            // var_dump($_FILES['file']);
+            // die();
             $id = uniqid();
             $file = "transaction/{$id}_{$name}";
             if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
@@ -212,20 +217,101 @@ class TransactionController extends Controller
                     $q = '';
                     $cells[] =   $cell->getValue();
                 }
-                $obj_code = $cells[0];
-                $name = $cells[1];
-                if (!empty($cells[0])) {
+                $tracking_number = $cells[0];
+                $payee_name = $cells[1];
+                $particular = $cells[2];
+                $amount = $cells[3];
+                $responsibility_center_name = $cells[4];
+                $earmark_number = $cells[5];
+                $payroll_number = $cells[6];
+                $date = $cells[7];
+
+                // $name = $cells[1];
+                if (
+                    empty($tracking_number)
+                    || empty($payee_name)
+                    || empty($particular)
+                    || empty($amount)
+                    || empty($responsibility_center_name)
+                    || empty($earmark_number)
+                    || empty($payroll_number)
+                    || empty($date)
+                ) {
+                    return json_encode(['isSuccess' => false, 'error' => "Error Somthing is Missing in Line $key"]);
+                    die();
+                } else {
+                    $payee  = (new \yii\db\Query())
+                        ->select(['account_name', 'id'])
+                        ->from('payee')
+                        ->where('account_name LIKE :account_name', ['account_name' => $payee_name])
+                        ->one();
+                    $responsibility_center  = (new \yii\db\Query())
+                        ->select(['name', 'id'])
+                        ->from('responsibility_center')
+                        ->where('name LIKE :name', ['name' => $responsibility_center_name])
+                        ->one();
+                    // $responsibility_center = ResponsibilityCenter::find()->where('like', 'name', $responsibility_center_name)->one();
+                    if (!empty($payee)) {
+                        $payee_id = $payee['id'];
+                    } else {
+                        return json_encode(['isSuccess' => false, 'error' => "Payee Does Not Exist in line $key"]);
+                        break;
+                    }
+                    if (!empty($responsibility_center)) {
+                        $responsibility_center_id = $responsibility_center['id'];
+                    } else {
+                        return json_encode(['isSuccess' => false, 'error' => "Responsibility Center Does Not Exist in Line $key"]);
+                        break;
+                    }
+                    
+                    $data[] = [
+                        'responsibility_center_id' => $responsibility_center_id,
+                        'payee_id' => $payee_id,
+                        'particular' => $particular,
+                        'gross_amount' => $amount,
+                        'tracking_number' => $tracking_number,
+                        'earmark_no' => $earmark_number,
+                        'payroll_number' => $payroll_number,
+                        'transaction_date' => $date
+                    ];
                 }
             }
 
             $column = [
-                'chart_of_account_id',
-                'object_code',
-                'name',
+                'responsibility_center_id',
+                'payee_id',
+                'particular',
+                'gross_amount',
+                'tracking_number',
+                'earmark_no',
+                'payroll_number',
+                'transaction_date',
             ];
-            $ja = Yii::$app->db->createCommand()->batchInsert('sub_accounts1', $column, $data)->execute();
+            $ja = Yii::$app->db->createCommand()->batchInsert('transaction', $column, $data)->execute();
 
-            return $this->redirect(['index']);
+            // return $this->redirect(['index']);
+            return json_encode(['isSuccess' => true]);
+            // ob_clean();
+            // echo "<pre>";
+            // var_dump($payee);
+            // echo "<pre>";
+            // return ob_get_clean();
         }
     }
+    public function actionSample($id)
+    {
+        return $this->render('view_sample', [
+            'model' => $this->findModel2($id),
+        ]);
+        
+    }
+    protected function findModel2($id)
+    {
+        if (($model = SubAccounts1::findOne($id)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    
 }

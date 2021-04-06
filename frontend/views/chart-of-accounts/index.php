@@ -93,6 +93,20 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             'id',
+            // [
+            //     'class' => 'kartik\grid\ExpandRowColumn',
+            //     'width' => '50px',
+            //     'value' => function ($model, $key, $index, $column) {
+            //         return GridView::ROW_COLLAPSED;
+            //     },
+            //     // uncomment below and comment detail if you need to render via ajax
+            //     // 'detailUrl' => Url::to([ '/index.php?r=transaction/sample&id='.$model->id]),
+            //     'detail' => function ($model, $key, $index, $column) {
+            //         return Yii::$app->controller->renderPartial('view', ['model' => $model]);
+            //     },
+            //     // 'headerOptions' => ['class' => 'kartik-sheet-style'],
+            //     'expandOneOnly' => true
+            // ],
 
             [
                 'label' => 'UACS',

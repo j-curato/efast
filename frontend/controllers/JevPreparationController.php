@@ -45,7 +45,7 @@ class JevPreparationController extends Controller
         return [
 
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'only' => ['logout', 'signup', 'index'],
                 'rules' => [
                     [
@@ -400,45 +400,45 @@ class JevPreparationController extends Controller
         // $modelsAddress = $modelCustomer->addresses;
         if (Yii::$app->user->can('update-jev')) {
 
-            $model = $this->findModel($id);
-            $modelJevItems = $model->jevAccountingEntries;
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                $oldIDs = ArrayHelper::map($modelJevItems, 'id', 'id');
-                $modelJevItems = Model::createMultiple(JevAccountingEntries::class, $modelJevItems);
-                Model::loadMultiple($modelJevItems, Yii::$app->request->post());
-                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelJevItems, 'id', 'id')));
+            // $model = $this->findModel($id);
+            // $modelJevItems = $model->jevAccountingEntries;
+            // if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            //     $oldIDs = ArrayHelper::map($modelJevItems, 'id', 'id');
+            //     $modelJevItems = Model::createMultiple(JevAccountingEntries::class, $modelJevItems);
+            //     Model::loadMultiple($modelJevItems, Yii::$app->request->post());
+            //     $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelJevItems, 'id', 'id')));
 
 
-                // validate all models
-                $valid = $model->validate();
-                $valid = Model::validateMultiple($modelJevItems);
+            //     // validate all models
+            //     $valid = $model->validate();
+            //     $valid = Model::validateMultiple($modelJevItems);
 
-                if ($valid) {
-                    $transaction = \Yii::$app->db->beginTransaction();
-                    try {
-                        if ($flag = $model->save(false)) {
-                            if (!empty($deletedIDs)) {
-                                JevAccountingEntries::deleteAll(['id' => $deletedIDs]);
-                            }
-                            foreach ($modelJevItems as $modelAddress) {
-                                $modelAddress->jev_preparation_id = $model->id;
-                                if (!($flag = $modelAddress->save(false))) {
-                                    $transaction->rollBack();
-                                    break;
-                                }
-                            }
-                        }
-                        if ($flag) {
-                            $transaction->commit();
-                            return $this->redirect(['view', 'id' => $model->id]);
-                        }
-                    } catch (Exception $e) {
-                        // var_dump($e);
-                        $transaction->rollBack();
-                    }
-                }
-                // return $this->redirect(['view', 'id' => $model->id]);
-            }
+            //     if ($valid) {
+            //         $transaction = \Yii::$app->db->beginTransaction();
+            //         try {
+            //             if ($flag = $model->save(false)) {
+            //                 if (!empty($deletedIDs)) {
+            //                     JevAccountingEntries::deleteAll(['id' => $deletedIDs]);
+            //                 }
+            //                 foreach ($modelJevItems as $modelAddress) {
+            //                     $modelAddress->jev_preparation_id = $model->id;
+            //                     if (!($flag = $modelAddress->save(false))) {
+            //                         $transaction->rollBack();
+            //                         break;
+            //                     }
+            //                 }
+            //             }
+            //             if ($flag) {
+            //                 $transaction->commit();
+            //                 return $this->redirect(['view', 'id' => $model->id]);
+            //             }
+            //         } catch (Exception $e) {
+            //             // var_dump($e);
+            //             $transaction->rollBack();
+            //         }
+            //     }
+            //     // return $this->redirect(['view', 'id' => $model->id]);
+            // }
 
             return $this->render('_form', [
                 'model' => $id,
@@ -1470,7 +1470,7 @@ class JevPreparationController extends Controller
         $x = explode('-', $_POST['chart_id']);
         $chart_id = $x[0];
         $chart = (new \yii\db\Query())
-            ->select(['chart_of_accounts.current_noncurrent', 'chart_of_accounts.account_group', 'major_accounts.object_code'])
+            ->select(['chart_of_accounts.id','chart_of_accounts.current_noncurrent', 'chart_of_accounts.account_group', 'major_accounts.object_code'])
             ->from('chart_of_accounts')
             ->join('LEFT JOIN', 'major_accounts', 'chart_of_accounts.major_account_id=major_accounts.id')
             ->join('LEFT JOIN', 'sub_accounts1', 'chart_of_accounts.id=sub_accounts1.chart_of_account_id')
@@ -1478,12 +1478,12 @@ class JevPreparationController extends Controller
 
 
 
-        if ($x[2] === 1) {
-            $chart->where("chart_of_accounts.id = :id", ['id' => $chart_id]);
+        if ( intval($x[2]) === 1) {
+            $chart->where("chart_of_accounts.id = :id", ['id' =>  intval($chart_id)]);
         } else if ($x[2] === 2) {
-            $chart->where("sub_accounts1.id = :id", ['id' => $chart_id]);
+            $chart->where("sub_accounts1.id = :id", ['id' => intval($chart_id)]);
         } else if ($x[2] === 3) {
-            $chart->where("sub_accounts2.id = :id", ['id' => $chart_id]);
+            $chart->where("sub_accounts2.id = :id", ['id' => intval($chart_id)]);
         }
 
         $q = $chart->one();
@@ -1502,14 +1502,17 @@ class JevPreparationController extends Controller
         if ($q['object_code'] == 1010000000) {
             $isCashEquivalent = true;
         }
-        if ($q['account_group'] == 'Equity') {
+        if (strtolower($q['account_group'] )=== 'equity') {
             $isEquity = true;
         }
 
         return json_encode(['result' => $q, 'isEquity' => $isEquity, 'isCashEquivalent' => $isCashEquivalent]);
+
+        // ob_clean();
         // echo "<pre>";
-        // var_dump($q);
+        // var_dump($q  );
         // echo "</pre>";
+        // return ob_get_clean();
     }
 
 

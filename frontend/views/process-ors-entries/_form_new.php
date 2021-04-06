@@ -30,7 +30,7 @@ use yii\helpers\Html;
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
-       
+
                 'floatHeaderOptions' => [
                     'top' => 50,
                     'position' => 'absolute',
@@ -111,8 +111,8 @@ use yii\helpers\Html;
                             AND raouds.id = raoud_entries.raoud_id
                             AND raouds.record_allotment_entries_id=$model->record_allotment_entries_id
                             ")->queryOne();
-                            $burs_ors_amount= $query['obligated_amount']+$query['burs_amount'];
-                            $remain = $query['record_allotment_amount'] -$burs_ors_amount ;
+                            $burs_ors_amount = $query['obligated_amount'] + $query['burs_amount'];
+                            $remain = $query['record_allotment_amount'] - $burs_ors_amount;
                             return $remain;
                         }
                     ],
@@ -176,16 +176,14 @@ use yii\helpers\Html;
                 </div>
                 <div class="col-sm-3" style="height:60x">
                     <label for="transaction_id">Transactions</label>
-                    <select id="transaction_id" name="transaction_id" class="transaction_id select" style="width: 100%; margin-top:50px" required>
+                    <select id="transaction_id" name="transaction_id" class="transaction_id select" style="width: 100%; margin-top:50px">
                         <option></option>
                     </select>
                 </div>
-
             </div>
-
             <table id="transaction_table" class="table table-striped">
                 <thead>
-                    <th>Raoud ID</th>
+                    <!-- <th>Raoud ID</th> -->
                     <th>MFO/PAP Code</th>
                     <th>MFO/PAP Code Name</th>
                     <th>Fund Source</th>
@@ -304,16 +302,23 @@ use yii\helpers\Html;
                     success: function(data) {
                         var result = JSON.parse(data).results
                         console.log(result)
-
+                        var object_code = ''
+                        var chart_id = ''
                         for (var i = 0; i < result.length; i++) {
+                            object_code = result[i]['object_code']
+                            chart_id = result[i]['chart_of_account_id']
 
+                            if (result[i]['object_code'] == "5010000000") {
+                                object_code = ''
+                                chart_id = ''
+                            }
                             var row = `<tr>
                             
-                            <td> <input value='${result[i]['raoud_id']}' type='text' name='raoud_id[]'/></td>
+                            <td style="display:none"> <input value='${result[i]['raoud_id']}' type='text' name='raoud_id[]' /></td>
                             <td> ${result[i]['mfo_pap_code_code']}</td>
                             <td> ${result[i]['mfo_pap_name']}</td>
                             <td> ${result[i]['fund_source_name']}</td>
-                            <td> ${result[i]['object_code']}</td>
+                            <td> ${object_code}</td>
                             <td> 
                                 <div>
                                     <select id="chart-${select_id}" required name="chart_of_account_id[]" class="chart-of-account" style="width: 100%">
@@ -322,13 +327,13 @@ use yii\helpers\Html;
                                 </div>
                             </td>
                             <td> <input value='${result[i]['obligation_amount']}' type='text' name='obligation_amount[]'/></td>
-                            <td><button  class='btn btn-danger' onclick='remove(this)'>remove</button></td></tr>`
+                            <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>`
                             $('#transaction_table').append(row);
                             $(`#chart-${select_id}`).select2({
                                 data: accounts,
                                 placeholder: "Select Chart of Account",
 
-                            }).val(`${result[i]['chart_of_account_id']}`).trigger('change');
+                            }).val(`${chart_id}`).trigger('change');
                             select_id++;
                         }
                     }
@@ -396,7 +401,8 @@ $script = <<< JS
                     data: $('#save_data').serialize(),
                     success: function(data) {
                         var res=JSON.parse(data)
-                        console.log(data)
+   
+
                         if (res.isSuccess) {
                             swal({
                                 title: "Success",
@@ -411,9 +417,18 @@ $script = <<< JS
                             $('#add_data')[0].reset();
                         }
                         else{
+                            var length = Object.keys(res.error).length
+                            var keys = Object.keys(res.error)
+                            var text=''
+                            console.log(keys[0])
+                            for(var i = 0;i<length;i++){
+                                var x=keys[i]
+                                text += res.error[x] 
+                            }
+                            console.log(text)
                             swal({
                                 title: "Error",
-                                text: res.error,
+                                text: text,
                                 type: "error",
                                 timer: 3000,
                                 button: false

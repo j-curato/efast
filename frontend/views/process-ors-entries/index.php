@@ -50,7 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'label' => 'Serial Number',
-                'attribute' => 'processOrs.reporting_period',
+                'attribute' => 'processOrs.serial_number',
                 // 'value' => 'processOrs.reporting_period'
             ],
             [
@@ -88,7 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $amount = $model->raoudEntries->amount;
                     if ($query['total'] < $amount  && $amount > 0) {
 
-                        $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/update&id=$model->id";
+                        $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/adjust&id=$model->id";
                         return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-secondary fa fa-pencil-square-o']);
                     } else {
                         return "";

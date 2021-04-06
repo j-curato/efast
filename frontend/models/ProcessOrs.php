@@ -36,6 +36,7 @@ class ProcessOrs extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['reporting_period','transaction_id'], 'required'],
             [['transaction_id', 'document_recieve_id', 'mfo_pap_code_id', 'fund_source_id'], 'integer'],
             [['reporting_period', 'serial_number', 'obligation_number'], 'string', 'max' => 255],
             [['funding_code'], 'string', 'max' => 50],

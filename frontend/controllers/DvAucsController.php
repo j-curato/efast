@@ -193,6 +193,7 @@ class DvAucsController extends Controller
             $nature_of_transaction_id = $_POST['nature_of_transaction'];
             $mrd_classification_id = $_POST['mrd_classification'];
             $reporting_period = $_POST['reporting_period'];
+            $particular = $_POST['particular'];
 
 
             $transaction = Yii::$app->db->beginTransaction();
@@ -203,9 +204,12 @@ class DvAucsController extends Controller
                 $dv->raoud_id = $raoud_id;
                 $dv->nature_of_transaction_id = $nature_of_transaction_id;
                 $dv->mrd_classification_id = $mrd_classification_id;
-                if ($dv->save(false)){
+                $dv->reporting_period = $reporting_period;
+                $dv->particular = $particular;
+                $dv->dv_number = $this->getDvNumber($reporting_period);
+                if ($dv->save(false)) {
                     $transaction->commit();
-                    return json_encode(['isSuccess'=>$dv->id]);
+                    return json_encode(['isSuccess' => $dv->id]);
                 }
             } catch (ErrorException $error) {
 
@@ -214,5 +218,31 @@ class DvAucsController extends Controller
                 return json_encode($error);
             }
         }
+    }
+    public function getDvNumber($reporting_period)
+    {
+        $latest_dv = (new \yii\db\Query())
+            ->select('dv_number')
+            ->from('dv_aucs')
+            ->orderBy('id DESC')
+            ->one();
+        $dv_number=$reporting_period;
+
+        if (!empty($latest_dv)) {
+            $last_number = explode('-', $latest_dv['dv_number'])[2] + 1;
+        }
+        else{
+            $last_number=1;
+        }
+        $x='';
+        for($i=strlen($last_number);$i<4;$i++){
+            $x.=0;
+        }
+        $dv_number .='-' . $x . $last_number;
+
+        // echo "<pre>";
+        // var_dump($dv_number)
+        // echo "</pre>";
+        return $dv_number;
     }
 }

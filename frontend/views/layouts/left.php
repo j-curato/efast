@@ -54,6 +54,8 @@
                                     ['label' => 'Fund Classification Code', 'icon' => 'circle-o', 'url' => ['/fund-category-and-classification-code'], 'options' => ['style' => 'color:red;']],
                                     ['label' => 'MFO/PAP Codes', 'icon' => 'circle-o', 'url' => ['/mfo-pap-code'],],
                                     ['label' => 'Fund Source', 'icon' => 'circle-o', 'url' => ['/fund-source'],],
+                                    ['label' => 'Nature of Transaction', 'icon' => 'circle-o', 'url' => ['/nature-of-transaction'],],
+                                    ['label' => 'MRD Classification', 'icon' => 'circle-o', 'url' => ['/mrd-classification'],],
                                 ],
                             ],
                             [

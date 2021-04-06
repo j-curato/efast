@@ -501,7 +501,7 @@ $(document).ready(function(){
         },
      
   
-    });
+       });
 
 
     }

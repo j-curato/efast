@@ -121,7 +121,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     <input type="text" id="fund_classification_code" name="fund_classification_code" placeholder="Fund Classification Code">
                 </div>
                 <div class="col-sm-3">
-                    <label for="book">Fund Source</label>
+                    <label for="book">Book</label>
                     <select id="book" name="book" class="book select" style="width: 100%">
                         <option></option>
                     </select>

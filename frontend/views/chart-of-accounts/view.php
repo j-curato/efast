@@ -1,6 +1,7 @@
 <?php
 
 use app\models\MajorAccounts;
+use app\models\SubAccounts1;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
@@ -11,8 +12,8 @@ use aryelds\sweetalert\SweetAlertAsset;
 /* @var $model app\models\ChartOfAccounts */
 
 $this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Chart Of Accounts', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+// $this->params['breadcrumbs'][] = ['label' => 'Chart Of Accounts', 'url' => ['index']];
+// $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="chart-of-accounts-view">
@@ -36,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::button('<span class="fa fa-pencil-square-o"></span>', ['value' => Url::to($t), 'class' => 'btn btn-primary btn-xs modalButtoncreate']); ?>
 
     </p>
-    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
+    <!-- <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button> -->
 
     <!-- Modal -->
     <div id="myModal" class="modal fade" role="dialog">
@@ -66,6 +67,8 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
 
+
+
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
@@ -74,6 +77,42 @@ $this->params['breadcrumbs'][] = $this->title;
             'general_ledger',
         ],
     ]) ?>
+
+    <div class="container">
+        <table class="table table-striped">
+            <thead>
+                <th>
+                    Object Code
+                </th>
+                <th>
+                    Account Title
+                </th>
+            </thead>
+            <tbody>
+                <?php
+                $sub_accounts1 = SubAccounts1::find()->joinWith('subAccounts2')->where("chart_of_account_id =:chart_of_account_id", ['chart_of_account_id' => $model->id])->all();
+                foreach ($sub_accounts1 as $val) {
+                    echo "<tr>
+                <td>$val->object_code</td>
+                <td>$val->name</td>
+
+                </tr>";
+                    foreach ($val->subAccounts2 as $val2) {
+
+                        echo "
+                            <tr>
+                            <td></td>
+                            <td>$val2->object_code</td>
+                            <td>$val2->name</td>
+                            </tr>
+                        ";
+                    }
+                }
+                ?>
+            </tbody>
+        </table>
+    </div>
+    
 
 
 </div>

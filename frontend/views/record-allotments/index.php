@@ -1,6 +1,8 @@
 <?php
 
 use app\models\FundClusterCode;
+use kartik\file\FileInput;
+use kartik\form\ActiveForm;
 use kartik\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
@@ -22,6 +24,58 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>
+      <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
+
+    <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
+                </div>
+                <div class='modal-body'>
+                    <center><a href="sub_account1/sub_account1_format.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                    <hr>
+                    <label for="ledger"> SELECT GENERAL LEDGER</label>
+                    <?php
+                    $ledger = Yii::$app->db->createCommand("SELECT chart_of_accounts.id, CONCAT(chart_of_accounts.uacs,' - ',chart_of_accounts.general_ledger) as name FROM chart_of_accounts")->queryAll();
+                    ?>
+                    <?php
+
+                    $form = ActiveForm::begin([
+                        'action' => ['record-allotments/import'],
+                        'method' => 'POST',
+                        'id' => 'import',
+                        'options' => [
+                            'enctype' => 'multipart/form-data',
+                        ], // important
+                    ]);
+
+                    // echo '<input type="file">';
+                    echo "<br>";
+                    echo FileInput::widget([
+                        'name' => 'file',
+                        // 'options' => ['multiple' => true],
+                        'id' => 'fileupload',
+                        'pluginOptions' => [
+                            'showPreview' => true,
+                            'showCaption' => true,
+                            'showRemove' => true,
+                            'showUpload' => true,
+                        ]
+                    ]);
+
+
+                    ActiveForm::end();
+
+                    ?>
+
+                </div>
+            </div>
+        </div>
+    </div>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

@@ -58,7 +58,7 @@ class SubAccounts1 extends \yii\db\ActiveRecord
      */
     public function getChartOfAccount()
     {
-        return $this->hasOne(ChartOfAccounts::className(), ['id' => 'chart_of_account_id']);
+        return $this->hasOne(ChartOfAccounts::class, ['id' => 'chart_of_account_id']);
     }
 
     /**
@@ -66,8 +66,8 @@ class SubAccounts1 extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getSubAccounts2s()
+    public function getSubAccounts2()
     {
-        return $this->hasMany(SubAccounts2::className(), ['sub_accounts1_id' => 'id']);
+        return $this->hasMany(SubAccounts2::class, ['sub_accounts1_id' => 'id']);
     }
 }

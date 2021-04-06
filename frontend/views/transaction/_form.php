@@ -22,7 +22,7 @@ use kartik\select2\Select2;
     <?php $form = ActiveForm::begin(); ?>
 
     <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-4">
 
             <?= $form->field($model, 'responsibility_center_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map($respons_center, 'id', 'name'),
@@ -32,7 +32,7 @@ use kartik\select2\Select2;
                 ],
             ]); ?>
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-4">
             <?= $form->field($model, 'payee_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map($payee, 'id', 'account_name'),
                 'options' => ['placeholder' => 'Select  Payee'],
@@ -41,7 +41,7 @@ use kartik\select2\Select2;
                 ],
             ]); ?>
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-4">
             <?= $form->field($model, 'transaction_date')->widget(DatePicker::class, [
                 'name' => 'date',
                 'pluginOptions' => [
@@ -55,21 +55,19 @@ use kartik\select2\Select2;
     </div>
 
     <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-4">
             <?= $form->field($model, 'tracking_number')->textInput(['maxlength' => true]) ?>
 
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-4">
             <?= $form->field($model, 'earmark_no')->textInput(['maxlength' => true]) ?>
 
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-4">
 
             <?= $form->field($model, 'payroll_number')->textInput(['maxlength' => true]) ?>
         </div>
-        <div class="col-sm-3">
 
-        </div>
     </div>
 
     <?= $form->field($model, 'particular')->textarea(['maxlength' => true]) ?>

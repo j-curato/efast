@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- <h1><?= Html::encode($this->title) ?></h1> -->
     <?php $t = yii::$app->request->baseUrl . '/index.php?r=jev-preparation/delete&id=' . $model->id; ?>
     <p class="actions" style="margin-left:50px;">
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Update', ['update', 'id' => $model->id,'duplicate'=>false], ['class' => 'btn btn-primary']) ?>
         <?php
         //  Html::a('Delete', ['delete', 'id' => $model->id], [
         //     'class' => 'btn btn-danger delete',

@@ -288,6 +288,10 @@ use yii\helpers\Html;
                     </select>
                 </div>
             </div>
+            <div class="row">
+            <label for="particular">Particular</label>
+            <input type="text" id="particular" name="particular" class="form-control">
+            </div>
 
             <table id="transaction_table" class="table table-striped">
                 <thead>

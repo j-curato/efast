@@ -190,42 +190,44 @@ class ProcessOrsController extends Controller
 
             $ors = new ProcessOrs();
             $ors->reporting_period = $reporting_period;
-            if ($ors->save()) {
+            if ($ors->validate()) {
+                if ($ors->save()) {
+                    // return json_encode($q);
+                    // $raoud = new Raouds();
+                    foreach ($_POST['chart_of_account_id'] as $index => $value) {
 
+                        $q = Raouds::find()->where("id =:id", ['id' => $_POST['raoud_id'][$index]])->one();
+                        $q->isActive = 0;
+                        $q->save();
+                        $raoud = new Raouds();
+                        $raoud->record_allotment_id = $q->record_allotment_id;
+                        $raoud->record_allotment_entries_id = $q->record_allotment_entries_id;
+                        $raoud->process_ors_id = $ors->id;
+                        $raoud->reporting_period = $ors->reporting_period;
+                        $raoud->obligated_amount = $_POST['final_amount'][$index];
 
-                // return json_encode($q);
-                // $raoud = new Raouds();
+                        if ($raoud->save()) {
+                            $raoud_entry = new RaoudEntries();
+                            $raoud_entry->raoud_id = $raoud->id;
+                            $raoud_entry->chart_of_account_id = $value;
+                            $raoud_entry->amount = $_POST['final_amount'][$index];
+                            if ($raoud_entry->save()) {
+                                echo $raoud->id;
+                            }
+                        }
 
-                foreach ($_POST['chart_of_account_id'] as $index => $value) {
-
-                    $q = Raouds::find()->where("id =:id", ['id' => $_POST['raoud_id'][$index]])->one();
-                    $q->isActive = 0;
-                    $q->save();
-                    $raoud = new Raouds();
-                    $raoud->record_allotment_id = $q->record_allotment_id;
-                    $raoud->record_allotment_entries_id = $q->record_allotment_entries_id;
-                    $raoud->process_ors_id = $ors->id;
-                    $raoud->reporting_period = $ors->reporting_period;
-                    $raoud->obligated_amount = $_POST['final_amount'][$index];
-
-                    if ($raoud->save()) {
-                        $raoud_entry = new RaoudEntries();
-                        $raoud_entry->raoud_id = $raoud->id;
-                        $raoud_entry->chart_of_account_id = $value;
-                        $raoud_entry->amount = $_POST['final_amount'][$index];
-                        if ($raoud_entry->save()) {
-                            echo $raoud->id;
+                        $ors_entry = new ProcessOrsEntries();
+                        $ors_entry->chart_of_account_id = $value;
+                        $ors_entry->process_ors_id = $ors->id;
+                        $ors_entry->amount = $_POST['final_amount'][$index];
+                        if ($ors_entry->save()) {
                         }
                     }
-
-                    $ors_entry = new ProcessOrsEntries();
-                    $ors_entry->chart_of_account_id = $value;
-                    $ors_entry->process_ors_id = $ors->id;
-                    $ors_entry->amount = $_POST['final_amount'][$index];
-                    if ($ors_entry->save()) {
-                    }
                 }
+            } else {
+                return json_encode(['isSuccess' => false, 'error' => $ors->errors]);
             }
+
 
             // $ors->reporting_period = $reporting_period
 

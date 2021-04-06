@@ -103,8 +103,16 @@ $this->params['breadcrumbs'][] = $this->title;
   echo ExportMenu::widget([
     'dataProvider' => $w,
     'columns' => $gridColumn,
-    'filename'=>'Jev'
+    'filename' => 'Jev',
+    'exportConfig' => [
+      ExportMenu::FORMAT_TEXT => false,
+      ExportMenu::FORMAT_PDF => false,
+      ExportMenu::FORMAT_EXCEL => false,
+      ExportMenu::FORMAT_HTML => false,
+    ]
+
   ]);
+
   ?>
 
 

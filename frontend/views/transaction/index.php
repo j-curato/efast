@@ -1,11 +1,14 @@
 <?php
 
+use app\models\SubAccounts1;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\helpers\Url;
 use yii\bootstrap\Modal;
 use kartik\widgets\ActiveForm;
 use kartik\widgets\FileInput;
+use aryelds\sweetalert\SweetAlertAsset;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\TransactionSearch */
@@ -68,10 +71,11 @@ Modal::end();
                     $ledger = Yii::$app->db->createCommand("SELECT chart_of_accounts.id, CONCAT(chart_of_accounts.uacs,' - ',chart_of_accounts.general_ledger) as name FROM chart_of_accounts")->queryAll();
                     ?>
                     <?php
+
                     $form = ActiveForm::begin([
-                        'action' => ['sub-accounts1/import'],
-                        'method' => 'POST',
-                        'id' => 'formupload',
+                        // 'action' => ['transaction/import-transaction'],
+                        // 'method' => 'POST',
+                        'id' => 'import',
                         'options' => [
                             'enctype' => 'multipart/form-data',
                         ], // important
@@ -94,7 +98,6 @@ Modal::end();
 
                     ActiveForm::end();
 
-
                     ?>
 
                 </div>
@@ -106,6 +109,7 @@ Modal::end();
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
             'heading' => 'List of Areas',
@@ -114,8 +118,24 @@ Modal::end();
             'top' => 50,
             'position' => 'absolute',
         ],
+
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
+            // [
+            //     'class' => 'kartik\grid\ExpandRowColumn',
+            //     'width' => '50px',
+            //     'value' => function ($model, $key, $index, $column) {
+            //         return GridView::ROW_COLLAPSED;
+            //     },
+            //     // uncomment below and comment detail if you need to render via ajax
+            //     // 'detailUrl' => Url::to([ '/index.php?r=transaction/sample&id='.$model->id]),
+            //     'detail' => function ($model, $key, $index, $column) {
+            //         $q=SubAccounts1::findOne(2602);
+            //         return Yii::$app->controller->renderPartial('view_sample', ['model' => $q]);
+            //     },
+            //     'headerOptions' => ['class' => 'kartik-sheet-style'],
+            //     'expandOneOnly' => true
+            // ],
 
             'id',
             'responsibility_center_id',
@@ -140,11 +160,81 @@ Modal::end();
 </div>
 
 <?php
+SweetAlertAsset::register($this);
+$script = <<<JS
+            var i=false;
+
+        
+            $('#import').submit(function(e){
+                // $(this).unbind();
+                e.preventDefault();
+                    
+                //  $("#employee").on("pjax:success", function(data) {
+                    //   console.log(data)
+                    // });
+                    
+                    if (!i){
+                        i=true;
+                        $.ajax({
+                            url: window.location.pathname + '?r=transaction/import-transaction',
+                            type:'POST',
+                            data:  new FormData(this),
+                            contentType: false,
+                            cache: false,
+                            processData:false,
+                            success:function(data){
+                                
+                                var res = JSON.parse(data)
+                                // break;
+                                // $('#uploadmodal').close()
+                                console.log(i)
+                                
+                        if (res.isSuccess){
+                            swal( {
+                                icon: 'success',
+                                title: "Successfuly Added",
+                                type: "success",
+                                timer:3000,
+                                closeOnConfirm: false,
+                                closeOnCancel: false
+                            },function(){
+                                window.location.href = window.location.pathname + "?r=transaction"
+                            })
+                        }
+                        else{
+                            swal( {
+                                icon: 'error',
+                                title: res.error,
+                                type: "error",
+                                timer:3000,
+                                closeOnConfirm: false,
+                                closeOnCancel: false
+                            })
+                            i=false;
+                        }
+                    },
+                    
+                    
+                    
+                    // data:$('#import').serialize()
+                })
+                
+                 return false; 
+                }
+                
+            })
+            $(document).ready(function(){
+             })
+        
+        JS;
+$this->registerJs($script);
+?>
+<?php
 
 $js = "
         $('#modalButtoncreate').click(function(){
-            $('#transactionmodal').modal('show').find('#modalContent').load($(this).attr('value'));
-        }); 
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+        });
         $('.modalButtonedit').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         });

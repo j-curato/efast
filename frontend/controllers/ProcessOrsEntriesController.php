@@ -120,6 +120,16 @@ class ProcessOrsEntriesController extends Controller
             'update_id' => $id
         ]);
     }
+    public function actionAdjust($id)
+    {
+        $searchModel = new Raouds2Search();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        return $this->render('create', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'update_id' => $id
+        ]);
+    }
 
     /**
      * Deletes an existing ProcessOrsEntries model.
@@ -212,13 +222,13 @@ class ProcessOrsEntriesController extends Controller
                     AND raoud_entries.amount >0
                     AND raoud_entries.parent_id_from_raoud = :raoud_id
                      ")
-                     ->bindValue(":raoud_id",$raoud_to_adjust->id)
-                     ->queryOne();
-                    
+                        ->bindValue(":raoud_id", $raoud_to_adjust->id)
+                        ->queryOne();
+
                     $total_amount = array_sum($_POST['obligation_amount']);
                     $adjust_total = $total_amount + $query['total_adjustment'];
 
-                    $remaining_balance= $raoud_to_adjust->raoudEntries->amount -  $query['total_adjustment'];
+                    $remaining_balance = $raoud_to_adjust->raoudEntries->amount -  $query['total_adjustment'];
                     // return  json_encode($query['total_adjustment']); 
                     if ($raoud_to_adjust->raoudEntries->amount >= $adjust_total) {
 
@@ -282,7 +292,7 @@ class ProcessOrsEntriesController extends Controller
                             ]);
                         }
                     } else {
-                        return json_encode(['isSuccess'=>false,'error' => 
+                        return json_encode(['isSuccess' => false, 'error' =>
                         "Obligation Amount is Less than Adjust Amount  Remaining Balance is  $remaining_balance"]);
                     }
                 } catch (ErrorException $e) {
@@ -297,7 +307,7 @@ class ProcessOrsEntriesController extends Controller
                     $ors = new ProcessOrs();
                     $ors->reporting_period = $reporting_period;
                     $ors->transaction_id = $transaction_id;
-                    $ors->serial_number = $this->getSerialNumber($reporting_period);
+                    $ors->serial_number = $this->getOrsSerialNumber($reporting_period);
                     if ($ors->validate()) {
 
 
@@ -308,11 +318,13 @@ class ProcessOrsEntriesController extends Controller
                                 $q = Raouds::find()->where("id =:id", ['id' => $_POST['raoud_id'][$index]])->one();
                                 // $q->isActive = 0;
                                 // $q->save();
+                                $qwe = explode('-', $q->serial_number);
                                 $raoud = new Raouds();
                                 // $raoud->record_allotment_id = $q->record_allotment_id;
                                 $raoud->record_allotment_entries_id = $q->record_allotment_entries_id;
                                 $raoud->is_parent = false;
-                                $raoud->isActive=false;
+                                $raoud->serial_number = Yii::$app->memem->getOrsBursRaoudSerialNumber($q->serial_number);
+                                $raoud->isActive = false;
                                 $raoud->process_ors_id = $ors->id;
                                 $raoud->reporting_period = $ors->reporting_period;
                                 $raoud->obligated_amount = $_POST['obligation_amount'][$index];
@@ -356,7 +368,7 @@ class ProcessOrsEntriesController extends Controller
                             return json_encode(['isSuccess' => true]);
                         }
                     } else {
-                        return json_encode(['error' => $ors->error]);
+                        return json_encode(['isSuccess' => false, 'error' => $ors->errors]);
                     }
                 } catch (ErrorException $e) {
                     return json_encode(["error" => $e]);
@@ -389,8 +401,9 @@ class ProcessOrsEntriesController extends Controller
         var_dump($serial_number);
         echo "</pre>";
     }
-    public function getSerialNumber($reporting_period)
+    public function getOrsSerialNumber()
     {
+        $reporting_period="2020-01";
         $query = (new \yii\db\Query())
             ->select("serial_number")
             ->from('process_ors')
@@ -402,18 +415,32 @@ class ProcessOrsEntriesController extends Controller
 
 
         if (empty($query['serial_number'])) {
-            $serial_number  = $year . '-' . 1;
+            $serial_number  = $reporting_period . '-' . 1;
         } else {
             $last_number = explode('-', $query['serial_number']);
-            $x=intval($last_number[1])+1;
-            $serial_number = $year . '-' . $x ;
+            $x = intval($last_number[2]) + 1;
+            $serial_number = $reporting_period . '-' . $x;
         }
         // ob_start();
         // echo "<pre>";
-        // var_dump( $serial_number);
+        // var_dump( $last_number[1]);
         // echo "</pre>";
         // return ob_get_clean();
         return $serial_number;
+    }
+    public function getRaoudSerialNumber($serial_number)
+    {
+        // $serial_number = "Fund 01-2021-01-3";
+        $raoud = (new \yii\db\Query())
+            ->select("serial_number")
+            ->from('raouds')
+            ->orderBy('id DESC')
+            ->one();
 
+        $x = explode('-', $serial_number);
+        $x[3] = explode('-', $raoud['serial_number'])[3] + 1;
+        $y = implode('-', $x);
+
+        return $y;
     }
 }
