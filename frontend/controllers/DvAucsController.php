@@ -9,6 +9,7 @@ use app\models\ProcessOrs;
 use app\models\Raouds;
 use app\models\Raouds2Search;
 use app\models\RaoudsSearchForProcessOrsSearch;
+use common\modules\auth\models\DvAucsEntries;
 use ErrorException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -97,14 +98,22 @@ class DvAucsController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        // $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+        // if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        //     return $this->redirect(['view', 'id' => $model->id]);
+        // }
 
-        return $this->render('update', [
-            'model' => $model,
+        // return $this->render('update', [
+        //     'model' => $model,
+        // ]);
+        $searchModel = new RaoudsSearchForProcessOrsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        // echo $id;
+        return $this->render('create', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'update_id' => $id,
         ]);
     }
 
@@ -188,6 +197,7 @@ class DvAucsController extends Controller
     public function actionInsertDv()
     {
 
+
         if ($_POST) {
             $raoud_id = $_POST['raoud_id'];
             $nature_of_transaction_id = $_POST['nature_of_transaction'];
@@ -201,15 +211,45 @@ class DvAucsController extends Controller
 
             try {
                 $dv = new DvAucs();
-                $dv->raoud_id = $raoud_id;
+                // $dv->raoud_id = $raoud_id;
                 $dv->nature_of_transaction_id = $nature_of_transaction_id;
                 $dv->mrd_classification_id = $mrd_classification_id;
                 $dv->reporting_period = $reporting_period;
                 $dv->particular = $particular;
+                // $dv->one_percent_ewt = $one_percent_ewt;
+                // $dv->two_percent_ewt = $two_percent_ewt;
+                // $dv->five_percent_ewt = $five_percent_ewt;
+                // $dv->three_percent_ft = $three_percent_ft;
+                // $dv->five_percent_ft = $five_percent_ft;
                 $dv->dv_number = $this->getDvNumber($reporting_period);
-                if ($dv->save(false)) {
+
+                if ($dv->validate()) {
+                    if ($flag=$dv->save(false)) {
+                        foreach ($_POST['raoud_id'] as $key => $val) {
+                            $dv_entries = new DvAucsEntries();
+                            $dv_entries->raoud_id = $val;
+                            $dv_entries->dv_aucs_id = $dv->id;
+                            $dv_entries->one_percent_ewt = $_POST['1_percent_ewt'][$key];
+                            $dv_entries->two_percent_ewt = $_POST['2_percent_ewt'][$key];
+                            $dv_entries->three_percent_ft = $_POST['3_percent_ft'][$key];
+                            $dv_entries->five_percent_ft = $_POST['5_percent_ft'][$key];
+                            $dv_entries->five_percent_ewt = $_POST['5_percent_ewt'][$key];
+                            if ($dv_entries->save(false)){
+
+                            }
+                            // $dv_entries->total_withheld =$_POST['_percent_'];
+                            // $dv_entries->tax_withheld =$_POST['_percent_'];
+
+                        }
+                    }
+                } else {
+                    return json_encode(['error' => $dv->errors]);
+                }
+                if ($flag) {
+
                     $transaction->commit();
-                    return json_encode(['isSuccess' => $dv->id]);
+                    // return $this->redirect(['view', 'id' => $model->id]);
+                    return json_encode(['isSuccess' => 'success', 'id' => $dv->id]);
                 }
             } catch (ErrorException $error) {
 
@@ -219,6 +259,7 @@ class DvAucsController extends Controller
             }
         }
     }
+
     public function getDvNumber($reporting_period)
     {
         $latest_dv = (new \yii\db\Query())
@@ -226,23 +267,26 @@ class DvAucsController extends Controller
             ->from('dv_aucs')
             ->orderBy('id DESC')
             ->one();
-        $dv_number=$reporting_period;
+        $dv_number = $reporting_period;
 
         if (!empty($latest_dv)) {
             $last_number = explode('-', $latest_dv['dv_number'])[2] + 1;
+        } else {
+            $last_number = 1;
         }
-        else{
-            $last_number=1;
+        $x = '';
+        for ($i = strlen($last_number); $i < 4; $i++) {
+            $x .= 0;
         }
-        $x='';
-        for($i=strlen($last_number);$i<4;$i++){
-            $x.=0;
-        }
-        $dv_number .='-' . $x . $last_number;
+        $dv_number .= '-' . $x . $last_number;
 
         // echo "<pre>";
         // var_dump($dv_number)
         // echo "</pre>";
         return $dv_number;
     }
+    // public function actionYawa()
+    // {
+
+    // }
 }

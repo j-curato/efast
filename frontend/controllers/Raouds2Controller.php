@@ -36,7 +36,7 @@ class Raouds2Controller extends Controller
     public function actionIndex()
     {
         $searchModel = new Raouds2Search();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,$sample=1);
 
         return $this->render('index', [
             'searchModel' => $searchModel,

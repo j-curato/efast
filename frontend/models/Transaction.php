@@ -43,8 +43,8 @@ class Transaction extends \yii\db\ActiveRecord
             [['particular', 'tracking_number', 'earmark_no', 'payroll_number'], 'string', 'max' => 255],
             [['transaction_date'], 'string', 'max' => 50],
             [['transaction_time'], 'string', 'max' => 20],
-            [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::className(), 'targetAttribute' => ['payee_id' => 'id']],
-            [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::className(), 'targetAttribute' => ['responsibility_center_id' => 'id']],
+            [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::class, 'targetAttribute' => ['payee_id' => 'id']],
+            [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
         ];
     }
 
@@ -74,7 +74,7 @@ class Transaction extends \yii\db\ActiveRecord
      */
     public function getPayee()
     {
-        return $this->hasOne(Payee::className(), ['id' => 'payee_id']);
+        return $this->hasOne(Payee::class, ['id' => 'payee_id']);
     }
 
     /**
@@ -84,6 +84,6 @@ class Transaction extends \yii\db\ActiveRecord
      */
     public function getResponsibilityCenter()
     {
-        return $this->hasOne(ResponsibilityCenter::className(), ['id' => 'responsibility_center_id']);
+        return $this->hasOne(ResponsibilityCenter::class, ['id' => 'responsibility_center_id']);
     }
 }

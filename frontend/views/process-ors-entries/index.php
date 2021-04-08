@@ -1,6 +1,8 @@
 <?php
 
 use kartik\export\ExportMenu;
+use kartik\file\FileInput;
+use kartik\form\ActiveForm;
 use kartik\grid\GridView;
 use yii\helpers\Html;
 
@@ -14,29 +16,76 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="process-ors-entries-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-<!-- 
+    <!-- 
     <p>
         <?= Html::a('Create Process Ors Entries', ['create'], ['class' => 'btn btn-success']) ?>
     </p> -->
+    <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button>
+    <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
+                </div>
+                <div class='modal-body'>
+                    <center><a href="sub_account1/sub_account1_format.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                    <hr>
+                    <label for="ledger"> SELECT GENERAL LEDGER</label>
+                    <?php
+                    $ledger = Yii::$app->db->createCommand("SELECT chart_of_accounts.id, CONCAT(chart_of_accounts.uacs,' - ',chart_of_accounts.general_ledger) as name FROM chart_of_accounts")->queryAll();
+                    ?>
+                    <?php
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); 
-    ?>
+                    $form = ActiveForm::begin([
+                        'action' => ['process-ors-entries/import'],
+                        'method' => 'POST',
+                        'id' => 'import',
+                        'options' => [
+                            'enctype' => 'multipart/form-data',
+                        ], // important
+                    ]);
+
+                    // echo '<input type="file">';
+                    echo "<br>";
+                    echo FileInput::widget([
+                        'name' => 'file',
+                        // 'options' => ['multiple' => true],
+                        'id' => 'fileupload',
+                        'pluginOptions' => [
+                            'showPreview' => true,
+                            'showCaption' => true,
+                            'showRemove' => true,
+                            'showUpload' => true,
+                        ]
+                    ]);
+
+
+                    ActiveForm::end();
+
+                    ?>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- RAOUDS ANG MODEL ANI. TRIP KO LANG -->
     <!-- NAA SA PROCESS ORS ENTRIES CONTROLLER SA INDEX NAKO GE CHANGE -->
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'panel' => [
-            'heading'=>'<h3 class="panel-title"> Process Ors</h3>',
-            'type'=>'primary',
-            'before'=>Html::a('<i class="glyphicon glyphicon-plus"></i>Create Process Ors', ['create'], ['class' => 'btn btn-success']),
+            'heading' => '<h3 class="panel-title"> Process Ors</h3>',
+            'type' => 'primary',
+            'before' => Html::a('<i class="glyphicon glyphicon-plus"></i>Create Process Ors', ['create'], ['class' => 'btn btn-success']),
             'exportConfig' => [
                 ExportMenu::FORMAT_TEXT => false,
                 ExportMenu::FORMAT_PDF => false
             ],
         ],
-   
-        
+
+
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
@@ -55,7 +104,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'label' => 'Amount',
-                'attribute' => 'raoudEntries.amount'
+                'attribute' => 'raoudEntries.amount',
+                'format' => ['decimal', 2]
             ],
             [
                 'label' => 'Adjust Amount',
@@ -71,7 +121,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     } else {
                         return '';
                     }
-                }
+                },
+                'format' => ['decimal', 2]
             ],
 
             [

@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\models\Books;
 use app\models\ProcessOrs;
 use Yii;
 use app\models\ProcessOrsEntries;
@@ -90,6 +91,7 @@ class ProcessOrsEntriesController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'update_id' => '',
+            'update' => false,
         ]);
     }
 
@@ -117,7 +119,8 @@ class ProcessOrsEntriesController extends Controller
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'update_id' => $id
+            'update_id' => $id,
+            'update' => true
         ]);
     }
     public function actionAdjust($id)
@@ -208,6 +211,7 @@ class ProcessOrsEntriesController extends Controller
         if (!empty($_POST)) {
             $reporting_period = $_POST['reporting_period'];
             $transaction_id = $_POST['transaction_id'];
+            $book_id=$_POST['book_id'];
             // return json_encode($_POST['chart_of_account_id']);
             $transaction = \Yii::$app->db->beginTransaction();
             // KUNG NAAY SULOD ANG UPDATE ID  MAG ADD OG RAOUD OG ENTRY NIYA  PARA E ADJUST
@@ -307,15 +311,15 @@ class ProcessOrsEntriesController extends Controller
                     $ors = new ProcessOrs();
                     $ors->reporting_period = $reporting_period;
                     $ors->transaction_id = $transaction_id;
-                    $ors->serial_number = $this->getOrsSerialNumber($reporting_period);
+                    $ors->serial_number = $this->getOrsSerialNumber($reporting_period,$book_id);
                     if ($ors->validate()) {
 
 
                         if ($flag = $ors->save()) {
                             // echo $reporting_period;
                             foreach ($_POST['chart_of_account_id'] as $index => $value) {
-
                                 $q = Raouds::find()->where("id =:id", ['id' => $_POST['raoud_id'][$index]])->one();
+                                // KUNG ASA E CHARGE NA RAOUD ANG GE OBLIGATE
                                 // $q->isActive = 0;
                                 // $q->save();
                                 $qwe = explode('-', $q->serial_number);
@@ -323,7 +327,7 @@ class ProcessOrsEntriesController extends Controller
                                 // $raoud->record_allotment_id = $q->record_allotment_id;
                                 $raoud->record_allotment_entries_id = $q->record_allotment_entries_id;
                                 $raoud->is_parent = false;
-                                $raoud->serial_number = Yii::$app->memem->getOrsBursRaoudSerialNumber($q->serial_number);
+                                // $raoud->serial_number = Yii::$app->memem->getOrsBursRaoudSerialNumber($q->serial_number);
                                 $raoud->isActive = false;
                                 $raoud->process_ors_id = $ors->id;
                                 $raoud->reporting_period = $ors->reporting_period;
@@ -349,18 +353,18 @@ class ProcessOrsEntriesController extends Controller
                                 }
 
 
-                                $ors_entry = new ProcessOrsEntries();
-                                $ors_entry->chart_of_account_id = $value;
-                                $ors_entry->process_ors_id = $ors->id;
-                                $ors_entry->amount = $_POST['obligation_amount'][$index];
-                                if ($ors_entry->validate()) {
+                                // $ors_entry = new ProcessOrsEntries();
+                                // $ors_entry->chart_of_account_id = $value;
+                                // $ors_entry->process_ors_id = $ors->id;
+                                // $ors_entry->amount = $_POST['obligation_amount'][$index];
+                                // if ($ors_entry->validate()) {
 
-                                    if ($ors_entry->save()) {
-                                    }
-                                } else {
-                                    $transaction->rollBack();
-                                    return json_encode(["error" => 'yawa sa ors entry']);
-                                }
+                                //     if ($ors_entry->save()) {
+                                //     }
+                                // } else {
+                                //     $transaction->rollBack();
+                                //     return json_encode(["error" => 'yawa sa ors entry']);
+                                // }
                             }
                         }
                         if ($flag) {
@@ -371,7 +375,7 @@ class ProcessOrsEntriesController extends Controller
                         return json_encode(['isSuccess' => false, 'error' => $ors->errors]);
                     }
                 } catch (ErrorException $e) {
-                    return json_encode(["error" => $e]);
+                    return json_encode(["error" => "wla ni sulod"]);
                 }
             }
 
@@ -379,48 +383,24 @@ class ProcessOrsEntriesController extends Controller
 
         }
     }
-    public function actionQwe()
+
+    public function getOrsSerialNumber($reporting_period,$book_id)
     {
+        $book =Books::findOne($book_id);
         $query = (new \yii\db\Query())
             ->select("serial_number")
             ->from('process_ors')
             ->orderBy("id DESC")
             ->one();
-
-        $reporting_period = "2021-01";
-        $year = date('Y', strtotime($reporting_period));
-
-
-        if (empty($query['serial_number'])) {
-            $serial_number  = $year . '-' . 1;
-        } else {
-            $last_number = explode('-', $query['serial_number']);
-            $serial_number = $year . '-' . $last_number + 1;
-        }
-        echo "<pre>";
-        var_dump($serial_number);
-        echo "</pre>";
-    }
-    public function getOrsSerialNumber()
-    {
-        $reporting_period="2020-01";
-        $query = (new \yii\db\Query())
-            ->select("serial_number")
-            ->from('process_ors')
-            ->orderBy("id DESC")
-            ->one();
-
         // $reporting_period = "2021-01";
         $year = date('Y', strtotime($reporting_period));
-
-
         if (empty($query['serial_number'])) {
-            $serial_number  = $reporting_period . '-' . 1;
+            $x = 1;
         } else {
             $last_number = explode('-', $query['serial_number']);
-            $x = intval($last_number[2]) + 1;
-            $serial_number = $reporting_period . '-' . $x;
+            $x = intval($last_number[3]) + 1;
         }
+        $serial_number = $book->name .'-'. $reporting_period . '-' . $x;
         // ob_start();
         // echo "<pre>";
         // var_dump( $last_number[1]);
@@ -442,5 +422,186 @@ class ProcessOrsEntriesController extends Controller
         $y = implode('-', $x);
 
         return $y;
+    }
+
+    public function actionImport()
+    {
+        if (!empty($_POST)) {
+            // $chart_id = $_POST['chart_id'];
+            $name = $_FILES["file"]["name"];
+            // var_dump($_FILES['file']);
+            // die();
+            $id = uniqid();
+            $file = "process-ors/{$id}_{$name}";
+            if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
+            } else {
+                return "ERROR 2: MOVING FILES FAILED.";
+                die();
+            }
+            $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+            $excel = $reader->load($file);
+            $excel->setActiveSheetIndexByName('Import Process ORS');
+            $worksheet = $excel->getActiveSheet();
+            // print_r($excel->getSheetNames());
+
+            $data = [];
+            // $chart_uacs = ChartOfAccounts::find()->where("id = :id", ['id' => $chart_id])->one()->uacs;
+
+            $latest_tracking_no = (new \yii\db\Query())
+                ->select('tracking_number')
+                ->from('transaction')
+                ->orderBy('id DESC')->one();
+            if ($latest_tracking_no) {
+                $x = explode('-', $latest_tracking_no['tracking_number']);
+                $last_number = $x[3] + 1;
+            } else {
+                $last_number = 1;
+            }
+            // 
+            $group_container = [];
+            foreach ($worksheet->getRowIterator(4) as $key => $row) {
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                $cells = [];
+                $y = 0;
+
+                foreach ($cellIterator as $x => $cell) {
+                    $q = '';
+                    if ($y === 12) {
+                        $cells[] = $cell->getCalculatedValue();
+                    } else if ($y === 4) {
+                        $cells[] = $cell->getFormattedValue();
+                    } else {
+                        $cells[] =   $cell->getValue();
+                    }
+                    $y++;
+                }
+
+                $cluster = $cells[0];
+                $reporting_period =  $cells[1];
+                $date = $cells[2];
+                $transaction_number = $cells[3];
+                $obligation_number = $cells[4];
+                $allotment_number = $cells[5];
+                $allotment_uacs = trim($cells[6]);
+                $obligation_uacs = trim($cells[7]);
+                $amount = $cells[11];
+
+                if (
+                    empty($cluster)
+                    && empty($reporting_period)
+                    && empty($date)
+                    && empty($transaction_number)
+                    && empty($obligation_number)
+                    && empty($allotment_number)
+                    && empty($allotment_uacs)
+                    && empty($obligation_uacs)
+
+                ) {
+                    // return json_encode(['isSuccess' => false, 'error' => "Error Somthing is Missing in Line $key"]);
+                    // die();
+                } else {
+
+
+                    $allotment_chart = $this->getChartOfAccount($allotment_uacs);
+                    $obligation_chart = $this->getChartOfAccount($obligation_uacs);
+
+                    $transaction = (new \yii\db\Query())
+                        ->select('id')
+                        ->from('transaction')
+                        ->where("tracking_number LIKE :tracking_number", ['tracking_number' => "%$transaction_number"])
+                        ->one();
+                    // ASA NA RAOUD NKO E CHARGE
+
+                    $raoud = (new \yii\db\Query())
+                        ->select(['raouds.id AS raoud_id', 'record_allotment_entries.id AS rea_id'])
+                        ->from('record_allotment_entries')
+                        ->join("LEFT JOIN", "record_allotments", "record_allotment_entries.record_allotment_id = record_allotments.id")
+                        ->join("LEFT JOIN", "raouds", "record_allotment_entries.id = raouds.record_allotment_entries_id")
+                        ->where("record_allotments.serial_number LIKE :serial_number", ['serial_number' => "%$allotment_number"])
+                        ->andWhere("record_allotment_entries.chart_of_account_id = :chart_of_account_id", ['chart_of_account_id' => $allotment_chart['id']])
+                        ->andWhere("raouds.is_parent = :is_parent", ['is_parent' => true])
+                        ->one();
+
+                    $isInserted = array_search($obligation_number, array_column($group_container, 'serial_number'));
+
+                    if ($isInserted === false) {
+                        $ors = new ProcessOrs();
+                        $ors->reporting_period = $reporting_period;
+                        $ors->transaction_id = $transaction['id'];
+                        $ors->serial_number = $obligation_number;
+                        if ($ors->save(false)) {
+                            $group_container[] = ['id' => $ors->id, 'serial_number' => $ors->serial_number];
+                        }
+                        // $raoud = new Raouds();
+                        // $raoud->record_allotment_entries_id = $q->record_allotment_entries_id;
+                        // $raoud->is_parent = false;
+                        // $raoud->isActive = false;
+                        // $raoud->process_ors_id = $ors->id;
+                        // $raoud->reporting_period = $ors->reporting_period;
+                        // $raoud->obligated_amount = $_POST['obligation_amount'][$index];
+                        $ors_id = $ors->id;
+                    } else {
+                        $ors_id = $group_container[$isInserted]['id'];
+                    }
+                    // for ($i = 0; $i < 2; $i++) {
+                    $raoud_insert = new Raouds();
+                    $raoud_insert->record_allotment_entries_id = $raoud['rea_id'];
+                    $raoud_insert->is_parent = false;
+                    // $raoud->serial_number = Yii::$app->memem->getOrsBursRaoudSerialNumber($q->serial_number);
+                    $raoud_insert->isActive = false;
+                    $raoud_insert->process_ors_id = $ors_id;
+                    $raoud_insert->reporting_period = $ors->reporting_period;
+                    $raoud_insert->obligated_amount =  $amount;
+                    if ($raoud_insert->save(false)) {
+                        $raoud_entries = new RaoudEntries();
+                        $raoud_entries->raoud_id = $raoud_insert->id;
+                        $raoud_entries->chart_of_account_id = $obligation_chart['id'];
+                        $raoud_entries->amount = $amount;
+                        if ($raoud_entries->save(false)) {
+                        }
+                    }
+                    // }
+
+
+
+                    // }
+
+                }
+                $last_number++;
+            }
+
+            $column = [
+                'responsibility_center_id',
+                'payee_id',
+                'particular',
+                'gross_amount',
+                'tracking_number',
+                // 'earmark_no',
+                'payroll_number',
+                // 'transaction_date',
+            ];
+            // $ja = Yii::$app->db->createCommand()->batchInsert('transaction', $column, $data)->execute();
+
+            // return $this->redirect(['index']);
+            // return json_encode(['isSuccess' => true]);
+            ob_clean();
+            echo "<pre>";
+            var_dump($group_container);
+            echo "<pre>";
+            return ob_get_clean();
+        }
+    }
+    public function getChartOfAccount($uacs)
+    {
+
+
+        $chart = (new \yii\db\Query())
+            ->select('id')
+            ->from('chart_of_accounts')
+            ->where("uacs = :uacs", ['uacs' => $uacs])
+            ->one();
+        return $chart;
     }
 }

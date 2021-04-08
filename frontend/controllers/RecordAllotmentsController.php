@@ -14,6 +14,7 @@ use app\models\RecordAllotments;
 use app\models\RecordAllotmentsSearch;
 use app\models\SubAccounts2;
 use app\models\Transaction;
+use Codeception\Lib\Di;
 use Exception;
 use Mpdf\Tag\Em;
 use yii\web\Controller;
@@ -177,7 +178,7 @@ class RecordAllotmentsController extends Controller
         } else {
             $recordAllotment = new RecordAllotments();
         }
-        $serial_number =Yii::$app->memem->getRaoudSerialNumber($reporting_period, $book_id, $_POST['update_id']);
+        $serial_number = Yii::$app->memem->getRaoudSerialNumber($reporting_period, $book_id, $_POST['update_id']);
         $fund_category_and_classification_code_id = Yii::$app->db->createCommand("SELECT * FROM `fund_category_and_classification_code` WHERE  {$_POST['fund_classification_code']}>=`fund_category_and_classification_code`.from  and {$_POST['fund_classification_code']} <= `fund_category_and_classification_code`.to LIMIT 1 ")->queryOne();
         $recordAllotment->date_issued = $date_issued;
         $recordAllotment->fund_classification = $_POST['fund_classification_code'];
@@ -211,7 +212,7 @@ class RecordAllotmentsController extends Controller
                                 $raoud->reporting_period = $reporting_period;
                                 $raoud->record_allotment_entries_id = $ra_entries->id;
 
-                                if ($raoud->validate()) {   
+                                if ($raoud->validate()) {
 
                                     if ($raoud->save(false)) {
                                         $raoudEntry = new RaoudEntries();
@@ -279,7 +280,7 @@ class RecordAllotmentsController extends Controller
                 'valid_until' => $model->valid_until,
                 'particulars' => $model->particulars,
                 'fund_classification' => $model->fund_classification,
-                'book_id'=>$model->book_id,
+                'book_id' => $model->book_id,
             ];
             $record_allotment_entries = [];
             foreach ($model->recordAllotmentEntries as $val) {
@@ -302,40 +303,37 @@ class RecordAllotmentsController extends Controller
     {
 
         return Yii::$app->memem->hello('heelo');
-         
     }
-    // public function getSerialNumber($reporting_period, $book_id, $update_id)
-    // {
+    public function getSerialNumber($reporting_period, $book_name, $update_id)
+    {
 
 
-    //     $book_name = Books::findOne($book_id);
+        // $fund_cluster = FundClusterCode::findOne($fund_cluster_code_id);
 
-    //     // $q = RecordAllotments::find()
-    //     // ->orderBy(['id' => SORT_DESC])
-    //     // ->one();
+        // $q = RecordAllotments::find()
+        // ->orderBy(['id' => SORT_DESC])
+        // ->one();
 
-    //     // KUHAAON ANG SERIAL NUMBER SA LAST ID OR SA GE UPDATE NA ID
-    //     $f = (new \yii\db\Query())
-    //         ->select('serial_number')
-    //         ->from('record_allotments');
-    //         !empty($update_id) ? $f->where("id =:id", ['id' => $update_id]) : $f->orderBy("id DESC");
-    //     $q = $f->one();
+        // KUHAAON ANG SERIAL NUMBER SA LAST ID OR SA GE UPDATE NA ID
+        $f = (new \yii\db\Query())
+            ->select('serial_number')
+            ->from('record_allotments');
+        !empty($update_id) ? $f->where("id =:id", ['id' => $update_id]) : $f->orderBy("id DESC");
+        $q = $f->one();
+        if (!empty($q)) {
+            $x = explode('-', $q['serial_number']);
+            $y = 1;
+            if (!empty($update_id)) {
+                $y = 0;
+            }
+            $last_number = $x[3] + $y;
+        } else {
+            $last_number = 1;
+        }
 
-
-    //     if (!empty($q)) {
-    //         $x = explode('-', $q['serial_number']);
-    //         $y = 1;
-    //         if (!empty($update_id)) {
-    //             $y = 0;
-    //         }
-    //         $last_number = $x[3] + $y;
-    //     } else {
-    //         $last_number = 1;
-    //     }
-
-    //     $serial_number = $book_name->name . '-' . $reporting_period . '-' . $last_number;
-    //     return  $serial_number;
-    // }
+        $serial_number = $book_name . '-' . $reporting_period . '-' . $last_number;
+        return  $serial_number;
+    }
     public function actionImport()
     {
         if (!empty($_POST)) {
@@ -353,16 +351,16 @@ class RecordAllotmentsController extends Controller
             $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
             $excel = $reader->load($file);
-            // $excel->setActiveSheetIndexByName('Chart of Accounts - Final');
+            $excel->setActiveSheetIndexByName(' Import Record Allotments');
             $worksheet = $excel->getActiveSheet();
             // print_r($excel->getSheetNames());
 
             $data = [];
             // $chart_uacs = ChartOfAccounts::find()->where("id = :id", ['id' => $chart_id])->one()->uacs;
             // 
-            $number_container =[];
-
-            foreach ($worksheet->getRowIterator(2) as $key => $row) {
+            $number_container = [];
+            $transaction = \Yii::$app->db->beginTransaction();
+            foreach ($worksheet->getRowIterator(4) as $key => $row) {
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
                 $cells = [];
@@ -371,127 +369,200 @@ class RecordAllotmentsController extends Controller
                     $q = '';
                     $cells[] =   $cell->getValue();
                 }
-                $group_number=$cells[0];
-                $date_issued = $cells[0];
-                $valid_until = $cells[1];
-                $reporting_period = $cells[2];
-                $fund_cluster_code_name = $cells[3];
-                $document_recieve_name = $cells[4];
-                $financing_source_code_name = $cells[5];
-                $authorization_code_name = $cells[6];
-                $mfo_pap_code_name = $cells[7];
-                $fund_source_name = $cells[7];
-                $fund_classification_code = $cells[7];
-                $book_name = $cells[7];
-                $amount = $cells[7];
-                $chart_name = $cells[7];
-                // $name = $cells[1];
-                $chart = (new \yii\db\Query())
-                ->select('id')
-                ->from('chart_of_accounts')
-                ->where('general_ledger :general_ledger',['general_ledger'=>$chart_name])
-                ->one();
+                $group_number = $cells[1];
+                $document_recieve_name = $cells[2];
+                $particular = $cells[3];
+                $mfo_pap_code_name = $cells[4];
+                $fund_cluster_code_name = $cells[7];
+                $financing_source_code_name = $cells[8];
+                $authorization_code_name = $cells[9];
+                $fund_classification_code_name = $cells[10];
+                $fund_source_name = $cells[12];
+                $uacs = $cells[13];
+                $amount = $cells[15];
 
                 if (
-                    empty($trackidate_issuedng_number)
+                    empty($group_number)
+                    || empty($document_recieve_name)
+                    || empty($particular)
+                    || empty($mfo_pap_code_name)
+                    || empty($fund_cluster_code_name)
+                    || empty($financing_source_code_name)
+                    || empty($authorization_code_name)
+                    || empty($fund_classification_code_name)
+                    || empty($fund_source_name)
+                    || empty($uacs)
+                    || empty($amount)
+
                 ) {
-                    return json_encode(['error' => "Error Somthing is Missing in Line $key"]);
-                    break;
+
+                    $transaction->rollBack();
+                    return json_encode(['error' => 'somthing is missing']);
+                    die();
                 } else {
-
-                    $exist= array_search($group_number,array_column($number_container,'id'));
-                    if (!$exist){
+                    $chart = (new \yii\db\Query())
+                        ->select('id')
+                        ->from('chart_of_accounts')
+                        ->where('uacs =:uacs', ['uacs' => $uacs])
+                        ->one();
+                    if (empty($chart)) {
+                        $transaction->rollBack();
+                        return json_encode(['error' => "Chart of Account Object Code Does Not Exist $key"]);
+                        die();
+                    }
+                    $document_recieve = (new \yii\db\Query())
+                        ->select('id')
+                        ->from('document_recieve')
+                        ->where("name LIKE :name", ['name' => $document_recieve_name])
+                        ->one();
+                    if (empty($document_recieve)) {
+                        $transaction->rollBack();
+                        return json_encode(['error' => "Document Recieve  Does Not Exist $key"]);
+                        die();
+                    }
+                    $mfo_pap_code = (new \yii\db\Query())
+                        ->select('id')
+                        ->from('mfo_pap_code')
+                        ->where("code = :code", ['code' => $mfo_pap_code_name])
+                        ->one();
+                    if (empty($mfo_pap_code)) {
+                        $transaction->rollBack();
+                        return json_encode(['error' => "MFO/PAP Code  Does Not Exist in line $key"]);
+                        die();
+                    }
+                    $fund_cluster_code = (new \yii\db\Query())
+                        ->select('id')
+                        ->from('fund_cluster_code')
+                        ->where('name LIKE :name', ['name' => $fund_cluster_code_name])
+                        ->one();
+                    
+                    if (empty($fund_cluster_code)) {
+                        $transaction->rollBack();
+                        return json_encode(['error' => "Fund Cluster Code  Does Not Exist $key"]);
+                        die();
+                    }
+                    $financing_source_code = (new \yii\db\Query())
+                        ->select('id')
+                        ->from('financing_source_code')
+                        ->where("name LIKE :name", ['name' => $financing_source_code_name])
+                        ->one();
+                    if (empty($financing_source_code)) {
+                        $transaction->rollBack();
+                        return json_encode(['error' => "Fund Source Code  Does Not Exist $key"]);
+                        die();
+                    }
+                    $authorization_code = (new \yii\db\Query())
+                        ->select('id')
+                        ->from('authorization_code')
+                        ->where("name LIKE :name", ['name' => $authorization_code_name])
+                        ->one();
+                    if (empty($authorization_code)) {
+                        $transaction->rollBack();
+                        return json_encode(['error' => "Authorization Code  Does Not Exist $key"]);
+                        die();
+                    }
+                    // $fund_classification_code = (new \yii\db\Query())
+                    //     ->select('id')
+                    //     ->from('fund_category_and_classification_code')
+                    //     ->where("name LIKE :name", ['name' => $fund_classification_code_name])
+                    //     ->one();
+                    $fund_classification_code = Yii::$app->db->createCommand("SELECT * FROM `fund_category_and_classification_code` WHERE  {$fund_classification_code_name}>=`fund_category_and_classification_code`.from  and {$fund_classification_code_name} <= `fund_category_and_classification_code`.to LIMIT 1 ")->queryOne();
+                    if (empty($fund_classification_code)) {
+                        $transaction->rollBack();
+                        return json_encode(['error' => "Fund Category and Classification Code  Does Not Exist $key"]);
+                        die();
+                    }
+                    $fund_source = (new \yii\db\Query())
+                        ->select('id')
+                        ->from('fund_source')
+                        ->where("name LIKE :name", ['name' => $fund_source_name])
+                        ->one();
+                    if (empty($fund_source)) {
+                        $transaction->rollBack();
+                        return json_encode(['error' => 'Fund Source  Does Not Exist']);
+                        die();
+                    }
+                    $books=(new \yii\db\Query())
+                    ->select(['id','name'])
+                    ->from('books')
+                    ->where("books.name LIKE :book",['book'=>"%$fund_cluster_code_name"])
+                    ->one();
+                    $exist = array_search($group_number, array_column($number_container, 'no'));
+                    $reporting_period = "2021-01";
+                    if ($exist === false) {
+                        $funding_code = $fund_cluster_code_name . $financing_source_code_name . $authorization_code_name . $fund_classification_code_name;
                         $recordAllotment = new RecordAllotments();
-                        // $serial_number = $this->getSerialNumber($reporting_period, $book_id, $_POST['update_id']);
-                        $fund_category_and_classification_code_id = Yii::$app->db->createCommand("SELECT * FROM `fund_category_and_classification_code` WHERE  {$_POST['fund_classification_code']}>=`fund_category_and_classification_code`.from  and {$_POST['fund_classification_code']} <= `fund_category_and_classification_code`.to LIMIT 1 ")->queryOne();
-                        $recordAllotment->date_issued = $date_issued;
-                        $recordAllotment->fund_classification = $_POST['fund_classification_code'];
-                        // $recordAllotment->serial_number = $serial_number;
-                        $recordAllotment->valid_until = $valid_until;
-                        $recordAllotment->reporting_period = $reporting_period;
-                        // $recordAllotment->particulars = $particular;
-                        // $recordAllotment->fund_cluster_code_id = $fund_cluster_code_id;
-                        // $recordAllotment->document_recieve_id = $document_recieve_id;
-                        // $recordAllotment->authorization_code_id = $authorization_code_id;
-                        // $recordAllotment->financing_source_code_id = $financing_source_code_id;
-                        // $recordAllotment->mfo_pap_code_id = $mfo_pap_code_id;
-                        // $recordAllotment->book_id = $book_id;
-                        // $recordAllotment->fund_source_id = $fund_source_id;
-                        // $recordAllotment->fund_category_and_classification_code_id = $fund_category_and_classification_code_id['id'];
-                        if ($recordAllotment->save(false)){
+                        $recordAllotment->serial_number = $this->getSerialNumber($reporting_period, $books['name'], '');
+                        $recordAllotment->document_recieve_id = $document_recieve['id'];
+                        $recordAllotment->particulars = $particular;
+                        $recordAllotment->mfo_pap_code_id = $mfo_pap_code['id'];
+                        $recordAllotment->fund_cluster_code_id = $fund_cluster_code['id'];
+                        $recordAllotment->financing_source_code_id = $financing_source_code['id'];
+                        $recordAllotment->authorization_code_id = $authorization_code['id'];
+                        $recordAllotment->fund_category_and_classification_code_id = $fund_classification_code['id'];
+                        $recordAllotment->fund_source_id = $fund_source['id'];
+                        $recordAllotment->funding_code = $funding_code;
 
-                            $record_allotment_id= $recordAllotment->id;
+
+                        if ($recordAllotment->save(false)) {
+                            $record_allotment_id = $recordAllotment->id;
                             $number_container[] =  ['id' =>  $recordAllotment->id, 'no' => $group_number];
                         }
-                        
-
-                    }
-                    else{
+                    } else {
                         $record_allotment_id = $number_container[$exist]['id'];
                     }
-                    $data[]=[
+                    $ra_entries = new RecordAllotmentEntries();
+                    $ra_entries->record_allotment_id = $record_allotment_id;
+                    $ra_entries->chart_of_account_id =  $chart['id'];
+                    $ra_entries->amount = $amount;
+                    if ($ra_entries->save(false)) {
+                        $raoud = new Raouds();
+                        $raoud->record_allotment_entries_id = $ra_entries->id;
                         
-                        'chart_of_account_id' => $chart['id'],
-                        'record_allotment_id' => $record_allotment_id,
-                        'amount' => $amount,
-                    ];
-                    // $payee  = (new \yii\db\Query())
-                    // ->select(['account_name','id'])
-                    // ->from('payee')
-                    // ->where('account_name LIKE :account_name',['account_name'=>$payee_name])
-                    // ->one();
-                    // $responsibility_center  = (new \yii\db\Query())
-                    // ->select(['name','id'])
-                    // ->from('responsibility_center')
-                    // ->where('name LIKE :name',['name'=>$responsibility_center_name])
-                    // ->one();
-                    // $responsibility_center = ResponsibilityCenter::find()->where('like', 'name', $responsibility_center_name)->one();
-                    // if (!empty($payee)) {
-                    //     $payee_id = $payee['id'];
-                    // } else {
-                    //     return json_encode(['error' => "Payee Does Not Exist in line $key"]);
-                    //     break;
-                    // }
-                    // if (!empty($responsibility_center)) {
-                    //     $responsibility_center_id = $responsibility_center['id'];
-                    // } else {
-                    //     return json_encode(['error' => "Responsibility Center Does Not Exist in Line $key"]);
-                    //     break;
-                    // }
-                    
+                        $raoud->serial_number=Yii::$app->memem->getRaoudSerialNumber($reporting_period,$fund_cluster_code['id'],'');
+                        $raoud->reporting_period= $reporting_period;
+                        if ($raoud->save(false)) {
+                            $raoudEntry = new RaoudEntries();
+                            $raoudEntry->raoud_id = $raoud->id;
+                            $raoudEntry->chart_of_account_id = $chart['id'];
+                            $raoudEntry->amount = $amount;
+                            if ($raoudEntry->save()) {
+                            } else {
+                                $transaction->rollBack();
+                                return json_encode("error");
+                            }
+                        } else {
+                            $transaction->rollBack();
+                            return json_encode("error");
+                        }
+                    } else {
+                        $transaction->rollBack();
+                        return json_encode("error");
+                    }
                     // $data[] = [
-                    //     'responsibility_center_id' => $responsibility_center_id,
-                    //     'payee_id' => $payee_id,
-                    //     'particular' => $particular,
-                    //     'gross_amount' => $amount,
-                    //     'tracking_number' => $tracking_number,
-                    //     'earmark_no' => $earmark_number,
-                    //     'payroll_number' => $payroll_number,
-                    //     'transaction_date' => $date
+
+                    //     'record_allotment_id' => $record_allotment_id,
+                    //     'chart_of_account_id' => $chart['id'],
+                    //     'amount' => $amount,
                     // ];
                 }
             }
+            $transaction->commit();
+            // $column = [
+            //     'record_allotment_id',
+            //     'chart_of_account_id',
+            //     'amount',
 
-            $column = [
-                'responsibility_center_id',
-                'payee_id',
-                'particular',
-                'gross_amount',
-                'tracking_number',
-                'earmark_no',
-                'payroll_number',
-                'transaction_date',
-            ];
-            $ja = Yii::$app->db->createCommand()->batchInsert('transaction', $column, $data)->execute();
+            // ];
+            // $ja = Yii::$app->db->createCommand()->batchInsert('record_allotment_entries', $column, $data)->execute();
 
             // return $this->redirect(['index']);
-            return json_encode(['error'=>$data]);
-            // ob_clean();
-            // echo "<pre>";
-            // var_dump($payee);
-            // echo "<pre>";
-            // return ob_get_clean();
+            // return json_encode(['error' => $data]);
+            ob_clean();
+            echo "<pre>";
+            var_dump('success');
+            echo "<pre>";
+            return ob_get_clean();
         }
     }
-
 }

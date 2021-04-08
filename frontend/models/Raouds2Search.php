@@ -11,14 +11,15 @@ use app\models\Raouds;
  */
 class Raouds2Search extends Raouds
 {
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['id', 'process_ors_id', 'record_allotment_entries_id', 'isActive', 'is_parent'], 'integer'],
-            [['serial_number', 'reporting_period'], 'safe'],
+            [['id', 'process_ors_id', 'record_allotment_entries_id', 'isActive', 'is_parent',], 'integer'],
+            [['serial_number', 'reporting_period',], 'safe'],
             [['obligated_amount'], 'number'],
         ];
     }
@@ -41,10 +42,9 @@ class Raouds2Search extends Raouds
      */
     public function search($params)
     {
-        $query = Raouds::find()->where("isActive =:isActive",['isActive'=>true]);
+        $query = Raouds::find()->where("isActive =:isActive", ['isActive' => true]);
 
         // add conditions that should always apply here
-
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -56,6 +56,9 @@ class Raouds2Search extends Raouds
             // $query->where('0=1');
             return $dataProvider;
         }
+        $query->joinWith('recordAllotmentEntries');
+        $query->join("LEFT JOIN", 'record_allotments', "record_allotment_entries.record_allotment_id=record_allotments.id");
+
 
         // grid filtering conditions
         $query->andFilterWhere([
@@ -68,7 +71,9 @@ class Raouds2Search extends Raouds
         ]);
 
         $query->andFilterWhere(['like', 'serial_number', $this->serial_number])
-            ->andFilterWhere(['like', 'reporting_period', $this->reporting_period]);
+            ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
+            // ->andFilterWhere(['=', 'record_allotments.mfo_pap_code_id', $sample])
+            ;
 
         return $dataProvider;
     }

@@ -12,11 +12,11 @@ class m210405_005233_add_tax_percents_to_dv_aucs_table extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn('dv_aucs', '1_percent_ewt', $this->float());
-        $this->addColumn('dv_aucs', '2_percent_ewt', $this->float());
-        $this->addColumn('dv_aucs', '3_percent_ft', $this->float());
-        $this->addColumn('dv_aucs', '5_percent_ft', $this->float());
-        $this->addColumn('dv_aucs', '5_percent_ewt', $this->float());
+        $this->addColumn('dv_aucs', 'one_percent_ewt', $this->float());
+        $this->addColumn('dv_aucs', 'two_percent_ewt', $this->float());
+        $this->addColumn('dv_aucs', 'three_percent_ft', $this->float());
+        $this->addColumn('dv_aucs', 'five_percent_ft', $this->float());
+        $this->addColumn('dv_aucs', 'five_percent_ewt', $this->float());
         $this->addColumn('dv_aucs', 'total_withheld', $this->float());
     }
 
@@ -25,11 +25,11 @@ class m210405_005233_add_tax_percents_to_dv_aucs_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropColumn('dv_aucs', '1_percent_ewt');
-        $this->dropColumn('dv_aucs', '2_percent_ewt');
-        $this->dropColumn('dv_aucs', '3_percent_ft');
-        $this->dropColumn('dv_aucs', '5_percent_ft');
-        $this->dropColumn('dv_aucs', '5_percent_ewt');
+        $this->dropColumn('dv_aucs', 'one_percent_ewt');
+        $this->dropColumn('dv_aucs', 'two_percent_ewt');
+        $this->dropColumn('dv_aucs', 'three_percent_ft');
+        $this->dropColumn('dv_aucs', 'five_percent_ft');
+        $this->dropColumn('dv_aucs', 'five_percent_ewt');
         $this->dropColumn('dv_aucs', 'total_withheld');
     }
 

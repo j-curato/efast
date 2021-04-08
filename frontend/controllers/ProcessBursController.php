@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\models\Books;
 use Yii;
 use app\models\ProcessBurs;
 use app\models\ProcessBursRaoudsSearch;
@@ -187,6 +188,8 @@ class ProcessBursController extends Controller
         // return json_encode($_POST['reporting_period']);
         if (!empty($_POST)) {
             $reporting_period = $_POST['reporting_period'];
+            $transaction_id=$_POST['transaction_id'];
+            $book_id=$_POST['book_id'];
             // return json_encode($_POST['chart_of_account_id']);
             $transaction = \Yii::$app->db->beginTransaction();
             // KUNG NAAY SULOD ANG UPDATE ID  MAG ADD OG RAOUD OG ENTRY NIYA  PARA E ADJUST
@@ -277,6 +280,7 @@ class ProcessBursController extends Controller
                 try {
                     $burs = new ProcessBurs();
                     $burs->reporting_period = $reporting_period;
+                    $burs->serial_number= $this->getBursSerialNumber($reporting_period,$book_id,$transaction_id);
                     if ($burs->validate()) {
 
                         if ($flag = $burs->save()) {
@@ -344,5 +348,29 @@ class ProcessBursController extends Controller
             // $ors->reporting_period = $reporting_period
 
         }
+    }
+    public function getBursSerialNumber($reporting_period,$book_id)
+    {
+        $book =Books::findOne($book_id);
+        $query = (new \yii\db\Query())
+            ->select("serial_number")
+            ->from('process_burs')
+            ->orderBy("id DESC")
+            ->one();
+        // $reporting_period = "2021-01";
+        $year = date('Y', strtotime($reporting_period));
+        if (empty($query['serial_number'])) {
+            $x = 1;
+        } else {
+            $last_number = explode('-', $query['serial_number']);
+            $x = intval($last_number[3]) + 1;
+        }
+        $serial_number = $book->name .'-'. $reporting_period . '-' . $x;
+        // ob_start();
+        // echo "<pre>";
+        // var_dump( $last_number[1]);
+        // echo "</pre>";
+        // return ob_get_clean();
+        return $serial_number;
     }
 }

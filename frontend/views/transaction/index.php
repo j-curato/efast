@@ -139,13 +139,21 @@ Modal::end();
 
             'id',
             'responsibility_center_id',
-            'payee_id',
+            // 'payee_id',
+            // [
+
+
+            // ],
             [
                 'label' => 'Payee',
                 'attribute' => 'payee.account_name'
             ],
             'particular',
-            'gross_amount',
+            // 'gross_amount',
+            [
+                'attribute'=>'gross_amount',
+                'format' => ['decimal', 2],
+            ],
             'tracking_number',
             'earmark_no',
             'payroll_number',
@@ -206,7 +214,7 @@ $script = <<<JS
                                 icon: 'error',
                                 title: res.error,
                                 type: "error",
-                                timer:3000,
+                                timer:10000,
                                 closeOnConfirm: false,
                                 closeOnCancel: false
                             })

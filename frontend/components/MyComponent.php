@@ -3,6 +3,7 @@
 namespace frontend\components;
 
 use app\models\Books;
+use app\models\FundClusterCode;
 use yii\base\Component;
 
 class MyComponent extends Component
@@ -11,11 +12,11 @@ class MyComponent extends Component
     // {
     //     return $q;
     // }
-    public function getRaoudSerialNumber($reporting_period, $book_id, $update_id)
+    public function getRaoudSerialNumber($reporting_period, $book, $update_id)
     {
 
 
-        $book_name = Books::findOne($book_id);
+        $fund_cluster = Books::findOne($book);
 
         // $q = RecordAllotments::find()
         // ->orderBy(['id' => SORT_DESC])
@@ -24,7 +25,7 @@ class MyComponent extends Component
         // KUHAAON ANG SERIAL NUMBER SA LAST ID OR SA GE UPDATE NA ID
         $f = (new \yii\db\Query())
             ->select('serial_number')
-            ->from('raouds');
+            ->from('record_allotments');
             !empty($update_id) ? $f->where("id =:id", ['id' => $update_id]) : $f->orderBy("id DESC");
         $q = $f->one();
 
@@ -40,7 +41,7 @@ class MyComponent extends Component
             $last_number = 1;
         }
 
-        $serial_number = $book_name->name . '-' . $reporting_period . '-' . $last_number;
+        $serial_number = $fund_cluster->name . '-' . $reporting_period . '-' . $last_number;
         return  $serial_number;
     }
 

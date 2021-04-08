@@ -31,7 +31,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container panel panel-default">
 
         <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>
-
+        <div style="float: right;">
+            <h6>
+                <?php
+                echo $model->tracking_number;
+                ?>
+            </h6>
+        </div>
         <table style="margin-top:30px">
             <tbody>
 
@@ -42,34 +48,34 @@ $this->params['breadcrumbs'][] = $this->title;
                             OBLIGATION REQUEST AND STATUS
                         </h4>
                         <div>
-                            _____________________________
+                            ___________________________________
                         </div>
                         <h5 class="head">
-                            entity name
+                            ENTITY NAME
                         </h5>
 
                     </td>
                     <td colspan="3">
-                        <div>
-                            <span>Serial Number:</span>
-                            <span>124123</span>
+                        <div class="serial">
+                            <span>Serial No.:</span>
+                            <span>______________________</span>
                         </div>
-                        <div>
+                        <div class="serial">
                             <span>Date:</span>
-                            <span>15-12-12</span>
+                            <span>__________________________</span>
                         </div>
-                        <div>
+                        <div class="serial">
                             <span>Fund Cluster:</span>
-                            <span>Fund 01</span>
+                            <span>____________________</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                        payee
+                        Payee
                     </td>
                     <td colspan="6">
-                        rqwrqweqwe qwe qwe qwe qwe qwe
+                        <?php echo $model->payee->account_name; ?>
                     </td>
                 </tr>
                 <tr>
@@ -77,7 +83,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         Office
                     </td>
                     <td colspan="6">
-                        qweqw
                     </td>
                 </tr>
                 <tr class="header">
@@ -85,7 +90,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         Address
                     </td>
                     <td colspan="6">
-                        qwe
                     </td>
                 </tr>
                 <tr class="header">
@@ -106,17 +110,45 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2">
+                    <td colspan='2' style='padding:10px'>
+                        <?php
+                        echo !empty($model->responsibilityCenter->name) ? $model->responsibilityCenter->name : '';
+                        ?>
                     </td>
-                    <td colspan="3">
+                    <td colspan='3'>
+                        <?php echo $model->particular ?>
                     </td>
-                    <td colspan="1">
+                    <td colspan='1'>
                     </td>
-                    <td colspan="1">
+                    <td colspan='1'>
                     </td>
-                    <td colspan="1">
+                    <td colspan='1'>
                     </td>
                 </tr>
+
+                <?php
+                $i = 0;
+                while ($i < 9) {
+                    echo "
+                    <tr >
+                    <td colspan='2' style='padding:10px'>
+                    </td>
+                    <td colspan='3'>
+                    </td>
+                    <td colspan='1'>
+                    </td>
+                    <td colspan='1'>
+                    </td>
+                    <td colspan='1'>
+                    </td>
+                </tr>
+                    
+                    ";
+                    $i++;
+                }
+
+                ?>
+
 
 
                 <tr style="border-top:1px solid black">
@@ -210,16 +242,25 @@ $this->params['breadcrumbs'][] = $this->title;
                         Due and Demandable
                     </td>
                 </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
+
+                <?php
+                $x = 0;
+                while ($x < 7) {
+                    echo "
+                    <tr>
+                        <td style='padding:10px'></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    ";
+                    $x++;
+                }
+                ?>
 
 
 
@@ -228,7 +269,294 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php Pjax::end() ?>
 
     </div>
+    <p style='page-break-after:always;'></p>
+    <div class="container panel panel-default">
+        <div style="float:right">
+            <h6>
+                <?php
+                echo $model->tracking_number;
+                ?>
+            </h6>
+        </div>
+        <table style="margin-top:30px">
+            <tbody>
+
+                <tr>
+
+                    <td colspan="5" style="text-align:center">
+                        <div>
+                            ___________________________
+                        </div>
+                        <h6 class="head">
+                            ENTITY NAME
+                        </h6>
+                        <h5 class="head">
+                            DISBURSEMENT VOUCHER
+                        </h5>
+
+                    </td>
+                    <td colspan="1">
+                        <div>
+                            <span>Fund Cluster:</span>
+                            <span>______________</span>
+                        </div>
+                        <div>
+                            <span>Date:</span>
+                            <span>__________________</span>
+                        </div>
+                        <div>
+                            <span>DV No.:</span>
+                            <span>_________________</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Mode of Payment
+                    </td>
+                    <td colspan="5">
+                        <div style="display: flex;width:100%;justify-content:space-evenly">
+                            <div style="display:flex">
+                                <div class="checkbox"></div>
+                                <div>
+                                    <div class="row">
+                                        <div></div>
+                                        <h6><i class="fa-square-o square-icon"></i>MDS Check</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display:flex">
+                                <div class="checkbox"></div>
+                                <h6><i class="fa-square-o square-icon"></i>Commercial Check</h6>
+                            </div>
+                            <div style="display:flex">
+                                <div class="checkbox"></div>
+                                <h6><i class="fa-square-o square-icon"></i>ADA</h6>
+                            </div>
+                            <div style="display:flex">
+                                <div class="checkbox"></div>
+                                <h6><i class="fa-square-o square-icon"></i>Others (Please specify)</h6>
+                            </div>
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td colspan="1" class="head" rowspan="2">
+                        Payee
+                    </td>
+                    <td colspan="3" rowspan="2">
+                        <?php echo $model->payee->account_name; ?>
+                    </td>
+                    <td rowspan="1">
+                        TIN/Employee No.
+                    </td>
+                    <td rowspan="1">
+                        ORS/BURS No.
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px;"></td>
+                    <td></td>
+                </tr>
+
+                <tr class="header">
+                    <td colspan="1" class="head">
+                        Address
+                    </td>
+                    <td colspan="5">
+                    </td>
+                </tr>
+                <tr>
+
+                    <td colspan="3">
+                        Particulars
+                    </td>
+                    <td>
+                        MFO/PAP
+                    </td>
+                    <td>
+                        Responsibility center
+                    </td>
+                    <td>
+                        Amount
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan='3' style='padding:10px'>
+                        <?php echo $model->particular ?>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <?php
+                $x = 0;
+                while ($x < 7) {
+                    echo "
+                    <tr>
+                        <td colspan='3' style='padding:10px'>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                  </tr>
+                    ";
+                    $x++;
+                }
+
+                ?>
+                <tr>
+                    <td class="head" style="text-align: center; font-size:12px" colspan="5">
+                        Amount Due
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="padding: 0;">
+                        <h6 style="margin:0">A: Certified: Expenses/Cash Advance necessary, lawful and incurred under my direct supervision.</h6>
+                        <h5 style="text-align: center; margin:2rem">
+                            Printed Name, Designation and Signature of Supervisor
+                        </h5>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <h6 class="head">
+                            B. Accounting Entry
+                        </h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td style='padding:10px' colspan='3'> Account Title</td>
+                    <td>UACS Code</td>
+                    <td>Debit</td>
+                    <td>Credit</td>
+                </tr>
+                <?php
+                $y = 0;
+                while ($y < 4) {
+
+                    echo "
+                    <tr>
+                        <td style='padding:10px' colspan='3'></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    ";
+                    $y++;
+                }
+
+                ?>
+                <tr>
+                    <td colspan="3" style="padding:0;">
+                        <h6 class="head">
+                            C. Certified
+                        </h6>
+
+
+                        <h6><i class="fa-square-o square-icon"></i>Cash Available</h6>
+                        <h6><i class="fa-square-o square-icon"></i> Subject to Authority to Debit Account (when applicable)</h6>
+                        <h6><i class="fa-square-o square-icon"></i> Supporting documents complete and amount claimed </h6>
+
+                    </td>
+                    <td colspan="3" style="padding:0;">
+                        <h6 style="margin:0" style="float:left" class="head">D:Approved for Payment</h6>
+                        <!-- <h5 style="text-align: center; margin:4rem">
+                        </h5> -->
+
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>Signature</td>
+                    <td colspan="2"></td>
+                    <td>Signature</td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+
+                    <td>Printed Name</td>
+                    <td colspan="2"></td>
+                    <td>Printed Name</td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td>Postion</td>
+                    <td colspan="2"></td>
+                    <td>Postion</td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td>Date</td>
+                    <td colspan="2"></td>
+                    <td>Date</td>
+                    <td colspan='2'></td>
+                </tr>
+                <!-- LETTER E -->
+                <tr>
+                    <td colspan="5" class="head">
+                        E. Reciept Payment
+                    </td>
+                    <td rowspan="2">JEV No.</td>
+                </tr>
+                <tr>
+
+                    <td>Check/ADA No. :</td>
+                    <td style="width:200px"></td>
+                    <td>Date :</td>
+                    <td colspan="">Bank Name & Account Number:</td>
+                    <td></td>
+
+                </tr>
+                <tr>
+                    <td>
+                        Signature :
+                    </td>
+                    <td>
+
+                    </td>
+                    <td>
+                        Date :
+                    </td>
+                    <td>
+                        Printed Name:
+                    </td>
+                    <td></td>
+
+                    <td rowspan="2">
+                        Date:
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="5">Official Receipt No. & Date/Other Documents</td>
+
+                </tr>
+
+
+
+
+
+            </tbody>
+        </table>
+    </div>
+
     <style>
+        .square-icon {
+            font-size: 20px;
+        }
+
+        .serial {
+            margin-top: 8px;
+        }
+
         .head {
             text-align: center;
             font-weight: bold;

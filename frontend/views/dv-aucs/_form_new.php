@@ -20,7 +20,83 @@ use yii\helpers\Html;
 
 
     <div id="container" class="container">
+        <form id='save_data' method='POST'>
+            <?php
+            $q = 0;
+            if (!empty($update_id)) {
 
+                $q = $update_id;
+            }
+            echo " <input type='text' id='update_id' name='update_id' value='$q'  style='display:none;' >";
+            ?>
+            <div class="row">
+
+                <div class="col-sm-3">
+                    <label for="reporting_period">Reporting Period</label>
+                    <?php
+                    echo DatePicker::widget([
+                        'name' => 'reporting_period',
+                        'id' => 'reporting_period',
+                        // 'value' => '12/31/2010',
+                        // 'options' => ['required' => true],
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'format' => 'yyyy-mm',
+                            'startView' => "year",
+                            'minViewMode' => "months",
+                        ]
+                    ]);
+                    ?>
+                </div>
+
+                <div class="col-sm-3" style="height:60x">
+                    <label for="transaction">Transaction Type</label>
+                    <select id="transaction" name="transaction" class="transaction select" style="width: 100%; margin-top:50px">
+                        <option></option>
+                    </select>
+                </div>
+
+                <div class="col-sm-3" style="height:60x">
+                    <label for="nature_of_transaction">Nature of Transaction</label>
+                    <select id="nature_of_transaction" name="nature_of_transaction" class="nature_of_transaction select" style="width: 100%; margin-top:50px">
+                        <option></option>
+                    </select>
+                </div>
+                <div class="col-sm-3" style="height:60x">
+                    <label for="mrd_classification">MRD Classification</label>
+                    <select id="mrd_classification" name="mrd_classification" class="mrd_classification select" style="width: 100%; margin-top:50px">
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <select id="payee" name="payee" class="payee select" style="width: 100%; margin-top:50px">
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <textarea name="particular" name="particular" id="particular" placeholder="PARTICULAR" required rows="3"></textarea>
+            </div>
+
+            <table id="transaction_table" class="table table-striped">
+                <thead>
+                    <th>Raoud ID</th>
+                    <th>Object Code</th>
+                    <th>General Ledger</th>
+                    <th>Obligated Amount</th>
+                    <th>1% EWT</th>
+                    <th>2% EWT</th>
+                    <th>3% FT</th>
+                    <th>5% FT</th>
+                    <th>5% EWT</th>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-success" style="width: 100%;" id="save" name="save"> SAVE</button>
+        </form>
         <form name="add_data" id="add_data">
 
 
@@ -123,7 +199,7 @@ use yii\helpers\Html;
                     [
                         'class' => '\kartik\grid\CheckboxColumn',
                         'checkboxOptions' => function ($model, $key, $index, $column) {
-                            return ['value' => $model->id, 'onchange' => 'enableDisable(this)', 'style' => 'width:20px;', 'class' => 'checkbox'];
+                            return ['value' => $model->id, 'onchange' => 'enableDisable(this)', 'style' => 'width:20px;', 'class' => 'checkbox',''];
                         }
                     ],
                     [
@@ -239,77 +315,7 @@ use yii\helpers\Html;
             ]); ?>
             <button type="submit" class="btn btn-primary" name="submit" style="width: 100%;"> ADD</button>
         </form>
-        <form id='save_data' method='POST'>
-            <?php
-            $q = 0;
-            if (!empty($update_id)) {
 
-                $q = $update_id;
-            }
-            echo " <input type='text' id='update_id' name='update_id' value='$q' style='display:none' >";
-            ?>
-            <div class="row">
-
-                <div class="col-sm-3">
-                    <label for="reporting_period">Reporting Period</label>
-                    <?php
-                    echo DatePicker::widget([
-                        'name' => 'reporting_period',
-                        'id' => 'reporting_period',
-                        // 'value' => '12/31/2010',
-                        // 'options' => ['required' => true],
-                        'pluginOptions' => [
-                            'autoclose' => true,
-                            'format' => 'yyyy-mm',
-                            'startView' => "year",
-                            'minViewMode' => "months",
-                        ]
-                    ]);
-                    ?>
-                </div>
-
-                <div class="col-sm-3" style="height:60x">
-                    <label for="reference">Transactions</label>
-                    <select id="reference" name="reference" class="reference select" style="width: 100%; margin-top:50px" >
-                        <option></option>
-                    </select>
-                </div>
-
-                <div class="col-sm-3" style="height:60x">
-                    <label for="nature_of_transaction">Transactions</label>
-                    <select id="nature_of_transaction" name="nature_of_transaction" class="nature_of_transaction select" style="width: 100%; margin-top:50px" >
-                        <option></option>
-                    </select>
-                </div>
-                <div class="col-sm-3" style="height:60x">
-                    <label for="mrd_classification">Transactions</label>
-                    <select id="mrd_classification" name="mrd_classification" class="mrd_classification select" style="width: 100%; margin-top:50px" >
-                        <option></option>
-                    </select>
-                </div>
-            </div>
-            <div class="row">
-            <label for="particular">Particular</label>
-            <input type="text" id="particular" name="particular" class="form-control">
-            </div>
-
-            <table id="transaction_table" class="table table-striped">
-                <thead>
-                    <th>Raoud ID</th>
-                    <th>Object Code</th>
-                    <th>General Ledger</th>
-                    <th>Obligated Amount</th>
-                    <th>1% EWT</th>
-                    <th>2% EWT</th>
-                    <th>3% FT</th>
-                    <th>5% FT</th>
-                    <th>5% EWT</th>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-            <button type="submit" class="btn btn-success" style="width: 100%;" id="save" name="save"> SAVE</button>
-        </form>
 
 
 
@@ -318,6 +324,11 @@ use yii\helpers\Html;
 
     </div>
     <style>
+        textarea {
+            max-width: 100%;
+            width: 100%;
+        }
+
         .grid-view td {
             white-space: normal;
         }
@@ -414,7 +425,7 @@ use yii\helpers\Html;
         var select_id = 0;
         $(document).ready(function() {
 
-
+            // MAG ADD OG DATA NA BUHATAN OG DV
             $('#add_data').submit(function(e) {
 
 
@@ -428,10 +439,12 @@ use yii\helpers\Html;
                         console.log(result)
 
                         for (var i = 0; i < result.length; i++) {
-
+                            if ($('#transaction').val() == 'Single' && i == 1) {
+                                break;
+                            }
                             var row = `<tr>
                             
-                            <td> <input value='${result[i]['raoud_id']}' type='text' name='raoud_id'/></td>
+                            <td> <input value='${result[i]['raoud_id']}' type='text' name='raoud_id[]'/></td>
  
                             <td> ${result[i]['object_code']}</td>
                             <td> 
@@ -472,7 +485,17 @@ $script = <<< JS
         var nature_of_transaction=[];
         var reference=[];
         var mrd_classification=[];
+
+    $("#transaction").change(function(){
+        var transaction_type=$("#transaction").val()
+        if (transaction_type =='Single'){
+            console.log(select_id)
+            
+        }
+    })
       $(document).ready(function() {
+
+
         $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
                 .then(function(data) {
                     var array = []
@@ -538,12 +561,32 @@ $script = <<< JS
                 })
 
             });
-            reference = ["ADADJ", "CDJ", "CKDJ", "CRJ", "GJ"]
-            $('#reference').select2({
-                data: reference,
-                placeholder: "Select Reference",
+                    // GET PAYEE
+                var payee=[];
+        $.getJSON('/dti-afms-2/frontend/web/index.php?r=payee/get-payee')
+            .then(function(data) {
+
+                var array = []
+                $.each(data, function(key, val) {
+                    array.push({
+                        id: val.id,
+                        text: val.account_name
+                    })
+                })
+                payee = array
+                $('#payee').select2({
+                    data: payee,
+                    placeholder: "Select Payee",
+                })
+
+            });
+           var transaction = ["Single", "Multiple"]
+            $('#transaction').select2({
+                data: transaction,
+                placeholder: "Select transaction",
 
             })      
+            // INSERT ANG DATA SA DATABASE
         $('#save_data').submit(function(e) {
   
 
@@ -575,6 +618,13 @@ $script = <<< JS
       
         })
     })
+    var update_id= $('#update_id').val()
+    if (update_id>0){
+        console.log (update_id)
+        // $.ajax({
+        //     url:window.location.pathname + "?r=dv-aucs/"
+        // })
+    }
     JS;
 $this->registerJs($script);
 ?>

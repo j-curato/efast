@@ -6,6 +6,7 @@
 <?php
 
 use app\models\FundClusterCode;
+use app\models\MfoPapCode;
 use kartik\date\DatePicker;
 use aryelds\sweetalert\SweetAlertAsset;
 use GuzzleHttp\Psr7\Query;
@@ -13,96 +14,166 @@ use kartik\grid\GridView;
 use kartik\money\MaskMoney;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use kartik\select2\Select2;
 ?>
 <div class="test">
+    <!-- <div id="container" class="container">
+        <div>
+            <?php
 
+            ?>
+        </div> -->
+    <form id='save_data' method='POST' style="margin-bottom:20px">
+        <?php
+        $q = 0;
+        if (!empty($update_id)) {
 
+            $q = $update_id;
+        }
+        echo " <input type='text' id='update_id' name='update_id' value='$q' style='display:none' >";
 
+        ?>
+        <div class="row">
 
-    <div id="container" class="container">
+            <div class="col-sm-3">
+                <label for="reporting_period">Reporting Period</label>
+                <?php
+                echo DatePicker::widget([
+                    'name' => 'reporting_period',
+                    'id' => 'reporting_period',
+                    // 'value' => '12/31/2010',
+                    // 'options' => ['required' => true],
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm',
+                        'startView' => "year",
+                        'minViewMode' => "months",
+                    ]
+                ]);
+                ?>
+            </div>
+            <div class="col-sm-3" style="height:60x">
+                <label for="book_id">Book</label>
+                <select id="book_id" name="book_id" class="book_id select" style="width: 100%; margin-top:50px">
+                    <option></option>
+                </select>
+            </div>
+            <div class="col-sm-3" style="height:60x">
+                <label for="transaction_id">Transactions</label>
+                <select id="transaction_id" name="transaction_id" class="transaction_id select" style="width: 100%; margin-top:50px">
+                    <option></option>
+                </select>
+            </div>
+        </div>
+        <table id="transaction_table" class="table table-striped">
+            <thead>
+                <!-- <th>Raoud ID</th> -->
+                <th>MFO/PAP Code</th>
+                <th>MFO/PAP Code Name</th>
+                <th>Fund Source</th>
+                <th>Object Code</th>
+                <th>General Ledger</th>
+                <th>Amount</th>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-success" style="width: 100%;" id="save" name="save"> SAVE</button>
+    </form>
+    <form name="add_data" id="add_data">
+        <!-- RAOUDS ANG MODEL ANI -->
+        <!-- NAA SA CREATE CONTROLLER NAKO GE CHANGE -->
+        <?= GridView::widget([
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchModel,
 
-        <form name="add_data" id="add_data">
+            'floatHeaderOptions' => [
+                'top' => 50,
+                'position' => 'absolute',
+            ],
+            'panel' => [
+                'type' => GridView::TYPE_PRIMARY,
+            ],
+            'export' => false,
 
+            'columns' => [
 
-            <!-- RAOUDS ANG MODEL ANI -->
-            <!-- NAA SA CREATE CONTROLLER NAKO GE CHANGE -->
+                // 'id',
+                [
+                    'label' => 'MFO/PAP Code',
+                    'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.code',
+                    'filter' =>Select2::widget([
+                        'model' => $searchModel,
+                        'attribute' => 'is_parent',
+                        'data' =>  ArrayHelper::map(MfoPapCode::find()->asArray()->all(), 'id', 'code'),
+                        'options' => ['placeholder' => 'Select '],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])
 
-            <?= GridView::widget([
-                'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
-
-                'floatHeaderOptions' => [
-                    'top' => 50,
-                    'position' => 'absolute',
                 ],
-                'columns' => [
+                [
+                    'label' => 'MFO/PAP Code Name',
+                    'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.name'
+                ],
+                [
+                    'label' => 'MFO/PAP Code id',
+                    'attribute' => 'recordAllotmentEntries.recordAllotment.mfo_pap_code_id'
+                ],
 
-                    'id',
-                    [
-                        'label' => 'MFO/PAP Code',
-                        'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.code',
-                        // 'filter' => Html::activeDropDownList(
-                        //     $searchModel,
-                        //     'recordAllotment.fund_cluster_code_id',
-                        //     ArrayHelper::map(FundClusterCode::find()->asArray()->all(), 'id', 'name'),
-                        //     ['class' => 'form-control', 'prompt' => 'Major Accounts']
-                        // )
-
-                    ],
-                    [
-                        'label' => 'MFO/PAP Code Name',
-                        'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.name'
-                    ],
-
-                    [
-                        'label' => 'Fund Source Code',
-                        'attribute' => 'recordAllotmentEntries.recordAllotment.fundSource.name'
-                    ],
-                    [
-                        'label' => 'Object Code',
-                        'value' => function ($model) {
-                            if ($model->process_ors_id != null) {
-                                return $model->raoudEntries->chartOfAccount->uacs;
-                            } else {
-                                return $model->recordAllotmentEntries->chartOfAccount->uacs;
-                            }
+                [
+                    'label' => 'Fund Source Code',
+                    'attribute' => 'recordAllotmentEntries.recordAllotment.fundSource.name'
+                ],
+                [
+                    'label' => 'Object Code',
+                    'value' => function ($model) {
+                        if ($model->process_ors_id != null) {
+                            return $model->raoudEntries->chartOfAccount->uacs;
+                        } else {
+                            return $model->recordAllotmentEntries->chartOfAccount->uacs;
                         }
-                    ],
-                    [
-                        'label' => 'General Ledger',
-                        // 'attribute' => 'recordAllotmentEntries.chartOfAccount.general_ledger'
-                        'value' => function ($model) {
-                            if ($model->process_ors_id != null) {
-                                return $model->raoudEntries->chartOfAccount->general_ledger;
-                            } else {
-                                return $model->recordAllotmentEntries->chartOfAccount->general_ledger;
-                            }
+                    }
+                ],
+                [
+                    'label' => 'General Ledger',
+                    // 'attribute' => 'recordAllotmentEntries.chartOfAccount.general_ledger'
+                    'value' => function ($model) {
+                        if ($model->process_ors_id != null) {
+                            return $model->raoudEntries->chartOfAccount->general_ledger;
+                        } else {
+                            return $model->recordAllotmentEntries->chartOfAccount->general_ledger;
                         }
-                    ],
-                    [
-                        'label' => 'Amount',
-                        'attribute' => 'recordAllotmentEntries.amount'
-                    ],
+                    }
+                ],
+                [
+                    'label' => 'Amount',
+                    'attribute' => 'recordAllotmentEntries.amount',
+                    'format' => ['decimal', 2],
+                    'hAlign' => 'right',
+                    'vAlign' => 'middle',
+                ],
 
-                    [
-                        'label' => 'Balance',
-                        'value' => function ($model) {
-                            // $query = (new \yii\db\Query())
-                            //     ->select([
+                [
+                    'label' => 'Balance',
+                    'value' => function ($model) {
+                        // $query = (new \yii\db\Query())
+                        //     ->select([
 
-                            //         'entry.obligation_total', 'record_allotment_entries.amount', 'entry.remain'
-                            //     ])
-                            //     ->from('raouds')
-                            //     ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
-                            //     ->join("LEFT JOIN", "(SELECT SUM(raouds.obligated_amount) as obligation_total,
-                            //     raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain
-                            //      From raouds,record_allotment_entries
-                            //      WHERE 
-                            //     raouds.record_allotment_entries_id = record_allotment_entries.id
-                            //     AND raouds.process_ors_id IS NOT NULL
-                            //     GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
-                            //     ->where("raouds.id = :id", ['id' => $model->id])->one();
-                            $query = Yii::$app->db->createCommand("SELECT SUM(raouds.obligated_amount) as obligated_amount,
+                        //         'entry.obligation_total', 'record_allotment_entries.amount', 'entry.remain'
+                        //     ])
+                        //     ->from('raouds')
+                        //     ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
+                        //     ->join("LEFT JOIN", "(SELECT SUM(raouds.obligated_amount) as obligation_total,
+                        //     raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain
+                        //      From raouds,record_allotment_entries
+                        //      WHERE 
+                        //     raouds.record_allotment_entries_id = record_allotment_entries.id
+                        //     AND raouds.process_ors_id IS NOT NULL
+                        //     GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
+                        //     ->where("raouds.id = :id", ['id' => $model->id])->one();
+                        $query = Yii::$app->db->createCommand("SELECT SUM(raouds.obligated_amount) as obligated_amount,
                             SUM(raouds.burs_amount) as burs_amount,
                             raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain,
                             record_allotment_entries.amount as record_allotment_amount
@@ -111,98 +182,53 @@ use yii\helpers\Html;
                             AND raouds.id = raoud_entries.raoud_id
                             AND raouds.record_allotment_entries_id=$model->record_allotment_entries_id
                             ")->queryOne();
-                            $burs_ors_amount = $query['obligated_amount'] + $query['burs_amount'];
-                            $remain = $query['record_allotment_amount'] - $burs_ors_amount;
-                            return $remain;
-                        }
-                    ],
-
-                    [
-                        'class' => '\kartik\grid\CheckboxColumn',
-                        'checkboxOptions' => function ($model, $key, $index, $column) {
-                            return ['value' => $model->id, 'onchange' => 'enableDisable(this)', 'style' => 'width:20px;', 'class' => 'checkbox'];
-                        }
-                    ],
-                    [
-                        'label' => 'Actions',
-                        'format' => 'raw',
-                        'value' => function ($model) {
-                            return ' ' .  MaskMoney::widget([
-                                'name' => "amount[$model->id]",
-                                'disabled' => true,
-                                'id' => "amount_$model->id",
-                                'options' => [
-                                    'class' => 'amounts',
-                                ],
-                                'pluginOptions' => [
-                                    'prefix' => '₱ ',
-                                    'allowNegative' => true
-                                ],
-                            ]);
-                        }
-                    ]
+                        $burs_ors_amount = $query['obligated_amount'] + $query['burs_amount'];
+                        $remain = $query['record_allotment_amount'] - $burs_ors_amount;
+                        return $remain;
+                    },
+                    'format' => ['decimal', 2],
+                    'hAlign' => 'right',
+                    'vAlign' => 'middle',
 
                 ],
-            ]); ?>
-            <button type="submit" class="btn btn-primary" name="submit" style="width: 100%;"> ADD</button>
-        </form>
-        <form id='save_data' method='POST'>
-            <?php
-            $q = 0;
-            if (!empty($update_id)) {
 
-                $q = $update_id;
-            }
-            echo " <input type='text' id='update_id' name='update_id' value='$q' style='display:none' >";
-            ?>
-            <div class="row">
+                [
+                    'class' => '\kartik\grid\CheckboxColumn',
+                    'checkboxOptions' => function ($model, $key, $index, $column) {
+                        return ['value' => $model->id, 'onchange' => 'enableDisable(this)', 'style' => 'width:20px;', 'class' => 'checkbox'];
+                    }
+                ],
+                [
+                    'label' => 'Actions',
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        return ' ' .  MaskMoney::widget([
+                            'name' => "amount[$model->id]",
+                            'disabled' => true,
+                            'id' => "amount_$model->id",
+                            'options' => [
+                                'class' => 'amounts',
+                            ],
+                            'pluginOptions' => [
+                                'prefix' => '₱ ',
+                                'allowNegative' => true
+                            ],
+                        ]);
+                    }
+                ]
 
-                <div class="col-sm-3">
-                    <label for="reporting_period">Reporting Period</label>
-                    <?php
-                    echo DatePicker::widget([
-                        'name' => 'reporting_period',
-                        'id' => 'reporting_period',
-                        // 'value' => '12/31/2010',
-                        // 'options' => ['required' => true],
-                        'pluginOptions' => [
-                            'autoclose' => true,
-                            'format' => 'yyyy-mm',
-                            'startView' => "year",
-                            'minViewMode' => "months",
-                        ]
-                    ]);
-                    ?>
-                </div>
-                <div class="col-sm-3" style="height:60x">
-                    <label for="transaction_id">Transactions</label>
-                    <select id="transaction_id" name="transaction_id" class="transaction_id select" style="width: 100%; margin-top:50px">
-                        <option></option>
-                    </select>
-                </div>
-            </div>
-            <table id="transaction_table" class="table table-striped">
-                <thead>
-                    <!-- <th>Raoud ID</th> -->
-                    <th>MFO/PAP Code</th>
-                    <th>MFO/PAP Code Name</th>
-                    <th>Fund Source</th>
-                    <th>Object Code</th>
-                    <th>General Ledger</th>
-                    <th>Amount</th>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-            <button type="submit" class="btn btn-success" style="width: 100%;" id="save" name="save"> SAVE</button>
-        </form>
+            ],
+        ]); ?>
+        <button type="submit" class="btn btn-primary" name="submit" style="width: 100%;"> ADD</button>
+    </form>
 
 
 
 
 
 
-    </div>
+
+    <!-- </div> -->
     <style>
         .grid-view td {
             white-space: normal;
@@ -357,7 +383,12 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depe
 $script = <<< JS
         var reporting_period = '';
         var transactions=[];
+        var book=[];
+
+
       $(document).ready(function() {
+        
+        // GET CHART OF ACCOUNTS
         $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
                 .then(function(data) {
                     var array = []
@@ -370,7 +401,7 @@ $script = <<< JS
                     accounts = array
        
                 })
-                    // GET FINANCING SOURCE CODES
+                    // GET TRANSACTIONs
         $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-transaction')
             .then(function(data) {
 
@@ -384,6 +415,25 @@ $script = <<< JS
                 transaction = array
                 $('#transaction_id').select2({
                     data: transaction,
+                    placeholder: "Select Transaction",
+
+                })
+
+            });        
+        // GET ALL BOOKS
+        $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
+            .then(function(data) {
+
+                var array = []
+                $.each(data, function(key, val) {
+                    array.push({
+                        id: val.id,
+                        text: val.name
+                    })
+                })
+                book = array
+                $('#book_id').select2({
+                    data: book,
                     placeholder: "Select Transaction",
 
                 })

@@ -358,7 +358,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     $.each(data, function(key, val) {
                         array.push({
                             id: val.id,
-                            text: val.specific_change
+                            text: val.name
                         })
                     })
                     fund_source = array

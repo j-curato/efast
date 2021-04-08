@@ -839,7 +839,7 @@ class JevPreparationController extends Controller
 
         if (!empty($_POST)) {
             $reporting_period = $_POST['reporting_period'] ? "{$_POST['reporting_period']}" : '';
-            $fund = $_POST['fund'];
+            $book_id = $_POST['book_id'];
 
             $data = JevPreparation::find()
                 ->joinWith(['jevAccountingEntries' => function ($query) {
@@ -856,8 +856,8 @@ class JevPreparationController extends Controller
                 ]);
             }
             if (!empty($fund)) {
-                $data->andWhere("jev_preparation.fund_cluster_code_id = :fund_cluster_code_id", [
-                    'fund_cluster_code_id' => $fund
+                $data->andWhere("jev_preparation.book_id = :book_id", [
+                    'book_id' => $book_id
                 ]);
             }
             // ->andWhere($sa)
@@ -865,8 +865,8 @@ class JevPreparationController extends Controller
             $x = $data->orderBy('id')
                 ->all();
 
-            $credit = $this->creditDebit('credit', $fund, $reporting_period, 'ADADJ');
-            $debit = $this->creditDebit('debit', $fund, $reporting_period, 'ADADJ');
+            $credit = $this->creditDebit('credit', $book_id, $reporting_period, 'ADADJ');
+            $debit = $this->creditDebit('debit', $book_id, $reporting_period, 'ADADJ');
 
             //     $credit = Yii::$app->db->createCommand("
             // SELECT DISTINCT chart_of_accounts.uacs,chart_of_accounts.general_ledger
@@ -894,7 +894,7 @@ class JevPreparationController extends Controller
             // echo '</pre>';
             $title = "ADVICE TO DEBIT ACCOUNT DISBURSEMENT JOURNAL";
             if ($_POST['export'] > 0) {
-                $this->ExcelExport($x, $credit, $debit, $reporting_period, $fund, $title);
+                $this->ExcelExport($x, $credit, $debit, $reporting_period, $book_id, $title);
             }
             return $this->render('adadj_view', [
                 'data' => $x,
@@ -1096,8 +1096,22 @@ class JevPreparationController extends Controller
 
         $id = uniqid();
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
-        $writer->save("C:\Users\Reynan\Downloads\sample-excel\ckdj_excel_$id.xlsx");
-        return "SUCCESS";
+        $file = "transaction\ckdj_excel_$id.xlsx";
+        $writer->save($file);
+        // $readableStream = fopen($file, 'rb');
+        // readfile($file);
+        // return "SUCCESS";
+
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename="'.basename($file).'"');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($file));
+        readfile($file);
+        exit;
+    
     }
 
     public function actionTrialBalance()
@@ -1470,7 +1484,7 @@ class JevPreparationController extends Controller
         $x = explode('-', $_POST['chart_id']);
         $chart_id = $x[0];
         $chart = (new \yii\db\Query())
-            ->select(['chart_of_accounts.id','chart_of_accounts.current_noncurrent', 'chart_of_accounts.account_group', 'major_accounts.object_code'])
+            ->select(['chart_of_accounts.id', 'chart_of_accounts.current_noncurrent', 'chart_of_accounts.account_group', 'major_accounts.object_code'])
             ->from('chart_of_accounts')
             ->join('LEFT JOIN', 'major_accounts', 'chart_of_accounts.major_account_id=major_accounts.id')
             ->join('LEFT JOIN', 'sub_accounts1', 'chart_of_accounts.id=sub_accounts1.chart_of_account_id')
@@ -1478,7 +1492,7 @@ class JevPreparationController extends Controller
 
 
 
-        if ( intval($x[2]) === 1) {
+        if (intval($x[2]) === 1) {
             $chart->where("chart_of_accounts.id = :id", ['id' =>  intval($chart_id)]);
         } else if ($x[2] === 2) {
             $chart->where("sub_accounts1.id = :id", ['id' => intval($chart_id)]);
@@ -1502,7 +1516,7 @@ class JevPreparationController extends Controller
         if ($q['object_code'] == 1010000000) {
             $isCashEquivalent = true;
         }
-        if (strtolower($q['account_group'] )=== 'equity') {
+        if (strtolower($q['account_group']) === 'equity') {
             $isEquity = true;
         }
 

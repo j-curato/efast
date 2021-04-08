@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ORDER BY jev_preparation.reporting_period
             ")->queryAll();
     $ledger = Yii::$app->db->createCommand("SELECT chart_of_accounts.id, CONCAT(chart_of_accounts.uacs,chart_of_accounts.general_ledger) as name FROM chart_of_accounts")->queryAll();
-    $fund = Yii::$app->db->createCommand("SELECT fund_cluster_code.id,fund_cluster_code.name FROM fund_cluster_code")->queryAll();
+    $books = Yii::$app->db->createCommand("SELECT books.id,books.name FROM books")->queryAll();
     $t = yii::$app->request->baseUrl . '/index.php?r=jev-preparation/sample';
     ?>
     <button id="export">export</button>
@@ -58,11 +58,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]);
                 ?>
             </div> -->
-            <div class="col-sm-6">
+            <div class="col-sm-5">
                 <label for="fund"> Fund Cluster Code</label>
                 <?php
                 echo Select2::widget([
-                    'data' => ArrayHelper::map($fund, 'id', 'name'),
+                    'data' => ArrayHelper::map($books, 'id', 'name'),
                     'id' => 'fund',
                     'name' => 'fund',
                     'options' => ['placeholder' => 'Select a Fund Cluster Code'],
@@ -72,7 +72,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]);
                 ?>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-5">
                 <label for="reporting_period">Reporting Period</label>
                 <?php
                 echo DatePicker::widget([
@@ -88,6 +88,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]
                 ]);
                 ?>
+            </div>
+            <div class="col-sm-2">
+                    <button class="btn btn-success" id="generate">Generate</button>
             </div>
 
         </div>
@@ -385,21 +388,24 @@ $script = <<< JS
 
 $(document).ready(function(){
     let gen = undefined
-    let fund = undefined
+    let book_id = undefined
     let reporting_period=undefined
     let ex=0
     $( "#general_ledger" ).change(function(){
         gen = $(this).val() 
         //  title = document.getElementById('title')
-        query()
+        // query()
     })
     $( "#fund" ).on('change keyup', function(){
-        fund = $(this).val()
+        book_id = $(this).val()
         // console.log(fund)
-        query()
+        // query()
     })
     $("#reporting_period").change(function(){
         reporting_period=$(this).val()
+        // query()
+    })
+    $("#generate").click(function(){
         query()
     })
     $("#export").click(function(){
@@ -415,7 +421,7 @@ $(document).ready(function(){
         type:'POST',
         data:{
             reporting_period:reporting_period?''+reporting_period.toString():'',
-            fund:fund?fund:0,
+            book_id:book_id?book_id:0,
             export:ex,
         }});
 

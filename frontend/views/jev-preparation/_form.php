@@ -243,6 +243,10 @@ use aryelds\sweetalert\SweetAlertAsset;
         </div>
     </div>
     <style>
+        textarea {
+            max-width: 100%;
+            width: 100%;
+        }
         .select {
             width: 500px;
             height: 2rem;
