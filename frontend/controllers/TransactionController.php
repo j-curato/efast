@@ -61,6 +61,7 @@ class TransactionController extends Controller
     public function actionIndex()
     {
         $searchModel = new TransactionSearch();
+
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -95,7 +96,7 @@ class TransactionController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
 
-            $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id,1);
+            $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1);
             $model->transaction_date = date('m-d-Y');
             if ($model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
@@ -179,7 +180,7 @@ class TransactionController extends Controller
     {
         return $this->render('disbursement_voucher');
     }
-    public function actionGetTransaction()
+    public function actionGetAllTransaction()
     {
         $query = (new \yii\db\Query())
             ->select('*')
@@ -187,6 +188,7 @@ class TransactionController extends Controller
             ->all();
         return json_encode($query);
     }
+    // IMPORT FILE MUST BE XLSX EXTENSION
     public function actionImportTransaction()
     {
         if (!empty($_POST)) {
@@ -204,7 +206,7 @@ class TransactionController extends Controller
             $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
             $excel = $reader->load($file);
-            $excel->setActiveSheetIndexByName('Import Transactions');
+            $excel->setActiveSheetIndexByName('Import Transactions (2)');
             $worksheet = $excel->getActiveSheet();
             // print_r($excel->getSheetNames());
 
@@ -212,17 +214,17 @@ class TransactionController extends Controller
             // $chart_uacs = ChartOfAccounts::find()->where("id = :id", ['id' => $chart_id])->one()->uacs;
 
             $latest_tracking_no = (new \yii\db\Query())
-            ->select('tracking_number')
-            ->from('transaction')
-            ->orderBy('id DESC')->one();
+                ->select('tracking_number')
+                ->from('transaction')
+                ->orderBy('id DESC')->one();
             if ($latest_tracking_no) {
                 $x = explode('-', $latest_tracking_no['tracking_number']);
-                $last_number = $x[4] + 1;
+                $last_number = $x[2] + 1;
             } else {
                 $last_number = 1;
             }
             // 
-
+            $qwe=1;
             foreach ($worksheet->getRowIterator(3) as $key => $row) {
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
@@ -237,79 +239,86 @@ class TransactionController extends Controller
                     }
                     $y++;
                 }
-                $tracking_number = $cells[0];
-                $payee_name =  trim($cells[1]);
-                $particular = $cells[2];
-                $amount = $cells[3];
-                $responsibility_center_name = $cells[4];
-                $payroll_number = $cells[5];
-                // $earmark_number = $cells[5];
-                // $date = $cells[7];
+                if (!empty($cells)) {
 
-                // $name = $cells[1];
-                if (
-                    // empty( $tracking_number)
-                    empty($payee_name)
-                    || empty($particular)
-                    // || empty($amount)
-                    // || empty($responsibility_center_name)
-                    // || empty($earmark_number)
-                    // || empty($payroll_number)
-                    // || empty($date)
-                ) {
-                    return json_encode(['isSuccess' => false, 'error' => "Error Somthing is Missing in Line $key"]);
-                    die();
-                } else {
-                    $payee  = (new \yii\db\Query())
-                        ->select(['account_name', 'id'])
-                        ->from('payee')
-                        ->where('account_name LIKE :account_name', ['account_name' => "%$payee_name%"])
-                        ->one();
-                    // $payee= Yii::$app->db->createCommand("SELECT * FROM payee WHERE payee.account_name LIKE '%$payee_name%'")->queryOne();
-                    $responsibility_center  = (new \yii\db\Query())
-                        ->select(['name', 'id'])
-                        ->from('responsibility_center')
-                        ->where('name LIKE :name', ['name' => $responsibility_center_name])
-                        ->one();
-                    // $responsibility_center = ResponsibilityCenter::find()->where('like', 'name', $responsibility_center_name)->one();
-                    if (!empty($payee)) {
-                        $payee_id = $payee['id'];
-                    } else {
-                        return json_encode(['isSuccess' => false, 'error' => "Payee Does Not Exist in line $key $payee_name"]);
-                        die();
-                    }
-                    // if (!empty($responsibility_center)) {
-                    //     $responsibility_center_id = $responsibility_center['id'];
-                    // } else {
-                    //     return json_encode(['isSuccess' => false, 'error' => "Responsibility Center Does Not Exist in Line $key"]);
-                    //     die();
-                    // }
+                    $tracking_number = $cells[0];
+                    $payee_name =  trim($cells[1]);
+                    $particular = $cells[2];
+                    $amount = $cells[3];
+                    $responsibility_center_name = $cells[4];
+                    $payroll_number = $cells[5];
+                    // $earmark_number = $cells[5];
+                    // $date = $cells[7];
 
-                    $data[] = [
-                        'responsibility_center_id' => !empty($responsibility_center) ? $responsibility_center['id'] : NULL,
-                        'payee_id' => $payee_id,
-                        'particular' => $particular,
-                        'gross_amount' => $amount,
-                        'tracking_number' => $this->getTrackingNumber($responsibility_center['id'],$last_number),
-                        // 'earmark_no' => $earmark_number,
-                        'payroll_number' => $payroll_number,
-                        // 'transaction_date' => $date
-                    ];
-                    // $transaction = new Transaction();
-                    // $transaction->responsibility_center_id =  !empty($responsibility_center) ? $responsibility_center['id'] : NULL;
-                    // $transaction->payee_id = $payee_id;
-                    // $transaction->particular = $particular;
-                    // $transaction->gross_amount = $amount;
-                    // $transaction->tracking_number = $this->getTrackingNumber(1);
-                    
-                    // if ($transaction->save(false)) {
-                        // } else {
-                            
+                    // $name = $cells[1];
+                    if (
+                        !empty($tracking_number)
+                        || !empty($payee_name)
+                        || !empty($particular)
+                        || !empty($amount)
+                        || !empty($responsibility_center_name)
+                        || !empty($payroll_number)
+                    ) {
+
+                        if (
+                            // empty( $tracking_number)
+                            empty($payee_name)
+                            || empty($particular)
+                            // || empty($amount)
+                            // || empty($responsibility_center_name)
+                            // || empty($earmark_number)
+                            // || empty($payroll_number)
+                            // || empty($date)
+                        ) {
+                            return json_encode(['isSuccess' => false, 'error' => "Error Something is Missing in Line $key"]);
+                            die();
+                        } else {
+                            $payee  = (new \yii\db\Query())
+                                ->select(['account_name', 'id'])
+                                ->from('payee')
+                                ->where('account_name LIKE :account_name', ['account_name' => "%$payee_name%"])
+                                ->one();
+                            // $payee= Yii::$app->db->createCommand("SELECT * FROM payee WHERE payee.account_name LIKE '%$payee_name%'")->queryOne();
+                            $responsibility_center  = (new \yii\db\Query())
+                                ->select(['name', 'id'])
+                                ->from('responsibility_center')
+                                ->where('name LIKE :name', ['name' => $responsibility_center_name])
+                                ->one();
+                            // $responsibility_center = ResponsibilityCenter::find()->where('like', 'name', $responsibility_center_name)->one();
+                            if (!empty($payee)) {
+                                $payee_id = $payee['id'];
+                            } else {
+                                return json_encode(['isSuccess' => false, 'error' => "Payee Does Not Exist in line $key $payee_name"]);
+                                die();
+                            }
+                            // if (!empty($responsibility_center)) {
+                            //     $responsibility_center_id = $responsibility_center['id'];
+                            // } else {
+                            //     return json_encode(['isSuccess' => false, 'error' => "Responsibility Center Does Not Exist in Line $key"]);
+                            //     die();
+                            // }
+
+                            $data[] = [
+                                'responsibility_center_id' => !empty($responsibility_center) ? $responsibility_center['id'] : NULL,
+                                'payee_id' => $payee_id,
+                                'particular' => $particular,
+                                'gross_amount' => $amount,
+                                'tracking_number' => $this->getTrackingNumber($responsibility_center['id'], $qwe),
+                                // 'earmark_no' => $earmark_number,
+                                'payroll_number' => $payroll_number,
+                                // 'transaction_date' => $date
+                            ];
                             //     return "yawa";
                             //     die();
                             // }
                         }
-                        $last_number++;
+                    }
+                    // echo "<pre>";
+                    // var_dump($last_number);
+                    // echo "<pre>";
+                    $last_number++;
+                    $qwe++;
+                }
             }
 
             $column = [
@@ -349,11 +358,11 @@ class TransactionController extends Controller
     }
 
 
-    public function getTrackingNumber( $responsibility_center_id,$to_add)
+    public function getTrackingNumber($responsibility_center_id, $to_add)
     {
         // $responsibility_center ='FAD';
         // $date = date('Y-m-d');
-        $date = "2021-01";
+        $date = date("Y");
         $responsibility_center = (new \yii\db\Query())
             ->select("name")
             ->from('responsibility_center')
@@ -365,7 +374,7 @@ class TransactionController extends Controller
             ->orderBy('id DESC')->one();
         if ($latest_tracking_no) {
             $x = explode('-', $latest_tracking_no['tracking_number']);
-            $last_number = $x[4] + $to_add;
+            $last_number = $x[2] + $to_add;
         } else {
             $last_number = $to_add;
         }
@@ -376,5 +385,25 @@ class TransactionController extends Controller
         $final_number .= $last_number;
         $tracking_number = $responsibility_center['name'] . '-' . $date . '-' . $final_number;
         return  $tracking_number;
+    }
+    public function actionGetTransaction()
+    {
+        if (!empty($_POST)) {
+            $transaction_id = $_POST['transaction_id'];
+            $query = (new \yii\db\Query())
+                ->select(["payee.account_name", "transaction.particular", "transaction.gross_amount"])
+                ->from("transaction")
+                ->join("LEFT JOIN", "payee", "transaction.payee_id = payee.id")
+                ->where("transaction.id =:transaction_id", ["transaction_id" => $transaction_id])
+                ->one();
+
+            return json_encode(["result" => $query]);
+            // ob_start();
+            // echo "<pre>";
+            // var_dump($query);
+            // echo "</pre>";
+            // return ob_get_clean();
+        }
+        // return json_encode("qqq");
     }
 }

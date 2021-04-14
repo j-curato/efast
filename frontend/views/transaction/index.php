@@ -53,9 +53,6 @@ Modal::end();
         <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Add New', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=transaction/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
     </p>
     <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); 
-    ?>
-
     <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -138,23 +135,24 @@ Modal::end();
             // ],
 
             'id',
-            'responsibility_center_id',
+            'tracking_number',
+
             // 'payee_id',
             // [
-
-
-            // ],
-            [
-                'label' => 'Payee',
-                'attribute' => 'payee.account_name'
-            ],
-            'particular',
-            // 'gross_amount',
-            [
-                'attribute'=>'gross_amount',
-                'format' => ['decimal', 2],
-            ],
-            'tracking_number',
+                
+                
+                // ],
+                [
+                    'label' => 'Payee',
+                    'attribute' => 'payee.account_name'
+                ],
+                'particular',
+                // 'gross_amount',
+                [
+                    'attribute'=>'gross_amount',
+                    'format' => ['decimal', 2],
+                ],
+                // 'responsibilityCenter.name',
             'earmark_no',
             'payroll_number',
             'transaction_date',
@@ -191,35 +189,35 @@ $script = <<<JS
                             cache: false,
                             processData:false,
                             success:function(data){
+                                console.log(data)
+                        //         var res = JSON.parse(data)
+                        //         // break;
+                        //         // $('#uploadmodal').close()
+                        //         console.log(i)
                                 
-                                var res = JSON.parse(data)
-                                // break;
-                                // $('#uploadmodal').close()
-                                console.log(i)
-                                
-                        if (res.isSuccess){
-                            swal( {
-                                icon: 'success',
-                                title: "Successfuly Added",
-                                type: "success",
-                                timer:3000,
-                                closeOnConfirm: false,
-                                closeOnCancel: false
-                            },function(){
-                                window.location.href = window.location.pathname + "?r=transaction"
-                            })
-                        }
-                        else{
-                            swal( {
-                                icon: 'error',
-                                title: res.error,
-                                type: "error",
-                                timer:10000,
-                                closeOnConfirm: false,
-                                closeOnCancel: false
-                            })
-                            i=false;
-                        }
+                        // if (res.isSuccess){
+                        //     swal( {
+                        //         icon: 'success',
+                        //         title: "Successfuly Added",
+                        //         type: "success",
+                        //         timer:3000,
+                        //         closeOnConfirm: false,
+                        //         closeOnCancel: false
+                        //     },function(){
+                        //         window.location.href = window.location.pathname + "?r=transaction"
+                        //     })
+                        // }
+                        // else{
+                        //     swal( {
+                        //         icon: 'error',
+                        //         title: res.error,
+                        //         type: "error",
+                        //         timer:10000,
+                        //         closeOnConfirm: false,
+                        //         closeOnCancel: false
+                        //     })
+                        //     i=false;
+                        // }
                     },
                     
                     

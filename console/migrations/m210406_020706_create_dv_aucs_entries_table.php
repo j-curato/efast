@@ -20,6 +20,12 @@ class m210406_020706_create_dv_aucs_entries_table extends Migration
             'id' => $this->primaryKey(),
             'dv_aucs_id' => $this->integer()->notNull(),
             'raoud_id' => $this->integer()->notNull(),
+             'amount_disbursed'=> $this->float(),
+             'vat_nonvat'=> $this->float(),
+             'ewt_goods_services'=> $this->float(),
+             'compensation'=> $this->float(),
+             'other_trust_liabilities'=> $this->float(),
+             'total_withheld'=> $this->float(),
  
         ]);
 

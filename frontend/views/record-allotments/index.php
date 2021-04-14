@@ -18,13 +18,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <!-- <p>
-        <?= Html::a('Create Record Allotments', ['create'], ['class' => 'btn btn-success']) ?>
-    </p> -->
+    <p>
+        <?= Html::a('<i class="glyphicon glyphicon-plus"></i>Create Record Allotment', ['create'], ['class' => 'btn btn-success']) ?>
+    <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
+    </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>
-      <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button>
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>
 
@@ -83,7 +83,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'panel' => [
             'heading'=>'<h3 class="panel-title"> Record Allotments</h3>',
             'type'=>'primary',
-            'before'=>Html::a('<i class="glyphicon glyphicon-plus"></i>Create Record Allotment', ['create'], ['class' => 'btn btn-success']),
+   
         ],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],

@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\CashFlow;
 use app\models\CashFlowSearch;
+use app\models\DvAucsEntries;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -127,11 +128,10 @@ class CashFlowController extends Controller
 
     public function actionGetAllCashflow()
     {
-        
+
         $cf = (new \yii\db\Query())->select('*')->from('cash_flow')->all();
 
         return  json_encode($cf);
-
-
     }
+
 }

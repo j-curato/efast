@@ -315,7 +315,6 @@ use aryelds\sweetalert\SweetAlertAsset;
         var vacant = 0;
         var i = 1;
         var x = [0];
-
         var update_id = undefined;
 
         function removeItem(index) {
@@ -623,8 +622,7 @@ use aryelds\sweetalert\SweetAlertAsset;
 
             // CHECK ADA NUMBER 
             ada_number = ['Check', 'ADA', 'Non Cash']
-            $('#check_ada').select2({
-                data: ada_number,
+            $('#check_ada').select2({ 
                 placeholder: 'Select CHECK/ADA'
 
             })

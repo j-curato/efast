@@ -17,8 +17,8 @@ class RaoudsSearchForProcessOrsSearch extends Raouds
     public function rules()
     {
         return [
-            [['id', 'process_ors_id', 'record_allotment_entries_id', 'isActive', 'is_parent', 'process_burs_id'], 'integer'],
-            [['serial_number', 'reporting_period'], 'safe'],
+            [['id', 'record_allotment_entries_id', 'isActive', 'is_parent', 'process_burs_id'], 'integer'],
+            [['serial_number', 'reporting_period','process_ors_id'], 'safe'],
             [['obligated_amount', 'burs_amount'], 'number'],
         ];
     }
@@ -42,7 +42,7 @@ class RaoudsSearchForProcessOrsSearch extends Raouds
     public function search($params)
     {
         $query = Raouds::find()->where("process_ors_id IS NOT NULL")
-            ->andWhere('obligated_amount > 0');
+           ;
 
         // add conditions that should always apply here
 
@@ -51,6 +51,8 @@ class RaoudsSearchForProcessOrsSearch extends Raouds
         ]);
 
         $this->load($params);
+        $query->joinWith('recordAllotmentEntries');
+        $query->joinWith('processOrs');
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
@@ -61,7 +63,7 @@ class RaoudsSearchForProcessOrsSearch extends Raouds
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'process_ors_id' => $this->process_ors_id,
+            // 'process_ors_id' => $this->process_ors_id,
             'record_allotment_entries_id' => $this->record_allotment_entries_id,
             'obligated_amount' => $this->obligated_amount,
             'isActive' => $this->isActive,
@@ -71,7 +73,9 @@ class RaoudsSearchForProcessOrsSearch extends Raouds
         ]);
 
         $query->andFilterWhere(['like', 'serial_number', $this->serial_number])
-            ->andFilterWhere(['like', 'reporting_period', $this->reporting_period]);
+            ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
+            ->andFilterWhere(['like', 'process_ors.serial_number', $this->process_ors_id])
+            ;
 
         return $dataProvider;
     }

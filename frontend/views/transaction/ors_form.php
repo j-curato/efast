@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             OBLIGATION REQUEST AND STATUS
                         </h4>
                         <div>
-                            ___________________________________
+                            <h5 style="font-weight: bold;">Department of Trade and Industry - Caraga</h5>
                         </div>
                         <h5 class="head">
                             ENTITY NAME
@@ -123,6 +123,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan='1'>
                     </td>
                     <td colspan='1'>
+                    <?php echo number_format( $model->gross_amount,2)?>
                     </td>
                 </tr>
 
@@ -285,11 +286,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <td colspan="5" style="text-align:center">
                         <div>
-                            ___________________________
+                            <h5 style="font-weight: bold;">Department of Trade and Industry - Caraga</h5>
                         </div>
-                        <h6 class="head">
+                        <h5 class="head">
                             ENTITY NAME
-                        </h6>
+                        </h5>
                         <h5 class="head">
                             DISBURSEMENT VOUCHER
                         </h5>
@@ -391,6 +392,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>
                     </td>
                     <td>
+                    <?php echo number_format( $model->gross_amount,2)?>
                     </td>
                 </tr>
                 <?php

@@ -100,18 +100,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
   ];
 
-  echo ExportMenu::widget([
-    'dataProvider' => $w,
-    'columns' => $gridColumn,
-    'filename' => 'Jev',
-    'exportConfig' => [
-      ExportMenu::FORMAT_TEXT => false,
-      ExportMenu::FORMAT_PDF => false,
-      ExportMenu::FORMAT_EXCEL => false,
-      ExportMenu::FORMAT_HTML => false,
-    ]
+  // echo ExportMenu::widget([
+  //   'dataProvider' => $w,
+  //   'columns' => $gridColumn,
+  //   'filename' => 'Jev',
+  //   'exportConfig' => [
+  //     ExportMenu::FORMAT_TEXT => false,
+  //     ExportMenu::FORMAT_PDF => false,
+  //     ExportMenu::FORMAT_EXCEL => false,
+  //     ExportMenu::FORMAT_HTML => false,
+  //   ]
 
-  ]);
+  // ]);
 
   ?>
 
@@ -130,6 +130,26 @@ $this->params['breadcrumbs'][] = $this->title;
       'position' => 'absolute',
 
     ],
+    'toolbar' =>  [
+      [
+        'content' =>
+        ExportMenu::widget([
+          'dataProvider' => $w,
+          'columns' => $gridColumn,
+          'filename' => 'Jev',
+          'exportConfig' => [
+            ExportMenu::FORMAT_TEXT => false,
+            ExportMenu::FORMAT_PDF => false,
+            ExportMenu::FORMAT_EXCEL => false,
+            ExportMenu::FORMAT_HTML => false,
+          ]
+
+        ]),
+        'options' => ['class' => 'btn-group mr-2', 'style' => 'margin-right:20px']
+      ],
+
+    ],
+    'toggleDataContainer' => ['class' => 'btn-group mr-2'],
     'columns' => [
       // ['class' => 'yii\grid\SerialColumn'],
 

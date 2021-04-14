@@ -49,7 +49,8 @@ class Raouds2Search extends Raouds
             'query' => $query,
         ]);
 
-        $this->load($params);
+        // $this->load($params);
+        $this->load($params,);
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
@@ -57,13 +58,14 @@ class Raouds2Search extends Raouds
             return $dataProvider;
         }
         $query->joinWith('recordAllotmentEntries');
+        $query->joinWith('processOrs');
         $query->join("LEFT JOIN", 'record_allotments', "record_allotment_entries.record_allotment_id=record_allotments.id");
 
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'process_ors_id' => $this->process_ors_id,
+            // 'process_ors_id' => $this->process_ors_id,
             'record_allotment_entries_id' => $this->record_allotment_entries_id,
             'obligated_amount' => $this->obligated_amount,
             'isActive' => $this->isActive,
@@ -72,7 +74,7 @@ class Raouds2Search extends Raouds
 
         $query->andFilterWhere(['like', 'serial_number', $this->serial_number])
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
-            // ->andFilterWhere(['=', 'record_allotments.mfo_pap_code_id', $sample])
+            ->andFilterWhere(['like', 'process_ors.serial_number', $this->process_ors_id])
             ;
 
         return $dataProvider;

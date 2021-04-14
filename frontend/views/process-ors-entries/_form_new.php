@@ -65,6 +65,26 @@ use kartik\select2\Select2;
                 </select>
             </div>
         </div>
+        <table class="table table-striped" id="transaction_detail">
+            <thead>
+                <th>Payee</th>
+                <th>Particular</th>
+                <th>Gross Amount</th>
+            </thead>
+            <tr>
+                <td>
+                    <div id="payee"></div>
+                </td>
+                <td>
+                    <div id="transaction_particular"></div>
+                </td>
+                <td>
+                    <div id="transaction_amount"></div>
+                </td>
+            </tr>
+            <tbody>
+            </tbody>
+        </table>
         <table id="transaction_table" class="table table-striped">
             <thead>
                 <!-- <th>Raoud ID</th> -->
@@ -95,6 +115,7 @@ use kartik\select2\Select2;
                 'type' => GridView::TYPE_PRIMARY,
             ],
             'export' => false,
+            'pjax' => true,
 
             'columns' => [
 
@@ -102,7 +123,7 @@ use kartik\select2\Select2;
                 [
                     'label' => 'MFO/PAP Code',
                     'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.code',
-                    'filter' =>Select2::widget([
+                    'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'is_parent',
                         'data' =>  ArrayHelper::map(MfoPapCode::find()->asArray()->all(), 'id', 'code'),
@@ -292,6 +313,9 @@ use kartik\select2\Select2;
 
     <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
     <script>
+        var update_id = undefined;
+        var account_name = undefined;
+
         function enableDisable(checkbox) {
             var isDisable = true
             if (checkbox.checked) {
@@ -313,6 +337,41 @@ use kartik\select2\Select2;
         function remove(i) {
             i.closest("tr").remove()
         }
+
+        function addData(result) {
+            for (var i = 0; i < result.length; i++) {
+                object_code = result[i]['object_code']
+                chart_id = result[i]['chart_of_account_id']
+
+                if (result[i]['object_code'] == "5010000000") {
+                    object_code = ''
+                    chart_id = ''
+                }
+                var row = `<tr>
+                            
+                            <td style="display:none"> <input value='${result[i]['raoud_id']}' type='text' name='raoud_id[]' /></td>
+                            <td> ${result[i]['mfo_pap_code_code']}</td>
+                            <td> ${result[i]['mfo_pap_name']}</td>
+                            <td> ${result[i]['fund_source_name']}</td>
+                            <td> ${object_code}</td>
+                            <td> 
+                                <div>
+                                    <select id="chart-${select_id}" required name="chart_of_account_id[]" class="chart-of-account" style="width: 100%">
+                                        <option></option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td> <input value='${result[i]['obligation_amount']}' type='text' name='obligation_amount[]'/></td>
+                            <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>`
+                $('#transaction_table').append(row);
+                $(`#chart-${select_id}`).select2({
+                    data: accounts,
+                    placeholder: "Select Chart of Account",
+
+                }).val(`${chart_id}`).trigger('change');
+                select_id++;
+            }
+        }
         var select_id = 0;
         $(document).ready(function() {
 
@@ -330,38 +389,39 @@ use kartik\select2\Select2;
                         console.log(result)
                         var object_code = ''
                         var chart_id = ''
-                        for (var i = 0; i < result.length; i++) {
-                            object_code = result[i]['object_code']
-                            chart_id = result[i]['chart_of_account_id']
+                        addData(result)
+                        // for (var i = 0; i < result.length; i++) {
+                        //     object_code = result[i]['object_code']
+                        //     chart_id = result[i]['chart_of_account_id']
 
-                            if (result[i]['object_code'] == "5010000000") {
-                                object_code = ''
-                                chart_id = ''
-                            }
-                            var row = `<tr>
-                            
-                            <td style="display:none"> <input value='${result[i]['raoud_id']}' type='text' name='raoud_id[]' /></td>
-                            <td> ${result[i]['mfo_pap_code_code']}</td>
-                            <td> ${result[i]['mfo_pap_name']}</td>
-                            <td> ${result[i]['fund_source_name']}</td>
-                            <td> ${object_code}</td>
-                            <td> 
-                                <div>
-                                    <select id="chart-${select_id}" required name="chart_of_account_id[]" class="chart-of-account" style="width: 100%">
-                                        <option></option>
-                                    </select>
-                                </div>
-                            </td>
-                            <td> <input value='${result[i]['obligation_amount']}' type='text' name='obligation_amount[]'/></td>
-                            <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>`
-                            $('#transaction_table').append(row);
-                            $(`#chart-${select_id}`).select2({
-                                data: accounts,
-                                placeholder: "Select Chart of Account",
+                        //     if (result[i]['object_code'] == "5010000000") {
+                        //         object_code = ''
+                        //         chart_id = ''
+                        //     }
+                        //     var row = `<tr>
 
-                            }).val(`${chart_id}`).trigger('change');
-                            select_id++;
-                        }
+                        //     <td style="display:none"> <input value='${result[i]['raoud_id']}' type='text' name='raoud_id[]' /></td>
+                        //     <td> ${result[i]['mfo_pap_code_code']}</td>
+                        //     <td> ${result[i]['mfo_pap_name']}</td>
+                        //     <td> ${result[i]['fund_source_name']}</td>
+                        //     <td> ${object_code}</td>
+                        //     <td> 
+                        //         <div>
+                        //             <select id="chart-${select_id}" required name="chart_of_account_id[]" class="chart-of-account" style="width: 100%">
+                        //                 <option></option>
+                        //             </select>
+                        //         </div>
+                        //     </td>
+                        //     <td> <input value='${result[i]['obligation_amount']}' type='text' name='obligation_amount[]'/></td>
+                        //     <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>`
+                        //     $('#transaction_table').append(row);
+                        //     $(`#chart-${select_id}`).select2({
+                        //         data: accounts,
+                        //         placeholder: "Select Chart of Account",
+
+                        //     }).val(`${chart_id}`).trigger('change');
+                        //     select_id++;
+                        // }
                     }
                 });
                 $('.checkbox').prop('checked', false); // Checks it
@@ -384,9 +444,53 @@ $script = <<< JS
         var reporting_period = '';
         var transactions=[];
         var book=[];
+       
+    $("#transaction_id").change(function(){
+        // console.log($("#transaction_id").val())
+        var transaction_id = $("#transaction_id").val()
+        
+        $.ajax({
+            url:window.location.pathname + "?r=transaction/get-transaction",
+            type:"POST",
+            data:{transaction_id:transaction_id},
+            success:function(data){
+                var res = JSON.parse(data)
+                account_name = res.result['account_name']
+                var particular = res.result['particular']
+                var amount = res.result['gross_amount']
+                // var x = document.getElementById("transaction_detail");
+                //  x.deleteRow(0);
+                $("#payee").text(res.result['account_name'])
+                $("#transaction_particular").text(res.result['particular'])
+                $("#transaction_amount").text(res.result['gross_amount'])
+                
+                console.log(account_name)
+ 
+                var row = "<tr><td>"+account_name+"</td></tr>"
+                // $('#transaction_detail').tbody(row);
+                // var x = document.getElementById("transaction_detail").getElementsByTagName("tbody")[0]row;
 
 
-      $(document).ready(function() {
+            }
+
+        })
+    })
+    $(document).ready(function() {
+        update_id = $('#update_id').val()
+        console.log(update_id)
+        //   update_id.change(function(){
+        //       console.log(update_id.val())
+        //   })
+          if (update_id!=null){
+            $.ajax({
+                type:"POST",
+                url:window.location.pathname + "?r=raouds/get-raoud",
+                data:{update_id:update_id},
+                success:function(data){
+                    console.log(data)
+                }
+            })
+        }
         
         // GET CHART OF ACCOUNTS
         $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
@@ -402,7 +506,7 @@ $script = <<< JS
        
                 })
                     // GET TRANSACTIONs
-        $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-transaction')
+        $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-all-transaction')
             .then(function(data) {
 
                 var array = []

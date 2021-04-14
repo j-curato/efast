@@ -48,6 +48,7 @@ class ProcessOrsEntriesController extends Controller
     {
         $searchModel = new ProcessOrsRaoudsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']]; 
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -123,6 +124,7 @@ class ProcessOrsEntriesController extends Controller
             'update' => true
         ]);
     }
+    // MAG ADJUST OG ORS
     public function actionAdjust($id)
     {
         $searchModel = new Raouds2Search();
@@ -441,23 +443,23 @@ class ProcessOrsEntriesController extends Controller
             $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
             $excel = $reader->load($file);
-            $excel->setActiveSheetIndexByName('Import Process ORS');
+            $excel->setActiveSheetIndexByName('Import Process ORS (2)');
             $worksheet = $excel->getActiveSheet();
             // print_r($excel->getSheetNames());
 
             $data = [];
             // $chart_uacs = ChartOfAccounts::find()->where("id = :id", ['id' => $chart_id])->one()->uacs;
 
-            $latest_tracking_no = (new \yii\db\Query())
-                ->select('tracking_number')
-                ->from('transaction')
-                ->orderBy('id DESC')->one();
-            if ($latest_tracking_no) {
-                $x = explode('-', $latest_tracking_no['tracking_number']);
-                $last_number = $x[3] + 1;
-            } else {
-                $last_number = 1;
-            }
+            // $latest_tracking_no = (new \yii\db\Query())
+            //     ->select('tracking_number')
+            //     ->from('transaction')
+            //     ->orderBy('id DESC')->one();
+            // if (!empty($latest_tracking_no)) {
+            //     $x = explode('-', $latest_tracking_no['tracking_number']);
+            //     $last_number = $x[3] + 1;
+            // } else {
+            //     $last_number = 1;
+            // }
             // 
             $group_container = [];
             foreach ($worksheet->getRowIterator(4) as $key => $row) {
@@ -488,29 +490,31 @@ class ProcessOrsEntriesController extends Controller
                 $obligation_uacs = trim($cells[7]);
                 $amount = $cells[11];
 
+
                 if (
-                    empty($cluster)
-                    && empty($reporting_period)
-                    && empty($date)
-                    && empty($transaction_number)
-                    && empty($obligation_number)
-                    && empty($allotment_number)
-                    && empty($allotment_uacs)
-                    && empty($obligation_uacs)
+                    !empty($cluster)
+                    || !empty($reporting_period)
+                    || !empty($date)
+                    || !empty($transaction_number)
+                    || !empty($obligation_number)
+                    || !empty($allotment_number)
+                    || !empty($allotment_uacs)
+                    || !empty($obligation_uacs)
 
                 ) {
-                    // return json_encode(['isSuccess' => false, 'error' => "Error Somthing is Missing in Line $key"]);
-                    // die();
-                } else {
+                //     return json_encode(['isSuccess' => false, 'error' => "Error Somthing is Missing in Line $key"]);
+                //     // die();
+                // } else {
 
 
                     $allotment_chart = $this->getChartOfAccount($allotment_uacs);
                     $obligation_chart = $this->getChartOfAccount($obligation_uacs);
-
+                    // $y=explode('-',$transaction_number);
+                    // $tt = $y[0] . '-' . $y[1] . '-' .$y[3];
                     $transaction = (new \yii\db\Query())
                         ->select('id')
                         ->from('transaction')
-                        ->where("tracking_number LIKE :tracking_number", ['tracking_number' => "%$transaction_number"])
+                        ->where("tracking_number LIKE :tracking_number", ['tracking_number' => "%$transaction_number%"])
                         ->one();
                     // ASA NA RAOUD NKO E CHARGE
 
@@ -569,7 +573,7 @@ class ProcessOrsEntriesController extends Controller
                     // }
 
                 }
-                $last_number++;
+                // $last_number++;
             }
 
             $column = [
@@ -588,7 +592,7 @@ class ProcessOrsEntriesController extends Controller
             // return json_encode(['isSuccess' => true]);
             ob_clean();
             echo "<pre>";
-            var_dump($group_container);
+            var_dump('success');
             echo "<pre>";
             return ob_get_clean();
         }

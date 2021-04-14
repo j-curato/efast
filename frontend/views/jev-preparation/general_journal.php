@@ -2,8 +2,11 @@
 
 use app\models\ChartOfAccounts;
 use app\models\FundClusterCode;
+use app\models\JevAccountingEntriesSearch;
+use app\models\JevPreparationSearch;
 use app\models\ResponsibilityCenter;
 use kartik\date\DatePicker;
+use kartik\export\ExportMenu;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\helpers\ArrayHelper;
@@ -70,10 +73,39 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
             </div>
             <div class="col-sm-2" style="padding:25px">
-                    <button class="btn btn-success" id="generate">Generate</button>
+                <button class="btn btn-success" id="generate">Generate</button>
             </div>
 
         </div>
+        <?php
+
+        // if (!empty($book_name)) {
+        //     $book = (new \yii\db\Query())
+        //         ->select("*")
+        //         ->from("books")
+        //         ->where("name =:name", ["name" => $book_name])
+        //         ->one();
+            // $q = new JevAccountingEntriesSearch();
+            // // $q->book_id = $book['id'];
+            // // $q->reporting_period = $reporting_period;
+            // $w = $q->search(Yii::$app->request->queryParams);
+            // $gridColumn = [
+            //     'id',
+            // ];
+            // echo ExportMenu::widget([
+            //     'dataProvider' => $w,
+            //     'columns' => $gridColumn,
+            //     'filename' => 'Jev',
+            //     'exportConfig' => [
+            //         ExportMenu::FORMAT_TEXT => false,
+            //         ExportMenu::FORMAT_PDF => false,
+            //         ExportMenu::FORMAT_EXCEL => false,
+            //         ExportMenu::FORMAT_HTML => false,
+            //     ]
+
+            // ]);
+        // }
+        ?>
         <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>
         <table class="table" style="margin-top:30px">
             <thead>
@@ -100,13 +132,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <th colspan="3" style="border-bottom:1px solid black">
                         <span>
-                            Fund Cluster:
+                            Book:
 
                         </span>
                         <span id="fund_cluster" style="text-align: center;">
 
-                            <?php if (!empty($fund_cluster_code)) {
-                                echo $fund_cluster_code;
+                            <?php if (!empty($book_name)) {
+                                echo $book_name;
                             }
                             ?>
                         </span>
@@ -167,11 +199,35 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         </tr>";
                         foreach ($val->jevAccountingEntries as $entry) {
+
+                            if ($entry->lvl === 1) {
+                                $account_title = $entry->chartOfAccount->general_ledger;
+                                $object_code = $entry->object_code;
+                            } else if ($entry->lvl === 2) {
+                                $q = (new \yii\db\Query())
+                                    ->select(["name", "object_code"])
+                                    ->from("sub_accounts1")
+                                    ->where("object_code =:object_code", ['object_code' => $entry->object_code])
+                                    ->one();
+                                $account_title = $q['name'];
+                                $object_code = $q["object_code"];
+                            } else if ($entry->lvl === 3) {
+                                $q = (new \yii\db\Query())
+                                    ->select(["name", "object_code"])
+                                    ->from("sub_accounts2")
+                                    ->where("object_code =:object_code", ['object_code' => $entry->object_code])
+                                    ->one();
+                                $account_title = $q['name'];
+                                $object_code = $q["object_code"];
+                            }
+
+
+
                             echo "<tr>" .
                                 "<td></td>" .
                                 "<td></td>" .
-                                "<td>" . $entry->chartOfAccount->general_ledger . "</td>" .
-                                "<td>" . $entry->chartOfAccount->uacs . "</td>" .
+                                "<td>" . $account_title . "</td>" .
+                                "<td>" . $object_code . "</td>" .
                                 "<td style='text-align:right;'>" . number_format($entry->debit, 2)  . "</td>" .
                                 "<td style='text-align:right;'>" . number_format($entry->credit, 2) . "</td>"
 
@@ -411,7 +467,7 @@ $(document).ready(function(){
     let reporting_period=undefined
     var title=""
 
-    $( "#book" ).on('change keyup', function(){
+    $( "#book" ).on('change', function(){
         book_id = $(this).val()
         // console.log(book_id)
         // query()

@@ -131,4 +131,34 @@ class RaoudsController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+    public function actionGetRaoud()
+    {
+        $query = (new \yii\db\Query())
+        ->select([
+            'mfo_pap_code.code AS mfo_pap_code_code', 'mfo_pap_code.name AS mfo_pap_name', 'fund_source.name AS fund_source_name',
+            'chart_of_accounts.uacs as object_code', 'chart_of_accounts.general_ledger', 'major_accounts.name',
+            'chart_of_accounts.id as chart_of_account_id', 'raouds.id AS raoud_id',
+            'entry.total', 'record_allotment_entries.amount', '(record_allotment_entries.amount - entry.total) AS remain'
+        ])
+        ->from('raouds')
+        ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
+        ->join("LEFT JOIN", "record_allotments", "record_allotment_entries.record_allotment_id=record_allotments.id")
+        ->join("LEFT JOIN", "chart_of_accounts", "record_allotment_entries.chart_of_account_id=chart_of_accounts.id")
+        ->join("LEFT JOIN", "major_accounts", "chart_of_accounts.major_account_id=major_accounts.id")
+        ->join("LEFT JOIN", "fund_source", "record_allotments.fund_source_id=fund_source.id")
+        ->join("LEFT JOIN", "mfo_pap_code", "record_allotments.mfo_pap_code_id=mfo_pap_code.id")
+        ->join("LEFT JOIN", "raoud_entries", "raouds.id=raoud_entries.raoud_id")
+        ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount) as total,
+        raouds.id, raouds.process_ors_id,
+        raouds.record_allotment_entries_id
+        FROM raouds,raoud_entries,process_ors
+        WHERE raouds.process_ors_id= process_ors.id
+        AND raouds.id = raoud_entries.raoud_id
+        AND raouds.process_ors_id IS NOT NULL 
+        GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
+        // ->join("LEFT JOIN","","raouds.process_ors_id=process_ors.id")
+
+        ->where("raouds.id = :id", ['id' => $_POST['update_id']])->one();
+        return json_encode(["result"=>$query]);
+    }
 }

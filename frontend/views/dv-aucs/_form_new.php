@@ -27,7 +27,7 @@ use yii\helpers\Html;
 
                 $q = $update_id;
             }
-            echo " <input type='text' id='update_id' name='update_id' value='$q'  style='display:none;' >";
+            echo " <input type='text' id='update_id' name='update_id' value='$q' style='display:none' >";
             ?>
             <div class="row">
 
@@ -71,6 +71,7 @@ use yii\helpers\Html;
             </div>
             <div class="row">
                 <div class="col-sm-3">
+                    <label for="payee">Payee</label>
                     <select id="payee" name="payee" class="payee select" style="width: 100%; margin-top:50px">
                         <option></option>
                     </select>
@@ -86,11 +87,11 @@ use yii\helpers\Html;
                     <th>Object Code</th>
                     <th>General Ledger</th>
                     <th>Obligated Amount</th>
-                    <th>1% EWT</th>
-                    <th>2% EWT</th>
-                    <th>3% FT</th>
-                    <th>5% FT</th>
-                    <th>5% EWT</th>
+                    <th>Amount Disbursed</th>
+                    <th>2306 (VAT/ Non-Vat)</th>
+                    <th>2307 (EWT Goods/Services)</th>
+                    <th>1601C (Compensation)</th>
+                    <th>Other Trust Liabilities</th>
                 </thead>
                 <tbody>
                 </tbody>
@@ -99,7 +100,10 @@ use yii\helpers\Html;
         </form>
         <form name="add_data" id="add_data">
 
-
+            <div style="display: none;">
+                <input type="text" id="transaction_type" name="transaction_type">
+                <input type="text" id="dv_count" name="dv_count">
+            </div>
             <!-- RAOUDS ANG MODEL ANI -->
             <!-- NAA SA CREATE CONTROLLER NAKO GE CHANGE -->
 
@@ -116,7 +120,6 @@ use yii\helpers\Html;
                 ],
                 'columns' => [
 
-                    'id',
                     // [
                     //     'label' => 'MFO/PAP Code',
                     //     'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.code',
@@ -148,6 +151,18 @@ use yii\helpers\Html;
                     //     }
                     // ],
                     [
+                        'label' => 'Ors Number',
+                        'attribute' => 'process_ors_id',
+                        'value' => function ($model) {
+                            // if ($model->process_ors_id != null) {
+                            //     return $model->raoudEntries->chartOfAccount->general_ledger;
+                            // } else {
+                            //     return $model->recordAllotmentEntries->chartOfAccount->general_ledger;
+                            // }
+                            return $model->processOrs->serial_number;
+                        }
+                    ],
+                    [
                         'label' => 'General Ledger',
                         // 'attribute' => 'recordAllotmentEntries.chartOfAccount.general_ledger'
                         'value' => function ($model) {
@@ -158,58 +173,60 @@ use yii\helpers\Html;
                             }
                         }
                     ],
-                    [
-                        'label' => 'Amount',
-                        'attribute' => 'recordAllotmentEntries.amount'
-                    ],
+                    // [
+                    //     'label' => 'Amount',
+                    //     'attribute' => 'recordAllotmentEntries.amount'
+                    // ],
 
-                    [
-                        'label' => 'Balance',
-                        'value' => function ($model) {
-                            // $query = (new \yii\db\Query())
-                            //     ->select([
+                    // [
+                    //     'label' => 'Balance',
+                    //     'value' => function ($model) {
+                    //         // $query = (new \yii\db\Query())
+                    //         //     ->select([
 
-                            //         'entry.obligation_total', 'record_allotment_entries.amount', 'entry.remain'
-                            //     ])
-                            //     ->from('raouds')
-                            //     ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
-                            //     ->join("LEFT JOIN", "(SELECT SUM(raouds.obligated_amount) as obligation_total,
-                            //     raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain
-                            //      From raouds,record_allotment_entries
-                            //      WHERE 
-                            //     raouds.record_allotment_entries_id = record_allotment_entries.id
-                            //     AND raouds.process_ors_id IS NOT NULL
-                            //     GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
-                            //     ->where("raouds.id = :id", ['id' => $model->id])->one();
-                            $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as obligated_amount,
-                                raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain
-                                From raouds,record_allotment_entries,raoud_entries
-                                WHERE raouds.record_allotment_entries_id = record_allotment_entries.id
-                                AND raouds.id = raoud_entries.raoud_id
-                                AND raouds.process_ors_id IS NOT NULL
-                                AND raouds.record_allotment_entries_id=$model->record_allotment_entries_id
-                                ")->queryOne();
-                            return $query['remain'];
-                        }
-                    ],
+                    //         //         'entry.obligation_total', 'record_allotment_entries.amount', 'entry.remain'
+                    //         //     ])
+                    //         //     ->from('raouds')
+                    //         //     ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
+                    //         //     ->join("LEFT JOIN", "(SELECT SUM(raouds.obligated_amount) as obligation_total,
+                    //         //     raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain
+                    //         //      From raouds,record_allotment_entries
+                    //         //      WHERE 
+                    //         //     raouds.record_allotment_entries_id = record_allotment_entries.id
+                    //         //     AND raouds.process_ors_id IS NOT NULL
+                    //         //     GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
+                    //         //     ->where("raouds.id = :id", ['id' => $model->id])->one();
+                    //         $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as obligated_amount,
+                    //             raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain
+                    //             From raouds,record_allotment_entries,raoud_entries
+                    //             WHERE raouds.record_allotment_entries_id = record_allotment_entries.id
+                    //             AND raouds.id = raoud_entries.raoud_id
+                    //             AND raouds.process_ors_id IS NOT NULL
+                    //             AND raouds.record_allotment_entries_id=$model->record_allotment_entries_id
+                    //             ")->queryOne();
+                    //         return $query['remain'];
+                    //     }
+                    // ],
                     [
                         'label' => 'Obligated Amount',
-                        'attribute' => 'obligated_amount'
+                        'attribute' => 'obligated_amount',
+                        'filter'=>false,
+                        'format'=>['decimal',2]
                     ],
                     [
                         'class' => '\kartik\grid\CheckboxColumn',
                         'checkboxOptions' => function ($model, $key, $index, $column) {
-                            return ['value' => $model->id, 'onchange' => 'enableDisable(this)', 'style' => 'width:20px;', 'class' => 'checkbox',''];
+                            return ['value' => $model->id, 'onchange' => 'enableDisable(this)', 'style' => 'width:20px;', 'class' => 'checkbox', ''];
                         }
                     ],
                     [
-                        'label' => '1% EWT',
+                        'label' => 'Amount Disbursed',
                         'format' => 'raw',
                         'value' => function ($model) {
                             return ' ' .  MaskMoney::widget([
-                                'name' => "1_percent_ewt[$model->id]",
+                                'name' => "amount_disbursed[$model->id]",
                                 'disabled' => true,
-                                'id' => "1_percent_ewt_$model->id",
+                                'id' => "amount_disbursed_$model->id",
                                 'options' => [
                                     'class' => 'amounts',
                                 ],
@@ -221,13 +238,13 @@ use yii\helpers\Html;
                         }
                     ],
                     [
-                        'label' => '2% EWT',
+                        'label' => '2306 (VAT/ Non-Vat)',
                         'format' => 'raw',
                         'value' => function ($model) {
                             return ' ' .  MaskMoney::widget([
-                                'name' => "2_percent_ewt[$model->id]",
+                                'name' => "vat_nonvat[$model->id]",
                                 'disabled' => true,
-                                'id' => "2_percent_ewt_$model->id",
+                                'id' => "vat_nonvat_$model->id",
                                 'options' => [
                                     'class' => 'amounts',
                                 ],
@@ -239,13 +256,13 @@ use yii\helpers\Html;
                         }
                     ],
                     [
-                        'label' => '3% FT',
+                        'label' => '2307 (EWT Goods/Services)',
                         'format' => 'raw',
                         'value' => function ($model) {
                             return ' ' .  MaskMoney::widget([
-                                'name' => "3_percent_ft[$model->id]",
+                                'name' => "ewt_goods_services[$model->id]",
                                 'disabled' => true,
-                                'id' => "3_percent_ft_$model->id",
+                                'id' => "ewt_goods_services_$model->id",
                                 'options' => [
                                     'class' => 'amounts',
                                 ],
@@ -257,13 +274,13 @@ use yii\helpers\Html;
                         }
                     ],
                     [
-                        'label' => '5% FT',
+                        'label' => '1601C (Compensation)',
                         'format' => 'raw',
                         'value' => function ($model) {
                             return ' ' .  MaskMoney::widget([
-                                'name' => "5_percent_ft[$model->id]",
+                                'name' => "compensation[$model->id]",
                                 'disabled' => true,
-                                'id' => "5_percent_ft_$model->id",
+                                'id' => "compensation_$model->id",
                                 'options' => [
                                     'class' => 'amounts',
                                 ],
@@ -275,13 +292,13 @@ use yii\helpers\Html;
                         }
                     ],
                     [
-                        'label' => '5% EWT',
+                        'label' => 'Other Trust Liabilities',
                         'format' => 'raw',
                         'value' => function ($model) {
                             return ' ' .  MaskMoney::widget([
-                                'name' => "5_percent_ewt[$model->id]",
+                                'name' => "other_trust_liabilities[$model->id]",
                                 'disabled' => true,
-                                'id' => "5_percent_ewt_$model->id",
+                                'id' => "other_trust_liabilities_$model->id",
                                 'options' => [
                                     'class' => 'amounts',
                                 ],
@@ -313,7 +330,7 @@ use yii\helpers\Html;
 
                 ],
             ]); ?>
-            <button type="submit" class="btn btn-primary" name="submit" style="width: 100%;"> ADD</button>
+            <button type="submit" class="btn btn-primary" name="submit" id="submit" style="width: 100%;"> ADD</button>
         </form>
 
 
@@ -403,16 +420,16 @@ use yii\helpers\Html;
         function enableInput(isDisable, index) {
             $(`#amount_${index}-disp`).prop('disabled', isDisable);
             $(`#amount_${index}`).prop('disabled', isDisable);
-            $(`#1_percent_ewt_${index}-disp`).prop('disabled', isDisable);
-            $(`#1_percent_ewt_${index}`).prop('disabled', isDisable);
-            $(`#2_percent_ewt_${index}-disp`).prop('disabled', isDisable);
-            $(`#2_percent_ewt_${index}`).prop('disabled', isDisable);
-            $(`#3_percent_ft_${index}-disp`).prop('disabled', isDisable);
-            $(`#3_percent_ft_${index}`).prop('disabled', isDisable);
-            $(`#5_percent_ft_${index}-disp`).prop('disabled', isDisable);
-            $(`#5_percent_ft_${index}`).prop('disabled', isDisable);
-            $(`#5_percent_ewt_${index}-disp`).prop('disabled', isDisable);
-            $(`#5_percent_ewt_${index}`).prop('disabled', isDisable);
+            $(`#amount_disbursed_${index}-disp`).prop('disabled', isDisable);
+            $(`#amount_disbursed_${index}`).prop('disabled', isDisable);
+            $(`#vat_nonvat_${index}-disp`).prop('disabled', isDisable);
+            $(`#vat_nonvat_${index}`).prop('disabled', isDisable);
+            $(`#ewt_goods_services_${index}-disp`).prop('disabled', isDisable);
+            $(`#ewt_goods_services_${index}`).prop('disabled', isDisable);
+            $(`#compensation_${index}-disp`).prop('disabled', isDisable);
+            $(`#compensation_${index}`).prop('disabled', isDisable);
+            $(`#other_trust_liabilities_${index}-disp`).prop('disabled', isDisable);
+            $(`#other_trust_liabilities_${index}`).prop('disabled', isDisable);
             // console.log(index)
             // button = document.querySelector('.amount_1').disabled=false;
             // console.log(  $('.amount_1').disaled)
@@ -421,46 +438,64 @@ use yii\helpers\Html;
 
         function remove(i) {
             i.closest("tr").remove()
+            dv_count--
         }
-        var select_id = 0;
-        $(document).ready(function() {
 
-            // MAG ADD OG DATA NA BUHATAN OG DV
-            $('#add_data').submit(function(e) {
-
-
-                e.preventDefault();
-                $.ajax({
-                    url: window.location.pathname + '?r=dv-aucs/sample',
-                    method: "POST",
-                    data: $('#add_data').serialize(),
-                    success: function(data) {
-                        var result = JSON.parse(data).results
-                        console.log(result)
-
-                        for (var i = 0; i < result.length; i++) {
-                            if ($('#transaction').val() == 'Single' && i == 1) {
-                                break;
-                            }
-                            var row = `<tr>
+        function addDvToTable(result) {
+            if ($("#transaction").val() == 'Single') {
+                $('#particular').val(result[0]['particulars'])
+                $('#payee').val(result[0]['payee_id']).trigger('change')
+                // console.log(result[0]['particulars'])
+            }
+            for (var i = 0; i < result.length; i++) {
+                if ($('#transaction').val() == 'Single' && i == 1) {
+                    break;
+                }
+                var row = `<tr>
                             
                             <td> <input value='${result[i]['raoud_id']}' type='text' name='raoud_id[]'/></td>
+ 
+                            <td> <input value='${result[i]['process_ors_id']}' type='text' name='process_ors_id[]'/></td>
  
                             <td> ${result[i]['object_code']}</td>
                             <td> 
                             ${result[i]['general_ledger']}
                             </td>
                             <td> ${result[i]['obligated_amount']}</td>
-                            <td> <input value='${result[i]['1_percent_ewt']}' type='text' name='1_percent_ewt[]'/></td>
-                            <td> <input value='${result[i]['2_percent_ewt']}' type='text' name='2_percent_ewt[]'/></td>
-                            <td> <input value='${result[i]['3_percent_ft']}' type='text' name='3_percent_ft[]'/></td>
-                            <td> <input value='${result[i]['5_percent_ft']}' type='text' name='5_percent_ft[]'/></td>
-                            <td> <input value='${result[i]['5_percent_ewt']}' type='text' name='5_percent_ewt[]'/></td>
+                            <td> <input value='${result[i]['amount_disbursed']}' type='text' name='amount_disbursed[]'/></td>
+                            <td> <input value='${result[i]['vat_nonvat']}' type='text' name='vat_nonvat[]'/></td>
+                            <td> <input value='${result[i]['ewt_goods_services']}' type='text' name='ewt_goods_services[]'/></td>
+                            <td> <input value='${result[i]['compensation']}' type='text' name='compensation[]'/></td>
+                            <td> <input value='${result[i]['other_trust_liabilities']}' type='text' name='other_trust_liabilities[]'/></td>
+                            <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
                         `
-                            $('#transaction_table').append(row);
+                $('#transaction_table').append(row);
 
-                            select_id++;
-                        }
+                select_id++;
+                dv_count++;
+
+            }
+            $("#dv_count").val(dv_count)
+
+        }
+        var select_id = 0;
+
+        var transaction_type = $("#transaction").val();
+        var dv_count = 1;
+        $(document).ready(function() {
+
+            // MAG ADD OG DATA NA BUHATAN OG DV
+            $('#submit').click(function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: window.location.pathname + '?r=dv-aucs/get-dv',
+                    method: "POST",
+                    data: $('#add_data').serialize(),
+                    success: function(data) {
+                        var result = JSON.parse(data).results
+                        console.log(result)
+                        addDvToTable(result)
+
                     }
                 });
                 $('.checkbox').prop('checked', false); // Checks it
@@ -488,10 +523,12 @@ $script = <<< JS
 
     $("#transaction").change(function(){
         var transaction_type=$("#transaction").val()
-        if (transaction_type =='Single'){
-            console.log(select_id)
+        $("#transaction_type").val(transaction_type)
+        // if (transaction_type =='Single'){
+        //     console.log(select_id)
             
-        }
+        // }
+        console.log(transaction_type)
     })
       $(document).ready(function() {
 
@@ -526,7 +563,7 @@ $script = <<< JS
        
                 })
                 // GET ALL NATURE OF TRANSCTION
-    $.getJSON('/dti-afms-2/frontend/web/index.php?r=nature-of-transaction/get-nature-of-transaction')
+     $.getJSON('/dti-afms-2/frontend/web/index.php?r=nature-of-transaction/get-nature-of-transaction')
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {
@@ -617,14 +654,32 @@ $script = <<< JS
                 });
       
         })
+
+
+        var update_id= $('#update_id').val()
+        if (update_id>0){
+            console.log (update_id)
+            $.ajax({
+                url:window.location.pathname + "?r=dv-aucs/update-dv",
+                type:"POST",
+                data:{dv_id:update_id},
+                success:function(data){
+
+                    var res = JSON.parse(data)
+                    console.log(res.result[0])
+                    addDvToTable(res.result)
+  
+                    $("#particular").val(res.result[0]['particular'])
+                    $("#payee").val(res.result[0]['payee_id']).trigger('change');
+                    $("#mrd_classification").val(res.result[0]['mrd_classification_id']).trigger("change");
+                    $("#nature_of_transaction").val(res.result[0]['nature_of_transaction_id']).trigger("change");
+                    $("#reporting_period").val(res.result[0]['reporting_period'])
+                    
+                }
+            })
+        }
     })
-    var update_id= $('#update_id').val()
-    if (update_id>0){
-        console.log (update_id)
-        // $.ajax({
-        //     url:window.location.pathname + "?r=dv-aucs/"
-        // })
-    }
+
     JS;
 $this->registerJs($script);
 ?>

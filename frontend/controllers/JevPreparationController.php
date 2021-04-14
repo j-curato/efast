@@ -806,7 +806,7 @@ class JevPreparationController extends Controller
 
             $x = $journal->all();
             $book_name = '';
-            if (!empty($fund)) {
+            if (!empty($book_id)) {
                 // $fund_cluster_code = $this->getBook($fund);
                 $book_name = $this->getBookName($book_id);
             }
@@ -817,7 +817,7 @@ class JevPreparationController extends Controller
                 'general_journal',
                 [
                     'journal' => $x,
-                    'fund_cluster_code' => $book_name,
+                    'book_name' => $book_name,
                     'reporting_period' => $reporting_period
                 ]
             );

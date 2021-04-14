@@ -80,4 +80,20 @@ class DvAucs extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Raouds::class, ['id' => 'raoud_id']);
     }
+    public function getDvAucsEntries()
+    {
+        return $this->hasMany(DvAucsEntries::class,['dv_aucs_id'=>'id']);
+    }
+    public function getNatureOfTransaction()
+    {
+        return $this->hasOne(NatureOfTransaction::class,['id'=>'nature_of_transaction_id']);
+    }
+    public function getMrdClassification()
+    {
+        return $this->hasOne(MrdClassification::class,['id'=>'mrd_classification_id']);
+    }
+    public function getPayee()
+    {
+        return $this->hasOne(Payee::class,['id'=>'payee_id']);
+    }
 }
