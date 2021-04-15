@@ -55,6 +55,7 @@ class JevAccountingEntriesSearch extends JevAccountingEntries
             // $query->where('0=1');
             return $dataProvider;
         }
+        $query->joinWith("jevPreparation");
 
         // grid filtering conditions
         $query->andFilterWhere([
@@ -64,6 +65,8 @@ class JevAccountingEntriesSearch extends JevAccountingEntries
             'debit' => $this->debit,
             'credit' => $this->credit,
         ]);
+        // $query->andFilterWhere(['like', 'jev_preparation.book_id', $book_id])
+        //     ->andFilterWhere(['like', 'jev_preparation.reporting_period', $reporting_period]);
 
         return $dataProvider;
     }

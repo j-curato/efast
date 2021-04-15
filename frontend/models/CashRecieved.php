@@ -40,6 +40,7 @@ class CashRecieved extends \yii\db\ActiveRecord
     {
         return [
             [['document_recieved_id', 'book_id', 'mfo_pap_code_id'], 'integer'],
+            [['document_recieved_id', 'book_id', 'mfo_pap_code_id','date','reporting_period','nca_no','purpose','amount'], 'required'],
             [['amount'], 'number'],
             [['date'], 'string', 'max' => 50],
             [['reporting_period'], 'string', 'max' => 40],

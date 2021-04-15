@@ -67,9 +67,11 @@
                                     ['label' => 'Transactions', 'icon' => 'circle-o', 'url' => ['/transaction'],],
                                     ['label' => 'Jev', 'icon' => 'circle-o', 'url' => ['/jev-preparation'],],
 
+                                    ['label' => 'Process Dv', 'icon' => 'circle-o', 'url' => ['/dv-aucs'],],
 
                                 ],
                             ],
+                 
                             [
                                 'label' => 'Reports',
                                 'icon' => 'circle-o',
@@ -126,7 +128,6 @@
                                     ['label' => 'Process Ors', 'icon' => 'circle-o', 'url' => ['/process-ors-entries'],],
                                     ['label' => 'Process BURS', 'icon' => 'circle-o', 'url' => ['/process-burs'],],
                                     ['label' => 'Raouds', 'icon' => 'circle-o', 'url' => ['/raouds'],],
-                                    ['label' => 'Process Dv', 'icon' => 'circle-o', 'url' => ['/dv-aucs'],],
 
                                 ],
                             ],
@@ -150,6 +151,7 @@
                                 'url' => '#',
                                 'items' => [
                                     ['label' => 'Cash Disbursement', 'icon' => 'circle-o', 'url' => ['/cash-disbursement'],],
+                                    ['label' => 'Cash Recieved', 'icon' => 'circle-o', 'url' => ['/cash-recieved'],],
 
                                 ],
                             ],

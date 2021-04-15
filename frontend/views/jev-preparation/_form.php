@@ -623,6 +623,7 @@ use aryelds\sweetalert\SweetAlertAsset;
             // CHECK ADA NUMBER 
             ada_number = ['Check', 'ADA', 'Non Cash']
             $('#check_ada').select2({ 
+                data:ada_number,
                 placeholder: 'Select CHECK/ADA'
 
             })

@@ -1,5 +1,7 @@
 <?php
 
+use app\models\ProcessOrs;
+use app\models\Raouds;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -26,14 +28,71 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'chart_of_account_id',
-            'process_ors_id',
-            'amount',
-        ],
-    ]) ?>
+    <?php
+    // DetailView::widget([
+    //     'model' => $model,
+    //     'attributes' => [
+    //         'id',
+    //         'chart_of_account_id',
+    //         'process_ors_id',
+    //         'amount',
+    //     ],
+    // ]) 
+    ?>
+    <?php
+    $ors  = ProcessOrs::findOne($model->process_ors_id);
+    ?>
+    <div class="container">
+
+        <table class="table table-striped">
+
+            <thead>
+                <th>
+                    ID
+                </th>
+                <th>
+                    Payee
+                </th>
+                <th>
+                    UACS
+                </th>
+                <th>
+                    General Ledger
+                </th>
+                <th>
+                    Amount
+                </th>
+            </thead>
+            <tbody>
+                <?php
+                foreach ($ors->raouds as $val) {
+
+                    echo "
+                    <tr>
+                        <td>
+                           {$val->id}
+                        </td>
+                        <td>
+                           {$val->processOrs->transaction->payee->account_name}
+                        </td>
+                        <td>
+                           {$val->raoudEntries->chartOfAccount->uacs}
+                        </td>
+                        <td>
+                           {$val->raoudEntries->chartOfAccount->general_ledger}
+                        </td>
+                        <td>" .
+                        number_format($val->raoudEntries->amount, 2)
+                        . "</td>
+         
+                    </tr>
+                    
+                    ";
+                }
+
+                ?>
+            </tbody>
+        </table>
+    </div>
 
 </div>

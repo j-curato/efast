@@ -87,6 +87,9 @@ $this->params['breadcrumbs'][] = $this->title;
             'dv_number',
             'reporting_period',
             'particular',
+            // foreach($model->dvAucsEntries as $val){
+                                
+            // },
             [
                 'label'=>"Payee",
                 'value'=>"payee.account_name"
@@ -109,4 +112,11 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); ?>
 
 
+<style>
+    .grid-view td {
+      white-space: normal;
+      width: 5rem;
+      padding: 0;
+    }
+  </style>
 </div>

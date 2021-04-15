@@ -59,7 +59,8 @@ class Raouds2Search extends Raouds
         }
         $query->joinWith('recordAllotmentEntries');
         $query->joinWith('processOrs');
-        $query->join("LEFT JOIN", 'record_allotments', "record_allotment_entries.record_allotment_id=record_allotments.id");
+        $query->join("LEFT JOIN", 'record_allotments',
+         "record_allotment_entries.record_allotment_id=record_allotments.id");
 
 
         // grid filtering conditions
@@ -72,7 +73,7 @@ class Raouds2Search extends Raouds
             'is_parent' => $this->is_parent,
         ]);
 
-        $query->andFilterWhere(['like', 'serial_number', $this->serial_number])
+        $query->andFilterWhere(['like', 'raouds.serial_number', $this->serial_number])
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
             ->andFilterWhere(['like', 'process_ors.serial_number', $this->process_ors_id])
             ;

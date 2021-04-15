@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
     </p>
-    <div class="container">
+    <div class="container" style="background-color: white;padding:10px">
 
         <table class="table table-striped">
 
@@ -39,13 +39,21 @@ $this->params['breadcrumbs'][] = $this->title;
             </thead>
             <tbody>
                 <?php
+                $total=0;
                 foreach ($model->recordAllotmentEntries as $val) {
                     echo "<tr>
                     <td>{$val->chartOfAccount->general_ledger}</td>
                     <td>" . number_format($val->amount, 2) . "</td>
                 </tr>";
+                    $total += $val->amount;
                 }
                 ?>
+                <tr>
+                    <td>
+                        <h5>Total</h5>
+                    </td>
+                    <td><?php echo number_format($total,2); ?></td>
+                </tr>
             </tbody>
         </table>
     </div>

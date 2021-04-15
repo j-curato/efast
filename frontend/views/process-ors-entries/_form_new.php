@@ -30,6 +30,9 @@ use kartik\select2\Select2;
 
             $q = $update_id;
         }
+
+
+        echo " <input type='text' id='update' name='update' value='$update' style='display:none' >";
         echo " <input type='text' id='update_id' name='update_id' value='$q' style='display:none' >";
 
         ?>
@@ -52,6 +55,21 @@ use kartik\select2\Select2;
                 ]);
                 ?>
             </div>
+            <div class="col-sm-3">
+                <label for="date">Date</label>
+                <?php
+                echo DatePicker::widget([
+                    'name' => 'date',
+                    'id' => 'date',
+                    // 'value' => '12/31/2010',
+                    // 'options' => ['required' => true],
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'mm-dd-yyyy',
+                    ]
+                ]);
+                ?>
+            </div>
             <div class="col-sm-3" style="height:60x">
                 <label for="book_id">Book</label>
                 <select id="book_id" name="book_id" class="book_id select" style="width: 100%; margin-top:50px">
@@ -65,26 +83,29 @@ use kartik\select2\Select2;
                 </select>
             </div>
         </div>
-        <table class="table table-striped" id="transaction_detail">
-            <thead>
-                <th>Payee</th>
-                <th>Particular</th>
-                <th>Gross Amount</th>
-            </thead>
-            <tr>
-                <td>
-                    <div id="payee"></div>
-                </td>
-                <td>
-                    <div id="transaction_particular"></div>
-                </td>
-                <td>
-                    <div id="transaction_amount"></div>
-                </td>
-            </tr>
-            <tbody>
-            </tbody>
-        </table>
+        <div class="card" style="background-color: white;margin:14px">
+            <table class="table table-striped" id="transaction_detail">
+                <thead>
+                    <th>Payee</th>
+                    <th>Particular</th>
+                    <th>Gross Amount</th>
+                </thead>
+                <tr>
+                    <td>
+                        <div id="payee"></div>
+                    </td>
+                    <td>
+                        <div id="transaction_particular"></div>
+                    </td>
+                    <td>
+                        <div id="transaction_amount"></div>
+                    </td>
+                </tr>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
         <table id="transaction_table" class="table table-striped">
             <thead>
                 <!-- <th>Raoud ID</th> -->
@@ -119,7 +140,7 @@ use kartik\select2\Select2;
 
             'columns' => [
 
-                // 'id',
+                'serial_number',
                 [
                     'label' => 'MFO/PAP Code',
                     'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.code',
@@ -348,7 +369,6 @@ use kartik\select2\Select2;
                     chart_id = ''
                 }
                 var row = `<tr>
-                            
                             <td style="display:none"> <input value='${result[i]['raoud_id']}' type='text' name='raoud_id[]' /></td>
                             <td> ${result[i]['mfo_pap_code_code']}</td>
                             <td> ${result[i]['mfo_pap_name']}</td>
@@ -356,7 +376,7 @@ use kartik\select2\Select2;
                             <td> ${object_code}</td>
                             <td> 
                                 <div>
-                                    <select id="chart-${select_id}" required name="chart_of_account_id[]" class="chart-of-account" style="width: 100%">
+                                    <select id="chart-${select_id}" required name="chart_of_account_id[]" class="chart-of-account" style="width: 100%" required>
                                         <option></option>
                                     </select>
                                 </div>
@@ -371,6 +391,9 @@ use kartik\select2\Select2;
                 }).val(`${chart_id}`).trigger('change');
                 select_id++;
             }
+            console.log(result)
+
+
         }
         var select_id = 0;
         $(document).ready(function() {
@@ -476,21 +499,7 @@ $script = <<< JS
         })
     })
     $(document).ready(function() {
-        update_id = $('#update_id').val()
-        console.log(update_id)
-        //   update_id.change(function(){
-        //       console.log(update_id.val())
-        //   })
-          if (update_id!=null){
-            $.ajax({
-                type:"POST",
-                url:window.location.pathname + "?r=raouds/get-raoud",
-                data:{update_id:update_id},
-                success:function(data){
-                    console.log(data)
-                }
-            })
-        }
+
         
         // GET CHART OF ACCOUNTS
         $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
@@ -562,11 +571,11 @@ $script = <<< JS
                                 title: "Success",
                                 // text: "You will not be able to undo this action!",
                                 type: "success",
-                                timer: 3000,
+                                timer: 30000,
                                 button: false
                                 // confirmButtonText: "Yes, delete it!",
                             }, function() {
-                                window.location.href = window.location.pathname + '?r=process-ors-entries/index'
+                                window.location.href = window.location.pathname + '?r=process-ors-entries/view&='+res.id
                             });
                             $('#add_data')[0].reset();
                         }
@@ -594,6 +603,37 @@ $script = <<< JS
                 });
       
         })
+        update_id = $('#update_id').val()
+        console.log(update_id)
+        //   update_id.change(function(){
+        //       console.log(update_id.val())
+        //   })
+          if (update_id!=null){
+            $.ajax({
+                type:"POST",
+                url:window.location.pathname + "?r=raouds/get-raoud",
+                data:{update_id:update_id},
+                success:function(data){
+                    var res = JSON.parse(data)
+                    // console.log(res)
+                }
+            })
+        }
+          if (update_id!=null && $('#update').val()==='update'){
+            $.ajax({
+                type:"POST",
+                url:window.location.pathname + "?r=raouds/get-raoud",
+                data:{update_id:update_id},
+                success:function(data){
+                    var res = JSON.parse(data)
+                    console.log(res.result[0]['book_id'])
+                    $("#reporting_period").val(res.result[0]['reporting_period']).trigger('change')
+                    $("#book_id").val(res.result[0]['book_id']).trigger('change')
+                    $("#transaction_id").val(res.result[0]['transaction_id']).trigger('change')
+                    addData(res.result)
+                }
+            })
+        }
     })
     JS;
 $this->registerJs($script);

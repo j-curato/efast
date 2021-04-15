@@ -48,7 +48,7 @@ class ProcessOrsEntriesController extends Controller
     {
         $searchModel = new ProcessOrsRaoudsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']]; 
+        $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -92,7 +92,7 @@ class ProcessOrsEntriesController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'update_id' => '',
-            'update' => false,
+            'update' => '',
         ]);
     }
 
@@ -111,7 +111,6 @@ class ProcessOrsEntriesController extends Controller
         // if ($model->load(Yii::$app->request->post()) && $model->save()) {
         //     return $this->redirect(['view', 'id' => $model->id]);
         // }
-
         // return $this->render('update', [
         //     'model' => $model,
         // ]);
@@ -121,7 +120,7 @@ class ProcessOrsEntriesController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'update_id' => $id,
-            'update' => true
+            'update' => 'update'
         ]);
     }
     // MAG ADJUST OG ORS
@@ -132,7 +131,9 @@ class ProcessOrsEntriesController extends Controller
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'update_id' => $id
+            'update_id' => $id,
+            'update' => 'adjust'
+            // 'adjust-id'=>$id
         ]);
     }
 
@@ -159,7 +160,7 @@ class ProcessOrsEntriesController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = ProcessOrsEntries::findOne($id)) !== null) {
+        if (($model = Raouds::findOne($id)) !== null) {
             return $model;
         }
 
@@ -169,24 +170,26 @@ class ProcessOrsEntriesController extends Controller
     public function actionSample()
     {
         $x = [];
-        foreach ($_POST['selection'] as $val) {
+        if (!empty($_POST)) {
 
-            $query = (new \yii\db\Query())
-                ->select([
-                    'mfo_pap_code.code AS mfo_pap_code_code', 'mfo_pap_code.name AS mfo_pap_name', 'fund_source.name AS fund_source_name',
-                    'chart_of_accounts.uacs as object_code', 'chart_of_accounts.general_ledger', 'major_accounts.name',
-                    'chart_of_accounts.id as chart_of_account_id', 'raouds.id AS raoud_id',
-                    'entry.total', 'record_allotment_entries.amount', '(record_allotment_entries.amount - entry.total) AS remain'
-                ])
-                ->from('raouds')
-                ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
-                ->join("LEFT JOIN", "record_allotments", "record_allotment_entries.record_allotment_id=record_allotments.id")
-                ->join("LEFT JOIN", "chart_of_accounts", "record_allotment_entries.chart_of_account_id=chart_of_accounts.id")
-                ->join("LEFT JOIN", "major_accounts", "chart_of_accounts.major_account_id=major_accounts.id")
-                ->join("LEFT JOIN", "fund_source", "record_allotments.fund_source_id=fund_source.id")
-                ->join("LEFT JOIN", "mfo_pap_code", "record_allotments.mfo_pap_code_id=mfo_pap_code.id")
-                ->join("LEFT JOIN", "raoud_entries", "raouds.id=raoud_entries.raoud_id")
-                ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount) as total,
+            foreach ($_POST['selection'] as $val) {
+
+                $query = (new \yii\db\Query())
+                    ->select([
+                        'mfo_pap_code.code AS mfo_pap_code_code', 'mfo_pap_code.name AS mfo_pap_name', 'fund_source.name AS fund_source_name',
+                        'chart_of_accounts.uacs as object_code', 'chart_of_accounts.general_ledger', 'major_accounts.name',
+                        'chart_of_accounts.id as chart_of_account_id', 'raouds.id AS raoud_id',
+                        'entry.total', 'record_allotment_entries.amount', '(record_allotment_entries.amount - entry.total) AS remain'
+                    ])
+                    ->from('raouds')
+                    ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
+                    ->join("LEFT JOIN", "record_allotments", "record_allotment_entries.record_allotment_id=record_allotments.id")
+                    ->join("LEFT JOIN", "chart_of_accounts", "record_allotment_entries.chart_of_account_id=chart_of_accounts.id")
+                    ->join("LEFT JOIN", "major_accounts", "chart_of_accounts.major_account_id=major_accounts.id")
+                    ->join("LEFT JOIN", "fund_source", "record_allotments.fund_source_id=fund_source.id")
+                    ->join("LEFT JOIN", "mfo_pap_code", "record_allotments.mfo_pap_code_id=mfo_pap_code.id")
+                    ->join("LEFT JOIN", "raoud_entries", "raouds.id=raoud_entries.raoud_id")
+                    ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount) as total,
                 raouds.id, raouds.process_ors_id,
                 raouds.record_allotment_entries_id
                 FROM raouds,raoud_entries,process_ors
@@ -194,17 +197,18 @@ class ProcessOrsEntriesController extends Controller
                 AND raouds.id = raoud_entries.raoud_id
                 AND raouds.process_ors_id IS NOT NULL 
                 GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
-                // ->join("LEFT JOIN","","raouds.process_ors_id=process_ors.id")
+                    // ->join("LEFT JOIN","","raouds.process_ors_id=process_ors.id")
 
-                ->where("raouds.id = :id", ['id' => $val])->one();
-            $query['obligation_amount'] =  $_POST['amount'][$val];
-            $x[] = $query;
+                    ->where("raouds.id = :id", ['id' => $val])->one();
+                $query['obligation_amount'] =  $_POST['amount'][$val];
+                $x[] = $query;
+            }
+
+            // return json_encode($_POST['selection']);
+            // $query=Yii::$app->db->createCommand("SELECT * FROM raouds where id IN ('1','2')")->queryAll();
+
+            return json_encode(['results' => $x]);
         }
-
-        // return json_encode($_POST['selection']);
-        // $query=Yii::$app->db->createCommand("SELECT * FROM raouds where id IN ('1','2')")->queryAll();
-
-        return json_encode(['results' => $x]);
     }
 
     public function actionInsertProcessOrs()
@@ -213,11 +217,12 @@ class ProcessOrsEntriesController extends Controller
         if (!empty($_POST)) {
             $reporting_period = $_POST['reporting_period'];
             $transaction_id = $_POST['transaction_id'];
-            $book_id=$_POST['book_id'];
+            $book_id = $_POST['book_id'];
+            $date = $_POST['date'];
             // return json_encode($_POST['chart_of_account_id']);
             $transaction = \Yii::$app->db->beginTransaction();
             // KUNG NAAY SULOD ANG UPDATE ID  MAG ADD OG RAOUD OG ENTRY NIYA  PARA E ADJUST
-            if ($_POST['update_id'] > 0) {
+            if ($_POST['update'] === 'adjust') {
                 try {
                     // KUHAON ANG PARENT NA RAOUD NA E ADJUST
                     $raoud_to_adjust = Raouds::find()->where("id =:id", ['id' => $_POST['update_id']])->one();
@@ -304,19 +309,29 @@ class ProcessOrsEntriesController extends Controller
                 } catch (ErrorException $e) {
                     return json_encode(["error" => $e]);
                 }
+            } else if ($_POST['update'] === 'update') {
+                $raoud = Raouds::findOne($_POST['update_id']);
+                $ors = ProcessOrs::findOne($raoud->process_ors_id);
+                $ors->reporting_period = $reporting_period;
+                $ors->transaction_id = $transaction_id;
+                if ($ors->save(false)) {
+                    $transaction->commit();
+                    return json_encode(['isSuccess' => true, 'ors_id' => $ors->id]);
+                }
             }
             // KUNG WLAY SULOD ANG UPDATE_ID DRI MO SULOD MAG BUHAT OG BAG.O NA DATA
             else {
 
 
                 try {
+
                     $ors = new ProcessOrs();
                     $ors->reporting_period = $reporting_period;
                     $ors->transaction_id = $transaction_id;
-                    $ors->serial_number = $this->getOrsSerialNumber($reporting_period,$book_id);
+                    $ors->book_id=$book_id;
+                    
+                    $ors->serial_number = $this->getOrsSerialNumber($reporting_period, $book_id);
                     if ($ors->validate()) {
-
-
                         if ($flag = $ors->save()) {
                             // echo $reporting_period;
                             foreach ($_POST['chart_of_account_id'] as $index => $value) {
@@ -371,7 +386,7 @@ class ProcessOrsEntriesController extends Controller
                         }
                         if ($flag) {
                             $transaction->commit();
-                            return json_encode(['isSuccess' => true]);
+                            return json_encode(['isSuccess' => true,'id'=>$ors->id]);
                         }
                     } else {
                         return json_encode(['isSuccess' => false, 'error' => $ors->errors]);
@@ -386,9 +401,9 @@ class ProcessOrsEntriesController extends Controller
         }
     }
 
-    public function getOrsSerialNumber($reporting_period,$book_id)
+    public function getOrsSerialNumber($reporting_period, $book_id)
     {
-        $book =Books::findOne($book_id);
+        $book = Books::findOne($book_id);
         $query = (new \yii\db\Query())
             ->select("serial_number")
             ->from('process_ors')
@@ -402,7 +417,7 @@ class ProcessOrsEntriesController extends Controller
             $last_number = explode('-', $query['serial_number']);
             $x = intval($last_number[3]) + 1;
         }
-        $serial_number = $book->name .'-'. $reporting_period . '-' . $x;
+        $serial_number = $book->name . '-' . $reporting_period . '-' . $x;
         // ob_start();
         // echo "<pre>";
         // var_dump( $last_number[1]);
@@ -481,7 +496,7 @@ class ProcessOrsEntriesController extends Controller
                 }
 
                 $cluster = $cells[0];
-                $reporting_period =  $cells[1];
+                $reporting_period = date("Y-m", strtotime($cells[1]));
                 $date = $cells[2];
                 $transaction_number = $cells[3];
                 $obligation_number = $cells[4];
@@ -502,9 +517,9 @@ class ProcessOrsEntriesController extends Controller
                     || !empty($obligation_uacs)
 
                 ) {
-                //     return json_encode(['isSuccess' => false, 'error' => "Error Somthing is Missing in Line $key"]);
-                //     // die();
-                // } else {
+                    //     return json_encode(['isSuccess' => false, 'error' => "Error Somthing is Missing in Line $key"]);
+                    //     // die();
+                    // } else {
 
 
                     $allotment_chart = $this->getChartOfAccount($allotment_uacs);

@@ -17,8 +17,8 @@ class ProcessOrsRaoudsSearch extends Raouds
     public function rules()
     {
         return [
-            [['id', 'process_ors_id', 'record_allotment_entries_id', 'isActive', 'is_parent', 'process_burs_id', 'mandatory_reserve_id'], 'integer'],
-            [['serial_number', 'reporting_period'], 'safe'],
+            [['id',  'record_allotment_entries_id', 'isActive', 'is_parent', 'process_burs_id', 'mandatory_reserve_id'], 'integer'],
+            [['serial_number','process_ors_id', 'reporting_period'], 'safe'],
             [['obligated_amount', 'burs_amount'], 'number'],
         ];
     }
@@ -56,11 +56,11 @@ class ProcessOrsRaoudsSearch extends Raouds
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->joinWith("processOrs");
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'process_ors_id' => $this->process_ors_id,
+            // 'process_ors_id' => $this->process_ors_id,
             'record_allotment_entries_id' => $this->record_allotment_entries_id,
             'obligated_amount' => $this->obligated_amount,
             'isActive' => $this->isActive,
@@ -71,7 +71,8 @@ class ProcessOrsRaoudsSearch extends Raouds
         ]);
 
         $query->andFilterWhere(['like', 'serial_number', $this->serial_number])
-            ->andFilterWhere(['like', 'reporting_period', $this->reporting_period]);
+            ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
+            ->andFilterWhere(['like', 'process_ors.serial_number', $this->process_ors_id]);
 
         return $dataProvider;
     }

@@ -123,7 +123,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan='1'>
                     </td>
                     <td colspan='1'>
-                    <?php echo number_format( $model->gross_amount,2)?>
+                        <?php echo number_format($model->gross_amount, 2) ?>
                     </td>
                 </tr>
 
@@ -153,7 +153,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
                 <tr style="border-top:1px solid black">
-                    <td colspan="4">
+                    <td colspan="3">
                         <div>
                             <span class="head">A. Certified: </span>
                             Charges to appropriation/alloment arenecessary,
@@ -161,49 +161,65 @@ $this->params['breadcrumbs'][] = $this->title;
                             valid, proper and legal
 
                         </div>
-                        <div>
-                            <span>Signature:</span>
-                            <span>______________</span>
-                        </div>
-                        <div>
-                            <span>Printed Name:</span>
-                            <span>______________</span>
-                        </div>
-                        <div>
-                            <span>Position:</span>
-                            <span>______________</span>
-                            <h6>Head, Budget Division/Unit/Authorized Representative</h6>
-                        </div>
-                        <div>
-                            <span>Date:</span>
-                            <span>______________</span>
+                        <div style="padding:14px">
+                            <div style="padding: 3px;">
+
+                                <span style="width:0px ;">Signature:</span>
+                                <span style="margin-left:2rem">__________________________________</span>
+                            </div>
+                            <div style="padding: 3px;">
+                                <span style="width:20px ;">Printed Name:</span>
+                                <span style="margin-left:2rem">
+                                    <select name="" id="q">
+                                        <option value="">qwe</option>
+                                        <option value="">q</option>
+                                    </select>
+                                </span>
+                            </div>
+                            <div style="padding: 3px;">
+                                <span>Position:</span>
+                                <span>_______________________________________</span>
+                                <div style="width: 150px;text-align:center;font-size:8px;margin-left:auto;margin-right:auto">
+                                    <small> Head, Budget Division/Unit/Authorized Representative</small>
+                                </div>
+                            </div>
+                            <div style="padding: 3px;">
+                                <span>Date:</span>
+                                <span>_____________________</span>
+                            </div>
                         </div>
 
                     </td>
-                    <td colspan="4">
-
-                        <div>
+                    <td colspan="5">
+                        <div >
                             <span class="head"> B. Certified:</span>
                             Allotment available and obligated
                             for the purpose/adjustment necessary as
                             indicated above
                         </div>
-                        <div>
-                            <span>Signature:</span>
-                            <span>______________</span>
-                        </div>
-                        <div>
-                            <span>Printed Name:</span>
-                            <span>______________</span>
-                        </div>
-                        <div>
-                            <span>Position:</span>
-                            <span>______________</span>
-                            <h6>Head, Budget Division/Unit/Authorized Representative</h6>
-                        </div>
-                        <div>
-                            <span>Date:</span>
-                            <span>______________</span>
+                        <div style="padding: 20px;">
+                            <div>
+                                <span>Signature:</span>
+                                <span>______________</span>
+                            </div>
+                            <div>
+                                <span>Printed Name:</span>
+                                <span>
+                                    <select name="" id="q">
+                                        <option value="">qwe</option>
+                                        <option value="">q</option>
+                                    </select>
+                                </span>
+                            </div>
+                            <div>
+                                <span>Position:</span>
+                                <span>______________</span>
+                                <h6>Head, Budget Division/Unit/Authorized Representative</h6>
+                            </div>
+                            <div>
+                                <span>Date:</span>
+                                <span>______________</span>
+                            </div>
                         </div>
 
                     </td>
@@ -392,7 +408,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>
                     </td>
                     <td>
-                    <?php echo number_format( $model->gross_amount,2)?>
+                        <?php echo number_format($model->gross_amount, 2) ?>
                     </td>
                 </tr>
                 <?php
@@ -576,9 +592,18 @@ $this->params['breadcrumbs'][] = $this->title;
             width: 100%;
         }
 
+
         @media print {
             .actions {
                 display: none;
+            }
+
+            select {
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                text-indent: 1px;
+                text-overflow: '';
+                border: none;
             }
 
             table,

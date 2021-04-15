@@ -1,7 +1,8 @@
 <?php
 
+use kartik\grid\GridView;
 use yii\helpers\Html;
-use yii\grid\GridView;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\CashRecievedSearch */
@@ -15,14 +16,21 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Cash Recieved', ['create'], ['class' => 'btn btn-success']) ?>
+        <!-- <?= Html::a('Create Cash Recieved', ['create'], ['class' => 'btn btn-success']) ?> -->
+        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Add New', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=cash-recieved/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel'=>[
+            'type'=>GridView::TYPE_PRIMARY,
+        ],
+        'export'=>false,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
@@ -31,6 +39,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'book_id',
             'mfo_pap_code_id',
             'date',
+
+
             //'reporting_period',
             //'nca_no',
             //'nta_no',
@@ -44,3 +54,16 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
+
+<?php
+$script = <<< JS
+
+    $('#modalButtoncreate').click(function(){
+         $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+    });
+    $('.modalButtonedit').click(function(){
+        $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+    });
+JS;
+$this->registerJs($script);
+?>

@@ -85,7 +85,7 @@ use yii\widgets\ActiveForm;
                 </div>
 
             </div>
-            <div class="row">
+            <div class="row" style="margin-bottom: 20px;">
                 <div class="col-sm-3">
                     <label for="check_ada_no">ADA/Check Number</label>
                     <?php
@@ -142,6 +142,8 @@ use yii\widgets\ActiveForm;
             $searchModel = new DvAucsEntriesSearch();
             $searchModel->id = $dv_aucs_entries_id;
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+            $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
+
             $qwe = DvAucsEntries::find()->select(['id'])->all();
             $x = [];;
             foreach ($qwe as $v) {
@@ -156,12 +158,12 @@ use yii\widgets\ActiveForm;
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
-                
+
                 'panel' => [
                     'type' => GridView::TYPE_PRIMARY,
                     'heading' => "List Of DV's",
                 ],
-                
+
                 'toggleDataOptions' => ['maxCount' => 100],
                 'pjax' => true,
                 'export' => false,
@@ -169,7 +171,7 @@ use yii\widgets\ActiveForm;
                     'top' => 50,
                     'position' => 'absolute',
                 ],
-                
+
                 'columns' => [
 
                     // 'id',
@@ -180,6 +182,17 @@ use yii\widgets\ActiveForm;
                         // "filter" => function () use ($dv_aucs_entries_id) {
                         //     return $dv_aucs_entries_id;
                         // }
+                    ],
+
+                    [
+                        'class' => '\kartik\grid\CheckboxColumn',
+                        'checkboxOptions' => function ($model, $key, $index, $column) use ($x, $dv_aucs_entries_id) {
+                            // return ['value' => $model->id,  'style' => 'width:20px;', 'class' => 'checkbox'];
+                            $bool = in_array($dv_aucs_entries_id, $x);
+                            if ($dv_aucs_entries_id === $model->id) {
+                                return ['checked' => $bool];
+                            }
+                        }
                     ],
                     [
                         'label' => 'DV Number',
@@ -194,30 +207,23 @@ use yii\widgets\ActiveForm;
 
                     ],
                     [
+                        'label' => 'Amount',
+                        'attribute' => 'amount_disbursed',
+                        'filter' => false,
+                        'format' => ['decimal', 2]
+                    ],
+                    [
                         'label' => 'Payee',
                         'attribute' => 'dvAucs.payee.account_name'
                     ],
                     [
                         'label' => 'Particular',
-                        'attribute' => 'dvAucs.particular'
-                    ],
-                    [
-                        'label' => 'Amount',
-                        'attribute' => 'amount_disbursed',
-                        'filter' => false
+                        'attribute' => 'dvAucs.particular',
+
                     ],
 
 
-                    [
-                        'class' => '\kartik\grid\CheckboxColumn',
-                        'checkboxOptions' => function ($model, $key, $index, $column) use ($x, $dv_aucs_entries_id) {
-                            // return ['value' => $model->id,  'style' => 'width:20px;', 'class' => 'checkbox'];
-                            $bool = in_array($dv_aucs_entries_id, $x);
-                            if ($dv_aucs_entries_id === $model->id) {
-                                return ['checked' => $bool];
-                            }
-                        }
-                    ],
+
 
 
                 ],
@@ -231,7 +237,13 @@ use yii\widgets\ActiveForm;
     <style>
         .container {
             background-color: white;
-            padding:12px
+            padding: 12px
+        }
+
+        .grid-view td {
+            white-space: normal;
+            width: 5rem;
+            padding: 0;
         }
     </style>
 </div>

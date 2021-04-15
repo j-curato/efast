@@ -782,45 +782,56 @@ class JevPreparationController extends Controller
 
 
         if (!empty($_POST)) {
-            $book_id = $_POST['book_id'] ? $_POST['book_id'] : '';
-            $reporting_period = $_POST['reporting_period'] ? "{$_POST['reporting_period']}" : '';
-            $journal = JevPreparation::find()
-                ->joinWith(['jevAccountingEntries', 'jevAccountingEntries.chartOfAccount']);
+            if (!empty($_POST['book_id']) || !empty($_POST['reporting_period'])) {
 
-            if (!empty($book_id)) {
+                $book_id = $_POST['book_id'] ? $_POST['book_id'] : '';
+                $reporting_period = $_POST['reporting_period'] ? "{$_POST['reporting_period']}" : '';
+                $journal = JevPreparation::find()
+                    ->joinWith(['jevAccountingEntries', 'jevAccountingEntries.chartOfAccount']);
 
-                $journal->andwhere("book_id  = :book_id", [
-                    'book_id' => $book_id
-                ]);
+                if (!empty($book_id)) {
+
+                    $journal->andwhere("book_id  = :book_id", [
+                        'book_id' => $book_id
+                    ]);
+                }
+                if (!empty($reporting_period)) {
+
+                    $journal->andwhere("jev_preparation.reporting_period  = :reporting_period", [
+                        'reporting_period' => $reporting_period
+                    ]);
+                }
+                // echo '<pre>';
+                // var_dump($reporting_period);
+                // echo '</pre>';
+
+
+                $x = $journal->all();
+                $book_name = '';
+                if (!empty($book_id)) {
+                    // $fund_cluster_code = $this->getBook($fund);
+                    $book_name = $this->getBookName($book_id);
+                }
+                // echo '<pre>';
+                // var_dump($fund);
+                // echo '</pre>';
+                return $this->render(
+                    'general_journal',
+                    [
+                        'journal' => $x,
+                        'book_name' => $book_name,
+                        'reporting_period' => $reporting_period
+                    ]
+                );
             }
-            if (!empty($reporting_period)) {
-
-                $journal->andwhere("jev_preparation.reporting_period  = :reporting_period", [
-                    'reporting_period' => $reporting_period
-                ]);
+            else {
+                return $this->render(
+                    'general_journal',
+                    [
+                        // 'journal' => ''
+                    ]
+                );
             }
-            // echo '<pre>';
-            // var_dump($reporting_period);
-            // echo '</pre>';
-
-
-            $x = $journal->all();
-            $book_name = '';
-            if (!empty($book_id)) {
-                // $fund_cluster_code = $this->getBook($fund);
-                $book_name = $this->getBookName($book_id);
-            }
-            // echo '<pre>';
-            // var_dump($fund);
-            // echo '</pre>';
-            return $this->render(
-                'general_journal',
-                [
-                    'journal' => $x,
-                    'book_name' => $book_name,
-                    'reporting_period' => $reporting_period
-                ]
-            );
         } else {
             return $this->render(
                 'general_journal',
@@ -1104,14 +1115,13 @@ class JevPreparationController extends Controller
 
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename="'.basename($file).'"');
+        header('Content-Disposition: attachment; filename="' . basename($file) . '"');
         header('Expires: 0');
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
         header('Content-Length: ' . filesize($file));
         readfile($file);
         exit;
-    
     }
 
     public function actionTrialBalance()

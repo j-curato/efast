@@ -5,6 +5,7 @@ use app\models\FundClusterCode;
 use app\models\JevAccountingEntriesSearch;
 use app\models\JevPreparationSearch;
 use app\models\ResponsibilityCenter;
+use app\models\SubAccounts1;
 use kartik\date\DatePicker;
 use kartik\export\ExportMenu;
 use yii\helpers\Html;
@@ -79,33 +80,83 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <?php
 
-        // if (!empty($book_name)) {
-        //     $book = (new \yii\db\Query())
-        //         ->select("*")
-        //         ->from("books")
-        //         ->where("name =:name", ["name" => $book_name])
-        //         ->one();
-            // $q = new JevAccountingEntriesSearch();
-            // // $q->book_id = $book['id'];
-            // // $q->reporting_period = $reporting_period;
-            // $w = $q->search(Yii::$app->request->queryParams);
-            // $gridColumn = [
-            //     'id',
-            // ];
-            // echo ExportMenu::widget([
-            //     'dataProvider' => $w,
-            //     'columns' => $gridColumn,
-            //     'filename' => 'Jev',
-            //     'exportConfig' => [
-            //         ExportMenu::FORMAT_TEXT => false,
-            //         ExportMenu::FORMAT_PDF => false,
-            //         ExportMenu::FORMAT_EXCEL => false,
-            //         ExportMenu::FORMAT_HTML => false,
-            //     ]
+        $q = new JevAccountingEntriesSearch();
+        $book_id = '';
+        if (!empty($book_name)) {
+            $book = (new \yii\db\Query())
+                ->select("*")
+                ->from("books")
+                ->where("name =:name", ["name" => $book_name])
+                ->one();
+            $book_id = $book['id'];
+            // $q->book_id = $book['id'];
+            // $q->reporting_period = $reporting_period;
+        }
+        $w = $q->search(Yii::$app->request->queryParams, $book_id, !empty($reporting_period) ? $reporting_period : '');
+        $gridColumn = [
+            'id',
+            'jevPreparation.reporting_period',
+            'jevPreparation.books.name',
+            [
+                'label' => 'General Ledger',
+                'value' => function ($model) {
+                    $account_title = '';
+                    if ($model->lvl === 1) {
+                        $account_title = $model->chartOfAccount->general_ledger;
+                    } else if ($model->lvl === 2) {
+                        $y = (new \yii\db\Query())
+                            ->select(['*'])
+                            ->from('sub_accounts1')
+                            ->where("object_code =:object_code", ['object_code' => $model->object_code])
+                            ->one();
+                        $account_title = $y['name'];
+                    } else if ($model->lvl === 3) {
+                        $X = (new \yii\db\Query())
+                            ->select(['*'])
+                            ->from('sub_accounts2')
+                            ->where("object_code =:object_code", ['object_code' => $model->object_code])
+                            ->one();
+                        $account_title = $X['name'];
+                    }
+                    return $account_title;
+                }
 
-            // ]);
+            ],
+            'jevPreparation.jev_number',
+            'jevPreparation.explaination',
+            'debit',
+            'credit'
+        ];
+        echo ExportMenu::widget([
+
+            'dataProvider' => $w,
+            'columns' => $gridColumn,
+            'filename' => 'Jev',
+            'exportConfig' => [
+                ExportMenu::FORMAT_TEXT => false,
+                ExportMenu::FORMAT_PDF => false,
+                ExportMenu::FORMAT_EXCEL => false,
+                ExportMenu::FORMAT_HTML => false,
+
+            ],
+            'target' => ExportMenu::TARGET_BLANK,
+            'options' => [
+                'class' => 'export_menu'
+            ]
+
+
+
+        ]);
         // }
         ?>
+        <style>
+            @media print {
+                /* HIDE EXPORT BUTTONS IN PRINT */
+                .btn-group {
+                    display: none;
+                }
+            }
+        </style>
         <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>
         <table class="table" style="margin-top:30px">
             <thead>

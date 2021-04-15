@@ -130,4 +130,11 @@ class DocumentRecieveController extends Controller
         $na = (new \yii\db\Query())->select('*')->from('document_recieve')->all();
         return json_encode($na);
     }
+    public function actionFindDocument()
+    {
+        $doc=$this->findModel($_POST['document_id'])->name;
+        $type = explode('-',$doc);
+
+        return json_encode(['result'=>strtolower(trim($type[0])) ]);
+    }
 }

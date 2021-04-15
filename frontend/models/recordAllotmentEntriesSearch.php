@@ -56,17 +56,18 @@ class recordAllotmentEntriesSearch extends recordAllotmentEntries
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->joinWith("recordAllotment");
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'record_allotment_id' => $this->record_allotment_id,
+            // 'record_allotment_id' => $this->record_allotment_id,
             'chart_of_account_id' => $this->chart_of_account_id,
             'amount' => $this->amount,
             'lvl' => $this->lvl,
         ]);
 
-        $query->andFilterWhere(['like', 'object_code', $this->object_code]);
+        $query->andFilterWhere(['like', 'object_code', $this->object_code])
+            ->andFilterWhere(['like', 'record_allotments.serial_number', $this->record_allotment_id]);
 
         return $dataProvider;
     }

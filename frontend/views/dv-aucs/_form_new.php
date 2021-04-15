@@ -51,7 +51,7 @@ use yii\helpers\Html;
 
                 <div class="col-sm-3" style="height:60x">
                     <label for="transaction">Transaction Type</label>
-                    <select id="transaction" name="transaction" class="transaction select" style="width: 100%; margin-top:50px">
+                    <select id="transaction" name="transaction_type" class="transaction select" style="width: 100%; margin-top:50px">
                         <option></option>
                     </select>
                 </div>
@@ -83,10 +83,11 @@ use yii\helpers\Html;
 
             <table id="transaction_table" class="table table-striped">
                 <thead>
-                    <th>Raoud ID</th>
-                    <th>Object Code</th>
-                    <th>General Ledger</th>
-                    <th>Obligated Amount</th>
+                    <th>Ors ID</th>
+                    <th>Serial Number</th>
+                    <th>Particular</th>
+                    <th>Payee</th>
+                    <th>Total Obligated</th>
                     <th>Amount Disbursed</th>
                     <th>2306 (VAT/ Non-Vat)</th>
                     <th>2307 (EWT Goods/Services)</th>
@@ -150,69 +151,58 @@ use yii\helpers\Html;
                     //         }
                     //     }
                     // ],
-                    [
-                        'label' => 'Ors Number',
-                        'attribute' => 'process_ors_id',
-                        'value' => function ($model) {
-                            // if ($model->process_ors_id != null) {
-                            //     return $model->raoudEntries->chartOfAccount->general_ledger;
-                            // } else {
-                            //     return $model->recordAllotmentEntries->chartOfAccount->general_ledger;
-                            // }
-                            return $model->processOrs->serial_number;
-                        }
-                    ],
-                    [
-                        'label' => 'General Ledger',
-                        // 'attribute' => 'recordAllotmentEntries.chartOfAccount.general_ledger'
-                        'value' => function ($model) {
-                            if ($model->process_ors_id != null) {
-                                return $model->raoudEntries->chartOfAccount->general_ledger;
-                            } else {
-                                return $model->recordAllotmentEntries->chartOfAccount->general_ledger;
-                            }
-                        }
-                    ],
+                    'serial_number',
+                    'transaction.particular',
+                    'transaction.payee.account_name',
+                    // [
+                    //     'label' => 'Ors Number',
+                    //     'attribute' => 'process_ors_id',
+                    //     'value' => function ($model) {
+                    //         // if ($model->process_ors_id != null) {
+                    //         //     return $model->raoudEntries->chartOfAccount->general_ledger;
+                    //         // } else {
+                    //         //     return $model->recordAllotmentEntries->chartOfAccount->general_ledger;
+                    //         // }
+                    //         return $model->processOrs->serial_number;
+                    //     }
+                    // ],
+                    // [
+                    //     'label' => 'General Ledger',
+                    //     // 'attribute' => 'recordAllotmentEntries.chartOfAccount.general_ledger'
+                    //     'value' => function ($model) {
+                    //         if ($model->process_ors_id != null) {
+                    //             return $model->raoudEntries->chartOfAccount->general_ledger;
+                    //         } else {
+                    //             return $model->recordAllotmentEntries->chartOfAccount->general_ledger;
+                    //         }
+                    //     }
+                    // ],
                     // [
                     //     'label' => 'Amount',
                     //     'attribute' => 'recordAllotmentEntries.amount'
                     // ],
 
-                    // [
-                    //     'label' => 'Balance',
-                    //     'value' => function ($model) {
-                    //         // $query = (new \yii\db\Query())
-                    //         //     ->select([
-
-                    //         //         'entry.obligation_total', 'record_allotment_entries.amount', 'entry.remain'
-                    //         //     ])
-                    //         //     ->from('raouds')
-                    //         //     ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
-                    //         //     ->join("LEFT JOIN", "(SELECT SUM(raouds.obligated_amount) as obligation_total,
-                    //         //     raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain
-                    //         //      From raouds,record_allotment_entries
-                    //         //      WHERE 
-                    //         //     raouds.record_allotment_entries_id = record_allotment_entries.id
-                    //         //     AND raouds.process_ors_id IS NOT NULL
-                    //         //     GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
-                    //         //     ->where("raouds.id = :id", ['id' => $model->id])->one();
-                    //         $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as obligated_amount,
-                    //             raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain
-                    //             From raouds,record_allotment_entries,raoud_entries
-                    //             WHERE raouds.record_allotment_entries_id = record_allotment_entries.id
-                    //             AND raouds.id = raoud_entries.raoud_id
-                    //             AND raouds.process_ors_id IS NOT NULL
-                    //             AND raouds.record_allotment_entries_id=$model->record_allotment_entries_id
-                    //             ")->queryOne();
-                    //         return $query['remain'];
-                    //     }
-                    // ],
                     [
-                        'label' => 'Obligated Amount',
-                        'attribute' => 'obligated_amount',
-                        'filter'=>false,
+                        'label' => 'Total Obligated',
+                        'value' => function ($model) {
+                            $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount)as total,process_ors.id as ors_id
+                            FROM process_ors,raouds,raoud_entries
+                            where process_ors.id = raouds.process_ors_id
+                            AND raouds.id=raoud_entries.raoud_id
+                            AND process_ors.id= :ors_id
+                            GROUP BY process_ors.id")
+                            ->bindValue(":ors_id",$model->id)
+                                ->queryOne();
+                            return $query['total'];
+                        },
                         'format'=>['decimal',2]
                     ],
+                    // [
+                    //     'label' => 'Obligated Amount',
+                    //     'attribute' => 'obligated_amount',
+                    //     'filter'=>false,
+                    //     'format'=>['decimal',2]
+                    // ],
                     [
                         'class' => '\kartik\grid\CheckboxColumn',
                         'checkboxOptions' => function ($model, $key, $index, $column) {
@@ -443,8 +433,8 @@ use yii\helpers\Html;
 
         function addDvToTable(result) {
             if ($("#transaction").val() == 'Single') {
-                $('#particular').val(result[0]['particulars'])
-                $('#payee').val(result[0]['payee_id']).trigger('change')
+                $('#particular').val(result[0]['transaction_particular'])
+                $('#payee').val(result[0]['transaction_payee_id']).trigger('change')
                 // console.log(result[0]['particulars'])
             }
             for (var i = 0; i < result.length; i++) {
@@ -453,15 +443,15 @@ use yii\helpers\Html;
                 }
                 var row = `<tr>
                             
-                            <td> <input value='${result[i]['raoud_id']}' type='text' name='raoud_id[]'/></td>
  
-                            <td> <input value='${result[i]['process_ors_id']}' type='text' name='process_ors_id[]'/></td>
+                            <td> <input value='${result[i]['ors_id']}' type='text' name='process_ors_id[]'/></td>
  
-                            <td> ${result[i]['object_code']}</td>
+                            <td> ${result[i]['serial_number']}</td>
                             <td> 
-                            ${result[i]['general_ledger']}
+                            ${result[i]['transaction_particular']}
                             </td>
-                            <td> ${result[i]['obligated_amount']}</td>
+                            <td> ${result[i]['transaction_payee']}</td>
+                            <td> ${result[i]['total']}</td>
                             <td> <input value='${result[i]['amount_disbursed']}' type='text' name='amount_disbursed[]'/></td>
                             <td> <input value='${result[i]['vat_nonvat']}' type='text' name='vat_nonvat[]'/></td>
                             <td> <input value='${result[i]['ewt_goods_services']}' type='text' name='ewt_goods_services[]'/></td>
@@ -494,7 +484,7 @@ use yii\helpers\Html;
                     success: function(data) {
                         var result = JSON.parse(data).results
                         console.log(result)
-                        addDvToTable(result)
+                        addDvToTable(result) 
 
                     }
                 });
@@ -650,6 +640,17 @@ $script = <<< JS
                             });
                             $('#add_data')[0].reset();
                         }
+                        else{
+
+                            swal({
+                                title: "Error",
+                                text: res.error,
+                                type: "error",
+                                timer: 6000,
+                                button: false
+                                // confirmButtonText: "Yes, delete it!",
+                            });
+                        }
                     }
                 });
       
@@ -666,7 +667,7 @@ $script = <<< JS
                 success:function(data){
 
                     var res = JSON.parse(data)
-                    console.log(res.result[0])
+                    console.log(res.result)
                     addDvToTable(res.result)
   
                     $("#particular").val(res.result[0]['particular'])
@@ -674,6 +675,7 @@ $script = <<< JS
                     $("#mrd_classification").val(res.result[0]['mrd_classification_id']).trigger("change");
                     $("#nature_of_transaction").val(res.result[0]['nature_of_transaction_id']).trigger("change");
                     $("#reporting_period").val(res.result[0]['reporting_period'])
+                    $('#transaction').val(res.result[0]['transaction_type']).trigger('change')
                     
                 }
             })

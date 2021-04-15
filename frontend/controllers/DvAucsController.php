@@ -7,6 +7,7 @@ use app\models\DvAucs;
 use app\models\DvAucsEntries;
 use app\models\DvAucsSearch;
 use app\models\ProcessOrs;
+use app\models\ProcessOrsSearch;
 use app\models\Raouds;
 use app\models\Raouds2Search;
 use app\models\RaoudsSearchForProcessOrsSearch;
@@ -43,6 +44,7 @@ class DvAucsController extends Controller
     {
         $searchModel = new DvAucsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->sort=['defaultOrder'=>['id'=>'DESC']];
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -79,7 +81,7 @@ class DvAucsController extends Controller
         // return $this->render('create', [
         //     'model' => $model,
         // ]);
-        $searchModel = new RaoudsSearchForProcessOrsSearch();
+        $searchModel = new ProcessOrsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('create', [
@@ -107,7 +109,7 @@ class DvAucsController extends Controller
         // return $this->render('update', [
         //     'model' => $model,
         // ]);
-        $searchModel = new RaoudsSearchForProcessOrsSearch();
+        $searchModel = new ProcessOrsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         // echo $id;
         return $this->render('create', [
@@ -168,33 +170,38 @@ class DvAucsController extends Controller
 
             $query = (new \yii\db\Query())
                 ->select([
-                    'mfo_pap_code.code AS mfo_pap_code_code', 'mfo_pap_code.name AS mfo_pap_name', 'fund_source.name AS fund_source_name',
-                    'chart_of_accounts.uacs as object_code', 'chart_of_accounts.general_ledger', 'major_accounts.name',
-                    'chart_of_accounts.id as chart_of_account_id', 'raouds.id AS raoud_id',
-                    'raouds.obligated_amount', 'record_allotments.particulars',
-                    'transaction.payee_id as payee_id','raouds.process_ors_id',
-                    'entry.total', 'record_allotment_entries.amount', '(record_allotment_entries.amount - entry.total) AS remain'
+                    "process_ors.id as ors_id", "process_ors.serial_number", "transaction.particular as transaction_particular",
+                    "payee.account_name as transaction_payee", "total_obligated.total", "payee.id as transaction_payee_id"
                 ])
-                ->from('raouds')
-                ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
-                ->join("LEFT JOIN", "record_allotments", "record_allotment_entries.record_allotment_id=record_allotments.id")
-                ->join("LEFT JOIN", "chart_of_accounts", "record_allotment_entries.chart_of_account_id=chart_of_accounts.id")
-                ->join("LEFT JOIN", "major_accounts", "chart_of_accounts.major_account_id=major_accounts.id")
-                ->join("LEFT JOIN", "fund_source", "record_allotments.fund_source_id=fund_source.id")
-                ->join("LEFT JOIN", "mfo_pap_code", "record_allotments.mfo_pap_code_id=mfo_pap_code.id")
-                ->join("LEFT JOIN", "raoud_entries", "raouds.id=raoud_entries.raoud_id")
-                ->join("LEFT JOIN", "process_ors", "raouds.process_ors_id=process_ors.id")
+                ->from('process_ors')
                 ->join("LEFT JOIN", "transaction", "process_ors.transaction_id = transaction.id")
-                ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount) as total,
-                raouds.id , raouds.process_ors_id,
-                raouds.record_allotment_entries_id
-                FROM raouds,raoud_entries,process_ors
-                WHERE raouds.process_ors_id= process_ors.id
-                AND raouds.id = raoud_entries.raoud_id
-                AND raouds.process_ors_id IS NOT NULL 
-                GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
-                // ->join("LEFT JOIN","","raouds.process_ors_id=process_ors.id")
-                ->where("raouds.id = :id", ['id' => $val])->one();
+                ->join("LEFT JOIN", "payee", "transaction.payee_id = payee.id")
+
+                ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount)as total,process_ors.id as ors_id
+                FROM process_ors,raouds,raoud_entries
+
+                where process_ors.id = raouds.process_ors_id
+                AND raouds.id=raoud_entries.raoud_id
+                GROUP BY process_ors.id) as total_obligated", "process_ors.id=total_obligated.ors_id")
+                // ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
+                // ->join("LEFT JOIN", "record_allotments", "record_allotment_entries.record_allotment_id=record_allotments.id")
+                // ->join("LEFT JOIN", "chart_of_accounts", "record_allotment_entries.chart_of_account_id=chart_of_accounts.id")
+                // ->join("LEFT JOIN", "major_accounts", "chart_of_accounts.major_account_id=major_accounts.id")
+                // ->join("LEFT JOIN", "fund_source", "record_allotments.fund_source_id=fund_source.id")
+                // ->join("LEFT JOIN", "mfo_pap_code", "record_allotments.mfo_pap_code_id=mfo_pap_code.id")
+                // ->join("LEFT JOIN", "raoud_entries", "raouds.id=raoud_entries.raoud_id")
+                // ->join("LEFT JOIN", "process_ors", "raouds.process_ors_id=process_ors.id")
+                // ->join("LEFT JOIN", "transaction", "process_ors.transaction_id = transaction.id")
+                // ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount) as total,
+                // raouds.id , raouds.process_ors_id,
+                // raouds.record_allotment_entries_id
+                // FROM raouds,raoud_entries,process_ors
+                // WHERE raouds.process_ors_id= process_ors.id
+                // AND raouds.id = raoud_entries.raoud_id
+                // AND raouds.process_ors_id IS NOT NULL 
+                // GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
+
+                ->where("process_ors.id = :id", ['id' => $val])->one();
             // $query['obligation_amount'] =  $_POST['amount'][$val];
             $query['amount_disbursed'] =  $_POST['amount_disbursed'][$val];
             $query['vat_nonvat'] =  $_POST['vat_nonvat'][$val];
@@ -218,13 +225,19 @@ class DvAucsController extends Controller
 
 
         if ($_POST) {
-            $raoud_id = $_POST['raoud_id'];
+            $process_id = $_POST['process_ors_id'];
             $nature_of_transaction_id = $_POST['nature_of_transaction'];
             $mrd_classification_id = $_POST['mrd_classification'];
             $reporting_period = $_POST['reporting_period'];
             $particular = $_POST['particular'];
             $payee_id = $_POST['payee'];
-
+            $transaction_type = $_POST['transaction_type'];
+            if (strtolower($transaction_type) === 'single') {
+                if (count($process_id )> 1) {
+                    return json_encode(["isSuccess" => false, "error" => "Cannot Insert Transaction Type is Single But has More Than 1 Entries"]);
+                    die();
+                }
+            }
 
             $transaction = Yii::$app->db->beginTransaction();
 
@@ -246,18 +259,12 @@ class DvAucsController extends Controller
                 $dv->reporting_period = $reporting_period;
                 $dv->particular = $particular;
                 $dv->payee_id = $payee_id;
-                // $dv->one_percent_ewt = $one_percent_ewt;
-                // $dv->two_percent_ewt = $two_percent_ewt;
-                // $dv->five_percent_ewt = $five_percent_ewt;
-                // $dv->three_percent_ft = $three_percent_ft;
-                // $dv->five_percent_ft = $five_percent_ft;
-                // $dv->dv_number = $this->getDvNumber($reporting_period);
-
+                $dv->transaction_type = $transaction_type;
                 if ($dv->validate()) {
                     if ($flag = $dv->save(false)) {
-                        foreach ($_POST['raoud_id'] as $key => $val) {
+                        foreach ($process_id as $key => $val) {
                             $dv_entries = new DvAucsEntries();
-                            $dv_entries->raoud_id = $val;
+                            // $dv_entries->raoud_id = $val;
                             $dv_entries->process_ors_id = $_POST['process_ors_id'][$key];
                             $dv_entries->dv_aucs_id = $dv->id;
                             $dv_entries->amount_disbursed = $_POST['amount_disbursed'][$key];
@@ -323,23 +330,34 @@ class DvAucsController extends Controller
 
             $query = (new \yii\db\Query())
                 ->select([
-                    "dv_aucs_entries.*", 'chart_of_accounts.uacs as object_code', "chart_of_Accounts.general_ledger",
-                    "raoud_entries.amount as obligated_amount", "dv_aucs.reporting_period", "dv_aucs.particular",
-                    "dv_aucs.payee_id", "dv_aucs.mrd_classification_id", "dv_aucs.nature_of_transaction_id",
-                    "dv_aucs.reporting_period","process_ors.serial_number","total_amount.total_ors"
+                    "dv_aucs_entries.*",
+                    "raoud_entries.amount as obligated_amount",
+                    "dv_aucs.reporting_period",
+                    "dv_aucs.particular",
+                    "dv_aucs.payee_id",
+                    "dv_aucs.mrd_classification_id",
+                    "dv_aucs.nature_of_transaction_id",
+                    "dv_aucs.reporting_period",
+                    "dv_aucs.transaction_type",
+                    "process_ors.serial_number",
+                    "process_ors.id as ors_id",
+                    "FORMAT(total_obligated.total,'N','en-us') as total",
+                    "transaction.particular as transaction_particular",
+                    "payee.account_name as transaction_payee"
 
                 ])
                 ->from("dv_aucs_entries")
                 ->join("LEFT JOIN", "dv_aucs", "dv_aucs_entries.dv_aucs_id = dv_aucs.id")
                 ->join("LEFT JOIN", "raouds", "dv_aucs_entries.raoud_id = raouds.id")
                 ->join("LEFT JOIN", "process_ors", "dv_aucs_entries.process_ors_id = process_ors.id")
-                ->join("LEFT JOIN","(SELECT SUM(raoud_entries.amount)as total_ors,
-                process_ors.id as ors_id FROM process_ors,raouds,raoud_entries
+                ->join("LEFT JOIN", "transaction", "process_ors.transaction_id = transaction.id")
+                ->join("LEFT JOIN", "payee", "transaction.payee_id = payee.id")
+                ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount)as total,process_ors.id as ors_id
+                FROM process_ors,raouds,raoud_entries
 
                 where process_ors.id = raouds.process_ors_id
                 AND raouds.id=raoud_entries.raoud_id
-           
-                GROUP BY process_ors.id) as total_amount","total_amount.ors_id=dv_aucs_entries.process_ors_id")
+                GROUP BY process_ors.id) as total_obligated", "process_ors.id=total_obligated.ors_id")
 
                 ->join("LEFT JOIN", "raoud_entries", "raouds.id = raoud_entries.raoud_id")
                 ->join("LEFT JOIN", "chart_of_accounts", "raoud_entries.chart_of_account_id = chart_of_accounts.id")
@@ -384,7 +402,7 @@ class DvAucsController extends Controller
             // }
             // 
             $transaction = Yii::$app->db->beginTransaction();
-                $flag="";
+            $flag = "";
             foreach ($worksheet->getRowIterator(3) as $key => $row) {
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
@@ -395,13 +413,15 @@ class DvAucsController extends Controller
                     if (
                         $y === 7
                         || $y === 8
-                        || $y === 9
+                        // || $y === 9
                         || $y === 10
-                        || $y === 11
+                        // || $y === 11
 
                     ) {
                         $cells[] = $cell->getCalculatedValue();
-                    } else {
+                    }
+          
+                    else {
                         $cells[] =   $cell->getValue();
                     }
                     $y++;
@@ -417,7 +437,7 @@ class DvAucsController extends Controller
                 $compensation_amount = $cells[9];
                 $trust_liab_amount = $cells[10];
                 $nature_of_transaction_name = trim($cells[12]);
-                $mrd_classification_name = $cells[13];
+                $mrd_classification_name = trim($cells[13]);
 
 
 
@@ -466,10 +486,10 @@ class DvAucsController extends Controller
                         ->where('account_name LIKE :account_name', ['account_name' => "%$payee_name%"])
                         ->one();
                     if (empty($payee)) {
-                        return json_encode(["error" => "$key $payee_name"]);
+                        return json_encode(["error" => "$key $payee_name payee"]);
                     }
                     if (empty($nature_of_transaction)) {
-                        return json_encode(["error" => "$key $nature_of_transaction_name"]);
+                        return json_encode(["error" => "$key $nature_of_transaction_name nature of transaction"]);
                     }
                     // $data[] = [
                     //     "nature" => $nature_of_transaction['id'],
@@ -490,7 +510,7 @@ class DvAucsController extends Controller
 
 
                         $dv = new DvAucs();
-                        $dv->dv_number = $this->getDvNumber($reporting_period);
+                        $dv->dv_number = $dv_number;
                         // $dv->raoud_id = intval($raoud_id);
                         $dv->nature_of_transaction_id = $nature_of_transaction['id'];
                         $dv->mrd_classification_id = $mrd_classification['id'];
@@ -525,7 +545,6 @@ class DvAucsController extends Controller
 
                             return json_encode(['error' => "error sa flag"]);
                         }
-    
                     } catch (ErrorException $error) {
 
                         $transaction->rollBack();
@@ -539,7 +558,7 @@ class DvAucsController extends Controller
 
                 $transaction->commit();
                 // return $this->redirect(['view', 'id' => $model->id]);
-                return json_encode(['isSuccess' => 'success', ]);
+                return json_encode(['isSuccess' => 'success',]);
             }
 
             // $column = [

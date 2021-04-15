@@ -1,6 +1,9 @@
 <?php
 
 use app\models\FundClusterCode;
+use app\models\recordAllotmentEntriesSearch;
+use app\models\RecordAllotmentsSearch;
+use kartik\export\ExportMenu;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
 use kartik\grid\GridView;
@@ -20,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('<i class="glyphicon glyphicon-plus"></i>Create Record Allotment', ['create'], ['class' => 'btn btn-success']) ?>
-    <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
+        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
@@ -77,66 +80,116 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 
+    <?php
+    $x = new recordAllotmentEntriesSearch();
+    $y = $x->search(Yii::$app->request->queryParams);
+    $gridColumns = [
+        'id',
+        [
+            'label' => "Serial Number",
+            'attribute' => "record_allotment_id",
+
+            'value' => "recordAllotment.serial_number"
+        ],
+        [
+            'label' => "Particular",
+            'attribute' => 'recordAllotment.particulars'
+
+        ],
+        [
+            'label' => 'Document Recieve',
+            'attribute' => 'recordAllotment.documentRecieve.name'
+        ],
+        [
+            'label' => 'Fund CLuster Code',
+            'attribute' => 'recordAllotment.fundClusterCode.name',
+            'filter' => Html::activeDropDownList(
+                $searchModel,
+                'fund_cluster_code_id',
+                ArrayHelper::map(FundClusterCode::find()->asArray()->all(), 'id', 'name'),
+                ['class' => 'form-control', 'prompt' => 'Fund Cluster Codes']
+            )
+        ],
+
+        [
+            'label' => 'Financing Source Code',
+            'attribute' => 'recordAllotment.financingSourceCode.name',
+        ],
+        [
+            'label' => 'Fund Category and Classification Code',
+            'attribute' => 'recordAllotment.fundCategoryAndClassificationCode.name'
+        ], [
+            'label' => 'Authorization Code',
+            'attribute' => 'recordAllotment.authorizationCode.name'
+        ],
+        [
+            'label' => 'MFO/PAP Code',
+            'attribute' => 'recordAllotment.mfoPapCode.code'
+        ],
+        [
+            'label' => 'MFO/PAP Name',
+            'attribute' => 'recordAllotment.mfoPapCode.name'
+        ],
+        [
+            'label' => 'MFO/PAP Name',
+            'attribute' => 'recordAllotment.mfoPapCode.name'
+        ],
+        [
+            'label' => 'Fund Source',
+            'attribute' => 'recordAllotment.fundSource.description'
+        ],
+        [
+            "label" => "UACS",
+            'attribute' => 'chartOfAccount.uacs'
+        ],
+        [
+            "label" => "General Ledger",
+            'attribute' => 'chartOfAccount.general_ledger',
+        ],
+        [
+
+            'label' => "Amount",
+            'attribute' => "amount",
+            'format' => ['decimal', 2],
+
+        ],
+        [
+            'class' => '\kartik\grid\ActionColumn',
+            'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>','style'=>"display:none"],
+        ]
+    ];
+    ?>
     <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
+        'dataProvider' => $y,
+        'filterModel' => $x,
+        'floatHeaderOptions' => [
+            'top' => 50,
+            'position' => 'absolute',
+        ],
         'panel' => [
-            'heading'=>'<h3 class="panel-title"> Record Allotments</h3>',
-            'type'=>'primary',
-   
-        ],
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            [
-                'label' => 'Document Recieve',
-                'attribute' => 'documentRecieve.name'
-            ],
-            [
-                'label' => 'Fund CLuster Code',
-                'attribute' => 'fundClusterCode.name',
-                'filter' => Html::activeDropDownList(
-                    $searchModel,
-                    'fund_cluster_code_id',
-                    ArrayHelper::map(FundClusterCode::find()->asArray()->all(), 'id', 'name'),
-                    ['class' => 'form-control', 'prompt' => 'Fund Cluster Codes']
-                )
-            ],
-
-            [
-                'label' => 'Financing Source Code',
-                'attribute' => 'financingSourceCode.name',
-            ],
-            [
-                'label' => 'Fund Category and Classification Code',
-                'attribute' => 'fundCategoryAndClassificationCode.name'
-            ], [
-                'label' => 'Authorization Code',
-                'attribute' => 'authorizationCode.name'
-            ],
-            [
-                'label' => 'MFO/PAP Code',
-                'attribute' => 'mfoPapCode.code'
-            ],
-            [
-                'label' => 'MFO/PAP Name',
-                'attribute' => 'mfoPapCode.name'
-            ],
-            [
-                'label' => 'Fund Source',
-                'attribute' => 'fundSource.name'
-            ],
-            'reporting_period',
-            'serial_number',
-            'allotment_number',
-            'date_issued',
-            'valid_until',
-            'particulars',
-
-            ['class' => 'yii\grid\ActionColumn'],
+            'heading' => '<h3 class="panel-title"> Record Allotments</h3>',
+            'type' => 'primary',
 
         ],
+        'toolbar' => [
+            [
+                'content' => ExportMenu::widget([
+                    'dataProvider' => $y,
+                    'columns' => $gridColumns,
+                    'filename' => 'RecordAllotments',
+                    'exportConfig' => [
+                        ExportMenu::FORMAT_TEXT => false,
+                        ExportMenu::FORMAT_PDF => false,
+                        ExportMenu::FORMAT_EXCEL => false,
+                        ExportMenu::FORMAT_HTML => false,
+                    ]
+                ]),
+                'options' => [
+                    'class' => 'btn-group mr-2', 'style' => 'margin-right:20px'
+                ]
+            ]
+        ],
+        'columns' => $gridColumns,
     ]); ?>
 
 
