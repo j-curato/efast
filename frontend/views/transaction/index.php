@@ -50,7 +50,7 @@ Modal::end();
         <?= Html::a('Create Transaction', ['create'], ['class' => 'btn btn-success']) ?>
     </p> -->
     <p>
- <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Add New', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=transaction/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>       
+        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Add New', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=transaction/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
     </p>
     <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button>
     <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -139,26 +139,29 @@ Modal::end();
 
             // 'payee_id',
             // [
-                
-                
-                // ],
-                [
-                    'label' => 'Payee',
-                    'attribute' => 'payee.account_name'
-                ],
-                'particular',
-                // 'gross_amount',
-                [
-                    'attribute'=>'gross_amount',
-                    'format' => ['decimal', 2],
-                ],
-                // 'responsibilityCenter.name',
+
+
+            // ],
+            [
+                'label' => 'Payee',
+                'attribute' => 'payee.account_name'
+            ],
+            'particular',
+            // 'gross_amount',
+            [
+                'attribute' => 'gross_amount',
+                'format' => ['decimal', 2],
+            ],
+            // 'responsibilityCenter.name',
             'earmark_no',
             'payroll_number',
             'transaction_date',
             //'transaction_time',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => '\kartik\grid\ActionColumn',
+                'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
+            ],
         ],
     ]); ?>
 

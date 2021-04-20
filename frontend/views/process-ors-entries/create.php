@@ -5,7 +5,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\ProcessOrsEntries */
 if (!empty($update_id)){
-    $title='Adjust Process Ors Entries';
+    $title=ucwords($update) . " Process Ors Entries";
 }
 else
 {

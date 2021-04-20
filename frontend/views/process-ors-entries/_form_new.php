@@ -140,7 +140,14 @@ use kartik\select2\Select2;
 
             'columns' => [
 
-                'serial_number',
+                // 'serial_number',
+                [
+                    'label' => 'Serial Number',
+
+                    'attribute' => 'recordAllotmentEntries.recordAllotment.serial_number'
+
+                ],
+
                 [
                     'label' => 'MFO/PAP Code',
                     'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.code',
@@ -359,7 +366,7 @@ use kartik\select2\Select2;
             i.closest("tr").remove()
         }
 
-        function addData(result) {
+        function addData(result,isUpdate) {
             for (var i = 0; i < result.length; i++) {
                 object_code = result[i]['object_code']
                 chart_id = result[i]['chart_of_account_id']
@@ -381,14 +388,20 @@ use kartik\select2\Select2;
                                     </select>
                                 </div>
                             </td>
-                            <td> <input value='${result[i]['obligation_amount']}' type='text' name='obligation_amount[]'/></td>
-                            <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>`
+                            <td> <input value='${result[i]['obligation_amount']}' type='text' name='obligation_amount[]' id='amount_${select_id}'/></td>
+                            <td><button id='remove_${select_id}' class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>`
                 $('#transaction_table').append(row);
+
                 $(`#chart-${select_id}`).select2({
                     data: accounts,
                     placeholder: "Select Chart of Account",
 
                 }).val(`${chart_id}`).trigger('change');
+                if (isUpdate) {
+                    $(`#chart-${select_id}`).prop('disabled', true);
+                    $(`#amount_${select_id}`).prop('disabled', true);
+                    $(`#remove_${select_id}`).prop('disabled', true);
+                }
                 select_id++;
             }
             console.log(result)
@@ -412,7 +425,7 @@ use kartik\select2\Select2;
                         console.log(result)
                         var object_code = ''
                         var chart_id = ''
-                        addData(result)
+                        addData(result,false)
                         // for (var i = 0; i < result.length; i++) {
                         //     object_code = result[i]['object_code']
                         //     chart_id = result[i]['chart_of_account_id']
@@ -547,7 +560,7 @@ $script = <<< JS
                 book = array
                 $('#book_id').select2({
                     data: book,
-                    placeholder: "Select Transaction",
+                    placeholder: "Select Book",
 
                 })
 
@@ -575,7 +588,7 @@ $script = <<< JS
                                 button: false
                                 // confirmButtonText: "Yes, delete it!",
                             }, function() {
-                                window.location.href = window.location.pathname + '?r=process-ors-entries/view&='+res.id
+                                window.location.href = window.location.pathname + '?r=process-ors-entries'
                             });
                             $('#add_data')[0].reset();
                         }
@@ -628,9 +641,10 @@ $script = <<< JS
                     var res = JSON.parse(data)
                     console.log(res.result[0]['book_id'])
                     $("#reporting_period").val(res.result[0]['reporting_period']).trigger('change')
+                    $("#date").val(res.result[0]['date']).trigger('change')
                     $("#book_id").val(res.result[0]['book_id']).trigger('change')
                     $("#transaction_id").val(res.result[0]['transaction_id']).trigger('change')
-                    addData(res.result)
+                    addData(res.result,true)
                 }
             })
         }

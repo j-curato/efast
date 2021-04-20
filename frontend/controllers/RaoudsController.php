@@ -139,6 +139,7 @@ class RaoudsController extends Controller
             ->select([
                 'process_ors.reporting_period',
                 'process_ors.book_id',
+                'process_ors.date',
                 'raouds.id as raoud_id',
                 'process_ors.transaction_id',
                 'mfo_pap_code.code AS mfo_pap_code_code',
@@ -158,11 +159,11 @@ class RaoudsController extends Controller
             ->from('raouds')
             ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
             ->join("LEFT JOIN", "record_allotments", "record_allotment_entries.record_allotment_id=record_allotments.id")
-            ->join("LEFT JOIN", "chart_of_accounts", "record_allotment_entries.chart_of_account_id=chart_of_accounts.id")
-            ->join("LEFT JOIN", "major_accounts", "chart_of_accounts.major_account_id=major_accounts.id")
             ->join("LEFT JOIN", "fund_source", "record_allotments.fund_source_id=fund_source.id")
             ->join("LEFT JOIN", "mfo_pap_code", "record_allotments.mfo_pap_code_id=mfo_pap_code.id")
             ->join("LEFT JOIN", "raoud_entries", "raouds.id=raoud_entries.raoud_id")
+            ->join("LEFT JOIN", "chart_of_accounts", "raoud_entries.chart_of_account_id=chart_of_accounts.id")
+            ->join("LEFT JOIN", "major_accounts", "chart_of_accounts.major_account_id=major_accounts.id")
             ->join("LEFT JOIN", "process_ors", "raouds.process_ors_id = process_ors.id")
             ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount) as total,
         raouds.id, raouds.process_ors_id,

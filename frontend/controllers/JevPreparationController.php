@@ -608,7 +608,7 @@ class JevPreparationController extends Controller
                                     if (!empty($uacs)) {
                                         $lvl = 3;
                                         $object_code = $uacs->object_code;
-                                        $chart_of_account_id = $uacs->subAccount1->chartOfAccount->id;
+                                        $chart_of_account_id = $uacs->subAccounts1->chartOfAccount->id;
                                     }
                                 } else {
                                     $lvl = 2;
@@ -823,8 +823,7 @@ class JevPreparationController extends Controller
                         'reporting_period' => $reporting_period
                     ]
                 );
-            }
-            else {
+            } else {
                 return $this->render(
                     'general_journal',
                     [

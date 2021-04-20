@@ -79,8 +79,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'id',
         // 'reporting_period',
         [
-            'label'=>"Reporting_period",
-            'attribute'=>'processOrs.reporting_period'
+            'label' => "Reporting_period",
+            'attribute' => 'processOrs.reporting_period'
         ],
 
 
@@ -174,7 +174,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'content' => ExportMenu::widget([
                     'dataProvider' => $dataProvider,
                     'columns' => $gridColumns,
-                    'filename'=>"ORS",
+                    'filename' => "ORS",
                     'exportConfig' => [
                         ExportMenu::FORMAT_CSV => false,
                         ExportMenu::FORMAT_TEXT => false,
@@ -184,7 +184,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     ]
                 ]),
-                'options'=>[
+                'options' => [
                     'class' => 'btn-group mr-2', 'style' => 'margin-right:20px'
                 ]
             ]
@@ -199,10 +199,10 @@ $this->params['breadcrumbs'][] = $this->title;
             //     'label'=>' Reporting Period',
             //     'attribute'=>'processOrs.reporting_period'
             // ],
-            'reporting_period',
             [
-                'label'=>"Transaction",
-                'attribute'=>"processOrs.transaction.tracking_number"
+                'label' => 'ors id',
+                'attribute' => 'processOrs.id',
+                // 'value' => 'processOrs.reporting_period'
             ],
             [
                 'label' => 'Obligation Number',
@@ -210,6 +210,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => 'processOrs.serial_number',
                 // 'value' => 'processOrs.reporting_period'
             ],
+            'reporting_period',
+            [
+                'label' => "Transaction",
+                'attribute' => "processOrs.transaction.tracking_number"
+            ],
+
             [
                 'label' => 'Allotment Number',
                 'attribute' => 'recordAllotmentEntries.recordAllotment.serial_number',
@@ -291,7 +297,7 @@ $this->params['breadcrumbs'][] = $this->title;
             // ['class' => 'yii\grid\ActionColumn'],
             [
                 'class' => '\kartik\grid\ActionColumn',
-                'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>','style'=>"display:none"],
+                'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
             ]
         ],
     ]); ?>

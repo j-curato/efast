@@ -21,6 +21,7 @@ use yii\helpers\Html;
 
     <div id="container" class="container">
         <form id='save_data' method='POST'>
+            <input type="text" name='book_id' id="book_id" style="display: none;">
             <?php
             $q = 0;
             if (!empty($update_id)) {
@@ -76,6 +77,12 @@ use yii\helpers\Html;
                         <option></option>
                     </select>
                 </div>
+                <!-- <div class="col-sm-3">
+                    <label for="book">Book</label>
+                    <select id="book" name="book" class="book select" style="width: 100%; margin-top:50px">
+                        <option></option>
+                    </select>
+                </div> -->
             </div>
             <div class="row">
                 <textarea name="particular" name="particular" id="particular" placeholder="PARTICULAR" required rows="3"></textarea>
@@ -119,6 +126,7 @@ use yii\helpers\Html;
                     'top' => 50,
                     'position' => 'absolute',
                 ],
+                'pjax' => true,
                 'columns' => [
 
                     // [
@@ -191,11 +199,11 @@ use yii\helpers\Html;
                             AND raouds.id=raoud_entries.raoud_id
                             AND process_ors.id= :ors_id
                             GROUP BY process_ors.id")
-                            ->bindValue(":ors_id",$model->id)
+                                ->bindValue(":ors_id", $model->id)
                                 ->queryOne();
                             return $query['total'];
                         },
-                        'format'=>['decimal',2]
+                        'format' => ['decimal', 2]
                     ],
                     // [
                     //     'label' => 'Obligated Amount',
@@ -441,6 +449,7 @@ use yii\helpers\Html;
                 if ($('#transaction').val() == 'Single' && i == 1) {
                     break;
                 }
+                $('#book_id').val(result[0]['book_id'])
                 var row = `<tr>
                             
  
@@ -484,7 +493,7 @@ use yii\helpers\Html;
                     success: function(data) {
                         var result = JSON.parse(data).results
                         console.log(result)
-                        addDvToTable(result) 
+                        addDvToTable(result)
 
                     }
                 });
@@ -510,6 +519,7 @@ $script = <<< JS
         var nature_of_transaction=[];
         var reference=[];
         var mrd_classification=[];
+        var books=[];
 
     $("#transaction").change(function(){
         var transaction_type=$("#transaction").val()
@@ -548,6 +558,25 @@ $script = <<< JS
                     mrd_classification = array
                     $('#mrd_classification').select2({
                         data:mrd_classification,
+                        placeholder:"Select MRD Classification"
+                    })
+       
+                })
+
+                // BOOKS
+                
+                $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
+                .then(function(data) {
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.name
+                        })
+                    })
+                    books = array
+                    $('#book').select2({
+                        data:books,
                         placeholder:"Select MRD Classification"
                     })
        

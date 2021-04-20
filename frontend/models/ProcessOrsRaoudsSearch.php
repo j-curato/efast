@@ -44,6 +44,9 @@ class ProcessOrsRaoudsSearch extends Raouds
         $query = Raouds::find()->where("process_ors_id IS NOT NULL");
 
         // add conditions that should always apply here
+        $query->joinWith("processOrs");
+        // $query->orderBy("process_ors.serial_number DESC")
+        // ;
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -56,7 +59,6 @@ class ProcessOrsRaoudsSearch extends Raouds
             // $query->where('0=1');
             return $dataProvider;
         }
-        $query->joinWith("processOrs");
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,

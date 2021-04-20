@@ -238,14 +238,11 @@ class ProcessOrsEntriesController extends Controller
 
                     $total_amount = array_sum($_POST['obligation_amount']);
                     $adjust_total = $total_amount + $query['total_adjustment'];
-
                     $remaining_balance = $raoud_to_adjust->raoudEntries->amount -  $query['total_adjustment'];
                     // return  json_encode($query['total_adjustment']); 
                     if ($raoud_to_adjust->raoudEntries->amount >= $adjust_total) {
-
                         $raoud_to_adjust->isActive = false;
                         $raoud_to_adjust->save();
-
                         // echo $reporting_period;
                         foreach ($_POST['chart_of_account_id'] as $index => $value) {
                             // KANI MAO NI ANG RAOUDS KUNG ASA E CHARGE ANG GE ADJUST
@@ -314,6 +311,7 @@ class ProcessOrsEntriesController extends Controller
                 $ors = ProcessOrs::findOne($raoud->process_ors_id);
                 $ors->reporting_period = $reporting_period;
                 $ors->transaction_id = $transaction_id;
+                $ors->date = $date;
                 if ($ors->save(false)) {
                     $transaction->commit();
                     return json_encode(['isSuccess' => true, 'ors_id' => $ors->id]);
@@ -329,6 +327,7 @@ class ProcessOrsEntriesController extends Controller
                     $ors->reporting_period = $reporting_period;
                     $ors->transaction_id = $transaction_id;
                     $ors->book_id=$book_id;
+                    $ors->date=$date;
                     
                     $ors->serial_number = $this->getOrsSerialNumber($reporting_period, $book_id);
                     if ($ors->validate()) {

@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\models\Books;
 use Yii;
 use app\models\DvAucs;
 use app\models\DvAucsEntries;
@@ -44,7 +45,7 @@ class DvAucsController extends Controller
     {
         $searchModel = new DvAucsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->sort=['defaultOrder'=>['id'=>'DESC']];
+        $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -60,7 +61,7 @@ class DvAucsController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
+        return $this->render('dv_form', [
             'model' => $this->findModel($id),
         ]);
     }
@@ -171,7 +172,9 @@ class DvAucsController extends Controller
             $query = (new \yii\db\Query())
                 ->select([
                     "process_ors.id as ors_id", "process_ors.serial_number", "transaction.particular as transaction_particular",
-                    "payee.account_name as transaction_payee", "total_obligated.total", "payee.id as transaction_payee_id"
+                    "payee.account_name as transaction_payee",
+                    "process_ors.book_id",
+                    "total_obligated.total", "payee.id as transaction_payee_id"
                 ])
                 ->from('process_ors')
                 ->join("LEFT JOIN", "transaction", "process_ors.transaction_id = transaction.id")
@@ -231,9 +234,10 @@ class DvAucsController extends Controller
             $reporting_period = $_POST['reporting_period'];
             $particular = $_POST['particular'];
             $payee_id = $_POST['payee'];
+            $book_id = $_POST['book_id'];
             $transaction_type = $_POST['transaction_type'];
             if (strtolower($transaction_type) === 'single') {
-                if (count($process_id )> 1) {
+                if (count($process_id) > 1) {
                     return json_encode(["isSuccess" => false, "error" => "Cannot Insert Transaction Type is Single But has More Than 1 Entries"]);
                     die();
                 }
@@ -251,7 +255,7 @@ class DvAucsController extends Controller
                 } else {
 
                     $dv = new DvAucs();
-                    $dv->dv_number = $this->getDvNumber($reporting_period);
+                    $dv->dv_number = $this->getDvNumber($reporting_period, $book_id);
                 }
                 // $dv->raoud_id = intval($raoud_id);
                 $dv->nature_of_transaction_id = $nature_of_transaction_id;
@@ -259,6 +263,7 @@ class DvAucsController extends Controller
                 $dv->reporting_period = $reporting_period;
                 $dv->particular = $particular;
                 $dv->payee_id = $payee_id;
+                $dv->book_id = $book_id;
                 $dv->transaction_type = $transaction_type;
                 if ($dv->validate()) {
                     if ($flag = $dv->save(false)) {
@@ -297,17 +302,20 @@ class DvAucsController extends Controller
         }
     }
 
-    public function getDvNumber($reporting_period)
+    public function getDvNumber($reporting_period,$book_id)
     {
+        // $reporting_period = "2021-01";
+        // $book_id=5;
         $latest_dv = (new \yii\db\Query())
             ->select('dv_number')
             ->from('dv_aucs')
             ->orderBy('id DESC')
             ->one();
-        $dv_number = $reporting_period;
+        $book = Books::findOne($book_id);
+        $dv_number = $book->name . '-' . $reporting_period;
 
         if (!empty($latest_dv)) {
-            $last_number = explode('-', $latest_dv['dv_number'])[2] + 1;
+            $last_number = explode('-', $latest_dv['dv_number'])[3] + 1;
         } else {
             $last_number = 1;
         }
@@ -318,10 +326,14 @@ class DvAucsController extends Controller
         $dv_number .= '-' . $x . $last_number;
 
         // echo "<pre>";
-        // var_dump($dv_number)
+        // var_dump(explode('-',$latest_dv['dv_number']));
         // echo "</pre>";
         return $dv_number;
     }
+
+
+
+
     public function actionUpdateDv()
     {
         if (!empty($_POST)) {
@@ -383,7 +395,7 @@ class DvAucsController extends Controller
             $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
             $excel = $reader->load($file);
-            $excel->setActiveSheetIndexByName('Import DV AUCS');
+            $excel->setActiveSheetIndexByName('Import DV AUCS (2)');
             $worksheet = $excel->getActiveSheet();
             // print_r($excel->getSheetNames());
 
@@ -419,9 +431,9 @@ class DvAucsController extends Controller
 
                     ) {
                         $cells[] = $cell->getCalculatedValue();
-                    }
-          
-                    else {
+                    } else if ($y === 4 || $y === 5) {
+                        $cells[] = $cell->getFormattedValue();
+                    } else {
                         $cells[] =   $cell->getValue();
                     }
                     $y++;

@@ -63,7 +63,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         Payee
                     </th>
                     <th>
-                        Tax Type
+                        Amount Disbursed
                     </th>
                     <th>
                         Tax Withheld
@@ -73,8 +73,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <?php
                 foreach ($model->dvAucsEntries as $val) {
-                    $ors_serial_number='';
-                    $ors_serial_number = !empty($val->process_ors_id)?$val->processOrs->serial_number:'';
+                    $ors_serial_number = '';
+                    $ors_serial_number = !empty($val->process_ors_id) ? $val->processOrs->serial_number : '';
                     echo "
                     <tr>
                     <td>
@@ -89,9 +89,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>
                         {$val->dvAucs->payee->account_name}
                     </td>
-                    <td>
-                        {$val->vat_nonvat}
-                    </td>
+                    <td>"
+                        . number_format($val->amount_disbursed, 2) .
+                        "</td>
                     <td>
                         {$val->ewt_goods_services}
                     </td>

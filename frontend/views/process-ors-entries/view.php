@@ -65,10 +65,13 @@ $this->params['breadcrumbs'][] = $this->title;
             </thead>
             <tbody>
                 <?php
-                foreach ($ors->raouds as $val) {
+                foreach ($ors->raouds as $key =>$val) {
 
                     echo "
                     <tr>
+                        <td>
+                           {$key}
+                        </td>
                         <td>
                            {$val->id}
                         </td>
