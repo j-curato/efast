@@ -51,6 +51,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     ID
                 </th>
                 <th>
+                    Reporting Period
+                </th>
+                <th>
                     Payee
                 </th>
                 <th>
@@ -73,7 +76,7 @@ $this->params['breadcrumbs'][] = $this->title;
                            {$key}
                         </td>
                         <td>
-                           {$val->id}
+                           {$val->reporting_period}
                         </td>
                         <td>
                            {$val->processOrs->transaction->payee->account_name}

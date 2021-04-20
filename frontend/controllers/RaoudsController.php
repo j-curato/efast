@@ -134,7 +134,7 @@ class RaoudsController extends Controller
     public function actionGetRaoud()
     {
 
-        $raoud = Raouds::findOne($_POST['update_id']);
+        // $raoud = Raouds::findOne($_POST['update_id']);
         $query = (new \yii\db\Query())
             ->select([
                 'process_ors.reporting_period',
@@ -174,7 +174,7 @@ class RaoudsController extends Controller
         AND raouds.process_ors_id IS NOT NULL 
         GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
             // ->join("LEFT JOIN","","raouds.process_ors_id=process_ors.id")
-            ->where("raouds.process_ors_id = :process_ors_id", ['process_ors_id' => $raoud->process_ors_id])
+            ->where("raouds.id = :id", ['id' => $_POST['update_id']])
             ->all();
         return json_encode(["result" => $query]);
     }

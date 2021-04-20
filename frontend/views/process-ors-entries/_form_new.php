@@ -140,7 +140,13 @@ use kartik\select2\Select2;
 
             'columns' => [
 
-                // 'serial_number',
+                // 'id',
+                [
+                    'label' => 'ID',
+
+                    'attribute' => 'recordAllotmentEntries.id'
+
+                ],
                 [
                     'label' => 'Serial Number',
 
@@ -250,6 +256,7 @@ use kartik\select2\Select2;
                 [
                     'label' => 'Actions',
                     'format' => 'raw',
+
                     'value' => function ($model) {
                         return ' ' .  MaskMoney::widget([
                             'name' => "amount[$model->id]",
@@ -263,7 +270,8 @@ use kartik\select2\Select2;
                                 'allowNegative' => true
                             ],
                         ]);
-                    }
+                    },
+                    'contentOptions' => ['style' => 'width:200px; white-space: normal;'],
                 ]
 
             ],
@@ -343,6 +351,7 @@ use kartik\select2\Select2;
     <script>
         var update_id = undefined;
         var account_name = undefined;
+        var select_id = 0;
 
         function enableDisable(checkbox) {
             var isDisable = true
@@ -365,8 +374,42 @@ use kartik\select2\Select2;
         function remove(i) {
             i.closest("tr").remove()
         }
+        var i = 1;
 
-        function addData(result,isUpdate) {
+        function copy(q) {
+          var r=  $(q).closest('tr').clone().find("input").each(function() {
+                $(this).attr({
+                    'id': function(_, id) {
+                        return id + select_id
+                    },
+                    'name': function(_, name) {
+                        return name
+                    },
+                    'value': '',
+                    'disabled': function(_, id) {
+                        return false
+                    },
+                });
+            }).end().appendTo("#transaction_table");
+            r.closest('tr').find("button").each(function() {
+                $(this).attr({
+                    'id': function(_, id) {
+                        return id + select_id
+                    },
+                    'name': function(_, name) {
+                        return name
+                    },
+                    'value': '',
+                    'disabled': function(_, id) {
+                        return false
+                    },
+                });
+            }).end()
+
+            select_id++;
+        }
+
+        function addData(result, isUpdate) {
             for (var i = 0; i < result.length; i++) {
                 object_code = result[i]['object_code']
                 chart_id = result[i]['chart_of_account_id']
@@ -376,7 +419,8 @@ use kartik\select2\Select2;
                     chart_id = ''
                 }
                 var row = `<tr>
-                            <td style="display:none"> <input value='${result[i]['raoud_id']}' type='text' name='raoud_id[]' /></td>
+                            <td style="display:none"> <input value='${result[i]['raoud_id']}' type='text' name='raoud_id[]' id='raoud_${select_id}' /></td>
+                            <td > <input  type='month' id='date_${select_id}' name='new_reporting_period[]' /></td>
                             <td> ${result[i]['mfo_pap_code_code']}</td>
                             <td> ${result[i]['mfo_pap_name']}</td>
                             <td> ${result[i]['fund_source_name']}</td>
@@ -389,7 +433,9 @@ use kartik\select2\Select2;
                                 </div>
                             </td>
                             <td> <input value='${result[i]['obligation_amount']}' type='text' name='obligation_amount[]' id='amount_${select_id}'/></td>
-                            <td><button id='remove_${select_id}' class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>`
+                            <td><a id='copy_${select_id}' class='btn btn-success ' type='button' onclick='copy(this)'><i class="fa fa-copy "></i></a></td>
+                            <td><button id='remove_${select_id}' class='btn btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td>
+                            </tr>`
                 $('#transaction_table').append(row);
 
                 $(`#chart-${select_id}`).select2({
@@ -401,6 +447,11 @@ use kartik\select2\Select2;
                     $(`#chart-${select_id}`).prop('disabled', true);
                     $(`#amount_${select_id}`).prop('disabled', true);
                     $(`#remove_${select_id}`).prop('disabled', true);
+                    // $(`#date_${select_id}`).val('12/12/2021');
+                    var dateControl = document.querySelector(`#date_${select_id}`);
+                    dateControl.value = result[i]['reporting_period'];
+                    $(`#date_${select_id}`).prop('disabled', true);
+                    $(`#raoud_${select_id}`).prop('disabled', true);
                 }
                 select_id++;
             }
@@ -408,7 +459,7 @@ use kartik\select2\Select2;
 
 
         }
-        var select_id = 0;
+
         $(document).ready(function() {
 
 
@@ -425,7 +476,7 @@ use kartik\select2\Select2;
                         console.log(result)
                         var object_code = ''
                         var chart_id = ''
-                        addData(result,false)
+                        addData(result, false)
                         // for (var i = 0; i < result.length; i++) {
                         //     object_code = result[i]['object_code']
                         //     chart_id = result[i]['chart_of_account_id']
@@ -621,25 +672,15 @@ $script = <<< JS
         //   update_id.change(function(){
         //       console.log(update_id.val())
         //   })
-          if (update_id!=null){
+          if (update_id!=null ){
             $.ajax({
                 type:"POST",
-                url:window.location.pathname + "?r=raouds/get-raoud",
+                url:window.location.pathname + "?r=process-ors-entries/get-raoud",
                 data:{update_id:update_id},
                 success:function(data){
                     var res = JSON.parse(data)
                     // console.log(res)
-                }
-            })
-        }
-          if (update_id!=null && $('#update').val()==='update'){
-            $.ajax({
-                type:"POST",
-                url:window.location.pathname + "?r=raouds/get-raoud",
-                data:{update_id:update_id},
-                success:function(data){
-                    var res = JSON.parse(data)
-                    console.log(res.result[0]['book_id'])
+                    console.log(res.result)
                     $("#reporting_period").val(res.result[0]['reporting_period']).trigger('change')
                     $("#date").val(res.result[0]['date']).trigger('change')
                     $("#book_id").val(res.result[0]['book_id']).trigger('change')
@@ -648,6 +689,22 @@ $script = <<< JS
                 }
             })
         }
+        //   if (update_id!=null && $('#update').val()==='adjust'){
+        //     $.ajax({
+        //         type:"POST",
+        //         url:window.location.pathname + "?r=raouds/get-raoud",
+        //         data:{update_id:update_id},
+        //         success:function(data){
+        //             var res = JSON.parse(data)
+        //             console.log(res.result)
+        //             $("#reporting_period").val(res.result[0]['reporting_period']).trigger('change')
+        //             $("#date").val(res.result[0]['date']).trigger('change')
+        //             $("#book_id").val(res.result[0]['book_id']).trigger('change')
+        //             $("#transaction_id").val(res.result[0]['transaction_id']).trigger('change')
+        //             addData(res.result,true)
+        //         }
+        //     })
+        // }
     })
     JS;
 $this->registerJs($script);

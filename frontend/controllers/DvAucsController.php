@@ -356,7 +356,6 @@ class DvAucsController extends Controller
                     "FORMAT(total_obligated.total,'N','en-us') as total",
                     "transaction.particular as transaction_particular",
                     "payee.account_name as transaction_payee"
-
                 ])
                 ->from("dv_aucs_entries")
                 ->join("LEFT JOIN", "dv_aucs", "dv_aucs_entries.dv_aucs_id = dv_aucs.id")

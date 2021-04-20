@@ -114,6 +114,7 @@ class ProcessOrsEntriesController extends Controller
         // return $this->render('update', [
         //     'model' => $model,
         // ]);
+        $raoud = Raouds::findOne($id);
         $searchModel = new Raouds2Search();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render('create', [
@@ -123,9 +124,10 @@ class ProcessOrsEntriesController extends Controller
             'update' => 'update'
         ]);
     }
-    // MAG ADJUST OG ORS
+    // MAG ADJUST SA MGA CHARGING
     public function actionAdjust($id)
     {
+        $raoud = Raouds::findOne($id);
         $searchModel = new Raouds2Search();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render('create', [
@@ -133,6 +135,18 @@ class ProcessOrsEntriesController extends Controller
             'dataProvider' => $dataProvider,
             'update_id' => $id,
             'update' => 'adjust'
+        ]);
+    }
+    // MAG RE ALIGN SA CHARGING SA ORS OG ORS
+    public function actionReAlign($id)
+    {
+        $searchModel = new Raouds2Search();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        return $this->render('create', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'update_id' => $id,
+            'update' => 're_align'
             // 'adjust-id'=>$id
         ]);
     }
@@ -146,9 +160,10 @@ class ProcessOrsEntriesController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        if (Yii::$app->user->can('delete-ors')) {
+            $this->findModel($id)->delete();
+            return $this->redirect(['index']);
+        }
     }
 
     /**
@@ -222,7 +237,7 @@ class ProcessOrsEntriesController extends Controller
             // return json_encode($_POST['chart_of_account_id']);
             $transaction = \Yii::$app->db->beginTransaction();
             // KUNG NAAY SULOD ANG UPDATE ID  MAG ADD OG RAOUD OG ENTRY NIYA  PARA E ADJUST
-            if ($_POST['update'] === 'adjust') {
+            if ($_POST['update'] === 're_align') {
                 try {
                     // KUHAON ANG PARENT NA RAOUD NA E ADJUST
                     $raoud_to_adjust = Raouds::find()->where("id =:id", ['id' => $_POST['update_id']])->one();
@@ -246,7 +261,8 @@ class ProcessOrsEntriesController extends Controller
                         // echo $reporting_period;
                         foreach ($_POST['chart_of_account_id'] as $index => $value) {
                             // KANI MAO NI ANG RAOUDS KUNG ASA E CHARGE ANG GE ADJUST
-                            $raoud_to_charge_adjustment = Raouds::find()->where("id =:id", ['id' => $_POST['raoud_id'][$index]])->one();
+                            $raoud_to_charge_adjustment = Raouds::find()
+                                ->where("id =:id", ['id' => $_POST['raoud_id'][$index]])->one();
                             // $raoud_to_charge_adjustment->isActive = 0;
                             // $raoud_to_charge_adjustment->save();
 
@@ -267,7 +283,7 @@ class ProcessOrsEntriesController extends Controller
                                 $raoud->is_parent = false;
                                 $raoud->isActive = false;
                                 $raoud->process_ors_id = $raoud_to_adjust->process_ors_id;
-                                $raoud->reporting_period = $_POST['reporting_period'];
+                                $raoud->reporting_period = $_POST['new_reporting_period'][$index];
                                 $raoud->obligated_amount = $amount;
                                 if ($flag = $raoud->validate()) {
                                     if ($raoud->save()) {
@@ -306,15 +322,44 @@ class ProcessOrsEntriesController extends Controller
                 } catch (ErrorException $e) {
                     return json_encode(["error" => $e]);
                 }
-            } else if ($_POST['update'] === 'update') {
+            } else if ($_POST['update'] === 'adjust') {
+                $reporting_period = $_POST['new_reporting_period'][0];
                 $raoud = Raouds::findOne($_POST['update_id']);
-                $ors = ProcessOrs::findOne($raoud->process_ors_id);
-                $ors->reporting_period = $reporting_period;
-                $ors->transaction_id = $transaction_id;
-                $ors->date = $date;
-                if ($ors->save(false)) {
-                    $transaction->commit();
-                    return json_encode(['isSuccess' => true, 'ors_id' => $ors->id]);
+                // $ors = ProcessOrs::findOne($raoud->process_ors_id);
+                // $ors->reporting_period = $reporting_period;
+                // $ors->transaction_id = $transaction_id;
+                // $ors->date = $date;
+                // if ($ors->save(false)) {
+                //     $transaction->commit();
+                //     return json_encode(['isSuccess' => true, 'ors_id' => $ors->id]);
+                // }
+                try {
+
+
+                    $new_raoud = new Raouds();
+                    $new_raoud->process_ors_id = $raoud->process_ors_id;
+                    $new_raoud->reporting_period = $reporting_period;
+                    $new_raoud->obligated_amount =  $_POST['obligation_amount'][0];
+                    $new_raoud->record_allotment_entries_id = $raoud->record_allotment_entries_id;
+                    $new_raoud->isActive = false;
+
+                    if ($flag = $new_raoud->save(false)) {
+                        $raoud_entry = new RaoudEntries();
+                        $raoud_entry->raoud_id = $new_raoud->id;
+                        $raoud_entry->amount = $_POST['obligation_amount'][0];
+                        $raoud_entry->chart_of_account_id = $raoud->raoudEntries->chart_of_account_id;
+                        if ($raoud_entry->save(false)) {
+                            $transaction->commit();
+                            return json_encode(['isSuccess' => true]);
+                        }
+                    }
+                    if ($flag) {
+                        $transaction->commit();
+                        return json_encode(['isSuccess' => true]);
+                    }
+                } catch (Exception $e) {
+                    $transaction->rollBack();
+                    return json_encode(['isSuccess' => false]);
                 }
             }
             // KUNG WLAY SULOD ANG UPDATE_ID DRI MO SULOD MAG BUHAT OG BAG.O NA DATA
@@ -326,9 +371,9 @@ class ProcessOrsEntriesController extends Controller
                     $ors = new ProcessOrs();
                     $ors->reporting_period = $reporting_period;
                     $ors->transaction_id = $transaction_id;
-                    $ors->book_id=$book_id;
-                    $ors->date=$date;
-                    
+                    $ors->book_id = $book_id;
+                    $ors->date = $date;
+
                     $ors->serial_number = $this->getOrsSerialNumber($reporting_period, $book_id);
                     if ($ors->validate()) {
                         if ($flag = $ors->save()) {
@@ -385,7 +430,7 @@ class ProcessOrsEntriesController extends Controller
                         }
                         if ($flag) {
                             $transaction->commit();
-                            return json_encode(['isSuccess' => true,'id'=>$ors->id]);
+                            return json_encode(['isSuccess' => true, 'id' => $ors->id]);
                         }
                     } else {
                         return json_encode(['isSuccess' => false, 'error' => $ors->errors]);
@@ -621,5 +666,60 @@ class ProcessOrsEntriesController extends Controller
             ->where("uacs = :uacs", ['uacs' => $uacs])
             ->one();
         return $chart;
+    }
+
+    public function actionGetRaoud()
+    {
+
+        // $raoud = (new \yii\db\Query())
+        //     ->select("")
+        //     ->from('raouds')
+        //     ->join("LEFT JOIN", 'raoud_entries', 'raouds.id = raoud_entries.raoud_id')
+        //     ->join("LEFT JOIN", 'process_ors', 'raouds.process_ors_id = process_ors.id')
+        //     // ->where("raouds.process_ors_id IS NULL " )
+        //     ->where("raouds.id = :id", ['id' => $_POST['update_id']])
+        //     ->all();
+        $query = (new \yii\db\Query())
+            ->select([
+                'process_ors.reporting_period',
+                'process_ors.book_id',
+                'process_ors.date',
+                'raouds.id as raoud_id',
+                'process_ors.transaction_id',
+                'mfo_pap_code.code AS mfo_pap_code_code',
+                'mfo_pap_code.name AS mfo_pap_name',
+                'fund_source.name AS fund_source_name',
+                'chart_of_accounts.uacs as object_code',
+                'chart_of_accounts.general_ledger',
+                'major_accounts.name',
+                'chart_of_accounts.id as chart_of_account_id',
+                'raouds.id AS raoud_id',
+                'entry.total',
+                'raoud_entries.amount as obligation_amount',
+
+                'record_allotment_entries.amount',
+                '(record_allotment_entries.amount - entry.total) AS remain'
+            ])
+            ->from('raouds')
+            ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
+            ->join("LEFT JOIN", "record_allotments", "record_allotment_entries.record_allotment_id=record_allotments.id")
+            ->join("LEFT JOIN", "fund_source", "record_allotments.fund_source_id=fund_source.id")
+            ->join("LEFT JOIN", "mfo_pap_code", "record_allotments.mfo_pap_code_id=mfo_pap_code.id")
+            ->join("LEFT JOIN", "raoud_entries", "raouds.id=raoud_entries.raoud_id")
+            ->join("LEFT JOIN", "chart_of_accounts", "raoud_entries.chart_of_account_id=chart_of_accounts.id")
+            ->join("LEFT JOIN", "major_accounts", "chart_of_accounts.major_account_id=major_accounts.id")
+            ->join("LEFT JOIN", "process_ors", "raouds.process_ors_id = process_ors.id")
+            ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount) as total,
+        raouds.id, raouds.process_ors_id,
+        raouds.record_allotment_entries_id
+        FROM raouds,raoud_entries,process_ors
+        WHERE raouds.process_ors_id= process_ors.id
+        AND raouds.id = raoud_entries.raoud_id
+        AND raouds.process_ors_id IS NOT NULL 
+        GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
+            // ->join("LEFT JOIN","","raouds.process_ors_id=process_ors.id")
+            ->where("raouds.id = :id", ['id' => $_POST['update_id']])
+            ->all();
+        return json_encode(["result" => $query]);
     }
 }

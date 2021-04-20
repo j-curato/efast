@@ -76,134 +76,16 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php
     $gridColumns = [
 
-        'id',
-        // 'reporting_period',
-        [
-            'label' => "Reporting_period",
-            'attribute' => 'processOrs.reporting_period'
-        ],
-
-
-        // 'raoudEntries.chartOfAccount.general_ledger',
-        [
-            'label' => 'General Ledger',
-            'value' => 'raoudEntries.chartOfAccount.general_ledger',
-            // 'value' => 'processOrs.reporting_period'
-        ],
-        [
-            'label' => 'Serial Number',
-            'attribute' => 'processOrs.serial_number',
-            // 'value' => 'processOrs.reporting_period'
-        ],
-        [
-            'label' => 'Amount',
-            'attribute' => 'raoudEntries.amount',
-            'format' => ['decimal', 2]
-        ],
-        [
-            'label' => 'Adjust Amount',
-            'value' => function ($model) {
-                $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total
-            FROM `raouds`,raoud_entries
-            WHERE raouds.id=raoud_entries.raoud_id
-            AND raoud_entries.amount >0
-            AND raoud_entries.parent_id_from_raoud = $model->id
-             ")->queryOne();
-                if (!empty($query['total'])) {
-                    return $query['total'];
-                } else {
-                    return '';
-                }
-            },
-            'format' => ['decimal', 2]
-        ],
-
-        [
-            'label' => 'Adjust',
-            'format' => 'raw',
-            'value' => function ($model) {
-
-                $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total
-            FROM `raouds`,raoud_entries
-            WHERE raouds.id=raoud_entries.raoud_id
-            AND raoud_entries.amount >0
-            AND raoud_entries.parent_id_from_raoud = $model->id
-             ")->queryOne();
-                $amount = $model->raoudEntries->amount;
-                if ($query['total'] < $amount  && $amount > 0) {
-
-                    $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/adjust&id=$model->id";
-                    return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-secondary fa fa-pencil-square-o']);
-                } else {
-                    return "";
-                }
-                // return $query['total'];
-            }
-        ],
-        // [
-        //     'label' => 'Adjust',
-        //     'format' => 'raw',
-        //     'value' => function ($model) {
-
-
-
-        //             $t = yii::$app->request->baseUrl . "/index.php?r=process-ors/view&id=$model->process_ors_id";
-        //             return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-success fa fa-pencil-square-o']);
-
-        //             // return $query['total'];
-        //     }
-        // ],
-
-
-        // ['class' => 'yii\grid\ActionColumn'],
-    ];
-
-    ?>
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'panel' => [
-            'heading' => '<h3 class="panel-title"> Process Ors</h3>',
-            'type' => 'primary',
-            // 'before' => Html::a('<i class="glyphicon glyphicon-plus"></i>Create Process Ors', ['create'], ['class' => 'btn btn-success']),
-
-        ],
-
-        'toolbar' => [
-            [
-                'content' => ExportMenu::widget([
-                    'dataProvider' => $dataProvider,
-                    'columns' => $gridColumns,
-                    'filename' => "ORS",
-                    'exportConfig' => [
-                        ExportMenu::FORMAT_CSV => false,
-                        ExportMenu::FORMAT_TEXT => false,
-                        ExportMenu::FORMAT_PDF => false,
-                        ExportMenu::FORMAT_HTML => false,
-                        ExportMenu::FORMAT_EXCEL => false,
-
-                    ]
-                ]),
-                'options' => [
-                    'class' => 'btn-group mr-2', 'style' => 'margin-right:20px'
-                ]
-            ]
-        ],
-        'export' => false,
-
-
-        'columns' => [
-
-            'id',
+        // 'id',
             // [
             //     'label'=>' Reporting Period',
             //     'attribute'=>'processOrs.reporting_period'
             // ],
-            [
-                'label' => 'ors id',
-                'attribute' => 'processOrs.id',
-                // 'value' => 'processOrs.reporting_period'
-            ],
+            // [
+            //     'label' => 'ors id',
+            //     'attribute' => 'processOrs.id',
+            //     // 'value' => 'processOrs.reporting_period'
+            // ],
             [
                 'label' => 'Obligation Number',
                 'attribute' => 'process_ors_id',
@@ -220,9 +102,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Allotment Number',
                 'attribute' => 'recordAllotmentEntries.recordAllotment.serial_number',
             ],
+            [
+                'label' => 'Allotment UACS Code',
+                'attribute' => 'recordAllotmentEntries.chartOfAccount.uacs',
+            ],
+            [
+                'label' => 'Allotment General Ledger',
+                'attribute' => 'recordAllotmentEntries.chartOfAccount.general_ledger',
+            ],
 
             [
-                'label' => 'UACS Object Code',
+                'label' => 'ORS UACS Object Code',
                 'value' => 'raoudEntries.chartOfAccount.uacs',
             ],
             [
@@ -272,35 +162,101 @@ $this->params['breadcrumbs'][] = $this->title;
                     if ($query['total'] < $amount  && $amount > 0) {
 
                         $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/adjust&id=$model->id";
-                        return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-secondary fa fa-pencil-square-o']);
+                        return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-primary fa fa-pencil-square-o']);
                     } else {
                         return "";
                     }
                     // return $query['total'];
-                }
+                },
+                'hiddenFromExport'=>true,
             ],
-            // [
-            //     'label' => 'Adjust',
-            //     'format' => 'raw',
-            //     'value' => function ($model) {
+            [
+                'label' => 'Re-Align',
+                'format' => 'raw',
+                'value' => function ($model) {
 
+                    $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total
+                    FROM `raouds`,raoud_entries
+                    WHERE raouds.id=raoud_entries.raoud_id
+                    AND raoud_entries.amount >0
+                    AND raoud_entries.parent_id_from_raoud = $model->id
+                     ")->queryOne();
+                    $amount = $model->raoudEntries->amount;
+                    if ($query['total'] < $amount  && $amount > 0) {
 
+                        $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/re-align&id=$model->id";
+                        return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-success fa fa-pencil-square-o']);
+                    } else {
+                        return "";
+                    }
+                    // return $query['total'];
+                },
+                'hiddenFromExport'=>true
+            ],
+            [
+                'label' => 'View',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$model->id";
+                    return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-info fa fa-eye']);
 
-            //             $t = yii::$app->request->baseUrl . "/index.php?r=process-ors/view&id=$model->process_ors_id";
-            //             return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-success fa fa-pencil-square-o']);
-
-            //             // return $query['total'];
-            //     }
-            // ],
+                    // return $query['total'];
+                },
+                'hiddenFromExport'=>true,
+            ],
 
 
             // ['class' => 'yii\grid\ActionColumn'],
+            // [
+            //     'class' => '\kartik\grid\ActionColumn',
+            //     // 'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
+            //     // 'delete' => false
+
+            // ]
+    ];
+
+    ?>
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
+        'panel' => [
+            'heading' => '<h3 class="panel-title"> Process Ors</h3>',
+            'type' => 'primary',
+            // 'before' => Html::a('<i class="glyphicon glyphicon-plus"></i>Create Process Ors', ['create'], ['class' => 'btn btn-success']),
+
+        ],
+
+        'toolbar' => [
             [
-                'class' => '\kartik\grid\ActionColumn',
-                'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
+                'content' => ExportMenu::widget([
+                    'dataProvider' => $dataProvider,
+                    'columns' => $gridColumns,
+                    'filename' => "ORS",
+                    'exportConfig' => [
+                        ExportMenu::FORMAT_CSV => false,
+                        ExportMenu::FORMAT_TEXT => false,
+                        ExportMenu::FORMAT_PDF => false,
+                        ExportMenu::FORMAT_HTML => false,
+                        ExportMenu::FORMAT_EXCEL => false,
+
+                    ]
+                ]),
+                'options' => [
+                    'class' => 'btn-group mr-2', 'style' => 'margin-right:20px'
+                ]
             ]
         ],
+        'export' => false,
+
+
+        'columns' =>$gridColumns
     ]); ?>
 
+<style>
+.grid-view td{
+    white-space: normal;
+    width: 2rem;
+}
+</style>
 
 </div>

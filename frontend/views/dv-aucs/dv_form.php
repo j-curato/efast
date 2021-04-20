@@ -31,11 +31,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="container panel panel-default">
         <div style="float:right">
-            <h6>
+            <span style="font-size: x-small;">
                 <?php
-                // echo $model->tracking_number;
+                echo $model->dv_number;
                 ?>
-            </h6>
+            </span>
         </div>
         <table style="margin-top:30px">
             <tbody>
@@ -65,7 +65,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                         <div>
                             <span>DV No.:</span>
-                            <span>_________________</span>
+                            <span style="font-size: x-small;">
+                                <?php
+                                echo $model->dv_number;
+                                ?>
+                            </span>
                         </div>
                     </td>
                 </tr>
@@ -201,7 +205,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                     <td>
                         <?php
-                       echo number_format($total,2);
+                        echo number_format($total, 2);
                         ?>
                     </td>
                 </tr>
@@ -351,8 +355,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
         td {
             border: 1px solid black;
-            padding: 0;
-            font-size: 10px;
+            padding: 3px;
+            font-size: 15px;
         }
 
         table {
@@ -401,11 +405,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 font-size: 5pt;
             }
 
-            table,
-            th,
             td {
                 border: 1px solid black;
                 padding: 5px;
+                font-size: x-small;
                 background-color: white;
             }
 

@@ -65,7 +65,7 @@ class Raouds2Search extends Raouds
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
+            'raouds.id' => $this->id,
             // 'process_ors_id' => $this->process_ors_id,
             'record_allotment_entries_id' => $this->record_allotment_entries_id,
             'obligated_amount' => $this->obligated_amount,
