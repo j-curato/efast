@@ -76,7 +76,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php
     $gridColumns = [
 
-        // 'id',
+        'id',
             // [
             //     'label'=>' Reporting Period',
             //     'attribute'=>'processOrs.reporting_period'

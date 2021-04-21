@@ -20,7 +20,7 @@ class m210316_081641_create_raoud_entries_table extends Migration
             'id' => $this->primaryKey(),
             'raoud_id' => $this->integer(),
             'chart_of_account_id' => $this->integer(),
-            'amount'=>$this->float()
+            'amount'=>$this->decimal(10,2)
         ]);
 
         // creates index for column `raoud_id`

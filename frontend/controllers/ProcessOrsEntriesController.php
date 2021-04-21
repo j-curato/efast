@@ -48,7 +48,7 @@ class ProcessOrsEntriesController extends Controller
     {
         $searchModel = new ProcessOrsRaoudsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
+        $dataProvider->sort = ['defaultOrder' => ['process_ors_id' => 'DESC']];
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -255,7 +255,7 @@ class ProcessOrsEntriesController extends Controller
                     $adjust_total = $total_amount + $query['total_adjustment'];
                     $remaining_balance = $raoud_to_adjust->raoudEntries->amount -  $query['total_adjustment'];
                     // return  json_encode($query['total_adjustment']); 
-                    if ($raoud_to_adjust->raoudEntries->amount >= $adjust_total) {
+                    // if ($raoud_to_adjust->raoudEntries->amount >= $adjust_total) {
                         $raoud_to_adjust->isActive = false;
                         $raoud_to_adjust->save();
                         // echo $reporting_period;
@@ -271,7 +271,13 @@ class ProcessOrsEntriesController extends Controller
                                 // $raoud->record_allotment_id = $raoud_to_charge_adjustment->record_allotment_id;
                                 $amount = 0;
                                 if ($i === 0) {
-                                    $amount = -$_POST['obligation_amount'][$index];
+                                    if ($raoud_to_adjust->raoudEntries->amount > $total_amount){
+                                        
+                                        $amount = -$_POST['obligation_amount'][$index];
+                                    }
+                                    else{
+                                        $amount = -$raoud_to_adjust->raoudEntries->amount;
+                                    }
                                     $chart_of_account_id = $raoud_to_adjust->raoudEntries->chart_of_account_id;
                                     $record_allotment_entries_id = $raoud_to_adjust->record_allotment_entries_id;
                                 } else {
@@ -313,12 +319,13 @@ class ProcessOrsEntriesController extends Controller
                             $transaction->commit();
                             return json_encode([
                                 'isSuccess' => true,
+                                'id'=>$raoud_to_adjust->process_ors_id
                             ]);
                         }
-                    } else {
-                        return json_encode(['isSuccess' => false, 'error' =>
-                        "Obligation Amount is Less than Adjust Amount  Remaining Balance is  $remaining_balance"]);
-                    }
+                    // } else {
+                    //     return json_encode(['isSuccess' => false, 'error' =>
+                    //     "Obligation Amount is Less than Adjust Amount  Remaining Balance is  $remaining_balance"]);
+                    // }
                 } catch (ErrorException $e) {
                     return json_encode(["error" => $e]);
                 }
@@ -355,7 +362,7 @@ class ProcessOrsEntriesController extends Controller
                     }
                     if ($flag) {
                         $transaction->commit();
-                        return json_encode(['isSuccess' => true]);
+                        return json_encode(['isSuccess' => true,'id'=>$raoud->process_ors_id]);
                     }
                 } catch (Exception $e) {
                     $transaction->rollBack();

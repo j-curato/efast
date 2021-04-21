@@ -24,7 +24,7 @@ class m210326_080246_create_dv_aucs_table extends Migration
             'reporting_period'=>$this->string(50),
             'tax_withheld'=>$this->string(),
             'other_trust_liability_withheld'=>$this->string(),
-            'net_amount_paid'=>$this->float(),
+            'net_amount_paid'=>$this->decimal(10,2),
             
         ]);
 

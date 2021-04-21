@@ -53,6 +53,7 @@ class CashDisbursement extends \yii\db\ActiveRecord
             'id' => 'ID',
             'book_id' => 'Book ID',
             'dv_aucs_entries_id' => 'Dv Aucs ID',
+            'dv_aucs_id' => 'Dv Aucs ID',
             'reporting_period' => 'Reporting Period',
             'mode_of_payment' => 'Mood Of Payment',
             'check_or_ada_no' => 'Check Or Ada No',
@@ -79,5 +80,9 @@ class CashDisbursement extends \yii\db\ActiveRecord
     public function getDvAucsEntries()
     {
         return $this->hasOne(DvAucsEntries::class, ['id' => 'dv_aucs_entries_id']);
+    }
+    public function getDvAucs()
+    {
+        return $this->hasOne(DvAucs::class, ['id' => 'dv_aucs_id']);
     }
 }

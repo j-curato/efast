@@ -94,6 +94,8 @@ $this->params['breadcrumbs'][] = $this->title;
         //'remark',
         //'tin_number',
 
+
+
         [
             'class' => '\kartik\grid\ActionColumn',
             'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],

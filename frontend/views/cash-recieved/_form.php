@@ -2,6 +2,7 @@
 
 use app\models\Books;
 use app\models\DocumentRecieve;
+use app\models\MfoPapCode;
 use kartik\date\DatePicker;
 use kartik\money\MaskMoney;
 use kartik\select2\Select2;
@@ -34,7 +35,12 @@ use yii\widgets\ActiveForm;
         ]
     ]) ?>
 
-    <?= $form->field($model, 'mfo_pap_code_id')->textInput() ?>
+    <?= $form->field($model, 'mfo_pap_code_id')->widget(Select2::class,[
+        'data'=>ArrayHelper::map(MfoPapCode::find()->asArray()->all(),'id','name'),
+        'pluginOptions'=>[
+            'placeholder'=>"Select MFO/PAP Code"
+        ]
+    ]) ?>
 
     <?= $form->field($model, 'date')->widget(DatePicker::class, [
         'name' => 'date',
@@ -55,6 +61,7 @@ use yii\widgets\ActiveForm;
     ]) ?>
 
     <?= $form->field($model, 'nca_no')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'account_number')->textInput(['maxlength' => true]) ?>
 
     <!-- <?= $form->field($model, 'nta_no')->textInput(['maxlength' => true]) ?>
 

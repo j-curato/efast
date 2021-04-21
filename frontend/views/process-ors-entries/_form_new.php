@@ -108,7 +108,7 @@ use kartik\select2\Select2;
 
         <table id="transaction_table" class="table table-striped">
             <thead>
-                <!-- <th>Raoud ID</th> -->
+                <th>Reporting Period</th>
                 <th>MFO/PAP Code</th>
                 <th>MFO/PAP Code Name</th>
                 <th>Fund Source</th>
@@ -377,7 +377,7 @@ use kartik\select2\Select2;
         var i = 1;
 
         function copy(q) {
-          var r=  $(q).closest('tr').clone().find("input").each(function() {
+            var r = $(q).closest('tr').clone().find("input").each(function() {
                 $(this).attr({
                     'id': function(_, id) {
                         return id + select_id
@@ -452,6 +452,10 @@ use kartik\select2\Select2;
                     dateControl.value = result[i]['reporting_period'];
                     $(`#date_${select_id}`).prop('disabled', true);
                     $(`#raoud_${select_id}`).prop('disabled', true);
+
+                }
+                if ($('#update').val() == '') {
+                    $(`#date_${select_id}`).prop('disabled', true);
                 }
                 select_id++;
             }

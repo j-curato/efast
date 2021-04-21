@@ -3,16 +3,17 @@
 use yii\db\Migration;
 
 /**
- * Class m210326_020900_add_burs_amount_to_raouds_table
+ * Class m210420_102021_add_isEnable_payee_table
  */
-class m210326_020900_add_burs_amount_to_raouds_table extends Migration
+class m210420_102021_add_isEnable_payee_table extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->addColumn('raouds', 'burs_amount', $this->decimal(10,2));
+        $this->addColumn('payee','isEnable',$this->boolean()->defaultValue(1));
+
     }
 
     /**
@@ -20,7 +21,7 @@ class m210326_020900_add_burs_amount_to_raouds_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropColumn('raouds', 'burs_amount');
+        $this->dropColumn('payee','isEnable');
     }
 
     /*
@@ -32,7 +33,7 @@ class m210326_020900_add_burs_amount_to_raouds_table extends Migration
 
     public function down()
     {
-        echo "m210326_020900_add_burs_amount_to_raouds_table cannot be reverted.\n";
+        echo "m210420_102021_add_isEnable_payee_table cannot be reverted.\n";
 
         return false;
     }

@@ -119,7 +119,7 @@ use yii\widgets\ActiveForm;
                     echo Select2::widget([
                         'name' => "mode_of_payment",
                         'value' => !empty($model->mode_of_payment) ? $model->mode_of_payment : '',
-                        'data' => ['check' => "Check", 'ada' => "ADA"],
+                        'data' => ['lbp check' => "LBP Check", 'ada' => "ADA",'echeck'=>"eCheck"],
                         "options" => [
                             "placeholder" => "Select Mode of Payment"
                         ]
@@ -139,8 +139,8 @@ use yii\widgets\ActiveForm;
             </select>
         </div> -->
             <?php
-            $searchModel = new DvAucsEntriesSearch();
-            $searchModel->id = $dv_aucs_entries_id;
+            $searchModel = new DvAucsSearch();
+            // $searchModel->id = $dv_aucs_entries_id;
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
             $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
 
@@ -196,8 +196,8 @@ use yii\widgets\ActiveForm;
                     ],
                     [
                         'label' => 'DV Number',
-                        'attribute' => 'dv_aucs_id',
-                        'value' => "dvAucs.dv_number"
+                        'attribute' => 'dv_number',
+                        // 'value' => "dv_number"
                         // 'filter' => Html::activeDropDownList(
                         //     $searchModel,
                         //     'recordAllotment.fund_cluster_code_id',
@@ -208,17 +208,28 @@ use yii\widgets\ActiveForm;
                     ],
                     [
                         'label' => 'Amount',
-                        'attribute' => 'amount_disbursed',
-                        'filter' => false,
-                        'format' => ['decimal', 2]
+                        // 'attribute' => 'amount_disbursed',
+                        // 'filter' => false,
+                        'format' => ['decimal', 2],
+                        'value'=>function($model){
+                            $query=(new \yii\db\Query())
+                            ->select(["SUM(dv_aucs_entries.amount_disbursed) as total_disbursed"])
+                            ->from('dv_aucs')
+                            ->join("LEFT JOIN","dv_aucs_entries","dv_aucs.id = dv_aucs_entries.dv_aucs_id")
+                            ->where("dv_aucs.id =:id",['id'=>$model->id])
+                            ->one();
+
+                            return $query['total_disbursed'];
+
+                        }
                     ],
                     [
                         'label' => 'Payee',
-                        'attribute' => 'dvAucs.payee.account_name'
+                        'attribute' => 'payee.account_name'
                     ],
                     [
                         'label' => 'Particular',
-                        'attribute' => 'dvAucs.particular',
+                        'attribute' => 'particular',
 
                     ],
 

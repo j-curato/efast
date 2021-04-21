@@ -20,7 +20,7 @@ class m210318_010528_create_process_ors_entries_table extends Migration
             'id' => $this->primaryKey(),
             'chart_of_account_id' => $this->integer()->notNull(),
             'process_ors_id' => $this->integer()->notNull(),
-            'amount' => $this->float()->notNull(),
+            'amount' => $this->decimal(10,2)->notNull(),
         ]);
 
         // creates index for column `chart_of_account_id`

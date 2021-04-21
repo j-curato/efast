@@ -20,7 +20,7 @@ class m210318_010423_create_record_allotment_entries_table extends Migration
             'id' => $this->primaryKey(),
             'record_allotment_id' => $this->integer()->notNull(),
             'chart_of_account_id' => $this->integer()->notNull(),
-            'amount' => $this->float()->notNull(),
+            'amount' => $this->decimal(10,2)->notNull(),
         ]);
 
         // creates index for column `record_allotment_id`

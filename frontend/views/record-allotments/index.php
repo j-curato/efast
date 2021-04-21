@@ -146,6 +146,7 @@ $this->params['breadcrumbs'][] = $this->title;
             "label" => "General Ledger",
             'attribute' => 'chartOfAccount.general_ledger',
         ],
+
         [
 
             'label' => "Amount",
@@ -154,8 +155,21 @@ $this->params['breadcrumbs'][] = $this->title;
 
         ],
         [
+            'label' => 'Update',
+            'format' => 'raw',
+            'value' => function ($model) {
+
+
+
+                $t = yii::$app->request->baseUrl . "/index.php?r=record-allotments/update&id=$model->record_allotment_id";
+                return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-primary fa fa-pencil-square-o']);
+            },
+            'hiddenFromExport' => true,
+        ],
+        [
             'class' => '\kartik\grid\ActionColumn',
-            'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>','style'=>"display:none"],
+            'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
+            'updateOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
         ]
     ];
     ?>

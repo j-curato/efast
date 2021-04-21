@@ -1,6 +1,8 @@
 <?php
 
 use kartik\export\ExportMenu;
+use kartik\file\FileInput;
+use kartik\form\ActiveForm;
 use kartik\grid\GridView;
 use yii\helpers\Html;
 
@@ -17,12 +19,57 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Create Cash Disbursement', ['create'], ['class' => 'btn btn-success']) ?>
+        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button>
     </p>
+
+    <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
+                </div>
+                <div class='modal-body'>
+                    <center><a href="jev/jev_format.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                    <hr>
+                    <?php
+
+
+                    $form = ActiveForm::begin([
+                        'action' => ['cash-disbursement/import'],
+                        'method' => 'post',
+                        'id' => 'formupload',
+                        'options' => [
+                            'enctype' => 'multipart/form-data',
+                        ], // important
+                    ]);
+                    // echo '<input type="file">';
+                    echo FileInput::widget([
+                        'name' => 'file',
+                        // 'options' => ['multiple' => true],
+                        'id' => 'fileupload',
+                        'pluginOptions' => [
+                            'showPreview' => true,
+                            'showCaption' => true,
+                            'showRemove' => true,
+                            'showUpload' => true,
+                        ]
+                    ]);
+
+                    ActiveForm::end();
+
+
+                    ?>
+
+                </div>
+            </div>
+        </div>
+    </div>
 
     <?php
     $gridColumn = [
 
-        // 'id',
+        'id',
         // 'book_id',
         [
             "label" => "Book",
@@ -32,23 +79,32 @@ $this->params['breadcrumbs'][] = $this->title;
         'reporting_period',
         'mode_of_payment',
         'check_or_ada_no',
-        'is_cancelled',
         'issuance_date',
         [
             'label' => "DV Number",
-            "attribute" => "dvAucsEntries.dvAucs.dv_number"
+            "attribute" => "dvAucs.dv_number"
         ],
         [
             'label' => "Payee",
-            "attribute" => "dvAucsEntries.dvAucs.payee.account_name"
+            "attribute" => "dvAucs.payee.account_name"
         ],
         [
-            'label' => "Paricular",
-            "attribute" => "dvAucsEntries.dvAucs.particular"
+            'label' => "Particular",
+            "attribute" => "dvAucs.particular"
         ],
         [
             'label' => "Amount Disbursed",
-            "attribute" => "dvAucsEntries.amount_disbursed"
+            'format' => ['decimal', 2],
+            'value' => function ($model) {
+                $query = (new \yii\db\Query())
+                    ->select(["SUM(dv_aucs_entries.amount_disbursed) as total_disbursed"])
+                    ->from('dv_aucs')
+                    ->join("LEFT JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
+                    ->where("dv_aucs.id =:id", ['id' => $model->dv_aucs_id])
+                    ->one();
+
+                return $query['total_disbursed'];
+            }
         ],
 
         ['class' => 'yii\grid\ActionColumn'],

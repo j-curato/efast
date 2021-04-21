@@ -39,6 +39,7 @@ class Payee extends \yii\db\ActiveRecord
             [['account_name', 'registered_name', 'contact_person', 'registered_address', 'remark'], 'string', 'max' => 255],
             [['contact'], 'string', 'max' => 20],
             [['tin_number'], 'string', 'max' => 30],
+            [['isEnable'], 'integer',],
         ];
     }
 
@@ -56,6 +57,7 @@ class Payee extends \yii\db\ActiveRecord
             'contact' => 'Contact',
             'remark' => 'Remark',
             'tin_number' => 'Tin Number',
+            'isEnable' => 'Enabled',
         ];
     }
 

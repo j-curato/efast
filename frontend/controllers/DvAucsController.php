@@ -152,19 +152,23 @@ class DvAucsController extends Controller
     public function actionGetDv()
     {
         $x = [];
-        $transaction_type = $_POST['transaction_type'];
+        $transaction_type = strtolower($_POST['transaction_type']);
         $selected_dv = $_POST['selection'];
         $dv_length = count($selected_dv);
-        if (strtolower($transaction_type) === 'single') {
+        if ($transaction_type === 'single') {
 
-            if (intval($_POST['dv_count']) > 1) {
-                return json_encode(["error" => "Transaction type is Single"]);
+            if (intval(count($selected_dv)) > 1) {
+                return json_encode(["isSuccess" => false, "error" => "Transaction type is Single"]);
                 die();
             }
             // return json_encode(["error" => "qwe"]);
             // die();
         } else if (empty($transaction_type)) {
-            return json_encode(["error" => "Select Transaction Type"]);
+            return json_encode(["isSuccess" => false, "error" => "Select Transaction Type"]);
+            die();
+        }
+        if ($transaction_type === 'no ors') {
+            return json_encode(["isSuccess" => false, "error" => "Cannot Add Transaction type is No Ors"]);
             die();
         }
         foreach ($selected_dv as $val) {
@@ -221,22 +225,22 @@ class DvAucsController extends Controller
         // echo "<pre>";
         // var_dump($_POST['1_percent_ewt']);
         // echo "</pre>";
-        return json_encode(['results' => $x]);
+        return json_encode(['isSuccess' => true, 'results' => $x]);
     }
     public function actionInsertDv()
     {
 
 
         if ($_POST) {
-            $process_id = $_POST['process_ors_id'];
+            $process_id = !empty($_POST['process_ors_id']) ? $_POST['process_ors_id'] : '';
             $nature_of_transaction_id = $_POST['nature_of_transaction'];
             $mrd_classification_id = $_POST['mrd_classification'];
             $reporting_period = $_POST['reporting_period'];
             $particular = $_POST['particular'];
             $payee_id = $_POST['payee'];
-            $book_id = $_POST['book_id'];
-            $transaction_type = $_POST['transaction_type'];
-            if (strtolower($transaction_type) === 'single') {
+            $book_id = !empty($_POST['book_id']) ? $_POST['book_id'] : 5;
+            $transaction_type = strtolower($_POST['transaction_type']);
+            if ($transaction_type === 'single') {
                 if (count($process_id) > 1) {
                     return json_encode(["isSuccess" => false, "error" => "Cannot Insert Transaction Type is Single But has More Than 1 Entries"]);
                     die();
@@ -264,24 +268,43 @@ class DvAucsController extends Controller
                 $dv->particular = $particular;
                 $dv->payee_id = $payee_id;
                 $dv->book_id = $book_id;
-                $dv->transaction_type = $transaction_type;
+                $dv->transaction_type = ucwords($transaction_type);
                 if ($dv->validate()) {
                     if ($flag = $dv->save(false)) {
-                        foreach ($process_id as $key => $val) {
+                        if ($transaction_type != 'no ors') {
+
+                            foreach ($process_id as $key => $val) {
+                                $dv_entries = new DvAucsEntries();
+                                // $dv_entries->raoud_id = $val;
+                                $dv_entries->process_ors_id = $_POST['process_ors_id'][$key];
+                                $dv_entries->dv_aucs_id = $dv->id;
+                                $dv_entries->amount_disbursed = $_POST['amount_disbursed'][$key];
+                                $dv_entries->vat_nonvat = $_POST['vat_nonvat'][$key];
+                                $dv_entries->ewt_goods_services = $_POST['ewt_goods_services'][$key];
+                                $dv_entries->compensation = $_POST['compensation'][$key];
+                                $dv_entries->other_trust_liabilities = $_POST['other_trust_liabilities'][$key];
+                                if ($dv_entries->save(false)) {
+                                }
+                                // $dv_entries->total_withheld =$_POST['_percent_'];
+                                // $dv_entries->tax_withheld =$_POST['_percent_'];
+
+                            }
+                        } else {
+                            // return  json_encode(["isSuccess"=>false,'error'=>$_POST['amount_disbursed'][0]]);
+                            // die();
+                            $amount = $_POST['amount_disbursed'][0];
                             $dv_entries = new DvAucsEntries();
                             // $dv_entries->raoud_id = $val;
-                            $dv_entries->process_ors_id = $_POST['process_ors_id'][$key];
                             $dv_entries->dv_aucs_id = $dv->id;
-                            $dv_entries->amount_disbursed = $_POST['amount_disbursed'][$key];
-                            $dv_entries->vat_nonvat = $_POST['vat_nonvat'][$key];
-                            $dv_entries->ewt_goods_services = $_POST['ewt_goods_services'][$key];
-                            $dv_entries->compensation = $_POST['compensation'][$key];
-                            $dv_entries->other_trust_liabilities = $_POST['other_trust_liabilities'][$key];
+                            $dv_entries->amount_disbursed = $amount;
+                            $dv_entries->vat_nonvat = $_POST['vat_nonvat'][0];
+                            $dv_entries->ewt_goods_services = $_POST['ewt_goods_services'][0];
+                            $dv_entries->compensation = $_POST['compensation'][0];
+                            $dv_entries->other_trust_liabilities = $_POST['other_trust_liabilities'][0];
+                            // return  json_encode(["isSuccess" => false, 'error' => $dv_entries->amount_disbursed]);
+                            // die();
                             if ($dv_entries->save(false)) {
                             }
-                            // $dv_entries->total_withheld =$_POST['_percent_'];
-                            // $dv_entries->tax_withheld =$_POST['_percent_'];
-
                         }
                     }
                 } else {
@@ -297,15 +320,16 @@ class DvAucsController extends Controller
 
                 $transaction->rollBack();
 
-                return json_encode($error);
+                return json_encode($error->getMessage());
             }
         }
     }
 
-    public function getDvNumber($reporting_period,$book_id)
+    public function getDvNumber($reporting_period, $book_id)
     {
         // $reporting_period = "2021-01";
         // $book_id=5;
+        !empty($book_id) ? $book_id : $book_id = 5;
         $latest_dv = (new \yii\db\Query())
             ->select('dv_number')
             ->from('dv_aucs')
@@ -374,6 +398,23 @@ class DvAucsController extends Controller
                 ->join("LEFT JOIN", "chart_of_accounts", "raoud_entries.chart_of_account_id = chart_of_accounts.id")
                 ->where("dv_aucs_entries.dv_aucs_id =:dv_aucs_id", ["dv_aucs_id" => $dv_id])
                 ->all();
+            if (empty($query)) {
+                $query = (new \yii\db\Query())
+                    ->select([
+                        "dv_aucs.reporting_period",
+                        "dv_aucs.particular",
+                        "dv_aucs.payee_id",
+                        "dv_aucs.mrd_classification_id",
+                        "dv_aucs.nature_of_transaction_id",
+                        "dv_aucs.reporting_period",
+                        "dv_aucs.transaction_type",
+                        "dv_aucs_entries.*",
+                    ])
+                    ->join("LEFT JOIN", 'dv_aucs_entries', 'dv_aucs.id = dv_aucs_entries.dv_aucs_id')
+                    ->from('dv_aucs')
+                    ->where("dv_aucs.id =:id", ['id' => $dv_id])
+                    ->all();
+            }
             return json_encode(["result" => $query]);
         }
     }

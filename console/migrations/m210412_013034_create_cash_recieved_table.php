@@ -28,7 +28,7 @@ class m210412_013034_create_cash_recieved_table extends Migration
             'nta_no'=>$this->string(100),
             'nft_no'=>$this->string(100),
             'purpose'=>$this->string(),
-            'amount'=>$this->float()
+            'amount'=>$this->decimal(10,2)
 
 
         ]);

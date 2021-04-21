@@ -1,5 +1,6 @@
 <?php
 
+use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -25,6 +26,12 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'remark')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'tin_number')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'isEnable')->widget(Select2::class, [
+        'data' => [true => 'True ', false => 'False'],
+        'pluginOptions' => [
+            // 'placeholder' => "Select"
+        ]
+    ]) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\CashRecieved;
 use app\models\CashRecievedSearch;
+use app\models\DocumentRecieve;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -21,7 +22,7 @@ class CashRecievedController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -66,7 +67,18 @@ class CashRecievedController extends Controller
     {
         $model = new CashRecieved();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            $document = DocumentRecieve::findOne($model->document_recieved_id);
+            if ($document->name === 'NCA - Notice of Cash Allocation') {
+            } else if ($document->name === 'NTA - Notice of Transfer Allocation') {
+                $model->nta_no = $model->nca_no;
+                $model->nca_no = 0;
+            } else if ($document->name === 'NFT - Notice of Fund Transfer') {
+                $model->nft_no = $model->nca_no;
+                $model->nca_no = 0;
+            }
+            if ($model->save(false)) {
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         }
 

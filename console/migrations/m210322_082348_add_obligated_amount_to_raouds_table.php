@@ -12,7 +12,7 @@ class m210322_082348_add_obligated_amount_to_raouds_table extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn('raouds','obligated_amount',$this->float());
+        $this->addColumn('raouds','obligated_amount',$this->decimal(10,2));
     }
 
     /**

@@ -39,7 +39,7 @@ use yii\helpers\Html;
                         'name' => 'reporting_period',
                         'id' => 'reporting_period',
                         // 'value' => '12/31/2010',
-                        // 'options' => ['required' => true],
+                        'options' => ['required' => true],
                         'pluginOptions' => [
                             'autoclose' => true,
                             'format' => 'yyyy-mm',
@@ -52,20 +52,20 @@ use yii\helpers\Html;
 
                 <div class="col-sm-3" style="height:60x">
                     <label for="transaction">Transaction Type</label>
-                    <select id="transaction" name="transaction_type" class="transaction select" style="width: 100%; margin-top:50px">
+                    <select required id="transaction" name="transaction_type" class="transaction select" style="width: 100%; margin-top:50px">
                         <option></option>
                     </select>
                 </div>
 
                 <div class="col-sm-3" style="height:60x">
                     <label for="nature_of_transaction">Nature of Transaction</label>
-                    <select id="nature_of_transaction" name="nature_of_transaction" class="nature_of_transaction select" style="width: 100%; margin-top:50px">
+                    <select required id="nature_of_transaction" name="nature_of_transaction" class="nature_of_transaction select" style="width: 100%; margin-top:50px">
                         <option></option>
                     </select>
                 </div>
                 <div class="col-sm-3" style="height:60x">
                     <label for="mrd_classification">MRD Classification</label>
-                    <select id="mrd_classification" name="mrd_classification" class="mrd_classification select" style="width: 100%; margin-top:50px">
+                    <select required id="mrd_classification" name="mrd_classification" class="mrd_classification select" style="width: 100%; margin-top:50px">
                         <option></option>
                     </select>
                 </div>
@@ -73,7 +73,7 @@ use yii\helpers\Html;
             <div class="row">
                 <div class="col-sm-3">
                     <label for="payee">Payee</label>
-                    <select id="payee" name="payee" class="payee select" style="width: 100%; margin-top:50px">
+                    <select required id="payee" name="payee" class="payee select" style="width: 100%; margin-top:50px">
                         <option></option>
                     </select>
                 </div>
@@ -450,10 +450,15 @@ use yii\helpers\Html;
                     break;
                 }
                 $('#book_id').val(result[0]['book_id'])
+                var amount_disbursed = result[i]['amount_disbursed'] ? result[i]['amount_disbursed'] : 0;
+                var vat_nonvat = result[i]['vat_nonvat'] ? result[i]['vat_nonvat'] : 0;
+                var ewt_goods_services = result[i]['ewt_goods_services'] ? result[i]['ewt_goods_services'] : 0;
+                var compensation = result[i]['compensation'] ? result[i]['compensation'] : 0;
+                var other_trust_liabilities = result[i]['other_trust_liabilities'] ? result[i]['other_trust_liabilities'] : 0;
                 var row = `<tr>
                             
  
-                            <td> <input value='${result[i]['ors_id']}' type='text' name='process_ors_id[]'/></td>
+                            <td > <input style='display:none' value='${result[i]['ors_id']}' type='text' name='process_ors_id[]'/></td>
  
                             <td> ${result[i]['serial_number']}</td>
                             <td> 
@@ -461,11 +466,11 @@ use yii\helpers\Html;
                             </td>
                             <td> ${result[i]['transaction_payee']}</td>
                             <td> ${result[i]['total']}</td>
-                            <td> <input value='${result[i]['amount_disbursed']}' type='text' name='amount_disbursed[]'/></td>
-                            <td> <input value='${result[i]['vat_nonvat']}' type='text' name='vat_nonvat[]'/></td>
-                            <td> <input value='${result[i]['ewt_goods_services']}' type='text' name='ewt_goods_services[]'/></td>
-                            <td> <input value='${result[i]['compensation']}' type='text' name='compensation[]'/></td>
-                            <td> <input value='${result[i]['other_trust_liabilities']}' type='text' name='other_trust_liabilities[]'/></td>
+                            <td> <input value='${amount_disbursed}' type='text' name='amount_disbursed[]'/></td>
+                            <td> <input value='${vat_nonvat}' type='text' name='vat_nonvat[]'/></td>
+                            <td> <input value='${ewt_goods_services}' type='text' name='ewt_goods_services[]'/></td>
+                            <td> <input value='${compensation}' type='text' name='compensation[]'/></td>
+                            <td> <input value='${other_trust_liabilities}' type='text' name='other_trust_liabilities[]'/></td>
                             <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
                         `
                 $('#transaction_table').append(row);
@@ -491,9 +496,21 @@ use yii\helpers\Html;
                     method: "POST",
                     data: $('#add_data').serialize(),
                     success: function(data) {
-                        var result = JSON.parse(data).results
-                        console.log(result)
-                        addDvToTable(result)
+                        var res = JSON.parse(data)
+                        console.log(res.results)
+                        if (res.isSuccess) {
+
+                            addDvToTable(res.results)
+                        } else {
+                            swal({
+                                title: "Error",
+                                text: res.error,
+                                type: "error",
+                                timer: 6000,
+                                button: false
+                                // confirmButtonText: "Yes, delete it!",
+                            });
+                        }
 
                     }
                 });
@@ -526,13 +543,17 @@ $script = <<< JS
         $("#transaction_type").val(transaction_type)
         // if (transaction_type =='Single'){
         //     console.log(select_id)
-            
+        var result=[1]
         // }
-        console.log(transaction_type)
+        var count=document.getElementById("transaction_table").rows.length
+        console.log(document.getElementById("transaction_table").rows.length)
+        if (transaction_type ==='No Ors' && count-1 <1){
+            addDvToTable(result)
+        }
     })
       $(document).ready(function() {
 
-
+        // CHART OF ACCOUNTS
         $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
                 .then(function(data) {
                     var array = []
@@ -636,7 +657,8 @@ $script = <<< JS
                 })
 
             });
-           var transaction = ["Single", "Multiple"]
+            // TRANSACTION TYPE
+           var transaction = ["Single", "Multiple","No Ors"]
             $('#transaction').select2({
                 data: transaction,
                 placeholder: "Select transaction",
@@ -665,9 +687,9 @@ $script = <<< JS
                                 button: false
                                 // confirmButtonText: "Yes, delete it!",
                             }, function() {
-                                // window.location.href = window.location.pathname + '?r=process-ors-entries/index'
+                                window.location.href = window.location.pathname + '?r=dv-aucs/view&id='+res.id
                             });
-                            $('#add_data')[0].reset();
+                            $('#save_data')[0].reset();
                         }
                         else{
 
@@ -696,15 +718,36 @@ $script = <<< JS
                 success:function(data){
 
                     var res = JSON.parse(data)
+                    var transaction_type=res.result[0]['transaction_type']
+                    var type='';
                     console.log(res.result)
-                    addDvToTable(res.result)
+
+                        if (!transaction_type){
+                            if (res.result.length >1){
+                                type='Multiple'
+                            }
+                            else if(res.result.length ===1){
+                                type='Single'
+                            }
+                            else if(res.result.length ===0){
+                                type='No Ors'
+                            }
+                        }
+                        else{
+                            type = transaction_type
+                        }
+                        // if (type !='No Ors'){
+
+                            addDvToTable(res.result)
+                        // }
+                    
   
                     $("#particular").val(res.result[0]['particular'])
                     $("#payee").val(res.result[0]['payee_id']).trigger('change');
                     $("#mrd_classification").val(res.result[0]['mrd_classification_id']).trigger("change");
                     $("#nature_of_transaction").val(res.result[0]['nature_of_transaction_id']).trigger("change");
                     $("#reporting_period").val(res.result[0]['reporting_period'])
-                    $('#transaction').val(res.result[0]['transaction_type']).trigger('change')
+                    $('#transaction').val(type).trigger('change')
                     
                 }
             })

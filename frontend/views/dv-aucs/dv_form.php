@@ -16,7 +16,7 @@ use aryelds\sweetalert\SweetAlertAsset;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Trial Balance';
+$this->title = 'DV Form';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index">

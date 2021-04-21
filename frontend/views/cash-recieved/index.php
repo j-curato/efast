@@ -35,18 +35,24 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'document_recieved_id',
-            'book_id',
-            'mfo_pap_code_id',
             'date',
-
-
-            //'reporting_period',
-            //'nca_no',
-            //'nta_no',
-            //'nft_no',
-            //'purpose',
-            //'amount',
+            'reporting_period',
+            [
+                'label'=>'Document Recieved',
+                'attribute'=>'documentRecieved.name'
+            ],
+            [
+                'label'=>"Book",
+                'attribute'=>'book.name'
+            ],
+            
+            
+            'nca_no',
+            'nta_no',
+            'nft_no',
+            'purpose',
+            // 'mfo_pap_code_id',
+            'amount',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
