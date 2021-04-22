@@ -8,7 +8,7 @@ use yii\helpers\Url;
 /* @var $searchModel app\models\CashRecievedSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Cash Recieveds';
+$this->title = 'Cash Receive';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="cash-recieved-index">
@@ -58,7 +58,12 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]); ?>
 
-
+<style>
+.grid-view td{
+    white-space: normal;
+    width: 5rem;
+}
+</style>
 </div>
 
 <?php

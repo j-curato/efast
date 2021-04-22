@@ -7,6 +7,9 @@
 
 use kartik\date\DatePicker;
 use aryelds\sweetalert\SweetAlertAsset;
+use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
+
 ?>
 <div class="test">
 
@@ -22,6 +25,36 @@ use aryelds\sweetalert\SweetAlertAsset;
             echo " <input type='text' id='update_id' name='update_id'  value='$q' style='display:none'>";
             // echo " <input type='text' id='duplicate' name='duplicate'  value='$duplicate' style='display:none'>";
             ?>
+             <div class="row">
+                <div class="col-sm-3" style="height:60x">
+                    <!-- <label for="dv">Select DV Number</label>
+                    <select id="dv" name="dv" class="dv select" style="width: 100%; margin-top:50px">
+                        <option>NO DV</option>
+                    </select> -->
+                </div>
+                <div class="col-sm-3">
+                    <label for="dv">Select DV Number</label>
+                    <?php
+                    echo Select2::widget([
+                        'name' => "dv",
+                        'id' => 'dv',
+                        'value' => !empty($model->book_id) ? $model->book_id : '',
+                        'data' => ArrayHelper::map((new \yii\db\Query())
+                            ->select(['cash_disbursement.id as cash_id', 'dv_aucs.dv_number'])
+                            ->from('cash_disbursement')
+                            ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id  = dv_aucs.id')
+                            ->where('cash_disbursement.is_cancelled = :is_cancelled', ['is_cancelled' => false])
+                            ->all(), "cash_id", "dv_number"),
+                        'options' => [
+                            'placeholder' => "Select Book",
+                        ],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ])
+                    ?>
+                </div>
+            </div>
             <div class="row">
 
                 <div class="col-sm-3">
@@ -75,7 +108,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                 <div class="col-sm-3">
                     <label for="reference">Reference</label>
 
-                    <select id="reference" name="reference" class="reference select" style="width: 100% ;margin-top:50px" required>
+                    <select id="reference" name="reference" class="reference select" style="width: 100% ;margin-top:50px">
                         <option></option>
                     </select>
                 </div>
@@ -106,7 +139,6 @@ use aryelds\sweetalert\SweetAlertAsset;
                     <label for="check_ada">Check ADA</label>
 
                     <select id="check_ada" name="check_ada" class="check_ada select" style="width: 100%">
-                        <option></option>
                     </select>
                 </div>
                 <div class="col-sm-3">
@@ -137,7 +169,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                 </div>
                 <div class="col-sm-3">
                     <label for="ada_number">Check/ADA Number </label>
-                    <input type="text" name="ada_number" id="ada_number" placeholder="Check/ADA Number NUMBER">
+                    <input type="text" name="ada_number" id="ada_number" placeholder="Check/ADA Number ">
                 </div>
 
             </div>
@@ -147,6 +179,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     <textarea name="particular" name="particular" id="particular" placeholder="PARTICULAR" required cols="151" rows="3"></textarea>
                 </div>
             </div>
+           
             <!-- BUTTON -->
             <!-- <div style="width: 100%; margin-bottom:50px;margin-right:25px;">
 
@@ -233,20 +266,13 @@ use aryelds\sweetalert\SweetAlertAsset;
 
     </div>
 
-    <div class="" id="loader" style="display:none">
-        <div id="bars5">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    </div>
     <style>
+
         textarea {
             max-width: 100%;
             width: 100%;
         }
+
         .select {
             width: 500px;
             height: 2rem;
@@ -298,7 +324,7 @@ use aryelds\sweetalert\SweetAlertAsset;
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
-    <link href="/dti-afms-2/frontend/web/js/select2.min.js"  />
+    <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
     <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
     <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
     <script>
@@ -312,6 +338,8 @@ use aryelds\sweetalert\SweetAlertAsset;
         var net_asset = [];
         var arr_form = [0];
         var books = [0];
+        var dv = [];
+
         var vacant = 0;
         var i = 1;
         var x = [0];
@@ -611,8 +639,30 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 
                 })
+            // GET ALL DV 
+            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=cash-disbursement/get-all-dv')
+            //     .then(function(data) {
+
+            //         var array = []
+            //         $.each(data, function(key, val) {
+            //             array.push({
+            //                 id: val.cash_id,
+            //                 text: val.dv_number
+            //             })
+            //         })
+            //         dv = array
+            //         $('#dv').select2({
+            //             data: dv,
+            //             placeholder: 'Select dv'
+
+            //         });
+
+
+            //     })
+
+
             // REFERENCE
-            reference = ["ADADJ", "CDJ", "CKDJ", "CRJ", "GJ"]
+            reference = ["CDJ", "CRJ", "GJ"]
             $('#reference').select2({
                 data: reference,
                 placeholder: "Select Reference",
@@ -621,10 +671,10 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 
             // CHECK ADA NUMBER 
-            ada_number = ['Check', 'ADA', 'Non Cash']
-            $('#check_ada').select2({ 
-                data:ada_number,
-                placeholder: 'Select CHECK/ADA'
+            ada_number = ['Non Cash', 'Check', 'ADA', ]
+            $('#check_ada').select2({
+                data: ada_number,
+                // placeholder: 'Select CHECK/ADA'
 
             })
 
@@ -668,8 +718,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                             $('#add_data')[0].reset();
 
 
-                        }
-                        else if (res.isSuccess == false){
+                        } else if (res.isSuccess == false) {
                             swal({
                                 title: res.error,
                                 // text: "You will not be able to undo this action!",
@@ -751,7 +800,48 @@ $script = <<< JS
         }
     // GET TOTAL OF DEBIT AND CREDIT
 
-    
+    $("#dv").change(function(){
+        // console.log($('#dv').val())
+        if ($('#dv').val()===''){
+            // $('#add_data')[0].reset();
+            // $('#book').val('').trigger('change') 
+            // $('#payee').val('').trigger('change')
+            // $('#r_center_id').val('').trigger('change')
+            // $('#particular').val('').trigger('change')
+            // $("#check_ada").val('').trigger('change')
+ 
+      }
+      else{
+
+
+        $.ajax({
+            type:"POST",
+            url:window.location.pathname + "?r=cash-disbursement/get-dv",
+            data:{cash_id:$('#dv').val()},
+            success:function(data){
+                // console.log(JSON.parse(data))
+                var res = JSON.parse(data)
+                $('#dv_number').val(res.dv_number)
+                $('#book').val(res.book_id).trigger('change')
+                $('#payee').val(res.payee_id).trigger('change')
+                $('#r_center_id').val(res.rc_id).trigger('change')
+                $('#particular').val(res.particular).trigger('change')
+                $('#ada_number').val(res.check_or_ada_no)
+                $('#check_ada_date').val(res.issuance_date)
+                $('#date').val(res.issuance_date)
+                $('#reporting_period').val(res.reporting_period)
+                if (res.mode_of_payment ==='ADA'){
+                    $("#check_ada").val('ADA').trigger('change')
+                }
+                else {
+                    
+                    $("#check_ada").val('Check').trigger('change')
+                }
+            }
+        })
+      }
+
+    })
      $(document).ready(function() {
         update_id = $('#update_id').val();
         // KUNG NAAY SULOD ANG UPDATE ID KUHAON ANG IYANG MGA DATA
@@ -772,7 +862,7 @@ $script = <<< JS
 
                         var jev = JSON.parse(data).jev_preparation
                         var jev_accounting_entries = JSON.parse(data).jev_accounting_entries
-                        // console.log(jev)
+                        console.log(jev)
                         var d = "2020-12-01"
                         // document.querySelector("#reporting_period").value=jev['reporting_period']
                         $('#reporting_period').val(jev['reporting_period'])
@@ -793,6 +883,7 @@ $script = <<< JS
                         $('#payee').val(jev['payee_id']);
                         $('#payee').trigger('change');
                         $('#book').val(jev['book_id']).trigger('change');
+                        $('#dv').val(jev['cash_disbursement_id']).trigger('change');
                         var x=0
                         // console.log(jev_accounting_entries)
                         // for (i; i < jev_accounting_entries.length;) {

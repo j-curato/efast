@@ -7,6 +7,7 @@ use app\models\CashDisbursement;
 use app\models\CashDisbursementSearch;
 use app\models\DvAucs;
 use app\models\DvAucsEntries;
+use DateTime;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -39,6 +40,7 @@ class CashDisbursementController extends Controller
     {
         $searchModel = new CashDisbursementSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -126,25 +128,23 @@ class CashDisbursementController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function actionGetDv()
-    {
-        if (!empty($_POST)) {
-            $dv_id = $_POST['dv_id'];
-        }
-    }
+
     public function actionInsertCashDisbursement()
     {
 
-        $reporting_period = $_POST["reporting_period"];
-        $book_id = $_POST["book"];
-        $check_ada_no = $_POST["check_ada_no"];
-        $good_cancelled = $_POST["good_cancelled"];
-        $issuance_date = $_POST["issuance_date"];
-        $mode_of_payment = $_POST["mode_of_payment"];
+        if ($_POST) {
 
-        if (count($_POST['selection']) > 1) {
-            return json_encode(["error" => "Selected Dv is More Than 1"]);
-        } else {
+            $reporting_period = $_POST["reporting_period"];
+            $book_id = $_POST["book"];
+            $check_ada_no = $_POST["check_ada_no"];
+            $good_cancelled = $_POST["good_cancelled"];
+            $issuance_date = $_POST["issuance_date"];
+            $mode_of_payment = $_POST["mode_of_payment"];
+            $selected_items = !empty($_POST['selection']) ? $_POST['selection'] : '';
+            // return json_encode(["isSuccess" => false,'error'=>$good_cancelled]);
+            // if (!empty(count($_POST['selection'])) > 1) {
+            //     return json_encode(["error" => "Selected Dv is More Than 1"]);
+            // } else {
 
             if (!empty($_POST['update_id'])) {
                 $cd = CashDisbursement::findOne($_POST['update_id']);
@@ -152,23 +152,39 @@ class CashDisbursementController extends Controller
 
                 $cd = new CashDisbursement();
             }
+            if ($good_cancelled == 0) {
+                if (empty($selected_items)) {
+                    return json_encode(["error" => "Select DV"]);
+                    die();
+                }
+                if (count($selected_items) > 1) {
+                    return json_encode(["error" => "Selected Dv is More Than 1"]);
+                    die();
+                }
+
+                $cd->dv_aucs_id = $_POST['selection'][0];
+            } else if ($good_cancelled == 1) {
+                if (!empty($selected_items)) {
+                    return json_encode(["error" => "Select Type is Cancelled "]);
+                    die();
+                }
+            }
             $cd->book_id = $book_id;
             $cd->reporting_period = $reporting_period;
             $cd->mode_of_payment = $mode_of_payment;
             $cd->check_or_ada_no = $check_ada_no;
             $cd->is_cancelled = $good_cancelled;
             $cd->issuance_date = $issuance_date;
-            $cd->dv_aucs_id = $_POST['selection'][0];
 
             if ($cd->validate()) {
                 if ($cd->save()) {
+                    return json_encode(["isSuccess" => true,]);
                 }
             } else {
                 return json_encode(["isSuccess" => false, "error" => $cd->errors]);
             }
+            // }
         }
-
-        return json_encode(["isSuccess" => true]);
     }
     public function actionImport()
     {
@@ -227,7 +243,7 @@ class CashDisbursementController extends Controller
                     $mode_of_payment = trim($cells[3]);
                     $check_ada_number = trim($cells[4]);
                     $good_cancelled = strtolower(trim($cells[5]));
-                    $issuance_date = date('m-d-Y', strtotime($cells[6]));
+                    $issuance_date = date('Y-m-d', strtotime($cells[6]));
                     $dv_number = trim($cells[7]);
                     $dv_id = null;
                     if ($good_cancelled === 'good') {
@@ -285,6 +301,63 @@ class CashDisbursementController extends Controller
             var_dump($data);
             echo "</pre>";
             return ob_get_clean();
+        }
+    }
+
+    public function actionGetAllDv()
+    {
+        $query = (new \yii\db\Query())
+            ->select(['cash_disbursement.id as cash_id', 'dv_aucs.dv_number'])
+            ->from('cash_disbursement')
+            ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id  = dv_aucs.id')
+            ->where('cash_disbursement.is_cancelled = :is_cancelled',['is_cancelled'=>false])
+            ->all();
+
+        // ob_clean();
+        // echo "<pre>";
+        // var_dump($query);
+        // echo "</pre>";
+        return json_encode($query);
+        // ob_clean();
+        // echo "<pre>";
+        // var_dump($query);
+        // echo "</pre>";
+        // return ob_get_clean();
+    }
+    public function actionGetDv()
+    {
+        if (!empty($_POST)) {
+            $cash_id = $_POST['cash_id'];
+
+            $query = (new \yii\db\Query())
+                ->select([
+                    'dv_aucs.book_id',
+                    'dv_aucs.dv_number',
+                    'dv_aucs.payee_id',
+                    'dv_aucs.particular',
+                    'dv_aucs.reporting_period',
+                    'cash_disbursement.check_or_ada_no',
+                    'cash_disbursement.mode_of_payment',
+                    'cash_disbursement.issuance_date',
+                    'responsibility_center.id as rc_id',
+                    'transaction.id as transaction_id',
+
+                ])
+                ->from("cash_disbursement")
+                ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id = dv_aucs.id')
+                ->join('LEFT JOIN', 'dv_aucs_entries', 'dv_aucs.id = dv_aucs_entries.dv_aucs_id')
+                ->join('LEFT JOIN', 'process_ors', 'dv_aucs_entries.process_ors_id = process_ors.id')
+                ->join('LEFT JOIN', 'transaction', 'process_ors.transaction_id = transaction.id')
+                ->join('LEFT JOIN', 'responsibility_center', 'transaction.responsibility_center_id = responsibility_center.id')
+                ->where("cash_disbursement.id = :id", [
+                    'id' => $cash_id
+                ])
+                ->one();
+            $date = new DateTime($query['issuance_date']);
+            // echo $date->format('Y-m-d H:i:s');
+            // $q = new DateTime($query['issuance_date']);
+            $query['issuance_date'] = $date->format('Y-m-d');
+            return json_encode($query);
         }
     }
 }

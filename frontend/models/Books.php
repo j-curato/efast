@@ -39,6 +39,7 @@ class Books extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Name',
+            'account_number' => 'Account Number',
         ];
     }
     public function getJevPreparation()

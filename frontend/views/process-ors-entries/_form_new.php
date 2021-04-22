@@ -349,7 +349,7 @@ use kartik\select2\Select2;
 
     <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
     <script>
-        var update_id = undefined;
+        var update_id = null;
         var account_name = undefined;
         var select_id = 0;
 
@@ -676,7 +676,7 @@ $script = <<< JS
         //   update_id.change(function(){
         //       console.log(update_id.val())
         //   })
-          if (update_id!=null ){
+          if (update_id!=0 ){
             $.ajax({
                 type:"POST",
                 url:window.location.pathname + "?r=process-ors-entries/get-raoud",

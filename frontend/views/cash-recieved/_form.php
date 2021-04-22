@@ -18,10 +18,35 @@ use yii\widgets\ActiveForm;
 <div class="cash-recieved-form">
 
     <?php $form = ActiveForm::begin(); ?>
+    <div class="row">
+        <div class="col-sm-6">
+            <?= $form->field($model, 'date')->widget(DatePicker::class, [
+                'name' => 'date',
+                'pluginOptions' => [
+                    'autoclose' => true,
+                    'format' => "mm-dd-yyyy"
+                ]
+            ]) ?>
+        </div>
+        <div class="col-sm-6">
+            <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
+                'name' => "reporting_period",
+                'pluginOptions' => [
+                    'autoclose' => true,
+                    'format' => "yyyy-mm",
+                    'minViewMode' => "months",
+                    'startView' => 'year'
+                ]
+            ]) ?>
+        </div>
+    </div>
+
+
 
     <?= $form->field($model, 'document_recieved_id')->widget(Select2::class, [
 
         'data' => ArrayHelper::map(DocumentRecieve::find()->asArray()->all(), 'id', 'name'),
+
         'pluginOptions' => [
             'placeholder' => "Select Document Recieve"
         ]
@@ -35,33 +60,15 @@ use yii\widgets\ActiveForm;
         ]
     ]) ?>
 
-    <?= $form->field($model, 'mfo_pap_code_id')->widget(Select2::class,[
-        'data'=>ArrayHelper::map(MfoPapCode::find()->asArray()->all(),'id','name'),
-        'pluginOptions'=>[
-            'placeholder'=>"Select MFO/PAP Code"
-        ]
-    ]) ?>
-
-    <?= $form->field($model, 'date')->widget(DatePicker::class, [
-        'name' => 'date',
+    <?= $form->field($model, 'mfo_pap_code_id')->widget(Select2::class, [
+        'data' => ArrayHelper::map(MfoPapCode::find()->asArray()->all(), 'id', 'name'),
         'pluginOptions' => [
-            'autoclose' => true,
-            'format' => "mm-dd-yyyy"
-        ]
-    ]) ?>
-
-    <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
-        'name' => "reporting_period",
-        'pluginOptions' => [
-            'autoclose' => true,
-            'format' => "yyyy-mm",
-            'minViewMode' => "months",
-            'startView' => 'year'
+            'placeholder' => "Select MFO/PAP Code"
         ]
     ]) ?>
 
     <?= $form->field($model, 'nca_no')->textInput(['maxlength' => true]) ?>
-    <?= $form->field($model, 'account_number')->textInput(['maxlength' => true]) ?>
+    <!-- <?= $form->field($model, 'account_number')->textInput(['maxlength' => true]) ?> -->
 
     <!-- <?= $form->field($model, 'nta_no')->textInput(['maxlength' => true]) ?>
 

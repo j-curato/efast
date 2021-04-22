@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Create Cash Disbursement', ['create'], ['class' => 'btn btn-success']) ?>
-        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button>
+        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
     </p>
 
     <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -68,6 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php
     $gridColumn = [
+        ['class' => 'yii\grid\SerialColumn'],
 
         'id',
         // 'book_id',
@@ -140,5 +141,11 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => $gridColumn
     ]); ?>
 
-
+        <style>
+        .grid-view td {
+            white-space: normal;
+            width: 10rem;
+            padding: 0;
+        }
+        </style>
 </div>

@@ -1,6 +1,7 @@
 <?php
 
 use app\models\Books;
+use app\models\DvAucs;
 use app\models\DvAucsEntries;
 use app\models\DvAucsEntriesSearch;
 use app\models\DvAucsSearch;
@@ -23,7 +24,7 @@ use yii\widgets\ActiveForm;
 
 
     <?php
-    $dv_aucs_entries_id = !empty($model->dv_aucs_entries_id) ? $model->dv_aucs_entries_id : "";
+    $dv_aucs_id = !empty($model->dv_aucs_id) ? $model->dv_aucs_id : "";
 
     $is_cancelled = $model->is_cancelled;
     ?>
@@ -61,7 +62,7 @@ use yii\widgets\ActiveForm;
                         'name' => 'issuance_date',
                         'value' => !empty($model->issuance_date) ? $model->issuance_date : '',
                         'pluginOptions' => [
-                            'format' => "mm-dd-yyyy",
+                            'format' => "yyyy-mm-dd",
                             'autoclose' => true,
 
                         ]
@@ -118,8 +119,8 @@ use yii\widgets\ActiveForm;
 
                     echo Select2::widget([
                         'name' => "mode_of_payment",
-                        'value' => !empty($model->mode_of_payment) ? $model->mode_of_payment : '',
-                        'data' => ['lbp check' => "LBP Check", 'ada' => "ADA",'echeck'=>"eCheck"],
+                        'value' => !empty($model->mode_of_payment) ? strtolower($model->mode_of_payment) : '',
+                        'data' => ['lbp check' => "LBP Check", 'ada' => "ADA", 'echeck' => "eCheck"],
                         "options" => [
                             "placeholder" => "Select Mode of Payment"
                         ]
@@ -140,11 +141,11 @@ use yii\widgets\ActiveForm;
         </div> -->
             <?php
             $searchModel = new DvAucsSearch();
-            // $searchModel->id = $dv_aucs_entries_id;
+            $searchModel->id = $dv_aucs_id;
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
             $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
 
-            $qwe = DvAucsEntries::find()->select(['id'])->all();
+            $qwe = DvAucs::find()->select(['id'])->all();
             $x = [];;
             foreach ($qwe as $v) {
                 $x[] = $v->id;
@@ -174,22 +175,23 @@ use yii\widgets\ActiveForm;
 
                 'columns' => [
 
-                    // 'id',
+                    'id',
+
+                    // [
+                    //     "label" => "id",
+                    //     "attribute" => "id",
+                    //     // "filter" => function () use ($dv_aucs_entries_id) {
+                    //     //     return $dv_aucs_entries_id;
+                    //     // }
+                    // ],
 
                     [
-                        "label" => "id",
-                        "attribute" => "id",
-                        // "filter" => function () use ($dv_aucs_entries_id) {
-                        //     return $dv_aucs_entries_id;
-                        // }
-                    ],
 
-                    [
                         'class' => '\kartik\grid\CheckboxColumn',
-                        'checkboxOptions' => function ($model, $key, $index, $column) use ($x, $dv_aucs_entries_id) {
+                        'checkboxOptions' => function ($model, $key, $index, $column) use ($x, $dv_aucs_id) {
                             // return ['value' => $model->id,  'style' => 'width:20px;', 'class' => 'checkbox'];
-                            $bool = in_array($dv_aucs_entries_id, $x);
-                            if ($dv_aucs_entries_id === $model->id) {
+                            $bool = in_array($dv_aucs_id, $x);
+                            if ($dv_aucs_id === $model->id) {
                                 return ['checked' => $bool];
                             }
                         }
@@ -211,16 +213,15 @@ use yii\widgets\ActiveForm;
                         // 'attribute' => 'amount_disbursed',
                         // 'filter' => false,
                         'format' => ['decimal', 2],
-                        'value'=>function($model){
-                            $query=(new \yii\db\Query())
-                            ->select(["SUM(dv_aucs_entries.amount_disbursed) as total_disbursed"])
-                            ->from('dv_aucs')
-                            ->join("LEFT JOIN","dv_aucs_entries","dv_aucs.id = dv_aucs_entries.dv_aucs_id")
-                            ->where("dv_aucs.id =:id",['id'=>$model->id])
-                            ->one();
+                        'value' => function ($model) {
+                            $query = (new \yii\db\Query())
+                                ->select(["SUM(dv_aucs_entries.amount_disbursed) as total_disbursed"])
+                                ->from('dv_aucs')
+                                ->join("LEFT JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
+                                ->where("dv_aucs.id =:id", ['id' => $model->id])
+                                ->one();
 
                             return $query['total_disbursed'];
-
                         }
                     ],
                     [
@@ -233,13 +234,9 @@ use yii\widgets\ActiveForm;
 
                     ],
 
-
-
-
-
                 ],
             ]); ?>
-            <button type="button" name="" id="submit" class="btn btn-success">Submit</button>
+            <button type="button" name="" id="submit" class="btn btn-success" style="width: 100%;">Save</button>
         </form>
 
     </div>
@@ -282,6 +279,17 @@ $script = <<< JS
                         swal({
                             title:"Success",
                             type:'success',
+                            button:false,
+                            timer:3000,
+                        },function(){
+                            window.location.href = window.location.pathname +"?r=cash-disbursement/index"
+                        })
+                    }
+                    else{
+                        swal({
+                            title:"Error",
+                            text:res.error,
+                            type:'error',
                             button:false,
                             timer:3000,
                         })

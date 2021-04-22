@@ -103,6 +103,29 @@ use yii\helpers\Html;
                 </thead>
                 <tbody>
                 </tbody>
+                <tfoot>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th>Total</th>
+                    <th>
+                        <div id="total_disbursed"></div>
+                    </th>
+                    <th>
+                        <div id="total_vat"></div>
+                    </th>
+                    <th>
+                        <div id="total_ewt"></div>
+                    </th>
+                    <th>
+                        <div id="total_compensation"></div>
+                    </th>
+                    <th>
+                        <div id="total_liabilities"></div>
+                    </th>
+         
+                </tfoot>
             </table>
             <button type="submit" class="btn btn-success" style="width: 100%;" id="save" name="save"> SAVE</button>
         </form>
@@ -415,6 +438,44 @@ use yii\helpers\Html;
 
         }
 
+        function getTotal() {
+            var total_disbursed = 0;
+            var total_vat = 0;
+            var total_ewt = 0;
+            var total_compensation = 0;
+            var total_liabilities = 0;
+            $(".amount_disbursed").each(function() {
+                total_disbursed += parseFloat($(this).val()) || 0;
+            });
+            $(".vat").each(function() {
+                total_vat += parseFloat($(this).val()) || 0;
+            });
+            $(".ewt").each(function() {
+                total_ewt += parseFloat($(this).val()) || 0;
+            });
+            $(".compensation").each(function() {
+                total_compensation += parseFloat($(this).val()) || 0;
+            });
+            $(".liabilities").each(function() {
+                total_liabilities += parseFloat($(this).val()) || 0;
+            });
+            $("#total_disbursed").text(thousands_separators(total_disbursed))
+            $("#total_vat").text(thousands_separators(total_vat))
+            $("#total_ewt").text(thousands_separators(total_ewt))
+            $("#total_compensation").text(thousands_separators(total_compensation))
+            $("#total_liabilities").text(thousands_separators(total_liabilities))
+        
+        }
+
+        function thousands_separators(num) {
+
+            var number = Number(Math.round(num + 'e2') + 'e-2')
+            var num_parts = number.toString().split(".");
+            num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return num_parts.join(".");
+            console.log(num)
+        }
+
         function enableInput(isDisable, index) {
             $(`#amount_${index}-disp`).prop('disabled', isDisable);
             $(`#amount_${index}`).prop('disabled', isDisable);
@@ -437,6 +498,7 @@ use yii\helpers\Html;
         function remove(i) {
             i.closest("tr").remove()
             dv_count--
+            getTotal()
         }
 
         function addDvToTable(result) {
@@ -466,22 +528,27 @@ use yii\helpers\Html;
                             </td>
                             <td> ${result[i]['transaction_payee']}</td>
                             <td> ${result[i]['total']}</td>
-                            <td> <input value='${amount_disbursed}' type='text' name='amount_disbursed[]'/></td>
-                            <td> <input value='${vat_nonvat}' type='text' name='vat_nonvat[]'/></td>
-                            <td> <input value='${ewt_goods_services}' type='text' name='ewt_goods_services[]'/></td>
-                            <td> <input value='${compensation}' type='text' name='compensation[]'/></td>
-                            <td> <input value='${other_trust_liabilities}' type='text' name='other_trust_liabilities[]'/></td>
+                            <td> <input value='${amount_disbursed}' type='text' name='amount_disbursed[]' class='amount_disbursed'/></td>
+                            <td> <input value='${vat_nonvat}' type='text' name='vat_nonvat[]' class='vat'/></td>
+                            <td> <input value='${ewt_goods_services}' type='text' name='ewt_goods_services[]' class='ewt'/></td>
+                            <td> <input value='${compensation}' type='text' name='compensation[]' class='compensation'/></td>
+                            <td> <input value='${other_trust_liabilities}' type='text' name='other_trust_liabilities[]' class='liabilities'/></td>
                             <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
                         `
-                $('#transaction_table').append(row);
-
+                $('#transaction_table tbody').append(row);
+                // total += amount_disbursed
                 select_id++;
                 dv_count++;
 
             }
+
+
+            getTotal()
             $("#dv_count").val(dv_count)
 
         }
+
+
         var select_id = 0;
 
         var transaction_type = $("#transaction").val();
@@ -538,6 +605,12 @@ $script = <<< JS
         var mrd_classification=[];
         var books=[];
 
+
+    $('#transaction_table').on('change keyup', '.amount_disbursed', function() {
+        getTotal()
+
+     });
+    
     $("#transaction").change(function(){
         var transaction_type=$("#transaction").val()
         $("#transaction_type").val(transaction_type)
@@ -551,6 +624,7 @@ $script = <<< JS
             addDvToTable(result)
         }
     })
+
       $(document).ready(function() {
 
         // CHART OF ACCOUNTS

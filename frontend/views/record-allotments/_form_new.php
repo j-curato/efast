@@ -77,7 +77,7 @@ use aryelds\sweetalert\SweetAlertAsset;
             <div class="row">
 
                 <div class="col-sm-3" style="height:60x">
-                    <label for="fund_cluster_code_id">fund_cluster_code_id</label>
+                    <label for="fund_cluster_code_id">Fund Cluster Code</label>
                     <select id="fund_cluster_code_id" name="fund_cluster_code_id" class="fund_cluster_code_id select" style="width: 100%; margin-top:50px" required>
                         <option></option>
                     </select>
@@ -122,12 +122,10 @@ use aryelds\sweetalert\SweetAlertAsset;
                 </div>
                 <div class="col-sm-3">
                     <label for="book">Book</label>
-                    <select id="book" name="book" class="book select" style="width: 100%">
+                    <select id="book" name="book" class="book select" style="width: 100%" required>
                         <option></option>
                     </select>
                 </div>
-
-
             </div>
             <div class="row">
                 <div class="col-sm-12">
@@ -339,7 +337,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     $.each(data, function(key, val) {
                         array.push({
                             id: val.id,
-                            text: val.name
+                            text: val.name +' - '+ val.description
                         })
                     })
                     authorization_code = array
@@ -377,7 +375,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     $.each(data, function(key, val) {
                         array.push({
                             id: val.id,
-                            text: val.name
+                            text:val.code + ' - '+val.name
                         })
                     })
                     mfo_pap_code = array
@@ -388,7 +386,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     });
 
                 })
-            // GET ALL BOOKS WITH SELECT2 DROPDOWN
+            // GET ALL FUND CLUSTER CODES
             $.getJSON('/dti-afms-2/frontend/web/index.php?r=fund-cluster-code/get-all-cluster')
                 .then(function(data) {
 
@@ -396,7 +394,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     $.each(data, function(key, val) {
                         array.push({
                             id: val.id,
-                            text: val.name
+                            text: val.name +' - '+ val.description
                         })
                     })
                     books = array
@@ -504,7 +502,7 @@ $script = <<< JS
                 $.each(data, function(key, val) {
                     array.push({
                         id: val.id,
-                        text: val.name
+                        text: val.name + ' - ' + val.description
                     })
                 })
                 financing_source_code = array

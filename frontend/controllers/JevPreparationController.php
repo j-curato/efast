@@ -770,6 +770,7 @@ class JevPreparationController extends Controller
                 //         echo '</pre>';
                 //     }
                 // }
+                unlink($file . '.xlsx');
             }
         } else {
             throw new ForbiddenHttpException();
@@ -1274,8 +1275,17 @@ class JevPreparationController extends Controller
             $date = !empty($_POST['date']) ? $_POST['date'] : '';
             // $fund_cluster_code = $_POST['fund_cluster_code'] ? $_POST['fund_cluster_code'] : '';
             $r_center_id = !empty($_POST['r_center_id']) ? $_POST['r_center_id'] : '';
-            $reference = !empty($_POST['reference']) ? $_POST['reference'] : '';
+
+
             $check_ada = !empty($_POST['check_ada']) ? $_POST['check_ada'] : '';
+            if (strtolower($check_ada) === 'ada') {
+                $reference = 'ADADJ';
+            } else if (strtolower($check_ada) === 'check') {
+                $reference = 'CKDJ';
+            } else {
+                $reference =  $_POST['reference'];
+            }
+            // $reference = !empty($_POST['reference']) ? $_POST['reference'] : '';
             $payee = !empty($_POST['payee']) ? $_POST['payee'] : '';
             $lddap = !empty($_POST['lddap']) ? $_POST['lddap'] : '';
             $cadadr_number = !empty($_POST['cadadr_number']) ? $_POST['cadadr_number'] : '';
@@ -1366,7 +1376,7 @@ class JevPreparationController extends Controller
                     // $jev_preparation->fund_cluster_code_id = $fund_cluster_code;
                     $jev_preparation->date = $date;
                     $jev_preparation->jev_number = $jev_number;
-                    $jev_preparation->ref_number = $ref_number;
+                    $jev_preparation->ref_number = $reference;
                     $jev_preparation->dv_number = $dv_number;
                     $jev_preparation->lddap_number = $lddap;
                     $jev_preparation->explaination = $explanation;
@@ -1378,6 +1388,7 @@ class JevPreparationController extends Controller
                     $jev_preparation->check_ada_number = $ada_number;
                     $jev_preparation->check_ada_date = $check_ada_date;
                     $jev_preparation->book_id = $book_id;
+                    $jev_preparation->cash_disbursement_id = $_POST['dv'];
 
 
                     if ($jev_preparation->validate()) {
@@ -1970,6 +1981,7 @@ class JevPreparationController extends Controller
             'check_ada_number' => $model->check_ada_number,
             'check_ada_date' => $model->check_ada_date,
             'book_id' => $model->book_id,
+            'cash_disbursement_id' => $model->cash_disbursement_id,
         ];
         $jev_ae = [];
         foreach ($model->jevAccountingEntries as $val) {

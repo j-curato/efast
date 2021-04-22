@@ -244,14 +244,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php
                     if (strtolower($model->check_ada) == 'ada') {
                         echo "<td>LDDAP#</td>";
-                        echo "<td>{$model->lddap_number}</td>";
+                        // echo "<td>{$model->lddap_number}</td>";
                     } else if (strtolower($model->check_ada) == 'check') {
                         echo "<td>CHECK#</td>";
-                        echo "<td>{$model->check_ada_number}</td>";
                     } else {
                         echo "<td></td>";
                         echo "<td></td>";
                     }
+                    echo "<td>{$model->check_ada_number}</td>";
                     ?>
 
                     <td></td>

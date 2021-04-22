@@ -16,7 +16,7 @@ class MyComponent extends Component
     {
 
 
-        $fund_cluster = Books::findOne($book);
+        $book = Books::findOne($book);
 
         // $q = RecordAllotments::find()
         // ->orderBy(['id' => SORT_DESC])
@@ -41,7 +41,7 @@ class MyComponent extends Component
             $last_number = 1;
         }
 
-        $serial_number = $fund_cluster->name . '-' . $reporting_period . '-' . $last_number;
+        $serial_number = $book->name . '-' . $reporting_period . '-' . $last_number;
         return  $serial_number;
     }
 
