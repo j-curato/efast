@@ -27,10 +27,10 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
+                    <h4 class="modal-title" id="myModalLabel">UPLOAD Cash Disbursement</h4>
                 </div>
                 <div class='modal-body'>
-                    <center><a href="jev/jev_format.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                    <center><a href="import_formats/Cash_Disbursement and DV Format.xlsx">Download Template Here to avoid error during Upload.</a></center>
                     <hr>
                     <?php
 
@@ -83,7 +83,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'issuance_date',
         [
             'label' => "DV Number",
-            "attribute" => "dvAucs.dv_number"
+            "attribute" => "dv_aucs_id",
+            'value'=>'dvAucs.dv_number'
         ],
         [
             'label' => "Payee",

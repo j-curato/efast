@@ -1275,6 +1275,7 @@ class JevPreparationController extends Controller
             $date = !empty($_POST['date']) ? $_POST['date'] : '';
             // $fund_cluster_code = $_POST['fund_cluster_code'] ? $_POST['fund_cluster_code'] : '';
             $r_center_id = !empty($_POST['r_center_id']) ? $_POST['r_center_id'] : '';
+            // $r_center_id = $_POST['r_center_id'];
 
 
             $check_ada = !empty($_POST['check_ada']) ? $_POST['check_ada'] : '';
@@ -1320,6 +1321,7 @@ class JevPreparationController extends Controller
                     $transaction = \Yii::$app->db->beginTransaction();
 
                     $jev_preparation = new JevPreparation();
+                    // kung update and transaction
                     if ($_POST['update_id'] > 0) {
                         $jv = JevPreparation::findOne($_POST['update_id']);
                         if (!empty($jv->jevAccountingEntries)) {
@@ -1335,30 +1337,37 @@ class JevPreparationController extends Controller
 
                         $jev_referenece = $q[0];
 
-                        $jev_book = $q[1];
+                        $jev_book = trim($q[1]);
                         $book = Books::find()->where("id =:id", ['id' => $book_id])->one();
                         // $x
-
+                        $qwe = strcasecmp($jev_referenece, $reference);
                         // if ($jev_book===$book->name){}
 
-                        if ($jev_referenece === $reference) {
+                        if ($qwe === 0 &&  strcasecmp($jv->book_id, $book_id) === 0) {
+                            // return json_encode(['jev'=>$jev_referenece,'ref'=>$reference,'q'=>$qwe]);
+                            // die();
                             $x = $reference;
                             $x .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
                             $y = explode('-', $x);
                             $jev_number = $y[0] . '-' . $y[1] . '-' . $y[2] . '-' . $y[3] . '-' . $jev_number_serial;
+                            // return json_encode(['jev' => $jev_number]);
+                            // die();
                         } else {
+
                             $jev_number = $reference;
                             $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
                         }
-                        if ($jev_book === $book->name) {
-                            $x = $reference;
-                            $x .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
-                            $y = explode('-', $x);
-                            $jev_number = $y[0] . '-' . $y[1] . '-' . $y[2] . '-' . $y[3] . '-' . $jev_number_serial;
-                        } else {
-                            $jev_number = $reference;
-                            $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
-                        }
+                        // if ($jev_book === $book->name) {
+                        //     $x = $reference;
+                        //     $x .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
+                        //     $y = explode('-', $x);
+                        //     $jev_number = $y[0] . '-' . $y[1] . '-' . $y[2] . '-' . $y[3] . '-' . $jev_number_serial;
+                        //     return json_encode(['jev'=>$reference]);
+                        //     die();
+                        // } else {
+                        //     $jev_number = $reference;
+                        //     $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
+                        // }
 
 
                         $jv->delete();
@@ -1366,7 +1375,8 @@ class JevPreparationController extends Controller
                         $jev_number = $reference;
                         $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
                     }
-
+                    // return json_encode(['jev' => $jev_number]);
+                    // die();
                     // $jev_number = $reference;
                     // $jev_number .= '-' . $this->getJevNumber($book_id, $reporting_period, $reference, 1);
                     // $x = explode('-', $jev_number);
@@ -1913,7 +1923,7 @@ class JevPreparationController extends Controller
                 'ref_number' => $reference
             ])
             ->orderBy([
-                'id' => SORT_DESC
+                'jev_number' => SORT_DESC
             ])->one();
         $ff = Books::find()
             ->where("id = :id", [

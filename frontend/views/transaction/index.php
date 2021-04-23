@@ -50,7 +50,7 @@ Modal::end();
         <?= Html::a('Create Transaction', ['create'], ['class' => 'btn btn-success']) ?>
     </p> -->
     <p>
-        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Add New', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=transaction/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=transaction/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
         <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
     </p>
     <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -61,7 +61,7 @@ Modal::end();
                     <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
                 </div>
                 <div class='modal-body'>
-                    <center><a href="sub_account1/sub_account1_format.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                    <center><a href="import_formats/Transaction_Format.xlsx">Download Template Here to avoid error during Upload.</a></center>
                     <hr>
                     <label for="ledger"> SELECT GENERAL LEDGER</label>
                     <?php

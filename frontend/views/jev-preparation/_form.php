@@ -130,7 +130,7 @@ use yii\helpers\ArrayHelper;
                 </div>
                 <div class="col-sm-3">
                     <label for="r_center_id">Responisibility Center</label>
-                    <select id="r_center_id" name="r_center" class="r_center_id select" style="width: 100%">
+                    <select id="r_center_id" name="r_center_id" class="r_center_id select" style="width: 100%">
                         <option></option>
                     </select>
                 </div>
@@ -865,6 +865,7 @@ $script = <<< JS
                         console.log(jev)
                         var d = "2020-12-01"
                         // document.querySelector("#reporting_period").value=jev['reporting_period']
+                        // $('#dv').val(jev['cash_disbursement_id']).trigger('change');
                         $('#reporting_period').val(jev['reporting_period'])
                         $('#check_ada_date').val(jev['check_ada_date'])
                         $('#particular').val(jev['explaination'])
@@ -883,7 +884,6 @@ $script = <<< JS
                         $('#payee').val(jev['payee_id']);
                         $('#payee').trigger('change');
                         $('#book').val(jev['book_id']).trigger('change');
-                        $('#dv').val(jev['cash_disbursement_id']).trigger('change');
                         var x=0
                         // console.log(jev_accounting_entries)
                         // for (i; i < jev_accounting_entries.length;) {

@@ -18,8 +18,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Create Payee', ['create'], ['class' => 'btn btn-success']) ?>
+        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal"> Import</button>
     </p>
-    <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal"> upload</button>
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>
 

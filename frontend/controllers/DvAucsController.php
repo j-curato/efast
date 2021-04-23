@@ -435,7 +435,7 @@ class DvAucsController extends Controller
             $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
             $excel = $reader->load($file);
-            $excel->setActiveSheetIndexByName('Import DV AUCS (2)');
+            $excel->setActiveSheetIndexByName('Import DV AUCS');
             $worksheet = $excel->getActiveSheet();
             // print_r($excel->getSheetNames());
 

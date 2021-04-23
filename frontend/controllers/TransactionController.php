@@ -206,7 +206,7 @@ class TransactionController extends Controller
             $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
             $excel = $reader->load($file);
-            $excel->setActiveSheetIndexByName('Import Transactions (2)');
+            $excel->setActiveSheetIndexByName('Import Transactions');
             $worksheet = $excel->getActiveSheet();
             // print_r($excel->getSheetNames());
 

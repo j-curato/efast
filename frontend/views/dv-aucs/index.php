@@ -18,9 +18,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Create Dv Aucs', ['create'], ['class' => 'btn btn-success']) ?>
+        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
     </p>
 
-    <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button>
     <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -29,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
                 </div>
                 <div class='modal-body'>
-                    <center><a href="sub_account1/sub_account1_format.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                    <center><a href="import_formats/DV_Format.xlsx">Download Template Here to avoid error during Upload.</a></center>
                     <hr>
                     <label for="ledger"> SELECT GENERAL LEDGER</label>
                     <?php
@@ -78,32 +78,46 @@ $this->params['breadcrumbs'][] = $this->title;
             'top' => 50,
             'position' => 'absolute',
         ],
-        'export'=>false,
+        'pjax'=>true,
+        'export' => false,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            // ['class' => 'yii\grid\SerialColumn'],
             'id',
             // 'process_ors_id',
             // 'raoud_id',
             'dv_number',
             'reporting_period',
             'particular',
+            
             // foreach($model->dvAucsEntries as $val){
-                                
+
             // },
             [
-                'label'=>"Payee",
-                'value'=>"payee.account_name"
+                'label' => "Payee",
+                'value' => "payee.account_name"
             ],
             [
-                'label'=>"MRD Classification",
-                'value'=>"mrdClassification.name"
+                'label' => "MRD Classification",
+                'value' => "mrdClassification.name"
             ],
             [
-                'label'=>"Nature of Transaction",
-                'value'=>"natureOfTransaction.name"
+                'label' => "Nature of Transaction",
+                'value' => "natureOfTransaction.name"
+            ],
+            [
+                'label' => "Amount Disbursed",
+                'value' => function ($model) {
+                    $query = (new \yii\db\Query())
+                        ->select("SUM(amount_disbursed) as total_disbursed")
+                        ->from("dv_aucs_entries")
+                        ->where('dv_aucs_entries.dv_aucs_id = :dv_aucs_id', ['dv_aucs_id' => $model->id])
+                        ->one();
+                    return $query['total_disbursed'];
+                },
+                'format' => ['decimal', 2],
+                'hAlign' => 'right', 
             ],
 
-            //'tax_withheld',
             //'other_trust_liability_withheld',
             //'net_amount_paid',
 
@@ -112,11 +126,13 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); ?>
 
 
-<style>
-    .grid-view td {
-      white-space: normal;
-      width: 5rem;
-      padding: 0;
-    }
-  </style>
+    <style>
+        .grid-view td {
+            white-space: normal;
+            width: 5rem;
+            padding: 0;
+        }
+
+
+    </style>
 </div>

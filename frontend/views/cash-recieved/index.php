@@ -53,6 +53,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'purpose',
             // 'mfo_pap_code_id',
             'amount',
+            [
+                'label'=>'Amount',
+                'attribute'=>'amount',
+                'format'=>['decimal',2],
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

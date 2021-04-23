@@ -89,7 +89,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>
                         {$val->dvAucs->payee->account_name}
                     </td>
-                    <td>"
+                    <td >"
                         . number_format($val->amount_disbursed, 2) .
                         "</td>
                     <td>

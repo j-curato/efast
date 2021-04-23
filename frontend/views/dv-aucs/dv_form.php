@@ -191,7 +191,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </td>
                         <td>
                         </td>
-                        <td>
+                        <td style='padding-left:auto'>
                         $amount
                         </td>
                   </tr>

@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\CashDisbursement;
+use app\models\Transmittal;
 
 /**
- * CashDisbursementSearch represents the model behind the search form of `app\models\CashDisbursement`.
+ * TransmittalSearch represents the model behind the search form of `app\models\Transmittal`.
  */
-class CashDisbursementSearch extends CashDisbursement
+class TransmittalSearch extends Transmittal
 {
     /**
      * {@inheritdoc}
@@ -17,8 +17,8 @@ class CashDisbursementSearch extends CashDisbursement
     public function rules()
     {
         return [
-            [['id', 'book_id', 'dv_aucs_id','dv_aucs_entries_id'], 'integer'],
-            [['reporting_period', 'mode_of_payment', 'check_or_ada_no', 'is_cancelled', 'issuance_date'], 'safe'],
+            [['id', 'cash_disbursement_id'], 'integer'],
+            [['transmittal_number', 'location'], 'safe'],
         ];
     }
 
@@ -40,7 +40,7 @@ class CashDisbursementSearch extends CashDisbursement
      */
     public function search($params)
     {
-        $query = CashDisbursement::find();
+        $query = Transmittal::find();
 
         // add conditions that should always apply here
 
@@ -49,7 +49,7 @@ class CashDisbursementSearch extends CashDisbursement
         ]);
 
         $this->load($params);
-            $query->joinWith('dvAucs');
+
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
@@ -59,16 +59,11 @@ class CashDisbursementSearch extends CashDisbursement
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'book_id' => $this->book_id,
-            'dv_aucs_entries_id' => $this->dv_aucs_entries_id,
+            'cash_disbursement_id' => $this->cash_disbursement_id,
         ]);
 
-        $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
-            ->andFilterWhere(['like', 'mode_of_payment', $this->mode_of_payment])
-            ->andFilterWhere(['like', 'check_or_ada_no', $this->check_or_ada_no])
-            ->andFilterWhere(['like', 'is_cancelled', $this->is_cancelled])
-            ->andFilterWhere(['like', 'dv_aucs.dv_number', $this->dv_aucs_id])
-            ->andFilterWhere(['like', 'issuance_date', $this->issuance_date]);
+        $query->andFilterWhere(['like', 'transmittal_number', $this->transmittal_number])
+            ->andFilterWhere(['like', 'location', $this->location]);
 
         return $dataProvider;
     }

@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
   <p>
     <?= Html::a('Create Jev ', ['create'], ['class' => 'btn btn-success']) ?>
-    <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button>
+    <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
   </p>
 
   <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">

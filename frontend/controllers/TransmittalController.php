@@ -3,16 +3,16 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\MandatoryReserve;
-use app\models\MandatoryReserveSearch;
+use app\models\Transmittal;
+use app\models\TransmittalSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * MandatoryReserveController implements the CRUD actions for MandatoryReserve model.
+ * TransmittalController implements the CRUD actions for Transmittal model.
  */
-class MandatoryReserveController extends Controller
+class TransmittalController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -30,12 +30,12 @@ class MandatoryReserveController extends Controller
     }
 
     /**
-     * Lists all MandatoryReserve models.
+     * Lists all Transmittal models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new MandatoryReserveSearch();
+        $searchModel = new TransmittalSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -45,7 +45,7 @@ class MandatoryReserveController extends Controller
     }
 
     /**
-     * Displays a single MandatoryReserve model.
+     * Displays a single Transmittal model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -58,13 +58,13 @@ class MandatoryReserveController extends Controller
     }
 
     /**
-     * Creates a new MandatoryReserve model.
+     * Creates a new Transmittal model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new MandatoryReserve();
+        $model = new Transmittal();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -76,7 +76,7 @@ class MandatoryReserveController extends Controller
     }
 
     /**
-     * Updates an existing MandatoryReserve model.
+     * Updates an existing Transmittal model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -96,29 +96,29 @@ class MandatoryReserveController extends Controller
     }
 
     /**
-     * Deletes an existing MandatoryReserve model.
+     * Deletes an existing Transmittal model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    // public function actionDelete($id)
-    // {
-    //     $this->findModel($id)->delete();
+    public function actionDelete($id)
+    {
+        $this->findModel($id)->delete();
 
-    //     return $this->redirect(['index']);
-    // }
+        return $this->redirect(['index']);
+    }
 
     /**
-     * Finds the MandatoryReserve model based on its primary key value.
+     * Finds the Transmittal model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return MandatoryReserve the loaded model
+     * @return Transmittal the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = MandatoryReserve::findOne($id)) !== null) {
+        if (($model = Transmittal::findOne($id)) !== null) {
             return $model;
         }
 

@@ -127,7 +127,8 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => 'Amount',
                 'attribute' => 'raoudEntries.amount',
-                'format' => ['decimal', 2]
+                'format' => ['decimal', 2],
+                'pageSummary'=>true,
             ],
             [
                 'label' => 'Adjust Amount',
@@ -225,6 +226,7 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'before' => Html::a('<i class="glyphicon glyphicon-plus"></i>Create Process Ors', ['create'], ['class' => 'btn btn-success']),
 
         ],
+        'showPageSummary'=>true,
 
         'toolbar' => [
             [

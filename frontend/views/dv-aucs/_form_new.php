@@ -149,7 +149,9 @@ use yii\helpers\Html;
                     'top' => 50,
                     'position' => 'absolute',
                 ],
+                'export'=>false,
                 'pjax' => true,
+                'showPageSummary' => true,
                 'columns' => [
 
                     // [
@@ -226,7 +228,8 @@ use yii\helpers\Html;
                                 ->queryOne();
                             return $query['total'];
                         },
-                        'format' => ['decimal', 2]
+                        'format' => ['decimal', 2],
+                        'pageSummary' => true
                     ],
                     // [
                     //     'label' => 'Obligated Amount',
