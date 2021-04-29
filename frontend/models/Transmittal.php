@@ -30,10 +30,8 @@ class Transmittal extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['cash_disbursement_id'], 'integer'],
             [['transmittal_number'], 'string', 'max' => 100],
-            [['location'], 'string', 'max' => 20],
-            [['cash_disbursement_id'], 'exist', 'skipOnError' => true, 'targetClass' => CashDisbursement::className(), 'targetAttribute' => ['cash_disbursement_id' => 'id']],
+            [['location','date'], 'string', 'max' => 20],
         ];
     }
 
@@ -44,9 +42,9 @@ class Transmittal extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'cash_disbursement_id' => 'Cash Disbursement ID',
             'transmittal_number' => 'Transmittal Number',
             'location' => 'Location',
+            'date' => 'Date',
         ];
     }
 
@@ -57,6 +55,10 @@ class Transmittal extends \yii\db\ActiveRecord
      */
     public function getCashDisbursement()
     {
-        return $this->hasOne(CashDisbursement::className(), ['id' => 'cash_disbursement_id']);
+        return $this->hasOne(CashDisbursement::class, ['id' => 'cash_disbursement_id']);
+    }
+    public function getTransmittalEntries()
+    {
+        return $this->hasMany(TransmittalEntries::class, ['transmittal_id' => 'id']);
     }
 }

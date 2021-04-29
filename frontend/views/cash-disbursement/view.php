@@ -24,6 +24,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
+        <?php
+        
+        $t = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/view&id=$model->dv_aucs_id";
+        echo  Html::a('DV Link', $t, ['class' => 'btn btn-success ']);
+        ?>
     </p>
 
     <?= DetailView::widget([
@@ -39,5 +44,19 @@ $this->params['breadcrumbs'][] = $this->title;
             'issuance_date',
         ],
     ]) ?>
+
+
+    <div class="container">
+
+
+        <table class="table table striped">
+
+            <thead></thead>
+            <tbody>
+
+
+            </tbody>
+        </table>
+    </div>
 
 </div>

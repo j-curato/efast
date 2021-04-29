@@ -1,5 +1,7 @@
 <?php
 
+use app\models\DvAucsEntriesSearch;
+use kartik\export\ExportMenu;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
 use kartik\grid\GridView;
@@ -66,7 +68,83 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </div>
+    <?php
+    $exportSearchModel = new DvAucsEntriesSearch();
+    $exportDataProvider = $exportSearchModel->search(Yii::$app->request->queryParams);
+    $exportColumns = [
+        [
+            'label' => "DV Number",
+            'value' => "dvAucs.dv_number"
+        ],
+        [
+            'label' => "Reporting Period",
+            'value' => "dvAucs.reporting_period"
+        ],
+        [
+            'label' => "ORS Number",
+            'value' => "processOrs.serial_number"
+        ],
+        [
+            'label' => "ORS Amount",
+            'format' => ['decimal', 2],
+            'value' => function ($model) {
 
+                $query = '';
+                $obligate = 0;
+                if (!empty($model->process_ors_id)) {
+
+                $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total_obligated
+                from process_ors,raouds,raoud_entries
+                WHERE process_ors.id = raouds.process_ors_id
+                AND raouds.id  = raoud_entries.raoud_id
+                AND process_ors.id = :process_ors_id")
+                ->bindValue(':process_ors_id',$model->process_ors_id)
+                ->queryOne();
+                    $obligate = $query['total_obligated'];
+                }
+
+                return $obligate;
+            }
+        ],
+        [
+            'label' => "Payee",
+            'value' => "dvAucs.payee.account_name"
+        ],
+        [
+            'label' => "Particular",
+            'value' => "dvAucs.particular"
+        ],
+        [
+            'label' => "DV Amount",
+            'value' => "amount_disbursed"
+        ],
+        [
+            'label' => "2306 (VAT / Non-Vat)",
+            'value' => "vat_nonvat"
+        ],
+        [
+            'label' => "2307 (EWT Goods / Services)",
+            'value' => "ewt_good_services"
+        ],
+        [
+            'label' => "1601C (Compensation)",
+            'value' => "compensation"
+        ],
+        [
+            'label' => "Other Trust Liabilities",
+            'value' => "other_trust_liabilities"
+        ],
+        [
+            'label' => "Nature of Transaction",
+            'value' => "dvAucs.natureOfTransaction.name"
+        ],
+        [
+            'label' => "MRD Classification",
+            'value' => "dvAucs.mrdClassification.name"
+        ],
+
+    ];
+    ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -78,17 +156,38 @@ $this->params['breadcrumbs'][] = $this->title;
             'top' => 50,
             'position' => 'absolute',
         ],
-        'pjax'=>true,
+        'toolbar' => [
+            [
+                'content' => ExportMenu::widget([
+                    'dataProvider' => $exportDataProvider,
+                    'columns' => $exportColumns,
+                    'filename' => "DV",
+                    'exportConfig' => [
+                        ExportMenu::FORMAT_CSV => false,
+                        ExportMenu::FORMAT_TEXT => false,
+                        ExportMenu::FORMAT_PDF => false,
+                        ExportMenu::FORMAT_HTML => false,
+                        ExportMenu::FORMAT_EXCEL => false,
+
+                    ]
+                ]),
+                'options' => [
+                    'class' => 'btn-group mr-2', 'style' => 'margin-right:20px'
+                ]
+            ]
+        ],
+        'pjax' => true,
         'export' => false,
         'columns' => [
             // ['class' => 'yii\grid\SerialColumn'],
+
             'id',
             // 'process_ors_id',
             // 'raoud_id',
             'dv_number',
             'reporting_period',
             'particular',
-            
+
             // foreach($model->dvAucsEntries as $val){
 
             // },
@@ -115,7 +214,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $query['total_disbursed'];
                 },
                 'format' => ['decimal', 2],
-                'hAlign' => 'right', 
+                'hAlign' => 'right',
             ],
 
             //'other_trust_liability_withheld',
@@ -132,7 +231,5 @@ $this->params['breadcrumbs'][] = $this->title;
             width: 5rem;
             padding: 0;
         }
-
-
     </style>
 </div>

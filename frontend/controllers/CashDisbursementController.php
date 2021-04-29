@@ -310,7 +310,7 @@ class CashDisbursementController extends Controller
             ->select(['cash_disbursement.id as cash_id', 'dv_aucs.dv_number'])
             ->from('cash_disbursement')
             ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id  = dv_aucs.id')
-            ->where('cash_disbursement.is_cancelled = :is_cancelled',['is_cancelled'=>false])
+            ->where('cash_disbursement.is_cancelled = :is_cancelled', ['is_cancelled' => false])
             ->all();
 
         // ob_clean();
@@ -359,5 +359,44 @@ class CashDisbursementController extends Controller
             $query['issuance_date'] = $date->format('Y-m-d');
             return json_encode($query);
         }
+    }
+    public function actionGetCashDisbursement()
+    {
+        if ($_POST) {
+            $selected = $_POST['selection'];
+            $q = "(";
+            $x = count($selected);
+            foreach ($selected as $key => $val) {
+
+                if ($key + 1 === $x) {
+                    $q .= $val;
+                } else {
+                    $q .= $val . ',';
+                }
+            }
+            $q .= ')';
+            $query  = Yii::$app->db->createCommand("SELECT 
+            cash_disbursement.check_or_ada_no,
+            cash_disbursement.id,
+            dv_aucs.dv_number,
+            dv_aucs.particular,
+            dv.total_disbursed,
+            payee.account_name as payee 
+
+             FROM cash_disbursement,dv_aucs,payee,(SELECT SUM(dv_aucs_entries.amount_disbursed) as total_disbursed,dv_aucs_entries.dv_aucs_id FROM dv_aucs_entries GROUP BY dv_aucs_id) as dv
+              WHERE cash_disbursement.dv_aucs_id = dv_aucs.id
+              AND dv_aucs.payee_id = payee.id
+              AND dv_aucs.id = dv.dv_aucs_id
+              AND cash_disbursement.id IN $q")
+                // ->bindValue(:id,$q)
+                ->queryAll();
+            // $query = (new \yii\db\Query())
+            //     ->select("*")
+            //     ->from("cash_disbursement")
+            //     ->where('cash_disbursement.id IN :id', ['id' => $q])
+            //     ->all();
+            return json_encode(['results' => $query]);
+        }
+        return json_encode('qwe');
     }
 }

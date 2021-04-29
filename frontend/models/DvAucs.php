@@ -82,18 +82,22 @@ class DvAucs extends \yii\db\ActiveRecord
     }
     public function getDvAucsEntries()
     {
-        return $this->hasMany(DvAucsEntries::class,['dv_aucs_id'=>'id']);
+        return $this->hasMany(DvAucsEntries::class, ['dv_aucs_id' => 'id']);
     }
     public function getNatureOfTransaction()
     {
-        return $this->hasOne(NatureOfTransaction::class,['id'=>'nature_of_transaction_id']);
+        return $this->hasOne(NatureOfTransaction::class, ['id' => 'nature_of_transaction_id']);
     }
     public function getMrdClassification()
     {
-        return $this->hasOne(MrdClassification::class,['id'=>'mrd_classification_id']);
+        return $this->hasOne(MrdClassification::class, ['id' => 'mrd_classification_id']);
     }
     public function getPayee()
     {
-        return $this->hasOne(Payee::class,['id'=>'payee_id']);
+        return $this->hasOne(Payee::class, ['id' => 'payee_id']);
+    }
+    public function getCashDisbursement()
+    {
+        return $this->hasOne(CashDisbursement::class, ['dv_aucs_id' => 'id']);
     }
 }

@@ -40,7 +40,7 @@ class ProcessOrsSearch extends ProcessOrs
      */
     public function search($params)
     {
-        $query = ProcessOrs::find();
+        $query = ProcessOrs::find()->where("process_ors.is_cancelled =false");
 
         // add conditions that should always apply here
 

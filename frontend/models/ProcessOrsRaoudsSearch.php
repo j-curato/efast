@@ -41,7 +41,8 @@ class ProcessOrsRaoudsSearch extends Raouds
      */
     public function search($params)
     {
-        $query = Raouds::find()->where("process_ors_id IS NOT NULL");
+        $query = Raouds::find()->where("process_ors_id IS NOT NULL")
+        ->andWhere("process_ors.is_cancelled =false");
 
         // add conditions that should always apply here
         $query->joinWith("processOrs");
@@ -73,7 +74,7 @@ class ProcessOrsRaoudsSearch extends Raouds
         ]);
 
         $query->andFilterWhere(['like', 'serial_number', $this->serial_number])
-            ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
+            ->andFilterWhere(['like', 'raouds.reporting_period', $this->reporting_period])
             ->andFilterWhere(['like', 'process_ors.serial_number', $this->process_ors_id]);
 
         return $dataProvider;

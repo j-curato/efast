@@ -2,6 +2,7 @@
 
 use app\models\ChartOfAccounts;
 use app\models\FundClusterCode;
+use app\models\Payee;
 use app\models\ResponsibilityCenter;
 use kartik\date\DatePicker;
 use yii\helpers\Html;
@@ -90,7 +91,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     DV No.
                 </th>
                 <th>
-                    LDDAP No.
+                    LDDAP/Check No.
                 </th>
                 <th>
                     Name of Disbursing Officer
@@ -145,15 +146,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
                     }
                     foreach ($data as $key => $d) {
-
+                        $payee_name ='';
+                        if (!empty($d->payee_id)){
+                            $payee_name=Payee::findOne($d->payee_id)->account_name;
+                        }
                         echo "<tr>"
 
                             . "<td>{$d->reporting_period}</td>" .
                             "<td>$d->jev_number </td>" .
                             "<td>$d->dv_number</td>" .
-                            "<td>CHECK NUMBER</td>" .
+                            "<td>$d->check_ada_number</td>" .
                             "<td>DISBURSING OFFICER</td>" .
-                            "<td>" . "PAYEE" . "</td>";
+                            "<td>" . $payee_name . "</td>";
 
                         $i = 0;
                         $y = 0;
@@ -164,7 +168,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 $x = array_search($acc->chartOfAccount->uacs, array_column($credit, 'uacs'));
                                 for ($i; $i < $credit_count; $i++) {
                                     if ($i == $x) {
-                                        echo "<td>" . $acc->chartOfAccount->uacs .  '---' . number_format($acc->credit) . "</td>";
+                                        echo "<td>" . $acc->chartOfAccount->uacs .  '---' . number_format($acc->credit,2) . "</td>";
                                         $i++;
                                         break;
                                     } else {
@@ -201,7 +205,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 $x = array_search($acc->chartOfAccount->uacs, array_column($debit, 'uacs'));
                                 for ($z; $z < $debit_count; $z++) {
                                     if ($z == $x) {
-                                        echo "<td>" . $acc->chartOfAccount->uacs . '--' . number_format($acc->debit) . "</td>";
+                                        echo "<td>" . $acc->chartOfAccount->uacs . '--' . number_format($acc->debit,2) . "</td>";
                                         $z++;
                                         break;
                                     } else {
@@ -224,7 +228,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             addRow($z, $debit_count);
                         }
 
-                        echo "<td>" . number_format($total) . "</td>";
+                        echo "<td>" . number_format($total,2) . "</td>";
                         echo "</tr>";
                     }
                 }

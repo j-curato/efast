@@ -17,27 +17,14 @@ class m210423_093828_create_transmittal_table extends Migration
     {
         $this->createTable('{{%transmittal}}', [
             'id' => $this->primaryKey(),
-            'cash_disbursement_id' => $this->integer(),
             'transmittal_number' => $this->string(100),
             'location' => $this->string(20),
+            'date' => $this->date(),
+            'created_at'=>$this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
 
         // creates index for column `cash_disbursement_id`
-        $this->createIndex(
-            '{{%idx-transmittal-cash_disbursement_id}}',
-            '{{%transmittal}}',
-            'cash_disbursement_id'
-        );
-
-        // add foreign key for table `{{%cash_disbursement}}`
-        $this->addForeignKey(
-            '{{%fk-transmittal-cash_disbursement_id}}',
-            '{{%transmittal}}',
-            'cash_disbursement_id',
-            '{{%cash_disbursement}}',
-            'id',
-            'CASCADE'
-        );
+      
     }
 
     /**
@@ -46,16 +33,7 @@ class m210423_093828_create_transmittal_table extends Migration
     public function safeDown()
     {
         // drops foreign key for table `{{%cash_disbursement}}`
-        $this->dropForeignKey(
-            '{{%fk-transmittal-cash_disbursement_id}}',
-            '{{%transmittal}}'
-        );
 
-        // drops index for column `cash_disbursement_id`
-        $this->dropIndex(
-            '{{%idx-transmittal-cash_disbursement_id}}',
-            '{{%transmittal}}'
-        );
 
         $this->dropTable('{{%transmittal}}');
     }

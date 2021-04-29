@@ -1,16 +1,9 @@
 <?php
 
-use app\models\ChartOfAccounts;
-use app\models\FundClusterCode;
-use app\models\ResponsibilityCenter;
+use app\models\Raouds;
+use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use yii\helpers\Html;
-use kartik\grid\GridView;
-use yii\helpers\ArrayHelper;
-use kartik\select2\Select2;
-use yii\helpers\Url;
-use yii\widgets\Pjax;
-use aryelds\sweetalert\SweetAlertAsset;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
@@ -30,6 +23,25 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <div class="container panel panel-default">
+        <p>
+
+            <?php
+
+
+
+            // $q = Raouds::find()
+            //     ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' => $model->processOrs->id])
+            //     ->one();
+
+            if (!empty($model->cashDisbursement)) {
+
+                $t = yii::$app->request->baseUrl . "/index.php?r=cash-disbursement/view&id={$model->cashDisbursement->id}";
+                echo  Html::a('Cash Disbursement Link', $t, ['class' => 'btn btn-success ']);
+            }
+
+
+            ?>
+        </p>
         <div style="float:right">
             <span style="font-size: x-small;">
                 <?php
@@ -42,7 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <tr>
 
-                    <td colspan="4" style="text-align:center">
+                    <td colspan="5" style="text-align:center">
                         <div>
                             <h5 style="font-weight: bold;">Department of Trade and Industry - Caraga</h5>
                         </div>
@@ -55,17 +67,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     </td>
                     <td colspan="2">
-                        <div>
+                        <div style="padding-bottom:6px;">
                             <span>Fund Cluster:</span>
-                            <span>______________</span>
+                            <span style="float: right;">__________________</span>
                         </div>
-                        <div>
+                        <div style="padding-bottom:6px;">
                             <span>Date:</span>
-                            <span>__________________</span>
+                            <span style="float: right;">__________________</span>
                         </div>
                         <div>
                             <span>DV No.:</span>
-                            <span style="font-size: x-small;">
+                            <span style="float: right;">
                                 <?php
                                 echo $model->dv_number;
                                 ?>
@@ -77,7 +89,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>
                         Mode of Payment
                     </td>
-                    <td colspan="5">
+                    <td colspan="6">
                         <div style="display: flex;width:100%;justify-content:space-evenly">
                             <div style="display:flex">
                                 <div class="checkbox"></div>
@@ -108,7 +120,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan="1" class="head" rowspan="2">
                         Payee
                     </td>
-                    <td colspan="3" rowspan="2">
+                    <td colspan="4" rowspan="2">
                         <?php echo $model->payee->account_name; ?>
                     </td>
                     <td rowspan="1">
@@ -127,12 +139,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan="1" class="head">
                         Address
                     </td>
-                    <td colspan="5">
+                    <td colspan="6">
                     </td>
                 </tr>
                 <tr>
 
-                    <td colspan="3">
+                    <td colspan="4">
                         Particulars
                     </td>
                     <td>
@@ -146,7 +158,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                 </tr>
                 <tr>
-                    <td colspan='3' style='padding:10px'>
+                    <td colspan='4' style='padding:10px'>
                         <?php echo $model->particular ?>
                     </td>
                     <td>
@@ -180,11 +192,21 @@ $this->params['breadcrumbs'][] = $this->title;
                 $total = 0;
                 foreach ($model->dvAucsEntries as $val) {
                     $ors_serial_number = !empty($val->process_ors_id) ? $val->processOrs->serial_number : '';
+                    $t = '';
+                    if (!empty($val->process_ors_id)) {
+
+                        $q = Raouds::find()
+                            ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' =>  $val->process_ors_id])
+                            ->one();
+                        // $q = !empty($val->process_ors_id) ? $val->process_ors_id : '';
+                        $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$q->id";
+                    }
+
                     $amount = number_format($val->amount_disbursed, 2);
                     $total += $val->amount_disbursed;
                     echo "
                     <tr>
-                        <td colspan='3' style='padding:0px'>
+                        <td colspan='4' style='padding:0px'>
                         $ors_serial_number
                         </td>
                         <td>
@@ -194,13 +216,19 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td style='padding-left:auto'>
                         $amount
                         </td>
+                        <td class='link'>" .
+
+                        Html::a('ORS', $t, ['class' => 'btn-xs btn-success '])
+                        . "
+                        
+                        </td>
                   </tr>
                     ";
                 }
 
                 ?>
                 <tr>
-                    <td class="head" style="text-align: center; font-size:12px" colspan="5">
+                    <td class="head" style="text-align: center; font-size:12px" colspan="6">
                         Amount Due
                     </td>
                     <td>
@@ -210,22 +238,28 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="6" style="padding: 0;">
+                    <td colspan="7" style="padding: 0;">
                         <h6 style="margin:0">A: Certified: Expenses/Cash Advance necessary, lawful and incurred under my direct supervision.</h6>
-                        <h5 style="text-align: center; margin:2rem">
+
+                        <div style="text-align: center;margin-top:1rem;font-size:12pt">
+                            <!-- <select name="" class="assignatory" style="width: 300px;">
+                                <option value=""></option>
+                            </select> -->
+                        </div>
+                        <h6 style="text-align: center;">
                             Printed Name, Designation and Signature of Supervisor
-                        </h5>
+                        </h6>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="6">
+                    <td colspan="7">
                         <h6 class="head">
                             B. Accounting Entry
                         </h6>
                     </td>
                 </tr>
                 <tr>
-                    <td style='padding:10px' colspan='3'> Account Title</td>
+                    <td style='padding:10px' colspan='4'> Account Title</td>
                     <td>UACS Code</td>
                     <td>Debit</td>
                     <td>Credit</td>
@@ -236,7 +270,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     echo "
                     <tr>
-                        <td style='padding:10px' colspan='3'></td>
+                        <td style='padding:10px' colspan='4'></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -247,10 +281,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 ?>
                 <tr>
-                    <td colspan="3" style="padding:0;">
-                        <h6 class="head">
+                    <td colspan="4" style="border-bottom: 1px solid white;font-weight:bold"> C. Certified</td>
+                    <td colspan="3 " style="border-bottom: 1px solid white;font-weight:bold">D:Approved for Payment</td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding:0;">
+                        <!-- <h6 class="head">
                             C. Certified
-                        </h6>
+                        </h6> -->
 
 
                         <h6><i class="fa-square-o square-icon"></i>Cash Available</h6>
@@ -259,7 +297,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     </td>
                     <td colspan="3" style="padding:0;">
-                        <h6 style="margin:0" style="float:left" class="head">D:Approved for Payment</h6>
+                        <!-- <h6 style="margin:0" style="float:left" class="head">D:Approved for Payment</h6> -->
                         <!-- <h5 style="text-align: center; margin:4rem">
                         </h5> -->
 
@@ -268,66 +306,122 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
 
                     <td>Signature</td>
-                    <td colspan="2"></td>
+                    <td colspan="3"></td>
                     <td>Signature</td>
                     <td colspan="2"></td>
                 </tr>
                 <tr>
 
                     <td>Printed Name</td>
-                    <td colspan="2"></td>
+                    <td colspan="3">
+                        <!-- <select name="" class="assignatory" style="width: 100%;">
+                                <option value=""></option>
+                            </select> -->
+                    </td>
                     <td>Printed Name</td>
-                    <td colspan="2"></td>
+                    <td colspan="2">
+                        <!-- <select name="" class="assignatory" style="width: 100%;">
+                                <option value=""></option>
+                            </select> -->
+                    </td>
                 </tr>
                 <tr>
                     <td>Postion</td>
-                    <td colspan="2"></td>
+                    <td colspan="3">
+                        <!-- <select name="" class="position" style="width: 100%;">
+                            <option></option>
+                        </select> -->
+                    </td>
                     <td>Postion</td>
-                    <td colspan="2"></td>
+                    <td colspan="2">
+                        <!-- <select name="" class="position" style="width: 100%;">
+                            <option></option>
+                        </select> -->
+                    </td>
                 </tr>
                 <tr>
                     <td>Date</td>
-                    <td colspan="2"></td>
+                    <td colspan="3">
+                        <?php
+
+                        // echo DatePicker::widget([
+                        //     'name' => 'dp_1',
+                        //     'options' => [
+                        //         'placeholder' => 'Select Date',
+                        //         'style' => 'background-color:white'
+                        //     ],
+                        //     'readonly' => true,
+                        //     'type' => DatePicker::TYPE_INPUT,
+                        //     'value' => date('m/d/Y'),
+                        //     'pluginOptions' => [
+                        //         'autoclose' => true,
+                        //         'format' => 'mm/dd/yyyy',
+                        //     ],
+                        // ]);
+
+                        ?>
+                    </td>
                     <td>Date</td>
-                    <td colspan='2'></td>
+                    <td colspan='2'>
+                        <?php
+
+                        // echo DatePicker::widget([
+                        //     'name' => 'dp_1',
+                        //     'options' => [
+                        //         'placeholder' => 'Select Date',
+                        //         'style' => 'background-color:white'
+                        //     ],
+                        //     'readonly' => true,
+                        //     'type' => DatePicker::TYPE_INPUT,
+                        //     'value' => date('m/d/Y'),
+                        //     'pluginOptions' => [
+                        //         'autoclose' => true,
+                        //         'format' => 'mm/dd/yyyy',
+                        //     ],
+                        // ]);
+
+                        ?>
+                    </td>
                 </tr>
                 <!-- LETTER E -->
                 <tr>
-                    <td colspan="5" class="head">
+                    <td colspan="6" class="head">
                         E. Reciept Payment
                     </td>
-                    <td rowspan="2">JEV No.</td>
+                    <td rowspan="2" style="vertical-align: top;">JEV No.</td>
                 </tr>
                 <tr>
 
-                    <td>Check/ADA No. :</td>
+                    <td>Check/ADA No.:</td>
                     <td style="width:200px"></td>
-                    <td>Date :</td>
+                    <td>Date:</td>
+                    <td style="width: 70px;"></td>
                     <td colspan="">Bank Name & Account Number:</td>
                     <td></td>
 
                 </tr>
                 <tr>
                     <td>
-                        Signature :
+                        Signature:
                     </td>
                     <td>
 
                     </td>
                     <td>
-                        Date :
+                        Date:
                     </td>
+                    <td style="width: 70px;"></td>
                     <td>
                         Printed Name:
                     </td>
                     <td></td>
 
-                    <td rowspan="2">
+                    <td rowspan="2" style="vertical-align: top;">
                         Date:
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="5">Official Receipt No. & Date/Other Documents</td>
+                    <td colspan="6">Official Receipt No. & Date/Other Documents</td>
 
                 </tr>
 
@@ -337,13 +431,76 @@ $this->params['breadcrumbs'][] = $this->title;
 
             </tbody>
         </table>
+
+        <!-- 
+        <div class="container">
+            <table class="table table-striped">
+                <tbody>
+
+                </tbody>
+            </table>
+        </div> -->
+        <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+        <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
+        <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
+        <script>
+            var assignatory = []
+            var positions = []
+            $(document).ready(function() {
+                // reference = ["GAY A. TIDALGO"]
+                // $('.assignatory').select2({
+                //     data: reference,
+                //     placeholder: "Select ",
+
+                // })
+                positions = ['Head', 'Budget', 'Division', 'Unit', 'Authorized Representative']
+                $('.position').select2({
+                    data: positions,
+                    placeholder: "Select Position",
+
+                })
+                $.getJSON('/dti-afms-2/frontend/web/index.php?r=assignatory/get-all-assignatory')
+
+                    .then(function(data) {
+
+                        var array = []
+                        $.each(data, function(key, val) {
+                            array.push({
+                                id: val.id,
+                                text: val.name
+                            })
+                        })
+                        assignatory = array
+                        $('.assignatory').select2({
+                            data: assignatory,
+                            placeholder: "Select ",
+
+                        })
+
+                    })
+            })
+            // $("#assignatory").change(function(){
+            //     console.log("qwe")
+            // })
+            // function sample(q) {
+            //     console.log(q.value)
+
+            //     $("#ass").text(q.value)
+
+            // }
+        </script>
     </div>
+    <?php
+    $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+    ?>
 
     <style>
         .square-icon {
             font-size: 20px;
         }
-
+        .container{
+            padding: 12px;
+        }
         .serial {
             margin-top: 8px;
         }
@@ -370,6 +527,35 @@ $this->params['breadcrumbs'][] = $this->title;
         @media print {
             .actions {
                 display: none;
+            }
+            .btn{
+                display: none;
+            }
+
+            .link {
+                display: none;
+            }
+
+            .krajee-datepicker {
+                border: 1px solid white;
+                font-size: 10px;
+            }
+
+            /* .select2-selection__rendered{
+            text-decoration: underline;
+        } */
+            .select2-container--default .select2-selection--single {
+                background-color: #fff;
+                border: 1px solid white;
+                border-radius: 4px;
+            }
+
+            .select2-selection__arrow {
+                display: none;
+            }
+
+            .select2-selection {
+                border: 1px solid white;
             }
 
             select {

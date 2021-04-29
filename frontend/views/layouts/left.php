@@ -55,6 +55,7 @@
                                     ['label' => 'CashFlow', 'icon' => 'circle-o', 'url' => ['/cash-flow'],],
                                     ['label' => 'Nature of Transaction', 'icon' => 'circle-o', 'url' => ['/nature-of-transaction'],],
                                     ['label' => 'MRD Classification', 'icon' => 'circle-o', 'url' => ['/mrd-classification'],],
+                                    ['label' => 'Asignatory', 'icon' => 'circle-o', 'url' => ['/assignatory'],],
 
 
                                 ],
@@ -68,6 +69,7 @@
                                     ['label' => 'Jev', 'icon' => 'circle-o', 'url' => ['/jev-preparation'],],
 
                                     ['label' => 'Process Dv', 'icon' => 'circle-o', 'url' => ['/dv-aucs'],],
+                                    ['label' => 'Transmittal', 'icon' => 'circle-o', 'url' => ['/transmittal'],],
 
                                 ],
                             ],
@@ -155,6 +157,19 @@
 
                                 ],
                             ],
+                        ],
+                    ],
+                    [
+                        'label' => 'Report',
+                        'icon' => 'share',
+                        'url' => '#',
+                        'items' => [
+                        
+                                    ['label' => 'Pending ORS', 'icon' => 'circle-o', 'url' => ['/report/pending-ors'],],
+                                    ['label' => "Pending DV's", 'icon' => 'circle-o', 'url' => ['/report/pending-dv'],],
+                                    ['label' => 'UnObligated Transaction', 'icon' => 'circle-o', 'url' => ['/report/unobligated-transaction'],],
+                                    ['label' => 'UnPaid Obligation', 'icon' => 'circle-o', 'url' => ['/report/unpaid-obligation'],],
+
                         ],
                     ],
 

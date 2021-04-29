@@ -2,6 +2,7 @@
 
 use app\models\ChartOfAccounts;
 use app\models\FundClusterCode;
+use app\models\Payee;
 use app\models\ResponsibilityCenter;
 use kartik\date\DatePicker;
 use yii\helpers\Html;
@@ -107,7 +108,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     DV No.
                 </th>
                 <th>
-                    LDDAP No.
+                    LDDAP/Check No.
                 </th>
                 <th>
                     Name of Disbursing Officer
@@ -115,13 +116,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>
                     Payee
                 </th>
-
+                        <!-- HEADER -->
                 <?php
                 if (!empty($credit) || !empty($debit)) {
                     foreach ($credit as $key => $c) {
 
 
-                        echo "<th>" . $c["general_ledger"] . '-' . $c["uacs"] . "</th>";
+                        echo "<th >" . $c["general_ledger"] . '-' . $c["uacs"] . "</th>";
                         // // echo '<pre>';
                         // // var_dump($c["uacs"]);
                         // // echo '</pre>';
@@ -157,28 +158,38 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
                     }
                     foreach ($data as $key => $d) {
-
+                        $payee_name='';
+                        $check_no ='';
+                        if (!empty($d->payee_id) ){
+                        $payee_name  = Payee::findOne($d->payee_id)->account_name;
+                        }
+                        // if (!empty($d->check_ada_number)){
+                            
+                        // }
                         echo "<tr>"
 
                             . "<td>{$d->reporting_period}</td>" .
                             "<td>$d->jev_number </td>" .
                             "<td>$d->dv_number</td>" .
-                            "<td>CHECK NUMBER</td>" .
+                            "<td>". $d->check_ada_number . "</td>" .
                             "<td>ALLEEN P. PAHAMTANG </td>" .
-                            "<td>" . "PAYEE" . "</td>";
+                            "<td>" . 
+            
+                            $payee_name
+                            . "</td>";
 
                         $i = 0;
                         $y = 0;
                         $total = 0;
+                        
                         foreach ($d->jevAccountingEntries as  $acc) {
 
                             if (!empty($acc->credit)) {
                                 $x = array_search($acc->chartOfAccount->uacs, array_column($credit, 'uacs'));
                                 for ($i; $i < $credit_count; $i++) {
                                     if ($i == $x) {
-                                        echo "<td> ".$acc->chartOfAccount->uacs  .'---'. number_format($acc->credit)." </td>";
+                                        echo "<td> ". number_format($acc->credit)." </td>";
                                         // echo "<td>" . number_format($acc->credit) . " </td>";
-
                                         $i++;
                                         break;
                                     } else {
@@ -192,8 +203,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 // }
                                 $y++;
                                
+                                $total += $acc->credit;
                             }
-                            $total += $acc->credit +$acc->debit;
                         }
                         if ($i < $credit_count && $y > 0) {
 
@@ -216,7 +227,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 $x = array_search($acc->chartOfAccount->uacs, array_column($debit, 'uacs'));
                                 for ($z; $z < $debit_count; $z++) {
                                     if ($z == $x) {
-                                        echo "<td>".$acc->chartOfAccount->uacs. '---'. number_format($acc->debit)."</td>";
+                                        echo "<td>". number_format($acc->debit)."</td>";
                                         // echo "<td>" . number_format($acc->debit) . "</td>";
                                         $z++;
                                         break;
@@ -227,7 +238,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
                                 $f++;
-                               
+                                $total += $acc->debit;
                             }
                         }
                         if ($z < $debit_count && $f > 0) {

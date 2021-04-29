@@ -167,6 +167,13 @@ Modal::end();
 
 
 </div>
+<style>
+        .grid-view td {
+            white-space: normal;
+            width: 5rem;
+            padding: 0;
+        }
+    </style>
 
 <?php
 SweetAlertAsset::register($this);

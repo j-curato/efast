@@ -14,36 +14,26 @@ $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="process-ors-entries-view">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-
-    <?php
-    // DetailView::widget([
-    //     'model' => $model,
-    //     'attributes' => [
-    //         'id',
-    //         'chart_of_account_id',
-    //         'process_ors_id',
-    //         'amount',
-    //     ],
-    // ]) 
-    ?>
     <?php
     $ors  = ProcessOrs::findOne($model->process_ors_id);
     ?>
-    <div class="container">
+    <h1><?= Html::encode($this->title) ?></h1>
 
+    <div class="container">
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('Cancel', ['cancel', 'id' => $ors->id], [
+                'class' => 'btn btn-danger',
+                'data' => [
+                    'confirm' => 'Are you sure you want to cancel this item?',
+                    'method' => 'post',
+                ],
+            ]) ?>
+            <?php
+            $t = yii::$app->request->baseUrl . "/index.php?r=transaction/view&id=$ors->transaction_id";
+            echo  Html::a('Transaction', $t, ['class' => 'btn btn-info']);
+            ?>
+        </p>
         <table class="table table-striped">
 
             <thead>
@@ -68,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </thead>
             <tbody>
                 <?php
-                foreach ($ors->raouds as $key =>$val) {
+                foreach ($ors->raouds as $key => $val) {
 
                     echo "
                     <tr>
@@ -100,5 +90,48 @@ $this->params['breadcrumbs'][] = $this->title;
             </tbody>
         </table>
     </div>
+    <div class="container">
+
+
+        <h4>List of DV's Using This ORS</h4>
+        <table class="table">
+            <thead>
+                <th>
+                    DV Number
+                </th>
+                <th>
+                    Link
+                </th>
+            </thead>
+            <tbody>
+
+                <?php
+                if (!empty($ors->dvAucsEntries)) {
+                    $dv_id = 0;
+                    foreach ($ors->dvAucsEntries as $val) {
+                        $x = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/view&id={$val->dvAucs->id}";
+                        echo "<tr>
+                        <td>{$val->dvAucs->dv_number}</td>
+                        <td>" .
+                            Html::a('Dv Link', $x, ['class' => 'btn-xs btn-danger '])
+                            . "</td>
+                        </tr>";
+                    }
+
+                    // http://10.20.17.33/dti-afms-2/frontend/web/index.php?r=dv-aucs%2Fview&id=6878
+                    // echo  
+                }
+                ?>
+            </tbody>
+
+        </table>
+    </div>
 
 </div>
+
+<style>
+    .container {
+        background-color: white;
+        padding: 12px;
+    }
+</style>

@@ -22,11 +22,15 @@ $this->title = 'Dashboard';
         // ->andWhere("raouds.reporting_period LIKE :reporting_period", ['reporting_period' => '2021%'])
         ->one();
 
-    $query1 = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total_obligated,
-            (SELECT SUM(dv_aucs_entries.amount_disbursed) as total_disbursed FROM `dv_aucs_entries` where dv_aucs_entries.process_ors_id IS NOT NULL) as total_disbursed
-            FROM process_ors,raouds,raoud_entries
-            WHERE process_ors.id = raouds.process_ors_id
-            AND raouds.id = raoud_entries.raoud_id
+    $ors = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total_obligated,
+                        (SELECT SUM(dv_aucs_entries.amount_disbursed) as total_disbursed
+                        FROM cash_disbursement,dv_aucs,dv_aucs_entries
+                        WHERE cash_disbursement.dv_aucs_id = dv_aucs.id
+                        AND dv_aucs.id = dv_aucs_entries.dv_aucs_id
+                        ) as total_disbursed
+                FROM process_ors,raouds,raoud_entries
+                WHERE process_ors.id = raouds.process_ors_id
+                AND raouds.id = raoud_entries.raoud_id
             ")
         ->queryOne();
     $query3 = Yii::$app->db->createCommand("SELECT SUM(dv_aucs_entries.vat_nonvat) as total_vat_nonvat,
@@ -35,14 +39,14 @@ $this->title = 'Dashboard';
     FROM dv_aucs_entries
     ")->queryOne();
 
-    $total_cash_disbursed = Yii::$app->db->createCommand("SELECT books.`name`, SUM(dv_aucs_entries.amount_disbursed)as total_disbursed 
+    $total_cash_disbursed = Yii::$app->db->createCommand("SELECT books.`name`,
+     SUM(dv_aucs_entries.amount_disbursed)as total_disbursed 
     FROM cash_disbursement,dv_aucs,dv_aucs_entries,books
     WHERE cash_disbursement.dv_aucs_id = dv_aucs.id
     AND dv_aucs.id = dv_aucs_entries.dv_aucs_id
     AND cash_disbursement.book_id = books.id
     GROUP BY cash_disbursement.book_id")->queryAll();
 
-    // -- AND process_ors.reporting_period LIKE '2021%'
 
     ?>
     <div class="body-content">
@@ -133,7 +137,7 @@ $this->title = 'Dashboard';
                             <td style="text-align: right;">
                                 <span style=" margin-left: auto;">
                                     <?php
-                                    echo number_format($query1['total_obligated'], 2);
+                                    echo number_format($ors['total_obligated'], 2);
                                     ?>
                                 </span>
 
@@ -148,7 +152,7 @@ $this->title = 'Dashboard';
                             <td style="text-align: right;">
                                 <span>
                                     <?php
-                                    echo number_format($query1['total_disbursed'], 2);
+                                    echo number_format($ors['total_disbursed'], 2);
                                     ?>
                                 </span>
                             </td>
@@ -175,7 +179,7 @@ $this->title = 'Dashboard';
                             <td style="text-align: right;">
                                 <span>
                                     <?php
-                                    echo  number_format($query1['total_obligated'] - $query1['total_disbursed'], 2);
+                                    echo  number_format($ors['total_obligated'] - $ors['total_disbursed'], 2);
 
                                     ?>
                                 </span>
@@ -225,7 +229,7 @@ $this->title = 'Dashboard';
                             <td style="text-align: right;">
                                 <span>
                                     <?php
-                                    echo number_format($query['total_obligated'], 2);
+                                    // echo number_format($query['total_obligated'], 2);
                                     ?>
                                 </span>
                             </td>
@@ -238,7 +242,7 @@ $this->title = 'Dashboard';
                             <td style="text-align: right;">
                                 <span>
                                     <?php
-                                    echo  number_format($query['total_allotment'] - $query['total_obligated'], 2);
+                                    echo number_format($total_withheld, 2);
                                     ?>
                                 </span>
                             </td>
@@ -260,15 +264,14 @@ $this->title = 'Dashboard';
                     <table class="table">
                         <thead>
 
-                        <th>qwe</th>
-                        <th style="text-align: right;">Fund 01</th>
-                        <th style="text-align: right;">Rapid LP </th>
+                            <th></th>
+                            <th style="text-align: right;">Fund 01</th>
+                            <th style="text-align: right;">Rapid LP </th>
                         </thead>
                         <tr>
                             <td>
 
                                 <span style="white-space: pre;">Cash Received</span>
-
                             </td>
                             <td style="text-align: right;">
                                 <span style=" margin-left: auto;">
@@ -323,6 +326,74 @@ $this->title = 'Dashboard';
             </div>
             <!-- END Cash Received and Disbursed -->
 
+        </div>
+        <!-- DV -->
+        <div class="row">
+            <?php
+
+            $pending_dv = Yii::$app->db->createCommand(
+                "SELECT COUNT(dv_aucs.id) as total_pending from dv_aucs where dv_aucs.id   NOT IN (SELECT cash_disbursement.dv_aucs_id from cash_disbursement WHERE cash_disbursement.dv_aucs_id IS NOT NULL)"
+            )->queryOne();
+            ?>
+
+            <div class="panel panel-default  col-sm-5">
+                <div class="panel-heading" style="background-color:white;width:100%">
+                    <h4>
+                        DV's
+                    </h4>
+                </div>
+                <div class="panel-content">
+                    <?php
+                    $total_dv = Yii::$app->db->createCommand("SELECT DISTINCT COUNT(cash_disbursement.id) ro_dv,
+                (SELECT DISTINCT count(transmittal_entries.cash_disbursement_id) as coa_dv from transmittal_entries) as coa_dv
+                
+                FROM cash_disbursement 
+                WHERE cash_disbursement.id NOT IN (SELECT DISTINCT transmittal_entries.cash_disbursement_id FROM transmittal_entries)")->queryOne();
+
+                    ?>
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <span style="white-space: pre;">Total DV's in Regional Office</span>
+                            </td>
+                            <td style="text-align: right;">
+                                <span style=" margin-left: auto;">
+                                    <?php
+                                    echo number_format($total_dv['ro_dv']);
+                                    ?>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>Total DV's in COA</span>
+
+                            </td>
+                            <td style="text-align: right;">
+                                <span>
+                                    <?php
+                                    echo number_format($total_dv['coa_dv']);
+                                    ?>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>Pending DV's</span>
+
+                            </td>
+                            <td style="text-align: right;">
+                                <span>
+                                    <?php
+                                    echo number_format($pending_dv['total_pending']);
+                                    ?>
+                                </span>
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+            </div>
         </div>
 
 

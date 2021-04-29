@@ -17,8 +17,8 @@ class TransmittalSearch extends Transmittal
     public function rules()
     {
         return [
-            [['id', 'cash_disbursement_id'], 'integer'],
-            [['transmittal_number', 'location'], 'safe'],
+            [['id', ], 'integer'],
+            [['transmittal_number', 'location','date'], 'safe'],
         ];
     }
 
@@ -59,7 +59,6 @@ class TransmittalSearch extends Transmittal
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'cash_disbursement_id' => $this->cash_disbursement_id,
         ]);
 
         $query->andFilterWhere(['like', 'transmittal_number', $this->transmittal_number])

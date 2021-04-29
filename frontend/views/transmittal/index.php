@@ -1,7 +1,7 @@
 <?php
 
+use kartik\grid\GridView;
 use yii\helpers\Html;
-use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\TransmittalSearch */
@@ -23,15 +23,37 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel' => [
+            'type' => GridView::TYPE_PRIMARY,
+            'heading' => 'List of Areas',
+        ],
+        'floatHeaderOptions' => [
+            'top' => 50,
+            'position' => 'absolute',
+        ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            // ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'cash_disbursement_id',
             'transmittal_number',
-            'location',
+            'date',
+            'location', 
+            [
 
-            ['class' => 'yii\grid\ActionColumn'],
+                'label'=>'DV Count',
+                'value'=>function($model){
+
+                    $query=(new \yii\db\Query())
+                    ->select('count(id) as count')
+                    ->from('transmittal_entries')
+                    ->where("transmittal_entries.transmittal_id =:transmittal_id",['transmittal_id'=>$model->id])
+                    ->one();
+
+                    return $query['count'];
+                }
+            ],
+
+            ['class' => '\kartik\grid\ActionColumn'],
         ],
     ]); ?>
 

@@ -124,7 +124,7 @@ use yii\helpers\Html;
                     <th>
                         <div id="total_liabilities"></div>
                     </th>
-         
+
                 </tfoot>
             </table>
             <button type="submit" class="btn btn-success" style="width: 100%;" id="save" name="save"> SAVE</button>
@@ -135,7 +135,8 @@ use yii\helpers\Html;
                 <input type="text" id="transaction_type" name="transaction_type">
                 <input type="text" id="dv_count" name="dv_count">
             </div>
-            <!-- RAOUDS ANG MODEL ANI -->
+
+            <!-- PROCESS ORS AND MODEL -->
             <!-- NAA SA CREATE CONTROLLER NAKO GE CHANGE -->
 
             <?= GridView::widget([
@@ -149,7 +150,7 @@ use yii\helpers\Html;
                     'top' => 50,
                     'position' => 'absolute',
                 ],
-                'export'=>false,
+                'export' => false,
                 'pjax' => true,
                 'showPageSummary' => true,
                 'columns' => [
@@ -467,7 +468,7 @@ use yii\helpers\Html;
             $("#total_ewt").text(thousands_separators(total_ewt))
             $("#total_compensation").text(thousands_separators(total_compensation))
             $("#total_liabilities").text(thousands_separators(total_liabilities))
-        
+
         }
 
         function thousands_separators(num) {

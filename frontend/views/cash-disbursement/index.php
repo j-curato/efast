@@ -68,7 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php
     $gridColumn = [
-        ['class' => 'yii\grid\SerialColumn'],
+        // ['class' => 'yii\grid\SerialColumn'],
 
         'id',
         // 'book_id',
@@ -125,7 +125,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ExportMenu::widget([
                     'dataProvider' => $dataProvider,
                     'columns' => $gridColumn,
-                    'filename' => 'Jev',
+                    'filename' => 'Cash Disbursements',
                     'exportConfig' => [
                         ExportMenu::FORMAT_TEXT => false,
                         // ExportMenu::FORMAT_PDF => false,

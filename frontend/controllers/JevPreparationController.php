@@ -1033,7 +1033,7 @@ class JevPreparationController extends Controller
         $sheet->setCellValue('A6', 'DATE');
         $sheet->setCellValue('B6', 'JEV No,');
         $sheet->setCellValue('C6', 'DV No.');
-        $sheet->setCellValue('D6', 'LDDAP !');
+        $sheet->setCellValue('D6', 'LDDAP/Check Number');
         $sheet->setCellValue('E6', 'NAME !');
         $sheet->setCellValue('F6', 'PAYEE !');
         $x = 7;
@@ -1073,7 +1073,15 @@ class JevPreparationController extends Controller
         $row = 7;
         $col = 1;
         foreach ($data as $d) {
+            $payee_name = '';
+            if (!empty($d->payee_id)) {
+                $payee_name = Payee::findOne($d->payee_id)->account_name;
+            }
             $sheet->setCellValueByColumnAndRow(1, $row,  $d->reporting_period);
+            $sheet->setCellValueByColumnAndRow(2, $row,  $d->jev_number);
+            $sheet->setCellValueByColumnAndRow(3, $row,  $d->dv_number);
+            $sheet->setCellValueByColumnAndRow(4, $row,  $d->check_ada_number);
+            $sheet->setCellValueByColumnAndRow(6, $row,  $payee_name);
             $total = 0;
             foreach ($d->jevAccountingEntries as $ae) {
 
@@ -1109,18 +1117,38 @@ class JevPreparationController extends Controller
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
         $file = "transaction\ckdj_excel_$id.xlsx";
         $writer->save($file);
-        // $readableStream = fopen($file, 'rb');
-        // readfile($file);
-        // return "SUCCESS";
 
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename="' . basename($file) . '"');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header('Content-Length: ' . filesize($file));
-        readfile($file);
+
+        // Initialize the cURL session
+        $ch = curl_init($file);
+
+        // Inintialize directory name where
+        // file will be save
+        $dir = './';
+
+        // Use basename() function to return
+        // the base name of file 
+        $file_name = basename($file);
+
+        // Save file into file location
+        $save_file_loc = $dir . $file_name;
+
+        // Open file 
+        $fp = fopen($save_file_loc, 'wb');
+
+        // It set an option for a cURL transfer
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+
+        // Perform a cURL session
+        curl_exec($ch);
+
+        // Closes a cURL session and frees all resources
+        curl_close($ch);
+
+        // Close file
+        fclose($fp);
+
         exit;
     }
 
@@ -1923,7 +1951,7 @@ class JevPreparationController extends Controller
                 'ref_number' => $reference
             ])
             ->orderBy([
-                'jev_number' => SORT_DESC
+                'id' => SORT_DESC
             ])->one();
         $ff = Books::find()
             ->where("id = :id", [
@@ -1956,7 +1984,7 @@ class JevPreparationController extends Controller
         return $ff;
         // ob_start();
         // echo "<pre>";
-        // var_dump($fund_cluster_code);
+        // var_dump( $query);
         // echo "</pre>";
         // return ob_get_clean();
     }

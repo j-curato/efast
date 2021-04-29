@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- <h1><?= Html::encode($this->title) ?></h1> -->
     <?php $t = yii::$app->request->baseUrl . '/index.php?r=jev-preparation/delete&id=' . $model->id; ?>
     <p class="actions" style="margin-left:50px;">
-        <?= Html::a('Update', ['update', 'id' => $model->id,'duplicate'=>false], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Update', ['update', 'id' => $model->id, 'duplicate' => false], ['class' => 'btn btn-primary']) ?>
         <?php
         //  Html::a('Delete', ['delete', 'id' => $model->id], [
         //     'class' => 'btn btn-danger delete',
@@ -120,7 +120,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </tr>
                 <tr>
-                    <th rowspan="1" colspan="4">
+                    <th rowspan="1" colspan="3">
                         <div>
                             <span>
                                 Date:
@@ -249,7 +249,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         echo "<td>CHECK#</td>";
                     } else {
                         echo "<td></td>";
-                        echo "<td></td>";
+                        // echo "<td></td>";
                     }
                     echo "<td>{$model->check_ada_number}</td>";
                     ?>
@@ -458,7 +458,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 margin-bottom: 5cm;
             } */
 
-
+            .main-footer {
+                display: none;
+            }
 
         }
     </style>

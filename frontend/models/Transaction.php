@@ -86,4 +86,12 @@ class Transaction extends \yii\db\ActiveRecord
     {
         return $this->hasOne(ResponsibilityCenter::class, ['id' => 'responsibility_center_id']);
     }
+    public function getProcessOrs()
+    {
+        return $this->hasOne(ProcessOrs::class, ['transaction_id' => 'id']);
+    }
+    // public function getRaouds()
+    // {
+    //     return $this->hasMany(Raouds::className(), ['process_ors_id' => 'id']);
+    // }
 }
