@@ -2,13 +2,15 @@
 
 use app\models\ProcessOrs;
 use app\models\Raouds;
+use aryelds\sweetalert\SweetAlert;
+use aryelds\sweetalert\SweetAlertAsset;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\ProcessOrsEntries */
 
-$this->title = $model->id;
+$this->title = $model->processOrs->serial_number;
 $this->params['breadcrumbs'][] = ['label' => 'Process Ors Entries', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -22,14 +24,23 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container">
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-            <?= Html::a('Cancel', ['cancel', 'id' => $ors->id], [
-                'class' => 'btn btn-danger',
-                'data' => [
-                    'confirm' => 'Are you sure you want to cancel this item?',
-                    'method' => 'post',
-                ],
-            ]) ?>
+       
             <?php
+            if ($ors->is_cancelled){
+                echo "
+                <button class='btn btn-success' id='cancel'>
+                    Activate
+                </button>
+                ";
+            }
+            else{
+                echo "
+                <button class='btn btn-danger' id='cancel'>
+                    Cancel
+                </button>
+                ";
+            }
+            echo "<input type='text' id='cancel_id' value='$ors->id' style='display:none'/>";
             $t = yii::$app->request->baseUrl . "/index.php?r=transaction/view&id=$ors->transaction_id";
             echo  Html::a('Transaction', $t, ['class' => 'btn btn-info']);
             ?>
@@ -52,12 +63,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>
                     General Ledger
                 </th>
-                <th>
+                <th style='text-align:right'>
                     Amount
                 </th>
             </thead>
             <tbody>
                 <?php
+                $total = 0;
                 foreach ($ors->raouds as $key => $val) {
 
                     echo "
@@ -77,16 +89,21 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td>
                            {$val->raoudEntries->chartOfAccount->general_ledger}
                         </td>
-                        <td>" .
+                        <td style='text-align:right'>" .
                         number_format($val->raoudEntries->amount, 2)
                         . "</td>
          
                     </tr>
                     
                     ";
+                    $total += $val->raoudEntries->amount;
                 }
 
                 ?>
+                <tr>
+                    <td colspan="5" style='text-align:center;font-weight:bold;'>Total</td>
+                    <td style='text-align:right;font-weight:bold;'><?php echo number_format($total, 2); ?></td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -135,3 +152,73 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 12px;
     }
 </style>
+<?php
+
+SweetAlertAsset::register($this);
+$script = <<< JS
+
+    $("#cancel").click(function(){
+    swal({
+        title: "Are you sure?",
+        text: "You will not be able to recover this imaginary file!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: '#DD6B55',
+        confirmButtonText: 'Yes, I am sure!',
+        cancelButtonText: "No, cancel it!",
+        closeOnConfirm: false,
+        closeOnCancel: true
+    },
+    function(isConfirm){
+
+    if (isConfirm){
+                $.ajax({
+                    type:"POST",
+                    url:window.location.pathname + "?r=process-ors-entries/cancel",
+                    data:{
+                        id:$("#cancel_id").val()
+                    },
+                    success:function(data){
+                        var res = JSON.parse(data)
+                        // swal({
+                        //     title:"Success",
+                        //     type:'success',
+                        //     button:false,
+                        //     timer:3000,
+                        //  })
+                        // console.log(data)
+                        var cancelled = res.cancelled?"Successfuly Cancelled":"Successfuly Activated";
+                        if(res.isSuccess){
+                            swal({
+                                title:cancelled,
+                                type:'success',
+                                button:false,
+                                timer:3000,
+                            },function(){
+                                location.reload(true)
+                            })
+                        }else{
+                            swal({
+                                title:"Error",
+                                text:"DV is Not canceleed",
+                                type:'error',
+                                button:false,
+                                timer:3000,
+                            })
+                        }
+                    }
+                })
+
+
+        } 
+    })
+
+    })
+    $(document).ready(function(){
+        
+    })
+
+JS;
+$this->registerJs($script);
+
+?>

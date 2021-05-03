@@ -25,8 +25,23 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container panel panel-default">
         <p>
 
-            <?php
 
+            <?php
+            if ($model->is_cancelled) {
+                echo "
+                    <button class='btn btn-success' id='cancel'>
+                        Activate
+                     </button>
+                    ";
+            } else {
+                echo "
+                <button class='btn btn-danger' id='cancel'>
+                    Cancel
+                 </button>
+                ";
+            }
+
+            echo "<input type='text' value='$model->id' id='cancel_id' style='display:none;'/>";
 
 
             // $q = Raouds::find()
@@ -498,9 +513,11 @@ $this->params['breadcrumbs'][] = $this->title;
         .square-icon {
             font-size: 20px;
         }
-        .container{
+
+        .container {
             padding: 12px;
         }
+
         .serial {
             margin-top: 8px;
         }
@@ -528,7 +545,8 @@ $this->params['breadcrumbs'][] = $this->title;
             .actions {
                 display: none;
             }
-            .btn{
+
+            .btn {
                 display: none;
             }
 
@@ -634,7 +652,58 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 SweetAlertAsset::register($this);
 $script = <<< JS
+    $("#cancel").click(function(){
+        swal({
+            title: "Are you sure?",
+            text: "You will not be able to recover this imaginary file!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: '#DD6B55',
+            confirmButtonText: 'Yes, I am sure!',
+            cancelButtonText: "No, cancel it!",
+            closeOnConfirm: false,
+            closeOnCancel: true
+         },
+         function(isConfirm){
 
+           if (isConfirm){
+                $.ajax({
+                type:'POST',
+                url:window.location.pathname + "?r=dv-aucs/cancel",
+                data:{id:$("#cancel_id").val()},
+                success:function(data){
+                    
+                    var res = JSON.parse(data)
+                    var cancelled = res.cancelled?"Successfuly Cancelled":"Successfuly Activated";
+                    if(res.isSuccess){
+                        swal({
+                                title:cancelled,
+                                type:'success',
+                                button:false,
+                                timer:3000,
+                            },function(){
+                                location.reload(true)
+                            })
+                    }
+                    else{
+                        swal({
+                                title:"Error Cannot Cancel",
+                                text:"Dili Ma  Cancel ang Disbursment Niya",
+                                type:'error',
+                                button:false,
+                                timer:3000,
+                            })
+                    }
+                }
+            })
+
+
+            } else {
+                swal("Cancelled", "Your imaginary file is safe :)", "error"); 
+            }
+        })
+
+    })
 
 JS;
 $this->registerJs($script);

@@ -203,7 +203,7 @@ class JevPreparationController extends Controller
                 ]);
             }
             // $query1->orderBy('jev_preparation.reporting_period');
-            $wew =  $query1
+         $query1
                 ->groupBy('jev_accounting_entries.chart_of_account_id')
                 ->orderBy('jev_preparation.reporting_period DESC')
                 ->orderBy('jev_preparation.date DESC')
@@ -1314,7 +1314,7 @@ class JevPreparationController extends Controller
             } else {
                 $reference =  $_POST['reference'];
             }
-            // $reference = !empty($_POST['reference']) ? $_POST['reference'] : '';
+            // $reference =  'Check';
             $payee = !empty($_POST['payee']) ? $_POST['payee'] : '';
             $lddap = !empty($_POST['lddap']) ? $_POST['lddap'] : '';
             $cadadr_number = !empty($_POST['cadadr_number']) ? $_POST['cadadr_number'] : '';
@@ -1333,7 +1333,7 @@ class JevPreparationController extends Controller
             if ($total_debit == $total_credit) {
 
                 $year = date('Y', strtotime($reporting_period));
-                if ($year != 2020) {
+                // if ($year != 2020) {
 
 
 
@@ -1517,9 +1517,9 @@ class JevPreparationController extends Controller
                         $errors = $jev_preparation->errors;
                         return json_encode(['error' => $errors]);
                     }
-                } else {
-                    return json_encode(['isSuccess' => false, 'error' => 'Reporting Period Must be 2021']);
-                }
+                // } else {
+                //     return json_encode(['isSuccess' => false, 'error' => 'Reporting Period Must be 2021']);
+                // }
             } else {
                 return json_encode(
                     [

@@ -1,5 +1,6 @@
 <?php
 
+use aryelds\sweetalert\SweetAlertAsset;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -17,17 +18,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
+
+
         <?php
-        
+        if ($model->is_cancelled) {
+            echo "<button class='btn btn-success' id='cancel' style='margin:5px'>Activate</button>";
+        } else {
+            echo "<button class='btn btn-danger' id='cancel' style='margin:5px'>Cancel</button>";
+        }
+        echo "<input type='text' id='cancel_id' value='$model->id' style='display:none;'/>";
         $t = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/view&id=$model->dv_aucs_id";
-        echo  Html::a('DV Link', $t, ['class' => 'btn btn-success ']);
+        echo  Html::a('DV Link', $t, ['class' => 'btn btn-info ', 'style' => 'margin:3px']);
         ?>
     </p>
 
@@ -35,12 +36,24 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'book_id',
-            'dv_aucs_id',
+            'book.name',
             'reporting_period',
-            'mood_of_payment',
+            'mode_of_payment',
+            'dvAucs.dv_number',
+            'dvAucs.payee.account_name',
+            'dvAucs.particular',
             'check_or_ada_no',
-            'is_cancelled',
+            'ada_number',
+            [
+                'label' => 'Cancelled',
+                'value' => function ($model) {
+                    if ($model->is_cancelled === 0) {
+                        return 'False';
+                    } else {
+                        return 'True';
+                    }
+                }
+            ],
             'issuance_date',
         ],
     ]) ?>
@@ -60,3 +73,65 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
 </div>
+
+
+<?php
+SweetAlertAsset::register($this);
+$script = <<<JS
+    $("#cancel").click(function(){
+        swal({
+            title: "Are you sure?",
+            text: "You will not be able to recover this imaginary file!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: '#DD6B55',
+            confirmButtonText: 'Yes, I am sure!',
+            cancelButtonText: "No, cancel it!",
+            closeOnConfirm: false,
+            closeOnCancel: true
+         },
+         function(isConfirm){
+
+           if (isConfirm){
+                    $.ajax({
+                        type:"POST",
+                        url:window.location.pathname + "?r=cash-disbursement/cancel",
+                        data:{
+                            id:$("#cancel_id").val()
+                        },
+                        success:function(data){
+                            var res = JSON.parse(data)
+                            var cancelled = res.cancelled?"Successfuly Cancelled":"Successfuly Activated";
+                            if(res.isSuccess){
+                                swal({
+                                        title:cancelled,
+                                        type:'success',
+                                        button:false,
+                                        timer:3000,
+                                    },function(){
+                                        location.reload(true)
+                                    })
+                            }
+                            else{
+                                swal({
+                                        title:"Error Cannot Cancel",
+                                        text:"Dili Ma  Cancel ang Disbursment Niya",
+                                        type:'error',
+                                        button:false,
+                                        timer:3000,
+                                    })
+                            }
+
+                        }
+                    })
+
+
+            } 
+        })
+
+    
+
+    })
+JS;
+$this->registerJs($script);
+?>

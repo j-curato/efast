@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use app\models\Books;
+use app\models\DvAccountingEntries;
 use Yii;
 use app\models\DvAucs;
 use app\models\DvAucsEntries;
@@ -12,6 +13,7 @@ use app\models\ProcessOrsSearch;
 use app\models\Raouds;
 use app\models\Raouds2Search;
 use app\models\RaoudsSearchForProcessOrsSearch;
+use app\models\SubAccounts2;
 use ErrorException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -127,12 +129,12 @@ class DvAucsController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    // public function actionDelete($id)
+    // {
+    //     $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
-    }
+    //     return $this->redirect(['index']);
+    // }
 
     /**
      * Finds the DvAucs model based on its primary key value.
@@ -240,10 +242,29 @@ class DvAucsController extends Controller
             $payee_id = $_POST['payee'];
             $book_id = !empty($_POST['book_id']) ? $_POST['book_id'] : 5;
             $transaction_type = strtolower($_POST['transaction_type']);
+
+            $account_entries =  !empty($_POST['chart_of_account_id']) ? count($_POST['chart_of_account_id']) : 0;
+            if ($account_entries === 1 && $_POST['chart_of_account_id'][0] === '') {
+                $account_entries = 0;
+            }
+            // return json_encode( $_POST['chart_of_account_id'] );
+
             if ($transaction_type === 'single') {
                 if (count($process_id) > 1) {
                     return json_encode(["isSuccess" => false, "error" => "Cannot Insert Transaction Type is Single But has More Than 1 Entries"]);
                     die();
+                }
+                $query = DvAucsEntries::find()
+                    ->where("dv_aucs_entries.process_ors_id =:process_ors_id", ['process_ors_id' => $process_id[0]])
+                    ->all();
+                if (empty($_POST['update_id'])) {
+                    foreach ($query as $val) {
+
+                        if ($val->dvAucs->transaction_type === 'Single' && $val->dvAucs->is_cancelled === 0) {
+
+                            return json_encode(['isSuccess' => 'exist', 'error' => 'Naa nay DV', 'id' => $val->dvAucs->id]);
+                        }
+                    }
                 }
             }
 
@@ -254,6 +275,9 @@ class DvAucsController extends Controller
                 if (!empty($_POST['update_id'])) {
                     $dv = DvAucs::findOne($_POST['update_id']);
                     foreach ($dv->dvAucsEntries as $val) {
+                        $val->delete();
+                    }
+                    foreach ($dv->dvAccountingEntries as $val) {
                         $val->delete();
                     }
                 } else {
@@ -306,15 +330,61 @@ class DvAucsController extends Controller
                             if ($dv_entries->save(false)) {
                             }
                         }
+                        if (!empty($account_entries)) {
+                            for ($i = 0; $i < $account_entries; $i++) {
+
+                                $x = explode('-', $_POST['chart_of_account_id'][$i]);
+
+                                $chart_id = 0;
+                                if ($x[2] == 2) {
+                                    $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
+                                        ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+                                        ->where('sub_accounts1.id =:id', ['id' => intval($x[0])])->one()['id'];
+                                } else if ($x[2] == 3) {
+                                    // $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
+                                    //     ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+                                    //     ->where('sub_accounts1.id =:id', ['id' => intval($x[0])])->one()['id'];
+                                    $chart_id = SubAccounts2::findOne(intval($x[0]))->subAccounts1->chart_of_account_id;
+                                } else {
+                                    $chart_id = $x[0];
+                                }
+
+                                $dv_accounting_entries = new DvAccountingEntries();
+                                $dv_accounting_entries->dv_aucs_id = $dv->id;
+                                $dv_accounting_entries->chart_of_account_id = intval($chart_id);
+                                $dv_accounting_entries->debit = !empty($_POST['debit'][$i]) ? $_POST['debit'][$i] : 0;
+                                $dv_accounting_entries->credit = !empty($_POST['credit'][$i]) ? $_POST['credit'][$i] : 0;
+                                // $dv_accounting_entries->current_noncurrent=$jev_preparation->id;
+                                $dv_accounting_entries->cashflow_id =  !empty($_POST['cash_flow_id'][$i]) ? $_POST['cash_flow_id'][$i] : '';
+                                $dv_accounting_entries->net_asset_equity_id =  !empty($_POST['isEquity'][$i]) ? $_POST['isEquity'][$i] : '';
+                                $dv_accounting_entries->lvl = $x[2];
+                                $dv_accounting_entries->object_code = $x[1];
+
+                                if (!($flag = $dv_accounting_entries->save(false))) {
+                                    //  return json_encode();
+                                    $s[] =  $dv_accounting_entries->cash_flow_transaction;
+                                    // echo "<pre>";
+                                    // var_dump($jv->id);
+                                    // echo "</pre>";
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                                // } else {
+                                //     return json_encode("more than 1 decimals");
+                                //     $transaction->rollBack();
+                                //     break;
+                                // }
+                            }
+                        }
                     }
                 } else {
-                    return json_encode(['error' => $dv->errors]);
+                    return json_encode(['isSuccess' => false, 'error' => $dv->errors]);
                 }
                 if ($flag) {
 
                     $transaction->commit();
                     // return $this->redirect(['view', 'id' => $model->id]);
-                    return json_encode(['isSuccess' => 'success', 'id' => $dv->id]);
+                    return json_encode(['isSuccess' => true, 'id' => $dv->id]);
                 }
             } catch (ErrorException $error) {
 
@@ -415,7 +485,40 @@ class DvAucsController extends Controller
                     ->where("dv_aucs.id =:id", ['id' => $dv_id])
                     ->all();
             }
-            return json_encode(["result" => $query]);
+
+            $model = DvAucs::findOne($dv_id);
+            $dv_accounting_entries = [];
+            if (!empty($model->dvAccountingEntries)) {
+
+                foreach ($model->dvAccountingEntries as $val) {
+
+                    if ($val->lvl === 2) {
+                        $chart_id = (new \yii\db\Query())->select(['sub_accounts1.id'])->from('sub_accounts1')
+                            ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+                            ->where('sub_accounts1.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
+                    } else if ($val->lvl === 3) {
+                        $chart_id = (new \yii\db\Query())->select(['sub_accounts2.id'])->from('sub_accounts2')
+                            // ->join("LEFT JOIN", 'sub_accounst1', 'sub_accounts2.sub_accounts1_id = sub_accounts1.id')
+                            // ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+                            ->where('sub_accounts2.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
+                    } else {
+                        $chart_id =  $val->chart_of_account_id;
+                    }
+                    $dv_accounting_entries[] = [
+                        'dv_aucs_id' => $val->dv_aucs_id,
+                        'chart_of_account_id' => $val->chart_of_account_id,
+                        'id' => $chart_id,
+                        'debit' => $val->debit,
+                        'credit' => $val->credit,
+                        'net_asset_equity_id' => $val->net_asset_equity_id,
+                        'object_code' => $val->object_code,
+                        'lvl' => $val->lvl,
+                        'cashflow_id' => $val->cashflow_id,
+                    ];
+                }
+            }
+
+            return json_encode(["result" => $query, 'dv_accounting_entries' => $dv_accounting_entries]);
         }
     }
     public function actionImport()
@@ -632,6 +735,32 @@ class DvAucsController extends Controller
             var_dump($data);
             echo "<pre>";
             return ob_get_clean();
+        }
+    }
+    public function actionCancel()
+    {
+
+        if ($_POST) {
+            $id = $_POST['id'];
+            $model = DvAucs::findOne($id);
+            if (!empty($model->cashDisbursement->id)) {
+
+                if ($model->cashDisbursement->is_cancelled === 0) {
+                    return json_encode(['isSuccess' => false, 'error' => 'Disbursement is Not Cancelled']);
+                    die();
+                }
+            }
+            $model->is_cancelled ? $model->is_cancelled = false : $model->is_cancelled = true;
+            if ($model->save(false)) {
+                return json_encode(['isSuccess' => true, 'cancelled' => $model->is_cancelled]);
+            }
+
+            // ob_clean();
+            // echo "<pre>";
+            // var_dump($model->cashDisbursement);
+            // echo "</pre>";
+            // return ob_get_clean();
+            // return json_encode($model);
         }
     }
 }

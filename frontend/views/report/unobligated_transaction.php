@@ -65,7 +65,8 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => 'Gross Amount',
                 'value' => 'gross_amount',
-                'format' => ['decimal', 2]
+                'format' => ['decimal', 2],
+                'hAlign'=>'right'
             ]
 
         ],

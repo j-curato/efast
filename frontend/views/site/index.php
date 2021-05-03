@@ -45,6 +45,7 @@ $this->title = 'Dashboard';
     WHERE cash_disbursement.dv_aucs_id = dv_aucs.id
     AND dv_aucs.id = dv_aucs_entries.dv_aucs_id
     AND cash_disbursement.book_id = books.id
+    AND cash_disbursement.is_cancelled = 0
     GROUP BY cash_disbursement.book_id")->queryAll();
 
 
@@ -313,10 +314,30 @@ $this->title = 'Dashboard';
 
                             </td>
                             <td style="text-align: right;">
-                                <span>
+                                <span id="total_cash_disbursed">
                                     <?php
-                                    echo  number_format($cash_recieved['total_cash_recieved'] - $result['Fund 01'][0]['total_disbursed'], 2);
+                                    // echo  number_format($cash_recieved['total_cash_recieved'] - $result['Fund 01'][0]['total_disbursed'], 2);
                                     ?>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>Pending DV's for Disbursement</span>
+
+                            </td>
+                            <td style="text-align: center;" colspan="2">
+                                <span id="total_amount_pending">
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>Cash Balance per Accounting</span>
+
+                            </td>
+                            <td style="text-align: center;" colspan="2">
+                                <span id="cash_balance_per_accounting">
                                 </span>
                             </td>
                         </tr>
@@ -412,3 +433,33 @@ $this->title = 'Dashboard';
         padding: 12px;
     }
 </style>
+
+<?php
+
+$script = <<<JS
+      function thousands_separators(num) {
+
+            var number = Number(Math.round(num + 'e2') + 'e-2')
+            var num_parts = number.toString().split(".");
+            num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return num_parts.join(".");
+            console.log(num)
+        }
+    $(document).ready(function(){
+
+        // CASH RECIEVED AND DISBURSEMENT
+        $.ajax({
+            type:'POST',
+            url:window.location.pathname + '?r=report/get-cash',
+            success:function(data){
+                var res = JSON.parse(data)
+                console.log(res)
+                $('#total_cash_disbursed').text(thousands_separators(res['cash_balance']))
+                $('#total_amount_pending').text(thousands_separators(res['total_amount_pending']))
+                $('#cash_balance_per_accounting').text(thousands_separators(res['cash_balance_per_accounting']))
+            }
+        })
+    })
+JS;
+$this->registerJs($script);
+?>

@@ -41,8 +41,8 @@ class ProcessOrsRaoudsSearch extends Raouds
      */
     public function search($params)
     {
-        $query = Raouds::find()->where("process_ors_id IS NOT NULL")
-        ->andWhere("process_ors.is_cancelled =false");
+        $query = Raouds::find()->where("process_ors_id IS NOT NULL");
+      
 
         // add conditions that should always apply here
         $query->joinWith("processOrs");
@@ -62,7 +62,7 @@ class ProcessOrsRaoudsSearch extends Raouds
         }
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
+            'raouds.id' => $this->id,
             // 'process_ors_id' => $this->process_ors_id,
             'record_allotment_entries_id' => $this->record_allotment_entries_id,
             'obligated_amount' => $this->obligated_amount,

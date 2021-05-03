@@ -17,8 +17,8 @@ class CashDisbursementSearch extends CashDisbursement
     public function rules()
     {
         return [
-            [['id', 'book_id', 'dv_aucs_entries_id'], 'integer'],
-            [['reporting_period','dv_aucs_id', 'mode_of_payment', 'check_or_ada_no', 'is_cancelled', 'issuance_date'], 'safe'],
+            [['id', 'book_id'], 'integer'],
+            [['reporting_period','dv_aucs_id', 'mode_of_payment', 'check_or_ada_no', 'is_cancelled', 'issuance_date','ada_number'], 'safe'],
         ];
     }
 
@@ -60,15 +60,15 @@ class CashDisbursementSearch extends CashDisbursement
         $query->andFilterWhere([
             'cash_disbursement.id' => $this->id,
             'book_id' => $this->book_id,
-            'dv_aucs_entries_id' => $this->dv_aucs_entries_id,
         ]);
 
-        $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
+        $query->andFilterWhere(['like', 'cash_disbursement.reporting_period', $this->reporting_period])
             ->andFilterWhere(['like', 'mode_of_payment', $this->mode_of_payment])
-            ->andFilterWhere(['like', 'check_or_ada_no', $this->check_or_ada_no])
+            ->andFilterWhere(['like', 'cash_disbursement.check_or_ada_no', $this->check_or_ada_no])
+            ->andFilterWhere(['like', 'ada_number', $this->ada_number])
             ->andFilterWhere(['like', 'is_cancelled', $this->is_cancelled])
             ->andFilterWhere(['like', 'dv_aucs.dv_number', $this->dv_aucs_id])
-            ->andFilterWhere(['like', 'issuance_date', $this->issuance_date]);
+            ->andFilterWhere(['like', 'cash_disbursement.issuance_date', $this->issuance_date]);
 
         return $dataProvider;
     }

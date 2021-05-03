@@ -18,7 +18,7 @@ class JevPreparationSearch extends JevPreparation
     {
         return [
             [['id', 'responsibility_center_id', 'fund_cluster_code_id','book_id'], 'integer'],
-            [['check_ada_number','reporting_period', 'date', 'jev_number', 'dv_number', 'lddap_number' , 'explaination','ref_number'], 'safe'],
+            [['check_ada_number','reporting_period', 'date', 'jev_number', 'dv_number', 'lddap_number' , 'explaination','ref_number','payee_id'], 'safe'],
         ];
     }
 
@@ -55,7 +55,7 @@ class JevPreparationSearch extends JevPreparation
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->joinWith('payee');
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
@@ -73,6 +73,7 @@ class JevPreparationSearch extends JevPreparation
             ->andFilterWhere(['like', 'lddap_number', $this->lddap_number])
             ->andFilterWhere(['like', 'explaination', $this->explaination])
             ->andFilterWhere(['like', 'check_ada_number', $this->check_ada_number])
+            ->andFilterWhere(['like', 'payee.account_name', $this->payee_id])
             // ->andFilterWhere(['like', 'jev_accounting_entries.chart_of_account_id', 2])
             ;
 

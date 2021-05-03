@@ -104,7 +104,7 @@ $script = <<<JS
 
     $(document).ready(function(){
 
-        $.
+        // $.
 
     })
 JS;

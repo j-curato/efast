@@ -4,12 +4,11 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\ProcessOrsEntries */
-if (!empty($update_id)){
-    $title=ucwords($update) . " Process Ors Entries";
-}
-else
-{
-    $title='Create Process Ors Entries';
+
+if (!empty($update_id)) {
+    $title = ucwords($update) . " Process Ors ";
+} else {
+    $title = 'Create Process Ors ';
 }
 $this->title = $title;
 $this->params['breadcrumbs'][] = ['label' => 'Process Ors Entries', 'url' => ['index']];
@@ -19,11 +18,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <?= $this->render('_form_new', [
-        
+
         'searchModel' => $searchModel,
         'dataProvider' => $dataProvider,
         'update_id' => $update_id,
-        'update'=>$update
+        'update' => $update
     ]) ?>
 
 </div>

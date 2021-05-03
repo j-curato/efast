@@ -20,6 +20,12 @@ use yii\helpers\Html;
 
 
     <div id="container" class="container">
+        <div class="row">
+            <div class="col-sm-12" style="color:red;text-align:center">
+                <h4 id="link">
+                </h4>
+            </div>
+        </div>
         <form id='save_data' method='POST'>
             <input type="text" name='book_id' id="book_id" style="display: none;">
             <?php
@@ -127,8 +133,62 @@ use yii\helpers\Html;
 
                 </tfoot>
             </table>
+
+            <div class="container">
+                <div id="form-0" class="accounting_entries" style="max-width: 100%;">
+                    <!-- chart of accounts -->
+
+                    <div class="row">
+                        <div>
+                            <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(0)"><i class="glyphicon glyphicon-minus"></i></button>
+                            <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="glyphicon glyphicon-plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label for="isCurrent">Current/NonCurrent </label>
+
+                            <input type="text" name="isCurrent[]" placeholder="Current/NonCurrent" id="isCurrent-0" />
+                        </div>
+                        <div class="col-sm-3">
+                            <label for="cadadr_number">Cash Flow </label>
+
+                            <select id="cashflow-0" name="cash_flow_id[]" style="width: 100% ;display:none">
+                                <option></option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3">
+                            <label for="cadadr_number">Changes in Net Asset and Equity </label>
+
+                            <select id="isEquity-0" name="isEquity[]" style="width: 100% ;display:none">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row gap-1">
+
+                        <div class="col-sm-5 ">
+
+                            <div>
+                                <select id="chart-0" name="chart_of_account_id[]" class="chart-of-account" onchange=isCurrent(this,0) style="width: 100%">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="text" id="debit-0" name="debit[]" class="debit" placeholder="Debit">
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="text" id="credit-0" name="credit[]" class="credit" placeholder="Credit">
+                        </div>
+                    </div>
+                </div>
+            </div>
             <button type="submit" class="btn btn-success" style="width: 100%;" id="save" name="save"> SAVE</button>
         </form>
+
         <form name="add_data" id="add_data">
 
             <div style="display: none;">
@@ -433,6 +493,13 @@ use yii\helpers\Html;
 
     <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
     <script>
+        var vacant = 0;
+        var i = 1;
+        var x = [0];
+        var update_id = undefined;
+        var cashflow = [];
+        var accounts=[];
+
         function enableDisable(checkbox) {
             var isDisable = true
             if (checkbox.checked) {
@@ -441,6 +508,157 @@ use yii\helpers\Html;
             enableInput(isDisable, checkbox.value)
 
         }
+
+        function removeItem(index) {
+            // $(`#form-${index}`).remove();
+            // arr_form.splice(index, 1);
+            // vacant = index
+            // $('#form' + index + '').remove();
+
+            document.getElementById(`form-${index}`).remove()
+            // console.log(index)
+            for (var y = 0; y < x.length; y++) {
+                if (x[y] === index) {
+                    delete x[y]
+                    x.splice(y, 1)
+                }
+            }
+            console.log(x, Math.max.apply(null, x))
+            getTotal()
+
+
+        }
+
+        function isCurrent(index, i) {
+            console.log(index.value)
+            // var chart_id = document.getElementById('chart-0').val()
+            // console.log(index)
+            $.ajax({
+                type: 'POST',
+                url: window.location.pathname + '?r=jev-preparation/is-current',
+                data: {
+                    chart_id: index.value
+                },
+                dataType: 'json',
+                success: function(data) {
+                    $('#isCurrent-' + i).val(data.result.current_noncurrent)
+                    console.log(data)
+                    // data.isCashEquivalent ? : $('#cash_flow_id-' + i).hide()
+                    data.isEquity ? $('#isEquity-' + i).show() : $('#isEquity-' + i).hide()
+                    // console.log(data)
+                    if (data.isCashEquivalent == true) {
+                        // $('#cashflow-' + i).select2({
+                        //     data: cashflow,
+                        //     placeholder: 'Select Cash Flow'
+                        // })
+                        // $('#cashflow-' + i).val(2).trigger('change');
+                        $('#cashflow-' + i).next().show()
+                    } else {
+
+                        $('#cashflow-' + i).val(null).trigger('change');
+                        // document.getElementById('isEquity-' + i).value = 'null'
+                        $('#cashflow-' + i).select2().next().hide();
+
+
+                    }
+                    if (data.isEquity == true) {
+                        // $('#isEquity-' + i).select2({
+                        //     data: net_asset,
+                        //     placeholder: 'Select Net Asset'
+
+                        // })
+
+                        $('#isEquity-' + i).next().show()
+                    } else {
+
+                        $('#isEquity-' + i).val(null).trigger('change');
+                        // document.getElementById('isEquity-' + i).value = 'null'
+                        $('#isEquity-' + i).select2().next().hide();
+
+
+                    }
+                }
+            })
+        }
+
+
+        function add() {
+
+            var latest = Math.max.apply(null, x)
+            // console.log('index: '+latest)
+            $(`#form-${latest}`)
+                .after(`<div id="form-${i}" style="max-width:100%;border: 1px solid gray;width:100%; padding: 2rem; margin-top: 1rem;background-color:white;border-radius:5px" class="control-group input-group" class="accounting_entries">
+                <!-- chart of accounts -->
+                <div class="row"  >
+                    <div>
+                        <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(${i})"><i class="glyphicon glyphicon-minus"></i></button>
+                        <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="glyphicon glyphicon-plus"></i></button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label for="isCurrent">Current/NonCurrent </label>
+                        <input type="text" name="isCurrent[]" id="isCurrent-${i}" placeholder="Current/NonCurrent"/>
+                    </div>
+                    <div class="col-sm-3" style="">
+                        <label for="isCurrent">Cash Flow </label>
+                        <select id="cashflow-${i}" name="cash_flow_id[]" style="width: 100% ;display:none" >
+                            <option ></option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3" >
+                        <label for="isCurrent">Changes in Net Asset and Equity </label>
+                            <select id="isEquity-${i}" name="isEquity[]" style="width: 100% ;display:none" >
+                                <option ></option>
+                            </select>
+                    </div>
+                </div>
+        
+                <div class="row gap-1">
+                        <div class="col-sm-5 ">
+                            <select id="chart-${i}" name="chart_of_account_id[]"  class="chart-of-accounts" onchange=isCurrent(this,${i}) style="width: 100%">
+                            <option></option>
+                            </select>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div >  <input type="text" id="debit-${i}"  name="debit[]" class="debit"  placeholder="Debit"></div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div >  <input type="text"   id="credit-${i}" name="credit[]" class="credit" placeholder="Credit"></div>
+                    </div>
+                </div>
+
+                    
+            </div>
+            `)
+            $(`#chart-${i}`).select2({
+                data: accounts,
+                placeholder: "Select Chart of Account",
+
+            });
+            $(`#cashflow-${i}`).select2({
+                data: cashflow,
+                placeholder: 'Select Cash Flow'
+            }).next().hide()
+            $(`#isEquity-${i}`).select2({
+                data: net_asset,
+                placeholder: 'Select Net Asset'
+
+            }).next().hide();
+            var deb = document.getElementsByName('debit[]');
+            // arr_form.splice(latest, 0, latest + 1)
+            // deb[1].value = 123
+            // console.log(deb[1].value)
+            x.push(i)
+
+            i++
+            // console.log(i)
+
+        }
+        $('.add-btn').click(function() {
+            add()
+        })
 
         function getTotal() {
             var total_disbursed = 0;
@@ -558,94 +776,7 @@ use yii\helpers\Html;
         var transaction_type = $("#transaction").val();
         var dv_count = 1;
         $(document).ready(function() {
-
-            // MAG ADD OG DATA NA BUHATAN OG DV
-            $('#submit').click(function(e) {
-                e.preventDefault();
-                $.ajax({
-                    url: window.location.pathname + '?r=dv-aucs/get-dv',
-                    method: "POST",
-                    data: $('#add_data').serialize(),
-                    success: function(data) {
-                        var res = JSON.parse(data)
-                        console.log(res.results)
-                        if (res.isSuccess) {
-
-                            addDvToTable(res.results)
-                        } else {
-                            swal({
-                                title: "Error",
-                                text: res.error,
-                                type: "error",
-                                timer: 6000,
-                                button: false
-                                // confirmButtonText: "Yes, delete it!",
-                            });
-                        }
-
-                    }
-                });
-                $('.checkbox').prop('checked', false); // Checks it
-                $('.amounts').prop('disabled', true);
-                $('.amounts').val(null);
-            })
-
-        })
-    </script>
-</div>
-
-
-<?php
-$this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-?>
-<?php SweetAlertAsset::register($this); ?>
-<?php
-
-$script = <<< JS
-        var reporting_period = '';
-        var transactions=[];
-        var nature_of_transaction=[];
-        var reference=[];
-        var mrd_classification=[];
-        var books=[];
-
-
-    $('#transaction_table').on('change keyup', '.amount_disbursed', function() {
-        getTotal()
-
-     });
-    
-    $("#transaction").change(function(){
-        var transaction_type=$("#transaction").val()
-        $("#transaction_type").val(transaction_type)
-        // if (transaction_type =='Single'){
-        //     console.log(select_id)
-        var result=[1]
-        // }
-        var count=document.getElementById("transaction_table").rows.length
-        console.log(document.getElementById("transaction_table").rows.length)
-        if (transaction_type ==='No Ors' && count-1 <1){
-            addDvToTable(result)
-        }
-    })
-
-      $(document).ready(function() {
-
-        // CHART OF ACCOUNTS
-        $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
-                .then(function(data) {
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.object_code + ' ' + val.title
-                        })
-                    })
-                    accounts = array
-       
-                })
-                // GET ALL MRD CLASSIFICATIOn
-        $.getJSON('/dti-afms-2/frontend/web/index.php?r=mrd-classification/get-mrd-classification')
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=mrd-classification/get-mrd-classification')
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {
@@ -681,7 +812,7 @@ $script = <<< JS
        
                 })
                 // GET ALL NATURE OF TRANSCTION
-     $.getJSON('/dti-afms-2/frontend/web/index.php?r=nature-of-transaction/get-nature-of-transaction')
+        $.getJSON('/dti-afms-2/frontend/web/index.php?r=nature-of-transaction/get-nature-of-transaction')
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {
@@ -735,6 +866,153 @@ $script = <<< JS
                 })
 
             });
+
+            // MAG ADD OG DATA NA BUHATAN OG DV
+            $('#submit').click(function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: window.location.pathname + '?r=dv-aucs/get-dv',
+                    method: "POST",
+                    data: $('#add_data').serialize(),
+                    success: function(data) {
+                        var res = JSON.parse(data)
+                        console.log(res.results)
+                        if (res.isSuccess) {
+
+                            addDvToTable(res.results)
+                        } else {
+                            swal({
+                                title: "Error",
+                                text: res.error,
+                                type: "error",
+                                timer: 6000,
+                                button: false
+                                // confirmButtonText: "Yes, delete it!",
+                            });
+                        }
+
+                    }
+                });
+                $('.checkbox').prop('checked', false); // Checks it
+                $('.amounts').prop('disabled', true);
+                $('.amounts').val(null);
+            })
+
+            // GET ALL CASHFLOW
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=cash-flow/get-all-cashflow')
+                .then(function(data) {
+
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.specific_cashflow
+                        })
+                    })
+                    cashflow = array
+                    $('#cashflow-0').select2({
+                        data: cashflow,
+                        placeholder: 'Select Cash Flow'
+                    }).next().hide()
+
+
+                })
+            // GET ALL NETASSETS
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=net-asset-equity/get-all-netasset')
+                .then(function(data) {
+
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.specific_change
+                        })
+                    })
+                    net_asset = array
+                    $('#isEquity-0').select2({
+                        data: net_asset,
+                        placeholder: 'Select Net Asset'
+
+                    }).next().hide();
+
+
+                })
+
+        })
+    </script>
+</div>
+
+
+<?php
+$this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+?>
+<?php SweetAlertAsset::register($this); ?>
+<?php
+
+$script = <<< JS
+        var reporting_period = '';
+        var transactions=[];
+        var nature_of_transaction=[];
+        var reference=[];
+        var mrd_classification=[];
+        var books=[];
+        var bbb=undefined;
+
+
+
+    $('#transaction_table').on('change keyup', '.amount_disbursed', function() {
+        getTotal()
+
+     });
+    
+    $("#transaction").change(function(){
+        var transaction_type=$("#transaction").val()
+        $("#transaction_type").val(transaction_type)
+        // if (transaction_type =='Single'){
+        //     console.log(select_id)
+        var result=[1]
+        // }
+        var count=$('#transaction_table tbody tr').length
+        console.log($('#transaction_table tbody tr').length)
+        if (transaction_type ==='No Ors' && count-1 <0){
+            addDvToTable(result)
+        }
+    })
+
+      $(document).ready(function() {
+        $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-all-account')
+                .then(function(data) {
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id + '-' + val.object_code + '-' + val.lvl,
+                            text: val.object_code + ' ' + val.title
+                        })
+                    })
+                    accounts = array
+                    $('#chart-0').select2({
+
+                        data: accounts,
+                        placeholder: "Select Chart of Account",
+
+                    })
+                })
+        // CHART OF ACCOUNTS
+
+        // $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
+        //         .then(function(data) {
+        //             var array = []
+        //             $.each(data, function(key, val) {
+        //                 array.push({
+        //                     id: val.id,
+        //                     text: val.object_code + ' ' + val.title
+        //                 })
+        //             })
+        //             accounts = array
+       
+        //         })
+                // GET ALL MRD CLASSIFICATIOn
+
             // TRANSACTION TYPE
            var transaction = ["Single", "Multiple","No Ors"]
             $('#transaction').select2({
@@ -756,7 +1034,7 @@ $script = <<< JS
                     success: function(data) {
                         var res=JSON.parse(data)
                         console.log(res)
-                        if (res.isSuccess) {
+                        if (res.isSuccess==true) {
                             swal({
                                 title: "Success",
                                 // text: "You will not be able to undo this action!",
@@ -769,11 +1047,25 @@ $script = <<< JS
                             });
                             $('#save_data')[0].reset();
                         }
-                        else{
+                        else if(res.isSuccess==false){
 
                             swal({
                                 title: "Error",
                                 text: res.error,
+                                type: "error",
+                                timer: 6000,
+                                button: false
+                                // confirmButtonText: "Yes, delete it!",
+                            });
+                        }
+                        else if(res.isSuccess=='exist'){
+                            var dv_link = window.location.pathname + "?r=dv-aucs/view&id=" +res.id
+                            $('#link').text('NAA NAY DV ANG ORS ')
+                     bbb = $(`<a type="button" href='`+ dv_link+`' >link here</a>`);
+                                 bbb.appendTo($("#link"));
+                            swal({
+                                title: "Error",
+                                text: "Naa Nay DV",
                                 type: "error",
                                 timer: 6000,
                                 button: false
@@ -798,7 +1090,7 @@ $script = <<< JS
                     var res = JSON.parse(data)
                     var transaction_type=res.result[0]['transaction_type']
                     var type='';
-                    console.log(res.result)
+                    console.log(res)
 
                         if (!transaction_type){
                             if (res.result.length >1){
@@ -826,6 +1118,34 @@ $script = <<< JS
                     $("#nature_of_transaction").val(res.result[0]['nature_of_transaction_id']).trigger("change");
                     $("#reporting_period").val(res.result[0]['reporting_period'])
                     $('#transaction').val(type).trigger('change')
+
+                    var x=0
+                        // console.log(jev_accounting_entries)
+                        // for (i; i < jev_accounting_entries.length;) {
+                        // }
+                        var dv_accounting_entries = res.dv_accounting_entries;
+                        for (x; x<res.dv_accounting_entries.length;x++){
+                            $("#debit-"+x).val(dv_accounting_entries[x]['debit'])
+                            $("#credit-"+x).val(dv_accounting_entries[x]['credit'])
+                            var chart = dv_accounting_entries[x]['id'] +"-" +dv_accounting_entries[x]['object_code']+"-"+dv_accounting_entries[x]['lvl']
+                            
+                            var cashflow = dv_accounting_entries[x]['cashflow_id'];
+                            var net_asset= dv_accounting_entries[x]['net_asset_equity_id'];
+                            $("#chart-"+x).val(chart).trigger('change');
+                            $("#isEquity-"+x).val(dv_accounting_entries[x]['net_asset_equity_id']).trigger('change');
+                            $("#cashflow-"+x).val(cashflow).trigger('change');
+                            // console.log(net_asset); 
+                            if ($( "#cashflow-"+x ).length ){
+                                // console.log(x)
+                            }
+                            else{
+                                // console.log('false')
+                            }
+                            // console.log(chart)
+                            if (x < res.dv_accounting_entries.length -1){
+                                add()
+                            }
+                        }
                     
                 }
             })

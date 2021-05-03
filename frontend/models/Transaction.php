@@ -88,7 +88,7 @@ class Transaction extends \yii\db\ActiveRecord
     }
     public function getProcessOrs()
     {
-        return $this->hasOne(ProcessOrs::class, ['transaction_id' => 'id']);
+        return $this->hasMany(ProcessOrs::class, ['transaction_id' => 'id']);
     }
     // public function getRaouds()
     // {

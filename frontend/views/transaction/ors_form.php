@@ -41,16 +41,16 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php
 
 
-            if (!empty($model->processOrs->id)) {
+            // if (!empty($model->processOrs->id)) {
 
-                $q = Raouds::find()
-                    ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' => $model->processOrs->id])
-                    ->one();
+            //     $q = Raouds::find()
+            //         ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' => $model->processOrs->id])
+            //         ->one();
 
 
-                $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$q->id";
-                echo  Html::a('ORS Link', $t, ['class' => 'btn btn-success ']);
-            }
+            //     $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$q->id";
+            //     echo  Html::a('ORS Link', $t, ['class' => 'btn btn-success ']);
+            // }
 
 
             ?>
@@ -320,6 +320,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php Pjax::end() ?>
 
     </div>
+
+
     <!-- FORM 1 END-->
     <p style='page-break-after:always;'></p>
     <!-- FORM 2-->
@@ -632,6 +634,37 @@ $this->params['breadcrumbs'][] = $this->title;
             </tbody>
         </table>
     </div>
+
+    <div class="container paner panel-default links" style="background-color: white;">
+
+        <table class="table ">
+            <tr>
+                <th>ORS Number</th>
+                <th>Link</th>
+            </tr>
+            <tbody>
+
+                <?php
+                foreach ($model->processOrs as $val)
+                    if (!empty($val->id)) {
+
+                        $q = Raouds::find()
+                            ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' => $val->id])
+                            ->one();
+
+
+                        $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$q->id";
+                        // echo  Html::a('ORS Link', $t, ['class' => 'btn btn-success ']);
+
+                    }
+                echo "<tr>
+                        <td>$val->serial_number</td>
+                        <td>" . Html::a('ORS Link', $t, ['class' => 'btn btn-success ']) . "</td>
+                    </tr>";
+                ?>
+            </tbody>
+        </table>
+    </div>
     <!-- FORM 2 END-->
 
 
@@ -703,9 +736,10 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 
 
-    .container{
+    .container {
         padding: 12px;
     }
+
     .square-icon {
         font-size: 20px;
     }
@@ -746,6 +780,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
     @media print {
         .actions {
+            display: none;
+        }
+
+        .links {
             display: none;
         }
 

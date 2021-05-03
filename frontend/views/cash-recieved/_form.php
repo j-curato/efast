@@ -24,7 +24,7 @@ use yii\widgets\ActiveForm;
                 'name' => 'date',
                 'pluginOptions' => [
                     'autoclose' => true,
-                    'format' => "mm-dd-yyyy"
+                    'format' => "yyyy-mm-dd"
                 ]
             ]) ?>
         </div>

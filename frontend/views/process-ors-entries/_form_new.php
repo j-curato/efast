@@ -276,7 +276,7 @@ use kartik\select2\Select2;
 
             ],
         ]); ?>
-        <button type="submit" class="btn btn-primary" name="submit" style="width: 100%;"> ADD</button>
+        <button type="submit" class="btn btn-primary" name="submit" id='add' style="width: 100%;"> ADD</button>
     </form>
 
 
@@ -346,12 +346,15 @@ use kartik\select2\Select2;
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
     <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
     <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
-
+    <link href="/dti-afms-2/frontend/web/js/maskMoney.js" />
     <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
     <script>
         var update_id = null;
         var account_name = undefined;
         var select_id = 0;
+        var accounts = []
+        var chart_of_accounts = undefined;
+
 
         function enableDisable(checkbox) {
             var isDisable = true
@@ -377,36 +380,76 @@ use kartik\select2\Select2;
         var i = 1;
 
         function copy(q) {
-            var r = $(q).closest('tr').clone().find("input").each(function() {
-                $(this).attr({
-                    'id': function(_, id) {
-                        return id + select_id
-                    },
-                    'name': function(_, name) {
-                        return name
-                    },
-                    'value': '',
-                    'disabled': function(_, id) {
-                        return false
-                    },
-                });
-            }).end().appendTo("#transaction_table");
-            r.closest('tr').find("button").each(function() {
-                $(this).attr({
-                    'id': function(_, id) {
-                        return id + select_id
-                    },
-                    'name': function(_, name) {
-                        return name
-                    },
-                    'value': '',
-                    'disabled': function(_, id) {
-                        return false
-                    },
-                });
-            }).end()
+            var qwer = $(q).closest('tr')
+            var raoud_id = qwer.find('.raoud_id').val();
+            var mfo_pap_code = qwer.find('.mfo_pap_code').text();
+            var mfo_pap_name = qwer.find('.mfo_pap_name').text();
+            var fund_source_name = qwer.find('.fund_source_name').text();
+            var object_code = qwer.find('.object_code').text();
+            var chart_id = qwer.find('.chart-of-account').val();
+            // var obj = JSON.parse('{
+            //     "raoud_id":${raoud_id},
+            //     "mfo_pap_code_code": ${mfo_pap_code},
+            //     "mfo_pap_name": ${mfo_pap_name},
+            //     "fund_source_name": ${fund_source_name},
+            //     "object_code": ${object_code},
+            //     "chart_id": ${chart_id},
+            //     }');
+            // var arr = {
+            //     'raoud_id': raoud_id,
+            //     'mfo_pap_code': mfo_pap_code,
+            //     'mfo_pap_name': mfo_pap_name,
+            //     'fund_source_name': fund_source_name,
+            //     'object_code': object_code,
+            // };
+            var obj = JSON.parse(`{
+                "raoud_id":${raoud_id},
+                "mfo_pap_code_code":"${mfo_pap_code}",
+                "mfo_pap_name": "${mfo_pap_name}",
+                "fund_source_name": "${fund_source_name}",
+                "object_code": "${object_code}",
+                "chart_of_account_id": ${chart_id},
+                "obligation_amount":0
+        }`);
 
-            select_id++;
+            console.log([obj])
+            var qwe = '';
+            if ($('#update').val() != 'create') {
+                qwe = 'copy';
+            }
+
+            addData([obj], qwe)
+
+            // var r = $(q).closest('tr').clone().find("input").each(function() {
+            //     $(this).attr({
+            //         'id': function(_, id) {
+            //             return id + select_id
+            //         },
+            //         'name': function(_, name) {
+            //             return name
+            //         },
+            //         'value': '',
+            //         'disabled': function(_, id) {
+            //             return false
+            //         },
+            //     });
+            // }).end().appendTo("#transaction_table");
+            // r.closest('tr').find("button").each(function() {
+            //     $(this).attr({
+            //         'id': function(_, id) {
+            //             return id + select_id
+            //         },
+            //         'name': function(_, name) {
+            //             return name
+            //         },
+            //         'value': '',
+            //         'disabled': function(_, id) {
+            //             return false
+            //         },
+            //     });
+            // }).end()
+
+            // select_id++;
         }
 
         function addData(result, isUpdate) {
@@ -414,17 +457,17 @@ use kartik\select2\Select2;
                 object_code = result[i]['object_code']
                 chart_id = result[i]['chart_of_account_id']
 
-                if (result[i]['object_code'] == "5010000000") {
+                if (result[i]['object_code'] == "5010000000" || result[i]['object_code'] == "5020000000") {
                     object_code = ''
                     chart_id = ''
                 }
                 var row = `<tr>
-                            <td style="display:none"> <input value='${result[i]['raoud_id']}' type='text' name='raoud_id[]' id='raoud_${select_id}' /></td>
-                            <td > <input  type='month' id='date_${select_id}' name='new_reporting_period[]' /></td>
-                            <td> ${result[i]['mfo_pap_code_code']}</td>
-                            <td> ${result[i]['mfo_pap_name']}</td>
-                            <td> ${result[i]['fund_source_name']}</td>
-                            <td> ${object_code}</td>
+                            <td style="display:none"> <input value='${result[i]['raoud_id']}' type='text' name='raoud_id[]' id='raoud_${select_id}' class='raoud_id' /></td>
+                            <td > <input  type='month' id='date_${select_id}' name='new_reporting_period[]' required /></td>
+                            <td> <div class='mfo_pap_code'>${result[i]['mfo_pap_code_code']}</div></td>
+                            <td><div class='mfo_pap_name'> ${result[i]['mfo_pap_name']}</div></td>
+                            <td><div class='fund_source_name'> ${result[i]['fund_source_name']}</div></td>
+                            <td><div class='object_code'> ${object_code}</div></td>
                             <td> 
                                 <div>
                                     <select id="chart-${select_id}" required name="chart_of_account_id[]" class="chart-of-account" style="width: 100%" required>
@@ -432,18 +475,57 @@ use kartik\select2\Select2;
                                     </select>
                                 </div>
                             </td>
-                            <td> <input value='${result[i]['obligation_amount']}' type='text' name='obligation_amount[]' id='amount_${select_id}'/></td>
+                            <td> <input value='${result[i]['obligation_amount']}' type='text' name='obligation_amount[]' id='amount_${select_id}' class='amount'/></td>
                             <td><a id='copy_${select_id}' class='btn btn-success ' type='button' onclick='copy(this)'><i class="fa fa-copy "></i></a></td>
                             <td><button id='remove_${select_id}' class='btn btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td>
                             </tr>`
                 $('#transaction_table').append(row);
+                var filtered_chart_of_accounts = chart_of_accounts.filter(function(chart) {
+                    // console.log(object_code)
 
+                    if (result[i]['object_code'] == "5010000000") {
+                        // console.log(object_code)
+                        var x = chart.object_code.match(/^501.*$/);
+
+                        if (x != "5010000000") {
+
+                            return x;
+                        }
+
+                    } else if (result[i]['object_code'] == "5020000000") {
+
+                        var y = chart.object_code.match(/^502.*$/);
+                        if (y != "5020000000") {
+
+                            return y;
+                        }
+
+                    } else {
+                        return chart
+                    }
+
+                });
+                // delete filtered_chart_of_accounts[0].id
+                // delete filtered_chart_of_accounts[0].object_code
+                // delete filtered_chart_of_accounts[0].title
+                // console.log(delete filtered_chart_of_accounts[0])
+                var q = []
+                $.each(filtered_chart_of_accounts, function(key, val) {
+                    q.push({
+                        id: val.id,
+                        text: val.object_code + ' ' + val.title
+                    })
+                })
+                // console.log(firstGradeStudents)
                 $(`#chart-${select_id}`).select2({
-                    data: accounts,
+                    data: q,
                     placeholder: "Select Chart of Account",
 
                 }).val(`${chart_id}`).trigger('change');
-                if (isUpdate) {
+                if (isUpdate == 'copy') {
+                    $(`#chart-${select_id} option:not(:selected)`).attr("disabled", true)
+                }
+                if (isUpdate == true) {
                     $(`#chart-${select_id}`).prop('disabled', true);
                     $(`#amount_${select_id}`).prop('disabled', true);
                     $(`#remove_${select_id}`).prop('disabled', true);
@@ -454,18 +536,82 @@ use kartik\select2\Select2;
                     $(`#raoud_${select_id}`).prop('disabled', true);
 
                 }
-                if ($('#update').val() == '') {
+                if ($('#update').val() == 'create') {
                     $(`#date_${select_id}`).prop('disabled', true);
+
+                    if (result[i]['object_code'] == "5010000000" || result[i]['object_code'] == "5020000000") {} else {
+                        // $(`#chart-${select_id}`).prop('disabled', true);
+
+                    }
                 }
                 select_id++;
             }
-            console.log(result)
+            // console.log(result)
+            $('.amount').maskMoney({
+                allowNegative: true
+            });
+
 
 
         }
 
         $(document).ready(function() {
+            // GET CHART OF ACCOUNTS
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
+                .then(function(data) {
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.object_code + ' ' + val.title
+                        })
+                    })
+                    accounts = array
+                    // var y=JSON.parse(accounts)
+                    chart_of_accounts = data
 
+                })
+
+
+
+            // GET TRANSACTIONs
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-all-transaction')
+                .then(function(data) {
+
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.tracking_number
+                        })
+                    })
+                    transaction = array
+                    $('#transaction_id').select2({
+                        data: transaction,
+                        placeholder: "Select Transaction",
+
+                    })
+
+                });
+            // GET ALL BOOKS
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
+                .then(function(data) {
+
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.name
+                        })
+                    })
+                    book = array
+                    $('#book_id').select2({
+                        data: book,
+                        placeholder: "Select Book",
+
+                    })
+
+                });
 
             $('#add_data').submit(function(e) {
 
@@ -481,44 +627,13 @@ use kartik\select2\Select2;
                         var object_code = ''
                         var chart_id = ''
                         addData(result, false)
-                        // for (var i = 0; i < result.length; i++) {
-                        //     object_code = result[i]['object_code']
-                        //     chart_id = result[i]['chart_of_account_id']
-
-                        //     if (result[i]['object_code'] == "5010000000") {
-                        //         object_code = ''
-                        //         chart_id = ''
-                        //     }
-                        //     var row = `<tr>
-
-                        //     <td style="display:none"> <input value='${result[i]['raoud_id']}' type='text' name='raoud_id[]' /></td>
-                        //     <td> ${result[i]['mfo_pap_code_code']}</td>
-                        //     <td> ${result[i]['mfo_pap_name']}</td>
-                        //     <td> ${result[i]['fund_source_name']}</td>
-                        //     <td> ${object_code}</td>
-                        //     <td> 
-                        //         <div>
-                        //             <select id="chart-${select_id}" required name="chart_of_account_id[]" class="chart-of-account" style="width: 100%">
-                        //                 <option></option>
-                        //             </select>
-                        //         </div>
-                        //     </td>
-                        //     <td> <input value='${result[i]['obligation_amount']}' type='text' name='obligation_amount[]'/></td>
-                        //     <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>`
-                        //     $('#transaction_table').append(row);
-                        //     $(`#chart-${select_id}`).select2({
-                        //         data: accounts,
-                        //         placeholder: "Select Chart of Account",
-
-                        //     }).val(`${chart_id}`).trigger('change');
-                        //     select_id++;
-                        // }
                     }
                 });
                 $('.checkbox').prop('checked', false); // Checks it
                 $('.amounts').prop('disabled', true);
                 $('.amounts').val(null);
             })
+
 
         })
     </script>
@@ -527,6 +642,7 @@ use kartik\select2\Select2;
 
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 <?php SweetAlertAsset::register($this); ?>
 <?php
@@ -567,70 +683,22 @@ $script = <<< JS
         })
     })
     $(document).ready(function() {
-
-        
-        // GET CHART OF ACCOUNTS
-        $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
-                .then(function(data) {
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.object_code + ' ' + val.title
-                        })
-                    })
-                    accounts = array
+        console.log("qwerty".substring(0,3))
        
-                })
-                    // GET TRANSACTIONs
-        $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-all-transaction')
-            .then(function(data) {
 
-                var array = []
-                $.each(data, function(key, val) {
-                    array.push({
-                        id: val.id,
-                        text: val.tracking_number
-                    })
-                })
-                transaction = array
-                $('#transaction_id').select2({
-                    data: transaction,
-                    placeholder: "Select Transaction",
-
-                })
-
-            });        
-        // GET ALL BOOKS
-        $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
-            .then(function(data) {
-
-                var array = []
-                $.each(data, function(key, val) {
-                    array.push({
-                        id: val.id,
-                        text: val.name
-                    })
-                })
-                book = array
-                $('#book_id').select2({
-                    data: book,
-                    placeholder: "Select Book",
-
-                })
-
-            });        
+            // SAVE DATA TO DATABASE
         $('#save_data').submit(function(e) {
   
 
             e.preventDefault();
 
-
+            $('.amount').maskMoney('unmasked');
                 $.ajax({
                     url: window.location.pathname + '?r=process-ors-entries/insert-process-ors',
                     method: "POST",
                     data: $('#save_data').serialize(),
                     success: function(data) {
+                        // console.log(data)
                         var res=JSON.parse(data)
    
 
@@ -643,7 +711,7 @@ $script = <<< JS
                                 button: false
                                 // confirmButtonText: "Yes, delete it!",
                             }, function() {
-                                window.location.href = window.location.pathname + '?r=process-ors-entries'
+                                window.location.href = window.location.pathname + '?r=process-ors-entries/view&id='+res.id
                             });
                             $('#add_data')[0].reset();
                         }
@@ -677,9 +745,10 @@ $script = <<< JS
         //       console.log(update_id.val())
         //   })
           if (update_id!=0 ){
+            //   $('#add').prop('disabled',true)
             $.ajax({
                 type:"POST",
-                url:window.location.pathname + "?r=process-ors-entries/get-raoud",
+                url:window.location.pathname + "?r=process-ors-entries/q",
                 data:{update_id:update_id},
                 success:function(data){
                     var res = JSON.parse(data)
@@ -709,6 +778,7 @@ $script = <<< JS
         //         }
         //     })
         // }
+
     })
     JS;
 $this->registerJs($script);

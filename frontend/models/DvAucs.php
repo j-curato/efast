@@ -35,12 +35,9 @@ class DvAucs extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['process_ors_id', 'raoud_id'], 'integer'],
             [['net_amount_paid'], 'number'],
             [['dv_number', 'tax_withheld', 'other_trust_liability_withheld'], 'string', 'max' => 255],
             [['reporting_period'], 'string', 'max' => 50],
-            [['process_ors_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProcessOrs::class, 'targetAttribute' => ['process_ors_id' => 'id']],
-            [['raoud_id'], 'exist', 'skipOnError' => true, 'targetClass' => Raouds::class, 'targetAttribute' => ['raoud_id' => 'id']],
         ];
     }
 
@@ -51,8 +48,7 @@ class DvAucs extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'process_ors_id' => 'Process Ors ID',
-            'raoud_id' => 'Raoud ID',
+
             'dv_number' => 'Dv Number',
             'reporting_period' => 'Reporting Period',
             'tax_withheld' => 'Tax Withheld',
@@ -99,5 +95,9 @@ class DvAucs extends \yii\db\ActiveRecord
     public function getCashDisbursement()
     {
         return $this->hasOne(CashDisbursement::class, ['dv_aucs_id' => 'id']);
+    }
+    public function getDvAccountingEntries()
+    {
+        return $this->hasMany(DvAccountingEntries::class, ['dv_aucs_id' => 'id']);
     }
 }

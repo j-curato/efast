@@ -2,10 +2,7 @@
 
 use app\models\Books;
 use app\models\DvAucs;
-use app\models\DvAucsEntries;
-use app\models\DvAucsEntriesSearch;
 use app\models\DvAucsSearch;
-use app\models\RaoudsSearchForProcessOrsSearch;
 use aryelds\sweetalert\SweetAlert;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
@@ -13,7 +10,6 @@ use kartik\grid\GridView;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\CashDisbursement */
@@ -31,6 +27,12 @@ use yii\widgets\ActiveForm;
     <div class="container">
 
 
+        <div class="row">
+            <div class="col-sm-12" style="text-align:center;color:red">
+                <h4 id="link">
+                </h4>
+            </div>
+        </div>
         <form id="cash_disbursement_form">
 
             <div class="row">
@@ -44,6 +46,9 @@ use yii\widgets\ActiveForm;
                     echo DatePicker::widget([
                         'name' => 'reporting_period',
                         'value' => !empty($model->reporting_period) ? $model->reporting_period : '',
+                        'options' => [
+                            'required' => true
+                        ],
                         'pluginOptions' => [
                             'format' => "yyyy-mm",
                             'autoclose' => true,
@@ -84,18 +89,42 @@ use yii\widgets\ActiveForm;
                     ])
                     ?>
                 </div>
+                <div class="col-sm-3">
+                    <label for="mode_of_payment">Mode of Payment</label>
+                    <?php
+
+                    echo Select2::widget([
+                        'name' => "mode_of_payment",
+                        'value' => !empty($model->mode_of_payment) ? strtolower($model->mode_of_payment) : '',
+                        'data' => ['lbp check' => "LBP Check", 'ada' => "ADA", 'echeck' => "eCheck"],
+                        "options" => [
+                            "placeholder" => "Select Mode of Payment"
+                        ]
+                    ])
+                    ?>
+                </div>
 
             </div>
             <div class="row" style="margin-bottom: 20px;">
                 <div class="col-sm-3">
-                    <label for="check_ada_no">ADA/Check Number</label>
+                    <label for="check_ada_no">Check Number</label>
                     <?php
                     // echo "
 
                     // <input type='text' class='form-control' name='check_ada_no' value='".!empty($model->check_or_ada_number)?$model->check_or_ada_no:''."'>
                     // ";
                     ?>
-                    <?= Html::input('text', 'check_ada_no', !empty($model->check_or_ada_no) ? $model->check_or_ada_no : '', ['class' => 'form-control']) ?>
+                    <?= Html::input('text', 'check_ada_no', !empty($model->check_or_ada_no) ? $model->check_or_ada_no : '', ['class' => 'form-control', 'required' => true]) ?>
+                </div>
+                <div class="col-sm-3">
+                    <label for="check_ada_no">ADA Number</label>
+                    <?php
+                    // echo "
+
+                    // <input type='text' class='form-control' name='check_ada_no' value='".!empty($model->check_or_ada_number)?$model->check_or_ada_no:''."'>
+                    // ";
+                    ?>
+                    <?= Html::input('text', 'ada_number', !empty($model->ada_number) ? $model->ada_number : '', ['class' => 'form-control']) ?>
                 </div>
 
                 <div class="col-sm-3">
@@ -113,20 +142,7 @@ use yii\widgets\ActiveForm;
                     ])
                     ?>
                 </div>
-                <div class="col-sm-3">
-                    <label for="mode_of_payment">Mode of Payment</label>
-                    <?php
 
-                    echo Select2::widget([
-                        'name' => "mode_of_payment",
-                        'value' => !empty($model->mode_of_payment) ? strtolower($model->mode_of_payment) : '',
-                        'data' => ['lbp check' => "LBP Check", 'ada' => "ADA", 'echeck' => "eCheck"],
-                        "options" => [
-                            "placeholder" => "Select Mode of Payment"
-                        ]
-                    ])
-                    ?>
-                </div>
 
             </div>
 
@@ -142,6 +158,8 @@ use yii\widgets\ActiveForm;
             <?php
             $searchModel = new DvAucsSearch();
             $searchModel->id = $dv_aucs_id;
+            $searchModel->is_cancelled = 0;
+
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
             $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
 
@@ -260,11 +278,15 @@ use yii\widgets\ActiveForm;
 SweetAlertAsset::register($this);
 
 $script = <<< JS
+    var cash_link=undefined;
+    var bbb=undefined;
     $(document).ready(function(){
 
         // $.getJSON(window.location.pathname +" ?r=")
 
-        $("#submit").click(function(e){
+     
+    })
+    $("#submit").click(function(e){
             e.preventDefault();
             
             $.ajax({
@@ -272,32 +294,55 @@ $script = <<< JS
                 url:window.location.pathname + "?r=cash-disbursement/insert-cash-disbursement",
                 data:$('#cash_disbursement_form').serialize(),
                 success:function(data){
-                    console.log(JSON.parse(data))
+                    // console.log(JSON.parse(data))
                     var res = JSON.parse(data)
+                    // console.log(res.error)
 
-                    if (res.isSuccess){
+                    if (res.isSuccess==true){
                         swal({
                             title:"Success",
                             type:'success',
                             button:false,
                             timer:3000,
                         },function(){
-                            window.location.href = window.location.pathname +"?r=cash-disbursement/index"
+                            window.location.href = window.location.pathname +"?r=cash-disbursement/view&id="+res.id
                         })
                     }
-                    else{
+                    else if (res.isSuccess ==false){
+                        var q='';
+                        for(var k in res.error) {
+                            console.log(k, res.error[k][0]);
+                            q+=res.error[k][0] + ' ,';
+                            }  
                         swal({
                             title:"Error",
-                            text:res.error,
+                            text:q,
                             type:'error',
                             button:false,
                             timer:3000,
                         })
                     }
+                    else if (res.isSuccess == 'exist'){
+                        console.log(res.id)
+
+                        $('#link').text('This DV Na disbursed na ')
+                        cash_link = window.location.pathname +"?r=cash-disbursement/view&id="+res.id
+                    
+                     bbb = $(`<a type="button" href='`+ cash_link+`' >link here</a>`);
+                                 bbb.appendTo($("#link"));
+                        swal({
+                            title:"Error",
+                            text:"DV na disbursed na",
+                            type:'error',
+                            button:false,
+                            timer:3000,
+                           
+                        })
+                    }
                 }
             })
         })
-    })
+        
 
 JS;
 $this->registerJs($script);

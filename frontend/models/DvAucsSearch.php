@@ -17,7 +17,7 @@ class DvAucsSearch extends DvAucs
     public function rules()
     {
         return [
-            [['id', 'process_ors_id', 'raoud_id'], 'integer'],
+            [['id'], 'integer'],
             [['dv_number', 'reporting_period', 'tax_withheld', 'other_trust_liability_withheld'], 'safe'],
             [['net_amount_paid'], 'number'],
         ];
@@ -60,9 +60,8 @@ class DvAucsSearch extends DvAucs
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'process_ors_id' => $this->process_ors_id,
-            'raoud_id' => $this->raoud_id,
             'net_amount_paid' => $this->net_amount_paid,
+            'is_cancelled' => $this->is_cancelled,
         ]);
 
         $query->andFilterWhere(['like', 'dv_number', $this->dv_number])

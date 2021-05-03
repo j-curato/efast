@@ -36,11 +36,14 @@ class CashDisbursement extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['book_id', 'dv_aucs_entries_id'], 'integer'],
+
+
+            [['book_id', 'dv_aucs_id','reporting_period', 'mode_of_payment', 'issuance_date'], 'required'], 
+            [['book_id', 'dv_aucs_id'], 'integer'], 
             [['reporting_period', 'mode_of_payment', 'issuance_date'], 'string', 'max' => 50],
+            [['ada_number'], 'string', 'max' => 40],
             [['check_or_ada_no', 'is_cancelled'], 'string', 'max' => 100],
             [['book_id'], 'exist', 'skipOnError' => true, 'targetClass' => Books::class, 'targetAttribute' => ['book_id' => 'id']],
-            [['dv_aucs_entries_id'], 'exist', 'skipOnError' => true, 'targetClass' => DvAucsEntries::class, 'targetAttribute' => ['dv_aucs_entries_id' => 'id']],
         ];
     }
 
@@ -52,13 +55,13 @@ class CashDisbursement extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'book_id' => 'Book ID',
-            'dv_aucs_entries_id' => 'Dv Aucs ID',
             'dv_aucs_id' => 'Dv Aucs ID',
             'reporting_period' => 'Reporting Period',
-            'mode_of_payment' => 'Mood Of Payment',
+            'mode_of_payment' => 'Mode Of Payment',
             'check_or_ada_no' => 'Check Or Ada No',
             'is_cancelled' => 'Is Cancelled',
             'issuance_date' => 'Issuance Date',
+            'ada_number' => 'Ada Number',
         ];
     }
 
@@ -77,10 +80,7 @@ class CashDisbursement extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getDvAucsEntries()
-    {
-        return $this->hasOne(DvAucsEntries::class, ['id' => 'dv_aucs_entries_id']);
-    }
+
     public function getDvAucs()
     {
         return $this->hasOne(DvAucs::class, ['id' => 'dv_aucs_id']);

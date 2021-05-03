@@ -93,13 +93,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 $obligate = 0;
                 if (!empty($model->process_ors_id)) {
 
-                $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total_obligated
+                    $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total_obligated
                 from process_ors,raouds,raoud_entries
                 WHERE process_ors.id = raouds.process_ors_id
                 AND raouds.id  = raoud_entries.raoud_id
                 AND process_ors.id = :process_ors_id")
-                ->bindValue(':process_ors_id',$model->process_ors_id)
-                ->queryOne();
+                        ->bindValue(':process_ors_id', $model->process_ors_id)
+                        ->queryOne();
                     $obligate = $query['total_obligated'];
                 }
 
@@ -141,6 +141,18 @@ $this->params['breadcrumbs'][] = $this->title;
         [
             'label' => "MRD Classification",
             'value' => "dvAucs.mrdClassification.name"
+        ],
+        [
+            'label' => "Good/Cancelled",
+            'value' => function($model){
+                if ($model->dvAucs->is_cancelled){
+                    return "Cancelled";
+                }
+                else
+                {
+                    return "Good";
+                }
+            }
         ],
 
     ];
@@ -220,7 +232,10 @@ $this->params['breadcrumbs'][] = $this->title;
             //'other_trust_liability_withheld',
             //'net_amount_paid',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => '\kartik\grid\ActionColumn',
+                'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
+            ],
         ],
     ]); ?>
 

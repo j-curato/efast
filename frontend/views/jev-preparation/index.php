@@ -89,6 +89,7 @@ $this->params['breadcrumbs'][] = $this->title;
   $w = $q->search(Yii::$app->request->queryParams);
   $gridColumn = [
     'jevPreparation.jev_number',
+    'jevPreparation.dv_number',
     'jevPreparation.check_ada_number',
     [
       'label'=>'Payee',
@@ -160,6 +161,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
       'id',
       'jev_number',
+      [
+        'label'=>'Payee',
+        'attribute'=>'payee_id',
+        'value'=>'payee.account_name'
+      ],
       // 'transaction_id',
       [
         'label' => 'Particular',

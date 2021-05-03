@@ -80,6 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'reporting_period',
         'mode_of_payment',
         'check_or_ada_no',
+        'ada_number',
         'issuance_date',
         [
             'label' => "DV Number",

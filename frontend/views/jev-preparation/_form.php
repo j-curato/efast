@@ -25,12 +25,9 @@ use yii\helpers\ArrayHelper;
             echo " <input type='text' id='update_id' name='update_id'  value='$q' style='display:none'>";
             // echo " <input type='text' id='duplicate' name='duplicate'  value='$duplicate' style='display:none'>";
             ?>
-             <div class="row">
-                <div class="col-sm-3" style="height:60x">
-                    <!-- <label for="dv">Select DV Number</label>
-                    <select id="dv" name="dv" class="dv select" style="width: 100%; margin-top:50px">
-                        <option>NO DV</option>
-                    </select> -->
+            <div class="row">
+                <div class="col-sm-3">
+                    <h4 id="have_jev" style='color:red'></h4>
                 </div>
                 <div class="col-sm-3">
                     <label for="dv">Select DV Number</label>
@@ -46,7 +43,7 @@ use yii\helpers\ArrayHelper;
                             ->where('cash_disbursement.is_cancelled = :is_cancelled', ['is_cancelled' => false])
                             ->all(), "cash_id", "dv_number"),
                         'options' => [
-                            'placeholder' => "Select Book",
+                            'placeholder' => "Select DV Number",
                         ],
                         'pluginOptions' => [
                             'allowClear' => true
@@ -54,6 +51,11 @@ use yii\helpers\ArrayHelper;
                     ])
                     ?>
                 </div>
+                <div class="col-sm-3">
+                    <label for="total_disbursed"> Total Disbursed</label>
+                    <h4 id="total_disbursed"></h4>
+                </div>
+
             </div>
             <div class="row">
 
@@ -179,7 +181,7 @@ use yii\helpers\ArrayHelper;
                     <textarea name="particular" name="particular" id="particular" placeholder="PARTICULAR" required cols="151" rows="3"></textarea>
                 </div>
             </div>
-           
+
             <!-- BUTTON -->
             <!-- <div style="width: 100%; margin-bottom:50px;margin-right:25px;">
 
@@ -267,7 +269,6 @@ use yii\helpers\ArrayHelper;
     </div>
 
     <style>
-
         textarea {
             max-width: 100%;
             width: 100%;
@@ -786,8 +787,79 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depe
 <?php
 
 $script = <<< JS
-      
+        function qwe(id){
+            $.ajax({
+                    url: window.location.pathname + '?r=jev-preparation/update-jev',
+                    method: 'POST',
+                    data: {
+                        update_id: id
+                    },
+                    beforeSend: function () {
+                 
+                    },
+                    success: function(data) {
 
+                        var jev = JSON.parse(data).jev_preparation
+                        var jev_accounting_entries = JSON.parse(data).jev_accounting_entries
+                        console.log(jev)
+                        var d = "2020-12-01"
+                        // document.querySelector("#reporting_period").value=jev['reporting_period']
+                        // $('#dv').val(jev['cash_disbursement_id']).trigger('change');
+                        $('#reporting_period').val(jev['reporting_period'])
+                        $('#check_ada_date').val(jev['check_ada_date'])
+                        $('#particular').val(jev['explaination'])
+                        $('#date').val(jev['date'])
+                        $('#ada_number').val(jev['check_ada_number'])
+                        $('#lddap').val(jev['lddap_number'])
+                        $('#dv_number').val(jev['dv_number'])
+                        $('#cadadr_number').val(jev['cadadr_serial_number'])
+                        // $('#reference').val(jev['reference'])
+                        // console.log(jev_accounting_entries)
+                        $('#reference').val(jev['ref_number']).trigger('change');
+                        console.log(jev['book_id']);
+                        $('#r_center_id').val(jev['responsibility_center_id']).trigger('change');
+                        $('#check_ada').val(jev['check_ada']);
+                        $('#check_ada').trigger('change');
+                        $('#payee').val(jev['payee_id']);
+                        $('#payee').trigger('change');
+                        $('#book').val(jev['book_id']).trigger('change');
+                        var x=0
+                        // console.log(jev_accounting_entries)
+                        // for (i; i < jev_accounting_entries.length;) {
+                        // }
+                        for (x; x<jev_accounting_entries.length;x++){
+                            $("#debit-"+x).val(jev_accounting_entries[x]['debit'])
+                            $("#credit-"+x).val(jev_accounting_entries[x]['credit'])
+                            var chart = jev_accounting_entries[x]['id'] +"-" +jev_accounting_entries[x]['object_code']+"-"+jev_accounting_entries[x]['lvl']
+                            
+                            var cashflow = jev_accounting_entries[x]['cashflow_id'];
+                            var net_asset= jev_accounting_entries[x]['net_asset_equity_id'];
+                            $("#chart-"+x).val(chart).trigger('change');
+                            $("#isEquity-"+x).val(jev_accounting_entries[x]['net_asset_equity_id']).trigger('change');
+                            $("#cashflow-"+x).val(cashflow).trigger('change');
+                            // console.log(net_asset); 
+                            if ($( "#cashflow-"+x ).length ){
+                                // console.log(x)
+                            }
+                            else{
+                                // console.log('false')
+                            }
+                            // console.log(chart)
+                            if (x < jev_accounting_entries.length -1){
+                                add()
+                            }
+                        }
+
+                    },
+                    complete: function(){
+                        $('#container').show();
+                        $('#loader').hide();
+                        console.log()
+                        getTotal()
+                    },
+        
+                })
+        }
         // ADD COMMA IN NUMBER
 
       function thousands_separators(num) {
@@ -798,9 +870,10 @@ $script = <<< JS
         return num_parts.join(".");
         console.log(num)
         }
-    // GET TOTAL OF DEBIT AND CREDIT
-
+    // POPULATE DATA ON DV CHANGE
     $("#dv").change(function(){
+        $("#check_ada option:not(:selected)").attr("disabled", false)
+
         // console.log($('#dv').val())
         if ($('#dv').val()===''){
             // $('#add_data')[0].reset();
@@ -809,34 +882,96 @@ $script = <<< JS
             // $('#r_center_id').val('').trigger('change')
             // $('#particular').val('').trigger('change')
             // $("#check_ada").val('').trigger('change')
- 
-      }
+            $('#total_disbursed').text('')
+            $('#have_jev').text('')
+            $('#submit').prop('disabled',false)
+            $("#book option:not(:selected)").attr("disabled", false)
+            $("#r_center_id option:not(:selected)").attr("disabled", false)
+            $("#payee option:not(:selected)").attr("disabled", false)
+            $("#check_ada option:not(:selected)").attr("disabled", false)
+          }
       else{
 
-
+        let eee = undefined;
+        let bbb = undefined;
         $.ajax({
             type:"POST",
             url:window.location.pathname + "?r=cash-disbursement/get-dv",
             data:{cash_id:$('#dv').val()},
             success:function(data){
-                // console.log(JSON.parse(data))
                 var res = JSON.parse(data)
-                $('#dv_number').val(res.dv_number)
-                $('#book').val(res.book_id).trigger('change')
-                $('#payee').val(res.payee_id).trigger('change')
-                $('#r_center_id').val(res.rc_id).trigger('change')
-                $('#particular').val(res.particular).trigger('change')
-                $('#ada_number').val(res.check_or_ada_no)
-                $('#check_ada_date').val(res.issuance_date)
-                $('#date').val(res.issuance_date)
-                $('#reporting_period').val(res.reporting_period)
-                if (res.mode_of_payment ==='ADA'){
+                $('#dv_number').val(res.results.dv_number)
+                $('#book').val(res.results.book_id).trigger('change')
+                $("#book option:not(:selected)").attr("disabled", true)
+                $('#payee').val(res.results.payee_id).trigger('change')
+                $("#payee option:not(:selected)").attr("disabled", true)
+                $('#r_center_id').val(res.results.rc_id).trigger('change')
+                $("#r_center_id option:not(:selected)").attr("disabled", true)
+                $('#particular').val(res.results.particular)
+                $('#ada_number').val(res.results.check_or_ada_no)
+                $('#check_ada_date').val(res.results.issuance_date)
+                $('#date').val(res.results.issuance_date)
+                $('#total_disbursed').text(thousands_separators(res.results.total_disbursed))
+                $('#reporting_period').val(res.results.reporting_period)
+                // console.log(JSON.parse(res.results.jev_id))
+                if (update_id == 0) {
+                    console.log("qwer")
+                    if (res.results.jev_id){
+                    // qwe(res.results.jev_id)
+
+                    $('#have_jev').text('This DV Naa nay JEV ')
+                    eee = window.location.pathname +"?r=jev-preparation/view&id="+res.results.jev_id
+                    console.log(eee)
+                    
+                     bbb = $(`<a type="button" href='`+ eee+`' >link here</a>`);
+                                 bbb.appendTo($("#have_jev"));
+
+                    $('#submit').prop('disabled',true)
+                  
+                }else
+                {
+                    $('#have_jev').text('')
+                    $('#submit').prop('disabled',false)
+                }
+
+                }
+         
+                if (res.results.mode_of_payment ==='ADA'){
                     $("#check_ada").val('ADA').trigger('change')
                 }
                 else {
                     
                     $("#check_ada").val('Check').trigger('change')
                 }
+                $("#check_ada option:not(:selected)").attr("disabled", true)
+
+
+                var x=0
+                var dv_accounting_entries = res.dv_accounting_entries;
+
+                        for (x; x<dv_accounting_entries.length;x++){
+                            $("#debit-"+x).val(dv_accounting_entries[x]['debit'])
+                            $("#credit-"+x).val(dv_accounting_entries[x]['credit'])
+                            var chart = dv_accounting_entries[x]['id'] +"-" +dv_accounting_entries[x]['object_code']+"-"+dv_accounting_entries[x]['lvl']
+                            
+                            var cashflow = dv_accounting_entries[x]['cashflow_id'];
+                            var net_asset= dv_accounting_entries[x]['net_asset_equity_id'];
+                            $("#chart-"+x).val(chart).trigger('change');
+                            $("#isEquity-"+x).val(dv_accounting_entries[x]['net_asset_equity_id']).trigger('change');
+                            $("#cashflow-"+x).val(cashflow).trigger('change');
+                            // console.log(net_asset); 
+                            if ($( "#cashflow-"+x ).length ){
+                                // console.log(x)
+                            }
+                            else{
+                                // console.log('false')
+                            }
+                            // console.log(chart)
+                            if (x < dv_accounting_entries.length -1){
+                                add()
+                            }
+                        }
+                
             }
         })
       }
@@ -865,7 +1000,7 @@ $script = <<< JS
                         console.log(jev)
                         var d = "2020-12-01"
                         // document.querySelector("#reporting_period").value=jev['reporting_period']
-                        // $('#dv').val(jev['cash_disbursement_id']).trigger('change');
+                        $('#dv').val(jev['cash_disbursement_id']).trigger('change');
                         $('#reporting_period').val(jev['reporting_period'])
                         $('#check_ada_date').val(jev['check_ada_date'])
                         $('#particular').val(jev['explaination'])

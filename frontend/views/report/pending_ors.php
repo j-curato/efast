@@ -50,8 +50,17 @@ $this->params['breadcrumbs'][] = $this->title;
     // ORDER BY id")->queryAll();
 
     $query = ProcessOrs::find()
+    ->join('LEFT JOIN',"(SELECT SUM(raoud_entries.amount) as total_obligated
+    ,raouds.process_ors_id
+    from raouds,raoud_entries
+    WHERE raouds.id = raoud_entries.raoud_id
+    GROUP BY raouds.process_ors_id
+    ) as qwe",'process_ors.id = qwe.process_ors_id')
         ->where("process_ors.id NOT IN (SELECT DISTINCT dv_aucs_entries.process_ors_id from dv_aucs_entries 
-   WHERE dv_aucs_entries.process_ors_id IS NOT NULL)");
+   WHERE dv_aucs_entries.process_ors_id IS NOT NULL)")
+   ->andWhere('qwe.total_obligated !=0')
+   ->andWhere('process_ors.is_cancelled =0')
+   ;
 
     // add conditions that should always apply here
 
@@ -88,7 +97,22 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => 'Payee',
                 'value' => 'transaction.payee.account_name'
-            ]
+            ],
+            [
+                'label'=>'Amount Obligated',
+                'value'=>function($model){
+                    $query = (new \yii\db\Query())
+                    ->select("SUM(raoud_entries.amount) as total_obligated")
+                    ->from("raouds")
+                    ->join("LEFT JOIN",'raoud_entries','raouds.id = raoud_entries.raoud_id')
+                    ->where("raouds.process_ors_id = :process_ors_id",['process_ors_id'=>$model->id])
+                    ->one();
+                    return $query['total_obligated'];
+                },
+                'format'=>['decimal',2],
+                'hAlign'=>'right'
+            ],
+            'is_cancelled'
 
         ],
     ]); ?>
