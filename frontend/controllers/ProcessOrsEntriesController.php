@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use app\models\Books;
+use app\models\OrsReportingPeriod;
 use app\models\ProcessOrs;
 use Yii;
 use app\models\ProcessOrsEntries;
@@ -183,7 +184,7 @@ class ProcessOrsEntriesController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
     // PAG KUHA SA RAOUDS DATA NGA BUHATAN OG OBLIGATION
-    public function actionSample()
+    public function actionAddData()
     {
         $x = [];
         if (!empty($_POST)) {
@@ -195,6 +196,7 @@ class ProcessOrsEntriesController extends Controller
                         'mfo_pap_code.code AS mfo_pap_code_code', 'mfo_pap_code.name AS mfo_pap_name', 'fund_source.name AS fund_source_name',
                         'chart_of_accounts.uacs as object_code', 'chart_of_accounts.general_ledger', 'major_accounts.name',
                         'chart_of_accounts.id as chart_of_account_id', 'raouds.id AS raoud_id',
+                        'chart_of_accounts.uacs as record_allotment_object_code',
                         'entry.total', 'record_allotment_entries.amount', '(record_allotment_entries.amount - entry.total) AS remain'
                     ])
                     ->from('raouds')
@@ -235,6 +237,25 @@ class ProcessOrsEntriesController extends Controller
             $transaction_id = $_POST['transaction_id'];
             $book_id = $_POST['book_id'];
             $date = $_POST['date'];
+
+            $q = OrsReportingPeriod::find()->where("reporting_period = :reporting_period", ['reporting_period' => $reporting_period])->one();
+
+            $y = date('Y', strtotime($reporting_period));
+            if ($y < date('Y')) {
+                return json_encode(['isSuccess' => false, 'error' => 'Reporting Period Year  Must be ' . date('Y')]);
+            }
+            // return json_encode(['isSuccess' => false, 'error' => 'Success']);
+
+
+            if (!empty($q)) {
+                if ($q->disabled === 1) {
+                    return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
+                    die();
+                }
+            }
+
+
+
             // return json_encode($_POST['chart_of_account_id']);
             $transaction = \Yii::$app->db->beginTransaction();
             // KUNG NAAY SULOD ANG UPDATE ID  MAG ADD OG RAOUD OG ENTRY NIYA  PARA E ADJUST
@@ -270,7 +291,9 @@ class ProcessOrsEntriesController extends Controller
                         // for ($i = 0; $i < 2; $i++) {
                         $raoud = new Raouds();
                         // $raoud->record_allotment_id = $raoud_to_charge_adjustment->record_allotment_id;
-                        $amount = intval(str_replace(',', '', $_POST['obligation_amount'][$index]));
+                        // $amount = intval(str_replace(', .', '', $_POST['obligation_amount'][$index]));
+                        $amount = $_POST['obligation_amount'][$index];
+                        // return json_encode(['error' => $amount]); 
                         // if ($i === 0) {
                         //     if ($raoud_to_adjust->raoudEntries->amount > $total_amount) {
 
@@ -311,7 +334,7 @@ class ProcessOrsEntriesController extends Controller
                         } else {
 
                             $transaction->rollBack();
-                            return json_encode(["error" => 'yawa sa raoud']);
+                            return json_encode(["error" => 'Error']);
                         }
                         // }
                     }
@@ -375,20 +398,20 @@ class ProcessOrsEntriesController extends Controller
                 $rao = Raouds::findOne($_POST['update_id']);
                 $ors_update = ProcessOrs::findOne($rao->process_ors_id);
                 $book = Books::findOne($book_id);
-                $ors_update->reporting_period = $reporting_period; 
+                $ors_update->reporting_period = $reporting_period;
                 $ors_update->transaction_id = $transaction_id;
                 $ors_update->book_id = $book_id;
-                $ors_update->date = $date;  
+                $ors_update->date = $date;
 
                 $x = explode('-', $ors_update->serial_number);
                 $serial = $book->name . '-' . $x[1] . '-' . $x[2] . '-' . $x[3];
                 $ors_update->serial_number = $serial;
                 if ($ors_update->save(false)) {
                     $transaction->commit();
-                    $r = Raouds::find()->where('raouds.process_ors_id = process_ors_id',['process_ors_id'=>$ors_update->id])->one();
-                    return json_encode(['isSuccess' => true ,'id'=>$r->id]);
+                    $r = Raouds::find()->where('raouds.process_ors_id = process_ors_id', ['process_ors_id' => $ors_update->id])->one();
+                    return json_encode(['isSuccess' => true, 'id' => $r->id]);
                 }
-                
+
                 // return json_encode($book->toArray());
             }
             // KUNG WLAY SULOD ANG UPDATE_ID DRI MO SULOD MAG BUHAT OG BAG.O NA DATA
@@ -409,6 +432,9 @@ class ProcessOrsEntriesController extends Controller
                             // echo $reporting_period;
                             foreach ($_POST['chart_of_account_id'] as $index => $value) {
                                 $q = Raouds::find()->where("id =:id", ['id' => $_POST['raoud_id'][$index]])->one();
+
+                                // $amount = intval(str_replace(', .', '', $_POST['obligation_amount'][$index]));
+                                $amount = $_POST['obligation_amount'][$index];
                                 // KUNG ASA E CHARGE NA RAOUD ANG GE OBLIGATE
                                 // $q->isActive = 0;
                                 // $q->save();
@@ -421,25 +447,25 @@ class ProcessOrsEntriesController extends Controller
                                 $raoud->isActive = false;
                                 $raoud->process_ors_id = $ors->id;
                                 $raoud->reporting_period = $ors->reporting_period;
-                                $raoud->obligated_amount = $_POST['obligation_amount'][$index];
+                                $raoud->obligated_amount = $amount;
                                 if ($raoud->validate()) {
                                     if ($raoud->save()) {
                                         $raoud_entry = new RaoudEntries();
                                         $raoud_entry->raoud_id = $raoud->id;
                                         $raoud_entry->chart_of_account_id = $value;
-                                        $raoud_entry->amount = $_POST['obligation_amount'][$index];
+                                        $raoud_entry->amount = $amount;
                                         if ($raoud_entry->validate()) {
                                             if ($raoud_entry->save()) {
                                             }
                                         } else {
                                             $transaction->rollBack();
-                                            return json_encode(['error' => 'yawa sa raoud entry']);
+                                            return json_encode(['error' => $raoud_entry->errors]);
                                         }
                                     }
                                 } else {
 
                                     $transaction->rollBack();
-                                    return json_encode(["error" => 'yawa sa raoud']);
+                                    return json_encode(["error" => 'Error']);
                                 }
 
 
@@ -458,7 +484,7 @@ class ProcessOrsEntriesController extends Controller
                             }
                         }
                         if ($flag) {
-                            
+
                             $transaction->commit();
                             return json_encode(['isSuccess' => true, 'id' => $raoud->id]);
                         }
@@ -466,6 +492,7 @@ class ProcessOrsEntriesController extends Controller
                         return json_encode(['isSuccess' => false, 'error' => $ors->errors]);
                     }
                 } catch (ErrorException $e) {
+                    $transaction->rollBack();
                     return json_encode(["error" => "wla ni sulod"]);
                 }
             }

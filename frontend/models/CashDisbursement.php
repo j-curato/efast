@@ -38,8 +38,8 @@ class CashDisbursement extends \yii\db\ActiveRecord
         return [
 
 
-            [['book_id', 'dv_aucs_id','reporting_period', 'mode_of_payment', 'issuance_date'], 'required'], 
-            [['book_id', 'dv_aucs_id'], 'integer'], 
+            [['book_id', 'dv_aucs_id', 'reporting_period', 'mode_of_payment', 'issuance_date'], 'required'],
+            [['book_id', 'dv_aucs_id'], 'integer'],
             [['reporting_period', 'mode_of_payment', 'issuance_date'], 'string', 'max' => 50],
             [['ada_number'], 'string', 'max' => 40],
             [['check_or_ada_no', 'is_cancelled'], 'string', 'max' => 100],
@@ -84,5 +84,9 @@ class CashDisbursement extends \yii\db\ActiveRecord
     public function getDvAucs()
     {
         return $this->hasOne(DvAucs::class, ['id' => 'dv_aucs_id']);
+    }
+    public function getJevPreparation()
+    {
+        return $this->hasOne(JevPreparation::class, ['cash_disbursement_id' => 'id']);
     }
 }

@@ -91,7 +91,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
             </div>
             <div class="col-sm-2">
-                    <button class="btn btn-success" id="generate">Generate</button>
+                <button class="btn btn-success" id="generate">Generate</button>
             </div>
 
         </div>
@@ -116,7 +116,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>
                     Payee
                 </th>
-                        <!-- HEADER -->
+                <!-- HEADER -->
                 <?php
                 if (!empty($credit) || !empty($debit)) {
                     foreach ($credit as $key => $c) {
@@ -158,37 +158,37 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
                     }
                     foreach ($data as $key => $d) {
-                        $payee_name='';
-                        $check_no ='';
-                        if (!empty($d->payee_id) ){
-                        $payee_name  = Payee::findOne($d->payee_id)->account_name;
+                        $payee_name = '';
+                        $check_no = '';
+                        if (!empty($d->payee_id)) {
+                            $payee_name  = Payee::findOne($d->payee_id)->account_name;
                         }
                         // if (!empty($d->check_ada_number)){
-                            
+
                         // }
                         echo "<tr>"
 
                             . "<td>{$d->reporting_period}</td>" .
                             "<td>$d->jev_number </td>" .
                             "<td>$d->dv_number</td>" .
-                            "<td>". $d->check_ada_number . "</td>" .
+                            "<td>" . $d->check_ada_number . "</td>" .
                             "<td>ALLEEN P. PAHAMTANG </td>" .
-                            "<td>" . 
-            
+                            "<td>" .
+
                             $payee_name
                             . "</td>";
 
                         $i = 0;
                         $y = 0;
                         $total = 0;
-                        
+
                         foreach ($d->jevAccountingEntries as  $acc) {
 
                             if (!empty($acc->credit)) {
                                 $x = array_search($acc->chartOfAccount->uacs, array_column($credit, 'uacs'));
                                 for ($i; $i < $credit_count; $i++) {
                                     if ($i == $x) {
-                                        echo "<td> ". number_format($acc->credit)." </td>";
+                                        echo "<td> " . number_format($acc->credit) . " </td>";
                                         // echo "<td>" . number_format($acc->credit) . " </td>";
                                         $i++;
                                         break;
@@ -202,7 +202,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 //     }
                                 // }
                                 $y++;
-                               
+
                                 $total += $acc->credit;
                             }
                         }
@@ -227,7 +227,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 $x = array_search($acc->chartOfAccount->uacs, array_column($debit, 'uacs'));
                                 for ($z; $z < $debit_count; $z++) {
                                     if ($z == $x) {
-                                        echo "<td>". number_format($acc->debit)."</td>";
+                                        echo "<td>" . number_format($acc->debit) . "</td>";
                                         // echo "<td>" . number_format($acc->debit) . "</td>";
                                         $z++;
                                         break;
@@ -250,7 +250,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                             addRow($z, $debit_count);
                         }
-                        echo "<td>".number_format($total)."</td>";
+                        echo "<td>" . number_format($total) . "</td>";
 
                         echo "</tr>";
                     }
@@ -421,7 +421,28 @@ $(document).ready(function(){
     })
     $("#export").click(function(){
         ex=1
-        query()
+        $.ajax({
+        url: window.location.pathname + '?r=jev-preparation/adadj',
+        type:'POST',
+        data:{
+            reporting_period:reporting_period?''+reporting_period.toString():'',
+            book_id:book_id?book_id:0,
+            export:ex,
+        },
+        success:function(data){
+            // var mywindow = window.open('?r=jev-preparation/ledger', 'new div', 'height=700,width=1300');
+            // mywindow.document.write('<html><head><title></title>');
+            // mywindow.document.write('<link rel="stylesheet" href="../web/print.css" type="text/css" media="all" />');
+            // mywindow.document.write('</head><body >');
+            // mywindow.document.write('' +JSON.parse(data));
+            // mywindow.document.write('</body></html>');
+            // mywindow.document.close();
+            // console.log(data)
+
+        }
+    })
+        
+        
     })
 
     function query(){
@@ -434,7 +455,9 @@ $(document).ready(function(){
             reporting_period:reporting_period?''+reporting_period.toString():'',
             book_id:book_id?book_id:0,
             export:ex,
-        }});
+        }})
+        
+        ;
 
     }
     function thousands_separators(num)

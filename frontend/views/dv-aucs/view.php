@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Raouds;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\widgets\Pjax;
@@ -7,7 +8,7 @@ use yii\widgets\Pjax;
 /* @var $this yii\web\View */
 /* @var $model app\models\DvAucs */
 
-$this->title = $model->id;
+$this->title = $model->dv_number;
 $this->params['breadcrumbs'][] = ['label' => 'Dv Aucs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -15,38 +16,19 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="dv-aucs-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-
-    <?php
-    //  DetailView::widget([
-    //     'model' => $model,
-    //     'attributes' => [
-    //         'id',
-    //         'process_ors_id',
-    //         'raoud_id',
-    //         'dv_number',
-    //         'reporting_period',
-    //         'tax_withheld',
-    //         'other_trust_liability_withheld',
-    //         'net_amount_paid',
-    //     ],
-    // ])
-    ?>
-
-
     <div class="container panel panel-default">
+        <p>
+            <?= Html::a('Print', ['dv-form', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?php
 
-        <table>
+            if (!empty($model->cashDisbursement)) {
+
+                $t = yii::$app->request->baseUrl . "/index.php?r=cash-disbursement/view&id={$model->cashDisbursement->id}";
+                echo  Html::a('Cash Disbursement Link', $t, ['class' => 'btn btn-success ']);
+            }
+            ?>
+        </p>
+        <table class="table table-striped">
 
             <tbody>
                 <thead>
@@ -72,9 +54,21 @@ $this->params['breadcrumbs'][] = $this->title;
             <tbody>
 
                 <?php
+
                 foreach ($model->dvAucsEntries as $val) {
+
                     $ors_serial_number = '';
                     $ors_serial_number = !empty($val->process_ors_id) ? $val->processOrs->serial_number : '';
+                    $t = '';
+                    if (!empty($val->process_ors_id)) {
+
+                        $q = Raouds::find()
+                            ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' =>  $val->process_ors_id])
+                            ->one();
+                        // $q = !empty($val->process_ors_id) ? $val->process_ors_id : '';
+                        $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$q->id";
+                    }
+
                     echo "
                     <tr>
                     <td>
@@ -95,6 +89,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>
                         {$val->ewt_goods_services}
                     </td>
+                    <td class='link'>" .
+
+                        Html::a('ORS', $t, ['class' => 'btn-xs btn-success '])
+                        . "
+                
+                </td>
                     </tr>
                     ";
                 }
@@ -109,6 +109,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <style>
         .head {
             font-weight: bold;
+        }
+        .container{
+            padding:15px
         }
 
         .checkbox {

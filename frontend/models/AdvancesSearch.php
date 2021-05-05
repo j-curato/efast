@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\recordAllotmentEntries;
+use app\models\Advances;
 
 /**
- * recordAllotmentEntriesSearch represents the model behind the search form of `app\models\recordAllotmentEntries`.
+ * AdvancesSearch represents the model behind the search form of `app\models\Advances`.
  */
-class recordAllotmentEntriesSearch extends recordAllotmentEntries
+class AdvancesSearch extends Advances
 {
     /**
      * {@inheritdoc}
@@ -17,9 +17,8 @@ class recordAllotmentEntriesSearch extends recordAllotmentEntries
     public function rules()
     {
         return [
-            [['id', 'record_allotment_id', 'chart_of_account_id', 'lvl'], 'integer'],
-            [['amount'], 'number'],
-            [['object_code'], 'safe'],
+            [['id'], 'integer'],
+            [['province', 'report_type', 'particular'], 'safe'],
         ];
     }
 
@@ -41,7 +40,7 @@ class recordAllotmentEntriesSearch extends recordAllotmentEntries
      */
     public function search($params)
     {
-        $query = recordAllotmentEntries::find();
+        $query = Advances::find();
 
         // add conditions that should always apply here
 
@@ -56,19 +55,16 @@ class recordAllotmentEntriesSearch extends recordAllotmentEntries
             // $query->where('0=1');
             return $dataProvider;
         }
-        $query->joinWith("recordAllotment");
+
         // grid filtering conditions
         $query->andFilterWhere([
-            'record_allotment_entries.id' => $this->id,
-            // 'record_allotment_id' => $this->record_allotment_id,
-            'chart_of_account_id' => $this->chart_of_account_id,
-            'amount' => $this->amount,
-            'lvl' => $this->lvl,
+            'id' => $this->id,
         ]);
 
-        $query->andFilterWhere(['like', 'object_code', $this->object_code])
-            ->andFilterWhere(['like', 'record_allotments.serial_number', $this->record_allotment_id]);
+        $query->andFilterWhere(['like', 'province', $this->province])
+            ->andFilterWhere(['like', 'report_type', $this->report_type])
+            ->andFilterWhere(['like', 'particular', $this->particular]);
 
- ;       return $dataProvider;
+        return $dataProvider;
     }
 }

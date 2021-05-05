@@ -56,6 +56,7 @@
                                     ['label' => 'Nature of Transaction', 'icon' => 'circle-o', 'url' => ['/nature-of-transaction'],],
                                     ['label' => 'MRD Classification', 'icon' => 'circle-o', 'url' => ['/mrd-classification'],],
                                     ['label' => 'Asignatory', 'icon' => 'circle-o', 'url' => ['/assignatory'],],
+                                    ['label' => 'Ors Reporting Period', 'icon' => 'circle-o', 'url' => ['/ors-reporting-period'],],
 
 
                                 ],
@@ -73,7 +74,7 @@
 
                                 ],
                             ],
-                 
+
                             [
                                 'label' => 'Reports',
                                 'icon' => 'circle-o',
@@ -118,7 +119,7 @@
                                     ['label' => 'Fund Classification Code', 'icon' => 'circle-o', 'url' => ['/fund-category-and-classification-code'], 'options' => ['style' => 'color:red;']],
                                     ['label' => 'MFO/PAP Codes', 'icon' => 'circle-o', 'url' => ['/mfo-pap-code'],],
                                     ['label' => 'Fund Source', 'icon' => 'circle-o', 'url' => ['/fund-source'],],
-                                    
+
                                 ],
                             ],
                             [
@@ -144,8 +145,7 @@
                                 'label' => 'Master Records',
                                 'icon' => 'circle-o',
                                 'url' => '#',
-                                'items' => [
-                                ],
+                                'items' => [],
                             ],
                             [
                                 'label' => 'Transaction',
@@ -164,16 +164,17 @@
                         'icon' => 'share',
                         'url' => '#',
                         'items' => [
-                        
-                                    ['label' => 'Pending ORS', 'icon' => 'circle-o', 'url' => ['/report/pending-ors'],],
-                                    ['label' => "Pending DV's", 'icon' => 'circle-o', 'url' => ['/report/pending-dv'],],
-                                    ['label' => 'UnObligated Transaction', 'icon' => 'circle-o', 'url' => ['/report/unobligated-transaction'],],
-                                    ['label' => 'UnPaid Obligation', 'icon' => 'circle-o', 'url' => ['/report/unpaid-obligation'],],
+
+                            ['label' => 'Pending ORS', 'icon' => 'circle-o', 'url' => ['/report/pending-ors'],],
+                            ['label' => "Pending DV's", 'icon' => 'circle-o', 'url' => ['/report/pending-dv'],],
+                            ['label' => 'UnObligated Transaction', 'icon' => 'circle-o', 'url' => ['/report/unobligated-transaction'],],
+                            ['label' => 'UnPaid Obligation', 'icon' => 'circle-o', 'url' => ['/report/unpaid-obligation'],],
+                            ['label' => 'Advances', 'icon' => 'circle-o', 'url' => ['/advances'],],
 
                         ],
                     ],
 
-    
+
 
 
 

@@ -36,6 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <!-- FORM 1 -->
     <div class="container panel panel-default">
+        <button class="btn btn-success" type="button" id="print">Print</button>
         <p>
 
             <?php
@@ -210,10 +211,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td style="width: 130px;" class="ors_a" style="vertical-align:top;padding:0">
                         Printed Name
                     </td>
-                    <td colspan="2" class="" style="border-bottom: 1px solid white;vertical-align:top;padding:0">
+                    <td colspan="2" class="" style="border-bottom: 1px solid white;padding:0">
 
                         <!-- ASSIGNATORY DROPDOWN -->
-                        <select name="" class="assignatory" style="width: 100%;" onchange="setPosition(this,1)">
+                        <select name="" id="assignatory_1" class="assignatory" style="width: 100%;" onchange="setPosition(this,1)">
                             <option value=""></option>
                         </select>
                     </td>
@@ -223,7 +224,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan="4" style="border-bottom:1px solid white;">
 
                         <!-- ASSIGNATORY DROPDOWN -->
-                        <select name="" class="assignatory" style="width: 100%;" onchange="setPosition(this,2)">
+                        <select name="" id="assignatory_2" class="assignatory" style="width: 100%;" onchange="setPosition(this,2)">
                             <option value=""></option>
                         </select>
                     </td>
@@ -232,13 +233,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td class="ors_a">
                         Position:
                     </td>
-                    <td colspan="2" style="border-bottom: 1px solid white;" id="position_1">
+                    <td colspan="2" style="border-bottom: 1px solid white;" class="pos" id="position_1">
 
                     </td>
                     <td class="ors_b">
                         Position:
                     </td>
-                    <td colspan="4" style="border-bottom:1px solid white;" id="position_2">
+                    <td colspan="4" style="border-bottom:1px solid white;" class="pos" id="position_2">
 
 
                     </td>
@@ -478,14 +479,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan="7" style="padding: 0;">
                         <h6 style="margin:0">A: Certified: Expenses/Cash Advance necessary, lawful and incurred under my direct supervision.</h6>
 
-                        <div style="text-align: center;margin-top:1rem;font-size:12pt">
-                            <select name="" class="assignatory" style="width: 300px;" onchange="">
+                        <div style="text-align: center;margin-top:1rem;font-size:10pt">
+                            <select name="" id="assignatory_5" class="assignatory" style="width: 300px;padding:0;" onchange="setPosition(this,5)">
                                 <option value=""></option>
                             </select>
+                            <div style="padding:0;" class="pos" id="position_5">
+
+                            </div>
                         </div>
-                        <h6 style="text-align: center;">
-                            Printed Name, Designation and Signature of Supervisor
-                        </h6>
+
                     </td>
                 </tr>
                 <tr>
@@ -552,7 +554,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>Printed Name</td>
                     <td colspan="3">
                         <div>
-                            <select name="" class="assignatory" style="width: 100%;" onchange="setPosition(this,3)">
+                            <select name="" id="assignatory_3" class="assignatory" style="width: 100%;" onchange="setPosition(this,3)">
                                 <option value=""></option>
                             </select>
                         </div>
@@ -560,7 +562,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>Printed Name</td>
                     <td colspan="2">
                         <div>
-                            <select name="" class="assignatory" style="width: 100%;" onchange="setPosition(this,4)">
+                            <select name="" class="assignatory" id="assignatory_4" style="width: 100%;" onchange="setPosition(this,4)">
                                 <option value=""></option>
                             </select>
                         </div>
@@ -568,11 +570,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <td>Postion</td>
-                    <td colspan="3" id="position_3">
+                    <td colspan="3" id="position_3" class="pos" >
 
                     </td>
                     <td>Postion</td>
-                    <td colspan="2" id="position_4">
+                    <td colspan="2" id="position_4" class="pos" >
                     </td>
                 </tr>
                 <tr>
@@ -645,22 +647,27 @@ $this->params['breadcrumbs'][] = $this->title;
             <tbody>
 
                 <?php
-                foreach ($model->processOrs as $val)
-                    if (!empty($val->id)) {
+                if (!empty($model->processOrs)) {
+                    foreach ($model->processOrs as $val) {
+                        if (!empty($val->id)) {
 
-                        $q = Raouds::find()
-                            ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' => $val->id])
-                            ->one();
+                            $q = Raouds::find()
+                                ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' => $val->id])
+                                ->one();
 
 
-                        $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$q->id";
-                        // echo  Html::a('ORS Link', $t, ['class' => 'btn btn-success ']);
+                            $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$q->id";
+                            // echo  Html::a('ORS Link', $t, ['class' => 'btn btn-success ']);
 
+                        }
+                        echo "<tr>
+                            <td>$val->serial_number</td>
+                            <td>" . Html::a('ORS Link', $t, ['class' => 'btn btn-success ']) . "</td>
+                        </tr>";
                     }
-                echo "<tr>
-                        <td>$val->serial_number</td>
-                        <td>" . Html::a('ORS Link', $t, ['class' => 'btn btn-success ']) . "</td>
-                    </tr>";
+                }
+
+
                 ?>
             </tbody>
         </table>
@@ -726,13 +733,24 @@ $this->params['breadcrumbs'][] = $this->title;
 
     }
 
+    .pos {
+        text-align: center;
+        font-weight: bold;
+    }
+
 
     .select2-container--default .select2-selection--single,
     .select2-selection .select2-selection--single {
         /* border: 1px solid #d2d6de; */
         /* border-radius: 0; */
         padding: 6px;
+        text-align: center;
         /* height: 34px; */
+        font-weight: bold;
+    }
+
+    .select2-container .select2-selection--single .select2-selection__rendered {
+        padding-right: 0;
     }
 
 
@@ -886,7 +904,25 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depe
 SweetAlertAsset::register($this);
 $script = <<< JS
 
+    $('#print').click(function(){
+        if (
+            $('#assignatory_1').val()==''
+            ||$('#assignatory_2').val()==''
+            ||$('#assignatory_3').val()==''
+            ||$('#assignatory_4').val()==''
+            ||$('#assignatory_5').val()==''
+        ){
+            swal({
+                title:'Please Choose Asignatory',
+                type:'error',
+                button:false,
 
+            })
+        }
+        else{
+            window.print()
+        }
+    })
 JS;
 $this->registerJs($script);
 ?>

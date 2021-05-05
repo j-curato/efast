@@ -66,7 +66,7 @@ class CashDisbursementSearch extends CashDisbursement
             ->andFilterWhere(['like', 'mode_of_payment', $this->mode_of_payment])
             ->andFilterWhere(['like', 'cash_disbursement.check_or_ada_no', $this->check_or_ada_no])
             ->andFilterWhere(['like', 'ada_number', $this->ada_number])
-            ->andFilterWhere(['like', 'is_cancelled', $this->is_cancelled])
+            ->andFilterWhere(['like', 'cash_disbursement.is_cancelled', $this->is_cancelled])
             ->andFilterWhere(['like', 'dv_aucs.dv_number', $this->dv_aucs_id])
             ->andFilterWhere(['like', 'cash_disbursement.issuance_date', $this->issuance_date]);
 

@@ -63,7 +63,7 @@ class DvAucsController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('dv_form', [
+        return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
     }
@@ -762,5 +762,11 @@ class DvAucsController extends Controller
             // return ob_get_clean();
             // return json_encode($model);
         }
+    }
+    public function actionDvForm($id)
+    {
+        return $this->render('dv_form', [
+            'model' => $this->findModel($id),
+        ]);
     }
 }

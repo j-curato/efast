@@ -29,6 +29,10 @@ $this->params['breadcrumbs'][] = $this->title;
         echo "<input type='text' id='cancel_id' value='$model->id' style='display:none;'/>";
         $t = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/view&id=$model->dv_aucs_id";
         echo  Html::a('DV Link', $t, ['class' => 'btn btn-info ', 'style' => 'margin:3px']);
+        if (!empty($model->jevPreparation)) {
+            $jev_link = yii::$app->request->baseUrl . "/index.php?r=jev-preparation/view&id={$model->jevPreparation->id}";
+            echo  Html::a('JEV ', $jev_link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px']);
+        }
         ?>
     </p>
 

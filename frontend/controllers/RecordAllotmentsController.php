@@ -150,6 +150,7 @@ class RecordAllotmentsController extends Controller
         $mfo_pap_code_id = $_POST['mfo_pap_code'];
         $fund_source_id = $_POST['fund_source'];
         $book_id = $_POST['book'];
+        $responsibility_center_id = $_POST['responsibility_center'];
         $transaction = \Yii::$app->db->beginTransaction();
         // COUNTER NI SIYA KUN ASA DAPIT NA CHART_OF_ACCOUNT_ID IYA I UPDATE OG E INSERT KUNG MAG DUNGAG KAG ENTRIES
         $x = 0;
@@ -192,6 +193,7 @@ class RecordAllotmentsController extends Controller
         $recordAllotment->financing_source_code_id = $financing_source_code_id;
         $recordAllotment->mfo_pap_code_id = $mfo_pap_code_id;
         $recordAllotment->book_id = $book_id;
+        $recordAllotment->responsibility_center_id = $responsibility_center_id;
         $recordAllotment->fund_source_id = $fund_source_id;
         $recordAllotment->fund_category_and_classification_code_id = $fund_category_and_classification_code_id['id'];
         if ($recordAllotment->validate()) {
@@ -281,6 +283,7 @@ class RecordAllotmentsController extends Controller
                 'particulars' => $model->particulars,
                 'fund_classification' => $model->fund_classification,
                 'book_id' => $model->book_id,
+                'responsibility_center_id' => $model->responsibility_center_id,
             ];
             $record_allotment_entries = [];
             foreach ($model->recordAllotmentEntries as $val) {

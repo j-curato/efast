@@ -206,7 +206,7 @@ class SubAccounts1Controller extends Controller
                 }
                 $obj_code = $cells[0];
                 $name = $cells[1];
-                if (!empty($cells[0] )) {
+                if (!empty($cells[0])) {
 
                     // if (in_array($obj_code, $uacs_storage, true)) {
 
@@ -244,5 +244,14 @@ class SubAccounts1Controller extends Controller
 
             return $this->redirect(['index']);
         }
+    }
+
+    public function actionGetAllSubAccount1()
+    {
+        $res = (new \yii\db\Query())
+            ->select("*")
+            ->from('sub_accounts1')
+            ->all();
+        return json_encode($res);
     }
 }

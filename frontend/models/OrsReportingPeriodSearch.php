@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\recordAllotmentEntries;
+use app\models\OrsReportingPeriod;
 
 /**
- * recordAllotmentEntriesSearch represents the model behind the search form of `app\models\recordAllotmentEntries`.
+ * OrsReportingPeriodSearch represents the model behind the search form of `app\models\OrsReportingPeriod`.
  */
-class recordAllotmentEntriesSearch extends recordAllotmentEntries
+class OrsReportingPeriodSearch extends OrsReportingPeriod
 {
     /**
      * {@inheritdoc}
@@ -17,9 +17,8 @@ class recordAllotmentEntriesSearch extends recordAllotmentEntries
     public function rules()
     {
         return [
-            [['id', 'record_allotment_id', 'chart_of_account_id', 'lvl'], 'integer'],
-            [['amount'], 'number'],
-            [['object_code'], 'safe'],
+            [['id', 'disabled'], 'integer'],
+            [['reporting_period'], 'safe'],
         ];
     }
 
@@ -41,7 +40,7 @@ class recordAllotmentEntriesSearch extends recordAllotmentEntries
      */
     public function search($params)
     {
-        $query = recordAllotmentEntries::find();
+        $query = OrsReportingPeriod::find();
 
         // add conditions that should always apply here
 
@@ -56,19 +55,15 @@ class recordAllotmentEntriesSearch extends recordAllotmentEntries
             // $query->where('0=1');
             return $dataProvider;
         }
-        $query->joinWith("recordAllotment");
+
         // grid filtering conditions
         $query->andFilterWhere([
-            'record_allotment_entries.id' => $this->id,
-            // 'record_allotment_id' => $this->record_allotment_id,
-            'chart_of_account_id' => $this->chart_of_account_id,
-            'amount' => $this->amount,
-            'lvl' => $this->lvl,
+            'id' => $this->id,
+            'disabled' => $this->disabled,
         ]);
 
-        $query->andFilterWhere(['like', 'object_code', $this->object_code])
-            ->andFilterWhere(['like', 'record_allotments.serial_number', $this->record_allotment_id]);
+        $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period]);
 
- ;       return $dataProvider;
+        return $dataProvider;
     }
 }

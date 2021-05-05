@@ -92,17 +92,39 @@ $this->params['breadcrumbs'][] = $this->title;
     'jevPreparation.dv_number',
     'jevPreparation.check_ada_number',
     [
-      'label'=>'Payee',
-      'value'=>'jevPreparation.payee.account_name'
+      'label' => 'Payee',
+      'value' => 'jevPreparation.payee.account_name'
     ],
     'chartOfAccount.uacs',
     'chartOfAccount.general_ledger',
+    [
+      'label' => 'Entry Object Code',
+      'value' => function ($model) {
+        return $model->object_code;
+      }
+    ],
+    [
+      'label' => 'Entry General Ledger',
+      'value' => function ($model) {
+        if ($model->lvl === 1) {
+          return $model->chartOfAccount->general_ledger;
+        } else if ($model->lvl === 2) {
+          $query = (new \yii\db\Query(0))->select('sub_accounts1.name')->from('sub_accounts1')->where('sub_accounts1.object_code =:object_code', ['object_code' => $model->object_code])->one();
+          return $query['name'];
+        } else if ($model->lvl === 3) {
+          $query = (new \yii\db\Query(0))->select('sub_accounts2.name')->from('sub_accounts2')->where('sub_accounts2.object_code =:object_code', ['object_code' => $model->object_code])->one();
+          return $query['name'];
+        }
+      }
+
+    ],
     'jevPreparation.reporting_period',
     'jevPreparation.date',
     'jevPreparation.explaination',
     'debit',
     'credit',
-    'jevPreparation.ref_number'
+    'jevPreparation.ref_number',
+
 
   ];
 
@@ -162,9 +184,9 @@ $this->params['breadcrumbs'][] = $this->title;
       'id',
       'jev_number',
       [
-        'label'=>'Payee',
-        'attribute'=>'payee_id',
-        'value'=>'payee.account_name'
+        'label' => 'Payee',
+        'attribute' => 'payee_id',
+        'value' => 'payee.account_name'
       ],
       // 'transaction_id',
       [

@@ -124,7 +124,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         [
             'label' => "2307 (EWT Goods / Services)",
-            'value' => "ewt_good_services"
+            'value' => "ewt_goods_services"
         ],
         [
             'label' => "1601C (Compensation)",

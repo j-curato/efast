@@ -23,17 +23,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="container">
         <p>
+            <?= Html::a('Create Process Ors', ['create'], ['class' => 'btn btn-success']) ?>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-       
+
             <?php
-            if ($ors->is_cancelled){
+            if ($ors->is_cancelled) {
                 echo "
                 <button class='btn btn-success' id='cancel'>
                     Activate
                 </button>
                 ";
-            }
-            else{
+            } else {
                 echo "
                 <button class='btn btn-danger' id='cancel'>
                     Cancel
@@ -55,7 +55,19 @@ $this->params['breadcrumbs'][] = $this->title;
                     Reporting Period
                 </th>
                 <th>
+                   Allotment Number
+                </th>
+                <th>
                     Payee
+                </th>
+                <th>
+                    Particular
+                </th>
+                <th>
+                    Allotment UACS Code
+                </th>
+                <th>
+                    Allotment General Ledger
                 </th>
                 <th>
                     UACS
@@ -81,7 +93,19 @@ $this->params['breadcrumbs'][] = $this->title;
                            {$val->reporting_period}
                         </td>
                         <td>
+                           {$val->recordAllotmentEntries->recordAllotment->serial_number}
+                        </td>
+                        <td>
                            {$val->processOrs->transaction->payee->account_name}
+                        </td>
+                        <td>
+                           {$val->processOrs->transaction->particular}
+                        </td>
+                        <td>
+                           {$val->recordAllotmentEntries->chartOfAccount->uacs}
+                        </td>
+                        <td>
+                           {$val->recordAllotmentEntries->chartOfAccount->general_ledger}
                         </td>
                         <td>
                            {$val->raoudEntries->chartOfAccount->uacs}
@@ -101,7 +125,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 ?>
                 <tr>
-                    <td colspan="5" style='text-align:center;font-weight:bold;'>Total</td>
+                    <td colspan="9" style='text-align:center;font-weight:bold;'>Total</td>
                     <td style='text-align:right;font-weight:bold;'><?php echo number_format($total, 2); ?></td>
                 </tr>
             </tbody>

@@ -547,9 +547,9 @@ use kartik\select2\Select2;
                 select_id++;
             }
             // console.log(result)
-            $('.amount').maskMoney({
-                allowNegative: true
-            });
+            // $('.amount').maskMoney({
+            //     allowNegative: true
+            // });
 
 
 
@@ -618,7 +618,7 @@ use kartik\select2\Select2;
 
                 e.preventDefault();
                 $.ajax({
-                    url: window.location.pathname + '?r=process-ors-entries/sample',
+                    url: window.location.pathname + '?r=process-ors-entries/add-data',
                     method: "POST",
                     data: $('#add_data').serialize(),
                     success: function(data) {
@@ -692,7 +692,7 @@ $script = <<< JS
 
             e.preventDefault();
 
-            $('.amount').maskMoney('unmasked');
+            // $('.amount').maskMoney('unmasked');
                 $.ajax({
                     url: window.location.pathname + '?r=process-ors-entries/insert-process-ors',
                     method: "POST",

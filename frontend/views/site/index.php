@@ -27,97 +27,42 @@ $this->title = 'Dashboard';
                         FROM cash_disbursement,dv_aucs,dv_aucs_entries
                         WHERE cash_disbursement.dv_aucs_id = dv_aucs.id
                         AND dv_aucs.id = dv_aucs_entries.dv_aucs_id
+                        AND cash_disbursement.is_cancelled =0
                         ) as total_disbursed
                 FROM process_ors,raouds,raoud_entries
                 WHERE process_ors.id = raouds.process_ors_id
                 AND raouds.id = raoud_entries.raoud_id
+                AND process_ors.is_cancelled =0
             ")
         ->queryOne();
     $query3 = Yii::$app->db->createCommand("SELECT SUM(dv_aucs_entries.vat_nonvat) as total_vat_nonvat,
-    SUM(dv_aucs_entries.ewt_goods_services) as total_ewt,
-    SUM(dv_aucs_entries.compensation) as total_compensation
-    FROM dv_aucs_entries
-    ")->queryOne();
+                SUM(dv_aucs_entries.ewt_goods_services) as total_ewt,
+                SUM(dv_aucs_entries.compensation) as total_compensation
+                FROM dv_aucs_entries
+            ")->queryOne();
 
     $total_cash_disbursed = Yii::$app->db->createCommand("SELECT books.`name`,
-     SUM(dv_aucs_entries.amount_disbursed)as total_disbursed 
-    FROM cash_disbursement,dv_aucs,dv_aucs_entries,books
-    WHERE cash_disbursement.dv_aucs_id = dv_aucs.id
-    AND dv_aucs.id = dv_aucs_entries.dv_aucs_id
-    AND cash_disbursement.book_id = books.id
-    AND cash_disbursement.is_cancelled = 0
-    GROUP BY cash_disbursement.book_id")->queryAll();
+                        SUM(dv_aucs_entries.amount_disbursed)as total_disbursed 
+                        FROM cash_disbursement,dv_aucs,dv_aucs_entries,books
+                        WHERE cash_disbursement.dv_aucs_id = dv_aucs.id
+                        AND dv_aucs.id = dv_aucs_entries.dv_aucs_id
+                        AND cash_disbursement.book_id = books.id
+                        AND cash_disbursement.is_cancelled = 0
+                        GROUP BY cash_disbursement.book_id")->queryAll();
+    $payable = Yii::$app->db->createCommand("SELECT SUM(dv_aucs_entries.amount_disbursed) as total_payable
+                FROM `dv_aucs`,dv_aucs_entries,mrd_classification 
+                where dv_aucs.mrd_classification_id = mrd_classification.id
+                AND dv_aucs.id = dv_aucs_entries.dv_aucs_id
+                AND mrd_classification.`name` LIKE 'Prior Year Accounts Payable'
+                AND dv_aucs.is_cancelled =0
+                ")->queryOne();
 
 
     ?>
     <div class="body-content">
 
         <div class="row justify-content-around">
-            <!-- Allotment/Appropriations and Obligations -->
-            <div class="panel panel-default col-sm-5">
-                <div class="panel-heading" style="background-color:white;width:100%">
 
-                    <h4>
-                        Allotment/Appropriations and Obligations
-
-                    </h4>
-                </div>
-
-                <div class="panel-content">
-                    <table class="table">
-
-                        <tr>
-                            <td>
-
-                                <span style="white-space: pre;">Total Allotments and Appropriations Received</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span style=" margin-left: auto;">
-                                    <?php
-                                    echo number_format($query['total_allotment'], 2);
-                                    ?>
-                                </span>
-
-                            </td>
-
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Total Obligations</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span>
-                                    <?php
-                                    echo number_format($query['total_obligated'], 2);
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Unobligated Balance</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span>
-                                    <?php
-                                    echo  number_format($query['total_allotment'] - $query['total_obligated'], 2);
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div>
-
-                </div>
-
-
-            </div>
-            <!-- END Allotment/Appropriations and Obligations -->
 
             <!-- Obligations and Disbursements -->
             <div class="panel panel-default col-sm-5">
@@ -153,7 +98,8 @@ $this->title = 'Dashboard';
                             <td style="text-align: right;">
                                 <span>
                                     <?php
-                                    echo number_format($ors['total_disbursed'], 2);
+                                    $total_disbursed = $ors['total_disbursed']-$payable['total_payable'];
+                                    echo number_format($total_disbursed, 2);
                                     ?>
                                 </span>
                             </td>
@@ -180,7 +126,22 @@ $this->title = 'Dashboard';
                             <td style="text-align: right;">
                                 <span>
                                     <?php
-                                    echo  number_format($ors['total_obligated'] - $ors['total_disbursed'], 2);
+                                    echo  number_format($ors['total_obligated'] - $total_disbursed, 2);
+
+                                    ?>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>Total Prior Year Accounts Payable</span>
+
+                            </td>
+                            <td style="text-align: right;">
+                                <span>
+                                    <?php
+
+                                    echo  number_format($payable['total_payable'], 2);
 
                                     ?>
                                 </span>
@@ -190,68 +151,6 @@ $this->title = 'Dashboard';
                 </div>
             </div>
             <!--END  Obligations and Disbursements -->
-
-        </div>
-        <div class="row">
-            <!-- Taxes Withheld and Remitted -->
-
-            <div class="panel panel-default  col-sm-5">
-                <div class="panel-heading" style="background-color:white;width:100%">
-                    <h4>
-                        Taxes Withheld and Remitted
-                    </h4>
-                </div>
-                <div class="panel-content">
-
-                    <table class="table">
-
-                        <tr>
-                            <td>
-
-                                <span style="white-space: pre;">Total Taxes Withheld</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span style=" margin-left: auto;">
-                                    <?php
-                                    $total_withheld = $query3['total_vat_nonvat'] + $query3['total_ewt'] + $query3['total_compensation'];
-                                    echo number_format($total_withheld, 2);
-                                    ?>
-                                </span>
-
-                            </td>
-
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Less: Total Tax Remittance</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span>
-                                    <?php
-                                    // echo number_format($query['total_obligated'], 2);
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Balance for Remittance</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span>
-                                    <?php
-                                    echo number_format($total_withheld, 2);
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            <!--END Taxes Withheld and Remitted -->
             <!-- Cash Received and Disbursed -->
             <div class="panel panel-default  col-sm-5">
                 <div class="panel-heading" style="background-color:white;width:100%">
@@ -346,6 +245,138 @@ $this->title = 'Dashboard';
 
             </div>
             <!-- END Cash Received and Disbursed -->
+
+
+        </div>
+        <div class="row">
+
+
+            <!-- Allotment/Appropriations and Obligations -->
+            <div class="panel panel-default col-sm-5">
+                <div class="panel-heading" style="background-color:white;width:100%">
+
+                    <h4>
+                        Allotment/Appropriations and Obligations
+
+                    </h4>
+                </div>
+
+                <div class="panel-content">
+                    <table class="table">
+
+                        <tr>
+                            <td>
+
+                                <span style="white-space: pre;">Total Allotments and Appropriations Received</span>
+
+                            </td>
+                            <td style="text-align: right;">
+                                <span style=" margin-left: auto;">
+                                    <?php
+                                    echo number_format($query['total_allotment'], 2);
+                                    ?>
+                                </span>
+
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>Total Obligations</span>
+
+                            </td>
+                            <td style="text-align: right;">
+                                <span>
+                                    <?php
+                                    echo number_format($query['total_obligated'], 2);
+                                    ?>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>Unobligated Balance</span>
+
+                            </td>
+                            <td style="text-align: right;">
+                                <span>
+                                    <?php
+                                    echo  number_format($query['total_allotment'] - $query['total_obligated'], 2);
+                                    ?>
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div>
+
+                </div>
+
+
+            </div>
+            <!-- END Allotment/Appropriations and Obligations -->
+
+
+            <!-- Taxes Withheld and Remitted -->
+
+            <div class="panel panel-default  col-sm-5">
+                <div class="panel-heading" style="background-color:white;width:100%">
+                    <h4>
+                        Taxes Withheld and Remitted
+                    </h4>
+                </div>
+                <div class="panel-content">
+
+                    <table class="table">
+
+                        <tr>
+                            <td>
+
+                                <span style="white-space: pre;">Total Taxes Withheld</span>
+
+                            </td>
+                            <td style="text-align: right;">
+                                <span style=" margin-left: auto;">
+                                    <?php
+                                    $total_withheld = $query3['total_vat_nonvat'] + $query3['total_ewt'] + $query3['total_compensation'];
+                                    echo number_format($total_withheld, 2);
+                                    ?>
+                                </span>
+
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>Less: Total Tax Remittance</span>
+
+                            </td>
+                            <td style="text-align: right;">
+                                <span>
+                                    <?php
+                                    // echo number_format($query['total_obligated'], 2);
+                                    ?>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>Balance for Remittance</span>
+
+                            </td>
+                            <td style="text-align: right;">
+                                <span>
+                                    <?php
+                                    echo number_format($total_withheld, 2);
+                                    ?>
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <!--END Taxes Withheld and Remitted -->
 
         </div>
         <!-- DV -->

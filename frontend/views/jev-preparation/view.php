@@ -13,7 +13,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\JevPreparation */
 
-$this->title = $model->id;
+$this->title = $model->jev_number;
 $this->params['breadcrumbs'][] = ['label' => 'Jev Preparations', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -37,6 +37,25 @@ $this->params['breadcrumbs'][] = $this->title;
         ?>
 
         <?= Html::button('Delete', ['value' => Url::to($t), 'class' => 'btn btn-danger delete']) ?>
+        <?php
+        if (!empty($model->dv_number)) {
+
+            $q = (new \yii\db\Query())
+            ->select('dv_aucs.id')
+            ->from('dv_aucs')
+            ->where('dv_aucs.dv_number =:dv_number', ['dv_number' => $model->dv_number])
+            ->one();
+            $dv_link = yii::$app->request->baseUrl . '/index.php?r=dv-aucs/view&id=' . $q['id']; 
+
+                echo "<a type='button' href='$dv_link' class='btn btn-success'>DV</a>";
+        }
+        if (!empty($model->cash_disbursement_id)){
+            $cash_link = yii::$app->request->baseUrl . '/index.php?r=cash-disbursement/view&id=' . $model->cash_disbursement_id;
+            echo "<a type='button' href='$cash_link' class='btn btn-warning'>Cash</a>";
+       
+        }
+
+        ?>
         <button onclick="window.print()" class="btn btn-primary print">
             Print
         </button>

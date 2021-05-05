@@ -157,6 +157,10 @@ class RecordAllotments extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Books::class, ['id' => 'book_id']);
     }
+    public function getResponsibilityCenter()
+    {
+        return $this->hasOne(ResponsibilityCenter::class, ['id' => 'responsibility_center_id']);
+    }
     public function getRecordAllotmentEntries()
     {
         return $this->hasMany(RecordAllotmentEntries::class, ['record_allotment_id' => 'id']);

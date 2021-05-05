@@ -205,21 +205,23 @@ $this->params['breadcrumbs'][] = $this->title;
                 // }
                 $ors_serial_number = '';
                 $total = 0;
-                foreach ($model->dvAucsEntries as $val) {
-                    $ors_serial_number = !empty($val->process_ors_id) ? $val->processOrs->serial_number : '';
-                    $t = '';
-                    if (!empty($val->process_ors_id)) {
+                if (!empty($model->dvAucsEntries)) {
 
-                        $q = Raouds::find()
-                            ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' =>  $val->process_ors_id])
-                            ->one();
-                        // $q = !empty($val->process_ors_id) ? $val->process_ors_id : '';
-                        $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$q->id";
-                    }
+                    foreach ($model->dvAucsEntries as $val) {
+                        $ors_serial_number = !empty($val->process_ors_id) ? $val->processOrs->serial_number : '';
+                        $t = '';
+                        if (!empty($val->process_ors_id)) {
 
-                    $amount = number_format($val->amount_disbursed, 2);
-                    $total += $val->amount_disbursed;
-                    echo "
+                            $q = Raouds::find()
+                                ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' =>  $val->process_ors_id])
+                                ->one();
+                            // $q = !empty($val->process_ors_id) ? $val->process_ors_id : '';
+                            $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$q->id";
+                        }
+
+                        $amount = number_format($val->amount_disbursed, 2);
+                        $total += $val->amount_disbursed;
+                        echo "
                     <tr>
                         <td colspan='4' style='padding:0px'>
                         $ors_serial_number
@@ -233,13 +235,15 @@ $this->params['breadcrumbs'][] = $this->title;
                         </td>
                         <td class='link'>" .
 
-                        Html::a('ORS', $t, ['class' => 'btn-xs btn-success '])
-                        . "
+                            Html::a('ORS', $t, ['class' => 'btn-xs btn-success '])
+                            . "
                         
                         </td>
                   </tr>
                     ";
+                    }
                 }
+
 
                 ?>
                 <tr>

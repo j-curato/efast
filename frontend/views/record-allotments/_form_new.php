@@ -5,8 +5,13 @@
 
 <?php
 
+use app\models\ResponsibilityCenter;
 use kartik\date\DatePicker;
 use aryelds\sweetalert\SweetAlertAsset;
+use kartik\select2\Select2;
+use Mpdf\Tag\Select;
+use yii\helpers\ArrayHelper;
+
 ?>
 <div class="test">
 
@@ -71,7 +76,10 @@ use aryelds\sweetalert\SweetAlertAsset;
                     ?>
                 </div>
                 <div class="col-sm-3">
-
+                    <label for="responsibility_center">Responsibility Center</label>
+                    <select id="responsibility_center" name="responsibility_center" class="responsibility_center select" style="width: 100%; margin-top:50px" required>
+                        <option></option>
+                    </select>
                 </div>
             </div>
             <div class="row">
@@ -232,6 +240,7 @@ use aryelds\sweetalert\SweetAlertAsset;
         var accounts = [];
         var fund_clusters = [];
         var document_recieve = [];
+        var responsibility_center = [];
         var financing_source_code = [];
         var authorization_code = [];
         var fund_source = [];
@@ -327,6 +336,23 @@ use aryelds\sweetalert\SweetAlertAsset;
                         placeholder: 'Select Document Recieve'
                     })
                 })
+            // GET RESPONSIBILITY CENTER
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=responsibility-center/get-responsibility-center')
+                .then(function(data) {
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.name
+                        })
+                    })
+                    responsibility_center = array
+                    $('#responsibility_center').select2({
+                        data: responsibility_center,
+
+                        placeholder: 'Select Responsibility Center'
+                    })
+                })
 
 
             // GET ALL AUTHORIZATION CODES
@@ -337,7 +363,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     $.each(data, function(key, val) {
                         array.push({
                             id: val.id,
-                            text: val.name +' - '+ val.description
+                            text: val.name + ' - ' + val.description
                         })
                     })
                     authorization_code = array
@@ -375,7 +401,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     $.each(data, function(key, val) {
                         array.push({
                             id: val.id,
-                            text:val.code + ' - '+val.name
+                            text: val.code + ' - ' + val.name
                         })
                     })
                     mfo_pap_code = array
@@ -394,7 +420,7 @@ use aryelds\sweetalert\SweetAlertAsset;
                     $.each(data, function(key, val) {
                         array.push({
                             id: val.id,
-                            text: val.name +' - '+ val.description
+                            text: val.name + ' - ' + val.description
                         })
                     })
                     books = array
@@ -406,6 +432,62 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 
                 })
+            // GET ALL CHART OF accounts
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
+                .then(function(data) {
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.object_code + ' ' + val.title
+                        })
+                    })
+                    accounts = array
+                    $('#chart-0').select2({
+                        data: accounts,
+                        placeholder: "Select Chart of Account",
+
+                    })
+                });
+            // GET FINANCING SOURCE CODES
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=financing-source-code/get-financing-source-codes')
+                .then(function(data) {
+
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.name + ' - ' + val.description
+                        })
+                    })
+                    financing_source_code = array
+                    $('#financing_source_code').select2({
+                        data: financing_source_code,
+                        placeholder: "Select Financing Source Code",
+
+                    })
+
+                });
+            // GET BOOKS
+            var books = [];
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
+                .then(function(data) {
+
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.name
+                        })
+                    })
+                    books = array
+                    $('#book').select2({
+                        data: books,
+                        placeholder: "Select Books",
+
+                    })
+
+                });
 
 
 
@@ -477,62 +559,7 @@ $script = <<< JS
          $('#financing_source_code').change(function(){
              console.log($(this).val())
          })
-             // GET ALL CHART OF accounts
-             $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
-                .then(function(data) {
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.object_code + ' ' + val.title
-                        })
-                    })
-                    accounts = array
-                    $('#chart-0').select2({
-                        data: accounts,
-                        placeholder: "Select Chart of Account",
-
-                    })
-                });
-            // GET FINANCING SOURCE CODES
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=financing-source-code/get-financing-source-codes')
-            .then(function(data) {
-
-                var array = []
-                $.each(data, function(key, val) {
-                    array.push({
-                        id: val.id,
-                        text: val.name + ' - ' + val.description
-                    })
-                })
-                financing_source_code = array
-                $('#financing_source_code').select2({
-                    data: financing_source_code,
-                    placeholder: "Select Financing Source Code",
-
-                })
-
-            });
-            // GET BOOKS
-            var books=[];
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
-            .then(function(data) {
-
-                var array = []
-                $.each(data, function(key, val) {
-                    array.push({
-                        id: val.id,
-                        text: val.name
-                    })
-                })
-                books = array
-                $('#book').select2({
-                    data: books,
-                    placeholder: "Select Books",
-
-                })
-
-            });
+       
         update_id = $('#update_id').val()
  
     // MAG API REQUEST KUNG NAAY SULOD ANG UPDATE_ID
@@ -562,6 +589,7 @@ $script = <<< JS
                         $('#mfo_pap_code').val(record_allotment['mfo_pap_code_id']).trigger('change');
                         $('#fund_source').val(record_allotment['fund_source_id']).trigger('change');
                         $('#book').val(record_allotment['book_id']).trigger('change');
+                        $('#responsibility_center').val(record_allotment['responsibility_center_id']).trigger('change');
                         $('#particular').val(record_allotment['particulars']);
 
                         // console.log(record_allotment['particulars']) 

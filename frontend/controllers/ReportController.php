@@ -34,29 +34,37 @@ class ReportController extends \yii\web\Controller
     public function actionSaob()
     {
 
-        $query = Yii::$app->db->createCommand("SELECT ors.*,record_allotment_entries.* from record_allotment_entries,(
-
-            SELECT SUM(raoud_entries.amount) as total_obligation,
-            raouds.record_allotment_entries_id,
-            raouds.reporting_period
-            
-             from raouds,raoud_entries
-            where raouds.id = raoud_entries.raoud_id
-            AND raouds.process_ors_id IS NOT NULL
-            AND raouds.reporting_period IN('2021-01','2021-02')
-            GROUP BY raouds.reporting_period,raouds.record_allotment_entries_id 
-            ORDER BY raouds.reporting_period,raouds.record_allotment_entries_id ) as ors
-            where record_allotment_entries.id = ors.record_allotment_entries_id
-            ORDER BY record_allotment_entries.id
+        $query = Yii::$app->db->createCommand("SELECT ors.total_obligation,
+        ors.reporting_period,
+        record_allotment_entries.id,
+        record_allotment_entries.amount,
+        chart_of_accounts.uacs,
+        chart_of_accounts.general_ledger from record_allotment_entries,chart_of_accounts,(
+        
+        SELECT SUM(raoud_entries.amount) as total_obligation,
+        raouds.record_allotment_entries_id,
+        raouds.reporting_period
+        
+         from raouds,raoud_entries,chart_of_accounts
+        where raouds.id = raoud_entries.raoud_id
+        AND raouds.process_ors_id IS NOT NULL
+        AND raouds.reporting_period IN('2021-01','2021-02')
+        GROUP BY raouds.reporting_period,raouds.record_allotment_entries_id 
+        ORDER BY raouds.reporting_period,raouds.record_allotment_entries_id ) as ors
+        where record_allotment_entries.id = ors.record_allotment_entries_id
+        AND record_allotment_entries.chart_of_account_id =chart_of_accounts.id
+        
+        ORDER BY record_allotment_entries.id
             
             ")->queryAll();
-        $result = ArrayHelper::index($query, 'reporting_period', [function ($element) {
-            return $element['reporting_period'];
-        }, '']);
+        $result = ArrayHelper::index($query, null, [function ($element) {
+            return $element['uacs'];
+        }, ]);
 
+        
         ob_clean();
         echo "<pre>";
-        var_dump($query);
+        var_dump($result);
         echo "</pre>";
         return ob_get_clean();
         // return $this->render('saob',[
@@ -105,9 +113,9 @@ class ReportController extends \yii\web\Controller
     {
         $dv = (new \yii\db\Query())
             ->select('SUM(dv_aucs_entries.amount_disbursed) as total_disbursed,SUM(dv_aucs_entries.vat_nonvat) as total_vat,
-        SUM(dv_aucs_entries.ewt_goods_services) as total_ewt,
-        SUM(dv_aucs_entries.compensation) as total_compensation
-        ')
+                    SUM(dv_aucs_entries.ewt_goods_services) as total_ewt,
+                    SUM(dv_aucs_entries.compensation) as total_compensation
+                    ')
             ->from('dv_aucs_entries')
             ->where('dv_aucs_entries.process_ors_id =:process_ors_id', ['process_ors_id' => 2008])
             ->one();
