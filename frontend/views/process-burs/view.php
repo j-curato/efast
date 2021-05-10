@@ -1,44 +1,251 @@
 <?php
 
+use app\models\ProcessBurs;
+use app\models\ProcessOrs;
+use app\models\Raouds;
+use aryelds\sweetalert\SweetAlert;
+use aryelds\sweetalert\SweetAlertAsset;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\ProcessBurs */
+/* @var $model app\models\ProcessOrsEntries */
 
-$this->title = $model->id;
+$this->title = $model->processOrs->serial_number;
 $this->params['breadcrumbs'][] = ['label' => 'Process Burs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="process-burs-view">
-
+<div class="process-ors-entries-view">
+    <?php
+    $burs  = ProcessOrs::findOne($model->process_ors_id);
+    ?>
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+    <div class="container">
+        <p>
+            <?= Html::a('Create Process Burs', ['create'], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'transaction_id',
-            'reporting_period',
-            'serial_number',
-            'obligation_number',
-            'funding_code',
-            'document_recieve_id',
-            'mfo_pap_code_id',
-            'fund_source_id',
-        ],
-    ]) ?>
+            <?php
+            if ($burs->is_cancelled) {
+                echo "
+                <button class='btn btn-success' id='cancel'>
+                    Activate
+                </button>
+                ";
+            } else {
+                echo "
+                <button class='btn btn-danger' id='cancel'>
+                    Cancel
+                </button>
+                ";
+            }
+            echo "<input type='text' id='cancel_id' value='$burs->id' style='display:none'/>";
+            $t = yii::$app->request->baseUrl . "/index.php?r=transaction/view&id=$burs->transaction_id";
+            echo  Html::a('Transaction', $t, ['class' => 'btn btn-info']);
+            $adjust = yii::$app->request->baseUrl . "/index.php?r=process-burs/re-align&id=$model->id";
+            echo Html::a('Adjust/Re-align', $adjust, ['class' => 'btn btn-warning ', 'style' => 'margin:5px']);
+            ?>
+        </p>
+        <table class="table table-striped">
+
+            <thead>
+                <th>
+                    ID
+                </th>
+                <th>
+                    Reporting Period
+                </th>
+                <th>
+                    Allotment Number
+                </th>
+                <th>
+                    Payee
+                </th>
+                <th>
+                    Particular
+                </th>
+                <th>
+                    Allotment UACS Code
+                </th>
+                <th>
+                    Allotment General Ledger
+                </th>
+                <th>
+                    UACS
+                </th>
+                <th>
+                    General Ledger
+                </th>
+                <th style='text-align:right'>
+                    Amount
+                </th>
+            </thead>
+            <tbody>
+                <?php
+                $total = 0;
+                foreach ($burs->raouds as $key => $val) {
+
+                    echo "
+                    <tr>
+                        <td>
+                           {$key}
+                        </td>
+                        <td>
+                           {$val->reporting_period}
+                        </td>
+                        <td>
+                           {$val->recordAllotmentEntries->recordAllotment->serial_number}
+                        </td>
+                        <td>
+                           {$val->processOrs->transaction->payee->account_name}
+                        </td>
+                        <td>
+                           {$val->processOrs->transaction->particular}
+                        </td>
+                        <td>
+                           {$val->recordAllotmentEntries->chartOfAccount->uacs}
+                        </td>
+                        <td>
+                           {$val->recordAllotmentEntries->chartOfAccount->general_ledger}
+                        </td>
+                        <td>
+                           {$val->raoudEntries->chartOfAccount->uacs}
+                        </td>
+                        <td>
+                           {$val->raoudEntries->chartOfAccount->general_ledger}
+                        </td>
+                        <td style='text-align:right'>" .
+                        number_format($val->raoudEntries->amount, 2)
+                        . "</td>
+         
+                    </tr>
+                    
+                    ";
+                    $total += $val->raoudEntries->amount;
+                }
+
+                ?>
+                <tr>
+                    <td colspan="9" style='text-align:center;font-weight:bold;'>Total</td>
+                    <td style='text-align:right;font-weight:bold;'><?php echo number_format($total, 2); ?></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="container">
+
+
+        <h4>List of DV's Using This ORS</h4>
+        <table class="table">
+            <thead>
+                <th>
+                    DV Number
+                </th>
+                <th>
+                    Link
+                </th>
+            </thead>
+            <tbody>
+
+                <?php
+                if (!empty($burs->dvAucsEntries)) {
+                    $dv_id = 0;
+                    foreach ($burs->dvAucsEntries as $val) {
+                        $x = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/view&id={$val->dvAucs->id}";
+                        echo "<tr>
+                        <td>{$val->dvAucs->dv_number}</td>
+                        <td>" .
+                            Html::a('Dv Link', $x, ['class' => 'btn-xs btn-danger '])
+                            . "</td>
+                        </tr>";
+                    }
+
+                    // http://10.20.17.33/dti-afms-2/frontend/web/index.php?r=dv-aucs%2Fview&id=6878
+                    // echo  
+                }
+                ?>
+            </tbody>
+
+        </table>
+    </div>
 
 </div>
+
+<style>
+    .container {
+        background-color: white;
+        padding: 12px;
+    }
+</style>
+<?php
+
+SweetAlertAsset::register($this);
+$script = <<< JS
+
+    $("#cancel").click(function(){
+    swal({
+        title: "Are you sure?",
+        text: "You will not be able to recover this imaginary file!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: '#DD6B55',
+        confirmButtonText: 'Yes, I am sure!',
+        cancelButtonText: "No, cancel it!",
+        closeOnConfirm: false,
+        closeOnCancel: true
+    },
+    function(isConfirm){
+
+    if (isConfirm){
+                $.ajax({
+                    type:"POST",
+                    url:window.location.pathname + "?r=process-ors-entries/cancel",
+                    data:{
+                        id:$("#cancel_id").val()
+                    },
+                    success:function(data){
+                        var res = JSON.parse(data)
+                        // swal({
+                        //     title:"Success",
+                        //     type:'success',
+                        //     button:false,
+                        //     timer:3000,
+                        //  })
+                        // console.log(data)
+                        var cancelled = res.cancelled?"Successfuly Cancelled":"Successfuly Activated";
+                        if(res.isSuccess){
+                            swal({
+                                title:cancelled,
+                                type:'success',
+                                button:false,
+                                timer:3000,
+                            },function(){
+                                location.reload(true)
+                            })
+                        }else{
+                            swal({
+                                title:"Error",
+                                text:"DV is Not canceleed",
+                                type:'error',
+                                button:false,
+                                timer:3000,
+                            })
+                        }
+                    }
+                })
+
+
+        } 
+    })
+
+    })
+    $(document).ready(function(){
+        
+    })
+
+JS;
+$this->registerJs($script);
+
+?>

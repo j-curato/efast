@@ -393,4 +393,12 @@ class ChartOfAccountsController extends Controller
         ')->queryAll();
         return json_encode($res);
     }
+    public function actionChartOfAccounts()
+    {
+        $res = Yii::$app->db->createCommand('SELECT chart_of_accounts.id,uacs,
+         general_ledger FROM chart_of_accounts 
+        
+        ')->queryAll();
+        return json_encode($res);
+    }
 }

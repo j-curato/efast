@@ -223,16 +223,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 $balance = 0;
                 $balance_per_uacs = [];
                 if (!empty($data)) {
+                    // var_dump($data);
                     foreach ($data as $key => $val) {
-
 
                         $credit = $val['credit'] ? number_format($val['credit'], 2) : '';
                         $debit = $val['debit'] ? number_format($val['debit'], 2) : '';
                         $balance = $val['balance'] ? number_format($val['balance'], 2) : '';
                         // $reporting_period = $val['reporting_period']?date('F Y',strtotime($val['reporting_period'])):'';
                         if (!empty($val['reporting_period'])) {
-                            echo "<tr>
-                            <td>{$val['reporting_period']}</td>
+                            // if ($data[$key - 1]['reporting_period'] != $val['reporting_period']) {
+
+                                echo "<tr>
+                            <td>" .$val['reporting_period'] . "</td>
                             <td></td>
                             <td></td>
                             <td></td>
@@ -241,6 +243,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td></td>
 
                         </tr>";
+                            // }
                         }
                         echo "<tr>
                             <td></td>

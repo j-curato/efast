@@ -154,6 +154,7 @@
                                 'items' => [
                                     ['label' => 'Cash Disbursement', 'icon' => 'circle-o', 'url' => ['/cash-disbursement'],],
                                     ['label' => 'Cash Recieved', 'icon' => 'circle-o', 'url' => ['/cash-recieved'],],
+                                    ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ['/liquidation'],],
 
                                 ],
                             ],
@@ -169,6 +170,7 @@
                             ['label' => "Pending DV's", 'icon' => 'circle-o', 'url' => ['/report/pending-dv'],],
                             ['label' => 'UnObligated Transaction', 'icon' => 'circle-o', 'url' => ['/report/unobligated-transaction'],],
                             ['label' => 'UnPaid Obligation', 'icon' => 'circle-o', 'url' => ['/report/unpaid-obligation'],],
+                            ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/report/saob'],],
                             ['label' => 'Advances', 'icon' => 'circle-o', 'url' => ['/advances'],],
 
                         ],

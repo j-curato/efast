@@ -338,16 +338,10 @@ use kartik\select2\Select2;
         }
     </style>
 
-    <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script> -->
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
     <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
     <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
     <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
     <link href="/dti-afms-2/frontend/web/js/maskMoney.js" />
-    <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
     <script>
         var update_id = null;
         var account_name = undefined;
@@ -475,11 +469,14 @@ use kartik\select2\Select2;
                                     </select>
                                 </div>
                             </td>
-                            <td> <input value='${result[i]['obligation_amount']}' type='text' name='obligation_amount[]' id='amount_${select_id}' class='amount'/></td>
+                            <td> <input value='${result[i]['obligation_amount']}'  type='text' name='obligation_amount[]' id='amount_${select_id}' class='amount'/></td>
                             <td><a id='copy_${select_id}' class='btn btn-success ' type='button' onclick='copy(this)'><i class="fa fa-copy "></i></a></td>
                             <td><button id='remove_${select_id}' class='btn btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td>
                             </tr>`
                 $('#transaction_table').append(row);
+                $(`#amount_${select_id}`).maskMoney({
+                    allowNegative: true
+                });
                 var filtered_chart_of_accounts = chart_of_accounts.filter(function(chart) {
                     // console.log(object_code)
 
@@ -498,6 +495,14 @@ use kartik\select2\Select2;
                         if (y != "5020000000") {
 
                             return y;
+                        }
+
+                    } else if (result[i]['object_code'] == "5060000000") {
+
+                        var q = chart.object_code.match(/^502.*$/);
+                        if (q != "5060000000") {
+
+                            return q;
                         }
 
                     } else {
@@ -522,6 +527,18 @@ use kartik\select2\Select2;
                     placeholder: "Select Chart of Account",
 
                 }).val(`${chart_id}`).trigger('change');
+                if (result[i]['object_code'] == "5060000000" ||
+                    result[i]['object_code'] == "5010000000" ||
+                    result[i]['object_code'] == "5020000000"
+
+                ) {
+
+                } else {
+                    $(`#chart-${select_id} option:not(:selected)`).attr('disabled', true);
+                }
+
+
+
                 if (isUpdate == 'copy') {
                     $(`#chart-${select_id} option:not(:selected)`).attr("disabled", true)
                 }
@@ -545,11 +562,10 @@ use kartik\select2\Select2;
                     }
                 }
                 select_id++;
+
             }
             // console.log(result)
-            // $('.amount').maskMoney({
-            //     allowNegative: true
-            // });
+
 
 
 
@@ -748,7 +764,7 @@ $script = <<< JS
             //   $('#add').prop('disabled',true)
             $.ajax({
                 type:"POST",
-                url:window.location.pathname + "?r=process-ors-entries/q",
+                url:window.location.pathname + "?r=process-ors-entries/update-ors",
                 data:{update_id:update_id},
                 success:function(data){
                     var res = JSON.parse(data)

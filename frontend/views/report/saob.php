@@ -2,6 +2,8 @@
 
 
 use aryelds\sweetalert\SweetAlertAsset;
+use kartik\date\DatePicker;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
@@ -13,27 +15,87 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="jev-preparation-index">
     <!-- <input type="text" name="" id="sample"> -->
 
-    
+
     <div class="container panel panel-default">
 
+        <div class="row">
+            <div class="col-sm-3">
+                <label for="reporting_period">Reportion Period</label>
+                <?php
+                echo DatePicker::widget([
+                    'name' => 'reporting_period',
+                    'id' => 'reporting_period',
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm',
+                        'minViewMode' => 'months',
+                        'autoclose' => true
+                    ]
+                ])
+                ?>
+            </div>
+            <div class="col-sm-3">
+                <button class="btn btn-success" id="generate">Generate</button>
+            </div>
+        </div>
 
+        <?php Pjax::begin(['id' => 'container', 'clientOptions' => ['method' => 'POST']]) ?>
         <table>
             <thead>
                 <tr>
-                    <th rowspan="2">PROJECT/program</th>
+                    <th rowspan="2">Project/Program</th>
                     <th rowspan="2">Allotment</th>
-                    <th rowspan="1" colspan='3' style="text-align: center;">OBligations</th>
+                    <th rowspan="1" colspan='3' style="text-align: center;">Obligations</th>
                     <th rowspan="2">Balances</th>
                     <th rowspan="2">Utilization</th>
                 </tr>
                 <tr>
                     <th>Last Month</th>
-                    <th>Last Month</th>
-                    <th>Last Month</th>
+                    <th>This Month</th>
+                    <th>To Date</th>
                 </tr>
             </thead>
-        </table>
+            <tbody>
+                <?php
 
+                $balance = 0;
+                if (!empty($query)) {
+                    foreach ($query as $key=>$data) {
+
+                        echo "<tr>
+                        <td>$key</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+
+                    </tr>";
+
+                        foreach ($data as $val) {
+                            $last_month_total = !empty($val["$reporting_period_last_month"]) ? $val["$reporting_period_last_month"] : 0;
+                            $this_month_total = !empty($val["$reporting_period_this_month"]) ? $val["$reporting_period_this_month"] : 0;
+                            $allotment_amount = $val['allotment_amount'];
+                            $balance = $allotment_amount - $last_month_total - $this_month_total;
+
+
+                            echo "<tr>
+                                    <td>{$val['object_code']}  {$val['general_ledger']}</td>
+                                    <td>" . number_format($allotment_amount, 2) . "</td>
+                                    <td>" . number_format($last_month_total, 2) . "</td>
+                                    <td>" . number_format($this_month_total, 2) . "</td>
+                                    <td>" . number_format($this_month_total, 2) . "</td>
+                                    <td>" . number_format($balance, 2) . "</td>
+
+                                </tr>";
+                        }
+                    }
+                }
+
+
+                ?>
+            </tbody>
+        </table>
+        <?php Pjax::end() ?>
     </div>
 
 </div>
@@ -123,6 +185,20 @@ SweetAlertAsset::register($this);
 $script = <<< JS
 
         $('#sample').maskMoney();
+    $('#generate').click(function(){    
+
+        $.pjax({
+            container: "#container", 
+            url: window.location.pathname + '?r=report/saob',
+            type:'POST',
+            data:{
+                reporting_period:$("#reporting_period").val()
+            }
+            
+        })
+
+    })
+
 JS;
 $this->registerJs($script);
 ?>

@@ -75,7 +75,7 @@ use yii\widgets\ActiveForm;
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <label for="Fund Source"></label>
+                    <label for="particular">Fund Source</label>
                     <textarea name="particular" id="particular" cols="100" rows="2" style="width: 100%;max-width:100%"></textarea>
                 </div>
             </div>
@@ -194,16 +194,11 @@ use yii\widgets\ActiveForm;
     </style>
 </div>
 
-<!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script> -->
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-<script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-<!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
-<link href="/dti-afms-2/frontend/web/js/select2.min.js" />
-<link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
+    <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+    <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
+    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
+    <link href="/dti-afms-2/frontend/web/js/maskMoney.js" />
 
-<!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
 <script>
     var vacant = 0;
     var i = 1;
@@ -252,13 +247,16 @@ use yii\widgets\ActiveForm;
                     </td>
                     
                     <td> 
-                         <input type='text' id='amount-${i}' name='amount[]'>
+                         <input type='text' id='amount-${i}' class='q' name='amount[]'>
                     </td>
      
                   
                     <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
                 `
             $("#transaction_table tbody").append(row)
+             $(`#amount-${i}`).maskMoney({
+                allowNegative: true
+            });
             $(`#chart-${i}`).select2({
                 data: accounts,
                 placeholder: "Select Chart of Account",
@@ -268,6 +266,8 @@ use yii\widgets\ActiveForm;
                 $(`#chart-${i}`).val( result[i]['sub_account1_id']).trigger('change')
                 $(`#amount-${i}`).val( result[i]['amount']).trigger('change')
             }
+           
+
         }
     }
     $(document).ready(function() {
@@ -285,7 +285,11 @@ use yii\widgets\ActiveForm;
             })
     })
 </script>
+<?php
 
+$this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+
+?>
 <?php
 SweetAlertAsset::register($this);
 $script = <<<JS
@@ -302,6 +306,7 @@ $script = <<<JS
                 var res = JSON.parse(data)
                 console.log(res)
                 addToTransactionTable(res)
+
             }
         })
     })

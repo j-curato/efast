@@ -41,11 +41,12 @@ class ProcessOrsRaoudsSearch extends Raouds
      */
     public function search($params)
     {
-        $query = Raouds::find()->where("process_ors_id IS NOT NULL");
+        $query = Raouds::find();
       
 
         // add conditions that should always apply here
         $query->joinWith("processOrs");
+        $query->where('process_ors.type =:type',['type'=>'ors']);
         // $query->orderBy("process_ors.serial_number DESC")
         // ;
 

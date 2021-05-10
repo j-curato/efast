@@ -152,6 +152,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'label' => "Amount",
             'attribute' => "amount",
             'format' => ['decimal', 2],
+            'hAlign'=>'right'
 
         ],
         [

@@ -18,7 +18,7 @@ class AdvancesSearch extends Advances
     {
         return [
             [['id'], 'integer'],
-            [['province', 'report_type', 'particular'], 'safe'],
+            [['province', 'report_type', 'particular','nft_number'], 'safe'],
         ];
     }
 
@@ -63,6 +63,7 @@ class AdvancesSearch extends Advances
 
         $query->andFilterWhere(['like', 'province', $this->province])
             ->andFilterWhere(['like', 'report_type', $this->report_type])
+            ->andFilterWhere(['like', 'nft_number', $this->nft_number])
             ->andFilterWhere(['like', 'particular', $this->particular]);
 
         return $dataProvider;

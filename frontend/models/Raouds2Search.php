@@ -19,7 +19,7 @@ class Raouds2Search extends Raouds
     {
         return [
             [['id', 'process_ors_id', 'record_allotment_entries_id', 'isActive', 'is_parent',], 'integer'],
-            [['serial_number', 'reporting_period',], 'safe'],
+            [['serial_number', 'reporting_period', 'sample'], 'safe'],
             [['obligated_amount'], 'number'],
         ];
     }
@@ -40,9 +40,10 @@ class Raouds2Search extends Raouds
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params, $type)
     {
         $query = Raouds::find()->where("isActive =:isActive", ['isActive' => true]);
+
 
         // add conditions that should always apply here
         $dataProvider = new ActiveDataProvider([
@@ -59,9 +60,20 @@ class Raouds2Search extends Raouds
         }
         $query->joinWith('recordAllotmentEntries');
         $query->joinWith('processOrs');
-        $query->join("LEFT JOIN", 'record_allotments',
-         "record_allotment_entries.record_allotment_id=record_allotments.id");
+        $query->join(
+            "LEFT JOIN",
+            'record_allotments',
+            "record_allotment_entries.record_allotment_id=record_allotments.id"
+        );
 
+        if ($type === 'burs') {
+            $book = Books::find()->where('books.name =:name', ['name' => 'Fund 07'])->one();
+            $query->andFilterWhere(['record_allotments.book_id' => $book->id]);
+        }
+        if ($type === 'ors') {
+            $book = Books::find()->where('books.name =:name', ['name' => 'Fund 07'])->one();
+            $query->andFilterWhere(['!=', 'record_allotments.book_id', $book->id]);
+        }
 
         // grid filtering conditions
         $query->andFilterWhere([
@@ -75,8 +87,7 @@ class Raouds2Search extends Raouds
 
         $query->andFilterWhere(['like', 'raouds.serial_number', $this->serial_number])
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
-            ->andFilterWhere(['like', 'process_ors.serial_number', $this->process_ors_id])
-            ;
+            ->andFilterWhere(['like', 'process_ors.serial_number', $this->process_ors_id]);
 
         return $dataProvider;
     }

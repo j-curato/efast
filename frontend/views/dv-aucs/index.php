@@ -162,7 +162,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'List of Areas',
+            'heading' => 'List of DV',
         ],
         'floatHeaderOptions' => [
             'top' => 50,

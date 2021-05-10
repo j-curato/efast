@@ -20,12 +20,16 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <?php
+
+    // ADVANCE ACCOUNTING ENTRIES AND MODEL NAA SA CONTROLLER GE CHANGE
     $gridColumn = [
 
         'id',
+        'advances.nft_number',
         [
             "label" => "DV Number",
-            "attribute" => "cashDisbursement.dvAucs.dv_number"
+            "attribute" => "att3",
+            "value" => "cashDisbursement.dvAucs.dv_number"
         ],
         [
             "label" => "Mode of Payment",
@@ -62,7 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         [
             "label" => "Report",
-            "attribute" => "advances.report"
+            "attribute" => "advances.report_type"
         ],
 
         [
@@ -97,7 +101,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ExportMenu::widget([
                     'dataProvider' => $dataProvider,
                     'columns' => $gridColumn,
-                    'filename' => 'Cash Disbursements',
+                    'filename' => 'Advances',
                     'exportConfig' => [
                         ExportMenu::FORMAT_TEXT => false,
                         // ExportMenu::FORMAT_PDF => false,
@@ -122,5 +126,5 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     </style>
 
-
+            
 </div>

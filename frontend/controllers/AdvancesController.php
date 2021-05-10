@@ -37,6 +37,7 @@ class AdvancesController extends Controller
      */
     public function actionIndex()
     {
+        
         $searchModel = new AdvancesEntriesSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         // $searchModel = new AdvancesSearch();
@@ -180,6 +181,7 @@ class AdvancesController extends Controller
             $particular = $_POST['particular'];
             $sub_account1_id = $_POST['sub_account1'];
             $amount = $_POST['amount'];
+            
             $transaction = Yii::$app->db->beginTransaction();
 
 
@@ -191,6 +193,7 @@ class AdvancesController extends Controller
                 }
             } else {
                 $advances = new Advances();
+                $advances->nft_number = $this->getNftNumber();
             }
 
 
@@ -205,8 +208,7 @@ class AdvancesController extends Controller
                         $ad_entry->advances_id = $advances->id;
                         $ad_entry->cash_disbursement_id = $cash_disbursement_id[$index];
                         $ad_entry->sub_account1_id = $sub_account1_id[$index];
-                        $ad_entry->amount = $amount[$index];
-
+                        $ad_entry->amount = floatval(preg_replace('/[^\d.]/', '', $amount[$index]));
                         if ($ad_entry->validate()) {
 
                             if ($ad_entry->save(false)) {
@@ -258,15 +260,34 @@ class AdvancesController extends Controller
             return json_encode($query);
         }
     }
-    public function actionNftNumber()
+    public function getNftNumber()
     {
         $q = Advances::find()->orderBy('id DESC')->one();
+        $num = 0;
+        if (!empty($q)) {
+            $x = explode('-', $q->nft_number);
+            $num = $x[1] + 1;
+        } else {
+            $num = 1;
+        }
 
-         if (!empty($q)){
-            //  $x = explode('-',$q->);
-         }
+        $y = '';
+        for ($i = strlen($num); $i < 4; $i++) {
+            $y .= 0;
+        }
+        $y .= $num;
 
-        return json_encode($q->id);
+
+        return date('Y') . '-' . $y;
+    }
+
+    public function actionGetAllAdvances()
+    {
+        $res = (new \yii\db\Query())
+            ->select("*")
+            ->from('advances')
+            ->all();
+        return json_encode($res);
     }
 }
 

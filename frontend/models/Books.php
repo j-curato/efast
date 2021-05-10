@@ -27,7 +27,7 @@ class Books extends \yii\db\ActiveRecord
     {
         return [
             [['name'], 'required'],
-            [['name'], 'string', 'max' => 255],
+            [['name','account_number'], 'string', 'max' => 255],
         ];
     }
 

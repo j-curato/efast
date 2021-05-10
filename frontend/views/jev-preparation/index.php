@@ -6,12 +6,14 @@ use app\models\JevAccountingEntries;
 use app\models\JevAccountingEntriesSearch;
 use app\models\JevPreparation;
 use app\models\ResponsibilityCenter;
+use kartik\date\DatePicker;
 use kartik\export\ExportMenu;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\helpers\ArrayHelper;
 use kartik\widgets\FileInput;
 use kartik\widgets\ActiveForm;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
@@ -92,6 +94,10 @@ $this->params['breadcrumbs'][] = $this->title;
     'jevPreparation.dv_number',
     'jevPreparation.check_ada_number',
     [
+      'label' => 'Book',
+      'value' => 'jevPreparation.books.name'
+    ],
+    [
       'label' => 'Payee',
       'value' => 'jevPreparation.payee.account_name'
     ],
@@ -143,7 +149,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
   ?>
 
-
+  <?php Pjax::begin(['id' => 'employee', 'clientOptions' => ['method' => 'POST']]) ?>
+  <?php Pjax::end() ?>
 
   <?= GridView::widget([
     'dataProvider' => $dataProvider,
@@ -161,19 +168,35 @@ $this->params['breadcrumbs'][] = $this->title;
     'toolbar' =>  [
       [
         'content' =>
-        ExportMenu::widget([
-          'dataProvider' => $w,
-          'columns' => $gridColumn,
-          'filename' => 'Jev',
-          'exportConfig' => [
-            ExportMenu::FORMAT_TEXT => false,
-            ExportMenu::FORMAT_PDF => false,
-            ExportMenu::FORMAT_EXCEL => false,
-            ExportMenu::FORMAT_HTML => false,
-          ]
+        // ExportMenu::widget([
+        //   'dataProvider' => $w,
+        //   'columns' => $gridColumn,
+        //   'filename' => 'Jev',
+        //   'exportConfig' => [
+        //     ExportMenu::FORMAT_TEXT => false,
+        //     ExportMenu::FORMAT_PDF => false,
+        //     ExportMenu::FORMAT_EXCEL => false,
+        //     ExportMenu::FORMAT_HTML => false,
+        //   ]
 
-        ]),
-        'options' => ['class' => 'btn-group mr-2', 'style' => 'margin-right:20px']
+        // ])
+
+        DatePicker::widget([
+          'name' => 'year',
+          'id' => 'year',
+          'options' => [
+            'style' => 'width:100px'
+          ],
+          'pluginOptions' => [
+            'format' => 'yyyy',
+            'startView' => 'years',
+            'minViewMode' => 'years',
+            'autoclose' => true
+          ]
+        ])
+          . '' .
+          "<button class='btn btn-primary' id='export'>Export</button>",
+        'options' => ['class' => 'btn-group', 'style' => 'margin-right:20px;display:flex']
       ],
 
     ],
@@ -255,7 +278,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     ],
   ]); ?>
-
   <style>
     .grid-view td {
       white-space: normal;
@@ -286,6 +308,19 @@ $script = <<< JS
       // })
       
         })
+
+      $('#export').click(function(){
+
+        $.pjax({container: "#employee", 
+        url: window.location.pathname + '?r=jev-preparation/export-jev',
+        type:'POST',
+        data:{
+            year:$('#year').val(),
+            
+        },
+        })
+        ;
+      })
 
     JS;
 $this->registerJs($script);

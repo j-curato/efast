@@ -10,7 +10,7 @@ use kartik\date\DatePicker;
 use aryelds\sweetalert\SweetAlertAsset;
 use GuzzleHttp\Psr7\Query;
 use kartik\money\MaskMoney;
-use kartik\grid\GridView; 
+use kartik\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 ?>
@@ -186,6 +186,29 @@ use yii\helpers\Html;
                     </div>
                 </div>
             </div>
+            <div class="total row">
+
+                <div class="col-sm-3 col-md-offset-5">
+                    <!-- <div class="form-group">
+        <label for="exampleInputEmail1">TOTAL DEBIT</label>
+        <input disabled type="text" style="background-color:white" class="form-control" id="d_total"  aria-describedby="emailHelp" placeholder="Total Dedit">
+    </div> -->
+                    <div>
+                        <label for="d_total"> Total Debit</label>
+                        <div id="d_total">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+
+                        <label for="c_total"> Total Credit</label>
+                        <div id="c_total">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
             <button type="submit" class="btn btn-success" style="width: 100%;" id="save" name="save"> SAVE</button>
         </form>
 
@@ -279,7 +302,8 @@ use yii\helpers\Html;
                     [
                         'label' => 'Total Obligated',
                         'value' => function ($model) {
-                            $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount)as total,process_ors.id as ors_id
+                            $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount)as total,
+                            process_ors.id as ors_id
                             FROM process_ors,raouds,raoud_entries
                             where process_ors.id = raouds.process_ors_id
                             AND raouds.id=raoud_entries.raoud_id
@@ -292,6 +316,7 @@ use yii\helpers\Html;
                         'format' => ['decimal', 2],
                         'pageSummary' => true
                     ],
+                    
                     // [
                     //     'label' => 'Obligated Amount',
                     //     'attribute' => 'obligated_amount',
@@ -498,7 +523,7 @@ use yii\helpers\Html;
         var x = [0];
         var update_id = undefined;
         var cashflow = [];
-        var accounts=[];
+        var accounts = [];
 
         function enableDisable(checkbox) {
             var isDisable = true
@@ -787,15 +812,15 @@ use yii\helpers\Html;
                     })
                     mrd_classification = array
                     $('#mrd_classification').select2({
-                        data:mrd_classification,
-                        placeholder:"Select MRD Classification"
+                        data: mrd_classification,
+                        placeholder: "Select MRD Classification"
                     })
-       
+
                 })
 
-                // BOOKS
-                
-                $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
+            // BOOKS
+
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {
@@ -806,13 +831,13 @@ use yii\helpers\Html;
                     })
                     books = array
                     $('#book').select2({
-                        data:books,
-                        placeholder:"Select MRD Classification"
+                        data: books,
+                        placeholder: "Select MRD Classification"
                     })
-       
+
                 })
-                // GET ALL NATURE OF TRANSCTION
-        $.getJSON('/dti-afms-2/frontend/web/index.php?r=nature-of-transaction/get-nature-of-transaction')
+            // GET ALL NATURE OF TRANSCTION
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=nature-of-transaction/get-nature-of-transaction')
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {
@@ -823,49 +848,49 @@ use yii\helpers\Html;
                     })
                     nature_of_transaction = array
                     $('#nature_of_transaction').select2({
-                        data:nature_of_transaction,
-                        placeholder:"Select Nature of Transaction"
+                        data: nature_of_transaction,
+                        placeholder: "Select Nature of Transaction"
                     })
-       
-                })
-                    // GET FINANCING SOURCE CODES
-        $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-transaction')
-            .then(function(data) {
 
-                var array = []
-                $.each(data, function(key, val) {
-                    array.push({
-                        id: val.id,
-                        text: val.tracking_number
+                })
+            // GET FINANCING SOURCE CODES
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-transaction')
+                .then(function(data) {
+
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.tracking_number
+                        })
                     })
-                })
-                transaction = array
-                $('#transaction_id').select2({
-                    data: transaction,
-                    placeholder: "Select Transaction",
+                    transaction = array
+                    $('#transaction_id').select2({
+                        data: transaction,
+                        placeholder: "Select Transaction",
 
-                })
-
-            });
-                    // GET PAYEE
-                var payee=[];
-        $.getJSON('/dti-afms-2/frontend/web/index.php?r=payee/get-payee')
-            .then(function(data) {
-
-                var array = []
-                $.each(data, function(key, val) {
-                    array.push({
-                        id: val.id,
-                        text: val.account_name
                     })
-                })
-                payee = array
-                $('#payee').select2({
-                    data: payee,
-                    placeholder: "Select Payee",
-                })
 
-            });
+                });
+            // GET PAYEE
+            var payee = [];
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=payee/get-payee')
+                .then(function(data) {
+
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.account_name
+                        })
+                    })
+                    payee = array
+                    $('#payee').select2({
+                        data: payee,
+                        placeholder: "Select Payee",
+                    })
+
+                });
 
             // MAG ADD OG DATA NA BUHATAN OG DV
             $('#submit').click(function(e) {
@@ -938,6 +963,27 @@ use yii\helpers\Html;
 
                 })
 
+        })
+        function getTotal() {
+            var total_credit = 0.00;
+            var total_debit = 0.00;
+            $(".credit").each(function() {
+                total_credit += Number($(this).val());
+            })
+            $(".debit").each(function() {
+                total_debit += Number($(this).val());
+            })
+
+            // console.log(total_debit);
+            document.getElementById("d_total").innerHTML = "<h4>" + thousands_separators(total_debit) + "</h4>";
+            document.getElementById("c_total").innerHTML = "<h4>" + thousands_separators(total_credit) + "</h4>";
+            //  $(".debit").change(function(){
+            //     $(this).val() =  thousands_separators(total_debit)
+            //  })
+            // $(this).val().replact
+        }
+        $(document).on("keyup change", ".credit, .debit", function() {
+            getTotal()
         })
     </script>
 </div>
@@ -1151,6 +1197,8 @@ $script = <<< JS
             })
         }
     })
+    
+
 
     JS;
 $this->registerJs($script);

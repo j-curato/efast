@@ -22,7 +22,7 @@ class m210504_020207_create_advances_table extends Migration
             'province'=>$this->string(50),
             'report_type'=>$this->string(50),
             'particular'=>$this->string(500),
-            'advances_number'=>$this->string()
+            'nft_number'=>$this->string()
         ]);
 
 

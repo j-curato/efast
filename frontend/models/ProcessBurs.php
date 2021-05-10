@@ -67,6 +67,10 @@ class ProcessBurs extends \yii\db\ActiveRecord
      */
     public function getTransaction()
     {
-        return $this->hasOne(Transaction::className(), ['id' => 'transaction_id']);
+        return $this->hasOne(Transaction::class, ['id' => 'transaction_id']);
+    }
+    public function getRaouds()
+    {
+        return $this->hasMany(Raouds::class, ['process_burs_id' => 'id']);
     }
 }

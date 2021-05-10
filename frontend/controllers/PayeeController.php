@@ -201,4 +201,9 @@ class PayeeController extends Controller
             $p = Yii::$app->db->createCommand("SELECT * FROM payee WHERE isEnable=1")->queryAll();
             return json_encode($p);
     }
+    public function getPayee()
+    {
+            $p = Yii::$app->db->createCommand("SELECT * FROM payee WHERE isEnable=1")->queryAll();
+            return json_encode($p);
+    }
 }

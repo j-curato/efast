@@ -421,26 +421,20 @@ $(document).ready(function(){
     })
     $("#export").click(function(){
         ex=1
-        $.ajax({
-        url: window.location.pathname + '?r=jev-preparation/adadj',
-        type:'POST',
-        data:{
-            reporting_period:reporting_period?''+reporting_period.toString():'',
-            book_id:book_id?book_id:0,
-            export:ex,
-        },
-        success:function(data){
-            // var mywindow = window.open('?r=jev-preparation/ledger', 'new div', 'height=700,width=1300');
-            // mywindow.document.write('<html><head><title></title>');
-            // mywindow.document.write('<link rel="stylesheet" href="../web/print.css" type="text/css" media="all" />');
-            // mywindow.document.write('</head><body >');
-            // mywindow.document.write('' +JSON.parse(data));
-            // mywindow.document.write('</body></html>');
-            // mywindow.document.close();
-            // console.log(data)
+    //     $.ajax({
+    //     url: window.location.pathname + '?r=jev-preparation/adadj',
+    //     type:'POST',
+    //     data:{
+    //         reporting_period:reporting_period?''+reporting_period.toString():'',
+    //         book_id:book_id?book_id:0,
+    //         export:ex,
+    //     },
+    //     success:function(data){
 
-        }
-    })
+
+    //     }
+    // })
+    query()
         
         
     })

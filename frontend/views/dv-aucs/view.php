@@ -1,6 +1,8 @@
 <?php
 
 use app\models\Raouds;
+use app\models\SubAccounts1;
+use app\models\SubAccounts2;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\widgets\Pjax;
@@ -48,7 +50,22 @@ $this->params['breadcrumbs'][] = $this->title;
                         Amount Disbursed
                     </th>
                     <th>
+                        2306
+                        (VAT / Non-Vat)
+                    </th>
+                    <th>
+                        2307
+                        (EWT Goods / Services)
+                    </th>
+                    <th>
+                        1601C
+                        (Compensation)
+                    </th>
+                    <th>
                         Tax Withheld
+                    </th>
+                    <th>
+                        Other Trust Liabilities
                     </th>
                 </thead>
             <tbody>
@@ -56,7 +73,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
 
                 foreach ($model->dvAucsEntries as $val) {
-
+                    $total_withheld = $val->compensation + $val->ewt_goods_services + $val->vat_nonvat;
                     $ors_serial_number = '';
                     $ors_serial_number = !empty($val->process_ors_id) ? $val->processOrs->serial_number : '';
                     $t = '';
@@ -87,7 +104,19 @@ $this->params['breadcrumbs'][] = $this->title;
                         . number_format($val->amount_disbursed, 2) .
                         "</td>
                     <td>
-                        {$val->ewt_goods_services}
+                        " . number_format($val->vat_nonvat, 2) . "
+                    </td>
+                    <td>
+                       " . number_format($val->ewt_goods_services, 2) . " 
+                    </td>
+                    <td>
+                       " . number_format($val->compensation, 2) . " 
+                    </td>
+                    <td>
+                        " . number_format($total_withheld, 2) . "
+                    </td>
+                    <td>
+                        " . number_format($val->other_trust_liabilities, 2) . "
                     </td>
                     <td class='link'>" .
 
@@ -106,12 +135,70 @@ $this->params['breadcrumbs'][] = $this->title;
         </table>
 
     </div>
+    <div class=" container panel panel-default">
+
+        <table class="table table-striped">
+            <thead>
+                <th>Object Code</th>
+                <th>Account Title</th>
+                <th style='text-align:right'>Debit</th>
+                <th style='text-align:right'>Credit</th>
+            </thead>
+            <tbody>
+
+
+                <?php
+                $total_debit = 0;
+                $total_credit = 0;
+                foreach ($model->dvAccountingEntries as $val) {
+
+                    $account_title = '';
+                    $total_debit += $val->debit;
+                    $total_credit += $val->credit;
+
+                    $debit = number_format($val->debit, 2);
+                    $credit = number_format($val->credit, 2);
+                    if ($val->lvl === 2) {
+                        $x = SubAccounts1::find()->where('object_code =:object_code', ['object_code' => $val->object_code])
+                            ->one();
+                        $account_title = $x->name;
+                    } else if ($val->lvl === 3) {
+                        $y = SubAccounts2::find()->where('object_code =:object_code', ['object_code' => $val->object_code])
+                            ->one();
+                        $account_title = $y->name;
+                    } else if ($val->lvl === 1) {
+                        $account_title = $val->chartOfAccount->general_ledger;
+                    }
+                    echo "<tr>
+                        <td>{$val->object_code}</td>
+                        <td>{$account_title}</td>
+                        <td style='text-align:right'>$debit</td>
+                        <td style='text-align:right'>$credit</td>
+                    
+                    </tr>";
+                }
+                ?>
+
+                <tr>
+                    <?php
+                    echo "<tr>
+                <td colspan='2' style='font-weight:bold'>Total</td>
+                <td style='text-align:right'>" . number_format($total_debit, 2) . "</td>
+                <td style='text-align:right'>" . number_format($total_credit, 2) . "</td>
+                </tr>";
+                    ?>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
     <style>
         .head {
             font-weight: bold;
         }
-        .container{
-            padding:15px
+
+        .container {
+            padding: 15px
         }
 
         .checkbox {

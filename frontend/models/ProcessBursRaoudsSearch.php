@@ -17,8 +17,8 @@ class ProcessBursRaoudsSearch extends Raouds
     public function rules()
     {
         return [
-            [['id', 'process_ors_id', 'record_allotment_entries_id', 'isActive', 'is_parent', 'process_burs_id', 'mandatory_reserve_id'], 'integer'],
-            [['serial_number', 'reporting_period'], 'safe'],
+            [['id', 'record_allotment_entries_id', 'isActive', 'is_parent',  'mandatory_reserve_id'], 'integer'],
+            [['serial_number', 'reporting_period', 'process_ors_id'], 'safe'],
             [['obligated_amount', 'burs_amount'], 'number'],
         ];
     }
@@ -41,14 +41,16 @@ class ProcessBursRaoudsSearch extends Raouds
      */
     public function search($params)
     {
-        $query = Raouds::find()->where("process_burs_id IS NOT NULL");
+        $query = Raouds::find();
 
+        $query->joinWith('processOrs');
+        $query->where('process_ors.type =:type', ['type' => 'burs']);
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
- 
+
         $this->load($params);
 
         if (!$this->validate()) {
@@ -60,7 +62,6 @@ class ProcessBursRaoudsSearch extends Raouds
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'process_ors_id' => $this->process_ors_id,
             'record_allotment_entries_id' => $this->record_allotment_entries_id,
             'obligated_amount' => $this->obligated_amount,
             'isActive' => $this->isActive,
@@ -71,6 +72,7 @@ class ProcessBursRaoudsSearch extends Raouds
         ]);
 
         $query->andFilterWhere(['like', 'serial_number', $this->serial_number])
+            ->andFilterWhere(['like', 'process_ors.serial_number', $this->process_ors_id])
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period]);
 
         return $dataProvider;

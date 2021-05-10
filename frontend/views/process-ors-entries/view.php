@@ -43,6 +43,8 @@ $this->params['breadcrumbs'][] = $this->title;
             echo "<input type='text' id='cancel_id' value='$ors->id' style='display:none'/>";
             $t = yii::$app->request->baseUrl . "/index.php?r=transaction/view&id=$ors->transaction_id";
             echo  Html::a('Transaction', $t, ['class' => 'btn btn-info']);
+            $adjust = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/re-align&id=$model->id";
+            echo Html::a('Adjust/Re-align', $adjust, ['class' => 'btn btn-warning ','style'=>'margin:5px']);
             ?>
         </p>
         <table class="table table-striped">
@@ -55,7 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     Reporting Period
                 </th>
                 <th>
-                   Allotment Number
+                    Allotment Number
                 </th>
                 <th>
                     Payee

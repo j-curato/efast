@@ -87,7 +87,7 @@ class ProcessOrsEntriesController extends Controller
         //     'model' => $model,
         // ]);
         $searchModel = new Raouds2Search();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,'ors');
 
         return $this->render('create', [
             'searchModel' => $searchModel,
@@ -117,7 +117,7 @@ class ProcessOrsEntriesController extends Controller
         // ]);
         $raoud = Raouds::findOne($id);
         $searchModel = new Raouds2Search();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,'ors');
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -130,7 +130,7 @@ class ProcessOrsEntriesController extends Controller
     {
         $raoud = Raouds::findOne($id);
         $searchModel = new Raouds2Search();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,'ors');
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -143,7 +143,7 @@ class ProcessOrsEntriesController extends Controller
     public function actionReAlign($id)
     {
         $searchModel = new Raouds2Search();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,'ors');
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -292,7 +292,13 @@ class ProcessOrsEntriesController extends Controller
                         $raoud = new Raouds();
                         // $raoud->record_allotment_id = $raoud_to_charge_adjustment->record_allotment_id;
                         // $amount = intval(str_replace(', .', '', $_POST['obligation_amount'][$index]));
-                        $amount = $_POST['obligation_amount'][$index];
+                        // $t = explode(',', $_POST['obligation_amount'][$index]);
+                         
+                        // $amount = number_format(implode($t),2);
+                        $t = explode(',', $_POST['obligation_amount'][$index]);
+                        list($amount) = sscanf(implode($t), "%f");
+                        // $amount = $_POST['obligation_amount'][$index];
+                        // $amount=floatval(preg_replace('/[^\d.]/', '',  $_POST['obligation_amount'][$index]));
                         // return json_encode(['error' => $amount]); 
                         // if ($i === 0) {
                         //     if ($raoud_to_adjust->raoudEntries->amount > $total_amount) {
@@ -328,7 +334,7 @@ class ProcessOrsEntriesController extends Controller
                                     }
                                 } else {
                                     $transaction->rollBack();
-                                    return json_encode(['error' => 'wla ni sulod sa raoud entries dapit']);
+                                    return json_encode(['error' => $raoud_entry->errors]);
                                 }
                             }
                         } else {
@@ -352,49 +358,51 @@ class ProcessOrsEntriesController extends Controller
                 } catch (ErrorException $e) {
                     return json_encode(["error" => $e]);
                 }
-            } else if ($_POST['update'] === 'adjust') {
-                $reporting_period = $_POST['new_reporting_period'][0];
-                $raoud = Raouds::findOne($_POST['update_id']);
-                // $ors = ProcessOrs::findOne($raoud->process_ors_id);
-                // $ors->reporting_period = $reporting_period;
-                // $ors->transaction_id = $transaction_id;
-                // $ors->date = $date;
-                // if ($ors->save(false)) {
-                //     $transaction->commit();
-                //     return json_encode(['isSuccess' => true, 'ors_id' => $ors->id]);
-                // }
-                try {
-                    foreach ($_POST['chart_of_account_id'] as $index => $value) {
-                    }
+            } 
+            // else if ($_POST['update'] === 'adjust') {
+            //     $reporting_period = $_POST['new_reporting_period'][0];
+            //     $raoud = Raouds::findOne($_POST['update_id']);
+            //     // $ors = ProcessOrs::findOne($raoud->process_ors_id);
+            //     // $ors->reporting_period = $reporting_period;
+            //     // $ors->transaction_id = $transaction_id;
+            //     // $ors->date = $date;
+            //     // if ($ors->save(false)) {
+            //     //     $transaction->commit();
+            //     //     return json_encode(['isSuccess' => true, 'ors_id' => $ors->id]);
+            //     // }
+            //     try {
+            //         foreach ($_POST['chart_of_account_id'] as $index => $value) {
+            //         }
 
-                    $new_raoud = new Raouds();
-                    $new_raoud->process_ors_id = $raoud->process_ors_id;
-                    $new_raoud->reporting_period = $reporting_period;
-                    $new_raoud->obligated_amount =  $_POST['obligation_amount'][0];
-                    $new_raoud->record_allotment_entries_id = $raoud->record_allotment_entries_id;
-                    $new_raoud->isActive = false;
+            //         $new_raoud = new Raouds();
+            //         $new_raoud->process_ors_id = $raoud->process_ors_id;
+            //         $new_raoud->reporting_period = $reporting_period;
+            //         $new_raoud->obligated_amount =  $_POST['obligation_amount'][0];
+            //         $new_raoud->record_allotment_entries_id = $raoud->record_allotment_entries_id;
+            //         $new_raoud->isActive = false;
 
-                    if ($flag = $new_raoud->save(false)) {
-                        $raoud_entry = new RaoudEntries();
-                        $raoud_entry->raoud_id = $new_raoud->id;
-                        $raoud_entry->amount = $_POST['obligation_amount'][0];
-                        $raoud_entry->chart_of_account_id = $raoud->raoudEntries->chart_of_account_id;
-                        $raoud_entry->parent_id_from_raoud = $raoud->id;
+            //         if ($flag = $new_raoud->save(false)) {
+            //             $raoud_entry = new RaoudEntries();
+            //             $raoud_entry->raoud_id = $new_raoud->id;
+            //             $raoud_entry->amount = $_POST['obligation_amount'][0];
+            //             $raoud_entry->chart_of_account_id = $raoud->raoudEntries->chart_of_account_id;
+            //             $raoud_entry->parent_id_from_raoud = $raoud->id;
 
-                        if ($raoud_entry->save(false)) {
-                            $transaction->commit();
-                            return json_encode(['isSuccess' => true]);
-                        }
-                    }
-                    if ($flag) {
-                        $transaction->commit();
-                        return json_encode(['isSuccess' => true, 'id' => $new_raoud->id]);
-                    }
-                } catch (Exception $e) {
-                    $transaction->rollBack();
-                    return json_encode(['isSuccess' => false]);
-                }
-            } else if ($_POST['update'] === 'update') {
+            //             if ($raoud_entry->save(false)) {
+            //                 $transaction->commit();
+            //                 return json_encode(['isSuccess' => true]);
+            //             }
+            //         }
+            //         if ($flag) {
+            //             $transaction->commit();
+            //             return json_encode(['isSuccess' => true, 'id' => $new_raoud->id]);
+            //         }
+            //     } catch (Exception $e) {
+            //         $transaction->rollBack();
+            //         return json_encode(['isSuccess' => false]);
+            //     }
+            // } 
+            else if ($_POST['update'] === 'update') {
                 $rao = Raouds::findOne($_POST['update_id']);
                 $ors_update = ProcessOrs::findOne($rao->process_ors_id);
                 $book = Books::findOne($book_id);
@@ -434,7 +442,10 @@ class ProcessOrsEntriesController extends Controller
                                 $q = Raouds::find()->where("id =:id", ['id' => $_POST['raoud_id'][$index]])->one();
 
                                 // $amount = intval(str_replace(', .', '', $_POST['obligation_amount'][$index]));
-                                $amount = $_POST['obligation_amount'][$index];
+                                // $amount = $_POST['obligation_amount'][$index];
+                                $t = explode(',', $_POST['obligation_amount'][$index]);
+                                list($amount) = sscanf(implode($t), "%f");
+                                // $amount=floatval(preg_replace('/[^\d.]/', '',  $_POST['obligation_amount'][$index]));
                                 // KUNG ASA E CHARGE NA RAOUD ANG GE OBLIGATE
                                 // $q->isActive = 0;
                                 // $q->save();
@@ -508,6 +519,7 @@ class ProcessOrsEntriesController extends Controller
         $query = (new \yii\db\Query())
             ->select("serial_number")
             ->from('process_ors')
+            ->where("process_ors.type=:type",['type'=>'ors'])
             ->orderBy("id DESC")
             ->one();
         // $reporting_period = "2021-01";
@@ -518,6 +530,7 @@ class ProcessOrsEntriesController extends Controller
             $last_number = explode('-', $query['serial_number']);
             $x = intval($last_number[3]) + 1;
         }
+        
         $serial_number = $book->name . '-' . $reporting_period . '-' . $x;
         // ob_start();
         // echo "<pre>";
@@ -810,7 +823,7 @@ class ProcessOrsEntriesController extends Controller
             return $id;
         }
     }
-    public function actionQ()
+    public function actionUpdateOrs()
     {
         if ($_POST) {
             $process_ors_id = Raouds::findOne($_POST['update_id'])->process_ors_id;

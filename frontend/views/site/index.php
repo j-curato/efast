@@ -13,7 +13,7 @@ $this->title = 'Dashboard';
     $query = (new \yii\db\Query())
         ->select([
             'SUM(raoud_entries.amount) as total_obligated',
-            'SUM(record_allotment_entries.amount) as total_allotment'
+            '(SELECT SUM(record_allotment_entries.amount) as total_allotment from record_allotment_entries) as total_allotment'
         ])
         ->from('raouds')
         ->join('LEFT JOIN', 'raoud_entries', 'raouds.id = raoud_entries.raoud_id')
@@ -98,7 +98,7 @@ $this->title = 'Dashboard';
                             <td style="text-align: right;">
                                 <span>
                                     <?php
-                                    $total_disbursed = $ors['total_disbursed']-$payable['total_payable'];
+                                    $total_disbursed = $ors['total_disbursed'] - $payable['total_payable'];
                                     echo number_format($total_disbursed, 2);
                                     ?>
                                 </span>
@@ -176,9 +176,23 @@ $this->title = 'Dashboard';
                             <td style="text-align: right;">
                                 <span style=" margin-left: auto;">
                                     <?php
-                                    $cash_recieved = Yii::$app->db->createCommand("SELECT SUM(cash_recieved.amount) as total_cash_recieved from cash_recieved")->queryOne();
+                                    $cash_recieved = Yii::$app->db->createCommand("SELECT SUM(cash_recieved.amount) as total_cash_recieved from cash_recieved,books
+                                     where cash_recieved.book_id = books.id
+                                    AND books.name ='Fund 01'")->queryOne();
 
                                     echo number_format($cash_recieved['total_cash_recieved'], 2);
+                                    ?>
+                                </span>
+
+                            </td>
+                            <td style="text-align: right;">
+                                <span style=" margin-left: auto;">
+                                    <?php
+                                    $cash_recieved2 = Yii::$app->db->createCommand("SELECT SUM(cash_recieved.amount) as total_cash_recieved from cash_recieved,books
+                                     where cash_recieved.book_id = books.id
+                                    AND books.name NOT LIKE 'Fund 01'")->queryOne();
+
+                                    echo number_format($cash_recieved2['total_cash_recieved'], 2);
                                     ?>
                                 </span>
 

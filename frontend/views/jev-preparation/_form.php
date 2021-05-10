@@ -915,7 +915,7 @@ $script = <<< JS
                 $('#reporting_period').val(res.results.reporting_period)
                 // console.log(JSON.parse(res.results.jev_id))
                 if (update_id == 0) {
-                    console.log("qwer")
+                    // console.log("qwer")
                     if (res.results.jev_id){
                     // qwe(res.results.jev_id)
 

@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?= Html::button('Delete', ['value' => Url::to($t), 'class' => 'btn btn-danger delete']) ?>
         <?php
-        if (!empty($model->dv_number)) {
+        if (!empty($model->cash_disbursement_id)) {
 
             $q = (new \yii\db\Query())
             ->select('dv_aucs.id')
