@@ -119,6 +119,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => 'Account Group',
                 'attribute' => 'account_group',
+         
             ],
 
             [
@@ -132,12 +133,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Major Account',
                 'attribute' => 'major_account_id',
                 'value' => 'majorAccount.name',
-                'filter' => Html::activeDropDownList(
-                    $searchModel,
-                    'major_account_id',
-                    ArrayHelper::map(MajorAccounts::find()->asArray()->all(), 'id', 'name'),
-                    ['class' => 'form-control', 'prompt' => 'Major Accounts']
-                )
+                'filterType' => GridView::FILTER_SELECT2,
+                'filter' => ArrayHelper::map(MajorAccounts::find()->asArray()->all(), 'id', 'name'),
+                'filterWidgetOptions' => [
+                    'pluginOptions' => ['allowClear' => true,'placeholder'=>'Major Account'],
+                ],
+                'format' => 'raw'
 
             ],
             [

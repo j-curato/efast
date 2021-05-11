@@ -235,12 +235,13 @@ class DvAucsController extends Controller
 
         if ($_POST) {
             $process_id = !empty($_POST['process_ors_id']) ? $_POST['process_ors_id'] : '';
+
             $nature_of_transaction_id = $_POST['nature_of_transaction'];
             $mrd_classification_id = $_POST['mrd_classification'];
             $reporting_period = $_POST['reporting_period'];
             $particular = $_POST['particular'];
             $payee_id = $_POST['payee'];
-            $book_id = !empty($_POST['book_id']) ? $_POST['book_id'] : 5;
+            $book_id = !empty($_POST['book']) ? $_POST['book'] : 5;
             $transaction_type = strtolower($_POST['transaction_type']);
 
             $account_entries =  !empty($_POST['chart_of_account_id']) ? count($_POST['chart_of_account_id']) : 0;
@@ -268,6 +269,27 @@ class DvAucsController extends Controller
                 }
             }
 
+            $params=[];
+            $sql=Yii::$app->db->getQueryBuilder()->buildCondition(['IN','process_ors.id',$_POST['process_ors_id'] ],$params);
+            $ors = (new \yii\db\Query())
+                ->select("book_id")
+                ->from('process_ors')
+                ->where("$sql",$params)
+                ->all();
+            $y = array_unique($ors);
+            if (count($y) > 1) {
+                return json_encode(['isSuccess' => false, 'error' => "bawal lain2 og book number"]);
+            }
+
+            if ($transaction_type === 'no ors') {
+                $book_id = $_POST['book'];
+            } else {
+                $book_id = $y[0]['book_id'];
+                // return json_encode(['isSuccess' => false, 'error' => $y[0]['book_id']]);
+            }
+
+
+
             $transaction = Yii::$app->db->beginTransaction();
 
 
@@ -280,8 +302,11 @@ class DvAucsController extends Controller
                     foreach ($dv->dvAccountingEntries as $val) {
                         $val->delete();
                     }
+                    $x = explode('-', $dv->dv_number);
+                    $bok = Books::findone($book_id);
+                    $x[0] = $bok->name;
+                    $dv->dv_number = implode('-', $x);
                 } else {
-
                     $dv = new DvAucs();
                     $dv->dv_number = $this->getDvNumber($reporting_period, $book_id);
                 }
@@ -445,6 +470,7 @@ class DvAucsController extends Controller
                     "dv_aucs.nature_of_transaction_id",
                     "dv_aucs.reporting_period",
                     "dv_aucs.transaction_type",
+                    "dv_aucs.book_id",
                     "process_ors.serial_number",
                     "process_ors.id as ors_id",
                     "FORMAT(total_obligated.total,'N','en-us') as total",
@@ -478,10 +504,11 @@ class DvAucsController extends Controller
                         "dv_aucs.nature_of_transaction_id",
                         "dv_aucs.reporting_period",
                         "dv_aucs.transaction_type",
+                        "dv_aucs.book_id",
                         "dv_aucs_entries.*",
                     ])
-                    ->join("LEFT JOIN", 'dv_aucs_entries', 'dv_aucs.id = dv_aucs_entries.dv_aucs_id')
                     ->from('dv_aucs')
+                    ->join("LEFT JOIN", 'dv_aucs_entries', 'dv_aucs.id = dv_aucs_entries.dv_aucs_id')
                     ->where("dv_aucs.id =:id", ['id' => $dv_id])
                     ->all();
             }

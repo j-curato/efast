@@ -83,7 +83,24 @@ $this->params['breadcrumbs'][] = $this->title;
             },
             'hAlign' => 'right'
         ],
-        ['class' => 'yii\grid\ActionColumn'],
+        [
+            'label' => 'View',
+            'format' => 'raw',
+            'value' => function ($model) {
+
+                return Html::a("", ['view', 'id' => $model->liquidation_id], ['class' => 'btn-xs btn-primary fa fa-eye']);
+                // return $query['total'];
+            },
+            'hiddenFromExport' => true,
+            'vAlign' => 'middle',
+        ],
+        // [
+        //     'class' => '\kartik\grid\ActionColumn',
+        //     'updateOptions' => [
+        //         'update' => false
+        //     ]
+
+        // ],
     ];
     ?>
     <?= GridView::widget([
@@ -121,6 +138,5 @@ $this->params['breadcrumbs'][] = $this->title;
 <style>
     .grid-view td {
         white-space: normal;
-        width: 700px;
     }
 </style>

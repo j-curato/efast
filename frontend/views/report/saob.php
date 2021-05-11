@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="container panel panel-default">
 
-        <div class="row">
+        <div class="row action">
             <div class="col-sm-3">
                 <label for="reporting_period">Reportion Period</label>
                 <?php
@@ -59,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 $balance = 0;
                 if (!empty($query)) {
-                    foreach ($query as $key=>$data) {
+                    foreach ($query as $key => $data) {
 
                         echo "<tr>
                         <td>$key</td>
@@ -172,7 +172,23 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 12px;
     }
 
-    @media print {}
+    @media print {
+        .action{
+            display: none;
+        }
+        th,td{
+            padding: 4px;
+            font-size: 10px;
+
+        }
+        .panel {
+            border: 0;
+        }
+        .main-footer   {
+            display:none
+        }
+
+    }
 </style>
 
 <?php

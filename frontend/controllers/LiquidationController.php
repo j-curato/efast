@@ -55,9 +55,9 @@ class LiquidationController extends Controller
      */
     public function actionView($id)
     {
-        $q = LiquidationEntries::findOne(($id));
+        // $q = LiquidationEntries::findOne(($id));
         return $this->render('view', [
-            'model' => $this->findModel($q->liquidation_id),
+            'model' => $this->findModel($id),
         ]);
     }
 
@@ -87,7 +87,7 @@ class LiquidationController extends Controller
     {
 
         $q  = LiquidationEntries::findOne($id);
-        $model = $this->findModel($q->liquidation_id);
+        $model = $this->findModel($id);
 
         // if ($model->load(Yii::$app->request->post()) && $model->save()) {
         //     return $this->redirect(['view', 'id' => $model->id]);
@@ -95,6 +95,7 @@ class LiquidationController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'update_type' => 'update'
         ]);
     }
 
@@ -110,6 +111,20 @@ class LiquidationController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+    public function actionReAlign($id)
+    {
+        $q  = LiquidationEntries::findOne($id);
+        $model = $this->findModel($id);
+
+        // if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        //     return $this->redirect(['view', 'id' => $model->id]);
+        // }
+
+        return $this->render('update', [
+            'model' => $model,
+            'update_type' => 're-align'
+        ]);
     }
 
     /**
@@ -149,24 +164,31 @@ class LiquidationController extends Controller
     public function actionInsertLiquidation()
     {
         if ($_POST) {
-            $advances_id = $_POST['advances_id'];
+            $advances_id = !empty($_POST['advances_id']) ? $_POST['advances_id'] : '';
             $payee_id = $_POST['payee'];
             $check_date = $_POST['check_date'];
             $check_number = $_POST['check_number'];
             $particular = $_POST['particular'];
-            $chart_of_account = $_POST['chart_of_account_id'];
-            $withdrawal = $_POST['withdrawal'];
-            $vat_nonvat = $_POST['vat_nonvat'];
-            $ewt = $_POST['ewt'];
+            $chart_of_account = !empty($_POST['chart_of_account_id']) ? $_POST['chart_of_account_id'] : '';
+            $withdrawal = !empty($_POST['withdrawal']) ? $_POST['withdrawal'] : '';
+            $vat_nonvat = !empty($_POST['vat_nonvat']) ? $_POST['vat_nonvat'] : '';
+            $ewt = !empty($_POST['ewt']) ? $_POST['ewt'] : '';
             $update_id = !empty($_POST['update_id']) ? $_POST['update_id'] : '';
+            $type = !empty($_POST['update_type']) ? $_POST['update_type'] : '';
+            $new_reporting_period = !empty($_POST['new_reporting_period']) ? $_POST['new_reporting_period'] : '';
 
-
+            // ob_clean();
+            // echo "<pre>";
+            // var_dump($ewt);
+            // echo "</pre>";
+            // die();
             $transaction = Yii::$app->db->beginTransaction();
+            $id ='';
             if (!empty($update_id)) {
                 $liquidation = Liquidation::findOne($update_id);
-                foreach($liquidation->liquidationEntries as $val){
-                    $val->delete();
-                }
+                // foreach ($liquidation->liquidationEntries as $val) {
+                //     $val->delete();
+                // }
             } else {
 
                 $liquidation = new Liquidation();
@@ -179,32 +201,37 @@ class LiquidationController extends Controller
             try {
                 if ($liquidation->validate()) {
                     if ($flag = $liquidation->save(false)) {
-                        foreach ($advances_id as $index => $val) {
+                        if (!empty($advances_id)) {
 
-                            list($withd) = sscanf(implode(explode(',', $withdrawal[$index])), "%f");
-                            list($vat) = sscanf(implode(explode(',', $vat_nonvat[$index])), "%f");
-                            list($e) = sscanf(implode(explode(',', $ewt[$index])), "%f");
-                            $liq_entries = new LiquidationEntries();
-                            $liq_entries->liquidation_id = $liquidation->id;
-                            $liq_entries->chart_of_account_id = $chart_of_account[$index];
-                            $liq_entries->advances_id = $val;
-                            $liq_entries->withdrawals = $withd;
-                            $liq_entries->vat_nonvat = $vat;
-                            $liq_entries->ewt_goods_services = $e;
+                            foreach ($advances_id as $index => $val) {
 
-                            if ($liq_entries->validate()) {
-                                if ($liq_entries->save(false)) {
+                                list($withd) = sscanf(implode(explode(',', $withdrawal[$index])), "%f");
+                                list($vat) = sscanf(implode(explode(',', $vat_nonvat[$index])), "%f");
+                                list($e) = sscanf(implode(explode(',', $ewt[$index])), "%f");
+                                $liq_entries = new LiquidationEntries();
+                                $liq_entries->liquidation_id = $liquidation->id;
+                                $liq_entries->chart_of_account_id = $chart_of_account[$index];
+                                $liq_entries->advances_id = $val;
+                                $liq_entries->withdrawals = $withd;
+                                $liq_entries->vat_nonvat = $vat;
+                                $liq_entries->ewt_goods_services = $e;
+                                $liq_entries->reporting_period = $new_reporting_period[$index];
+
+                                if ($liq_entries->validate()) {
+                                    if ($liq_entries->save(false)) {
+                                       
+                                    }
+                                } else {
+                                    $transaction->rollBack();
+                                    return json_encode(['isSuccess' => false, 'error' => $liq_entries->errors]);
                                 }
-                            } else {
-                                $transaction->rollBack();
-                                return json_encode(['isSuccess' => false, 'error' => $liq_entries->errors]);
                             }
                         }
                     }
                     if ($flag) {
 
                         $transaction->commit();
-                        return json_encode(['isSuccess' => true]);
+                        return json_encode(['isSuccess' => true, 'id' => $liquidation->id]);
                     }
                 } else {
                     $transaction->rollback();
@@ -232,7 +259,8 @@ class LiquidationController extends Controller
                     'liquidation_entries.chart_of_account_id',
                     'liquidation_entries.ewt_goods_services',
                     'liquidation_entries.vat_nonvat',
-                    'liquidation_entries.withdrawals'
+                    'liquidation_entries.withdrawals',
+                    'liquidation_entries.reporting_period'
                 ])
                 ->from('liquidation_entries')
                 ->join('LEFT JOIN', 'advances', 'liquidation_entries.advances_id = advances.id')

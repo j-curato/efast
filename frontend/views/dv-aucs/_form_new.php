@@ -5,6 +5,7 @@
 
 <?php
 
+use app\models\Books;
 use app\models\FundClusterCode;
 use kartik\date\DatePicker;
 use aryelds\sweetalert\SweetAlertAsset;
@@ -83,12 +84,14 @@ use yii\helpers\Html;
                         <option></option>
                     </select>
                 </div>
-                <!-- <div class="col-sm-3">
+                <div class="col-sm-3" id='bok'>
                     <label for="book">Book</label>
                     <select id="book" name="book" class="book select" style="width: 100%; margin-top:50px">
                         <option></option>
                     </select>
-                </div> -->
+                </div>
+
+
             </div>
             <div class="row">
                 <textarea name="particular" name="particular" id="particular" placeholder="PARTICULAR" required rows="3"></textarea>
@@ -219,7 +222,7 @@ use yii\helpers\Html;
                 <input type="text" id="dv_count" name="dv_count">
             </div>
 
-            <!-- PROCESS ORS AND MODEL -->
+            <!-- PROCESS ORS ANG MODEL -->
             <!-- NAA SA CREATE CONTROLLER NAKO GE CHANGE -->
 
             <?= GridView::widget([
@@ -238,66 +241,23 @@ use yii\helpers\Html;
                 'showPageSummary' => true,
                 'columns' => [
 
-                    // [
-                    //     'label' => 'MFO/PAP Code',
-                    //     'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.code',
-                    //     // 'filter' => Html::activeDropDownList(
-                    //     //     $searchModel,
-                    //     //     'recordAllotment.fund_cluster_code_id',
-                    //     //     ArrayHelper::map(FundClusterCode::find()->asArray()->all(), 'id', 'name'),
-                    //     //     ['class' => 'form-control', 'prompt' => 'Major Accounts']
-                    //     // )
-
-                    // ],
-                    // [
-                    //     'label' => 'MFO/PAP Code Name',
-                    //     'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.name'
-                    // ],
-
-                    // [
-                    //     'label' => 'Fund Source Code',
-                    //     'attribute' => 'recordAllotmentEntries.recordAllotment.fundSource.name'
-                    // ],
-                    // [
-                    //     'label' => 'Object Code',
-                    //     'value' => function ($model) {
-                    //         if ($model->process_ors_id != null) {
-                    //             return $model->raoudEntries->chartOfAccount->uacs;
-                    //         } else {
-                    //             return $model->recordAllotmentEntries->chartOfAccount->uacs;
-                    //         }
-                    //     }
-                    // ],
                     'serial_number',
                     'transaction.particular',
                     'transaction.payee.account_name',
-                    // [
-                    //     'label' => 'Ors Number',
-                    //     'attribute' => 'process_ors_id',
-                    //     'value' => function ($model) {
-                    //         // if ($model->process_ors_id != null) {
-                    //         //     return $model->raoudEntries->chartOfAccount->general_ledger;
-                    //         // } else {
-                    //         //     return $model->recordAllotmentEntries->chartOfAccount->general_ledger;
-                    //         // }
-                    //         return $model->processOrs->serial_number;
-                    //     }
-                    // ],
-                    // [
-                    //     'label' => 'General Ledger',
-                    //     // 'attribute' => 'recordAllotmentEntries.chartOfAccount.general_ledger'
-                    //     'value' => function ($model) {
-                    //         if ($model->process_ors_id != null) {
-                    //             return $model->raoudEntries->chartOfAccount->general_ledger;
-                    //         } else {
-                    //             return $model->recordAllotmentEntries->chartOfAccount->general_ledger;
-                    //         }
-                    //     }
-                    // ],
-                    // [
-                    //     'label' => 'Amount',
-                    //     'attribute' => 'recordAllotmentEntries.amount'
-                    // ],
+                    [
+                        'label' => 'Book',
+                        'attribute' => 'book_id',
+                        'value' => 'book.name',
+                        'filterType' => GridView::FILTER_SELECT2,
+                        'filter' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
+                        'filterWidgetOptions' => [
+                            'pluginOptions' => [
+                                'allowClear' => true,
+                                'placeholder' => 'Select Book'
+                            ]
+                        ],
+                        'format' => 'raw'
+                    ],
 
                     [
                         'label' => 'Total Obligated',
@@ -316,13 +276,7 @@ use yii\helpers\Html;
                         'format' => ['decimal', 2],
                         'pageSummary' => true
                     ],
-                    
-                    // [
-                    //     'label' => 'Obligated Amount',
-                    //     'attribute' => 'obligated_amount',
-                    //     'filter'=>false,
-                    //     'format'=>['decimal',2]
-                    // ],
+
                     [
                         'class' => '\kartik\grid\CheckboxColumn',
                         'checkboxOptions' => function ($model, $key, $index, $column) {
@@ -541,23 +495,20 @@ use yii\helpers\Html;
             // $('#form' + index + '').remove();
 
             document.getElementById(`form-${index}`).remove()
-            // console.log(index)
             for (var y = 0; y < x.length; y++) {
                 if (x[y] === index) {
                     delete x[y]
                     x.splice(y, 1)
                 }
             }
-            console.log(x, Math.max.apply(null, x))
+            // console.log(x, Math.max.apply(null, x))
             getTotal()
 
 
         }
 
         function isCurrent(index, i) {
-            console.log(index.value)
             // var chart_id = document.getElementById('chart-0').val()
-            // console.log(index)
             $.ajax({
                 type: 'POST',
                 url: window.location.pathname + '?r=jev-preparation/is-current',
@@ -567,10 +518,8 @@ use yii\helpers\Html;
                 dataType: 'json',
                 success: function(data) {
                     $('#isCurrent-' + i).val(data.result.current_noncurrent)
-                    console.log(data)
                     // data.isCashEquivalent ? : $('#cash_flow_id-' + i).hide()
                     data.isEquity ? $('#isEquity-' + i).show() : $('#isEquity-' + i).hide()
-                    // console.log(data)
                     if (data.isCashEquivalent == true) {
                         // $('#cashflow-' + i).select2({
                         //     data: cashflow,
@@ -610,7 +559,6 @@ use yii\helpers\Html;
         function add() {
 
             var latest = Math.max.apply(null, x)
-            // console.log('index: '+latest)
             $(`#form-${latest}`)
                 .after(`<div id="form-${i}" style="max-width:100%;border: 1px solid gray;width:100%; padding: 2rem; margin-top: 1rem;background-color:white;border-radius:5px" class="control-group input-group" class="accounting_entries">
                 <!-- chart of accounts -->
@@ -674,15 +622,14 @@ use yii\helpers\Html;
             var deb = document.getElementsByName('debit[]');
             // arr_form.splice(latest, 0, latest + 1)
             // deb[1].value = 123
-            // console.log(deb[1].value)
             x.push(i)
 
             i++
-            // console.log(i)
 
         }
         $('.add-btn').click(function() {
             add()
+            getTotal()
         })
 
         function getTotal() {
@@ -720,7 +667,6 @@ use yii\helpers\Html;
             var num_parts = number.toString().split(".");
             num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             return num_parts.join(".");
-            console.log(num)
         }
 
         function enableInput(isDisable, index) {
@@ -736,9 +682,7 @@ use yii\helpers\Html;
             $(`#compensation_${index}`).prop('disabled', isDisable);
             $(`#other_trust_liabilities_${index}-disp`).prop('disabled', isDisable);
             $(`#other_trust_liabilities_${index}`).prop('disabled', isDisable);
-            // console.log(index)
             // button = document.querySelector('.amount_1').disabled=false;
-            // console.log(  $('.amount_1').disaled)
 
         }
 
@@ -752,7 +696,6 @@ use yii\helpers\Html;
             if ($("#transaction").val() == 'Single') {
                 $('#particular').val(result[0]['transaction_particular'])
                 $('#payee').val(result[0]['transaction_payee_id']).trigger('change')
-                // console.log(result[0]['particulars'])
             }
             for (var i = 0; i < result.length; i++) {
                 if ($('#transaction').val() == 'Single' && i == 1) {
@@ -801,6 +744,7 @@ use yii\helpers\Html;
         var transaction_type = $("#transaction").val();
         var dv_count = 1;
         $(document).ready(function() {
+            $("#bok").hide();
             $.getJSON('/dti-afms-2/frontend/web/index.php?r=mrd-classification/get-mrd-classification')
                 .then(function(data) {
                     var array = []
@@ -832,7 +776,7 @@ use yii\helpers\Html;
                     books = array
                     $('#book').select2({
                         data: books,
-                        placeholder: "Select MRD Classification"
+                        placeholder: "Select Book"
                     })
 
                 })
@@ -901,7 +845,6 @@ use yii\helpers\Html;
                     data: $('#add_data').serialize(),
                     success: function(data) {
                         var res = JSON.parse(data)
-                        console.log(res.results)
                         if (res.isSuccess) {
 
                             addDvToTable(res.results)
@@ -964,6 +907,7 @@ use yii\helpers\Html;
                 })
 
         })
+
         function getTotal() {
             var total_credit = 0.00;
             var total_debit = 0.00;
@@ -974,7 +918,6 @@ use yii\helpers\Html;
                 total_debit += Number($(this).val());
             })
 
-            // console.log(total_debit);
             document.getElementById("d_total").innerHTML = "<h4>" + thousands_separators(total_debit) + "</h4>";
             document.getElementById("c_total").innerHTML = "<h4>" + thousands_separators(total_credit) + "</h4>";
             //  $(".debit").change(function(){
@@ -1015,13 +958,22 @@ $script = <<< JS
         var transaction_type=$("#transaction").val()
         $("#transaction_type").val(transaction_type)
         // if (transaction_type =='Single'){
-        //     console.log(select_id)
         var result=[1]
         // }
         var count=$('#transaction_table tbody tr').length
-        console.log($('#transaction_table tbody tr').length)
         if (transaction_type ==='No Ors' && count-1 <0){
             addDvToTable(result)
+           
+            // $("#bok").prop('required',true);
+        }
+        if (transaction_type==='No Ors'){
+            $("#bok").show();
+            $("#book").prop('required',true);
+        }
+        else{
+            $("#bok").hide();
+            $("#book").prop('required',false);
+            
         }
     })
 
@@ -1079,7 +1031,6 @@ $script = <<< JS
                     data: $('#save_data').serialize(),
                     success: function(data) {
                         var res=JSON.parse(data)
-                        console.log(res)
                         if (res.isSuccess==true) {
                             swal({
                                 title: "Success",
@@ -1126,7 +1077,6 @@ $script = <<< JS
 
         var update_id= $('#update_id').val()
         if (update_id>0){
-            console.log (update_id)
             $.ajax({
                 url:window.location.pathname + "?r=dv-aucs/update-dv",
                 type:"POST",
@@ -1134,9 +1084,9 @@ $script = <<< JS
                 success:function(data){
 
                     var res = JSON.parse(data)
+                    console.log(res.result)
                     var transaction_type=res.result[0]['transaction_type']
                     var type='';
-                    console.log(res)
 
                         if (!transaction_type){
                             if (res.result.length >1){
@@ -1164,11 +1114,10 @@ $script = <<< JS
                     $("#nature_of_transaction").val(res.result[0]['nature_of_transaction_id']).trigger("change");
                     $("#reporting_period").val(res.result[0]['reporting_period'])
                     $('#transaction').val(type).trigger('change')
+                    $('#book').val(res.result[0]['book_id']).trigger('change')
 
                     var x=0
-                        // console.log(jev_accounting_entries)
-                        // for (i; i < jev_accounting_entries.length;) {
-                        // }
+               
                         var dv_accounting_entries = res.dv_accounting_entries;
                         for (x; x<res.dv_accounting_entries.length;x++){
                             $("#debit-"+x).val(dv_accounting_entries[x]['debit'])
@@ -1180,14 +1129,10 @@ $script = <<< JS
                             $("#chart-"+x).val(chart).trigger('change');
                             $("#isEquity-"+x).val(dv_accounting_entries[x]['net_asset_equity_id']).trigger('change');
                             $("#cashflow-"+x).val(cashflow).trigger('change');
-                            // console.log(net_asset); 
                             if ($( "#cashflow-"+x ).length ){
-                                // console.log(x)
                             }
                             else{
-                                // console.log('false')
                             }
-                            // console.log(chart)
                             if (x < res.dv_accounting_entries.length -1){
                                 add()
                             }
@@ -1195,6 +1140,7 @@ $script = <<< JS
                     
                 }
             })
+            getTotal()
         }
     })
     

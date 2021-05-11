@@ -108,4 +108,8 @@ class ProcessOrs extends \yii\db\ActiveRecord
     {
         return $this->hasMany(DvAucsEntries::class, ['process_ors_id' => 'id']);
     }
+    public function getBook()
+    {
+        return $this->hasOne(Books::class,['id'=>'book_id']);
+    }
 }

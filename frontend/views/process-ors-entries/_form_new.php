@@ -124,6 +124,9 @@ use kartik\select2\Select2;
     <form name="add_data" id="add_data">
         <!-- RAOUDS ANG MODEL ANI -->
         <!-- NAA SA CREATE CONTROLLER NAKO GE CHANGE -->
+        <?php
+       $mfo= MfoPapCode::find()->asArray()->all()
+        ?>
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'filterModel' => $searchModel,
@@ -160,7 +163,8 @@ use kartik\select2\Select2;
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'is_parent',
-                        'data' =>  ArrayHelper::map(MfoPapCode::find()->asArray()->all(), 'id', 'code'),
+                        'name'=>'mfo',
+                        'data' =>  ArrayHelper::map($mfo, 'id', 'code'),
                         'options' => ['placeholder' => 'Select '],
                         'pluginOptions' => [
                             'allowClear' => true

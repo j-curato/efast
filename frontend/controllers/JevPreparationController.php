@@ -908,7 +908,7 @@ class JevPreparationController extends Controller
             // echo '</pre>';
             $title = "ADVICE TO DEBIT ACCOUNT DISBURSEMENT JOURNAL";
             if ($_POST['export'] > 0) {
-                $this->ExcelExport($x, $credit, $debit, $reporting_period, $book_id, $title);
+                $this->ExcelExport($x, $credit, $debit, $reporting_period, $book_id, $title, 'ADADJ');
             }
             return $this->render('adadj_view', [
                 'data' => $x,
@@ -962,7 +962,7 @@ class JevPreparationController extends Controller
             // echo '</pre>';
             $title = "CHECK DISBURSEMENT JOURNAL";
             if ($_POST['export'] > 0) {
-                $this->ExcelExport($x, $credit, $debit, $reporting_period, $book_id, $title);
+                $this->ExcelExport($x, $credit, $debit, $reporting_period, $book_id, $title, 'CKDJ');
             }
             return $this->render('ckdj_view', [
                 'credit' => $credit,
@@ -1017,7 +1017,7 @@ class JevPreparationController extends Controller
     }
     // use PhpOffice\PhpSpreadsheet\Spreadsheet;
     // use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-    public function ExcelExport($data, $credit, $debit, $reporting_period, $book_id, $title)
+    public function ExcelExport($data, $credit, $debit, $reporting_period, $book_id, $title, $type)
     {
 
 
@@ -1039,8 +1039,8 @@ class JevPreparationController extends Controller
         $sheet->setCellValue('B6', 'JEV No,');
         $sheet->setCellValue('C6', 'DV No.');
         $sheet->setCellValue('D6', 'LDDAP/Check Number');
-        $sheet->setCellValue('E6', 'NAME !');
-        $sheet->setCellValue('F6', 'PAYEE !');
+        $sheet->setCellValue('E6', 'Disbursing Officer');
+        $sheet->setCellValue('F6', 'Payee');
         $x = 7;
         $styleArray = array(
             'borders' => array(
@@ -1119,7 +1119,7 @@ class JevPreparationController extends Controller
         }
 
         $id = uniqid();
-        $file_name = "ckdj_excel_$id.xlsx";
+        $file_name = "$type" . '_' . "$id.xlsx";
         header('Content-Type: application/vnd.ms-excel');
         header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
         header('Content-Transfer-Encoding: binary');
@@ -1132,9 +1132,9 @@ class JevPreparationController extends Controller
         $writer->save($file);
         // echo "<script> window.location.href = '$file';</script>";
         echo "<script>window.open('$file2','_self')</script>";
-
         //    echo readfile("../../frontend/web/transaction/" . $file_name);
-
+        
+        // unlink($file2);
         exit();
         // return json_encode(['res' => "transaction\ckdj_excel_$id.xlsx"]);
         // return json_encode($file);
@@ -2380,6 +2380,13 @@ class JevPreparationController extends Controller
                     'Beginning Balance'
                 );
                 //DEBIT
+                $debit='';
+                $credit='';
+                if ($x['total_debit']>=$x['total_credit']){
+                    $debit = $x['total_debit'] - $x['total_credit'];
+                }else {
+                    $credit = $x['total_credit'] - $x['total_debit'];
+                }
                 $sheet->setCellValueByColumnAndRow(
                     12,
                     $row,

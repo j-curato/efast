@@ -18,12 +18,15 @@ use yii\helpers\ArrayHelper;
 <div class="liquidation-form">
 
 
-    <div class="container panel panel-default">
+    <div class="">
         <form id='save_data'>
             <?php
             !empty($model->id) ? $x = $model->id : $x = '';
+            !empty($update_type) ? $t = $update_type : $t = '';
             echo "<input type='text' value='$x' name='update_id' id='update_id' style='display:none'/>";
+            echo "<input type='text' value='$t' name='update_type' id='update_type' style='display:none'/>";
             $particular = '';
+
             $payee = '';
             $check_date = '';
             $check_number = '';
@@ -92,6 +95,7 @@ use yii\helpers\ArrayHelper;
             <table class="table table-striped" id="transaction_table">
 
                 <thead>
+                    <th>Reporting Period</th>
                     <th>NFT Number</th>
                     <th>Report</th>
                     <th>Province</th>
@@ -215,15 +219,16 @@ use yii\helpers\ArrayHelper;
                 'columns' => $gridColumn
             ]); ?>
 
-            <button class="btn btn-primary" id="add" type="submit" >Add</button>
+            <button class="btn btn-primary" id="add" type="submit">Add</button>
         </form>
 
     </div>
 
 </div>
 <style>
-    .container {
+    .liquidation-form {
         padding: 2rem;
+        background-color: white;
     }
 
     .grid-view td {
@@ -231,11 +236,13 @@ use yii\helpers\ArrayHelper;
         width: 10rem;
         padding: 0;
     }
-    #add{
-        width:100%;
+
+    #add {
+        width: 100%;
     }
-    #save{
-        width:100%;
+
+    #save {
+        width: 100%;
         margin-top: 20px;
         margin-bottom: 20px;
     }
@@ -275,43 +282,77 @@ SweetAlertAsset::register($this);
         getTotal()
     }
 
-    function addToTransactionTable(result) {
+    function copy(q) {
+        var qwer = $(q).closest('tr')
+        var id = qwer.find('.advances_id').val();
+        var nft_number = qwer.find('.nft_number').text();
+        var report_type = qwer.find('.report_type').text();
+        var province = qwer.find('.province').text();
+        var particular = qwer.find('.particular').text();
+        var chart_of_account_id = qwer.find('.chart_of_account').val();
+        var withdrawal = qwer.find('.withdrawal').val();
+        var vat_nonvat = qwer.find('.vat_nonvat').val();
+        var ewt_goods_services = qwer.find('.ewt_goods_services').val();
+        var obj = JSON.parse(`{
+                "id":${id},
+                "nft_number":"${nft_number}",
+                "report_type": "${report_type}",
+                "province": "${province}",
+                "particular": "${particular}",
+                "withdrawals":0,
+                "chart_of_account_id": ${chart_of_account_id},
+                "vat_nonvat": ${vat_nonvat},
+                "ewt_goods_services": ${ewt_goods_services}
+     
+        }`);
+
+        console.log([obj])
+        var qwe = '';
+        if ($('#update').val() != 'create') {
+            qwe = 'copy';
+        }
+        addToTransactionTable([obj],copy)
+        
+    }
+
+
+    function addToTransactionTable(result,type) {
 
 
         for (var i = 0; i < result.length; i++) {
             var row = `<tr>
-                    <td style='display:none'> <input value='${result[i]['id']}' type='text' name='advances_id[]'/></td>
-
-                    <td> ${result[i]['nft_number']}</td>
-                    <td> ${result[i]['report_type']}</td>
-                    <td> ${result[i]['province']}</td>
-                    <td> ${result[i]['particular']}</td>
+                    <td style='display:none'> <input value='${result[i]['id']}' id='advances_${transaction_table_count}' class='advances_id' type='text' name='advances_id[]'/></td>
+                    <td > <input style='width:140px' type='month'data-date='' data-date-format='yyyy-mm' id='date_${transaction_table_count}' name='new_reporting_period[]' required /></td>
+                    <td class='nft_number'> ${result[i]['nft_number']}</td>
+                    <td class='report_type'> ${result[i]['report_type']}</td>
+                    <td class=''province> ${result[i]['province']}</td>
+                    <td class='particular'> ${result[i]['particular']}</td>
 
                     <td> 
-                        <select id="chart-${transaction_table_count}" name="chart_of_account_id[]" required class="chart_of_account_id" style="width: 200px">
+                        <select id="chart-${transaction_table_count}" name="chart_of_account_id[]" required class="chart_of_account" style="width: 200px">
                             <option></option>
                         </select>
                     </td>
                     
                     <td> 
                         <div class='form-group' style='width:150px'>
-                        <input type='text' id='withdrawal-${transaction_table_count}' class='form-control' name='withdrawal[]'>
+                        <input type='text' id='withdrawal-${transaction_table_count}' class='form-control withdrawal' name='withdrawal[]'>
                         </div>
                     </td>
                     <td> 
                         <div class='form-group' style='width:150px'>
 
-                            <input type='text' id='vat_nonvat-${transaction_table_count}' class='form-control' name='vat_nonvat[]'>
+                            <input type='text' id='vat_nonvat-${transaction_table_count}' class='form-control vat_nonvat' name='vat_nonvat[]'>
                         </div>
 
                     </td>
                     <td> 
                          <div class='form-group' style='width:150px'>
-                            <input type='text' id='ewt-${transaction_table_count}' class='form-control' name='ewt[]'>
+                            <input type='text' id='ewt-${transaction_table_count}' class='form-control ewt_goods_services' name='ewt[]'>
                          </div>
 
                     </td>
-     
+                    <td><a id='copy_${transaction_table_count}' class='btn btn-success ' type='button' onclick='copy(this)'><i class="fa fa-copy "></i></a></td>
                   
                     <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
                 `
@@ -336,6 +377,18 @@ SweetAlertAsset::register($this);
                 $(`#withdrawal-${transaction_table_count}`).val(result[i]['withdrawals'])
                 $(`#vat_nonvat-${transaction_table_count}`).val(result[i]['vat_nonvat'])
                 $(`#ewt-${transaction_table_count}`).val(result[i]['ewt_goods_services'])
+                $(`#date_${transaction_table_count}`).val(result[i]['reporting_period'])
+            }
+            if (type == 're-align') {
+                $(`#chart-${transaction_table_count}`).prop('disabled', true)
+                $(`#withdrawal-${transaction_table_count}`).prop('disabled', true)
+                $(`#vat_nonvat-${transaction_table_count}`).prop('disabled', true)
+                $(`#ewt-${transaction_table_count}`).prop('disabled', true)
+                $(`#advances_${transaction_table_count}`).prop('disabled', true)
+                $(`#date_${transaction_table_count}`).prop('disabled', true)
+                
+                // console.log("re-align")
+
             }
             transaction_table_count++;
         }
@@ -429,6 +482,8 @@ $script = <<<JS
                         type:'success',
                         button:false,
 
+                    },function(){
+                        window.location.href = window.location.pathname +"?r=liquidation/view&id=" +res.id
                     })
                 }
 
@@ -446,7 +501,8 @@ $script = <<<JS
                 success:function(data){
                     var res=JSON.parse(data)
                     console.log(res)
-                    addToTransactionTable(res)
+                    
+                    addToTransactionTable(res,$("#update_type").val())
                 }
 
             })

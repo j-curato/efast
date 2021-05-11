@@ -38,10 +38,15 @@ $this->params['breadcrumbs'][] = $this->title;
     $books = Yii::$app->db->createCommand("SELECT books.id,books.name FROM books")->queryAll();
     $t = yii::$app->request->baseUrl . '/index.php?r=jev-preparation/sample';
     ?>
-    <button id="export">export</button>
 
 
     <div class="container panel panel-default">
+        <div class="row" style="margin: 20px;">
+            <div class="col-sm-3">
+                <button id="export" class="btn btn-primary">export</button>
+
+            </div>
+        </div>
         <div class="actions " style="bottom: 20px;">
 
 
@@ -90,7 +95,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]);
                 ?>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-2" style="margin-top:25px">
                 <button class="btn btn-success" id="generate">Generate</button>
             </div>
 

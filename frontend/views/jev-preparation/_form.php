@@ -353,23 +353,20 @@ use yii\helpers\ArrayHelper;
             // $('#form' + index + '').remove();
 
             document.getElementById(`form-${index}`).remove()
-            // console.log(index)
             for (var y = 0; y < x.length; y++) {
                 if (x[y] === index) {
                     delete x[y]
                     x.splice(y, 1)
                 }
             }
-            console.log(x, Math.max.apply(null, x))
+            // console.log(x, Math.max.apply(null, x))
             getTotal()
 
 
         }
 
         function isCurrent(index, i) {
-            // console.log(i)
             // var chart_id = document.getElementById('chart-0').val()
-            // console.log(index)
             $.ajax({
                 type: 'POST',
                 url: window.location.pathname + '?r=jev-preparation/is-current',
@@ -379,10 +376,8 @@ use yii\helpers\ArrayHelper;
                 dataType: 'json',
                 success: function(data) {
                     $('#isCurrent-' + i).val(data.result.current_noncurrent)
-                    console.log(data)
                     // data.isCashEquivalent ? : $('#cash_flow_id-' + i).hide()
                     data.isEquity ? $('#isEquity-' + i).show() : $('#isEquity-' + i).hide()
-                    // console.log(data)
                     if (data.isCashEquivalent == true) {
                         // $('#cashflow-' + i).select2({
                         //     data: cashflow,
@@ -419,14 +414,12 @@ use yii\helpers\ArrayHelper;
         }
 
         function q(q) {
-            console.log(q)
             // add()
         }
 
         function add() {
 
             var latest = Math.max.apply(null, x)
-            // console.log('index: '+latest)
             $(`#form-${latest}`)
                 .after(`<div id="form-${i}" style="max-width:100%;border: 1px solid gray;width:100%; padding: 2rem; margin-top: 1rem;background-color:white;border-radius:5px" class="control-group input-group" class="accounting_entries">
                     <!-- chart of accounts -->
@@ -490,11 +483,9 @@ use yii\helpers\ArrayHelper;
             var deb = document.getElementsByName('debit[]');
             // arr_form.splice(latest, 0, latest + 1)
             // deb[1].value = 123
-            // console.log(deb[1].value)
             x.push(i)
 
             i++
-            // console.log(i)
 
         }
 
@@ -697,14 +688,10 @@ use yii\helpers\ArrayHelper;
                     data: $('#add_data').serialize(),
                     success: function(data) {
                         //  alert(data);  
-                        console.log(data)
                         // //  $('#add_name')[0].reset();  
                         var res = JSON.parse(data)
-                        // console.log(data)
-                        // // console.log(JSON.parse(data))
 
                         if (res.isSuccess == "success") {
-                            // console.log(data)
                             swal({
                                 title: "Success",
                                 // text: "You will not be able to undo this action!",
@@ -713,7 +700,6 @@ use yii\helpers\ArrayHelper;
                                 button: false
                                 // confirmButtonText: "Yes, delete it!",
                             }, function() {
-                                // console.log('qwe')
                                 window.location.href = window.location.pathname + '?r=jev-preparation/view&id=' + res.id
                             });
                             $('#add_data')[0].reset();
@@ -728,7 +714,6 @@ use yii\helpers\ArrayHelper;
                                 button: false
                                 // confirmButtonText: "Yes, delete it!",
                             }, function() {
-                                // console.log('qwe')
                             });
                         }
 
@@ -748,7 +733,6 @@ use yii\helpers\ArrayHelper;
                 total_debit += Number($(this).val());
             })
 
-            // console.log(total_debit);
             document.getElementById("d_total").innerHTML = "<h4>" + thousands_separators(total_debit) + "</h4>";
             document.getElementById("c_total").innerHTML = "<h4>" + thousands_separators(total_credit) + "</h4>";
             //  $(".debit").change(function(){
@@ -766,16 +750,8 @@ use yii\helpers\ArrayHelper;
             var num_parts = number.toString().split(".");
             num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             return num_parts.join(".");
-            console.log(num)
         }
 
-        function sample() {
-            console.log("sample")
-            // $("#loader").show()
-            // setTimeout(() => {
-            //     $('#loader').show();
-            // }, 10000);
-        }
     </script>
 </div>
 
@@ -787,79 +763,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depe
 <?php
 
 $script = <<< JS
-        function qwe(id){
-            $.ajax({
-                    url: window.location.pathname + '?r=jev-preparation/update-jev',
-                    method: 'POST',
-                    data: {
-                        update_id: id
-                    },
-                    beforeSend: function () {
-                 
-                    },
-                    success: function(data) {
-
-                        var jev = JSON.parse(data).jev_preparation
-                        var jev_accounting_entries = JSON.parse(data).jev_accounting_entries
-                        console.log(jev)
-                        var d = "2020-12-01"
-                        // document.querySelector("#reporting_period").value=jev['reporting_period']
-                        // $('#dv').val(jev['cash_disbursement_id']).trigger('change');
-                        $('#reporting_period').val(jev['reporting_period'])
-                        $('#check_ada_date').val(jev['check_ada_date'])
-                        $('#particular').val(jev['explaination'])
-                        $('#date').val(jev['date'])
-                        $('#ada_number').val(jev['check_ada_number'])
-                        $('#lddap').val(jev['lddap_number'])
-                        $('#dv_number').val(jev['dv_number'])
-                        $('#cadadr_number').val(jev['cadadr_serial_number'])
-                        // $('#reference').val(jev['reference'])
-                        // console.log(jev_accounting_entries)
-                        $('#reference').val(jev['ref_number']).trigger('change');
-                        console.log(jev['book_id']);
-                        $('#r_center_id').val(jev['responsibility_center_id']).trigger('change');
-                        $('#check_ada').val(jev['check_ada']);
-                        $('#check_ada').trigger('change');
-                        $('#payee').val(jev['payee_id']);
-                        $('#payee').trigger('change');
-                        $('#book').val(jev['book_id']).trigger('change');
-                        var x=0
-                        // console.log(jev_accounting_entries)
-                        // for (i; i < jev_accounting_entries.length;) {
-                        // }
-                        for (x; x<jev_accounting_entries.length;x++){
-                            $("#debit-"+x).val(jev_accounting_entries[x]['debit'])
-                            $("#credit-"+x).val(jev_accounting_entries[x]['credit'])
-                            var chart = jev_accounting_entries[x]['id'] +"-" +jev_accounting_entries[x]['object_code']+"-"+jev_accounting_entries[x]['lvl']
-                            
-                            var cashflow = jev_accounting_entries[x]['cashflow_id'];
-                            var net_asset= jev_accounting_entries[x]['net_asset_equity_id'];
-                            $("#chart-"+x).val(chart).trigger('change');
-                            $("#isEquity-"+x).val(jev_accounting_entries[x]['net_asset_equity_id']).trigger('change');
-                            $("#cashflow-"+x).val(cashflow).trigger('change');
-                            // console.log(net_asset); 
-                            if ($( "#cashflow-"+x ).length ){
-                                // console.log(x)
-                            }
-                            else{
-                                // console.log('false')
-                            }
-                            // console.log(chart)
-                            if (x < jev_accounting_entries.length -1){
-                                add()
-                            }
-                        }
-
-                    },
-                    complete: function(){
-                        $('#container').show();
-                        $('#loader').hide();
-                        console.log()
-                        getTotal()
-                    },
-        
-                })
-        }
+ 
         // ADD COMMA IN NUMBER
 
       function thousands_separators(num) {
@@ -868,13 +772,11 @@ $script = <<< JS
         var num_parts = number.toString().split(".");
         num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         return num_parts.join(".");
-        console.log(num)
         }
     // POPULATE DATA ON DV CHANGE
     $("#dv").change(function(){
         $("#check_ada option:not(:selected)").attr("disabled", false)
 
-        // console.log($('#dv').val())
         if ($('#dv').val()===''){
             // $('#add_data')[0].reset();
             // $('#book').val('').trigger('change') 
@@ -913,15 +815,11 @@ $script = <<< JS
                 $('#date').val(res.results.issuance_date)
                 $('#total_disbursed').text(thousands_separators(res.results.total_disbursed))
                 $('#reporting_period').val(res.results.reporting_period)
-                // console.log(JSON.parse(res.results.jev_id))
                 if (update_id == 0) {
-                    // console.log("qwer")
                     if (res.results.jev_id){
-                    // qwe(res.results.jev_id)
 
                     $('#have_jev').text('This DV Naa nay JEV ')
                     eee = window.location.pathname +"?r=jev-preparation/view&id="+res.results.jev_id
-                    console.log(eee)
                     
                      bbb = $(`<a type="button" href='`+ eee+`' >link here</a>`);
                                  bbb.appendTo($("#have_jev"));
@@ -959,14 +857,10 @@ $script = <<< JS
                             $("#chart-"+x).val(chart).trigger('change');
                             $("#isEquity-"+x).val(dv_accounting_entries[x]['net_asset_equity_id']).trigger('change');
                             $("#cashflow-"+x).val(cashflow).trigger('change');
-                            // console.log(net_asset); 
                             if ($( "#cashflow-"+x ).length ){
-                                // console.log(x)
                             }
                             else{
-                                // console.log('false')
                             }
-                            // console.log(chart)
                             if (x < dv_accounting_entries.length -1){
                                 add()
                             }
@@ -983,7 +877,6 @@ $script = <<< JS
         if (update_id > 0) {
         $('#container').hide();
 
-                // console.log(update_id)
                 $.ajax({
                     url: window.location.pathname + '?r=jev-preparation/update-jev',
                     method: 'POST',
@@ -997,7 +890,6 @@ $script = <<< JS
 
                         var jev = JSON.parse(data).jev_preparation
                         var jev_accounting_entries = JSON.parse(data).jev_accounting_entries
-                        console.log(jev)
                         var d = "2020-12-01"
                         // document.querySelector("#reporting_period").value=jev['reporting_period']
                         $('#dv').val(jev['cash_disbursement_id']).trigger('change');
@@ -1010,9 +902,7 @@ $script = <<< JS
                         $('#dv_number').val(jev['dv_number'])
                         $('#cadadr_number').val(jev['cadadr_serial_number'])
                         // $('#reference').val(jev['reference'])
-                        // console.log(jev_accounting_entries)
                         $('#reference').val(jev['ref_number']).trigger('change');
-                        console.log(jev['book_id']);
                         $('#r_center_id').val(jev['responsibility_center_id']).trigger('change');
                         $('#check_ada').val(jev['check_ada']);
                         $('#check_ada').trigger('change');
@@ -1020,7 +910,6 @@ $script = <<< JS
                         $('#payee').trigger('change');
                         $('#book').val(jev['book_id']).trigger('change');
                         var x=0
-                        // console.log(jev_accounting_entries)
                         // for (i; i < jev_accounting_entries.length;) {
                         // }
                         for (x; x<jev_accounting_entries.length;x++){
@@ -1033,14 +922,10 @@ $script = <<< JS
                             $("#chart-"+x).val(chart).trigger('change');
                             $("#isEquity-"+x).val(jev_accounting_entries[x]['net_asset_equity_id']).trigger('change');
                             $("#cashflow-"+x).val(cashflow).trigger('change');
-                            // console.log(net_asset); 
                             if ($( "#cashflow-"+x ).length ){
-                                // console.log(x)
                             }
                             else{
-                                // console.log('false')
                             }
-                            // console.log(chart)
                             if (x < jev_accounting_entries.length -1){
                                 add()
                             }
@@ -1050,7 +935,6 @@ $script = <<< JS
                     complete: function(){
                         $('#container').show();
                         $('#loader').hide();
-                        console.log()
                         getTotal()
                     },
         

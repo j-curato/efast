@@ -89,6 +89,7 @@ use yii\widgets\ActiveForm;
                     <th>Check Date</th>
                     <th>Payee</th>
                     <th>Particular</th>
+                    <th>Sub Account</th>
                     <th>Amount</th>
                 </thead>
                 <tbody></tbody>

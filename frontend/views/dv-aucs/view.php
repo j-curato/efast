@@ -21,6 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container panel panel-default">
         <p>
             <?= Html::a('Print', ['dv-form', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <?php
 
             if (!empty($model->cashDisbursement)) {
