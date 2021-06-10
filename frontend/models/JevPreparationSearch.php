@@ -58,7 +58,7 @@ class JevPreparationSearch extends JevPreparation
         $query->joinWith('payee');
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
+            'jev_preparation.id' => $this->id,
             'responsibility_center_id' => $this->responsibility_center_id,
             'fund_cluster_code_id' => $this->fund_cluster_code_id,
             'book_id' => $this->book_id,

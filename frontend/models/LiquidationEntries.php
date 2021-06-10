@@ -37,9 +37,9 @@ class LiquidationEntries extends \yii\db\ActiveRecord
         return [
             [['liquidation_id', 'chart_of_account_id', 'advances_id'], 'integer'],
             [['withdrawals', 'vat_nonvat', 'ewt_goods_services'], 'number'],
-            [['advances_id'], 'exist', 'skipOnError' => true, 'targetClass' => Advances::className(), 'targetAttribute' => ['advances_id' => 'id']],
-            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::className(), 'targetAttribute' => ['chart_of_account_id' => 'id']],
-            [['liquidation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Liquidation::className(), 'targetAttribute' => ['liquidation_id' => 'id']],
+            [['advances_id'], 'exist', 'skipOnError' => true, 'targetClass' => Advances::class, 'targetAttribute' => ['advances_id' => 'id']],
+            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
+            [['liquidation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Liquidation::class, 'targetAttribute' => ['liquidation_id' => 'id']],
         ];
     }
 
@@ -64,9 +64,9 @@ class LiquidationEntries extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getAdvances()
+    public function getAdvancesEntries()
     {
-        return $this->hasOne(Advances::className(), ['id' => 'advances_id']);
+        return $this->hasOne(AdvancesEntries::class, ['id' => 'advances_id']);
     }
 
     /**
@@ -76,7 +76,7 @@ class LiquidationEntries extends \yii\db\ActiveRecord
      */
     public function getChartOfAccount()
     {
-        return $this->hasOne(ChartOfAccounts::className(), ['id' => 'chart_of_account_id']);
+        return $this->hasOne(ChartOfAccounts::class, ['id' => 'chart_of_account_id']);
     }
 
     /**
@@ -86,6 +86,6 @@ class LiquidationEntries extends \yii\db\ActiveRecord
      */
     public function getLiquidation()
     {
-        return $this->hasOne(Liquidation::className(), ['id' => 'liquidation_id']);
+        return $this->hasOne(Liquidation::class, ['id' => 'liquidation_id']);
     }
 }

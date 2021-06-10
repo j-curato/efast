@@ -36,12 +36,12 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        'assetManager'=>[
-            'appendTimestamp'=>true,
+        'assetManager' => [
+            'appendTimestamp' => true,
         ],
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
-            'defaultROles'=>['guest'],
+            'defaultROles' => ['guest'],
         ],
         /*
         'urlManager' => [
@@ -58,12 +58,12 @@ return [
     'params' => $params,
     'modules' => [
         'gridview' =>  [
-        'class' => '\kartik\grid\Module'
-      // enter optional module parameters below - only if you need to
-      // use your own export download action or custom translation
-      // message source
-      // 'downloadAction' => 'gridview/export/download',
-      // 'i18n' => []
-  ]
-],
+            'class' => '\kartik\grid\Module'
+            // enter optional module parameters below - only if you need to
+            // use your own export download action or custom translation
+            // message source
+            // 'downloadAction' => 'gridview/export/download',
+            // 'i18n' => []
+        ]
+    ],
 ];

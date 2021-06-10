@@ -193,22 +193,22 @@ $this->params['breadcrumbs'][] = $this->title;
                             foreach ($val2 as $key3 => $val3) {
 
                                 echo "<tr>
-                                <td class='right-border'></td>
-                                <td colspan='2' class='right-border' style='text-align:left' >{$key3}</td>
-                                <td colspan='1'></td>
-                                <td ></td>
-                                <td ></td>
-                             </tr>";
+                                        <td class='right-border'></td>
+                                        <td colspan='2' class='right-border' style='text-align:left' >{$key3}</td>
+                                        <td colspan='1'></td>
+                                        <td ></td>
+                                        <td ></td>
+                                    </tr>";
 
                                 foreach ($val3 as $key4 => $val4) {
                                     $total_current += $val4['current_bal'];
                                     $total_last_year += $val4['last_year_bal'];
                                     echo "<tr >
-                            <td colspan='2' class='right-border'> </td>
-                            <td  style='text-align:left' colspan='2'>{$val4['general_ledger']}</td>
-                            <td>" . number_format($val4['current_bal'], 2) . "</td>
-                            <td> " . number_format($val4['last_year_bal'], 2) . "</td>
-                        </tr>";
+                                            <td colspan='2' class='right-border'> </td>
+                                            <td  style='text-align:left' colspan='2'>{$val4['general_ledger']}</td>
+                                            <td style='text-align:right'>" . number_format($val4['current_bal'], 2) . "</td>
+                                            <td style='text-align:right'> " . number_format($val4['last_year_bal'], 2) . "</td>
+                                        </tr>";
                                 }
                             }
                         }

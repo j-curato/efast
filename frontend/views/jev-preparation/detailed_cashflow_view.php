@@ -189,8 +189,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                     echo "<tr >
                             <td colspan='2' class='right-border'> </td>
                             <td  style='text-align:left' colspan='2'>{$val4['specific_cashflow']}</td>
-                            <td>" . number_format($val4['current_bal'], 2) . "</td>
-                            <td> " . number_format($val4['last_year_bal'], 2) . "</td>
+                            <td style='text-align:right'>" . number_format($val4['current_bal'], 2) . "</td>
+                            <td style='text-align:right'> " . number_format($val4['last_year_bal'], 2) . "</td>
                         </tr>";
                                 }
                             }
@@ -198,8 +198,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         echo "<tr>
                     <td colspan='1' class='right-border'></td>
                     <td colspan='3'  >Total </td>
-                    <td colspan='1'>" . number_format($total_current, 2) . "</td>
-                    <td colspan='1'>" . number_format($total_last_year, 2) . "</td>
+                    <td colspan='1'  style='text-align:right'>" . number_format($total_current, 2) . "</td>
+                    <td colspan='1'  style='text-align:right'>" . number_format($total_last_year, 2) . "</td>
                  </tr>";
                     }
                 }

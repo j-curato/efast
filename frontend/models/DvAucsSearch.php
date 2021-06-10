@@ -18,7 +18,7 @@ class DvAucsSearch extends DvAucs
     {
         return [
             [['id'], 'integer'],
-            [['dv_number', 'reporting_period', 'tax_withheld', 'other_trust_liability_withheld'], 'safe'],
+            [['dv_number', 'reporting_period', 'tax_withheld', 'other_trust_liability_withheld','particular'], 'safe'],
             [['net_amount_paid'], 'number'],
         ];
     }
@@ -66,6 +66,7 @@ class DvAucsSearch extends DvAucs
 
         $query->andFilterWhere(['like', 'dv_number', $this->dv_number])
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
+            ->andFilterWhere(['like', 'particular', $this->particular])
             ->andFilterWhere(['like', 'tax_withheld', $this->tax_withheld])
             ->andFilterWhere(['like', 'other_trust_liability_withheld', $this->other_trust_liability_withheld]);
 

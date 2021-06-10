@@ -107,7 +107,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan="6">
                         <div style="display: flex;width:100%;justify-content:space-evenly">
                             <div style="display:flex">
-                                <div class="checkbox"></div>
                                 <div>
                                     <div class="row">
                                         <div></div>
@@ -116,15 +115,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </div>
                             </div>
                             <div style="display:flex">
-                                <div class="checkbox"></div>
                                 <span><i class="fa-square-o square-icon"></i>Commercial Check</span>
                             </div>
                             <div style="display:flex">
-                                <div class="checkbox"></div>
                                 <span><i class="fa-square-o square-icon"></i>ADA</span>
                             </div>
                             <div style="display:flex">
-                                <div class="checkbox"></div>
                                 <span><i class="fa-square-o square-icon"></i>Others (Please specify)</span>
                             </div>
                         </div>
@@ -168,7 +164,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>
                         Responsibility center
                     </td>
-                    <td>
+                    <td style="text-align: center;">
                         Amount
                     </td>
                 </tr>
@@ -230,7 +226,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </td>
                         <td>
                         </td>
-                        <td style='padding-left:auto'>
+                        <td style='padding-left:auto;text-align:right;padding-right:10px'>
                         $amount
                         </td>
                         <td class='link'>" .
@@ -250,24 +246,28 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td class="head" style="text-align: center; font-size:12px" colspan="6">
                         Amount Due
                     </td>
-                    <td>
+                    <td style="text-align: right;padding-right:10px">
                         <?php
                         echo number_format($total, 2);
                         ?>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="7" style="padding: 0;">
-                        <h6 style="margin:0">A: Certified: Expenses/Cash Advance necessary, lawful and incurred under my direct supervision.</h6>
+                    <td colspan="7" style="padding: 12;">
+                        <h6 style="margin-top:8px">A: Certified: Expenses/Cash Advance necessary, lawful and incurred under my direct supervision.</h6>
 
-                        <div style="text-align: center;margin-top:1rem;font-size:12pt">
-                            <!-- <select name="" class="assignatory" style="width: 300px;">
+                        <div style="text-align: center;
+                        margin-top:3rem;
+                        margin-bottom:2rem;
+                        font-size:10pt">
+                            <select name="" id="assignatory_5" class="assignatory" style="width: 300px;padding:0;" onchange="setPosition(this,5)">
                                 <option value=""></option>
-                            </select> -->
+                            </select>
+                            <div style="padding:0;font-weight:normal" class="pos" id="position_5">
+
+                            </div>
                         </div>
-                        <h6 style="text-align: center;">
-                            Printed Name, Designation and Signature of Supervisor
-                        </h6>
+
                     </td>
                 </tr>
                 <tr>
@@ -333,29 +333,28 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <td>Printed Name</td>
                     <td colspan="3">
-                        <!-- <select name="" class="assignatory" style="width: 100%;">
+                        <div>
+                            <select name="" id="assignatory_3" class="assignatory" style="width: 100%;" onchange="setPosition(this,3)">
                                 <option value=""></option>
-                            </select> -->
+                            </select>
+                        </div>
                     </td>
                     <td>Printed Name</td>
                     <td colspan="2">
-                        <!-- <select name="" class="assignatory" style="width: 100%;">
+                        <div>
+                            <select name="" class="assignatory" id="assignatory_4" style="width: 100%;" onchange="setPosition(this,4)">
                                 <option value=""></option>
-                            </select> -->
+                            </select>
+                        </div>
                     </td>
                 </tr>
                 <tr>
                     <td>Postion</td>
-                    <td colspan="3">
-                        <!-- <select name="" class="position" style="width: 100%;">
-                            <option></option>
-                        </select> -->
+                    <td colspan="3" id="position_3" class="pos">
+
                     </td>
                     <td>Postion</td>
-                    <td colspan="2">
-                        <!-- <select name="" class="position" style="width: 100%;">
-                            <option></option>
-                        </select> -->
+                    <td colspan="2" id="position_4" class="pos">
                     </td>
                 </tr>
                 <tr>
@@ -465,6 +464,10 @@ $this->params['breadcrumbs'][] = $this->title;
         <script>
             var assignatory = []
             var positions = []
+
+            function setPosition(q, pos) {
+                $("#position_" + pos).text(q.value)
+            }
             $(document).ready(function() {
                 // reference = ["GAY A. TIDALGO"]
                 // $('.assignatory').select2({
@@ -485,7 +488,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         var array = []
                         $.each(data, function(key, val) {
                             array.push({
-                                id: val.id,
+                                id: val.position,
                                 text: val.name
                             })
                         })
@@ -498,15 +501,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     })
             })
-            // $("#assignatory").change(function(){
-            //     console.log("qwe")
-            // })
-            // function sample(q) {
-            //     console.log(q.value)
-
-            //     $("#ass").text(q.value)
-
-            // }
         </script>
     </div>
     <?php
@@ -516,6 +510,17 @@ $this->params['breadcrumbs'][] = $this->title;
     <style>
         .square-icon {
             font-size: 20px;
+        }
+
+        .select2-container--default .select2-selection--single,
+        .select2-selection .select2-selection--single {
+            /* border: 1px solid #d2d6de; */
+            /* border-radius: 0; */
+            /* padding: 6px; */
+            text-align: center;
+            vertical-align: bottom;
+            /* height: 34px; */
+            font-weight: bold;
         }
 
         .container {
@@ -543,11 +548,18 @@ $this->params['breadcrumbs'][] = $this->title;
             margin-right: auto;
             width: 100%;
         }
+        .pos{
+            text-align: center;
+        }
 
 
         @media print {
             .actions {
                 display: none;
+            }
+
+            .select2-container {
+                height: 20px;
             }
 
             .btn {
@@ -568,9 +580,10 @@ $this->params['breadcrumbs'][] = $this->title;
         } */
             .select2-container--default .select2-selection--single {
                 background-color: #fff;
-                border: 1px solid white;
+                border: none;
                 border-radius: 4px;
             }
+
 
             .select2-selection__arrow {
                 display: none;

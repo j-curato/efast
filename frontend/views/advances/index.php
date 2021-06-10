@@ -1,6 +1,8 @@
 <?php
 
 use kartik\export\ExportMenu;
+use kartik\file\FileInput;
+use kartik\form\ActiveForm;
 use kartik\grid\GridView;
 use yii\helpers\Html;
 
@@ -17,7 +19,52 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Create Advances', ['create'], ['class' => 'btn btn-success']) ?>
+        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
     </p>
+
+    <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">UPLOAD Cash Disbursement</h4>
+                </div>
+                <div class='modal-body'>
+                    <center><a href="import_formats/Cash_Disbursement and DV Format.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                    <hr>
+                    <?php
+
+
+                    $form = ActiveForm::begin([
+                        'action' => ['advances/import'],
+                        'method' => 'post',
+                        'id' => 'formupload',
+                        'options' => [
+                            'enctype' => 'multipart/form-data',
+                        ], // important
+                    ]);
+                    // echo '<input type="file">';
+                    echo FileInput::widget([
+                        'name' => 'file',
+                        // 'options' => ['multiple' => true],
+                        'id' => 'fileupload',
+                        'pluginOptions' => [
+                            'showPreview' => true,
+                            'showCaption' => true,
+                            'showRemove' => true,
+                            'showUpload' => true,
+                        ]
+                    ]);
+
+                    ActiveForm::end();
+
+
+                    ?>
+
+                </div>
+            </div>
+        </div>
+    </div>
 
     <?php
 
@@ -25,7 +72,16 @@ $this->params['breadcrumbs'][] = $this->title;
     $gridColumn = [
 
         'id',
-        'advances.nft_number',
+        // 'advances.nft_number',
+        [
+            'label' => 'NFT Number',
+            'attribute' => 'advances.nft_number',
+        ],
+        [
+            'label' => 'Reporting Period',
+            // 'attribute' => '',
+            'value' => 'advances.reporting_period'
+        ],
         [
             "label" => "DV Number",
             "attribute" => "att3",
@@ -39,10 +95,10 @@ $this->params['breadcrumbs'][] = $this->title;
             "label" => "Check Number",
             "attribute" => "cashDisbursement.check_or_ada_no"
         ],
-        [
-            "label" => "ADA Number",
-            "attribute" => "cashDisbursement.ada_number"
-        ],
+        // [
+        //     "label" => "ADA Number",
+        //     "attribute" => "cashDisbursement.ada_number"
+        // ],
         [
             "label" => "Check Date",
             "attribute" => "cashDisbursement.issuance_date"
@@ -58,7 +114,7 @@ $this->params['breadcrumbs'][] = $this->title;
         [
             "label" => "Amount",
             "attribute" => "amount",
-            'hAlign'=>'right'
+            'hAlign' => 'right'
         ],
         [
             "label" => "Book",
@@ -75,56 +131,69 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         [
             "label" => "Fund Source",
-            "attribute" => "advances.particular"
+            "attribute" => "fund_source"
         ],
         [
-            "label" => "UACS Code",
-            "attribute" => "subAccount1.object_code"
+            "label" => "Object Code",
+            "attribute" => "subAccountView.object_code"
         ],
         [
-            "label" => "UACS Code",
-            "attribute" => "subAccount1.name"
+            "label" => "Account Title",
+            "attribute" => "subAccountView.account_title"
+        ],
+        [
+            'label' => 'action',
+            'format' => 'raw',
+            'value' => function ($model) {
+
+                $t = yii::$app->request->baseUrl . "/index.php?r=advances/update&id=$model->advances_id";
+                $r = yii::$app->request->baseUrl . "/index.php?r=advances/view&id=$model->advances_id";
+                return ' ' . Html::a('', $r, ['class' => 'btn-xs fa fa-eye']) . ' '
+                    . Html::a('', $t, ['class' => 'btn-xs fa fa-pencil']);
+            }
         ],
 
-        ['class' => 'yii\grid\ActionColumn'],
     ];
     ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'columns' => $gridColumn,
         'panel' => [
-            'type' => Gridview::TYPE_PRIMARY,
+            'type' => GridView::TYPE_PRIMARY,
+            'heading' => 'Liquidations',
         ],
-        'toolbar' =>  [
+        'toolbar' => [
             [
                 'content' =>
                 ExportMenu::widget([
                     'dataProvider' => $dataProvider,
-                    'columns' => $gridColumn,
-                    'filename' => 'Advances',
+                    'columns'  => $gridColumn,
+                    'filename' => 'Liquidations',
                     'exportConfig' => [
+                        ExportMenu::FORMAT_CSV => false,
                         ExportMenu::FORMAT_TEXT => false,
-                        // ExportMenu::FORMAT_PDF => false,
-                        ExportMenu::FORMAT_EXCEL => false,
                         ExportMenu::FORMAT_HTML => false,
+
                     ]
-
                 ]),
-                'options' => ['class' => 'btn-group mr-2', 'style' => 'margin-right:20px']
-            ],
-
-        ],
-        'toggleDataContainer' => ['class' => 'btn-group mr-2'],
-        'columns' => $gridColumn
+                'options' => [
+                    'class' => 'btn-group mr-2', 'style' => 'margin-right:20px'
+                ]
+            ]
+        ]
     ]); ?>
 
+
+</div>
+<!-- 
     <style>
         .grid-view td {
             white-space: normal;
             width: 10rem;
             padding: 0;
         }
-    </style>
+    </style> -->
 
-            
+
 </div>

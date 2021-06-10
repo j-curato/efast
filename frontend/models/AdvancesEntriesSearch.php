@@ -17,8 +17,9 @@ class AdvancesEntriesSearch extends AdvancesEntries
     public function rules()
     {
         return [
-            [['id', 'advances_id', 'cash_disbursement_id', 'sub_account1_id'], 'integer'],
+            [['id',  'cash_disbursement_id', 'sub_account1_id'], 'integer'],
             [['amount'], 'number'],
+            [['advances_id'], 'safe'],
         ];
     }
 
@@ -49,7 +50,7 @@ class AdvancesEntriesSearch extends AdvancesEntries
             'query' => $query,
         ]);
             
-        $this->load($params,'');
+        $this->load($params);
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
@@ -59,12 +60,12 @@ class AdvancesEntriesSearch extends AdvancesEntries
         $query->joinWith('advances');
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'advances_id' => $this->advances_id,
+            'advances_entries.id' => $this->id,
             'cash_disbursement_id' => $this->cash_disbursement_id,
             'sub_account1_id' => $this->sub_account1_id,
             'amount' => $this->amount,
         ]);
+        $query->andFilterWhere(['like', 'advances.nft_number', $this->advances_id]);
 
         return $dataProvider;
     }

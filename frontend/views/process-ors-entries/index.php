@@ -259,7 +259,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'format' => 'raw',
             'value' => function ($model) {
                 $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$model->id";
-                return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-info fa fa-eye']);
+                return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-primary fa fa-eye']);
 
                 // return $query['total'];
             },

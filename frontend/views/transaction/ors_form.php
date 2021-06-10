@@ -20,7 +20,7 @@ use aryelds\sweetalert\SweetAlertAsset;
 $this->title = 'Transaction Forms';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="jev-preparation-index">
+<div class="jev-preparation-index" id='doc'>
 
     <?php
 
@@ -71,9 +71,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
 
                     <td colspan="5" style="text-align: center;">
-                        <h4 class="head">
+                        <h5 class="head">
                             OBLIGATION REQUEST AND STATUS
-                        </h4>
+                        </h5>
                         <div>
                             <h5 style="font-weight: bold;">Department of Trade and Industry - Caraga</h5>
                         </div>
@@ -137,19 +137,19 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                 </tr>
                 <tr>
-                    <td colspan='2' style='padding:10px'>
+                    <td colspan='2' style="vertical-align: top;">
                         <?php
                         echo !empty($model->responsibilityCenter->name) ? $model->responsibilityCenter->name : '';
                         ?>
                     </td>
-                    <td colspan='3'>
+                    <td colspan='3' style="padding-bottom: 10rem;">
                         <?php echo $model->particular ?>
                     </td>
                     <td colspan='1'>
                     </td>
                     <td colspan='1'>
                     </td>
-                    <td colspan='1'>
+                    <td colspan='1' style="vertical-align: top;text-align: right;padding-right:10px">
                         <?php echo number_format($model->gross_amount, 2) ?>
                     </td>
                 </tr>
@@ -197,13 +197,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td class="ors_a" style="vertical-align:top;">
                         Signature
                     </td>
-                    <td colspan="2" class="" style="border-bottom: 1px solid white;vertical-align:bottom">
+                    <td colspan="2" class="" style="border-bottom: 1px solid white;vertical-align:bottom;text-align:center">
                         ______________________________________
                     </td>
                     <td colspan="1" class=" ors_b">
                         Signature
                     </td>
-                    <td colspan="4" style="border-bottom: 1px solid white;">
+                    <td colspan="4" style="border-bottom: 1px solid white;text-align:center">
                         _______________________________
                     </td>
                 </tr>
@@ -233,7 +233,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td class="ors_a">
                         Position:
                     </td>
-                    <td colspan="2" style="border-bottom: 1px solid white;" class="pos" id="position_1">
+                    <td colspan="2" style="border-bottom: 1px solid white;vertical-align:text-top" class="pos" id="position_1">
 
                     </td>
                     <td class="ors_b">
@@ -249,14 +249,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td style="border-top:1px solid white;border-right:1px solid white;">
                         Date:
                     </td>
-                    <td colspan="2">
+                    <td colspan="2" style="text-align:center">
                         ______________________________________
 
                     </td>
-                    <td style="border-left:1px solid white;border-right:1px solid white">
+                    <td style="border-left:1px solid white;border-right:1px solid white;">
                         Date:
                     </td>
-                    <td colspan="4">
+                    <td colspan="4" style="text-align:center">
                         _______________________________
 
                     </td>
@@ -352,17 +352,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     </td>
                     <td colspan="2">
-                        <div>
+
+                        <div class="serial">
                             <span>Fund Cluster:</span>
-                            <span style="float: right">_____________________</span>
+                            <span style="float: right;"> _________________</span>
                         </div>
-                        <div>
+                        <div class="serial">
                             <span>Date:</span>
-                            <span style="float: right">_____________________</span>
+                            <span style="float: right;">_________________</span>
                         </div>
-                        <div>
+                        <div class="serial">
                             <span>DV No.:</span>
-                            <span style="float: right">_____________________</span>
+                            <span style="float: right;">_________________</span>
                         </div>
                     </td>
                 </tr>
@@ -370,28 +371,21 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>
                         Mode of Payment
                     </td>
-                    <td colspan="6">
+                    <td colspan="6" style="padding: 0;">
                         <div style="display: flex;width:100%;justify-content:space-evenly">
-                            <div style="display:flex">
-                                <div class="checkbox"></div>
+                            <div style="padding:0;margin:0">
                                 <div>
-                                    <div class="row">
-                                        <div></div>
-                                        <h6><i class="fa-square-o square-icon"></i>MDS Check</h6>
-                                    </div>
+                                    <span><i class="fa-square-o square-icon"></i>MDS Check</span>
                                 </div>
                             </div>
-                            <div style="display:flex">
-                                <div class="checkbox"></div>
-                                <h6><i class="fa-square-o square-icon"></i>Commercial Check</h6>
+                            <div style="padding:0;margin:0">
+                                <span><i class="fa-square-o square-icon"></i>Commercial Check</span>
                             </div>
-                            <div style="display:flex">
-                                <div class="checkbox"></div>
-                                <h6><i class="fa-square-o square-icon"></i>ADA</h6>
+                            <div style="padding:0;margin:0">
+                                <span><i class="fa-square-o square-icon"></i>ADA</span>
                             </div>
-                            <div style="display:flex">
-                                <div class="checkbox"></div>
-                                <h6><i class="fa-square-o square-icon"></i>Others (Please specify)</h6>
+                            <div style="padding:0;margin:0">
+                                <span><i class="fa-square-o square-icon"></i>Others (Please specify)</span>
                             </div>
                         </div>
                     </td>
@@ -434,56 +428,60 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>
                         Responsibility center
                     </td>
-                    <td>
+                    <td  style="text-align: center;">
                         Amount
                     </td>
                 </tr>
                 <tr>
-                    <td colspan='4' style='padding:10px'>
+                    <td colspan='4' style='padding-bottom:10rem'>
                         <?php echo $model->particular ?>
                     </td>
                     <td>
                     </td>
                     <td>
                     </td>
-                    <td>
+                    <td style="vertical-align: top; text-align: right;padding-right:10px">
                         <?php echo number_format($model->gross_amount, 2) ?>
                     </td>
                 </tr>
                 <?php
                 $x = 0;
-                while ($x < 2) {
-                    echo "
-                    <tr>
-                        <td colspan='4' style='padding:10px'>
-                        </td>
-                        <td>
-                        </td>
-                        <td>
-                        </td>
-                        <td>
-                        </td>
-                  </tr>
-                    ";
-                    $x++;
-                }
+                // while ($x < 2) {
+                //     echo "
+                //     <tr>
+                //         <td colspan='4' style='padding:10px'>
+                //         </td>
+                //         <td>
+                //         </td>
+                //         <td>
+                //         </td>
+                //         <td>
+                //         </td>
+                //   </tr>
+                //     ";
+                //     $x++;
+                // }
 
                 ?>
                 <tr>
                     <td class="head" style="text-align: center; font-size:12px" colspan="6">
                         Amount Due
                     </td>
-                    <td></td>
+                    <td style="text-align: right;padding-right:10px"> <?php echo number_format($model->gross_amount, 2) ?></td>
                 </tr>
                 <tr>
-                    <td colspan="7" style="padding: 0;">
-                        <h6 style="margin:0">A: Certified: Expenses/Cash Advance necessary, lawful and incurred under my direct supervision.</h6>
+                    <td colspan="7" style="padding: 12;">
+                        <h6 style="margin-top:8px">A: Certified: Expenses/Cash Advance necessary, lawful and incurred under my direct supervision.</h6>
 
-                        <div style="text-align: center;margin-top:1rem;font-size:10pt">
-                            <select name="" id="assignatory_5" class="assignatory" style="width: 300px;padding:0;" onchange="setPosition(this,5)">
+                        <div style="text-align: center;
+                        margin-top:3rem;
+                        margin-bottom:2rem;
+                        font-size:10pt">
+                            <select name="" id="assignatory_5" class="assignatory" style="width: 300px;padding:0;"
+                             onchange="setPosition(this,5)">
                                 <option value=""></option>
                             </select>
-                            <div style="padding:0;" class="pos" id="position_5">
+                            <div style="padding:0;font-weight:normal" class="pos" id="position_5">
 
                             </div>
                         </div>
@@ -530,9 +528,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         </h6> -->
 
 
-                        <h6><i class="fa-square-o square-icon"></i>Cash Available</h6>
-                        <h6><i class="fa-square-o square-icon"></i> Subject to Authority to Debit Account (when applicable)</h6>
-                        <h6><i class="fa-square-o square-icon"></i> Supporting documents complete and amount claimed </h6>
+                        <div><i class="fa-square-o square-icon"></i>Cash Available</div>
+                        <div><i class="fa-square-o square-icon"></i> Subject to Authority to Debit Account (when applicable)</div>
+                        <div><i class="fa-square-o square-icon"></i> Supporting documents complete and amount claimed </div>
 
                     </td>
                     <td colspan="3" style="padding:0;">
@@ -570,11 +568,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <td>Postion</td>
-                    <td colspan="3" id="position_3" class="pos" >
+                    <td colspan="3" id="position_3" class="pos">
 
                     </td>
                     <td>Postion</td>
-                    <td colspan="2" id="position_4" class="pos" >
+                    <td colspan="2" id="position_4" class="pos">
                     </td>
                 </tr>
                 <tr>
@@ -733,9 +731,20 @@ $this->params['breadcrumbs'][] = $this->title;
 
     }
 
+
+    .select2-container .select2-selection--single .select2-selection__rendered {
+        margin-top: 0;
+        vertical-align: bottom;
+
+    }
+
     .pos {
         text-align: center;
-        font-weight: bold;
+        /* font-weight: bold; */
+    }
+
+    .select2 {
+        margin: 0;
     }
 
 
@@ -745,9 +754,11 @@ $this->params['breadcrumbs'][] = $this->title;
         /* border-radius: 0; */
         padding: 6px;
         text-align: center;
+        vertical-align: bottom;
         /* height: 34px; */
         font-weight: bold;
     }
+
 
     .select2-container .select2-selection--single .select2-selection__rendered {
         padding-right: 0;
@@ -759,7 +770,7 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 
     .square-icon {
-        font-size: 20px;
+        font-size: 18px;
     }
 
     .serial {
@@ -801,6 +812,18 @@ $this->params['breadcrumbs'][] = $this->title;
             display: none;
         }
 
+        .select2-container--default .select2-selection--single,
+        .select2-selection .select2-selection--single {
+            /* border: 1px solid #d2d6de; */
+            /* border-radius: 0; */
+            padding: 0;
+
+        }
+
+        .select2-container {
+            height: 20px;
+        }
+
         .links {
             display: none;
         }
@@ -820,7 +843,7 @@ $this->params['breadcrumbs'][] = $this->title;
         } */
         .select2-container--default .select2-selection--single {
             background-color: #fff;
-            border: 1px solid white;
+            border: none;
             padding: 0;
         }
 
@@ -923,6 +946,7 @@ $script = <<< JS
             window.print()
         }
     })
+
 JS;
 $this->registerJs($script);
 ?>

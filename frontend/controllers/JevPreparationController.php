@@ -441,7 +441,18 @@ class JevPreparationController extends Controller
             //     }
             //     // return $this->redirect(['view', 'id' => $model->id]);
             // }
-
+            $model = $this->findModel($id);
+            if (date('Y', strtotime($model->reporting_period)) < date('Y')) {
+                throw new ForbiddenHttpException();
+            }
+            $q = (new \yii\db\Query())
+                ->select("*")
+                ->from('jev_reporting_period')
+                ->where('reporting_period =:reporting_period', ['reporting_period' => $model->reporting_period])
+                ->one();
+            if (!empty($q)) {
+                throw new ForbiddenHttpException();
+            }
             return $this->render('_form', [
                 'model' => $id,
                 // 'modelJevItems' => (empty($modelJevItems)) ? [new JevAccountingEntries] : $modelJevItems
@@ -458,23 +469,23 @@ class JevPreparationController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
+    // public function actionDelete($id)
+    // {
 
-        if (Yii::$app->user->can('delete-jev')) {
+    //     if (Yii::$app->user->can('delete-jev')) {
 
-            $q =  $this->findModel($id);
-            foreach ($q->jevAccountingEntries as $val) {
-                $val->delete();
-            }
+    //         $q =  $this->findModel($id);
+    //         foreach ($q->jevAccountingEntries as $val) {
+    //             $val->delete();
+    //         }
 
-            $q->delete();
+    //         $q->delete();
 
-            return $this->redirect(['index']);
-        } else {
-            throw new ForbiddenHttpException();
-        }
-    }
+    //         return $this->redirect(['index']);
+    //     } else {
+    //         throw new ForbiddenHttpException();
+    //     }
+    // }
 
     /**
      * Finds the JevPreparation model based on its primary key value.
@@ -791,7 +802,11 @@ class JevPreparationController extends Controller
                 $book_id = $_POST['book_id'] ? $_POST['book_id'] : '';
                 $reporting_period = $_POST['reporting_period'] ? "{$_POST['reporting_period']}" : '';
                 $journal = JevPreparation::find()
-                    ->joinWith(['jevAccountingEntries', 'jevAccountingEntries.chartOfAccount']);
+                    ->joinWith(['jevAccountingEntries', 'jevAccountingEntries.chartOfAccount'])
+                    ->where("jev_preparation.ref_number  = :ref_number", [
+                        'ref_number' => 'GJ'
+                    ]);
+
 
                 if (!empty($book_id)) {
 
@@ -810,7 +825,7 @@ class JevPreparationController extends Controller
                 // echo '</pre>';
 
 
-                $x = $journal->all();
+                $x = $journal->orderBy('jev_preparation.jev_number ASC')->all();
                 $book_name = '';
                 if (!empty($book_id)) {
                     // $fund_cluster_code = $this->getBook($fund);
@@ -1133,7 +1148,7 @@ class JevPreparationController extends Controller
         // echo "<script> window.location.href = '$file';</script>";
         echo "<script>window.open('$file2','_self')</script>";
         //    echo readfile("../../frontend/web/transaction/" . $file_name);
-        
+
         // unlink($file2);
         exit();
         // return json_encode(['res' => "transaction\ckdj_excel_$id.xlsx"]);
@@ -1288,6 +1303,24 @@ class JevPreparationController extends Controller
 
 
             $reporting_period = $_POST['reporting_period'];
+
+            if (date('Y', strtotime($reporting_period)) < date('Y')) {
+                return json_encode(['isSuccess' => false, 'error' => "Invalid Reporting Period"]);
+            } else {
+                $xyz = (new \yii\db\Query())
+                    ->select('*')
+                    ->from('jev_reporting_period')
+                    ->where('jev_reporting_period.reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+                    ->one();
+                if (!empty($xyz)) {
+                    return json_encode(['isSuccess' => false, 'error' => " Reporting Period is Disabled"]);
+                }
+                // else
+                // {
+                //     return json_encode(['isSuccess' => false, 'error' => $xyz['reporting_period']]);
+                // }
+
+            }
             $check_ada_date = !empty($_POST['check_ada_date']) ? $_POST['check_ada_date'] : '';
             $date = !empty($_POST['date']) ? $_POST['date'] : '';
             // $fund_cluster_code = $_POST['fund_cluster_code'] ? $_POST['fund_cluster_code'] : '';
@@ -1737,13 +1770,16 @@ class JevPreparationController extends Controller
                     'book_id' => $_POST['book_id']
                 ])
                 // ->groupBy('object_code')
-                ->orderBy('jev_preparation.date')
+                // ->orderBy('jev_preparation.id ASC')
+                ->orderBy('jev_preparation.date,jev_preparation.jev_number ASC')
+                // ->orderBy('jev_preparation.created_at ASC')
                 ->all();
             $book_name = Books::find()->where("id =:id", ['id' => $_POST['book_id']])->one()->name;
             $sl_name = (new \yii\db\Query())->select(['name'])->from('sub_accounts1')
                 ->where("object_code =:object_code", ['object_code' => $_POST['sub_account']])->one()['name'];
             $sl_final = [];
             $balance = 0;
+            // ArrayHelper::multisort($sl, ['jev_number'], [SORT_ASC]);
 
             foreach ($sl as $val) {
 
@@ -1766,6 +1802,7 @@ class JevPreparationController extends Controller
             if (!empty($sl_final[0]['general_ledger'])) {
                 $general_ledger = $sl_final[0]['general_ledger'];
             }
+
             return $this->render('subsidiary_ledger_view', [
                 'data' => $sl_final,
                 'fund_cluster' => $book_name,
@@ -1791,7 +1828,7 @@ class JevPreparationController extends Controller
         $q = Yii::$app->db->createCommand("SELECT * from 
             (SELECT chart_of_accounts.account_group,chart_of_accounts.uacs,chart_of_accounts.general_ledger,
             chart_of_accounts.current_noncurrent,major_accounts.name,chart_of_accounts.normal_balance,
-            
+            jev_preparation.id as jev_id,
             jev_preparation.reporting_period,
             SUM(jev_accounting_entries.debit) as total_debit, SUM(jev_accounting_entries.credit) as total_credit
             FROM jev_accounting_entries,jev_preparation,chart_of_accounts,major_accounts
@@ -1940,7 +1977,7 @@ class JevPreparationController extends Controller
                 'ref_number' => $reference
             ])
             ->orderBy([
-                'id' => SORT_DESC
+                'jev_number' => SORT_DESC
             ])->one();
         $ff = Books::find()
             ->where("id = :id", [
@@ -2380,11 +2417,11 @@ class JevPreparationController extends Controller
                     'Beginning Balance'
                 );
                 //DEBIT
-                $debit='';
-                $credit='';
-                if ($x['total_debit']>=$x['total_credit']){
+                $debit = '';
+                $credit = '';
+                if ($x['total_debit'] >= $x['total_credit']) {
                     $debit = $x['total_debit'] - $x['total_credit'];
-                }else {
+                } else {
                     $credit = $x['total_credit'] - $x['total_debit'];
                 }
                 $sheet->setCellValueByColumnAndRow(
@@ -2505,7 +2542,9 @@ class JevPreparationController extends Controller
                 $row++;
             }
 
-            $id = uniqid();
+            date_default_timezone_set('Asia/Manila');
+            // return date('l jS \of F Y h:i:s A');
+            $id = date('Y-m-d h A');
             $file_name = "jev_$id.xlsx";
             // header('Content-Type: application/vnd.ms-excel');
             // header("Content-disposition: attachment; filename=\"" . $file_name . "\"");

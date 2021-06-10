@@ -713,8 +713,7 @@ use yii\helpers\ArrayHelper;
                                 timer: 3000,
                                 button: false
                                 // confirmButtonText: "Yes, delete it!",
-                            }, function() {
-                            });
+                            }, function() {});
                         }
 
                     }
@@ -751,7 +750,6 @@ use yii\helpers\ArrayHelper;
             num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             return num_parts.join(".");
         }
-
     </script>
 </div>
 
@@ -792,83 +790,84 @@ $script = <<< JS
             $("#payee option:not(:selected)").attr("disabled", false)
             $("#check_ada option:not(:selected)").attr("disabled", false)
           }
-      else{
+        else{
 
-        let eee = undefined;
-        let bbb = undefined;
-        $.ajax({
-            type:"POST",
-            url:window.location.pathname + "?r=cash-disbursement/get-dv",
-            data:{cash_id:$('#dv').val()},
-            success:function(data){
-                var res = JSON.parse(data)
-                $('#dv_number').val(res.results.dv_number)
-                $('#book').val(res.results.book_id).trigger('change')
-                $("#book option:not(:selected)").attr("disabled", true)
-                $('#payee').val(res.results.payee_id).trigger('change')
-                $("#payee option:not(:selected)").attr("disabled", true)
-                $('#r_center_id').val(res.results.rc_id).trigger('change')
-                $("#r_center_id option:not(:selected)").attr("disabled", true)
-                $('#particular').val(res.results.particular)
-                $('#ada_number').val(res.results.check_or_ada_no)
-                $('#check_ada_date').val(res.results.issuance_date)
-                $('#date').val(res.results.issuance_date)
-                $('#total_disbursed').text(thousands_separators(res.results.total_disbursed))
-                $('#reporting_period').val(res.results.reporting_period)
-                if (update_id == 0) {
-                    if (res.results.jev_id){
+            let eee = undefined;
+            let bbb = undefined;
+            $.ajax({
+                type:"POST",
+                url:window.location.pathname + "?r=cash-disbursement/get-dv",
+                data:{cash_id:$('#dv').val()},
+                success:function(data){
+                    var res = JSON.parse(data)
+                    $('#dv_number').val(res.results.dv_number)
+                    $('#book').val(res.results.book_id).trigger('change')
+                    $("#book option:not(:selected)").attr("disabled", true)
+                    $('#payee').val(res.results.payee_id).trigger('change')
+                    $("#payee option:not(:selected)").attr("disabled", true)
+                    $('#r_center_id').val(res.results.rc_id).trigger('change')
+                    $("#r_center_id option:not(:selected)").attr("disabled", true)
+                    $('#particular').val(res.results.particular)
+                    $('#ada_number').val(res.results.check_or_ada_no)
+                    $('#check_ada_date').val(res.results.issuance_date)
+                    $('#date').val(res.results.issuance_date)
+                    $('#total_disbursed').text(thousands_separators(res.results.total_disbursed))
+                    $('#reporting_period').val(res.results.reporting_period)
+                    if (update_id == 0) {
+                        if (res.results.jev_id){
 
-                    $('#have_jev').text('This DV Naa nay JEV ')
-                    eee = window.location.pathname +"?r=jev-preparation/view&id="+res.results.jev_id
+                        $('#have_jev').text('This DV Naa nay JEV ')
+                        eee = window.location.pathname +"?r=jev-preparation/view&id="+res.results.jev_id
+                        
+                        bbb = $(`<a type="button" href='`+ eee+`' >link here</a>`);
+                                    bbb.appendTo($("#have_jev"));
+
+                        $('#submit').prop('disabled',true)
                     
-                     bbb = $(`<a type="button" href='`+ eee+`' >link here</a>`);
-                                 bbb.appendTo($("#have_jev"));
+                    }else
+                    {
+                        $('#have_jev').text('')
+                        $('#submit').prop('disabled',false)
+                    }
 
-                    $('#submit').prop('disabled',true)
-                  
-                }else
-                {
-                    $('#have_jev').text('')
-                    $('#submit').prop('disabled',false)
-                }
+                    }
+            
+                    if (res.results.mode_of_payment ==='ADA'){
+                        $("#check_ada").val('ADA').trigger('change')
+                    }
+                    else {
+                        
+                        $("#check_ada").val('Check').trigger('change')
+                    }
+                    $("#check_ada option:not(:selected)").attr("disabled", true)
 
-                }
-         
-                if (res.results.mode_of_payment ==='ADA'){
-                    $("#check_ada").val('ADA').trigger('change')
-                }
-                else {
+
+                    var x=0
+                    var dv_accounting_entries = res.dv_accounting_entries;
+
+                            for (x; x<dv_accounting_entries.length;x++){
+                                $("#debit-"+x).val(dv_accounting_entries[x]['debit'])
+                                $("#credit-"+x).val(dv_accounting_entries[x]['credit'])
+                                var chart = dv_accounting_entries[x]['id'] +"-" +dv_accounting_entries[x]['object_code']+"-"+dv_accounting_entries[x]['lvl']
+                                
+                                var cashflow = dv_accounting_entries[x]['cashflow_id'];
+                                var net_asset= dv_accounting_entries[x]['net_asset_equity_id'];
+                                $("#chart-"+x).val(chart).trigger('change');
+                                $("#isEquity-"+x).val(dv_accounting_entries[x]['net_asset_equity_id']).trigger('change');
+                                $("#cashflow-"+x).val(cashflow).trigger('change');
+                                if ($( "#cashflow-"+x ).length ){
+                                }
+                                else{
+                                }
+                                if (x < dv_accounting_entries.length -1){
+                                    add()
+                                }
+                            }
                     
-                    $("#check_ada").val('Check').trigger('change')
                 }
-                $("#check_ada option:not(:selected)").attr("disabled", true)
-
-
-                var x=0
-                var dv_accounting_entries = res.dv_accounting_entries;
-
-                        for (x; x<dv_accounting_entries.length;x++){
-                            $("#debit-"+x).val(dv_accounting_entries[x]['debit'])
-                            $("#credit-"+x).val(dv_accounting_entries[x]['credit'])
-                            var chart = dv_accounting_entries[x]['id'] +"-" +dv_accounting_entries[x]['object_code']+"-"+dv_accounting_entries[x]['lvl']
-                            
-                            var cashflow = dv_accounting_entries[x]['cashflow_id'];
-                            var net_asset= dv_accounting_entries[x]['net_asset_equity_id'];
-                            $("#chart-"+x).val(chart).trigger('change');
-                            $("#isEquity-"+x).val(dv_accounting_entries[x]['net_asset_equity_id']).trigger('change');
-                            $("#cashflow-"+x).val(cashflow).trigger('change');
-                            if ($( "#cashflow-"+x ).length ){
-                            }
-                            else{
-                            }
-                            if (x < dv_accounting_entries.length -1){
-                                add()
-                            }
-                        }
-                
-            }
-        })
-      }
+            })
+        }
+      getTotal()
 
     })
      $(document).ready(function() {

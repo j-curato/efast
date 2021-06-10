@@ -2,10 +2,16 @@
 
 namespace frontend\controllers;
 
+use app\models\AdvancesLiquidation;
+use app\models\AdvancesLiquidationSearch;
 use app\models\JevAccountingEntries;
+use app\models\Liquidation;
 use app\models\SubAccounts1;
 use app\models\SubAccounts2;
+use kartik\grid\GridView;
 use Yii;
+use yii\data\ActiveDataProvider;
+use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 
 class ReportController extends \yii\web\Controller
@@ -20,6 +26,7 @@ class ReportController extends \yii\web\Controller
 
         return $this->render('pending_ors');
     }
+
     public function actionUnobligatedTransaction()
     {
 
@@ -156,16 +163,9 @@ class ReportController extends \yii\web\Controller
 
     public function actionSample()
     {
-        $dv = (new \yii\db\Query())
-            ->select('SUM(dv_aucs_entries.amount_disbursed) as total_disbursed,SUM(dv_aucs_entries.vat_nonvat) as total_vat,
-                    SUM(dv_aucs_entries.ewt_goods_services) as total_ewt,
-                    SUM(dv_aucs_entries.compensation) as total_compensation
-                    ')
-            ->from('dv_aucs_entries')
-            ->where('dv_aucs_entries.process_ors_id =:process_ors_id', ['process_ors_id' => 2008])
-            ->one();
+        // date_default_timezone_set('UTC');
 
-        return json_encode($dv);
+
     }
 
     public function actionExportJev()
@@ -442,6 +442,153 @@ class ReportController extends \yii\web\Controller
         // return json_encode($file);
         // exit;
         // }
+    }
+
+    public function actionCibr()
+    {
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $province = $_POST['province'];
+
+            $dataProvider = Yii::$app->db->createCommand("
+            SELECT * from advances_liquidation where reporting_period =:reporting_period
+            ")
+            ->bindValue(':reporting_period',$reporting_period)
+            ->queryAll();
+            // return $reporting_period;
+            // ob_clean();
+            // echo "<pre>";
+            // var_dump($dataProvider);
+            // echo "</pre>";
+            // return ob_get_clean();
+            return $this->render('cibr', [
+                'dataProvider' => $dataProvider
+            ]);
+        } else {
+
+            return $this->render('cibr');
+        }
+    }
+    public function actionAdvancesLiquidation()
+    {
+        // SELECT
+        // liquidation.check_date,
+        // liquidation.check_number,
+        // liquidation.dv_number,
+        // liquidation.reporting_period,
+        // liquidation.is_cancelled,
+        // liquidation.particular,
+        // liquidation.withdrawals,
+        // liquidation.vat_nonvat,
+        // liquidation.ewt_goods_services,
+        // payee.account_name as payee,
+        // chart_of_accounts.uacs as gl_object_code,
+        // chart_of_accounts.general_ledger as gl_account_title,
+        // sub_accounts1.object_code as sl_object_code,
+        // sub_accounts1.`name` as sl_account_title
+        // FROM liquidation,advances_entries,payee,
+        // chart_of_accounts,sub_accounts1
+        // WHERE liquidation.advances_id = advances_entries.id
+        // AND liquidation.payee_id = payee.id
+        // AND liquidation.chart_of_account_id = chart_of_accounts.id
+        // AND advances_entries.sub_account1_id = sub_accounts1.id
+        $query1 = (new \yii\db\Query())
+            ->select([
+                'liquidation.id',
+                'liquidation.check_date',
+                'liquidation.check_number',
+                'liquidation.is_cancelled',
+                'liquidation.dv_number',
+                'liquidation.reporting_period',
+                'advances.particular as fund_source',
+                'payee.account_name as payee',
+                'liquidation.particular',
+                'chart_of_accounts.uacs as gl_object_code',
+                'chart_of_accounts.general_ledger as gl_account_title',
+                'advances_entries.amount',
+                'liquidation.withdrawals',
+                'liquidation.vat_nonvat',
+                'liquidation.ewt_goods_services',
+                'advances.report_type',
+                'sub_accounts1.object_code as sl_object_code',
+                'sub_accounts1.name as sl_account_title',
+
+            ])
+            ->from('liquidation')
+            ->join('LEFT JOIN', 'advances_entries', 'liquidation.advances_entries_id = advances_entries.id')
+            ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
+            ->join('LEFT JOIN', 'chart_of_accounts', 'liquidation.chart_of_account_id = chart_of_accounts.id')
+            ->join('LEFT JOIN', 'sub_accounts1', 'advances_entries.sub_account1_id = sub_accounts1.id')
+            ->join('LEFT JOIN', 'payee', 'liquidation.payee_id = payee.id');
+        // ->all();
+
+
+        $query2 = (new \yii\db\Query())
+            ->select(
+                [
+                    'advances_entries.id',
+                    'cash_disbursement.issuance_date',
+                    'cash_disbursement.check_or_ada_no',
+                    'cash_disbursement.is_cancelled',
+                    'dv_aucs.dv_number',
+                    'cash_disbursement.reporting_period',
+                    'advances.particular as fund_source',
+                    'payee.account_name as payee',
+                    'dv_aucs.particular',
+                    new Expression('NULL as gl_object_code'),
+                    new Expression('NULL as gl_account_title'),
+                    'advances_entries.amount',
+                    new Expression('NULL as withdrawals'),
+                    new Expression('NULL as vat_nonvat'),
+                    new Expression('NULL as ewt_goods_services'),
+                    'advances.report_type',
+                    'sub_accounts1.object_code as sl_object_code',
+                    'sub_accounts1.name as sl_account_title'
+                ]
+
+            )
+            ->from('advances_entries')
+            ->join("LEFT JOIN", 'cash_disbursement', 'advances_entries.cash_disbursement_id=cash_disbursement.id')
+            ->join("LEFT JOIN", 'sub_accounts1', 'advances_entries.sub_account1_id=sub_accounts1.id')
+            ->join("LEFT JOIN", 'dv_aucs', 'cash_disbursement.dv_aucs_id=dv_aucs.id')
+            ->join("LEFT JOIN", 'advances', 'advances_entries.advances_id=advances.id')
+            ->join("LEFT JOIN", 'payee', 'dv_aucs.payee_id=payee.id');
+        // ->all();
+        $query1->union($query2);
+        $query3 = (new \yii\db\Query())
+            ->select('*')
+            ->from('advances_liquidation');
+        $query4 = AdvancesLiquidation::find();
+        $query = Liquidation::find()->select('*')->from(['random_name' => $query1]);
+
+        $searchModel = new AdvancesLiquidationSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        // return $this->render('index', [
+        //     'searchModel' => $searchModel,
+        //     'dataProvider' => $dataProvider,
+        // ]);
+        // $dataProvider = new ActiveDataProvider([
+        //     'query' => $query4,
+
+        // ]);
+
+        // ob_clean();
+        // echo "<pre>";
+        // var_dump($query3);
+        // echo "</pre>";
+        // return ob_get_clean();
+        //Search filters and grid filters can go here
+
+
+        return $this->render('advances_liquidation', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+    public function actionCdr()
+    {
+        return $this->render('cdr');
     }
 }
 

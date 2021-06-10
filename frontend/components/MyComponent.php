@@ -60,4 +60,18 @@ class MyComponent extends Component
 
         return $y;
     }
+    public function cancel($id,$table,$type)
+    {
+        // $q=(new \yii\db\Query())
+        // ->update("$table")
+        // ->set('is_cancelled =:is_cancelled',['is_cancelled'=>$type])
+        // ->where("id =:id",['id'=>$id]);
+
+        \Yii::$app->db->createCommand("UPDATE :t SET is_cancelled = :tpe WHERE id = :id")
+        ->bindValue(`:t`,$table)
+        ->bindValue(':tpe',$type)
+        ->bindValue(':id',$id)
+        
+        ->execute();
+    }
 }

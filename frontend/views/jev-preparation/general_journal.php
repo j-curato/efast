@@ -151,6 +151,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ?>
         <style>
             @media print {
+
                 /* HIDE EXPORT BUTTONS IN PRINT */
                 .btn-group {
                     display: none;
@@ -288,9 +289,29 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
                 ?>
 
+                <tr class="footer1" style="border:0;">
+                    <td colspan="3" class="br"></td>
+                    <td colspan='2' class="br" style="padding-top:2em">
+                        CERTIFIED CORRECT:
+                    </td>
+                    <td></td>
+                </tr>
+                <tr class="footer2">
+                    <td colspan="3" class="br"></td>
 
+                    <td colspan='2' class="br">
+                        <h5>
+                            JOHN VOLTAIRE S. ANCLA,CPA
+
+                        </h5>
+                        <h6>
+                            Accountant III
+                        </h6>
+                    </td>
+                    <td></td>
+                </tr>
             </tbody>
-            <tfoot>
+            <!-- <tfoot>
                 <tr class="footer1" style="border:0;">
                     <td colspan="3" class="br"></td>
                     <td colspan='2' class="br" style="padding-top:2em">
@@ -313,7 +334,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td></td>
                 </tr>
 
-            </tfoot>
+            </tfoot> -->
 
         </table>
         <?php Pjax::end() ?>
@@ -334,10 +355,10 @@ $this->params['breadcrumbs'][] = $this->title;
             font-weight: bold;
         }
 
-        tfoot>tr>td {
+        /* tfoot>tr>td {
             border: 1px solid white;
         }
-
+ */
 
 
         .header2 {
@@ -455,6 +476,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 size: auto;
                 margin: 0;
                 margin-top: 0.5cm;
+                margin-bottom: 0.5cm;
             }
 
 

@@ -37,7 +37,7 @@ class AdvancesController extends Controller
      */
     public function actionIndex()
     {
-        
+
         $searchModel = new AdvancesEntriesSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         // $searchModel = new AdvancesSearch();
@@ -57,8 +57,8 @@ class AdvancesController extends Controller
      */
     public function actionView($id)
     {
-        $x = AdvancesEntries::findOne($id);
-        $model = $this->findModel($x->advances_id);
+        // $x = AdvancesEntries::findOne($id);
+        $model = $this->findModel($id);
         return $this->render('view', [
             'model' => $model,
         ]);
@@ -92,8 +92,8 @@ class AdvancesController extends Controller
     public function actionUpdate($id)
 
     {
-        $x = AdvancesEntries::findOne($id);
-        $model = $this->findModel($x->advances_id);
+        // $x = AdvancesEntries::findOne($id);
+        $model = $this->findModel($id);
 
         // if ($model->load(Yii::$app->request->post()) && $model->save()) {
         //     return $this->redirect(['view', 'id' => $model->id]);
@@ -179,9 +179,11 @@ class AdvancesController extends Controller
             $report = $_POST['report'];
             $province = $_POST['province'];
             $particular = $_POST['particular'];
+            $reporting_period = $_POST['reporting_period'];
             $sub_account1_id = $_POST['sub_account1'];
             $amount = $_POST['amount'];
-            
+            $fund_source = $_POST['fund_source'];
+
             $transaction = Yii::$app->db->beginTransaction();
 
 
@@ -200,6 +202,7 @@ class AdvancesController extends Controller
             $advances->report_type = $report;
             $advances->province = $province;
             $advances->particular = $particular;
+            $advances->reporting_period = $reporting_period;
             if ($advances->validate()) {
                 if ($flag = $advances->save(false)) {
 
@@ -207,7 +210,8 @@ class AdvancesController extends Controller
                         $ad_entry = new AdvancesEntries();
                         $ad_entry->advances_id = $advances->id;
                         $ad_entry->cash_disbursement_id = $cash_disbursement_id[$index];
-                        $ad_entry->sub_account1_id = $sub_account1_id[$index];
+                        $ad_entry->object_code = $sub_account1_id[$index];
+                        $ad_entry->fund_source = $fund_source[$index];
                         $ad_entry->amount = floatval(preg_replace('/[^\d.]/', '', $amount[$index]));
                         if ($ad_entry->validate()) {
 
@@ -220,7 +224,7 @@ class AdvancesController extends Controller
                 }
                 if ($flag) {
                     $transaction->commit();
-                    return json_encode(['isSuccess' => true]);
+                    return json_encode(['isSuccess' => true, 'id' => $advances->id]);
                 }
             } else {
 
@@ -244,10 +248,11 @@ class AdvancesController extends Controller
                     'payee.account_name as payee',
                     'dv_aucs.particular',
                     'advances.report_type',
-                    'advances.particular',
+                    'advances.reporting_period',
                     'advances.province',
                     'advances_entries.amount',
-                    'advances_entries.sub_account1_id'
+                    'advances_entries.object_code',
+                    'advances_entries.fund_source'
                 ])
                 ->from('advances_entries')
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
@@ -288,6 +293,128 @@ class AdvancesController extends Controller
             ->from('advances')
             ->all();
         return json_encode($res);
+    }
+    public function actionImport()
+    {
+        if (!empty($_POST)) {
+            // $chart_id = $_POST['chart_id'];
+            $name = $_FILES["file"]["name"];
+            // var_dump($_FILES['file']);
+            // die();
+            $id = uniqid();
+            $file = "transaction/{$id}_{$name}";
+            if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
+            } else {
+                return "ERROR 2: MOVING FILES FAILED.";
+                die();
+            }
+            $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+            $excel = $reader->load($file);
+            $excel->setActiveSheetIndexByName('Advances');
+            $worksheet = $excel->getActiveSheet();
+            // print_r($excel->getSheetNames());
+
+            $data = [];
+            // $chart_uacs = ChartOfAccounts::find()->where("id = :id", ['id' => $chart_id])->one()->uacs;
+
+            $latest_tracking_no = (new \yii\db\Query())
+                ->select('tracking_number')
+                ->from('transaction')
+                ->orderBy('id DESC')->one();
+            if ($latest_tracking_no) {
+                $x = explode('-', $latest_tracking_no['tracking_number']);
+                $last_number = $x[2] + 1;
+            } else {
+                $last_number = 1;
+            }
+            // 
+            $qwe = 1;
+            $advances_id = [];
+            foreach ($worksheet->getRowIterator(2) as $key => $row) {
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                $cells = [];
+                $y = 0;
+                foreach ($cellIterator as $x => $cell) {
+                    $q = '';
+                    if ($y === 7) {
+                        $cells[] = $cell->getValue();
+                    } else {
+                        $cells[] =   $cell->getValue();
+                    }
+                    $y++;
+                }
+                if (!empty($cells)) {
+
+                    $nft_number = trim($cells[0]);
+                    $check_number = trim($cells[1]);
+                    $province =  $cells[2];
+                    $reporting_period = date("Y-m", strtotime($cells[3]));
+                    $fund_source = trim($cells[4]);
+                    $report_type = trim($cells[5]);
+                    $sl_object_code = trim($cells[6]);
+                    $amount = strtolower(trim($cells[8]));
+
+                    $sl_id = (new \yii\db\Query())
+                        ->select("object_code")
+                        ->from('sub_accounts_view')
+                        ->where("sub_accounts_view.object_code =:object_code", ['object_code' => $sl_object_code])
+                        ->one();
+                    $advances_id = null;
+                    $q = (new \yii\db\Query())
+                        ->select("nft_number,id")
+                        ->from("advances")
+                        ->where("advances.nft_number =:nft_number", ['nft_number' => $nft_number])
+                        ->one();
+                    $cd = (new \yii\db\Query())
+                        ->select('id')
+                        ->from('cash_disbursement')
+                        ->where('cash_disbursement.check_or_ada_no =:check', ['check' => $check_number])
+                        ->one();
+                    if (empty($q)) {
+                        $advances = new Advances();
+                        $advances->nft_number = $nft_number;
+                        $advances->reporting_period = $reporting_period;
+                        $advances->report_type = $report_type;
+                      
+                        $advances->province = $province;
+
+                        if ($advances->save(false)) {
+                            $advances_id = $advances->id;
+                        }
+                    } else {
+                        $advances_id = $q['id'];
+                    }
+                    $data[] = [
+                        'advances_id' => $advances_id,
+                        'cash_disbursement_id' => $cd['id'],
+                        // 'sub_account1_id' => $sl_id['id'],
+                        'amount' =>  $amount,
+                        'object_code' => $sl_id['object_code'],
+                        'fund_source'=>$fund_source
+                    ];
+                }
+            }
+
+            $column = [
+                'advances_id',
+                'cash_disbursement_id',
+                // 'sub_account1_id',
+                'amount',
+                'object_code',
+                'fund_source'
+            ];
+            $ja = Yii::$app->db->createCommand()->batchInsert('advances_entries', $column, $data)->execute();
+
+            // return $this->redirect(['index']);
+            // return json_encode(['isSuccess' => true]);
+            ob_clean();
+            echo "<pre>";
+            var_dump($data);
+            echo "</pre>";
+            return ob_get_clean();
+        }
     }
 }
 

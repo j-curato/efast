@@ -1,6 +1,7 @@
 <?php
 
 use app\models\FundClusterCode;
+use app\models\JevReportingPeriod;
 use app\models\SubAccounts1;
 use app\models\SubAccounts2;
 use aryelds\sweetalert\SweetAlertAsset;
@@ -33,32 +34,29 @@ $this->params['breadcrumbs'][] = $this->title;
         //     'method' => 'post',
         // ],
         // ])
-
+            $q=JevReportingPeriod::find()->all();
         ?>
 
-        <?= Html::button('Delete', ['value' => Url::to($t), 'class' => 'btn btn-danger delete']) ?>
+        <?= Html::button('Print', ['onclick' => 'window.print()', 'class' => 'btn btn-success print']) ?>
         <?php
         if (!empty($model->cash_disbursement_id)) {
 
             $q = (new \yii\db\Query())
-            ->select('dv_aucs.id')
-            ->from('dv_aucs')
-            ->where('dv_aucs.dv_number =:dv_number', ['dv_number' => $model->dv_number])
-            ->one();
-            $dv_link = yii::$app->request->baseUrl . '/index.php?r=dv-aucs/view&id=' . $q['id']; 
+                ->select('dv_aucs.id')
+                ->from('dv_aucs')
+                ->where('dv_aucs.dv_number =:dv_number', ['dv_number' => $model->dv_number])
+                ->one();
+            $dv_link = yii::$app->request->baseUrl . '/index.php?r=dv-aucs/view&id=' . $q['id'];
 
-                echo "<a type='button' href='$dv_link' class='btn btn-success'>DV</a>";
+            echo "<a type='button' href='$dv_link' class='btn btn-success'>DV</a>";
         }
-        if (!empty($model->cash_disbursement_id)){
+        if (!empty($model->cash_disbursement_id)) {
             $cash_link = yii::$app->request->baseUrl . '/index.php?r=cash-disbursement/view&id=' . $model->cash_disbursement_id;
             echo "<a type='button' href='$cash_link' class='btn btn-warning'>Cash</a>";
-       
         }
 
         ?>
-        <button onclick="window.print()" class="btn btn-primary print">
-            Print
-        </button>
+
     </p>
 
     <?php
@@ -267,7 +265,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     } else if (strtolower($model->check_ada) == 'check') {
                         echo "<td>CHECK#</td>";
                     } else {
-                        echo "<td></td>";
+                        echo "<td style='padding:12px'></td>";
                         // echo "<td></td>";
                     }
                     echo "<td>{$model->check_ada_number}</td>";

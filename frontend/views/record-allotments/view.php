@@ -33,17 +33,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>
                     General Ledger
                 </th>
-                <th>
+                <th style='text-align:right'>
                     Amount
                 </th>
             </thead>
             <tbody>
                 <?php
-                $total=0;
+                $total = 0;
                 foreach ($model->recordAllotmentEntries as $val) {
                     echo "<tr>
                     <td>{$val->chartOfAccount->general_ledger}</td>
-                    <td>" . number_format($val->amount, 2) . "</td>
+                    <td style='text-align:right'>" . number_format($val->amount, 2) . "</td>
                 </tr>";
                     $total += $val->amount;
                 }
@@ -52,7 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>
                         <h5>Total</h5>
                     </td>
-                    <td><?php echo number_format($total,2); ?></td>
+                    <td style='text-align:right'><?php echo number_format($total, 2); ?></td>
                 </tr>
             </tbody>
         </table>

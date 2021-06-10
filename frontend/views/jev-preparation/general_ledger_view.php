@@ -250,9 +250,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td>{$val['date']}</td>
                             <td>{$val['explaination']}</td>
                             <td>{$val['jev_number']}</td>
-                            <td>$debit </td>
-                            <td>$credit</td>
-                            <td>$balance</td>
+                            <td  style='text-align:right'>$debit </td>
+                            <td  style='text-align:right'>$credit</td>
+                            <td  style='text-align:right'>$balance</td>
 
                         </tr>";
                     };

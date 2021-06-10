@@ -38,9 +38,15 @@ class Liquidation extends \yii\db\ActiveRecord
             [['payee_id', 'responsibility_center_id'], 'integer'],
             [['particular'], 'string'],
             [['check_date', 'check_number'], 'string', 'max' => 50],
+            [['reporting_period'], 'string', 'max' => 20],
             [['dv_number'], 'string', 'max' => 100],
-            [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::className(), 'targetAttribute' => ['payee_id' => 'id']],
-            [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::className(), 'targetAttribute' => ['responsibility_center_id' => 'id']],
+            [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::class, 'targetAttribute' => ['payee_id' => 'id']],
+            [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
+            [['chart_of_account_id', 'advances_entries_id'], 'integer'],
+            [['withdrawals', 'vat_nonvat', 'ewt_goods_services'], 'number'],
+            [['advances_entries_id'], 'exist', 'skipOnError' => true, 'targetClass' => Advances::class, 'targetAttribute' => ['advances_entries_id' => 'id']],
+            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
+
         ];
     }
 
@@ -57,6 +63,12 @@ class Liquidation extends \yii\db\ActiveRecord
             'check_number' => 'Check Number',
             'dv_number' => 'Dv Number',
             'particular' => 'Particular',
+            'reporting_period' => 'Reporting Period',
+            'chart_of_account_id' => 'Chart Of Account ID',
+            'advances_entries_id' => 'Advances ID',
+            'withdrawals' => 'Withdrawals',
+            'vat_nonvat' => 'Vat Nonvat',
+            'ewt_goods_services' => 'Ewt Goods Services',
         ];
     }
 
@@ -67,7 +79,7 @@ class Liquidation extends \yii\db\ActiveRecord
      */
     public function getPayee()
     {
-        return $this->hasOne(Payee::className(), ['id' => 'payee_id']);
+        return $this->hasOne(Payee::class, ['id' => 'payee_id']);
     }
 
     /**
@@ -77,7 +89,7 @@ class Liquidation extends \yii\db\ActiveRecord
      */
     public function getResponsibilityCenter()
     {
-        return $this->hasOne(ResponsibilityCenter::className(), ['id' => 'responsibility_center_id']);
+        return $this->hasOne(ResponsibilityCenter::class, ['id' => 'responsibility_center_id']);
     }
 
     /**
@@ -87,6 +99,10 @@ class Liquidation extends \yii\db\ActiveRecord
      */
     public function getLiquidationEntries()
     {
-        return $this->hasMany(LiquidationEntries::className(), ['liquidation_id' => 'id']);
+        return $this->hasMany(LiquidationEntries::class, ['liquidation_id' => 'id']);
+    }
+    public function getChartOfAccount()
+    {
+        return $this->hasOne(ChartOfAccounts::class, ['id' => 'chart_of_account_id']);
     }
 }

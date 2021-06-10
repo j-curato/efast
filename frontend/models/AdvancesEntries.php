@@ -84,4 +84,12 @@ class AdvancesEntries extends \yii\db\ActiveRecord
     {
         return $this->hasOne(SubAccounts1::class, ['id' => 'sub_account1_id']);
     }
+    public function getLiquidation()
+    {
+        return $this->hasOne(SubAccounts1::class, ['id' => 'sub_account1_id']);
+    }
+    public function getSubAccountView()
+    {
+        return $this->hasOne(SubAccountsView::class, ['object_code' => 'object_code']);
+    }
 }

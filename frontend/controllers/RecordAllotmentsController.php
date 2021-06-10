@@ -64,8 +64,9 @@ class RecordAllotmentsController extends Controller
      */
     public function actionView($id)
     {
+        $r = RecordAllotmentEntries::findOne($id);
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $this->findModel($r->record_allotment_id),
         ]);
     }
 

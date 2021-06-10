@@ -60,10 +60,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 {$val->cashDisbursement->dvAucs->payee->account_name}
                 </td>
                 <td>
-                {$val->subAccount1->object_code}
+                {$val->subAccountView->object_code}
                 </td>
                 <td>
-                {$val->subAccount1->name}
+                {$val->subAccountView->account_title}
                 </td>
                 <td style='text-align:right'>
                 {$val->amount}
@@ -86,3 +86,4 @@ $this->params['breadcrumbs'][] = $this->title;
     </table>
 
 </div>
+

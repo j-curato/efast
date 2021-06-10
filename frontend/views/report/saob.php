@@ -80,11 +80,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
                             echo "<tr>
                                     <td>{$val['object_code']}  {$val['general_ledger']}</td>
-                                    <td>" . number_format($allotment_amount, 2) . "</td>
-                                    <td>" . number_format($last_month_total, 2) . "</td>
-                                    <td>" . number_format($this_month_total, 2) . "</td>
-                                    <td>" . number_format($this_month_total, 2) . "</td>
-                                    <td>" . number_format($balance, 2) . "</td>
+                                    <td class='amount'>" . number_format($allotment_amount, 2) . "</td>
+                                    <td class='amount'>" . number_format($last_month_total, 2) . "</td>
+                                    <td class='amount'>" . number_format($this_month_total, 2) . "</td>
+                                    <td class='amount'>" . number_format($this_month_total, 2) . "</td>
+                                    <td class='amount'>" . number_format($balance, 2) . "</td>
 
                                 </tr>";
                         }
@@ -163,7 +163,9 @@ $this->params['breadcrumbs'][] = $this->title;
         white-space: normal;
         width: 100px;
     }
-
+    .amount{
+        text-align: right;
+    }
     table,
     th,
     td {

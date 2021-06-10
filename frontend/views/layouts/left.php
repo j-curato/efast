@@ -9,10 +9,10 @@
             </div>
             <div class="pull-left info">
                 <p>Alexander Pierce</p>
-
                 <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
         </div>
+        
 
         <!-- search form -->
         <form action="#" method="get" class="sidebar-form">
@@ -57,6 +57,7 @@
                                     ['label' => 'MRD Classification', 'icon' => 'circle-o', 'url' => ['/mrd-classification'],],
                                     ['label' => 'Asignatory', 'icon' => 'circle-o', 'url' => ['/assignatory'],],
                                     ['label' => 'Ors Reporting Period', 'icon' => 'circle-o', 'url' => ['/ors-reporting-period'],],
+                                    ['label' => 'Jev Reporting Period', 'icon' => 'circle-o', 'url' => ['/jev-reporting-period'],],
 
 
                                 ],
@@ -154,7 +155,6 @@
                                 'items' => [
                                     ['label' => 'Cash Disbursement', 'icon' => 'circle-o', 'url' => ['/cash-disbursement'],],
                                     ['label' => 'Cash Recieved', 'icon' => 'circle-o', 'url' => ['/cash-recieved'],],
-                                    ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ['/liquidation'],],
 
                                 ],
                             ],
@@ -170,8 +170,11 @@
                             ['label' => "Pending DV's", 'icon' => 'circle-o', 'url' => ['/report/pending-dv'],],
                             ['label' => 'UnObligated Transaction', 'icon' => 'circle-o', 'url' => ['/report/unobligated-transaction'],],
                             ['label' => 'UnPaid Obligation', 'icon' => 'circle-o', 'url' => ['/report/unpaid-obligation'],],
+                            ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/report/cibr'],],
                             ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/report/saob'],],
                             ['label' => 'Advances', 'icon' => 'circle-o', 'url' => ['/advances'],],
+                            ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ['/liquidation'],],
+                            ['label' => 'Advances/Liquidation', 'icon' => 'circle-o', 'url' => ['/report/advances-liquidation'],],
 
                         ],
                     ],

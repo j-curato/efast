@@ -30,14 +30,32 @@ use yii\helpers\ArrayHelper;
             $payee = '';
             $check_date = '';
             $check_number = '';
+            $reporting_period = '';
             if (!empty($model)) {
                 $particular = $model->particular;
                 $payee = $model->payee_id;
                 $check_date = $model->check_date;
                 $check_number = $model->check_number;
+                $reporting_period = $model->reporting_period;
             }
             ?>
             <div class="row">
+                <div class="col-sm-3">
+                    <label for="reporting_peirod">Reporting Period</label>
+                    <?php
+                    echo DatePicker::widget([
+                        'name' => 'reporting_period',
+                        'id' => 'reporting_period',
+                        'value' => $reporting_period,
+                        'pluginOptions' => [
+                            'format' => 'yyyy-mm',
+                            'autoclose' => true,
+                            'startView' => 'months',
+                            'minViewMode' => 'months'
+                        ]
+                    ])
+                    ?>
+                </div>
                 <div class="col-sm-3">
                     <label for="check_date">Date</label>
                     <?php
@@ -56,6 +74,7 @@ use yii\helpers\ArrayHelper;
 
 
                 </div>
+
                 <div class="col-sm-3">
                     <label for="payee">Payee</label>
                     <?php
@@ -70,6 +89,7 @@ use yii\helpers\ArrayHelper;
                     ])
                     ?>
                 </div>
+
                 <div class="col-sm-3">
                     <label for="check_number">Check Number</label>
 
@@ -100,7 +120,7 @@ use yii\helpers\ArrayHelper;
                     <th>Report</th>
                     <th>Province</th>
                     <th>Fund Source</th>
-                    <th>Advances NFT Number</th>
+                    <th>Chart of Account</th>
                     <th>Withdrawals</th>
                     <th>Tax1</th>
                     <th>Tax2</th>
@@ -115,7 +135,7 @@ use yii\helpers\ArrayHelper;
         <form id="add_data">
 
             <?php
-            $searchModel = new AdvancesSearch();
+            $searchModel = new AdvancesEntriesSearch();
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
             $gridColumn = [
 
@@ -135,77 +155,39 @@ use yii\helpers\ArrayHelper;
                         ];
                     }
                 ],
-                'nft_number',
                 [
-                    "label" => "Report",
-                    "attribute" => "report_type"
+                    'label' => 'NFT Number',
+                    'value' => 'advances.nft_number'
+                ],
+                [
+                    "label" => "Report Type",
+                    "value" => "advances.report_type"
                 ],
 
                 [
                     "label" => "Province",
-                    "attribute" => "province"
+                    "attribute" => "advances.province"
                 ],
                 [
                     "label" => "Fund Source",
-                    "attribute" => "particular"
+                    "attribute" => "advances.particular"
                 ],
-                // [
-                //     'label' => 'Amount Disbursed',
-                //     'format' => 'raw',
-                //     'value' => function ($model) {
-                //         return ' ' .  MaskMoney::widget([
-                //             'name' => "amount_disbursed[$model->id]",
-                //             'disabled' => true,
-                //             'id' => "amount_disbursed_$model->id",
-                //             'options' => [
-                //                 'class' => 'amounts',
-                //             ],
-                //             'pluginOptions' => [
-                //                 'prefix' => '₱ ',
-                //                 'allowNegative' => true
-                //             ],
-                //         ]);
-                //     }
-                // ],
-                // [
-                //     'label' => '2306 (VAT/ Non-Vat)',
-                //     'format' => 'raw',
-                //     'value' => function ($model) {
-                //         return ' ' .  MaskMoney::widget([
-                //             'name' => "vat_nonvat[$model->id]",
-                //             'disabled' => true,
-                //             'id' => "vat_nonvat_$model->id",
-                //             'options' => [
-                //                 'class' => 'amounts',
-                //             ],
-                //             'pluginOptions' => [
-                //                 'prefix' => '₱ ',
-                //                 'allowNegative' => true
-                //             ],
-                //         ]);
-                //     }
-                // ],
-                // [
-                //     'label' => '2307 (EWT Goods/Services)',
-                //     'format' => 'raw',
-                //     'value' => function ($model) {
-                //         return ' ' .  MaskMoney::widget([
-                //             'name' => "ewt_goods_services[$model->id]",
-                //             'disabled' => true,
-                //             'id' => "ewt_goods_services_$model->id",
-                //             'options' => [
-                //                 'class' => 'amounts',
-                //             ],
-                //             'pluginOptions' => [
-                //                 'prefix' => '₱ ',
-                //                 'allowNegative' => true
-                //             ],
-                //         ]);
-                //     }
-                // ],
-
-
-                ['class' => 'yii\grid\ActionColumn'],
+                [
+                    "label" => "Check Number",
+                    "attribute" => "cashDisbursement.check_or_ada_no"
+                ],
+                [
+                    "label" => "SL Object Code",
+                    "attribute" => "subAccount1.object_code"
+                ],
+                [
+                    "label" => "SL Account Title",
+                    "attribute" => "subAccount1.name"
+                ],
+                [
+                    "label" => "Amount",
+                    "attribute" => "amount"
+                ],
             ];
             ?>
             <?= GridView::widget([
@@ -311,12 +293,12 @@ SweetAlertAsset::register($this);
         if ($('#update').val() != 'create') {
             qwe = 'copy';
         }
-        addToTransactionTable([obj],copy)
-        
+        addToTransactionTable([obj], copy)
+
     }
 
 
-    function addToTransactionTable(result,type) {
+    function addToTransactionTable(result, type) {
 
 
         for (var i = 0; i < result.length; i++) {
@@ -354,7 +336,7 @@ SweetAlertAsset::register($this);
                     </td>
                     <td><a id='copy_${transaction_table_count}' class='btn btn-success ' type='button' onclick='copy(this)'><i class="fa fa-copy "></i></a></td>
                   
-                    <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
+                    <td><button  class='btn btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
                 `
             $("#transaction_table tbody").append(row)
             $(`#withdrawal-${transaction_table_count}`).maskMoney({
@@ -386,8 +368,12 @@ SweetAlertAsset::register($this);
                 $(`#ewt-${transaction_table_count}`).prop('disabled', true)
                 $(`#advances_${transaction_table_count}`).prop('disabled', true)
                 $(`#date_${transaction_table_count}`).prop('disabled', true)
-                
+
                 // console.log("re-align")
+
+            }
+            if ($('#update_type').val() === 'create') {
+                $(`#date_${transaction_table_count}`).prop('disabled', true)
 
             }
             transaction_table_count++;
@@ -463,7 +449,14 @@ $script = <<<JS
             }
         })
     })
-
+    $('#reporting_period').change(function(){
+        if ($('#update_type').val()!='re-align'){
+            $('.new_reporting_period').each(function(){
+                this.val($('#reporting_period').val())
+            })
+        }
+    })
+    
     // SAVE DATA TO DATABASE
     $('#save_data').submit(function(e) {
         e.preventDefault();
@@ -475,6 +468,7 @@ $script = <<<JS
             success: function(data) {
                 console.log(data)
                 var res = JSON.parse(data)
+                console.log(res.id)
                 // addToTransactionTable(res)
                 if (res.isSuccess){
                     swal({
@@ -482,9 +476,11 @@ $script = <<<JS
                         type:'success',
                         button:false,
 
-                    },function(){
-                        window.location.href = window.location.pathname +"?r=liquidation/view&id=" +res.id
-                    })
+                    }
+                  //  ,function(){
+                        // window.location.href = window.location.pathname +"?r=liquidation/view&id=" +res.id
+                   // }
+                    )
                 }
 
             }
