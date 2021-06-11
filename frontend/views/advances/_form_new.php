@@ -16,189 +16,189 @@ use kartik\select2\Select2;
 
 
     <!-- <div class="container panel panel-default"> -->
-        <form id='save_data' style="margin:12px;">
-            <?php
-            if (!empty($model->id)) {
+    <form id='save_data' style="margin:12px;">
+        <?php
+        if (!empty($model->id)) {
 
 
-                echo "<input type='text' style='display:none' id='update_id' name='update_id' value='$model->id'/>";
-            }
+            echo "<input type='text' style='display:none' id='update_id' name='update_id' value='$model->id'/>";
+        }
 
-            ?>
-            <div class="row">
-                <div class="col-sm-3">
-                    <label for="report"> Report Type</label>
-                    <?php
+        ?>
+        <div class="row">
+            <div class="col-sm-3">
+                <label for="report"> Report Type</label>
+                <?php
 
-                    $report = [
-                        'Advances for Operating Expenses' => '101 OPEX CDR',
-                        'Advances to Special Disbursing Officer' => '101 SDO CDR',
-                        'RAPID LP SDO CDR' => 'RAPID LP SDO CDR',
-                        'GJ' => 'GJ'
-                    ];
+                $report = [
+                    'Advances for Operating Expenses' => '101 OPEX CDR',
+                    'Advances to Special Disbursing Officer' => '101 SDO CDR',
+                    'RAPID LP SDO CDR' => 'RAPID LP SDO CDR',
+                    'GJ' => 'GJ'
+                ];
 
-                    echo Select2::widget([
-                        'data' => $report,
-                        'name' => 'report',
-                        'id' => 'report',
-                        'pluginOptions' => [
-                            'placeholder' => 'Select Report'
-                        ]
-                    ])
-                    ?>
-                </div>
-                <div class="col-sm-3">
-                    <label for="report"> Province</label>
-
-                    <?php
-
-                    $province = [
-                        'ADN' => 'ADN',
-                        'ADS' => 'ADS',
-                        'SDN' => 'SDN',
-                        'SDS' => 'SDS',
-                        'PDI' => 'PDI'
-                    ];
-                    echo Select2::widget([
-                        'data' => $province,
-                        'name' => 'province',
-                        'id' => 'province',
-                        'pluginOptions' => [
-                            'placeholder' => 'Select Province'
-                        ]
-                    ])
-                    ?>
-                </div>
-                <div class="col-sm-3">
-                    <label for="reporting_period">Reporting Period</label>
-                    <?php
-                    echo DatePicker::widget([
-                        'name' => 'reporting_period',
-                        'id' => 'reporting_period',
-                        'pluginOptions' => [
-                            'startView' => 'months',
-                            'minViewMode' => 'months',
-                            'format' => 'yyyy-mm',
-                            'autoclose' => true
-                        ]
-                    ])
-                    ?>
-                </div>
+                echo Select2::widget([
+                    'data' => $report,
+                    'name' => 'report',
+                    'id' => 'report',
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Report'
+                    ]
+                ])
+                ?>
             </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <label for="particular">Fund Source</label>
-                    <textarea name="particular" id="particular" cols="100" rows="2" style="width: 100%;max-width:100%"></textarea>
-                </div>
+            <div class="col-sm-3">
+                <label for="report"> Province</label>
+
+                <?php
+
+                $province = [
+                    'ADN' => 'ADN',
+                    'ADS' => 'ADS',
+                    'SDN' => 'SDN',
+                    'SDS' => 'SDS',
+                    'PDI' => 'PDI'
+                ];
+                echo Select2::widget([
+                    'data' => $province,
+                    'name' => 'province',
+                    'id' => 'province',
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Province'
+                    ]
+                ])
+                ?>
             </div>
+            <div class="col-sm-3">
+                <label for="reporting_period">Reporting Period</label>
+                <?php
+                echo DatePicker::widget([
+                    'name' => 'reporting_period',
+                    'id' => 'reporting_period',
+                    'pluginOptions' => [
+                        'startView' => 'months',
+                        'minViewMode' => 'months',
+                        'format' => 'yyyy-mm',
+                        'autoclose' => true
+                    ]
+                ])
+                ?>
+            </div>
+        </div>
+        <!-- <div class="row">
+            <div class="col-sm-12">
+                <label for="particular">Fund Source</label>
+                <textarea name="particular" id="particular" cols="100" rows="2" style="width: 100%;max-width:100%"></textarea>
+            </div>
+        </div> -->
 
-            <table class="table tabl-striped" id='transaction_table'>
-                <thead>
-                    <th>DV Number</th>
-                    <!-- <th>Mode of Payment</th> -->
-                    <th>Check Number</th>
-                    <!-- <th>Ada Number</th> -->
-                    <th>Check Date</th>
-                    <th>Payee</th>
-                    <th>Particular</th>
-                    <th>Fund Source</th>
-                    <th>Sub Account</th>
-                    <th>Amount</th>
-                </thead>
-                <tbody></tbody>
-            </table>
+        <table class="table tabl-striped" id='transaction_table'>
+            <thead>
+                <th>DV Number</th>
+                <!-- <th>Mode of Payment</th> -->
+                <th>Check Number</th>
+                <!-- <th>Ada Number</th> -->
+                <th>Check Date</th>
+                <th>Payee</th>
+                <th>Particular</th>
+                <th>Fund Source</th>
+                <th>Sub Account</th>
+                <th>Amount</th>
+            </thead>
+            <tbody></tbody>
+        </table>
 
-            <button class="btn btn-success" type="submit" style="width: 100%;">Save</button>
-        </form>
-
-
-        <form id="add_data">
-
-            <?php
-            $searchModel = new CashDisbursementSearch();
-            $searchModel->is_cancelled = 0;
-
-            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-            $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
-
-            $gridColumn = [
-                // ['class' => 'yii\grid\SerialColumn'],
-
-                'id',
-                // 'book_id',
-
-                [
-
-                    'class' => '\kartik\grid\CheckboxColumn',
-                    'checkboxOptions' => function ($model, $key, $index, $column) {
-                        return ['value' => $model->id,  'style' => 'width:20px;', 'class' => 'checkbox'];
-                    }
-                ],
-                [
-                    "label" => "Book",
-                    "attribute" => "book_id",
-                    "value" => "book.name"
-                ],
-                'mode_of_payment',
-                'check_or_ada_no',
-                'ada_number',
-                'issuance_date',
-                [
-                    'label' => "DV Number",
-                    "attribute" => "dv_aucs_id",
-                    'value' => 'dvAucs.dv_number'
-                ],
-                [
-                    'label' => "Payee",
-                    "attribute" => "dvAucs.payee.account_name"
-                ],
-                [
-                    'label' => "Particular",
-                    "attribute" => "dvAucs.particular"
-                ],
-                [
-                    'label' => "Amount Disbursed",
-                    'format' => ['decimal', 2],
-                    'value' => function ($model) {
-                        $query = (new \yii\db\Query())
-                            ->select(["SUM(dv_aucs_entries.amount_disbursed) as total_disbursed"])
-                            ->from('dv_aucs')
-                            ->join("LEFT JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
-                            ->where("dv_aucs.id =:id", ['id' => $model->dv_aucs_id])
-                            ->one();
-
-                        return $query['total_disbursed'];
-                    }
-                ],
+        <button class="btn btn-success" type="submit" style="width: 100%;">Save</button>
+    </form>
 
 
-            ];
-            // echo "<pre>";
-            // var_dump($qwe);
-            // echo "</pre>";
-            // return ob_get_clean();
-            ?>
-            <?= GridView::widget([
-                'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
+    <form id="add_data">
 
-                'panel' => [
-                    'type' => GridView::TYPE_PRIMARY,
-                    'heading' => "List Of Disbursements",
-                ],
+        <?php
+        $searchModel = new CashDisbursementSearch();
+        $searchModel->is_cancelled = 0;
 
-                'toggleDataOptions' => ['maxCount' => 100],
-                'pjax' => true,
-                'export' => false,
-                'floatHeaderOptions' => [
-                    'top' => 50,
-                    'position' => 'absolute',
-                ],
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
 
-                'columns' => $gridColumn
-            ]); ?>
-            <button type="submit" name="" id="add" class="btn btn-success" style="width: 100%;">Add</button>
-        </form>
+        $gridColumn = [
+            // ['class' => 'yii\grid\SerialColumn'],
+
+            'id',
+            // 'book_id',
+
+            [
+
+                'class' => '\kartik\grid\CheckboxColumn',
+                'checkboxOptions' => function ($model, $key, $index, $column) {
+                    return ['value' => $model->id,  'style' => 'width:20px;', 'class' => 'checkbox'];
+                }
+            ],
+            [
+                "label" => "Book",
+                "attribute" => "book_id",
+                "value" => "book.name"
+            ],
+            'mode_of_payment',
+            'check_or_ada_no',
+            'ada_number',
+            'issuance_date',
+            [
+                'label' => "DV Number",
+                "attribute" => "dv_aucs_id",
+                'value' => 'dvAucs.dv_number'
+            ],
+            [
+                'label' => "Payee",
+                "attribute" => "dvAucs.payee.account_name"
+            ],
+            [
+                'label' => "Particular",
+                "attribute" => "dvAucs.particular"
+            ],
+            [
+                'label' => "Amount Disbursed",
+                'format' => ['decimal', 2],
+                'value' => function ($model) {
+                    $query = (new \yii\db\Query())
+                        ->select(["SUM(dv_aucs_entries.amount_disbursed) as total_disbursed"])
+                        ->from('dv_aucs')
+                        ->join("LEFT JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
+                        ->where("dv_aucs.id =:id", ['id' => $model->dv_aucs_id])
+                        ->one();
+
+                    return $query['total_disbursed'];
+                }
+            ],
+
+
+        ];
+        // echo "<pre>";
+        // var_dump($qwe);
+        // echo "</pre>";
+        // return ob_get_clean();
+        ?>
+        <?= GridView::widget([
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchModel,
+
+            'panel' => [
+                'type' => GridView::TYPE_PRIMARY,
+                'heading' => "List Of Disbursements",
+            ],
+
+            'toggleDataOptions' => ['maxCount' => 100],
+            'pjax' => true,
+            'export' => false,
+            'floatHeaderOptions' => [
+                'top' => 50,
+                'position' => 'absolute',
+            ],
+
+            'columns' => $gridColumn
+        ]); ?>
+        <button type="submit" name="" id="add" class="btn btn-success" style="width: 100%;">Add</button>
+    </form>
     <!-- </div> -->
     <style>
         .grid-view td {
@@ -206,7 +206,8 @@ use kartik\select2\Select2;
             width: 5rem;
             padding: 0;
         }
-        .fund_source{
+
+        .fund_source {
             max-width: 400px;
             max-height: 50px;
         }
@@ -242,6 +243,7 @@ use kartik\select2\Select2;
         // dv_count--
         // getTotal()
     }
+
     function copy(q) {
         var qwer = $(q).closest('tr')
         var cash_disbursement_id = qwer.find('.cash_disbursement_id').val();
@@ -259,6 +261,7 @@ use kartik\select2\Select2;
                 "issuance_date": "${issuance_date}",
                 "payee": "${payee}",
                 "particular": "${particular}",
+                "fund_source": "",
                 "ewt_goods_services": ${cash_disbursement_id}
      
        }`);
@@ -288,7 +291,7 @@ use kartik\select2\Select2;
                     <td class='particular'>${result[i]['particular']}</td>
                     <td> 
                          <textarea type='text' id='fund_source-${transaction_table_count}' class='fund_source' name='fund_source[]'>
-                         ${result[i]['particular']}
+                         ${result[i]['fund_source']}
                          </textarea>
                     </td>
 
@@ -372,7 +375,9 @@ $script = <<<JS
             success:function(data){
                 console.log(data)
                 var res =JSON.parse(data)
-
+                    var keys = [];
+                    for(var k in res.error) keys.push(k);
+                console.log(keys)
                 if (res.isSuccess){
                     swal({
                         type:'success',

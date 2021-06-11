@@ -13,7 +13,7 @@ use Yii;
  * @property int|null $advances_id
  * @property float|null $withdrawals
  * @property float|null $vat_nonvat
- * @property float|null $ewt_goods_services
+ * @property float|null $expanded_tax
  *
  * @property Advances $advances
  * @property ChartOfAccounts $chartOfAccount
@@ -36,7 +36,7 @@ class LiquidationEntries extends \yii\db\ActiveRecord
     {
         return [
             [['liquidation_id', 'chart_of_account_id', 'advances_id'], 'integer'],
-            [['withdrawals', 'vat_nonvat', 'ewt_goods_services'], 'number'],
+            [['withdrawals', 'vat_nonvat', 'expanded_tax'], 'number'],
             [['advances_id'], 'exist', 'skipOnError' => true, 'targetClass' => Advances::class, 'targetAttribute' => ['advances_id' => 'id']],
             [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
             [['liquidation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Liquidation::class, 'targetAttribute' => ['liquidation_id' => 'id']],
@@ -55,7 +55,7 @@ class LiquidationEntries extends \yii\db\ActiveRecord
             'advances_id' => 'Advances ID',
             'withdrawals' => 'Withdrawals',
             'vat_nonvat' => 'Vat Nonvat',
-            'ewt_goods_services' => 'Ewt Goods Services',
+            'expanded_tax' => 'Expanded Tax',
         ];
     }
 
@@ -66,7 +66,7 @@ class LiquidationEntries extends \yii\db\ActiveRecord
      */
     public function getAdvancesEntries()
     {
-        return $this->hasOne(AdvancesEntries::class, ['id' => 'advances_id']);
+        return $this->hasOne(AdvancesEntries::class, ['id' => 'advances_entries_id']);
     }
 
     /**
@@ -88,4 +88,5 @@ class LiquidationEntries extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Liquidation::class, ['id' => 'liquidation_id']);
     }
+
 }

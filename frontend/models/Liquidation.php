@@ -42,10 +42,6 @@ class Liquidation extends \yii\db\ActiveRecord
             [['dv_number'], 'string', 'max' => 100],
             [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::class, 'targetAttribute' => ['payee_id' => 'id']],
             [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
-            [['chart_of_account_id', 'advances_entries_id'], 'integer'],
-            [['withdrawals', 'vat_nonvat', 'ewt_goods_services'], 'number'],
-            [['advances_entries_id'], 'exist', 'skipOnError' => true, 'targetClass' => Advances::class, 'targetAttribute' => ['advances_entries_id' => 'id']],
-            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
 
         ];
     }
@@ -64,11 +60,6 @@ class Liquidation extends \yii\db\ActiveRecord
             'dv_number' => 'Dv Number',
             'particular' => 'Particular',
             'reporting_period' => 'Reporting Period',
-            'chart_of_account_id' => 'Chart Of Account ID',
-            'advances_entries_id' => 'Advances ID',
-            'withdrawals' => 'Withdrawals',
-            'vat_nonvat' => 'Vat Nonvat',
-            'ewt_goods_services' => 'Ewt Goods Services',
         ];
     }
 
@@ -101,8 +92,6 @@ class Liquidation extends \yii\db\ActiveRecord
     {
         return $this->hasMany(LiquidationEntries::class, ['liquidation_id' => 'id']);
     }
-    public function getChartOfAccount()
-    {
-        return $this->hasOne(ChartOfAccounts::class, ['id' => 'chart_of_account_id']);
-    }
+
+
 }

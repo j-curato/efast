@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Create Liquidation', ['create'], ['class' => 'btn btn-success']) ?>
-    <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
+        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
     </p>
 
     <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -78,29 +78,29 @@ $this->params['breadcrumbs'][] = $this->title;
         'id',
         [
             'label' => 'DV Number',
-            'attribute' => 'dv_number'
+            'attribute' => 'liquidation.dv_number'
 
         ],
         [
             'label' => 'Check Date',
-            'value' => 'check_date',
+            'value' => 'liquidation.check_date',
         ],
         [
             'label' => 'Check Number',
-            'value' => 'check_number'
+            'value' => 'liquidation.check_number'
         ],
         [
             'label' => 'Fund Source',
-            'attribute' => 'advances_entries.advances.particular'
+            'attribute' => 'advancesEntries.fund_source'
         ],
         [
             'label' => 'Particular',
-            'attribute' => 'particular'
+            'attribute' => 'liquidation.particular'
         ],
 
         [
             'label' => 'Payee',
-            'value' => 'payee.account_name'
+            'value' => 'liquidation.payee.account_name'
         ],
         [
             'label' => 'Object Code',
@@ -124,14 +124,14 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         [
             'label' => 'EWT',
-            'attribute' => 'ewt_goods_services',
+            'attribute' => 'expanded_tax',
             'hAlign' => 'right'
 
         ],
         [
             'label' => 'Gross Payment',
             'value' => function ($model) {
-                return $model->withdrawals + $model->vat_nonvat + $model->ewt_goods_services;
+                return $model->withdrawals + $model->vat_nonvat + $model->expanded_tax;
             },
             'hAlign' => 'right'
         ],
@@ -140,7 +140,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'format' => 'raw',
             'value' => function ($model) {
 
-                return Html::a("", ['view', 'id' => $model->id], ['class' => 'btn-xs  fa fa-eye']);
+                return Html::a("", ['view', 'id' => $model->liquidation_id], ['class' => 'btn-xs  fa fa-eye']);
                 // return $query['total'];
             },
             'hiddenFromExport' => true,

@@ -26,11 +26,7 @@ class m210531_043648_add_tax_columns_in_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropColumn('liquidation','chart_of_account_id');
-        $this->dropColumn('liquidation','advances_entries_id');
-        $this->dropColumn('liquidation','withdrawals');
-        $this->dropColumn('liquidation','vat_nonvat');
-        $this->dropColumn('liquidation','ewt_goods_services');
+      
     }
 
     /*

@@ -153,7 +153,8 @@ class AdvancesController extends Controller
            dv_aucs.dv_number,
            dv_aucs.particular,
             dv_entries.total_disbursed,
-            payee.account_name as payee
+            payee.account_name as payee,
+            '' as fund_source
 
             FROM cash_disbursement,dv_aucs,payee,
             (SELECT SUM(dv_aucs_entries.amount_disbursed) as total_disbursed,dv_aucs_entries.dv_aucs_id 
@@ -178,7 +179,6 @@ class AdvancesController extends Controller
             $cash_disbursement_id = $_POST['cash_disbursement_id'];
             $report = $_POST['report'];
             $province = $_POST['province'];
-            $particular = $_POST['particular'];
             $reporting_period = $_POST['reporting_period'];
             $sub_account1_id = $_POST['sub_account1'];
             $amount = $_POST['amount'];
@@ -201,7 +201,6 @@ class AdvancesController extends Controller
 
             $advances->report_type = $report;
             $advances->province = $province;
-            $advances->particular = $particular;
             $advances->reporting_period = $reporting_period;
             if ($advances->validate()) {
                 if ($flag = $advances->save(false)) {
@@ -213,8 +212,8 @@ class AdvancesController extends Controller
                         $ad_entry->object_code = $sub_account1_id[$index];
                         $ad_entry->fund_source = $fund_source[$index];
                         $ad_entry->amount = floatval(preg_replace('/[^\d.]/', '', $amount[$index]));
+                        $ad_entry->book_id = $ad_entry->cashDisbursement->book->id;
                         if ($ad_entry->validate()) {
-
                             if ($ad_entry->save(false)) {
                             }
                         } else {
@@ -232,6 +231,7 @@ class AdvancesController extends Controller
             }
         }
     }
+
     public function actionUpdateAdvances()
     {
         if ($_POST) {
@@ -252,7 +252,8 @@ class AdvancesController extends Controller
                     'advances.province',
                     'advances_entries.amount',
                     'advances_entries.object_code',
-                    'advances_entries.fund_source'
+                    'advances_entries.fund_source',
+
                 ])
                 ->from('advances_entries')
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
@@ -377,7 +378,7 @@ class AdvancesController extends Controller
                         $advances->nft_number = $nft_number;
                         $advances->reporting_period = $reporting_period;
                         $advances->report_type = $report_type;
-                      
+
                         $advances->province = $province;
 
                         if ($advances->save(false)) {
@@ -392,7 +393,7 @@ class AdvancesController extends Controller
                         // 'sub_account1_id' => $sl_id['id'],
                         'amount' =>  $amount,
                         'object_code' => $sl_id['object_code'],
-                        'fund_source'=>$fund_source
+                        'fund_source' => $fund_source
                     ];
                 }
             }

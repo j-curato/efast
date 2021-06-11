@@ -8,6 +8,7 @@ use app\models\LiquidataionSearch;
 use app\models\LiquidationEntries;
 use app\models\LiquidationEntriesSearch;
 use Exception;
+use Mpdf\Tag\Em;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -24,7 +25,7 @@ class LiquidationController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -38,7 +39,7 @@ class LiquidationController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new LiquidataionSearch();
+        $searchModel = new LiquidationEntriesSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -154,7 +155,12 @@ class LiquidationController extends Controller
             $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'advances_entries.id', $selected], $params);
 
             $query = (new \yii\db\Query())
-                ->select('*')
+                ->select([
+                    'advances_entries.*',
+                    'advances.nft_number',
+                    'advances.report_type',
+                    'advances.province'
+                ])
                 ->from('advances_entries')
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
                 ->where("$sql", $params)
@@ -174,11 +180,25 @@ class LiquidationController extends Controller
             $chart_of_account = !empty($_POST['chart_of_account_id']) ? $_POST['chart_of_account_id'] : '';
             $withdrawal = !empty($_POST['withdrawal']) ? $_POST['withdrawal'] : '';
             $vat_nonvat = !empty($_POST['vat_nonvat']) ? $_POST['vat_nonvat'] : '';
-            $ewt = !empty($_POST['ewt']) ? $_POST['ewt'] : '';
+            $expanded_tax = !empty($_POST['ewt']) ? $_POST['ewt'] : '';
             $update_id = !empty($_POST['update_id']) ? $_POST['update_id'] : '';
             $type = !empty($_POST['update_type']) ? $_POST['update_type'] : '';
             $new_reporting_period = !empty($_POST['new_reporting_period']) ? $_POST['new_reporting_period'] : '';
             $reporting_period = $_POST['reporting_period'];
+            $check_range = $_POST['check_range'];
+
+            $check = (new \yii\db\Query())
+                ->select([
+                    'check_range.from',
+                    'check_range.to',
+                ])
+                ->from('check_range')
+                ->where("check_range.id = :id", ['id' => $check_range])
+                ->one();
+            if ($check_number >= $check['from'] && $check_number <= ['to']) {
+                
+            }
+
 
             // ob_clean();
             // echo "<pre>";
@@ -220,15 +240,14 @@ class LiquidationController extends Controller
                             foreach ($advances_id as $index => $val) {
                                 list($withd) = sscanf(implode(explode(',', $withdrawal[$index])), "%f");
                                 list($vat) = sscanf(implode(explode(',', $vat_nonvat[$index])), "%f");
-                                list($e) = sscanf(implode(explode(',', $ewt[$index])), "%f");
+                                list($e) = sscanf(implode(explode(',', $expanded_tax[$index])), "%f");
                                 $liq_entries = new LiquidationEntries();
                                 $liq_entries->liquidation_id = $liquidation->id;
                                 $liq_entries->chart_of_account_id = $chart_of_account[$index];
-                                $liq_entries->advances_id = $val;
+                                $liq_entries->advances_entries_id = $val;
                                 $liq_entries->withdrawals = $withd;
                                 $liq_entries->vat_nonvat = $vat;
-                                $liq_entries->ewt_goods_services = $e;
-                                $liq_entries->reporting_period = $new_reporting_period[$index];
+                                $liq_entries->expanded_tax = $e;
                                 $liq_entries->reporting_period = !empty($new_reporting_period) ? $new_reporting_period[$index] : $reporting_period;
 
                                 if ($liq_entries->validate()) {
@@ -266,19 +285,20 @@ class LiquidationController extends Controller
 
             $query = (new \yii\db\Query())
                 ->select([
-                    'liquidation_entries.advances_id as id',
-                    'advances.particular',
+                    'liquidation_entries.advances_entries_id as id',
+                    'advances_entries.fund_source',
                     'advances.nft_number',
                     'advances.province',
                     'advances.report_type',
                     'liquidation_entries.chart_of_account_id',
-                    'liquidation_entries.ewt_goods_services',
+                    'liquidation_entries.expanded_tax',
                     'liquidation_entries.vat_nonvat',
                     'liquidation_entries.withdrawals',
                     'liquidation_entries.reporting_period'
                 ])
                 ->from('liquidation_entries')
-                ->join('LEFT JOIN', 'advances', 'liquidation_entries.advances_id = advances.id')
+                ->join('LEFT JOIN', 'advances_entries', 'liquidation_entries.advances_entries_id = advances_entries.id')
+                ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
                 ->where("liquidation_entries.liquidation_id =:liquidation_id", ['liquidation_id' => $id])
                 ->all();
             return json_encode($query);
@@ -293,7 +313,8 @@ class LiquidationController extends Controller
             ->orderBy("liquidation.id DESC")
             ->one();
         $num = 0;
-        if (!empty($q)) {
+
+        if (!empty($q['dv_number'])) {
             $x = explode('-', $q['dv_number']);
             $num = $x[2] + 1;
         } else {
@@ -354,6 +375,8 @@ class LiquidationController extends Controller
             // 
             $qwe = 1;
             $advances_id = [];
+
+            $transaction = Yii::$app->db->beginTransaction();
             foreach ($worksheet->getRowIterator(2) as $key => $row) {
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
@@ -361,8 +384,8 @@ class LiquidationController extends Controller
                 $y = 0;
                 foreach ($cellIterator as $x => $cell) {
                     $q = '';
-                    if ($y === 7) {
-                        $cells[] = $cell->getValue();
+                    if ($y === 0) {
+                        $cells[] = $cell->getFormattedValue();
                     } else {
                         $cells[] =   $cell->getValue();
                     }
@@ -388,11 +411,16 @@ class LiquidationController extends Controller
                         ->from('chart_of_accounts')
                         ->where("chart_of_accounts.uacs =:uacs", ['uacs' => $object_code])
                         ->one();
+                    $c_id = null;
+                    if (!empty($chart_id)) {
+                        $c_id = $chart_id['id'];
+                    }
                     $payee_id = (new \yii\db\Query())
                         ->select('id')
                         ->from('payee')
                         ->where("payee.account_name LIKE :account_name", ['account_name' => $payee])
                         ->one();
+
                     $advances_entries_id = (new \yii\db\Query())
                         ->select("id")
                         ->from("advances_entries")
@@ -406,7 +434,7 @@ class LiquidationController extends Controller
                     if (empty($payee_id)) {
                         ob_clean();
                         echo "<pre>";
-                        var_dump($key. " " .$payee);
+                        var_dump($key . " " . $payee);
                         echo "</pre>";
                         return ob_get_clean();
                     }
@@ -419,7 +447,10 @@ class LiquidationController extends Controller
                         $liquidation->particular = $particular;
                         $liquidation->is_cancelled = $is_cancel;
                         $liquidation->payee_id = $payee_id['id'];
-                        $liquidation->advances_entries_id = $advances_entries_id['id'];
+                        $liquidation->dv_number = $this->getDvNumber($reporting_period);
+                        $liquidation->reporting_period = $reporting_period;
+                        // $liquidation->advances_entries_id = $advances_entries_id['id'];
+                        // $liquidation->chart_of_account_id = $advances_entries_id['id'];
                         // $liquidation->responsibility_center_id = $res_center;
                         if ($liquidation->save(false)) {
                             $liquidation_id = $liquidation->id;
@@ -429,11 +460,13 @@ class LiquidationController extends Controller
                     }
                     $data[] = [
                         'liquidation_id' => $liquidation_id,
-                        'chart_of_account_id' => $chart_id,
+                        'chart_of_account_id' => $c_id,
                         'withdrawals' => $withdrawal,
                         'vat_nonvat' => $vat,
-                        'ewt_goods_services' => $expanded,
-                        'reporting_period' => $reporting_period
+                        'expanded_tax' => $expanded,
+                        'reporting_period' => $reporting_period,
+                        'advances_entries_id' => $advances_entries_id['id']
+
                     ];
                 }
             }
@@ -443,16 +476,18 @@ class LiquidationController extends Controller
                 'chart_of_account_id',
                 'withdrawals',
                 'vat_nonvat',
-                'ewt_goods_services',
-                'reporting_period'
+                'expanded_tax',
+                'reporting_period',
+                'advances_entries_id'
             ];
             $ja = Yii::$app->db->createCommand()->batchInsert('liquidation_entries', $column, $data)->execute();
 
             // return $this->redirect(['index']);
             // return json_encode(['isSuccess' => true]);
+            $transaction->commit();
             ob_clean();
             echo "<pre>";
-            var_dump($data);
+            var_dump('success');
             echo "</pre>";
             return ob_get_clean();
         }

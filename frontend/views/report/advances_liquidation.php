@@ -6,6 +6,7 @@ use kartik\grid\GridView;
 use yii\widgets\Pjax;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
+use kartik\export\ExportMenu;
 use kartik\select2\Select2;
 use yii\data\ActiveDataProvider;
 
@@ -35,10 +36,37 @@ $this->params['breadcrumbs'][] = $this->title;
         'particular',
         'gl_object_code',
         'gl_account_title',
-        'amount',
-        'withdrawals',
-        'vat_nonvat',
-        'ewt_goods_services',
+        [
+            'label' => 'Cash Advances Received',
+            'attribute' => 'amount'
+        ],
+        [
+            'attribute' => 'withdrawals',
+            'hAlign' => 'right'
+        ],
+        [
+            'attribute' => 'vat_nonvat',
+            'hAlign' => 'right'
+        ],
+        [
+            'attribute' => 'expanded_tax',
+            'hAlign' => 'right'
+        ],
+        [
+            'label' => "Total Tax",
+            'value' => function ($model) {
+                $q= $model->vat_nonvat + $model->expanded_tax;
+                return $q;
+            }   
+        ],
+        [
+            'label' => "Gross Payment",
+            'value' => function ($model) {
+                $w=$model->withdrawals - ($model->vat_nonvat + $model->expanded_tax);
+                return  $w  ;
+            }
+        ],
+
         'report_type',
         'sl_object_code',
         'sl_account_title'
@@ -57,6 +85,26 @@ $this->params['breadcrumbs'][] = $this->title;
             'top' => 50,
             'position' => 'absolute',
         ],
+        'toolbar' =>  [
+            [
+                'content' =>
+                ExportMenu::widget([
+                    'dataProvider' => $dataProvider,
+                    'columns' => $gridColumn,
+                    'filename' => 'Advances/Liquidation',
+                    'exportConfig' => [
+                        ExportMenu::FORMAT_TEXT => false,
+                        // ExportMenu::FORMAT_PDF => false,
+                        ExportMenu::FORMAT_EXCEL => false,
+                        ExportMenu::FORMAT_HTML => false,
+                    ]
+
+                ]),
+                'options' => ['class' => 'btn-group mr-2', 'style' => 'margin-right:20px']
+            ],
+
+        ],
+        'toggleDataContainer' => ['class' => 'btn-group mr-2'],
         'columns' => $gridColumn,
     ]); ?>
 

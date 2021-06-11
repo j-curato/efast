@@ -32,8 +32,9 @@ class Advances extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['province', 'report_type'], 'string', 'max' => 50],
+            [['province', 'report_type','reporting_period'], 'string', 'max' => 50],
             [['particular'], 'string', 'max' => 500],
+            [['report_type','province','reporting_period'], 'required'],
         ];
     }
 
@@ -47,6 +48,7 @@ class Advances extends \yii\db\ActiveRecord
             'province' => 'Province',
             'report_type' => 'Report Type',
             'particular' => 'Particular',
+            'reporting_period' => 'Reporting Period',
         ];
     }
 

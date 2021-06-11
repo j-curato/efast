@@ -2,6 +2,7 @@
 
 use app\models\AdvancesEntriesSearch;
 use app\models\AdvancesSearch;
+use app\models\CheckRange;
 use app\models\Payee;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
@@ -102,6 +103,29 @@ use yii\helpers\ArrayHelper;
 
             </div>
             <div class="row">
+
+                <div class="col-sm-3">
+                    <label for="check_range">Payee</label>
+                    <?php
+                    $check = (new \yii\db\Query())
+                        ->select([
+                            'id',
+                            "CONCAT(check_range.from,' to ',check_range.to) as range"
+                        ])
+                        ->from('check_range')
+                        ->all();
+                    echo Select2::widget([
+                        'data' => ArrayHelper::map($check, 'id', 'range'),
+                        'name' => 'check_range',
+                        'id' => 'check_range',
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Payee'
+                        ]
+                    ])
+                    ?>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-sm-12">
                     <label for="particular">Particular</label>
 
@@ -122,8 +146,8 @@ use yii\helpers\ArrayHelper;
                     <th>Fund Source</th>
                     <th>Chart of Account</th>
                     <th>Withdrawals</th>
-                    <th>Tax1</th>
-                    <th>Tax2</th>
+                    <th>Vat/Non-Vat</th>
+                    <th>Expanded Tax</th>
                 </thead>
                 <tbody>
 
@@ -170,7 +194,7 @@ use yii\helpers\ArrayHelper;
                 ],
                 [
                     "label" => "Fund Source",
-                    "attribute" => "advances.particular"
+                    "attribute" => "fund_source"
                 ],
                 [
                     "label" => "Check Number",
@@ -178,11 +202,11 @@ use yii\helpers\ArrayHelper;
                 ],
                 [
                     "label" => "SL Object Code",
-                    "attribute" => "subAccount1.object_code"
+                    "attribute" => "subAccountView.object_code"
                 ],
                 [
                     "label" => "SL Account Title",
-                    "attribute" => "subAccount1.name"
+                    "attribute" => "subAccountView.account_title"
                 ],
                 [
                     "label" => "Amount",
@@ -260,8 +284,7 @@ SweetAlertAsset::register($this);
 
     function remove(i) {
         i.closest("tr").remove()
-        dv_count--
-        getTotal()
+
     }
 
     function copy(q) {
@@ -270,21 +293,21 @@ SweetAlertAsset::register($this);
         var nft_number = qwer.find('.nft_number').text();
         var report_type = qwer.find('.report_type').text();
         var province = qwer.find('.province').text();
-        var particular = qwer.find('.particular').text();
-        var chart_of_account_id = qwer.find('.chart_of_account').val();
+        var fund_source = qwer.find('.fund_source').text();
+        var chart_of_account_id = qwer.find('.chart_of_account').val() != null ? qwer.find('.chart_of_account').val() : 0;
         var withdrawal = qwer.find('.withdrawal').val();
         var vat_nonvat = qwer.find('.vat_nonvat').val();
-        var ewt_goods_services = qwer.find('.ewt_goods_services').val();
+        var expanded_tax = qwer.find('.expanded_tax').val();
         var obj = JSON.parse(`{
                 "id":${id},
                 "nft_number":"${nft_number}",
                 "report_type": "${report_type}",
                 "province": "${province}",
-                "particular": "${particular}",
+                "fund_source": "${fund_source}",
+                "chart_of_account_id":"${chart_of_account_id}" ,
                 "withdrawals":0,
-                "chart_of_account_id": ${chart_of_account_id},
-                "vat_nonvat": ${vat_nonvat},
-                "ewt_goods_services": ${ewt_goods_services}
+                "vat_nonvat":0,
+                "expanded_tax": 0
      
         }`);
 
@@ -308,7 +331,7 @@ SweetAlertAsset::register($this);
                     <td class='nft_number'> ${result[i]['nft_number']}</td>
                     <td class='report_type'> ${result[i]['report_type']}</td>
                     <td class=''province> ${result[i]['province']}</td>
-                    <td class='particular'> ${result[i]['particular']}</td>
+                    <td class='fund_source'> ${result[i]['fund_source']}</td>
 
                     <td> 
                         <select id="chart-${transaction_table_count}" name="chart_of_account_id[]" required class="chart_of_account" style="width: 200px">
@@ -330,7 +353,7 @@ SweetAlertAsset::register($this);
                     </td>
                     <td> 
                          <div class='form-group' style='width:150px'>
-                            <input type='text' id='ewt-${transaction_table_count}' class='form-control ewt_goods_services' name='ewt[]'>
+                            <input type='text' id='ewt-${transaction_table_count}' class='form-control expanded_tax' name='ewt[]'>
                          </div>
 
                     </td>

@@ -41,8 +41,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>UACS Object Code</th>
                 <th>General Ledger</th>
                 <th class='number'>Withdrawals</th>
-                <th class='number'>tax1</th>
-                <th class='number'>tax2</th>
+                <th class='number'>Vat/Non-Vat</th>
+                <th class='number'>Expanded Tax</th>
             </thead>
             <tbody>
 
@@ -50,25 +50,25 @@ $this->params['breadcrumbs'][] = $this->title;
                 $total_withdrawal = 0;
                 $total_vat_nonvat = 0;
                 $total_ewt = 0;
-                // foreach ($model->liquidationEntries as $val) {
+                foreach ($model->liquidationEntries as $val) {
 
-                //     $total_withdrawal += $val->withdrawals;
-                //     $total_vat_nonvat += $val->vat_nonvat;
-                //     $total_ewt += $val->ewt_goods_services;
-                //     echo "<tr>
-                // <td>{$val->reporting_period}</td>
-                // <td>{$val->advances->nft_number}</td>
-                // <td>{$val->advances->report_type}</td>
-                // <td>{$val->advances->province}</td>
-                // <td>{$val->advances->particular}</td>
-                // <td>{$val->chartOfAccount->uacs}</td>
-                // <td>{$val->chartOfAccount->general_ledger}</td>
-                // <td class='number'>" . number_format($val->withdrawals, 2) . "</td>
-                // <td class='number'>" . number_format($val->vat_nonvat, 2) . "</td>
-                // <td class='number'>" . number_format($val->ewt_goods_services, 2) . "</td>
+                    $total_withdrawal += $val->withdrawals;
+                    $total_vat_nonvat += $val->vat_nonvat;
+                    $total_ewt += $val->expanded_tax;
+                    echo "<tr>
+                <td>{$val->reporting_period}</td>
+                <td>{$val->advancesEntries->advances->nft_number}</td>
+                <td>{$val->advancesEntries->advances->report_type}</td>
+                <td>{$val->advancesEntries->advances->province}</td>
+                <td>{$val->advancesEntries->fund_source}</td>
+                <td>{$val->chartOfAccount->uacs}</td>
+                <td>{$val->chartOfAccount->general_ledger}</td>
+                <td class='number'>" . number_format($val->withdrawals, 2) . "</td>
+                <td class='number'>" . number_format($val->vat_nonvat, 2) . "</td>
+                <td class='number'>" . number_format($val->expanded_tax, 2) . "</td>
                 
-                // </tr>";
-                // }
+                </tr>";
+                }
 
                 echo "<tr>
                 <td colspan='7' style='text-align:center;font-weight:bold;'>Total</td>

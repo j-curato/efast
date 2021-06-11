@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <form id='filter'>
         <div class="row">
             <div class="col-sm-3">
-                <label for="reporting_period">Reportinh Period</label>
+                <label for="reporting_period">Reporting Period</label>
                 <?php
 
                 echo DatePicker::widget([
@@ -123,26 +123,26 @@ $this->params['breadcrumbs'][] = $this->title;
             </tr>
             <tr>
 
-                <th rowspan="6">Date</th>
-                <th rowspan="6">Check No.</th>
-                <th rowspan="6">Particular</th>
-                <th rowspan="3" colspan="3">CASH IN BANK</th>
+                <th class='head' rowspan="6">Date</th>
+                <th class='head' rowspan="6">Check No.</th>
+                <th class='head' rowspan="6">Particular</th>
+                <th class='head' rowspan="3" colspan="3">CASH IN BANK</th>
             </tr>
 
             <tr>
                 <th colspan="9">BREAKDOWN </th>
             </tr>
             <tr>
-                <th colspan="3">PERSONNEL SERVICES </th>
-                <th colspan="3">MAINTENANCE AND OTHER OPERATING EXPENSES </th>
-                <th colspan="3">OTHERS</th>
+                <th class='head' colspan="3">PERSONNEL SERVICES </th>
+                <th class='head' colspan="3">MAINTENANCE AND OTHER OPERATING EXPENSES </th>
+                <th class='head' colspan="3">OTHERS</th>
             </tr>
 
 
             <tr>
-                <th rowspan="3">Deposits</th>
-                <th rowspan="3">Withdrawals/Payments</th>
-                <th rowspan="3"> Balances</th>
+                <th class='head' rowspan="3">Deposits</th>
+                <th class='head' rowspan="3">Withdrawals</th>
+                <th class='head' rowspan="3"> Balances</th>
             </tr>
             <tr>
                 <th rowspan="1">1</th>
@@ -151,9 +151,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th rowspan="1"> 4</th>
                 <th rowspan="1"> 5</th>
                 <th rowspan="1"> 6</th>
-                <th rowspan="2"> Account Description</th>
-                <th rowspan="2">UACS Code</th>
-                <th rowspan="2">Amount</th>
+                <th class='head' rowspan="2"> Account Description</th>
+                <th class='head' rowspan="2">UACS Code</th>
+                <th class='head' rowspan="2">Amount</th>
             </tr>
             <tr>
                 <th rowspan="1">1</th>
@@ -170,11 +170,11 @@ $this->params['breadcrumbs'][] = $this->title;
             if (!empty($dataProvider)) {
                 foreach ($dataProvider as $data) {
                     echo "<tr>
-                        <td>".$data['check_date']."</td>
-                        <td>".$data['check_number']."</td>
-                        <td>".$data['particular']."</td>
-                        <td>".$data['amount']."</td>
-                        <td>".$data['withdrawals']."</td>
+                        <td>" . $data['check_date'] . "</td>
+                        <td>" . $data['check_number'] . "</td>
+                        <td >" . $data['particular'] . "</td>
+                        <td>" . $data['amount'] . "</td>
+                        <td>" . $data['withdrawals'] . "</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -182,14 +182,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>".$data['gl_account_title']."</td>
-                        <td>".$data['gl_object_code']."</td>
-                        <td>".$data['amount']."</td>
+                        <td>" . $data['gl_account_title'] . "</td>
+                        <td>" . $data['gl_object_code'] . "</td>
+                        <td>" . $data['amount'] . "</td>
                 </tr>";
                 }
-            //     echo "<pre>";
-            //         var_dump($dataProvider);
-            //    echo" </pre>";
+                //     echo "<pre>";
+                //         var_dump($dataProvider);
+                //    echo" </pre>";
             }
 
 
@@ -209,6 +209,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
     .header {
         border: 1px solid white
+    }
+
+    .head {
+        text-align: center;
+    }
+    @media print {
+
+        td,
+        th {
+            font-size: 10px;
+            padding: 0;
+        }
+
+        #filter {
+            display: none;
+        }
     }
 </style>
 

@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\LiquidationEntries;
+use app\models\CheckRange;
 
 /**
- * LiquidationEntriesSearch represents the model behind the search form of `app\models\LiquidationEntries`.
+ * CheckRangeSearch represents the model behind the search form of `app\models\CheckRange`.
  */
-class LiquidationEntriesSearch extends LiquidationEntries
+class CheckRangeSearch extends CheckRange
 {
     /**
      * {@inheritdoc}
@@ -17,9 +17,7 @@ class LiquidationEntriesSearch extends LiquidationEntries
     public function rules()
     {
         return [
-            [['id', 'chart_of_account_id', 'advances_id'], 'integer'],
-            [['withdrawals', 'vat_nonvat', 'expanded_tax'], 'number'],
-            [['liquidation_id', ], 'safe'],
+            [['id', 'from', 'to'], 'integer'],
         ];
     }
 
@@ -41,7 +39,7 @@ class LiquidationEntriesSearch extends LiquidationEntries
      */
     public function search($params)
     {
-        $query = LiquidationEntries::find();
+        $query = CheckRange::find();
 
         // add conditions that should always apply here
 
@@ -56,18 +54,13 @@ class LiquidationEntriesSearch extends LiquidationEntries
             // $query->where('0=1');
             return $dataProvider;
         }
-        $query->joinWith('liquidation');
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'chart_of_account_id' => $this->chart_of_account_id,
-            'advances_id' => $this->advances_id,
-            'withdrawals' => $this->withdrawals,
-            'vat_nonvat' => $this->vat_nonvat,
-            'expanded_tax' => $this->expanded_tax,
+            'from' => $this->from,
+            'to' => $this->to,
         ]);
-        $query->andFilterWhere(['like','liquidation.dv_number',$this->liquidation_id]);
 
         return $dataProvider;
     }
