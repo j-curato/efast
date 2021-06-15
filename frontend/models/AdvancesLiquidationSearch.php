@@ -18,7 +18,7 @@ class AdvancesLiquidationSearch extends AdvancesLiquidation
     {
         return [
             // [[ 'payee_id', 'responsibility_center_id'], 'integer'],
-            [['check_date', 'check_number', 'dv_number', 'particular', 'reporting_period'], 'safe'],
+            [['check_date', 'check_number', 'dv_number', 'particular','reporting_period'], 'safe'],
         ];
     }
 

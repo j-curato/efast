@@ -31,12 +31,13 @@ $this->params['breadcrumbs'][] = $this->title;
     // SELECT * from dv_aucs where dv_aucs.id NOT IN
     //(SELECT DISTINCT cash_disbursement.dv_aucs_id from cash_disbursement WHERE cash_disbursement.dv_aucs_id IS NOT NULL)
     $query = DvAucs::find()
-        ->join('LEFT JOIN', "(SELECT SUM(dv_aucs_entries.amount_disbursed) as total_disbursed
-        ,dv_aucs_entries.dv_aucs_id from dv_aucs_entries GROUP BY dv_aucs_entries.dv_aucs_id) as qwe", 'dv_aucs.id = qwe.dv_aucs_id')
+        ->join('LEFT JOIN',"(SELECT SUM(dv_aucs_entries.amount_disbursed) as total_disbursed
+        ,dv_aucs_entries.dv_aucs_id from dv_aucs_entries GROUP BY dv_aucs_entries.dv_aucs_id) as qwe",'dv_aucs.id = qwe.dv_aucs_id')
         ->where("dv_aucs.id NOT IN 
         (SELECT DISTINCT cash_disbursement.dv_aucs_id from cash_disbursement WHERE cash_disbursement.dv_aucs_id IS NOT NULL)")
         ->andWhere('qwe.total_disbursed >0')
-        ->andWhere('dv_aucs.is_cancelled =0');
+        ->andWhere('dv_aucs.is_cancelled =0')
+        ;
 
     // add conditions that should always apply here
 
@@ -69,20 +70,20 @@ $this->params['breadcrumbs'][] = $this->title;
             'dv_number',
             'payee.account_name',
             [
-                'label' => 'Amount Disbursed',
-                'value' => function ($model) {
+                'label'=>'Amount Disbursed',
+                'value'=>function($model){
 
-                    $query = (new \yii\db\Query())
-                        ->select("SUM(dv_aucs_entries.amount_disbursed) total_disbursed")
-                        ->from("dv_aucs")
-                        ->join("LEFT JOIN", 'dv_aucs_entries', 'dv_aucs.id = dv_aucs_entries.dv_aucs_id')
-                        ->where("dv_aucs.id = :id", ['id' => $model->id])
-                        ->one();
+                    $query= (new \yii\db\Query())
+                    ->select("SUM(dv_aucs_entries.amount_disbursed) total_disbursed")
+                    ->from("dv_aucs")
+                    ->join("LEFT JOIN",'dv_aucs_entries','dv_aucs.id = dv_aucs_entries.dv_aucs_id')
+                    ->where("dv_aucs.id = :id",['id'=>$model->id])
+                    ->one();
 
                     return $query['total_disbursed'];
                 },
-                'format' => ['decimal', 2],
-                'hAlign' => 'right'
+                'format'=>['decimal',2],
+                'hAlign'=>'right'
             ],
             'is_cancelled'
 

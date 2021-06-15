@@ -17,7 +17,7 @@ return [
         ],
         'user' => [
             'identityClass' => 'common\models\User',
-            'enableAutoLogin' => false,
+            'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
         ],
         'session' => [
@@ -54,14 +54,6 @@ return [
         'memem' => [
             'class' => 'frontend\components\MyComponent'
         ],
-        'request' => [
-            'class' => 'common\components\Request',
-            'web' => '/frontend/web'
-        ],
-        // 'urlManager' => [
-        //     'enablePrettyUrl' => true,
-        //     'showScriptName' => false,
-        // ],
     ],
     'params' => $params,
     'modules' => [

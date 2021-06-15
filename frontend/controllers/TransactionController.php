@@ -25,7 +25,26 @@ class TransactionController extends Controller
     public function behaviors()
     {
         return [
-       
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['index'],
+                'rules' => [
+                    [
+                        'actions' => ['index'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                    // [
+                    //     'actions' => ['create'],
+                    //     'allow' => true,
+                    //     'roles' => ['accounting'],
+                    // ],
+
+
+                ],
+
+
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [

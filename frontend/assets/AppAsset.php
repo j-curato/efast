@@ -16,7 +16,10 @@ class AppAsset extends AssetBundle
     ];
     public $js = [
         'app.js',
-
+        'maskmoney/dist/jquery.maskMoney.min.js',
+        'js/jquery.min.js',
+        'js/select2.min.js',
+        'manifest.webmanifest',
     ];
     public $depends = [
         'yii\web\YiiAsset',

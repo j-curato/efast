@@ -35,7 +35,7 @@ class Liquidation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['payee_id', 'responsibility_center_id','check_range_id'], 'integer'],
+            [['payee_id', 'responsibility_center_id'], 'integer'],
             [['particular'], 'string'],
             [['check_date', 'check_number'], 'string', 'max' => 50],
             [['reporting_period'], 'string', 'max' => 20],
@@ -60,7 +60,6 @@ class Liquidation extends \yii\db\ActiveRecord
             'dv_number' => 'Dv Number',
             'particular' => 'Particular',
             'reporting_period' => 'Reporting Period',
-            'check_range_id' => 'Check Range',
         ];
     }
 
