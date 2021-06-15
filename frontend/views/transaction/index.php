@@ -200,34 +200,34 @@ $script = <<<JS
                             processData:false,
                             success:function(data){
                                 console.log(data)
-                        //         var res = JSON.parse(data)
+                                var res = JSON.parse(data)
                         //         // break;
                         //         // $('#uploadmodal').close()
                         //         console.log(i)
                                 
-                        // if (res.isSuccess){
-                        //     swal( {
-                        //         icon: 'success',
-                        //         title: "Successfuly Added",
-                        //         type: "success",
-                        //         timer:3000,
-                        //         closeOnConfirm: false,
-                        //         closeOnCancel: false
-                        //     },function(){
-                        //         window.location.href = window.location.pathname + "?r=transaction"
-                        //     })
-                        // }
-                        // else{
-                        //     swal( {
-                        //         icon: 'error',
-                        //         title: res.error,
-                        //         type: "error",
-                        //         timer:10000,
-                        //         closeOnConfirm: false,
-                        //         closeOnCancel: false
-                        //     })
-                        //     i=false;
-                        // }
+                        if (res.isSuccess){
+                            swal( {
+                                icon: 'success',
+                                title: "Successfuly Added",
+                                type: "success",
+                                timer:3000,
+                                closeOnConfirm: false,
+                                closeOnCancel: false
+                            },function(){
+                                window.location.href = window.location.pathname + "?r=transaction"
+                            })
+                        }
+                        else{
+                            swal( {
+                                icon: 'error',
+                                title: res.error,
+                                type: "error",
+                                timer:10000,
+                                closeOnConfirm: false,
+                                closeOnCancel: false
+                            })
+                            i=false;
+                        }
                     },
                     
                     

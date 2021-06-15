@@ -516,6 +516,10 @@ class ProcessOrsEntriesController extends Controller
     public function getOrsSerialNumber($reporting_period, $book_id)
     {
         $book = Books::findOne($book_id);
+//         select substring_index(substring(serial_number, instr(serial_number, "-")+9), " ", 1) as q from process_ors
+
+// WHERE process_ors.type LIKE 'ors'
+// ORDER BY q DESC
         $query = (new \yii\db\Query())
             ->select("serial_number")
             ->from('process_ors')
@@ -572,7 +576,7 @@ class ProcessOrsEntriesController extends Controller
             $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
             $excel = $reader->load($file);
-            $excel->setActiveSheetIndexByName('Import Process ORS (2)');
+            $excel->setActiveSheetIndexByName('Import Process ORS');
             $worksheet = $excel->getActiveSheet();
             // print_r($excel->getSheetNames());
 
@@ -591,6 +595,7 @@ class ProcessOrsEntriesController extends Controller
             // }
             // 
             $group_container = [];
+            $transaction = \Yii::$app->db->beginTransaction();
             foreach ($worksheet->getRowIterator(4) as $key => $row) {
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
@@ -614,7 +619,7 @@ class ProcessOrsEntriesController extends Controller
                 $date = $cells[2];
                 $transaction_number = $cells[3];
                 $obligation_number = $cells[4];
-                $allotment_number = $cells[5];
+                $allotment_number = explode("-",trim($cells[5]))[3];
                 $allotment_uacs = trim($cells[6]);
                 $obligation_uacs = trim($cells[7]);
                 $amount = $cells[11];
@@ -715,6 +720,7 @@ class ProcessOrsEntriesController extends Controller
                 'payroll_number',
                 // 'transaction_date',
             ];
+            $transaction->commit();
             // $ja = Yii::$app->db->createCommand()->batchInsert('transaction', $column, $data)->execute();
 
             // return $this->redirect(['index']);

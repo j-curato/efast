@@ -132,7 +132,12 @@ $this->params['breadcrumbs'][] = $this->title;
     ];
     $gridColumns = [
 
-        'id',
+        [
+            'label' => 'id',
+            'attribute' => 'process_ors_id',
+            'value' => 'processOrs.id',
+            // 'value' => 'processOrs.reporting_period'
+        ],
         // [
         //     'label' => 'Particular',
         //     'value' => "processOrs.transaction.particular"
