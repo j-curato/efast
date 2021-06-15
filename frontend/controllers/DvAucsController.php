@@ -280,7 +280,7 @@ class DvAucsController extends Controller
                 foreach($ors as $o){
                     $x[]=$o['book_id'];
                 }
-                $y = array_unique($x);
+                $y = array_unique($ors);
             if (count($y) > 1) {
                 return json_encode(['isSuccess' => false, 'error' => "bawal lain2 og book number"]);
             }
