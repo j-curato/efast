@@ -884,11 +884,11 @@ class JevPreparationController extends Controller
                     'reporting_period' => $reporting_period
                 ]);
             }
-            if (!empty($fund)) {
-                $data->andWhere("jev_preparation.book_id = :book_id", [
-                    'book_id' => $book_id
-                ]);
-            }
+            // if (!empty($fund)) {
+            $data->andWhere("jev_preparation.book_id = :book_id", [
+                'book_id' => $book_id
+            ]);
+            // }
             // ->andWhere($sa)
 
             $x = $data->orderBy('id')
@@ -960,11 +960,11 @@ class JevPreparationController extends Controller
                     'reporting_period' => $reporting_period
                 ]);
             }
-            if (!empty($fund)) {
-                $data->andWhere("jev_preparation.book_id = :book_id", [
-                    'book_id' => $book_id
-                ]);
-            }
+            // if (!empty($fund)) {
+            $data->andWhere("jev_preparation.book_id = :book_id", [
+                'book_id' => $book_id
+            ]);
+            // }
             // $data->addSelect(['total'=>$query = (new \yii\db\Query())->from('billing')
             // $sum = $query->sum('amount')]);
             $x = $data->orderBy('id')->all();

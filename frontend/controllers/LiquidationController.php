@@ -9,6 +9,7 @@ use app\models\LiquidationEntries;
 use app\models\LiquidationEntriesSearch;
 use Exception;
 use Mpdf\Tag\Em;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -24,6 +25,46 @@ class LiquidationController extends Controller
     public function behaviors()
     {
         return [
+
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'logout',
+                    'signup',
+                    'index',
+                    'create',
+                    'view',
+                    'update',
+                    'delete',
+                    're-align',
+                    'import',
+                    'insert-liquidation',
+                    'add-advances',
+                    'update-liquidation',
+                    'cancel',
+
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'create',
+                            'view',
+                            'update',
+                            'delete',
+                            're-align',
+                            'import',
+                            'insert-liquidation',
+                            'add-advances',
+                            'update-liquidation',
+                            'cancel',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -196,84 +237,75 @@ class LiquidationController extends Controller
                 ->where("check_range.id = :id", ['id' => $check_range])
                 ->one();
             if ($check_number >= $check['from'] && $check_number <= ['to']) {
-                
-            }
+                // ob_clean();
+                // echo "<pre>";
+                // var_dump($ewt);
+                // echo "</pre>";
+                // die();
+                $transaction = Yii::$app->db->beginTransaction();
+                $id = '';
+                if (!empty($update_id)) {
+                    $liquidation = Liquidation::findOne($update_id);
+                    // foreach ($liquidation->liquidationEntries as $val) {
+                    //     $val->delete();
+                    // }
+                } else {
+                    $liquidation = new Liquidation();
+                }
+                $liquidation->check_date = $check_date;
+                $liquidation->payee_id = $payee_id;
+                $liquidation->check_number = $check_number;
+                $liquidation->particular = $particular;
+                $liquidation->reporting_period = $reporting_period;
+                $liquidation->dv_number = $this->getDvNumber($reporting_period);
+                $r_per = $type === 're-align' ? $new_reporting_period[0] : $reporting_period;
+                $liquidation->reporting_period =  $reporting_period;
+                $liquidation->check_range_id =  $check_range;
+                try {
+                    if ($liquidation->validate()) {
+                        if ($flag = $liquidation->save(false)) {
+                            if (!empty($advances_id)) {
 
+                                foreach ($advances_id as $index => $val) {
+                                    list($withd) = sscanf(implode(explode(',', $withdrawal[$index])), "%f");
+                                    list($vat) = sscanf(implode(explode(',', $vat_nonvat[$index])), "%f");
+                                    list($e) = sscanf(implode(explode(',', $expanded_tax[$index])), "%f");
+                                    $liq_entries = new LiquidationEntries();
+                                    $liq_entries->liquidation_id = $liquidation->id;
+                                    $liq_entries->chart_of_account_id = $chart_of_account[$index];
+                                    $liq_entries->advances_entries_id = $val;
+                                    $liq_entries->withdrawals = $withd;
+                                    $liq_entries->vat_nonvat = $vat;
+                                    $liq_entries->expanded_tax = $e;
+                                    $liq_entries->reporting_period = !empty($new_reporting_period) ? $new_reporting_period[$index] : $reporting_period;
 
-            // ob_clean();
-            // echo "<pre>";
-            // var_dump($ewt);
-            // echo "</pre>";
-            // die();
-            $transaction = Yii::$app->db->beginTransaction();
-            $id = '';
-            if (!empty($update_id)) {
-                $liquidation = Liquidation::findOne($update_id);
-                // foreach ($liquidation->liquidationEntries as $val) {
-                //     $val->delete();
-                // }
-            } else {
-                $liquidation = new Liquidation();
-            }
-            $liquidation->check_date = $check_date;
-            $liquidation->payee_id = $payee_id;
-            $liquidation->check_number = $check_number;
-            $liquidation->particular = $particular;
-            $liquidation->reporting_period = $reporting_period;
-            $liquidation->dv_number = $this->getDvNumber($reporting_period);
-            $r_per = $type === 're-align' ? $new_reporting_period[0] : $reporting_period;
-            // list($withd) = sscanf(implode(explode(',', $withdrawal[0])), "%f");
-            // list($vat) = sscanf(implode(explode(',', $vat_nonvat[0])), "%f");
-            // list($e) = sscanf(implode(explode(',', $ewt[0])), "%f");
-            // $liquidation->chart_of_account_id = $chart_of_account[0];
-            // $liquidation->withdrawals = $withd;
-            // $liquidation->vat_nonvat = $vat;
-            // $liquidation->ewt_goods_services = $e;
-            // $liquidation->advances_entries_id = $advances_id[0];
-            $liquidation->reporting_period =  $reporting_period;
-
-            try {
-                if ($liquidation->validate()) {
-                    if ($flag = $liquidation->save(false)) {
-                        if (!empty($advances_id)) {
-
-                            foreach ($advances_id as $index => $val) {
-                                list($withd) = sscanf(implode(explode(',', $withdrawal[$index])), "%f");
-                                list($vat) = sscanf(implode(explode(',', $vat_nonvat[$index])), "%f");
-                                list($e) = sscanf(implode(explode(',', $expanded_tax[$index])), "%f");
-                                $liq_entries = new LiquidationEntries();
-                                $liq_entries->liquidation_id = $liquidation->id;
-                                $liq_entries->chart_of_account_id = $chart_of_account[$index];
-                                $liq_entries->advances_entries_id = $val;
-                                $liq_entries->withdrawals = $withd;
-                                $liq_entries->vat_nonvat = $vat;
-                                $liq_entries->expanded_tax = $e;
-                                $liq_entries->reporting_period = !empty($new_reporting_period) ? $new_reporting_period[$index] : $reporting_period;
-
-                                if ($liq_entries->validate()) {
-                                    if ($liq_entries->save(false)) {
+                                    if ($liq_entries->validate()) {
+                                        if ($liq_entries->save(false)) {
+                                        }
+                                    } else {
+                                        $transaction->rollBack();
+                                        return json_encode(['isSuccess' => false, 'error' => $liq_entries->errors]);
                                     }
-                                } else {
-                                    $transaction->rollBack();
-                                    return json_encode(['isSuccess' => false, 'error' => $liq_entries->errors]);
                                 }
                             }
+                            $transaction->commit();
+                            return json_encode(['isSuccess' => true, 'id' => $liquidation->id]);
                         }
-                        $transaction->commit();
-                        return json_encode(['isSuccess' => true, 'id' => $liquidation->id]);
-                    }
-                    if ($flag) {
+                        if ($flag) {
 
-                        $transaction->commit();
-                        return json_encode(['isSuccess' => true, 'id' => $liquidation->id]);
+                            $transaction->commit();
+                            return json_encode(['isSuccess' => true, 'id' => $liquidation->id]);
+                        }
+                    } else {
+                        $transaction->rollback();
+                        return json_encode(['isSuccess' => false, 'error' => $liquidation->errors]);
                     }
-                } else {
-                    $transaction->rollback();
-                    return json_encode(['isSuccess' => false, 'error' => $liquidation->errors]);
+                } catch (Exception $e) {
+                    $transaction->rollBack();
+                    return json_encode(['isSuccess' => false, 'error' => $e->getMessage()]);
                 }
-            } catch (Exception $e) {
-                $transaction->rollBack();
-                return json_encode(['isSuccess' => false, 'error' => $e->getMessage()]);
+            } else {
+                return json_encode(['isSuccess' => false, 'error' => 'Check Number WALA ']);
             }
         }
     }
@@ -307,20 +339,24 @@ class LiquidationController extends Controller
 
     public function getDvNumber($reporting_period)
     {
-        $q = (new \yii\db\Query())
-            ->select('liquidation.dv_number')
-            ->from('liquidation')
-            ->orderBy("liquidation.id DESC")
-            ->one();
+        //         select substring_index(substring(dv_number, instr(dv_number, "-")+4), " ", 1)as latest_dv_number from liquidation
+        // ORDER BY latest_dv_number DESC 
+        $q = Yii::$app->db->createCommand(" SELECT substring_index(substring(dv_number, instr(dv_number, '-')+4), ' ', 1)as latest_dv_number from liquidation
+        ORDER BY latest_dv_number DESC ")->queryOne();
+        // $q = (new \yii\db\Query())
+        //     ->select(" substring_index(substring(dv_number, instr(dv_number, '-')+4), ' ', 1)as latest_dv_number")
+        //     ->from('liquidation')
+        //     ->orderBy("liquidation.latest_dv_number DESC")
+        //     ->one();
         $num = 0;
-
-        if (!empty($q['dv_number'])) {
-            $x = explode('-', $q['dv_number']);
-            $num = $x[2] + 1;
+        if (!empty($q['latest_dv_number'])) {
+            // $x = explode('-', $q['dv_number']);
+            $x = (int)$q['latest_dv_number'];
+            $num =  $x + 1;
         } else {
             $num = 1;
         }
-
+        // return $num;
         $string = substr(str_repeat(0, 4) . $num, -4);
         return $reporting_period . '-' . $string;
     }

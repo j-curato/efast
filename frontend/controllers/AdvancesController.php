@@ -6,7 +6,7 @@ use Yii;
 use app\models\Advances;
 use app\models\AdvancesEntries;
 use app\models\AdvancesEntriesSearch;
-use app\models\AdvancesSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -22,6 +22,27 @@ class AdvancesController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['logout', 'signup', 'index','create'],
+                'rules' => [
+                    [
+                        'actions' => ['index'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['create'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+           
+
+
+                ],
+
+
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [

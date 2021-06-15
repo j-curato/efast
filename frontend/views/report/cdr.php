@@ -312,7 +312,7 @@ $script = <<< JS
             $.pjax({
                 container:'#cibr',
                 type:'POST',
-                url:window.location.pathname +"?r=report/cibr",
+                url:window.location.pathname +"?r=report/cdr",
                 data:$("#filter").serialize()
             })
         })

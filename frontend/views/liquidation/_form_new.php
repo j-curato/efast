@@ -38,6 +38,7 @@ use yii\helpers\ArrayHelper;
                 $check_date = $model->check_date;
                 $check_number = $model->check_number;
                 $reporting_period = $model->reporting_period;
+                $check_range_id = $model->check_range_id;
             }
             ?>
             <div class="row">
@@ -105,7 +106,7 @@ use yii\helpers\ArrayHelper;
             <div class="row">
 
                 <div class="col-sm-3">
-                    <label for="check_range">Payee</label>
+                    <label for="check_range">Check Range</label>
                     <?php
                     $check = (new \yii\db\Query())
                         ->select([
@@ -118,8 +119,9 @@ use yii\helpers\ArrayHelper;
                         'data' => ArrayHelper::map($check, 'id', 'range'),
                         'name' => 'check_range',
                         'id' => 'check_range',
+                        'value' => $check_range_id,
                         'pluginOptions' => [
-                            'placeholder' => 'Select Payee'
+                            'placeholder' => 'Select check'
                         ]
                     ])
                     ?>
@@ -503,6 +505,16 @@ $script = <<<JS
                   //  ,function(){
                         // window.location.href = window.location.pathname +"?r=liquidation/view&id=" +res.id
                    // }
+                    )
+                }
+                else{
+                    swal({
+                        title:'Error',
+                        text:res.error,
+                        type:'error',
+                        button:false,
+
+                    }
                     )
                 }
 
