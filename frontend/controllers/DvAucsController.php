@@ -276,7 +276,11 @@ class DvAucsController extends Controller
                 ->from('process_ors')
                 ->where("$sql",$params)
                 ->all();
-            $y = array_unique($ors);
+                $x=[];
+                foreach($ors as $o){
+                    $x[]=$o['book_id'];
+                }
+                $y = array_unique($x);
             if (count($y) > 1) {
                 return json_encode(['isSuccess' => false, 'error' => "bawal lain2 og book number"]);
             }
