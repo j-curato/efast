@@ -9,6 +9,7 @@ use app\models\LiquidationEntries;
 use app\models\LiquidationEntriesSearch;
 use Exception;
 use Mpdf\Tag\Em;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -24,6 +25,39 @@ class LiquidationController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'create',
+                    'update',
+                    'delete',
+                    're-align',
+                    'add-advances',
+                    'insert-liquidation',
+                    'update-liquidation',
+                    'cancel',
+                    'import',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'create',
+                            'update',
+                            'delete',
+                            're-align',
+                            'add-advances',
+                            'insert-liquidation',
+                            'update-liquidation',
+                            'cancel',
+                            'import',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -110,9 +144,9 @@ class LiquidationController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        // $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        // return $this->redirect(['index']);
     }
     public function actionReAlign($id)
     {
@@ -196,7 +230,6 @@ class LiquidationController extends Controller
                 ->where("check_range.id = :id", ['id' => $check_range])
                 ->one();
             if ($check_number >= $check['from'] && $check_number <= ['to']) {
-                
             }
 
 

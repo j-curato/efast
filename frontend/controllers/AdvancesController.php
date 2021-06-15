@@ -7,6 +7,7 @@ use app\models\Advances;
 use app\models\AdvancesEntries;
 use app\models\AdvancesEntriesSearch;
 use app\models\AdvancesSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -22,6 +23,34 @@ class AdvancesController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'logout',
+                    'index',
+                    'create',
+                    'update',
+                    'view',
+                    'add-data',
+                    'insert-advances',
+                    'get-all-advances',
+                    'import',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'create',
+                            'update',
+                            'view',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
+
+
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -113,7 +142,7 @@ class AdvancesController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        // $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
     }
