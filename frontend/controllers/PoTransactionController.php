@@ -3,18 +3,16 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\CashRecieved;
-use app\models\CashRecievedSearch;
-use app\models\DocumentRecieve;
-use yii\filters\AccessControl;
+use app\models\PoTransaction;
+use app\models\PoTransactionSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * CashRecievedController implements the CRUD actions for CashRecieved model.
+ * PoTransactionController implements the CRUD actions for PoTransaction model.
  */
-class CashRecievedController extends Controller
+class PoTransactionController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -22,31 +20,8 @@ class CashRecievedController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::class,
-                'only' => [
-                    'index',
-                    'create',
-                    'update',
-                    'delete',
-                    'view',
-                ],
-                'rules' => [
-                    [
-                        'actions' => [
-                            'index',
-                            'create',
-                            'update',
-                            'delete',
-                            'view',
-                        ],
-                        'allow' => true,
-                        'roles' => ['@']
-                    ]
-                ]
-            ],
             'verbs' => [
-                'class' => VerbFilter::class,
+                'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -55,12 +30,12 @@ class CashRecievedController extends Controller
     }
 
     /**
-     * Lists all CashRecieved models.
+     * Lists all PoTransaction models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new CashRecievedSearch();
+        $searchModel = new PoTransactionSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -70,7 +45,7 @@ class CashRecievedController extends Controller
     }
 
     /**
-     * Displays a single CashRecieved model.
+     * Displays a single PoTransaction model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -83,36 +58,25 @@ class CashRecievedController extends Controller
     }
 
     /**
-     * Creates a new CashRecieved model.
+     * Creates a new PoTransaction model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new CashRecieved();
+        $model = new PoTransaction();
 
-        if ($model->load(Yii::$app->request->post())) {
-            $document = DocumentRecieve::findOne($model->document_recieved_id);
-            if ($document->name === 'NCA - Notice of Cash Allocation') {
-            } else if ($document->name === 'NTA - Notice of Transfer Allocation') {
-                $model->nta_no = $model->nca_no;
-                $model->nca_no = 0;
-            } else if ($document->name === 'NFT - Notice of Fund Transfer') {
-                $model->nft_no = $model->nca_no;
-                $model->nca_no = 0;
-            }
-            if ($model->save(false)) {
-            }
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->renderAjax('create', [
+        return $this->render('create', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Updates an existing CashRecieved model.
+     * Updates an existing PoTransaction model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -132,7 +96,7 @@ class CashRecievedController extends Controller
     }
 
     /**
-     * Deletes an existing CashRecieved model.
+     * Deletes an existing PoTransaction model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -146,15 +110,15 @@ class CashRecievedController extends Controller
     }
 
     /**
-     * Finds the CashRecieved model based on its primary key value.
+     * Finds the PoTransaction model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return CashRecieved the loaded model
+     * @return PoTransaction the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = CashRecieved::findOne($id)) !== null) {
+        if (($model = PoTransaction::findOne($id)) !== null) {
             return $model;
         }
 

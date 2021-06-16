@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Books;
 use app\models\DvAucs;
 use kartik\grid\GridView;
 use yii\widgets\Pjax;
@@ -7,17 +8,20 @@ use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\select2\Select2;
 use yii\data\ActiveDataProvider;
+use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = "List of Pending DV's";
+$this->title = "CIBR";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index" style="background-color: white;">
 
-
+    <?php
+    $prov = [];
+    ?>
     <form id='filter'>
         <div class="row">
             <div class="col-sm-3">
@@ -42,10 +46,31 @@ $this->params['breadcrumbs'][] = $this->title;
                 echo Select2::widget([
                     'name' => 'province',
                     'id' => 'province',
-                    'data' => ['adn' => 'ADN', 'sdn' => 'SDN'],
+                    'data' => [
+                        'adn' => 'ADN',
+                        'sdn' => 'SDN',
+                        'ads' => 'ADS',
+                        'sds' => 'SDS',
+                        'pdi' => 'PDI',
+                    ],
                     'pluginOptions' => [
                         'autoclose' => true,
                         'placeholder' => 'Select Province'
+                    ]
+                ])
+
+                ?>
+            </div>
+            <div class="col-sm-3">
+                <label for="book">book</label>
+                <?php
+                echo Select2::widget([
+                    'name' => 'book',
+                    'id' => 'book',
+                    'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'name', 'name'),
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'placeholder' => 'Select book'
                     ]
                 ])
 
@@ -58,44 +83,65 @@ $this->params['breadcrumbs'][] = $this->title;
     </form>
 
     <?php Pjax::begin(['id' => 'cibr', 'clientOptions' => ['method' => 'POST']]) ?>
+
     <table>
 
         <thead>
             <tr>
-                <th colspan="15" style="text-align: center;border:1px solid white">CASH IN BANK REGISTER</th>
+                <th colspan="12" style="text-align: center;border:1px solid white">CASH IN BANK REGISTER</th>
             </tr>
             <tr>
-                <th colspan="15" style="text-align: center;border:1px solid white">
+                <th colspan="12" style="text-align: center;border:1px solid white">
 
                     <span>
-                        For the month of April,2021
-
+                        For the month of <?php
+                                            if (!empty($reporting_period)) {
+                                                echo date('F, Y', strtotime($reporting_period));
+                                            }
+                                            ?>
                     </span>
                 </th>
             </tr>
             <tr>
-                <th colspan="12" class="header">
+                <th colspan="9" class="header">
                     <span> Entity Name:Department of Trade and Industry</span>
                 </th>
                 <th colspan="3" class="header">
                     <span>
-                        Sheet No. :_________________
+                        Sheet No. :_____________________
                     </span>
                 </th>
             </tr>
             <tr>
-                <th colspan="12" class="header">
-                    <span> Sub-Office/District/Division: _Provincial Office_</span>
+                <th colspan="9" class="header">
+                    <span> Sub-Office/District/Division: Provincial Office</span>
                 </th>
                 <th colspan="3" class="header">
                     <span>
-                        Name of Disbursing Officer: Ferdinand R. Inres
+                        Name of Disbursing Officer: <?php
+
+                                                    if (!empty($province)) {
+                                                        // echo $prov[$province]['officer'];
+                                                        $prov = Yii::$app->memem->cibrCdrHeader($province);
+                                                        echo $prov['officer'];
+                                                        // echo Yii::$app->memem->cibrCdrHeader($province)['officer'];
+
+
+                                                    }
+                                                    ?>
                     </span>
                 </th>
             </tr>
             <tr>
-                <th colspan="12" class="header">
-                    <span> Municipality/City/Province: _Surigao del Norte_</span>
+                <th colspan="9" class="header">
+                    <span> Municipality/City/Province: <?php
+
+                                                        if (!empty($province)) {
+                                                            // echo $prov[$province]['province'];
+                                                            // echo Yii::$app->memem->cibrCdrHeader($province)['province'];
+                                                            echo $prov['province'];
+                                                        }
+                                                        ?></span>
                 </th>
                 <th colspan="3" class="header">
                     <span>
@@ -104,8 +150,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 </th>
             </tr>
             <tr>
-                <th colspan="12" rowspan="2" style="border-left:1px solid white;border-right:1px solid white;">
-                    <span> Fund Cluster : _Fund 01_</span>
+                <th colspan="9" rowspan="2" style="border-left:1px solid white;border-right:1px solid white;">
+                    <span> Fund Cluster : <?php
+                                            if (!empty($book)) {
+
+                                                echo $book;
+                                            }
+                                            ?></span>
                 </th>
                 <th colspan="3" class="header" style="border-left:1px solid white;border-right:1px solid white;">
                     <span>
@@ -116,7 +167,12 @@ $this->params['breadcrumbs'][] = $this->title;
             <tr>
                 <th colspan="3" style="border-left:1px solid white;border-right:1px solid white;">
                     <span>
-                        Location: Surigao City
+                        Location: <?php
+                                    if (!empty($province)) {
+                                        // echo Yii::$app->memem->cibrCdrHeader($province)['location'];
+                                        echo $prov['location'];
+                                    }
+                                    ?>
                     </span>
                 </th>
 
@@ -130,11 +186,11 @@ $this->params['breadcrumbs'][] = $this->title;
             </tr>
 
             <tr>
-                <th colspan="9">BREAKDOWN </th>
+                <th colspan="6" style="text-align: center;">BREAKDOWN </th>
             </tr>
             <tr>
-                <th class='head' colspan="3">PERSONNEL SERVICES </th>
-                <th class='head' colspan="3">MAINTENANCE AND OTHER OPERATING EXPENSES </th>
+                <th class='head' colspan="2">PERSONNEL SERVICES </th>
+                <th class='head' colspan="1">MAINTENANCE AND OTHER OPERATING EXPENSES </th>
                 <th class='head' colspan="3">OTHERS</th>
             </tr>
 
@@ -145,48 +201,64 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th class='head' rowspan="3"> Balances</th>
             </tr>
             <tr>
-                <th rowspan="1">1</th>
-                <th rowspan="1">2</th>
-                <th rowspan="1"> 3</th>
-                <th rowspan="1"> 4</th>
-                <th rowspan="1"> 5</th>
-                <th rowspan="1"> 6</th>
+                <th rowspan="1">Salaries and Wages-Casual</th>
+                <th rowspan="1">Salaries and Wages -Casual/ Contractual</th>
+                <!-- <th rowspan="1"> 3</th> -->
+                <th rowspan="1"> Office Supplies Expenses </th>
+                <!-- <th rowspan="1"> 5</th>
+                <th rowspan="1"> 6</th> -->
                 <th class='head' rowspan="2"> Account Description</th>
                 <th class='head' rowspan="2">UACS Code</th>
                 <th class='head' rowspan="2">Amount</th>
             </tr>
             <tr>
-                <th rowspan="1">1</th>
-                <th rowspan="1">2</th>
-                <th rowspan="1"> 3</th>
-                <th rowspan="1"> 4</th>
-                <th rowspan="1"> 5</th>
-                <th rowspan="1"> 6</th>
+                <th rowspan="1">50101020</th>
+                <th rowspan="1">50101020</th>
+                <!-- <th rowspan="1"> 3</th> -->
+                <th rowspan="1"> 50201010</th>
+                <!-- <th rowspan="1"> 5</th>
+                <th rowspan="1"> 6</th> -->
             </tr>
         </thead>
         <tbody>
 
             <?php
+            $total_deposit = 0;
+            $total_withdrawals = 0;
             if (!empty($dataProvider)) {
                 foreach ($dataProvider as $data) {
                     echo "<tr>
                         <td>" . $data['check_date'] . "</td>
                         <td>" . $data['check_number'] . "</td>
                         <td >" . $data['particular'] . "</td>
-                        <td>" . $data['amount'] . "</td>
-                        <td>" . $data['withdrawals'] . "</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td style='text-align:right'>" . number_format((int)$data['amount'], 2) . "</td>
+                        <td style='text-align:right'>" . number_format((int)$data['withdrawals'], 2) . "</td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td>" . $data['gl_account_title'] . "</td>
                         <td>" . $data['gl_object_code'] . "</td>
-                        <td>" . $data['amount'] . "</td>
+                        <td style='text-align:right'>" . number_format((int)$data['withdrawals'], 2)  . "</td>
                 </tr>";
+                    $total_deposit += intval((int)$data['amount']);
+                    $total_withdrawals += intval((int)$data['withdrawals']);
                 }
+
+                echo "<tr>
+                <td></td>
+                <td colspan='2' style='text-align:center;font-weight:bold'>Total</td>
+                <td style='text-align:right'>" . number_format($total_deposit, 2) . "</td>
+                <td style='text-align:right'>" . number_format($total_withdrawals,) . "</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+             
+                <td style='text-align:right'>" . number_format($total_withdrawals,) . "</td>
+                </tr>";
                 //     echo "<pre>";
                 //         var_dump($dataProvider);
                 //    echo" </pre>";
@@ -194,6 +266,24 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             ?>
+
+            <tr>
+                <td colspan="8" style="border-right:none;"> </td>
+                <td colspan="2" style="text-align: center;border-left:none;border-right:none">
+
+                    <div class="foot" style="text-align: left;margin-top:2rem;">Certified Correct:</div>
+                    <div class="foot" style="font-weight: bold; margin-top:2rem;text-transform:uppercase"><?php
+
+                                                                                                            if (!empty($province)) {
+                                                                                                                echo $prov['officer'];
+                                                                                                            }
+                                                                                                            ?></div>
+                    <div class="foot">Signature</div>
+                    <div class="foot">Disbursing Officer</div>
+
+                </td>
+                <td colspan="2" style="border-left: none;"></td>
+            </tr>
 
         </tbody>
 
@@ -205,6 +295,7 @@ $this->params['breadcrumbs'][] = $this->title;
     th,
     td {
         border: 1px solid black;
+        padding: 10px;
     }
 
     .header {
@@ -214,15 +305,20 @@ $this->params['breadcrumbs'][] = $this->title;
     .head {
         text-align: center;
     }
+
     @media print {
 
         td,
         th {
             font-size: 10px;
-            padding: 0;
+            padding: 2px;
         }
 
         #filter {
+            display: none;
+        }
+
+        .main-footer {
             display: none;
         }
     }
@@ -284,155 +380,7 @@ $this->params['breadcrumbs'][] = $this->title;
             });
         });
     </script> -->
-<style>
-    .select2-selection--single {
-        /* border: 1px solid #d2d6de; */
-        border-radius: 0;
-        /* padding: 6px ; */
-        height: 34px;
 
-    }
-
-    .select2-container--default .select2-selection--single,
-    .select2-selection .select2-selection--single {
-        /* border: 1px solid #d2d6de; */
-        /* border-radius: 0; */
-        padding: 6px;
-        /* height: 34px; */
-    }
-
-
-
-    .square-icon {
-        font-size: 20px;
-    }
-
-    .serial {
-        margin-top: 8px;
-    }
-
-    .head {
-        text-align: center;
-        font-weight: bold;
-    }
-
-    td {
-        border: 1px solid black;
-        padding: .5rem;
-    }
-
-    table {
-        margin: 12px;
-        margin-left: auto;
-        margin-right: auto;
-        width: 100%;
-    }
-
-    .ors_a {
-        border-top: 1px solid white;
-        border-right: 1px solid white;
-        border-bottom: 1px solid white;
-    }
-
-    .ors_b {
-        border-top: 1px solid white;
-        border-right: 1px solid white;
-        border-bottom: 1px solid white;
-        border-left: 1px solid white;
-    }
-
-    @media print {
-        .actions {
-            display: none;
-        }
-
-        .krajee-datepicker {
-            border: 1px solid white;
-            font-size: 10px;
-            padding-left: 9px;
-        }
-
-        /* .select2-selection__rendered{
-            text-decoration: underline;
-        } */
-        .select2-container--default .select2-selection--single {
-            background-color: #fff;
-            border: 1px solid white;
-            padding: 0;
-        }
-
-        .select2-selection__arrow {
-            display: none;
-        }
-
-        .select2-selection {
-            border: 1px solid white;
-        }
-
-        select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            text-indent: 1px;
-            text-overflow: '';
-            border: none;
-        }
-
-        table,
-        th,
-        td {
-            border: 1px solid black;
-            padding: 5px;
-            font-size: 10px;
-        }
-
-        @page {
-            size: auto;
-            margin: 0;
-            margin-top: 0.5cm;
-        }
-
-
-
-        .container {
-            margin: 0;
-            top: 0;
-        }
-
-        .entity_name {
-            font-size: 5pt;
-        }
-
-
-
-        .container {
-
-            border: none;
-        }
-
-
-        table {
-            page-break-after: auto
-        }
-
-        tr {
-            page-break-inside: avoid;
-            page-break-after: auto
-        }
-
-        td {
-            page-break-inside: avoid;
-            page-break-after: auto
-        }
-
-        /* thead {
-                display: table-header-group
-            } */
-
-        .main-footer {
-            display: none;
-        }
-    }
-</style>
 
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
@@ -441,9 +389,31 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/jquery.dataTables.js", 
 <?php
 SweetAlertAsset::register($this);
 $script = <<< JS
-
+        //      $("#cibr").on("pjax:success", function(data) {
+        //         var res= JSON.parse(data)
+        //         swal({
+        //                 title: 'qqq',
+        //                 type: "error",
+        //                 timer: 3000,
+        //                 button: false
+        //                         // confirmButtonText: "Yes, delete it!",
+        //             })
+            
+        // });
         $('#generate').click(function(e){
             e.preventDefault();
+            if ($("#reporting_period").val()==''
+            ||$("#book").val()==''
+            ||$("#province").val()==''
+            ){
+               swal({
+                        title: 'qqq',
+                        type: "error",
+                        timer: 3000,
+                        button: false
+                                // confirmButtonText: "Yes, delete it!",
+                    })
+            }
             
             $.pjax({
                 container:'#cibr',
@@ -452,6 +422,7 @@ $script = <<< JS
                 data:$("#filter").serialize()
             })
         })
+
 JS;
 $this->registerJs($script);
 ?>

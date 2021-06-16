@@ -26,7 +26,7 @@ class MyComponent extends Component
         $f = (new \yii\db\Query())
             ->select('serial_number')
             ->from('record_allotments');
-            !empty($update_id) ? $f->where("id =:id", ['id' => $update_id]) : $f->orderBy("id DESC");
+        !empty($update_id) ? $f->where("id =:id", ['id' => $update_id]) : $f->orderBy("id DESC");
         $q = $f->one();
 
 
@@ -60,7 +60,7 @@ class MyComponent extends Component
 
         return $y;
     }
-    public function cancel($id,$table,$type)
+    public function cancel($id, $table, $type)
     {
         // $q=(new \yii\db\Query())
         // ->update("$table")
@@ -68,10 +68,44 @@ class MyComponent extends Component
         // ->where("id =:id",['id'=>$id]);
 
         \Yii::$app->db->createCommand("UPDATE :t SET is_cancelled = :tpe WHERE id = :id")
-        ->bindValue(`:t`,$table)
-        ->bindValue(':tpe',$type)
-        ->bindValue(':id',$id)
-        
-        ->execute();
+            ->bindValue(`:t`, $table)
+            ->bindValue(':tpe', $type)
+            ->bindValue(':id', $id)
+
+            ->execute();
+    }
+    public function cibrCdrHeader($province)
+    {
+        $prov = [
+            'adn' => [
+                'province' => 'Agusan Del Norte',
+                'officer' => 'Rosie R. Vellesco',
+                'location' => 'Butuan City'
+            ],
+            'sdn' => [
+                'province' => 'Surigao Del Norte',
+                'officer' => 'Ferdinand R. Inres',
+                'location' => 'Surigao City'
+            ],
+
+            'ads' => [
+                'province' => 'Agusan Del SUr',
+                'officer' => 'Maria Prescylin C. Lademora',
+                'location' => 'San Francisco, ADS'
+            ],
+            'sds' => [
+                'province' => 'Surigao Del Sur',
+                'officer' => 'Fritzie N. Usares',
+                'location' => 'Tandag City'
+            ],
+            'pdi' => [
+                'province' => 'Dinagat Islands',
+                'officer' => 'Venus A. Custodio',
+                'location' => 'San Jose, PDI'
+            ],
+
+
+        ];
+        return $prov[$province];
     }
 }
