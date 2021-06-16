@@ -525,20 +525,22 @@ class ReportController extends \yii\web\Controller
                 amount,
                 withdrawals,
                 gl_object_code,
-                gl_account_title
+                gl_account_title,
+                reporting_period
             from advances_liquidation
-             where reporting_period =:reporting_period AND province LIKE :province
+             where reporting_period <=:reporting_period AND province LIKE :province
              AND book_name LIKE :book
-             ORDER BY check_date,check_number
+             ORDER BY reporting_period,check_date,check_number
             ")
                 ->bindValue(':reporting_period', $reporting_period)
                 ->bindValue(':province', $province)
                 ->bindValue(':book', $book)
                 ->queryAll();
             // return $reporting_period;
+
             // ob_clean();
             // echo "<pre>";
-            // var_dump($dataProvider);
+            // var_dump($result);
             // echo "</pre>";
             // return ob_get_clean();
             return $this->render('cibr', [
@@ -578,38 +580,47 @@ class ReportController extends \yii\web\Controller
             $query = (new \yii\db\Query())
                 ->select('*')
                 ->from('advances_liquidation')
-                ->where('reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+                ->where('reporting_period <=:reporting_period', ['reporting_period' => $reporting_period])
                 ->andWhere('book_name =:book_name', ['book_name' => $book_name])
                 ->andWhere('province LIKE :province', ['province' => $province])
                 ->andWhere('report_type LIKE :report_type', ['report_type' => $report_type])
+                ->orderBy('reporting_period')
                 ->all();
-                $result = ArrayHelper::index($query, null, 'gl_object_code');
-                $consolidated=[];
-                foreach($result as $key =>$res){ 
-                    $total=0;
-                    $account_title='';
-                    foreach($res as $data){
-                        $total+=(int)$data['withdrawals'];
-                    }
 
-                    $consolidated[]=[
-                        'object_code'=>$key,
-                        'account_title'=>$res[0]['gl_account_title'],
-                        'total'=>$total];
-                    
-                }
+
+            $result = ArrayHelper::index($query, null, [function ($element) {
+                return $element['reporting_period'];
+            }, 'gl_object_code']);
             // ob_clean();
             // echo "<pre>";
-            // var_dump($arr);
+            // var_dump($result);
             // echo "</pre>";
 
             // return ob_get_clean();
+            $consolidated = [];
+            foreach ($result[$reporting_period] as $key => $res) {
+                $total = 0;
+                $account_title = '';
+       
+                foreach ($res as $data) {
+                    $total += (int)$data['withdrawals'];
+
+                 
+                }
+
+                $consolidated[] = [
+                    'object_code' => $key,
+                    'account_title' => $res[0]['gl_account_title'],
+                    'total' => $total
+                ];
+            }
+
             return $this->render('cdr', [
                 'dataProvider' => $query,
                 'reporting_period' => $reporting_period,
                 'province' => $province,
-                'consolidated'=>$consolidated,
-                'book'=>$book_name
+                'consolidated' => $consolidated,
+                'book' => $book_name
 
             ]);
         } else {
@@ -617,7 +628,6 @@ class ReportController extends \yii\web\Controller
             return $this->render('cdr');
         }
     }
-    
 }
 
 

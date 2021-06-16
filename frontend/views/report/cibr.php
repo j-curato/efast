@@ -77,7 +77,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
             </div>
             <div class="col-sm-3">
-                <button class="btn btn-success" id="generate">Generate</button>
+                <button class="btn btn-success" style="margin-top: 23px;" id="generate">Generate</button>
             </div>
         </div>
     </form>
@@ -225,39 +225,63 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php
             $total_deposit = 0;
             $total_withdrawals = 0;
+            $balance = 0;
+            $x = 0;
             if (!empty($dataProvider)) {
-                foreach ($dataProvider as $data) {
-                    echo "<tr>
-                        <td>" . $data['check_date'] . "</td>
-                        <td>" . $data['check_number'] . "</td>
-                        <td >" . $data['particular'] . "</td>
-                        <td style='text-align:right'>" . number_format((int)$data['amount'], 2) . "</td>
-                        <td style='text-align:right'>" . number_format((int)$data['withdrawals'], 2) . "</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>" . $data['gl_account_title'] . "</td>
-                        <td>" . $data['gl_object_code'] . "</td>
-                        <td style='text-align:right'>" . number_format((int)$data['withdrawals'], 2)  . "</td>
-                </tr>";
-                    $total_deposit += intval((int)$data['amount']);
-                    $total_withdrawals += intval((int)$data['withdrawals']);
+                foreach ($dataProvider as $i => $data) {
+                    $balance += (int)$data['amount'] - (int)$data['withdrawals'];
+                    if ($data['reporting_period'] === $reporting_period) {
+                        if ($x === 0) {
+                            echo "<tr>
+                  
+                            <td></td>
+                            <td></td>
+                            <td style='text-align:center'>Beginning Balance</td>
+                            <td ></td>
+                            <td ></td>
+                            <td style='text-align:right'>" . number_format($balance - (int)$data['amount'] + (int)$data['withdrawals'], 2) . "</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td ></td>
+                         </tr>";
+                            $x++;
+                        }
+                        echo "<tr>
+                  
+                            <td>" . $data['check_date'] . "</td>
+                            <td>" . $data['check_number'] . "</td>
+                            <td >" . $data['particular'] . "</td>
+                            <td style='text-align:right'>" . number_format((int)$data['amount'], 2) . "</td>
+                            <td style='text-align:right'>" . number_format((int)$data['withdrawals'], 2) . "</td>
+                            <td>" . number_format($balance, 2) . "</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>" . $data['gl_account_title'] . "</td>
+                            <td>" . $data['gl_object_code'] . "</td>
+                            <td style='text-align:right'>" . number_format((int)$data['withdrawals'], 2)  . "</td>
+                         </tr>";
+                        $total_deposit += intval((int)$data['amount']);
+                        $total_withdrawals += intval((int)$data['withdrawals']);
+                    }
                 }
 
                 echo "<tr>
                 <td></td>
                 <td colspan='2' style='text-align:center;font-weight:bold'>Total</td>
-                <td style='text-align:right'>" . number_format($total_deposit, 2) . "</td>
-                <td style='text-align:right'>" . number_format($total_withdrawals,) . "</td>
-                <td></td>
+                <td style='text-align:right;font-weight:bold'>" . number_format($total_deposit, 2) . "</td>
+                <td style='text-align:right;font-weight:bold'>" . number_format($total_withdrawals,) . "</td>
+                <td style='text-align:right;font-weight:bold'>" . number_format($balance,) . "</td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
              
-                <td style='text-align:right'>" . number_format($total_withdrawals,) . "</td>
+                <td style='text-align:right;font-weight:bold'>" . number_format($total_withdrawals,) . "</td>
                 </tr>";
                 //     echo "<pre>";
                 //         var_dump($dataProvider);
@@ -329,57 +353,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
 <link href="/dti-afms-2/frontend/web/js/jquery.dataTables.js" />
 <link href="/dti-afms-2/frontend/web/css/jquery.dataTables.css" rel="stylesheet" />
-<!-- 
-    <script>
-        $(document).ready(function() {
-            $('#myTable').DataTable({
 
-                processing: true,
-                // serverSide: true,
-                ajax: {
-                    url: window.location.pathname + "?r=report/pending-ors",
-                    data: function(data) {
-                        data.id = data.id
-                    },
-                    dataSrc: 'data'
-                },
-                columns: [{
-                        data: 'id'
-                    },
-                    {
-                        data: 'transaction_id'
-                    },
-                    {
-                        data: 'reporting_period'
-                    },
-                    {
-                        data: 'serial_number'
-                    },
-                    {
-                        data: 'obligation_number'
-                    },
-                    {
-                        data: 'funding_code'
-                    },
-                    {
-                        data: 'document_recieve_id'
-                    },
-                    {
-                        data: 'mfo_pap_code_id'
-                    },
-                    {
-                        data: 'fund_source_id'
-                    },
-                    {
-                        data: 'book_id'
-                    },
-                    {
-                        data: 'date'
-                    },
-                ]
-            });
-        });
-    </script> -->
 
 
 <?php
