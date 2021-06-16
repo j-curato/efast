@@ -275,12 +275,14 @@ class DvAucsController extends Controller
                 ->select("book_id")
                 ->from('process_ors')
                 ->where("$sql", $params)
+                ->distinct('book_id')
                 ->all();
             $x = [];
             foreach ($ors as $o) {
                 $x[] = $o['book_id'];
             }
-            $y = array_unique($ors);
+            // $y = array_unique($ors);
+            $y = array_unique($x);
             if (count($y) > 1) {
                 return json_encode(['isSuccess' => false, 'error' => "bawal lain2 og book number"]);
             }
@@ -288,7 +290,8 @@ class DvAucsController extends Controller
             if ($transaction_type === 'no ors') {
                 $book_id = $_POST['book'];
             } else {
-                $book_id = $y[0]['book_id'];
+                // $book_id = $y[0]['book_id'];
+                $book_id = $y[0];
                 // return json_encode(['isSuccess' => false, 'error' => $y[0]['book_id']]);
             }
 
