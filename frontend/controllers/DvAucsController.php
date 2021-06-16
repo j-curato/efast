@@ -269,18 +269,18 @@ class DvAucsController extends Controller
                 }
             }
 
-            $params=[];
-            $sql=Yii::$app->db->getQueryBuilder()->buildCondition(['IN','process_ors.id',$_POST['process_ors_id'] ],$params);
+            $params = [];
+            $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'process_ors.id', $_POST['process_ors_id']], $params);
             $ors = (new \yii\db\Query())
                 ->select("book_id")
                 ->from('process_ors')
-                ->where("$sql",$params)
+                ->where("$sql", $params)
                 ->all();
-                $x=[];
-                foreach($ors as $o){
-                    $x[]=$o['book_id'];
-                }
-                $y = array_unique($ors);
+            $x = [];
+            foreach ($ors as $o) {
+                $x[] = $o['book_id'];
+            }
+            $y = array_unique($ors);
             if (count($y) > 1) {
                 return json_encode(['isSuccess' => false, 'error' => "bawal lain2 og book number"]);
             }
