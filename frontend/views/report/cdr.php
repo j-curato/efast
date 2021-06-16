@@ -90,7 +90,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
             </div>
             <div class="col-sm-2">
-                <button class="btn btn-success" id="generate">Generate</button>
+                <button class="btn btn-success" id="generate" style="margin-top:23px">Generate</button>
             </div>
         </div>
     </form>
@@ -215,24 +215,50 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php
             $total_cash_advance = 0;
             $total_payments = 0;
+            $x = 0;
+            $balance = 0;
+            $amount = 0;
+            $withdrawals = 0;
             if (!empty($dataProvider)) {
                 foreach ($dataProvider as $data) {
-                    echo "<tr>
-                        <td>" . $data['check_date'] . "</td>
+                    $amount =  (int) $data['amount'];
+                    $withdrawals = (int) $data['withdrawals'];
+                    $balance += $amount  - $withdrawals;
+                    if ($data['reporting_period'] === $reporting_period) {
+                        if ($x === 0) {
+                            echo "<tr>
+                            <td></td>
+                            <td ></td>
+                            <td></td>
+                            <td class='amount'></td>
+                            <td></td>
+                            <td class='amount'>" . number_format($balance - $amount + $withdrawals, 2) . "</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class='amount'></td>
+                          </tr>";
+                            $x++;
+                        }
+                        echo "<tr>
+                        <td>" . $data['reporting_period'] . "</td>
                         <td >" . $data['check_number'] . "</td>
                         <td>" . $data['particular'] . "</td>
                         <td class='amount'>" . $data['amount'] . "</td>
                         <td class='amount'>" . $data['withdrawals'] . "</td>
-                        <td></td>
+                        <td class='amount'>" . number_format($balance , 2) . "</td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td>" . $data['gl_account_title'] . "</td>
                         <td>" . $data['gl_object_code'] . "</td>
                         <td class='amount'>" . $data['withdrawals'] . "</td>
-                </tr>";
-                    $total_cash_advance += (int)$data['amount'];
-                    $total_payments += (int)$data['withdrawals'];
+                       </tr>";
+                        $total_cash_advance += (int)$data['amount'];
+                        $total_payments += (int)$data['withdrawals'];
+                    }
                 }
                 //     echo "<pre>";
                 //         var_dump($dataProvider);
@@ -260,20 +286,21 @@ $this->params['breadcrumbs'][] = $this->title;
             $total_conso = 0;
             if (!empty($consolidated)) {
                 foreach ($consolidated as $conso) {
+                    $amnt = $conso['total']!=0?number_format($conso['total'], 2):'-';
                     echo "<tr>
-                    <td></td>
-                    <td ></td>
-                    <td></td>
-                    <td class='amount'></td>
-                    <td class='amount'></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>" . $conso['account_title'] . "</td>
-                    <td>" . $conso['object_code'] . "</td>
-                    <td class='amount' >" .  number_format($conso['total'], 2) . "</td>
-            </tr>";
+                        <td></td>
+                        <td ></td>
+                        <td></td>
+                        <td class='amount'></td>
+                        <td class='amount'></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>" . $conso['account_title'] . "</td>
+                        <td>" . $conso['object_code'] . "</td>
+                        <td class='amount' >" . $amnt  . "</td>
+                    </tr>";
                     $total_conso += (int)$conso['total'];
                 }
             }
