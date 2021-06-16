@@ -224,7 +224,7 @@ class TransactionController extends Controller
                 $last_number = 1;
             }
             // 
-            $qwe=1;
+            $qwe = 1;
             foreach ($worksheet->getRowIterator(3) as $key => $row) {
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
@@ -291,12 +291,12 @@ class TransactionController extends Controller
                                 return json_encode(['isSuccess' => false, 'error' => "Payee Does Not Exist in line $key $payee_name"]);
                                 die();
                             }
-                            // if (!empty($responsibility_center)) {
-                            //     $responsibility_center_id = $responsibility_center['id'];
-                            // } else {
-                            //     return json_encode(['isSuccess' => false, 'error' => "Responsibility Center Does Not Exist in Line $key"]);
-                            //     die();
-                            // }
+                            if (!empty($responsibility_center)) {
+                                $responsibility_center_id = $responsibility_center['id'];
+                            } else {
+                                return json_encode(['isSuccess' => false, 'error' => "Responsibility Center Does Not Exist in Line $key"]);
+                                die();
+                            }
 
                             $data[] = [
                                 'responsibility_center_id' => !empty($responsibility_center) ? $responsibility_center['id'] : NULL,
