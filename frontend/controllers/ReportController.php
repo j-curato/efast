@@ -12,10 +12,68 @@ use kartik\grid\GridView;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\Expression;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 
 class ReportController extends \yii\web\Controller
 {
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'pending-ors',
+                    'unobligated-transaction',
+                    'pending-dv',
+                    'unpaid-obligation',
+                    'saob',
+                    'get-cash',
+                    'export-jev',
+                    'cibr',
+                    'cdr',
+                    // actionPendingOrs
+                    // actionUnobligatedTransaction
+                    // actionPendingDv
+                    // actionUnpaidObligation
+                    // actionSaob
+                    // actionGetCash
+                    // actionSample
+                    // actionExportJev
+                    // actionCibr
+                    // actionCdr
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'pending-ors',
+                            'unobligated-transaction',
+                            'pending-dv',
+                            'unpaid-obligation',
+                            'saob',
+                            'get-cash',
+                            'export-jev',
+                            'cibr',
+                            'cdr',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
+
+
+                ]
+            ],
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
+    }
     public function actionIndex()
     {
         return $this->render('index');
@@ -449,12 +507,34 @@ class ReportController extends \yii\web\Controller
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
             $province = $_POST['province'];
+            $book = $_POST['book'];
 
-            $dataProvider = Yii::$app->db->createCommand("
-            SELECT * from advances_liquidation where reporting_period =:reporting_period
+            if (
+                empty($reporting_period)
+                || empty($province)
+                || empty($book)
+            ) {
+                return json_encode(['error' => true, 'message' => 'Reporting Period,Province and Book are Required']);
+            }
+
+
+            $dataProvider = Yii::$app->db->createCommand("SELECT 
+                check_date,
+                check_number,
+                particular,
+                amount,
+                withdrawals,
+                gl_object_code,
+                gl_account_title
+            from advances_liquidation
+             where reporting_period =:reporting_period AND province LIKE :province
+             AND book_name LIKE :book
+             ORDER BY check_date,check_number
             ")
-            ->bindValue(':reporting_period',$reporting_period)
-            ->queryAll();
+                ->bindValue(':reporting_period', $reporting_period)
+                ->bindValue(':province', $province)
+                ->bindValue(':book', $book)
+                ->queryAll();
             // return $reporting_period;
             // ob_clean();
             // echo "<pre>";
@@ -462,7 +542,11 @@ class ReportController extends \yii\web\Controller
             // echo "</pre>";
             // return ob_get_clean();
             return $this->render('cibr', [
-                'dataProvider' => $dataProvider
+                'dataProvider' => $dataProvider,
+                'province' => $province,
+                'reporting_period' => $reporting_period,
+                'book' => $book
+
             ]);
         } else {
 
@@ -471,114 +555,11 @@ class ReportController extends \yii\web\Controller
     }
     public function actionAdvancesLiquidation()
     {
-        // SELECT
-        // liquidation.check_date,
-        // liquidation.check_number,
-        // liquidation.dv_number,
-        // liquidation.reporting_period,
-        // liquidation.is_cancelled,
-        // liquidation.particular,
-        // liquidation.withdrawals,
-        // liquidation.vat_nonvat,
-        // liquidation.ewt_goods_services,
-        // payee.account_name as payee,
-        // chart_of_accounts.uacs as gl_object_code,
-        // chart_of_accounts.general_ledger as gl_account_title,
-        // sub_accounts1.object_code as sl_object_code,
-        // sub_accounts1.`name` as sl_account_title
-        // FROM liquidation,advances_entries,payee,
-        // chart_of_accounts,sub_accounts1
-        // WHERE liquidation.advances_id = advances_entries.id
-        // AND liquidation.payee_id = payee.id
-        // AND liquidation.chart_of_account_id = chart_of_accounts.id
-        // AND advances_entries.sub_account1_id = sub_accounts1.id
-        $query1 = (new \yii\db\Query())
-            ->select([
-                'liquidation.id',
-                'liquidation.check_date',
-                'liquidation.check_number',
-                'liquidation.is_cancelled',
-                'liquidation.dv_number',
-                'liquidation.reporting_period',
-                'advances.particular as fund_source',
-                'payee.account_name as payee',
-                'liquidation.particular',
-                'chart_of_accounts.uacs as gl_object_code',
-                'chart_of_accounts.general_ledger as gl_account_title',
-                'advances_entries.amount',
-                'liquidation.withdrawals',
-                'liquidation.vat_nonvat',
-                'liquidation.ewt_goods_services',
-                'advances.report_type',
-                'sub_accounts1.object_code as sl_object_code',
-                'sub_accounts1.name as sl_account_title',
 
-            ])
-            ->from('liquidation')
-            ->join('LEFT JOIN', 'advances_entries', 'liquidation.advances_entries_id = advances_entries.id')
-            ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
-            ->join('LEFT JOIN', 'chart_of_accounts', 'liquidation.chart_of_account_id = chart_of_accounts.id')
-            ->join('LEFT JOIN', 'sub_accounts1', 'advances_entries.sub_account1_id = sub_accounts1.id')
-            ->join('LEFT JOIN', 'payee', 'liquidation.payee_id = payee.id');
-        // ->all();
-
-
-        $query2 = (new \yii\db\Query())
-            ->select(
-                [
-                    'advances_entries.id',
-                    'cash_disbursement.issuance_date',
-                    'cash_disbursement.check_or_ada_no',
-                    'cash_disbursement.is_cancelled',
-                    'dv_aucs.dv_number',
-                    'cash_disbursement.reporting_period',
-                    'advances.particular as fund_source',
-                    'payee.account_name as payee',
-                    'dv_aucs.particular',
-                    new Expression('NULL as gl_object_code'),
-                    new Expression('NULL as gl_account_title'),
-                    'advances_entries.amount',
-                    new Expression('NULL as withdrawals'),
-                    new Expression('NULL as vat_nonvat'),
-                    new Expression('NULL as ewt_goods_services'),
-                    'advances.report_type',
-                    'sub_accounts1.object_code as sl_object_code',
-                    'sub_accounts1.name as sl_account_title'
-                ]
-
-            )
-            ->from('advances_entries')
-            ->join("LEFT JOIN", 'cash_disbursement', 'advances_entries.cash_disbursement_id=cash_disbursement.id')
-            ->join("LEFT JOIN", 'sub_accounts1', 'advances_entries.sub_account1_id=sub_accounts1.id')
-            ->join("LEFT JOIN", 'dv_aucs', 'cash_disbursement.dv_aucs_id=dv_aucs.id')
-            ->join("LEFT JOIN", 'advances', 'advances_entries.advances_id=advances.id')
-            ->join("LEFT JOIN", 'payee', 'dv_aucs.payee_id=payee.id');
-        // ->all();
-        $query1->union($query2);
-        $query3 = (new \yii\db\Query())
-            ->select('*')
-            ->from('advances_liquidation');
-        $query4 = AdvancesLiquidation::find();
-        $query = Liquidation::find()->select('*')->from(['random_name' => $query1]);
 
         $searchModel = new AdvancesLiquidationSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        // return $this->render('index', [
-        //     'searchModel' => $searchModel,
-        //     'dataProvider' => $dataProvider,
-        // ]);
-        // $dataProvider = new ActiveDataProvider([
-        //     'query' => $query4,
-
-        // ]);
-
-        // ob_clean();
-        // echo "<pre>";
-        // var_dump($query3);
-        // echo "</pre>";
-        // return ob_get_clean();
-        //Search filters and grid filters can go here
 
 
         return $this->render('advances_liquidation', [
@@ -588,7 +569,53 @@ class ReportController extends \yii\web\Controller
     }
     public function actionCdr()
     {
-        return $this->render('cdr');
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $book_name  = $_POST['book'];
+            $province = $_POST['province'];
+            $report_type = $_POST['report_type'];
+
+            $query = (new \yii\db\Query())
+                ->select('*')
+                ->from('advances_liquidation')
+                ->where('reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+                ->andWhere('book_name =:book_name', ['book_name' => $book_name])
+                ->andWhere('province LIKE :province', ['province' => $province])
+                ->andWhere('report_type LIKE :report_type', ['report_type' => $report_type])
+                ->all();
+                $result = ArrayHelper::index($query, null, 'gl_object_code');
+                $consolidated=[];
+                foreach($result as $key =>$res){ 
+                    $total=0;
+                    $account_title='';
+                    foreach($res as $data){
+                        $total+=(int)$data['withdrawals'];
+                    }
+
+                    $consolidated[]=[
+                        'object_code'=>$key,
+                        'account_title'=>$res[0]['gl_account_title'],
+                        'total'=>$total];
+                    
+                }
+            // ob_clean();
+            // echo "<pre>";
+            // var_dump($arr);
+            // echo "</pre>";
+
+            // return ob_get_clean();
+            return $this->render('cdr', [
+                'dataProvider' => $query,
+                'reporting_period' => $reporting_period,
+                'province' => $province,
+                'consolidated'=>$consolidated,
+                'book'=>$book_name
+
+            ]);
+        } else {
+
+            return $this->render('cdr');
+        }
     }
     
 }

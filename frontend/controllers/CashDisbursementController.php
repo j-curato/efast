@@ -9,6 +9,7 @@ use app\models\DvAccountingEntries;
 use app\models\DvAucs;
 use app\models\DvAucsEntries;
 use DateTime;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -24,6 +25,46 @@ class CashDisbursementController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'create',
+                    'update',
+                    'delete',
+                    'view',
+                    'insert-cash-disbursement',
+                    'import',
+                    'get-all-dv',
+                    'get-cash-disbursement',
+                    'cancel',
+                    // actionInsertCashDisbursement
+                    //                     actionImport
+                    // actionGetAllDv
+                    // actionGetDv
+                    // actionGetCashDisbursement
+                    // actionCancel
+                ],
+
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'create',
+                            'update',
+                            'delete',
+                            'view',
+                            'insert-cash-disbursement',
+                            'import',
+                            'get-all-dv',
+                            'get-cash-disbursement',
+                            'cancel',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -109,7 +150,7 @@ class CashDisbursementController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        // $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
     }

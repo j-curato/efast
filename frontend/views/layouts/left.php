@@ -170,11 +170,12 @@
                             ['label' => "Pending DV's", 'icon' => 'circle-o', 'url' => ['/report/pending-dv'],],
                             ['label' => 'UnObligated Transaction', 'icon' => 'circle-o', 'url' => ['/report/unobligated-transaction'],],
                             ['label' => 'UnPaid Obligation', 'icon' => 'circle-o', 'url' => ['/report/unpaid-obligation'],],
-                            ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/report/cibr'],],
                             ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/report/saob'],],
                             ['label' => 'Advances', 'icon' => 'circle-o', 'url' => ['/advances'],],
                             ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ['/liquidation'],],
                             ['label' => 'Advances/Liquidation', 'icon' => 'circle-o', 'url' => ['/report/advances-liquidation'],],
+                            ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/report/cibr'],],
+                            ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/report/cdr'],],
 
                         ],
                     ],

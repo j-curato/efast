@@ -76,6 +76,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php
     $exportColumns = [
         'id',
+   
         'reporting_period',
         [
             'label' => 'Date',
@@ -133,6 +134,10 @@ $this->params['breadcrumbs'][] = $this->title;
     $gridColumns = [
 
         'id',
+        // [
+        //     'label' => 'ID',
+        //     'value' => "processOrs.id"
+        // ],
 
         [
             'label' => 'BURS Number',
