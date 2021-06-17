@@ -275,12 +275,14 @@ class DvAucsController extends Controller
                 ->select("book_id")
                 ->from('process_ors')
                 ->where("$sql", $params)
+                ->distinct('book_id')
                 ->all();
             $x = [];
             foreach ($ors as $o) {
                 $x[] = $o['book_id'];
             }
-            $y = array_unique($ors);
+            // $y = array_unique($ors);
+            $y = array_unique($x);
             if (count($y) > 1) {
                 return json_encode(['isSuccess' => false, 'error' => "bawal lain2 og book number"]);
             }
@@ -288,7 +290,8 @@ class DvAucsController extends Controller
             if ($transaction_type === 'no ors') {
                 $book_id = $_POST['book'];
             } else {
-                $book_id = $y[0]['book_id'];
+                // $book_id = $y[0]['book_id'];
+                $book_id = $y[0];
                 // return json_encode(['isSuccess' => false, 'error' => $y[0]['book_id']]);
             }
 
@@ -428,17 +431,22 @@ class DvAucsController extends Controller
     {
         // $reporting_period = "2021-01";
         // $book_id=5;
+        $latest_dv=Yii::$app->db->createCommand("SELECT substring_index(substring(dv_number, instr(dv_number, '-')+9), ' ', 1) as q 
+        from dv_aucs
+        
+        ORDER BY q DESC  LIMIT 1")->queryScalar();
         !empty($book_id) ? $book_id : $book_id = 5;
-        $latest_dv = (new \yii\db\Query())
-            ->select('dv_number')
-            ->from('dv_aucs')
-            ->orderBy('id DESC')
-            ->one();
+        // $latest_dv = (new \yii\db\Query())
+        //     ->select('dv_number')
+        //     ->from('dv_aucs')
+        //     ->orderBy('id DESC')
+        //     ->one();
         $book = Books::findOne($book_id);
         $dv_number = $book->name . '-' . $reporting_period;
 
         if (!empty($latest_dv)) {
-            $last_number = explode('-', $latest_dv['dv_number'])[3] + 1;
+            // $last_number = explode('-', $latest_dv['dv_number'])[3] + 1;
+            $last_number = (int) $latest_dv+ 1;
         } else {
             $last_number = 1;
         }

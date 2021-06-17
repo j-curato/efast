@@ -390,7 +390,7 @@ class ProcessBursController extends Controller
                                             $transaction->rollBack();
                                             return json_encode(['error' => $raoud_entry->errors]);
                                         }
-                                    } 
+                                    }
                                 } else {
 
                                     $transaction->rollBack();
@@ -416,19 +416,23 @@ class ProcessBursController extends Controller
     public function getBursSerialNumber($reporting_period, $book_id)
     {
         $book = Books::findOne($book_id);
-        $query = (new \yii\db\Query())
-            ->select("process_ors.serial_number")
-            ->from('process_ors')
-            ->where("process_ors.type=:type",['type'=>'burs'])
-            ->orderBy("id DESC")
-            ->one();
+        // $query = (new \yii\db\Query())
+        //     ->select("process_ors.serial_number")
+        //     ->from('process_ors')
+        //     ->where("process_ors.type=:type",['type'=>'burs'])
+        //     ->orderBy("id DESC")
+        //     ->one();
+        $query = Yii::$app->db->createCommand("SELECT substring_index(substring(serial_number, instr(serial_number, '-')+9), ' ', 1) as q 
+        from process_ors
+        where type ='burs'
+        ORDER BY q DESC  LIMIT 1")->queryScalar();
         // $reporting_period = "2021-01";
         $year = date('Y', strtotime($reporting_period));
-        if (empty($query['serial_number'])) {
+        if (empty($query)) {
             $x = 1;
         } else {
-            $last_number = explode('-', $query['serial_number']);
-            $x = intval($last_number[3]) + 1;
+            // $last_number = explode('-', $query['serial_number']);
+            $x = (int)$query + 1;
         }
 
         $y = '';
