@@ -4,6 +4,7 @@ namespace frontend\components;
 
 use app\models\Books;
 use app\models\FundClusterCode;
+use Yii;
 use yii\base\Component;
 
 class MyComponent extends Component
@@ -107,5 +108,22 @@ class MyComponent extends Component
 
         ];
         return $prov[$province];
+    }
+    public function cdrFilterQuery($reporting_period, $book_name, $province, $report_type)
+    {
+        $query = (new \yii\db\Query())
+            ->select('id,is_final')
+            ->from('cdr')
+            ->where('reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+            ->andWhere('book_name =:book_name', ['book_name' => $book_name])
+            ->andWhere('province LIKE :province', ['province' => $province])
+            ->andWhere('report_type LIKE :report_type', ['report_type' => $report_type])
+            ->orderBy('reporting_period')
+            ->one();
+        if (!empty($query)) {
+            return $query;
+        } else {
+            return '';
+        }
     }
 }

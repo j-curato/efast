@@ -19,10 +19,7 @@ $this->title = "CDR";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index" style="background-color: white;">
-    <?php
 
-
-    ?>
 
     <form id='filter'>
         <div class="row">
@@ -33,6 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 echo DatePicker::widget([
                     'id' => 'reporting_period',
                     'name' => 'reporting_period',
+                    'value' => !empty($model->reporting_period) ? $model->reporting_period : '',
                     'pluginOptions' => [
                         'autoclose' => true,
                         'startView' => 'months',
@@ -48,6 +46,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 echo Select2::widget([
                     'name' => 'province',
                     'id' => 'province',
+                    'value' => !empty($model->province) ? $model->province : '',
                     'data' => [
                         'adn' => 'ADN',
                         'ads' => 'ADS',
@@ -69,6 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 echo Select2::widget([
                     'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'name', 'name'),
                     'id' => 'book',
+                    'value' => !empty($model->book_name) ? $model->book_name : '',
                     'name' => 'book',
                     'pluginOptions' => [
                         'placeholder' => 'Select Book'
@@ -85,6 +85,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'Advances for Operating Expenses' => 'OPEX',
                         'Advances to Special Disbursing Officer' => 'SDO'
                     ],
+                    'value' => !empty($model->report_type) ? $model->report_type : '',
                     'name' => 'report_type',
                     'id' => 'report_type',
                     'pluginOptions' => [
@@ -104,8 +105,21 @@ $this->params['breadcrumbs'][] = $this->title;
 
         ?>
 
-        <button class='btn btn-success' id='cdr_jev'>jev</button>
-        <button class='btn btn-success' id='save'>Save</button>
+
+        <?php
+        if (empty($model->id)) {
+            echo "<button class='btn btn-success' id='save'>Save</button>";
+            // echo "<input type='text' value='$model->is_final'>";
+
+
+        } else {
+            if ($model->is_final === 1) {
+                echo "  <button class='btn btn-success' id='cdr_jev'>jev</button>";
+                echo "  <input type='text' id='cdr_id' value='$model->id'>";
+            }
+        }
+
+        ?>
     </div>
 
     <?php Pjax::begin(['id' => 'cibr', 'clientOptions' => ['method' => 'POST']]) ?>
@@ -121,18 +135,8 @@ $this->params['breadcrumbs'][] = $this->title;
         $officer = $prov['officer'];
         $location = $prov['location'];
     }
-    $cdr_id = 0;
-    if (!empty($cdr)) {
-        $cdr_id = $cdr['id'];
 
-        if ((int)$cdr['is_final'] === 0) {
-            echo " <button class='btn btn-success' id='final'>Final CDR</button>";
-        }
-    }
-    if (empty($cdr) && !empty($province)) {
-    }
 
-    echo "<input type='text' value='$cdr_id'>";
 
     ?>
     <table>
@@ -159,7 +163,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <td colspan="3" class="header">
                 <span>
                     Sheet No. :___________________
-                </span> 
+                </span>
             </td>
         </tr>
         <tr style="border:1px solid white">
@@ -467,17 +471,23 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/jquery.dataTables.js", 
 <?php
 SweetAlertAsset::register($this);
 $script = <<< JS
-
-        $('#generate').click(function(e){
-            e.preventDefault();
-            
+        function generatData(){
             $.pjax({
                 container:'#cibr',
                 type:'POST',
-                url:window.location.pathname +"?r=report/cdr",
+                url:window.location.pathname +"?r=cdr/cdr",
                 data:$("#filter").serialize()
             })
+        }
+        $(document).ready(function(){
+            if ($("#cdr_id").val()>0){
+                generatData()
+            }
         })
+        $('#generate').click(function(e){
+            e.preventDefault();
+        })
+        
         // $("#cibr").on("pjax:success", function(data) {
         //     //     var res= JSON.parse(data)
         //     console.log(data)
@@ -498,7 +508,7 @@ $script = <<< JS
         $("#cdr_jev").click(function(e){
             // e.preventDefault();
             
-            window.location.href = window.location.pathname + '?r=jev-preparation/cdr-jev&' +$('#filter').serialize()
+            window.location.href = window.location.pathname + '?r=jev-preparation/cdr-jev&id=' + $('#cdr_id').val()
             // window.location.href = window.location.pathname + '?r=jev-preparation/cdr-jev&reporting_period=' + $('#reporting_period').val()
             // $.ajax({
             //     type:'POST',

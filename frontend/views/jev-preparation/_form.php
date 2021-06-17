@@ -24,6 +24,9 @@ use yii\helpers\ArrayHelper;
             }
             echo " <input type='text' id='update_id' name='update_id'  value='$q' style='display:none'>";
             // echo " <input type='text' id='duplicate' name='duplicate'  value='$duplicate' style='display:none'>";
+            if (!empty($type)) {
+                echo " <input type='text' id='type' name='type'  value='$type' style='display:none'>";
+            }
             ?>
             <div class="row">
                 <div class="col-sm-3">
@@ -874,9 +877,10 @@ $script = <<< JS
     })
      $(document).ready(function() {
         update_id = $('#update_id').val();
+        var type = $('#type').val();
         // KUNG NAAY SULOD ANG UPDATE ID KUHAON ANG IYANG MGA DATA
-        if (update_id > 0) {
-        $('#container').hide();
+        if (update_id > 0 && type=='update') {
+                 $('#container').hide();
 
                 $.ajax({
                     url: window.location.pathname + '?r=jev-preparation/update-jev',
@@ -942,7 +946,42 @@ $script = <<< JS
                 })
             }
 
+            if (update_id >0 && type=='cdr'){
+               $.ajax({
+                   type:"POST",
+                   url:window.location.pathname + "?r=report/get-cdr",
+                   data:{id:update_id},
+                   success:function(data){
+                    var x=0 
+                    var debit_value=0
+                       var res= JSON.parse(data).result
+                    //    console.log(accounts)
+                       for (x; x<res.length;x++){
+                            debit_value = parseInt(res[x]['total_withdrawals']) + parseInt(res[x]['total_vat'])+parseInt(res[x]['total_expanded'])
+                            $("#debit-"+x).val(debit_value)
+                            // $("#credit-"+x).val(jev_accounting_entries[x]['credit'])
+                            // var chart = jev_accounting_entries[x]['id'] +"-" +jev_accounting_entries[x]['object_code']+"-"+jev_accounting_entries[x]['lvl']
+                            
+                            // var cashflow = jev_accounting_entries[x]['cashflow_id'];
+                            // var net_asset= jev_accounting_entries[x]['net_asset_equity_id'];
+                            $("#chart-"+x).val(res[x]['code']).trigger('change');
+                            // $("#isEquity-"+x).val(jev_accounting_entries[x]['net_asset_equity_id']).trigger('change');
+                            // $("#cashflow-"+x).val(cashflow).trigger('change');
+                            if ($( "#cashflow-"+x ).length ){
+                            }
+                            else{
+                            }
+                            if (x < res.length -1){
+                                add()
+                            }
+                        }
+                        getTotal()
+                   }
+               })
+            }
         })
+
+    
 
     JS;
 $this->registerJs($script);

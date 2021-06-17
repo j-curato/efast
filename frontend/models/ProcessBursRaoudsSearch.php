@@ -17,8 +17,8 @@ class ProcessBursRaoudsSearch extends Raouds
     public function rules()
     {
         return [
-            [['id', 'record_allotment_entries_id', 'isActive', 'is_parent',  'mandatory_reserve_id'], 'integer'],
-            [['serial_number', 'reporting_period', 'process_ors_id'], 'safe'],
+            [[ 'record_allotment_entries_id', 'isActive', 'is_parent',  'mandatory_reserve_id'], 'integer'],
+            [['serial_number', 'reporting_period', 'process_ors_id','id'], 'safe'],
             [['obligated_amount', 'burs_amount'], 'number'],
         ];
     }
@@ -61,7 +61,6 @@ class ProcessBursRaoudsSearch extends Raouds
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
             'record_allotment_entries_id' => $this->record_allotment_entries_id,
             'obligated_amount' => $this->obligated_amount,
             'isActive' => $this->isActive,
@@ -71,8 +70,8 @@ class ProcessBursRaoudsSearch extends Raouds
             'mandatory_reserve_id' => $this->mandatory_reserve_id,
         ]);
 
-        $query->andFilterWhere(['like', 'serial_number', $this->serial_number])
-            ->andFilterWhere(['like', 'process_ors.serial_number', $this->process_ors_id])
+        $query
+            ->andFilterWhere(['like', 'process_ors.serial_number', $this->id])
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period]);
 
         return $dataProvider;

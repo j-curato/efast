@@ -4,6 +4,8 @@ namespace frontend\controllers;
 
 use app\models\AdvancesLiquidation;
 use app\models\AdvancesLiquidationSearch;
+use app\models\Cdr;
+use app\models\DvAucs;
 use app\models\JevAccountingEntries;
 use app\models\Liquidation;
 use app\models\SubAccounts1;
@@ -577,8 +579,21 @@ class ReportController extends \yii\web\Controller
             $province = $_POST['province'];
             $report_type = $_POST['report_type'];
 
+            $cdr = Yii::$app->memem->cdrFilterQuery($reporting_period, $book_name, $province, $report_type);
             $query = (new \yii\db\Query())
-                ->select('*')
+                ->select(
+                    'check_date,
+                    check_number,
+                    particular,
+                    amount,
+                    withdrawals,
+                    gl_object_code,
+                    gl_account_title,
+                    reporting_period,
+                    vat_nonvat,
+                    expanded_tax
+                '
+                )
                 ->from('advances_liquidation')
                 ->where('reporting_period <=:reporting_period', ['reporting_period' => $reporting_period])
                 ->andWhere('book_name =:book_name', ['book_name' => $book_name])
@@ -598,34 +613,244 @@ class ReportController extends \yii\web\Controller
 
             // return ob_get_clean();
             $consolidated = [];
-            foreach ($result[$reporting_period] as $key => $res) {
-                $total = 0;
-                $account_title = '';
-       
-                foreach ($res as $data) {
-                    $total += (int)$data['withdrawals'];
+            if (!empty($result[$reporting_period])) {
 
-                 
+                foreach ($result[$reporting_period] as $key => $res) {
+                    $total = 0;
+                    $vat_nonvat = 0;
+                    $expanded_tax = 0;
+                    $account_title =  $res[0]['gl_account_title'];
+
+                    foreach ($res as $data) {
+                        $total += (float)$data['withdrawals'];
+                        $vat_nonvat += (float)$data['vat_nonvat'];
+                        $expanded_tax += (float)$data['expanded_tax'];
+                    }
+
+                    $consolidated[] = [
+                        'object_code' => $key,
+                        'account_title' => $account_title,
+                        'total' => $total,
+                        'vat_nonvat' => $vat_nonvat,
+                        'expanded_tax' => $expanded_tax,
+                        'gross_amount' => $total + $vat_nonvat + $expanded_tax
+                    ];
                 }
-
-                $consolidated[] = [
-                    'object_code' => $key,
-                    'account_title' => $res[0]['gl_account_title'],
-                    'total' => $total
-                ];
             }
 
+            // ob_clean();
+            // echo "<pre>";
+            // var_dump($consolidated);
+            // echo "</pre>";
+
+            // return ob_get_clean();
+            // return json_encode($cdr);
             return $this->render('cdr', [
                 'dataProvider' => $query,
                 'reporting_period' => $reporting_period,
                 'province' => $province,
                 'consolidated' => $consolidated,
-                'book' => $book_name
+                'book' => $book_name,
+                'cdr' => $cdr
+
 
             ]);
+
         } else {
 
             return $this->render('cdr');
+        }
+    }
+
+    public function actionInsertCdr()
+    {
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $province = $_POST['province'];
+            $book_name = $_POST['book'];
+            $report_type = $_POST['report_type'];
+            $query = (new \yii\db\Query())
+                ->select('id')
+                ->from('cdr')
+                ->where('reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+                ->andWhere('province LIKE :province', ['province' => $province])
+                ->andWhere('book_name LIKE :book_name', ['book_name' => $book_name])
+                ->andWhere('report_type LIKE :report_type', ['report_type' => $report_type])
+                ->one();
+            if (!empty($query)) {
+                return json_encode(['isSuccess' => false, 'error' => 'na save na ']);
+            }
+            $cdr = new Cdr();
+            $cdr->reporting_period = $reporting_period;
+            $cdr->province = $province;
+            $cdr->book_name = $book_name;
+            $cdr->report_type = $report_type;
+
+            if ($cdr->validate()) {
+                if ($cdr->save(false)) {
+                    return json_encode(['isSuccess' => true,]);
+                }
+            } else {
+                return json_encode(['isSuccess' => false, 'error' => $cdr->errors]);
+            }
+        }
+    }
+    public function actionGetCdr()
+
+    {
+        if ($_POST) {
+            $id = $_POST['id'];
+
+            $cdr  = Cdr::findOne($id);
+            // $query = (new \yii\db\Query())
+            //     ->select('id')
+            //     ->from('cdr')
+            //     ->where('reporting_period =:reporting_period', ['reporting_period' => $cdr->reporting_period])
+            //     ->andWhere('province LIKE :province', ['province' => $cdr->province])
+            //     ->andWhere('book_name LIKE :book_name', ['book_name' => $cdr->book_name])
+            //     ->andWhere('report_type LIKE :report_type', ['report_type' => $cdr->report_type])
+            //     ->one();
+
+            $q = Yii::$app->db->createCommand("SELECT  gl_object_code, gl_account_title,
+                reporting_period, vat_nonvat, expanded_tax,
+                ROUND(SUM(expanded_tax),2) as total_expanded,
+                ROUND(SUM(vat_nonvat),2) as total_vat,
+                ROUND(SUM(withdrawals),2) as total_withdrawals,
+                CONCAT(chart_of_accounts.id,'-',chart_of_accounts.uacs,'-',1) as code
+                FROM advances_liquidation,chart_of_accounts
+                WHERE 
+                advances_liquidation.gl_object_code = chart_of_accounts.uacs
+                AND(reporting_period = :reporting_period) 
+                AND (book_name = :book_name)
+                AND (province LIKE :province) 
+                AND (report_type LIKE :report_type)
+                GROUP BY gl_object_code
+            ")
+                ->bindValue(':reporting_period', $cdr->reporting_period)
+                ->bindValue(':book_name', $cdr->book_name)
+                ->bindValue(':province', $cdr->province)
+                ->bindValue(':report_type', $cdr->report_type)
+                ->queryAll();
+            // $query2 = (new \yii\db\Query())
+            //     ->select(' gl_object_code, gl_account_title,
+            //     reporting_period, vat_nonvat, expanded_tax,
+            //         SUM(expanded_tax) as total_expanded,
+            //     SUM(vat_nonvat) as total_vat,
+            //     SUM(withdrawals) as total_withdrawals ')
+            //     ->from('advances_liquidation')
+            //     ->where('reporting_period =:reporting_period', $cdr->reporting_period)
+            //     ->andWhere('province LIKE :province', $cdr->province)
+            //     ->andWhere('book_name = :book_name', $cdr->book_name)
+            //     ->andWhere('report_type LIKE :report_type', $cdr->report_type)
+            //     ->groupBy('gl_object_code')
+            //     ->all();
+            if (!empty($cdr)) {
+                return json_encode(['result' => $q]);
+            }
+        }
+    }
+
+    public function actionTemp()
+    {
+        return $this->render('temp');
+    }
+    public function actionTempImport()
+    {
+        if (!empty($_POST)) {
+            // $chart_id = $_POST['chart_id'];
+            $name = $_FILES["file"]["name"];
+            // var_dump($_FILES['file']);
+            // die();
+            $id = uniqid();
+            $file = "transaction/{$id}_{$name}";
+            if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
+            } else {
+                return "ERROR 2: MOVING FILES FAILED.";
+                die();
+            }
+            $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+            $excel = $reader->load($file);
+            $excel->setActiveSheetIndexByName('qwe');
+            $worksheet = $excel->getActiveSheet();
+            // print_r($excel->getSheetNames());
+
+            $data = [];
+            $transaction = Yii::$app->db->beginTransaction();
+            foreach ($worksheet->getRowIterator(2) as $key => $row) {
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                $cells = [];
+                $y = 0;
+                foreach ($cellIterator as $x => $cell) {
+                    $q = '';
+
+                    $cells[] =   $cell->getValue();
+                }
+                if (!empty($cells)) {
+
+                    // $dv = trim($cells[1]);
+
+
+                    // $q = (new \yii\db\Query())
+                    //     ->select('id')
+                    //     ->from('dv_aucs')
+                    //     ->where("dv_number LIKE :dv_number", ['dv_number', "%".$dv])
+                    //     ->one();
+                    $dv = '%' . trim($cells[1]);
+                    $q = Yii::$app->db->createCommand("SELECT id  FROM dv_aucs where dv_number LIKE :dv")
+                        ->bindValue(':dv', $dv)
+                        ->queryScalar();
+                    $w = DvAucs::findOne($q);
+                    // Fund 01-2021-06-0956
+                    $x = explode('-', $w->dv_number);
+                    unset($x[3]);
+                    array_push($x, $cells[0]);
+                    $y = implode('-', $x);
+                    $w->dv_number = $y;
+                    // $w->dv_number =$dv_number;
+                    // ob_clean();
+                    // echo "<pre>";
+                    // var_dump();
+                    // echo "</pre>";
+                    // return ob_get_clean();
+                    // die();
+                    $data[] = [
+                        'id' => $q,
+                        'to' => $cells[0],
+                        'from' => $cells[1],
+                    ];
+                }
+                // if ($key === 1) {
+                //     ob_clean();
+                //     echo "<pre>";
+                //     var_dump($dv);
+                //     echo "</pre>";
+                //     return ob_get_clean();
+                // }
+            }
+            $qwe = [];
+            foreach ($data as $d) {
+                $s = DvAucs::findOne((int)$d['id']);
+                $x = explode('-', $w->dv_number);
+                unset($x[3]);
+                array_push($x, $d['to']);
+                $y = implode('-', $x);
+                $s->dv_number = $y;
+                $qwe[] = $s->dv_number;
+                if ($s->save(false)) {
+                }
+                // var_dump($d['id']);
+            }
+            $transaction->commit();
+
+
+            // return json_encode(['isSuccess' => true]);
+            ob_clean();
+            echo "<pre>";
+            var_dump($qwe);
+            echo "</pre>";
+            return ob_get_clean();
         }
     }
 }

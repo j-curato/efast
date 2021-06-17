@@ -382,7 +382,8 @@ class JevPreparationController extends Controller
         // ]);
         if (Yii::$app->user->can('create-jev')) {
             return $this->render('create', [
-                'model' => ''
+                'model' => '',
+                'type' => 'create'
             ]);
         } else {
             throw new ForbiddenHttpException();
@@ -455,6 +456,7 @@ class JevPreparationController extends Controller
             }
             return $this->render('_form', [
                 'model' => $id,
+                'type' => 'update'
                 // 'modelJevItems' => (empty($modelJevItems)) ? [new JevAccountingEntries] : $modelJevItems
             ]);
         } else {
@@ -1619,38 +1621,38 @@ class JevPreparationController extends Controller
         $begining_reporting_period = JevPreparation::find()->orderBy('reporting_period ASC')->one()->reporting_period;
         $begining_month = $x[0] . '-01';
         $q = Yii::$app->db->createCommand("SELECT * from 
-    (SELECT chart_of_accounts.account_group,chart_of_accounts.uacs,chart_of_accounts.general_ledger,
-    chart_of_accounts.current_noncurrent,major_accounts.name,chart_of_accounts.normal_balance,
-    
-    jev_preparation.reporting_period,
-    SUM(jev_accounting_entries.debit) as total_debit, SUM(jev_accounting_entries.credit) as total_credit
-    FROM jev_accounting_entries,jev_preparation,chart_of_accounts,major_accounts
+            (SELECT chart_of_accounts.account_group,chart_of_accounts.uacs,chart_of_accounts.general_ledger,
+            chart_of_accounts.current_noncurrent,major_accounts.name,chart_of_accounts.normal_balance,
+            
+            jev_preparation.reporting_period,
+            SUM(jev_accounting_entries.debit) as total_debit, SUM(jev_accounting_entries.credit) as total_credit
+            FROM jev_accounting_entries,jev_preparation,chart_of_accounts,major_accounts
 
-    WHERE jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
-    AND jev_accounting_entries.jev_preparation_id = jev_preparation.id
-    AND chart_of_accounts.major_account_id = major_accounts.id
-    AND chart_of_accounts.account_group IN ('Assets','Liabilities','Equity')
-    AND jev_preparation.reporting_period BETWEEN :begining_month AND :reporting_period
-    AND jev_preparation.book_id = :book_id    
-    GROUP BY chart_of_accounts.account_group,chart_of_accounts.major_account_id,chart_of_accounts.uacs
-    ORDER BY chart_of_accounts.account_group,chart_of_accounts.current_noncurrent,chart_of_accounts.major_account_id) as r1
+            WHERE jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
+            AND jev_accounting_entries.jev_preparation_id = jev_preparation.id
+            AND chart_of_accounts.major_account_id = major_accounts.id
+            AND chart_of_accounts.account_group IN ('Assets','Liabilities','Equity')
+            AND jev_preparation.reporting_period BETWEEN :begining_month AND :reporting_period
+            AND jev_preparation.book_id = :book_id    
+            GROUP BY chart_of_accounts.account_group,chart_of_accounts.major_account_id,chart_of_accounts.uacs
+            ORDER BY chart_of_accounts.account_group,chart_of_accounts.current_noncurrent,chart_of_accounts.major_account_id) as r1
 
-    LEFT JOIN
-    
-    (SELECT chart_of_accounts.uacs,
-    SUM(jev_accounting_entries.debit) as last_year_total_debit, SUM(jev_accounting_entries.credit) as last_year_total_credit
-    FROM jev_accounting_entries,jev_preparation,chart_of_accounts,major_accounts
-    WHERE jev_accounting_entries.chart_of_account_id = chart_of_accounts.id 
-    AND jev_accounting_entries.jev_preparation_id = jev_preparation.id
-    AND chart_of_accounts.major_account_id = major_accounts.id
-    AND chart_of_accounts.account_group IN ('Assets','Liabilities','Equity')
-    AND jev_preparation.reporting_period BETWEEN  :begining_reporting_period AND :reporting_period
-    AND jev_preparation.book_id = :book_id
-    GROUP BY chart_of_accounts.account_group,chart_of_accounts.major_account_id,chart_of_accounts.uacs
-    ORDER BY chart_of_accounts.account_group,chart_of_accounts.current_noncurrent,chart_of_accounts.major_account_id) as r2
+            LEFT JOIN
+            
+            (SELECT chart_of_accounts.uacs,
+            SUM(jev_accounting_entries.debit) as last_year_total_debit, SUM(jev_accounting_entries.credit) as last_year_total_credit
+            FROM jev_accounting_entries,jev_preparation,chart_of_accounts,major_accounts
+            WHERE jev_accounting_entries.chart_of_account_id = chart_of_accounts.id 
+            AND jev_accounting_entries.jev_preparation_id = jev_preparation.id
+            AND chart_of_accounts.major_account_id = major_accounts.id
+            AND chart_of_accounts.account_group IN ('Assets','Liabilities','Equity')
+            AND jev_preparation.reporting_period BETWEEN  :begining_reporting_period AND :reporting_period
+            AND jev_preparation.book_id = :book_id
+            GROUP BY chart_of_accounts.account_group,chart_of_accounts.major_account_id,chart_of_accounts.uacs
+            ORDER BY chart_of_accounts.account_group,chart_of_accounts.current_noncurrent,chart_of_accounts.major_account_id) as r2
 
-    ON (r1.uacs = r2.uacs)
-    ")
+            ON (r1.uacs = r2.uacs)
+            ")
             ->bindValue(':book_id', intval($book_id))
             ->bindValue(':reporting_period', $reporting_period)
             ->bindValue(':reporting_period_last_year', $reporting_period_last_year)
@@ -2580,5 +2582,15 @@ class JevPreparationController extends Controller
             // return json_encode($file);
             // exit;
         }
+    }
+
+    public function actionCdrJev($id)
+
+    {
+        return $this->render('create', [
+            'model' => $id,
+            'type' => 'cdr',
+
+        ]);
     }
 }
