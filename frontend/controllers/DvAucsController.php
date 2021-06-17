@@ -431,17 +431,22 @@ class DvAucsController extends Controller
     {
         // $reporting_period = "2021-01";
         // $book_id=5;
+        $latest_dv=Yii::$app->db->createCommand("SELECT substring_index(substring(dv_number, instr(dv_number, '-')+9), ' ', 1) as q 
+        from dv_aucs
+        
+        ORDER BY q DESC  LIMIT 1")->queryScalar();
         !empty($book_id) ? $book_id : $book_id = 5;
-        $latest_dv = (new \yii\db\Query())
-            ->select('dv_number')
-            ->from('dv_aucs')
-            ->orderBy('id DESC')
-            ->one();
+        // $latest_dv = (new \yii\db\Query())
+        //     ->select('dv_number')
+        //     ->from('dv_aucs')
+        //     ->orderBy('id DESC')
+        //     ->one();
         $book = Books::findOne($book_id);
         $dv_number = $book->name . '-' . $reporting_period;
 
         if (!empty($latest_dv)) {
-            $last_number = explode('-', $latest_dv['dv_number'])[3] + 1;
+            // $last_number = explode('-', $latest_dv['dv_number'])[3] + 1;
+            $last_number = (int) $latest_dv+ 1;
         } else {
             $last_number = 1;
         }

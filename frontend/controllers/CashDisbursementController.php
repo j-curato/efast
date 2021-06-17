@@ -118,6 +118,7 @@ class CashDisbursementController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'type' => 'create'
         ]);
     }
 
@@ -138,6 +139,7 @@ class CashDisbursementController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'type' => 'update'
         ]);
     }
 
@@ -211,16 +213,23 @@ class CashDisbursementController extends Controller
                     return json_encode(["error" => "Select Type is Cancelled "]);
                     die();
                 }
+            } else if (empty($good_cancelled)) {
+                return json_encode(["error" => "Good/Cancelled is Required "]);
+                die();
             }
             // SELECT * FROM `cash_disbursement` WHERE cash_disbursement.dv_aucs_id=6697;
-            $query = (new \yii\db\Query)
-                ->select("cash_disbursement.id")
-                ->from("cash_disbursement")
-                ->where("cash_disbursement.dv_aucs_id = :dv_aucs_id", ['dv_aucs_id' => $selected_items[0]])
-                ->one();
-            if (!empty($query)) {
-                return json_encode(['isSuccess' => 'exist', 'id' => $query['id']]);
+            if (empty($_POST['update_id'])) {
+                $query = (new \yii\db\Query)
+                    ->select("cash_disbursement.id")
+                    ->from("cash_disbursement")
+                    ->where("cash_disbursement.dv_aucs_id = :dv_aucs_id", ['dv_aucs_id' => $selected_items[0]])
+                    ->one();
+                if (!empty($query)) {
+                    return json_encode(['isSuccess' => 'exist', 'id' => $query['id']]);
+                }
             }
+
+
 
             $cd->book_id = $book_id;
             $cd->reporting_period = $reporting_period;
