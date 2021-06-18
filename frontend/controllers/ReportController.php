@@ -716,7 +716,8 @@ class ReportController extends \yii\web\Controller
                 ROUND(SUM(expanded_tax),2) as total_expanded,
                 ROUND(SUM(vat_nonvat),2) as total_vat,
                 ROUND(SUM(withdrawals),2) as total_withdrawals,
-                CONCAT(chart_of_accounts.id,'-',chart_of_accounts.uacs,'-',1) as code
+                CONCAT(chart_of_accounts.id,'-',chart_of_accounts.uacs,'-',1) as code,
+                ROUND(SUM(withdrawals),2)+ROUND(SUM(vat_nonvat),2)+ROUND(SUM(expanded_tax),2) as debit
                 FROM advances_liquidation,chart_of_accounts
                 WHERE 
                 advances_liquidation.gl_object_code = chart_of_accounts.uacs

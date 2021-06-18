@@ -17,7 +17,7 @@ class LiquidationEntriesSearch extends LiquidationEntries
     public function rules()
     {
         return [
-            [['id', 'chart_of_account_id', 'advances_id'], 'integer'],
+            [['id', 'chart_of_account_id', ], 'integer'],
             [['withdrawals', 'vat_nonvat', 'expanded_tax'], 'number'],
             [['liquidation_id', ], 'safe'],
         ];
@@ -62,7 +62,6 @@ class LiquidationEntriesSearch extends LiquidationEntries
         $query->andFilterWhere([
             'id' => $this->id,
             'chart_of_account_id' => $this->chart_of_account_id,
-            'advances_id' => $this->advances_id,
             'withdrawals' => $this->withdrawals,
             'vat_nonvat' => $this->vat_nonvat,
             'expanded_tax' => $this->expanded_tax,

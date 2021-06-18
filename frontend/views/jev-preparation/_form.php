@@ -955,9 +955,9 @@ $script = <<< JS
                     var x=0 
                     var debit_value=0
                        var res= JSON.parse(data).result
-                    //    console.log(accounts)
+                       console.log(res)
                        for (x; x<res.length;x++){
-                            debit_value = parseInt(res[x]['total_withdrawals']) + parseInt(res[x]['total_vat'])+parseInt(res[x]['total_expanded'])
+                            debit_value = res[x]['debit'] 
                             $("#debit-"+x).val(debit_value)
                             // $("#credit-"+x).val(jev_accounting_entries[x]['credit'])
                             // var chart = jev_accounting_entries[x]['id'] +"-" +jev_accounting_entries[x]['object_code']+"-"+jev_accounting_entries[x]['lvl']

@@ -22,7 +22,7 @@ class CdrController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -53,8 +53,20 @@ class CdrController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        return $this->render('update', [
+            'model' => $model,
+            'dataProvider' => '',
+            'reporting_period' => '',
+            'province' => '',
+            'consolidated' => '',
+            'book' => '',
+            'cdr' => '',
         ]);
     }
 
@@ -159,8 +171,28 @@ class CdrController extends Controller
                 ->andWhere('book_name =:book_name', ['book_name' => $book_name])
                 ->andWhere('province LIKE :province', ['province' => $province])
                 ->andWhere('report_type LIKE :report_type', ['report_type' => $report_type])
-                ->orderBy('reporting_period')
+                ->orderBy('reporting_period,check_date')
                 ->all();
+            // $query2 = (new \yii\db\Query())
+            //     ->select(
+            //         " '' as check_date,
+            //         '' as check_number,
+            //         '' as  particular,
+            //         SUM() as  amount,
+            //         '' as withdrawals,
+            //         '' as gl_object_code,
+            //         '' as gl_account_title,
+            //         '' as reporting_period,
+            //         '' as vat_nonvat,
+            //         '' as expanded_tax
+            //     "
+            //     )
+            //     ->from('advances_liquidation')
+            //     ->where('reporting_period <:reporting_period', ['reporting_period' => $reporting_period])
+            //     ->andWhere('book_name =:book_name', ['book_name' => $book_name])
+            //     ->andWhere('province LIKE :province', ['province' => $province])
+            //     ->andWhere('report_type LIKE :report_type', ['report_type' => $report_type])
+            //     ->all();
 
 
             $result = ArrayHelper::index($query, null, [function ($element) {
@@ -176,13 +208,13 @@ class CdrController extends Controller
             if (!empty($result[$reporting_period])) {
 
                 foreach ($result[$reporting_period] as $key => $res) {
-                    $total = 0;
+                    $gross_amount = 0;
                     $vat_nonvat = 0;
                     $expanded_tax = 0;
                     $account_title =  $res[0]['gl_account_title'];
 
                     foreach ($res as $data) {
-                        $total += (float)$data['withdrawals'];
+                        $gross_amount += (float)$data['withdrawals'];
                         $vat_nonvat += (float)$data['vat_nonvat'];
                         $expanded_tax += (float)$data['expanded_tax'];
                     }
@@ -190,21 +222,40 @@ class CdrController extends Controller
                     $consolidated[] = [
                         'object_code' => $key,
                         'account_title' => $account_title,
-                        'total' => $total,
-                        'vat_nonvat' => $vat_nonvat,
-                        'expanded_tax' => $expanded_tax,
-                        'gross_amount' => $total + $vat_nonvat + $expanded_tax
+                        'gross_amount' => round($gross_amount, 2),
+                        'vat_nonvat' => round($vat_nonvat, 2),
+                        'expanded_tax' => round($expanded_tax, 2),
+                        'gross_expense' => round($gross_amount + $vat_nonvat + $expanded_tax, 2)
                     ];
                 }
             }
+            $prov = [];
+            $municipality = '';
+            $officer = '';
+            $location = '';
 
+            $prov = Yii::$app->memem->cibrCdrHeader($province);
+            $municipality = $prov['province'];
+            $officer = $prov['officer'];
+            $location = $prov['location'];
+            // $q = array_sum($consolidated['gross_amount']);
+            // return (['res' => $q]);
             // ob_clean();
             // echo "<pre>";
             // var_dump($consolidated);
             // echo "</pre>";
 
             // return ob_get_clean();
-            return json_encode(['cdr'=>$query,'consolidate'=>$consolidated]);
+            return json_encode([
+                'cdr' => $query,
+                'consolidate' => $consolidated,
+                'book_name' => $book_name,
+                'reporting_period' => date('F, Y', strtotime($reporting_period)),
+                'municipality' => $municipality,
+                'officer' => $officer,
+                'location' => $location
+
+            ]);
 
             // return $this->render('update', [
             //     'dataProvider' => $query,
@@ -219,9 +270,19 @@ class CdrController extends Controller
             // ]);
         } else {
 
-           return $this->render('update',[
+            return $this->render('update', []);
+        }
+    }
+    public function actionCdrFinal()
+    {
+        if ($_POST) {
+            $id = $_POST['id'];
 
-           ]); 
+            $cdr = Cdr::findOne($id);
+            $cdr->is_final = $cdr->is_final === 0 ? true : false;
+            if ($cdr->save(false)) {
+                return json_encode(['isScuccess' => true, 'message' => 'success']);
+            }
         }
     }
 }
