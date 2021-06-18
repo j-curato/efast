@@ -204,21 +204,24 @@ class CdrController extends Controller
             // echo "</pre>";
 
             // return ob_get_clean();
-            // return json_encode($cdr);
-            return $this->render('update', [
-                'dataProvider' => $query,
-                'reporting_period' => $reporting_period,
-                'province' => $province,
-                'consolidated' => $consolidated,
-                'book' => $book_name,
-                'cdr' => $cdr,
-                'model' => ''
+            return json_encode(['cdr'=>$query,'consolidate'=>$consolidated]);
+
+            // return $this->render('update', [
+            //     'dataProvider' => $query,
+            //     'reporting_period' => $reporting_period,
+            //     'province' => $province,
+            //     'consolidated' => $consolidated,
+            //     'book' => $book_name,
+            //     'cdr' => $cdr,
+            //     'model' => ''
 
 
-            ]);
+            // ]);
         } else {
 
-            $this->actionUpdate;
+           return $this->render('update',[
+
+           ]); 
         }
     }
 }

@@ -431,7 +431,7 @@ class DvAucsController extends Controller
     {
         // $reporting_period = "2021-01";
         // $book_id=5;
-        $latest_dv=Yii::$app->db->createCommand("SELECT substring_index(substring(dv_number, instr(dv_number, '-')+9), ' ', 1) as q 
+        $latest_dv = Yii::$app->db->createCommand("SELECT substring_index(substring(dv_number, instr(dv_number, '-')+9), ' ', 1) as q 
         from dv_aucs
         
         ORDER BY q DESC  LIMIT 1")->queryScalar();
@@ -446,7 +446,7 @@ class DvAucsController extends Controller
 
         if (!empty($latest_dv)) {
             // $last_number = explode('-', $latest_dv['dv_number'])[3] + 1;
-            $last_number = (int) $latest_dv+ 1;
+            $last_number = (int) $latest_dv + 1;
         } else {
             $last_number = 1;
         }
@@ -781,17 +781,20 @@ class DvAucsController extends Controller
 
         if ($_POST) {
             $id = $_POST['id'];
+            
             $model = DvAucs::findOne($id);
             if (!empty($model->cashDisbursement->id)) {
 
                 if ($model->cashDisbursement->is_cancelled === 0) {
-                    return json_encode(['isSuccess' => false, 'error' => 'Disbursement is Not Cancelled']);
+                    return json_encode(['isSuccess' => false, 'cancelled' => 'Disbursement is Not Cancelled']);
                     die();
                 }
             }
             $model->is_cancelled ? $model->is_cancelled = false : $model->is_cancelled = true;
             if ($model->save(false)) {
                 return json_encode(['isSuccess' => true, 'cancelled' => $model->is_cancelled]);
+            } else {
+                return json_encode(['isSuccess' => false, 'cancelled' => 'save failed']);
             }
 
             // ob_clean();
@@ -801,6 +804,7 @@ class DvAucsController extends Controller
             // return ob_get_clean();
             // return json_encode($model);
         }
+        // return json_encode('qwer');
     }
     public function actionDvForm($id)
     {

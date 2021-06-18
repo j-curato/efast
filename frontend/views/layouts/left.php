@@ -175,7 +175,7 @@
                             ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ['/liquidation'],],
                             ['label' => 'Advances/Liquidation', 'icon' => 'circle-o', 'url' => ['/report/advances-liquidation'],],
                             ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/report/cibr'],],
-                            ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/report/cdr'],],
+                            ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/cdr'],],
 
                         ],
                     ],

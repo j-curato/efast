@@ -139,8 +139,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     ?>
-    <table>
-
+    <table id='data_table'>
+        <thead>
         <tr>
             <td colspan="12" class="header" style="text-align: center;border:1px solid white">CASH DISBURSEMENT REGISTER</td>
         </tr>
@@ -239,6 +239,8 @@ $this->params['breadcrumbs'][] = $this->title;
             <td rowspan="1" class="t_head">(50101020)</td>
             <td rowspan="1" class="t_head"> (50203010)</td>
         </tr>
+        </thead>
+       
         <tbody>
 
             <?php
@@ -330,34 +332,34 @@ $this->params['breadcrumbs'][] = $this->title;
             $total_vat = 0;
             $total_expanded = 0;
             $total_gross = 0;
-            if (!empty($consolidated)) {
-                foreach ($consolidated as $conso) {
-                    $amnt = $conso['total'] != 0 ? number_format($conso['total'], 2) : '-';
-                    $vat = $conso['vat_nonvat'] != 0 ? number_format($conso['vat_nonvat'], 2) : '-';
-                    $expanded = $conso['expanded_tax'] != 0 ? number_format($conso['expanded_tax'], 2) : '-';
-                    $gross = $conso['gross_amount'] != 0 ? number_format($conso['gross_amount'], 2) : '-';
+            // if (!empty($consolidated)) {
+            //     foreach ($consolidated as $conso) {
+            //         $amnt = $conso['total'] != 0 ? number_format($conso['total'], 2) : '-';
+            //         $vat = $conso['vat_nonvat'] != 0 ? number_format($conso['vat_nonvat'], 2) : '-';
+            //         $expanded = $conso['expanded_tax'] != 0 ? number_format($conso['expanded_tax'], 2) : '-';
+            //         $gross = $conso['gross_amount'] != 0 ? number_format($conso['gross_amount'], 2) : '-';
 
-                    echo "<tr>
-                        <td></td>
-                        <td ></td>
-                        <td></td>
-                        <td class='amount'></td>
-                        <td class='amount'></td>
-                        <td></td>
-                       
-                        <td class='amount'>" . $vat . "</td>
-                        <td class='amount'>" . $expanded . "</td>
-                        <td class='amount'>" . $gross . "</td>
-                        <td>" . $conso['account_title'] . "</td>
-                        <td>" . $conso['object_code'] . "</td>
-                        <td class='amount' >" . $amnt  . "</td>
-                    </tr>";
-                    $total_conso += (float)$conso['total'];
-                    $total_vat += (float)$conso['vat_nonvat'];
-                    $total_expanded += (float)$conso['expanded_tax'];
-                    $total_gross += (float)$conso['gross_amount'];
-                }
-            }
+            //         echo "<tr>
+            //             <td></td>
+            //             <td ></td>
+            //             <td></td>
+            //             <td class='amount'></td>
+            //             <td class='amount'></td>
+            //             <td></td>
+
+            //             <td class='amount'>" . $vat . "</td>
+            //             <td class='amount'>" . $expanded . "</td>
+            //             <td class='amount'>" . $gross . "</td>
+            //             <td>" . $conso['account_title'] . "</td>
+            //             <td>" . $conso['object_code'] . "</td>
+            //             <td class='amount' >" . $amnt  . "</td>
+            //         </tr>";
+            //         $total_conso += (float)$conso['total'];
+            //         $total_vat += (float)$conso['vat_nonvat'];
+            //         $total_expanded += (float)$conso['expanded_tax'];
+            //         $total_gross += (float)$conso['gross_amount'];
+            //     }
+            // }
             ?>
             <tr>
 
@@ -471,7 +473,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/jquery.dataTables.js", 
 <?php
 SweetAlertAsset::register($this);
 $script = <<< JS
-        function generatData(){
+        function generatData(e){
+            e.preventDefault();
+            
             $.pjax({
                 container:'#cibr',
                 type:'POST',
@@ -486,6 +490,41 @@ $script = <<< JS
         })
         $('#generate').click(function(e){
             e.preventDefault();
+            // generatData()
+            $.ajax({
+
+                type:'POST',
+                url:window.location.pathname +"?r=cdr/cdr",
+                data:$("#filter").serialize(),
+                success:function(data){
+                    var res = JSON.parse(data)
+                    console.log(res)
+                    $("#data_table > tbody").html("");
+                    for (var i=0 ;i<res.cdr.length;i++){
+
+                    var row =`echo "<tr>
+                        <td>1</td>
+                        <td ></td>
+                        <td></td>
+                        <td class='amount'></td>
+                        <td class='amount'></td>
+                        <td class='amount'></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class='amount'></td>
+                       </tr>";`
+
+                    
+                   $('#data_table tbody').append(row)
+                   }
+
+                }
+
+            })
+
         })
         
         // $("#cibr").on("pjax:success", function(data) {
