@@ -954,8 +954,13 @@ $script = <<< JS
                    success:function(data){
                     var x=0 
                     var debit_value=0
-                       var res= JSON.parse(data).result
-                       console.log(res)
+                       var d= JSON.parse(data)
+                       var res=d.result
+                        
+                       console.log(d)
+                       var total_vat=0
+                       var total_expanded=0
+                       var total_gross=0
                        for (x; x<res.length;x++){
                             debit_value = res[x]['debit'] 
                             $("#debit-"+x).val(debit_value)
@@ -974,7 +979,25 @@ $script = <<< JS
                             if (x < res.length -1){
                                 add()
                             }
+                            total_gross+=parseFloat(res[x]['total_withdrawals'])
+                            total_vat+=parseFloat(res[x]['total_vat'])
+                            total_expanded+=parseFloat(res[x]['total_expanded'])
                         }
+                        add()
+                        $("#credit-"+x).val(parseFloat(total_gross).toFixed(2))
+                        // $("#chart-"+x).val(d.vat['id'] + '-'+d.vat['object_code']+'-'+2).trigger('change');
+                        x++
+                        add()
+                        $("#credit-"+x).val(parseFloat(total_vat).toFixed(2))
+                        $("#chart-"+x).val(d.expanded['id'] + '-'+d.expanded['object_code']+'-'+2).trigger('change');
+                        x++
+                        add()
+                        $("#credit-"+x).val(parseFloat(total_expanded).toFixed(2))
+                        $("#chart-"+x).val(d.vat['id'] + '-'+d.vat['object_code']+'-'+2).trigger('change');
+                        x++
+                        console.log(total_gross)
+                        console.log(total_vat)
+                        console.log(total_expanded)
                         getTotal()
                    }
                })

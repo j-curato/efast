@@ -3,16 +3,16 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\PoTransaction;
-use app\models\PoTransactionSearch;
+use app\models\OtherReciepts;
+use app\models\OtherRecieptsSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * PoTransactionController implements the CRUD actions for PoTransaction model.
+ * OtherRecieptsController implements the CRUD actions for OtherReciepts model.
  */
-class PoTransactionController extends Controller
+class OtherRecieptsController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -21,7 +21,7 @@ class PoTransactionController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::class,
+                'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -30,12 +30,12 @@ class PoTransactionController extends Controller
     }
 
     /**
-     * Lists all PoTransaction models.
+     * Lists all OtherReciepts models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new PoTransactionSearch();
+        $searchModel = new OtherRecieptsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -45,7 +45,7 @@ class PoTransactionController extends Controller
     }
 
     /**
-     * Displays a single PoTransaction model.
+     * Displays a single OtherReciepts model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -58,28 +58,25 @@ class PoTransactionController extends Controller
     }
 
     /**
-     * Creates a new PoTransaction model.
+     * Creates a new OtherReciepts model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new PoTransaction();
+        $model = new OtherReciepts();
 
-        if ($model->load(Yii::$app->request->post())) {
-            $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id);
-            if ($model->save(false)) {
-            }
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->renderAjax('create', [
+        return $this->render('create', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Updates an existing PoTransaction model.
+     * Updates an existing OtherReciepts model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -99,7 +96,7 @@ class PoTransactionController extends Controller
     }
 
     /**
-     * Deletes an existing PoTransaction model.
+     * Deletes an existing OtherReciepts model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -113,54 +110,18 @@ class PoTransactionController extends Controller
     }
 
     /**
-     * Finds the PoTransaction model based on its primary key value.
+     * Finds the OtherReciepts model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return PoTransaction the loaded model
+     * @return OtherReciepts the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = PoTransaction::findOne($id)) !== null) {
+        if (($model = OtherReciepts::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
-    }
-    public function getTrackingNumber($responsibility_center_id)
-    {
-        $date = date("Y");
-        $responsibility_center = (new \yii\db\Query())
-            ->select("name")
-            ->from('responsibility_center')
-            ->where("id =:id", ['id' => $responsibility_center_id])
-            ->one();
-
-        $latest_tracking_no = Yii::$app->db->createCommand("SELECT substring_index(substring(tracking_number,instr(tracking_number,'-')+6),' ',1)as q
-        FROM `po_transaction` ORDER BY q DESC LIMIT 1")->queryScalar();
-        if (!empty($latest_tracking_no)) {
-            $last_number = $latest_tracking_no + 1;
-        } else {
-            $last_number = 1;
-        }
-        $final_number = '';
-        for ($y = strlen($last_number); $y < 3; $y++) {
-            $final_number .= 0;
-        }
-        $final_number .= $last_number;
-        $tracking_number = $responsibility_center['name'] . '-' . $date . '-' . $final_number;
-        return  $tracking_number;
-    }
-    public function actionGetTransaction()
-    {
-        if ($_POST) {
-            $id = $_POST['id'];
-            $query = (new \yii\db\Query())
-                ->select('*')
-                ->from('po_transaction')
-                ->where('id =:id', ['id', $id])
-                ->one();
-            return json_encode(['data' => $query]);
-        }
     }
 }

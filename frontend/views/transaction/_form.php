@@ -44,7 +44,7 @@ use kartik\select2\Select2;
         <div class="col-sm-4">
             <?= $form->field($model, 'transaction_date')->widget(DatePicker::class, [
                 'name' => 'date',
-                'value'=>date("m-d-Y"),
+                'value' => date("m-d-Y"),
                 'pluginOptions' => [
                     'autoclose' => true,
                     'format' => 'mm-dd-yyyy'

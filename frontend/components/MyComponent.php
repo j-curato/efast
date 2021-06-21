@@ -3,7 +3,9 @@
 namespace frontend\components;
 
 use app\models\Books;
+use app\models\ChartOfAccounts;
 use app\models\FundClusterCode;
+use app\models\SubAccounts1;
 use Yii;
 use yii\base\Component;
 
@@ -124,6 +126,37 @@ class MyComponent extends Component
             return $query;
         } else {
             return '';
+        }
+    }
+    public function createSubAccount1($account_title, $id)
+    {
+        $model = new SubAccounts1();
+        // $account_title = $_POST['account_title'];
+        // $id = $_POST['id'];
+
+        $chart_uacs = ChartOfAccounts::find()
+            ->where("id = :id", ['id' => $id])->one()->uacs;
+        $last_id = SubAccounts1::find()->orderBy('id DESC')->one()->id + 1;
+
+        $uacs = $chart_uacs . '_';
+        for ($i = strlen($last_id); $i <= 4; $i++) {
+            $uacs .= 0;
+        }
+        // if ($account_title) {
+
+
+        $model->chart_of_account_id = $id;
+        $model->object_code = $uacs . $last_id;
+        $model->name = $account_title;
+        if ($model->validate()) {
+            if ($model->save()) {
+                // CONCAT(chart_of_accounts.id,'-',chart_of_accounts.uacs,'-',1) as code,
+                return $model->id . '-'. $model->object_code.'-'. 1;
+            }
+        } else {
+            // validation failed: $errors is an array containing error messages
+            $errors = $model->errors;
+            return json_encode($errors);
         }
     }
 }

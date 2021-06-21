@@ -4,6 +4,7 @@ use app\models\AdvancesEntriesSearch;
 use app\models\AdvancesSearch;
 use app\models\CheckRange;
 use app\models\Payee;
+use app\models\PoTransaction;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\grid\GridView;
@@ -105,7 +106,7 @@ use yii\helpers\ArrayHelper;
             <div class="row">
 
                 <div class="col-sm-3">
-                    <label for="check_range">Payee</label>
+                    <label for="check_range">Check Range</label>
                     <?php
                     $check = (new \yii\db\Query())
                         ->select([
@@ -119,7 +120,23 @@ use yii\helpers\ArrayHelper;
                         'name' => 'check_range',
                         'id' => 'check_range',
                         'pluginOptions' => [
-                            'placeholder' => 'Select Payee'
+                            'placeholder' => 'Select Range'
+                        ]
+                    ])
+                    ?>
+                </div>
+                <div class="col-sm-3">
+
+                    <label for="transaction">Transaction</label>
+                    <?php
+                    $po_transaction = PoTransaction::find()->asArray()
+                        ->all();
+                    echo Select2::widget([
+                        'data' => ArrayHelper::map($po_transaction, 'id', 'tracking_number'),
+                        'name' => 'transaction',
+                        'id' => 'transaction',
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Transaction'
                         ]
                     ])
                     ?>
@@ -454,7 +471,18 @@ SweetAlertAsset::register($this);
 
 <?php
 $script = <<<JS
- 
+    // ON change transction dropdown
+    $("#transaction").change(function(){
+        $.ajax({
+            type:"POST",
+            url:window.location.pathname + '?=po-transaction/get-transaction',
+            data:{id:$('#transaction').val()},
+            success:function(data){
+                var res = JSON.parse(data)
+                
+            }
+        })
+    })
 
 //  ADD DATA TO TRANSACTION TABLE
     $('#add_data').submit(function(e) {

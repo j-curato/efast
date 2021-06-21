@@ -2,6 +2,8 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use aryelds\sweetalert\SweetAlertAsset;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\PoTransactionSearch */
@@ -15,7 +17,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Po Transaction', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=po-transaction/create'),
+         'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -39,3 +42,19 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
+
+
+<?php
+SweetAlertAsset::register($this);
+$script = <<<JS
+  
+  $('#modalButtoncreate').click(function(){
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+        });
+        $('.modalButtonedit').click(function(){
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+        });
+
+JS;
+$this->registerJs($script);
+?>

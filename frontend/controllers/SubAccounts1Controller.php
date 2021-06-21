@@ -254,5 +254,4 @@ class SubAccounts1Controller extends Controller
             ->all();
         return json_encode($res);
     }
-
 }

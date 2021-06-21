@@ -146,6 +146,10 @@ $this->params['breadcrumbs'][] = $this->title;
             "label" => "General Ledger",
             'attribute' => 'chartOfAccount.general_ledger',
         ],
+        [
+            "label" => "Allotment Class",
+            'attribute' => 'chartOfAccount.majorAccount.name',
+        ],
 
         [
 
@@ -153,6 +157,37 @@ $this->params['breadcrumbs'][] = $this->title;
             'attribute' => "amount",
             'format' => ['decimal', 2],
             'hAlign'=>'right'
+
+        ],
+
+        [
+
+            'label' => "NCA/NTA",
+            'value'=>function($model){
+                $x ='';
+                if ( $model->recordAllotment->documentRecieve->name === 'GARO'){
+                    $x = 'NCA';
+                }
+                else{
+                    $x = 'NTA';
+                }
+                return $x;
+            }
+
+        ],
+        [
+
+            'label' => "CARP/101",
+            'value'=>function($model){
+                $x ='';
+                if ( $model->recordAllotment->mfoPapCode->name === 'CARP'){
+                    $x = 'CARP';
+                }
+                else{
+                    $x = '101';
+                }
+                return $x;
+            }
 
         ],
         [

@@ -36,7 +36,7 @@ class DvAucsEntries extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['dv_aucs_id', ], 'required'],
+            [['dv_aucs_id',], 'required'],
             [['dv_aucs_id', 'raoud_id'], 'integer'],
             [['amount_disbursed', 'vat_nonvat', 'ewt_goods_services', 'compensation', 'other_trust_liabilities', 'total_withheld'], 'number'],
             [['dv_aucs_id'], 'exist', 'skipOnError' => true, 'targetClass' => DvAucs::class, 'targetAttribute' => ['dv_aucs_id' => 'id']],

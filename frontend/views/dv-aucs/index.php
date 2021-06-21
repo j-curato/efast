@@ -144,14 +144,28 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         [
             'label' => "Good/Cancelled",
-            'value' => function($model){
-                if ($model->dvAucs->is_cancelled){
+            'value' => function ($model) {
+                if ($model->dvAucs->is_cancelled) {
                     return "Cancelled";
-                }
-                else
-                {
+                } else {
                     return "Good";
                 }
+            }
+        ],
+        [
+            'label' => "Allotment Class",
+            'value' => function ($model) {
+                $x = '';
+                if (!empty($model->processOrs->id)) {
+                    $x =  $model->processOrs->id;
+                    $q = (new yii\db\Query())
+                        ->select('record_allotment_id')
+                        ->from('raouds')
+                        ->where('record_allotment_id =:record_allotment_id', ['record_allotment_id' => $model->processOrs->id])
+                        ->andWhere('is_parent =:is_parent', ['is_parent' => 1])
+                        ->one();
+                }
+                return $x;
             }
         ],
 

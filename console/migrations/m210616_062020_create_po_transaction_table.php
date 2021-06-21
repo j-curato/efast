@@ -21,7 +21,8 @@ class m210616_062020_create_po_transaction_table extends Migration
             'payee' =>$this->text(),
             'particular'=>$this->text(),
             'amount'=>$this->decimal(10,2),
-            'payroll_number'=>$this->string(100)
+            'payroll_number'=>$this->string(100),
+            'tracking_numner'=>$this->string(100)
         ]);
 
         // creates index for column `responsibility_center_id`

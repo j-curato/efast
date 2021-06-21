@@ -35,8 +35,8 @@ class PoTransaction extends \yii\db\ActiveRecord
             [['responsibility_center_id'], 'integer'],
             [['payee', 'particular'], 'string'],
             [['amount'], 'number'],
-            [['payroll_number'], 'string', 'max' => 100],
-            [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::className(), 'targetAttribute' => ['responsibility_center_id' => 'id']],
+            [['payroll_number','tracking_number'], 'string', 'max' => 100],
+            [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
         ];
     }
 
@@ -52,6 +52,7 @@ class PoTransaction extends \yii\db\ActiveRecord
             'particular' => 'Particular',
             'amount' => 'Amount',
             'payroll_number' => 'Payroll Number',
+            'tracking_number' => 'Tracking Number',
         ];
     }
 
@@ -62,6 +63,6 @@ class PoTransaction extends \yii\db\ActiveRecord
      */
     public function getResponsibilityCenter()
     {
-        return $this->hasOne(ResponsibilityCenter::className(), ['id' => 'responsibility_center_id']);
+        return $this->hasOne(ResponsibilityCenter::class, ['id' => 'responsibility_center_id']);
     }
 }

@@ -147,72 +147,74 @@ $this->params['breadcrumbs'][] = $this->title;
                 </td>
             </tr>
             <tr style="border:1px solid white">
-                <td colspan="9" class="header">
+                <td colspan="8" class="header">
                     <span> Entity Name:Department of Trade and Industry</span>
                 </td>
-                <td colspan="3" class="header">
+                <td colspan="4" class="header officer">
                     <span>
-                        Sheet No. :___________________
+                        Name of Accountable Officer:
                     </span>
                 </td>
             </tr>
             <tr style="border:1px solid white">
-                <td colspan="9" class="header">
+                <td colspan="8" class="header">
                     <span> Sub-Office/District/Division: Provincial Office</span>
                 </td>
-                <td colspan="3" class="header">
-                    <span class="officer">
-                        Name of Disbursing Officer: <?= $officer ?>
+                <td colspan="4" class="header">
+                    <span class="">
+                        Official Designation: Special Disbursing Officer
                     </span>
                 </td>
             </tr>
             <tr style="border:1px solid white">
-                <td colspan="9" class="header municipality">
+                <td colspan="8" class="header municipality">
                     <span> Municipality/City/Province: <?php echo $municipality; ?></span>
                 </td>
-                <td colspan="3" class="header">
+                <td colspan="4" class="header">
                     <span class="municipality">
-                        Station:
+                        Station:DTI -
                     </span>
                 </td>
             </tr>
             <tr>
-                <td colspan="9" rowspan="2" style="border-left:1px solid white;border-right:1px solid white;" class="header">
+                <td colspan="8" rowspan="2" style="border-left:1px solid white;border-right:1px solid white;" class="header">
                     <span class="book"> Fund Cluster : <?= !empty($book) ? $book : '' ?></span>
                 </td>
-                <td colspan="3" class="header" style="border-left:1px solid white;border-right:1px solid white;">
+                <td colspan="4" class="header" style="border-left:1px solid white;border-right:1px solid white;">
                     <span>
-                        Bank : Landbank of the Philippines
+                        Register No : Landbank of the Philippines
                     </span>
                 </td>
             </tr>
             <tr>
-                <td colspan="3" style="border-left:1px solid white;border-right:1px solid white;" class="header">
-                    <span class="location">
-                        Location: <?= $location ?>
+                <td colspan="4" style="border-left:1px solid white;border-right:1px solid white;" class="header">
+                    <span>
+                        Sheet No.: __________________________
                     </span>
                 </td>
 
             </tr>
             <tr>
 
-                <td rowspan="6" class="t_head">Date</td>
-                <td rowspan="6" class="t_head">Check No.</td>
-                <td rowspan="6" class="t_head">Particular</td>
-                <td rowspan="3" class="t_head" colspan="3">CASH IN BANK</td>
+                <td rowspan="7" class="t_head">Date</td>
+                <td rowspan="7" class="t_head">Check No.</td>
+                <td rowspan="7" class="t_head">Particular</td>
+                <td rowspan="3" class="t_head" colspan="3">Advances to Special Disbursing Officer (1990103000)</td>
             </tr>
 
             <tr>
                 <td colspan="6" class="t_head">BREAKDOWN </td>
             </tr>
             <tr>
-                <td rowspan="3" class="t_head">Salaries and Wages - Regular</td>
-                <td rowspan="3" class="t_head">Salaries and Wages -Casual/ Contractual</td>
-                <td rowspan="3" class="t_head"> Office Supplies Expenses </td>
-                <td colspan="3" class="t_head" rowspan="2">OTHERS</td>
+                <td rowspan="4" class="t_head">Salaries and Wages - Regular</td>
+                <td rowspan="4" class="t_head">Salaries and Wages -Casual/ Contractual</td>
+                <td rowspan="4" class="t_head"> Office Supplies Expenses </td>
+                <td colspan="3" class="t_head" rowspan="3">OTHERS</td>
             </tr>
 
-
+            <tr>
+                <td rowspan="" colspan="3" class="t_head">Amount</td>
+            </tr>
             <tr>
                 <td rowspan="3" class="t_head">Deposits</td>
                 <td rowspan="3" class="t_head">Withdrawals/ Payments</td>
@@ -220,9 +222,9 @@ $this->params['breadcrumbs'][] = $this->title;
             </tr>
             <tr>
 
-                <td rowspan="2" class="t_head"> Account Description</td>
-                <td rowspan="2" class="t_head">UACS Code</td>
-                <td rowspan="2" class="t_head">Amount</td>
+                <td rowspan="3" class="t_head"> Account Description</td>
+                <td rowspan="3" class="t_head">UACS Code</td>
+                <td rowspan="3" class="t_head">Amount</td>
             </tr>
             <tr>
                 <td rowspan="1" class="t_head">(50101010)</td>
@@ -437,7 +439,9 @@ $this->params['breadcrumbs'][] = $this->title;
             font-size: 10px;
             padding: 2px;
         }
-
+        .btn{
+            display: none;
+        }
         .amount {
             padding: 5px;
         }
@@ -673,11 +677,30 @@ $script = <<< JS
             e.preventDefault();
             $.ajax({
                 type:'POST',
-                url:window.location.pathname +"?r=report/insert-cdr",
+                url:window.location.pathname +"?r=cdr/insert-cdr",
                 data:$("#filter").serialize(),
                 success:function(data){
                     var res = JSON.parse(data)
                     console.log(res)
+                    if (res.isSuccess){
+                        swal({
+                            title:'success',
+                            type:'success',
+                            button:false,
+                            timer:3000,
+                        },function(){
+                            window.location.href= window.location.pathname +'?r=cdr/view&id=' +res.id
+                        })
+                    }
+                    else{
+                        swal({
+                            title:'Failed',
+                            text:'CDR already saved',
+                            type:'error',
+                            button:false,
+                            timer:3000
+                        })
+                    }
                 }
             })
         })
@@ -702,7 +725,16 @@ $script = <<< JS
                     data:{id:$('#cdr_id').val()},
                     success:function(data){
                         var res = JSON.parse(data)
-                        console.log(res)
+                        if (res.isScuccess){
+                            swal({
+                                title:'Success',
+                                type:'success',
+                                button:false,
+                                timer:3000
+                            },function(){
+                                location.reload(true);
+                            })
+                        }
                     }
                 }
                 

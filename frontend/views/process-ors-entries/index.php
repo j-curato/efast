@@ -98,6 +98,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'value' => "recordAllotmentEntries.chartOfAccount.uacs"
         ],
         [
+            'label' => 'Allotment CLass',
+            'value' => "recordAllotmentEntries.chartOfAccount.majorAccount.name"
+        ],
+        [
             'label' => 'Obligation UACS Object Code',
             'value' => "raoudEntries.chartOfAccount.uacs"
         ],
@@ -120,6 +124,34 @@ $this->params['breadcrumbs'][] = $this->title;
             'pageSummary' => true,
         ],
         [
+
+            'label' => "NCA/NTA",
+            'value' => function ($model) {
+                $x = '';
+                if ($model->recordAllotmentEntries->recordAllotment->documentRecieve->name === 'GARO') {
+                    $x = 'NCA';
+                } else {
+                    $x = 'NTA';
+                }
+                return $x;
+            }
+
+        ],
+        [
+
+            'label' => "CARP/101",
+            'value' => function ($model) {
+                $x = '';
+                if ($model->recordAllotmentEntries->recordAllotment->mfoPapCode->name === 'CARP') {
+                    $x = 'CARP';
+                } else {
+                    $x = '101';
+                }
+                return $x;
+            }
+
+        ],
+        [
             'label' => 'Good/Cancelled',
             'value' => function ($model) {
                 if ($model->processOrs->is_cancelled) {
@@ -138,6 +170,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'value' => 'processOrs.id',
             // 'value' => 'processOrs.reporting_period'
         ],
+
         // [
         //     'label' => 'Particular',
         //     'value' => "processOrs.transaction.particular"

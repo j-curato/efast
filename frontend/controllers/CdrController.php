@@ -280,9 +280,60 @@ class CdrController extends Controller
 
             $cdr = Cdr::findOne($id);
             $cdr->is_final = $cdr->is_final === 0 ? true : false;
+            $cdr->serial_number = $this->getSerialNumber($cdr->reporting_period, $cdr->report_type, $cdr->book_name, $cdr->province);
             if ($cdr->save(false)) {
                 return json_encode(['isScuccess' => true, 'message' => 'success']);
             }
         }
+    }
+    public function actionInsertCdr()
+    {
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $province = $_POST['province'];
+            $book_name = $_POST['book'];
+            $report_type = $_POST['report_type'];
+            $query = (new \yii\db\Query())
+                ->select('id')
+                ->from('cdr')
+                ->where('reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+                ->andWhere('province LIKE :province', ['province' => $province])
+                ->andWhere('book_name LIKE :book_name', ['book_name' => $book_name])
+                ->andWhere('report_type LIKE :report_type', ['report_type' => $report_type])
+                ->one();
+            if (!empty($query)) {
+                return json_encode(['isSuccess' => false, 'error' => 'na save na ']);
+            }
+            $cdr = new Cdr();
+            $cdr->reporting_period = $reporting_period;
+            $cdr->province = $province;
+            $cdr->book_name = $book_name;
+            $cdr->report_type = $report_type;
+
+            if ($cdr->validate()) {
+                if ($cdr->save(false)) {
+                    return json_encode(['isSuccess' => true, 'error' => 'Success', 'id' => $cdr->id]);
+                }
+            } else {
+                return json_encode(['isSuccess' => false, 'error' => $cdr->errors]);
+            }
+        }
+    }
+    public function getSerialNumber($reporting_period, $report_type, $book_name, $province)
+    {
+        // $report_type = 'Advances for Operating Expenses';
+        // $province = 'ADN';
+        // $reporting_period = '2021-02';
+        
+        $serial_number = 'CDR ';
+        if ($report_type === 'Advances for Operating Expenses') {
+            $type = 'OPEX';
+        } else if ($report_type === 'Advances to Special Disbursing Officer') {
+            $type = 'SDO';
+        }
+
+        $serial_number .= $book_name . '-' . $type . '-' . strtoupper($province) . '-' . $reporting_period;
+
+        return $serial_number;
     }
 }
