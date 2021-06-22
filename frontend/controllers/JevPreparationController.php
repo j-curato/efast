@@ -987,7 +987,7 @@ class JevPreparationController extends Controller
                 'data' => $x
             ]);
         } else {
-            return $this->render('ckdj_view',);
+            return $this->render('ckdj_view');
         }
     }
 

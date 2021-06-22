@@ -5,6 +5,8 @@ namespace frontend\controllers;
 use app\models\AdvancesLiquidation;
 use app\models\AdvancesLiquidationSearch;
 use app\models\Cdr;
+use app\models\DetailedDvAucs;
+use app\models\DetailedDvAucsSearch;
 use app\models\DvAucs;
 use app\models\JevAccountingEntries;
 use app\models\Liquidation;
@@ -889,6 +891,16 @@ class ReportController extends \yii\web\Controller
             echo "</pre>";
             return ob_get_clean();
         }
+    }
+    public function actionDetailedDvAucs()
+    {
+        $searchModel = new DetailedDvAucsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('detailed_dv_aucs', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 }
 

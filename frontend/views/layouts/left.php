@@ -177,6 +177,7 @@
                             ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/report/cibr'],],
                             ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/cdr'],],
                             ['label' => 'PO Transaction', 'icon' => 'circle-o', 'url' => ['/po-transaction'],],
+                            ['label' => 'Detailed Dv', 'icon' => 'circle-o', 'url' => ['/report/detailed-dv-aucs'],],
 
                         ],
                     ],
