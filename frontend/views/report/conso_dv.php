@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ?>
 
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-3" style="margin-top: 2.5rem;">
             <button class="btn btn-success" id="generate">Generate</button>
         </div>
 
@@ -78,6 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     #con {
         display: none;
+        margin-top: 20px;
     }
 
     table,
@@ -151,8 +152,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td>${res[i]['mfo_code']}</td>
                         <td>${res[i]['mfo_name']}</td>
                         <td class='amount' >${thousands_separators(total_allotment_recieve)}</td>
-                        <td class='amount' >${parseFloat(obligation).toFixed(2)}</td>
-                        <td class='amount' >${parseFloat(disbursement).toFixed(2)}</td>
+                        <td class='amount'>  ${thousands_separators(parseFloat(obligation).toFixed(2))}</td>
+                        <td class='amount'>  ${thousands_separators(parseFloat(disbursement).toFixed(2))}</td>
                         <td class='amount'>  ${thousands_separators(parseFloat(taxes_withheld).toFixed(2))}</td>
                         <td>${res[i]['mfo_description']}</td>
                     </tr>`
