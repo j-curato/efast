@@ -911,9 +911,15 @@ class ReportController extends \yii\web\Controller
             $reporting_period = $_POST['reporting_period'];
             $q = date('Y', strtotime($reporting_period));
             $year = "$q%";
-            $dataProvider = Yii::$app->db->createCommand("CALL conso_dv(:reporting_period,:year)")
+            $allotment_class = $_POST['allotment_class'];
+            $book_id = $_POST['book_id'];
+
+            // return json_encode($allotment_class);
+            $dataProvider = Yii::$app->db->createCommand("CALL conso_dv(:reporting_period,:year,:book_id,:allotment_class)")
                 ->bindValue(':reporting_period', $reporting_period)
                 ->bindValue(':year', $year)
+                ->bindValue(':allotment_class', $allotment_class)
+                ->bindValue(':book_id', $book_id)
                 ->queryAll();
             return json_encode($dataProvider);
         } else {

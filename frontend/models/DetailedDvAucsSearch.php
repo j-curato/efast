@@ -66,6 +66,8 @@ class DetailedDvAucsSearch extends DetailedDvAucs
             ->andFilterWhere(['like', 'obligation_number', $this->obligation_number])
             ->andFilterWhere(['like', 'transaction_tracking_number', $this->transaction_tracking_number])
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
+            ->andFilterWhere(['like', 'mfo_code', $this->mfo_code])
+            ->andFilterWhere(['like', 'allotment_number', $this->allotment_number])
             ->andFilterWhere(['like', 'particular', $this->particular]);
 
         return $dataProvider;

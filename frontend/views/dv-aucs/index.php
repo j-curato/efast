@@ -159,9 +159,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 if (!empty($model->processOrs->id)) {
                     $x =  $model->processOrs->id;
                     $q = (new yii\db\Query())
-                        ->select('record_allotment_id')
+                        ->select('record_allotment_entries_id')
                         ->from('raouds')
-                        ->where('record_allotment_id =:record_allotment_id', ['record_allotment_id' => $model->processOrs->id])
+                        ->where('process_ors_id =:process_ors_id', ['process_ors_id' => $model->processOrs->id])
                         ->andWhere('is_parent =:is_parent', ['is_parent' => 1])
                         ->one();
                 }
