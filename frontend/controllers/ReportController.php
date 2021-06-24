@@ -5,6 +5,8 @@ namespace frontend\controllers;
 use app\models\AdvancesLiquidation;
 use app\models\AdvancesLiquidationSearch;
 use app\models\Cdr;
+use app\models\ConsoDetailedDv;
+use app\models\ConsoDetailedDvSearch;
 use app\models\DetailedDvAucs;
 use app\models\DetailedDvAucsSearch;
 use app\models\DvAucs;
@@ -901,6 +903,23 @@ class ReportController extends \yii\web\Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+    public function actionConsoDetailedDv()
+    {
+        $dataProvider = '';
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $q = date('Y', strtotime($reporting_period));
+            $year = "$q%";
+            $dataProvider = Yii::$app->db->createCommand("CALL conso_dv(:reporting_period,:year)")
+                ->bindValue(':reporting_period', $reporting_period)
+                ->bindValue(':year', $year)
+                ->queryAll();
+            return json_encode($dataProvider);
+        } else {
+
+            return $this->render('conso_dv');
+        }
     }
 }
 

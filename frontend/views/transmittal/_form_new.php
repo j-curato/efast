@@ -101,7 +101,8 @@ use yii\widgets\ActiveForm;
             ],
             [
                 'label' => 'DV Number',
-                'attribute' => 'dvAucs.dv_number'
+                'attribute' => 'dv_aucs_id',
+                'value' => 'dvAucs.dv_number'
             ],
             [
                 'label' => 'Check/ada Number',

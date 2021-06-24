@@ -39,6 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'allotment_number',
         'allotment_object_code',
         'allotment_account_title',
+        'allotment_class',
         'obligation_object_code',
         'obligation_account_title',
         'obligation_amount',
@@ -56,13 +57,14 @@ $this->params['breadcrumbs'][] = $this->title;
         [
             'label' => 'Good/Cancelled',
             'value' => function ($model) {
-                if ($model->is_cancelled ) {
+                if ($model->is_cancelled) {
                     return 'Cancelled';
                 } else {
                     return 'Good';
                 }
             }
-        ]
+        ],
+        'jev_number',
 
     ];
 
@@ -79,7 +81,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'top' => 50,
             'position' => 'absolute',
         ],
-        'pjax'=>true,
+        'pjax' => true,
         'toolbar' =>  [
             [
                 'content' =>
