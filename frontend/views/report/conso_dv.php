@@ -140,7 +140,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 var obligation = 0
                 var disbursement = 0
                 var total_allotment_recieve = 0
-            
+
                 for (var i = 0; i < res.length; i++) {
                     obligation = res[i]['conso_total_obligation']
                     taxes_withheld = parseFloat(res[i]['conso_total_ewt']) + parseFloat(res[i]['conso_total_vat']);
