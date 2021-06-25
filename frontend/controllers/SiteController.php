@@ -1,4 +1,5 @@
 <?php
+
 namespace frontend\controllers;
 
 use frontend\models\ResendVerificationEmailForm;
@@ -94,7 +95,9 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+            // return $this->render('index');
+            return $this->goHome();
+
             // return $this->redirect('');
         } else {
             $model->password = '';
@@ -157,7 +160,7 @@ class SiteController extends Controller
      */
     public function actionSignup()
     {
-        $this->layout='register';
+        $this->layout = 'register';
         $model = new SignupForm();
         if ($model->load(Yii::$app->request->post()) && $model->signup()) {
             Yii::$app->session->setFlash('success', 'Thank you for registration. Please check your inbox for verification email.');
