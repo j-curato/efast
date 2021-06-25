@@ -29,7 +29,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout', 'signup', ],
+                'only' => ['logout', 'signup',],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -77,7 +77,7 @@ class SiteController extends Controller
     {
         // if (!Yii::$app->user->isGuest) {
 
-            return $this->render('index');
+        return $this->render('index');
         // }
     }
     /**
@@ -88,7 +88,8 @@ class SiteController extends Controller
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+            // return $this->goHome();
+            return $this->render('index');
         }
 
         $model = new LoginForm();
