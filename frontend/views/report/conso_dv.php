@@ -1,4 +1,4 @@
-<link href="/dti-afms-2/frontend/web/css/site.css" rel="stylesheet" />
+<link href="/frontend/web/css/site.css" rel="stylesheet" />
 <?php
 
 use app\models\AdvancesEntries;
