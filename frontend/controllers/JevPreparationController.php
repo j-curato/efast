@@ -1812,7 +1812,7 @@ class JevPreparationController extends Controller
                 'sl_name' => $sl_name
             ]);
         } else {
-            return $this->render('subsidiary_ledger_view',);
+            return $this->render('subsidiary_ledger_view');
         }
 
 
