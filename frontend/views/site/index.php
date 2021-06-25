@@ -2,7 +2,23 @@
 
 /* @var $this yii\web\View */
 
+use common\models\LoginForm;
 use yii\helpers\ArrayHelper;
+
+if (Yii::$app->user->isGuest) {
+    /**
+     * Do not use this code in your template. Remove it. 
+     * Instead, use the code  $this->layout = '//main-login'; in your controller.
+     */
+    $model = new LoginForm();
+    echo $this->render(
+        'login',[
+            'model'=>$model
+        ]
+      
+    );
+}
+else{
 
 $this->title = 'Dashboard';
 ?>
@@ -466,6 +482,7 @@ $this->title = 'Dashboard';
 
     </div>
 </div>
+<?php }?>
 <style>
     .panel {
         background-color: white;

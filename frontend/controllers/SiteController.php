@@ -29,7 +29,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout', 'signup'],
+                'only' => ['logout', 'signup', ],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -75,7 +75,10 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        // if (!Yii::$app->user->isGuest) {
+
+            return $this->render('index');
+        // }
     }
     /**
      * Logs in a user.
@@ -93,7 +96,7 @@ class SiteController extends Controller
             return $this->goBack();
         } else {
             $model->password = '';
-            
+
             return $this->render('login', [
                 'model' => $model,
             ]);
