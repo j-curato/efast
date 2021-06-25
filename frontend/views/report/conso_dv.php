@@ -202,7 +202,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     total_conso_tax += parseFloat(taxes_withheld)
                     console.log(total_conso_total_allotment_recieve)
                     var mfo_code = res[i]['mfo_code'] ? res[i]['mfo_code'] : ''
-                    var mfo_name = res[i]['mfo_name'] ? res[i]['mfo_name'] : 'Prior Year Accounts Payable'
+                    var mfo_name = res[i]['mfo_name'] ? res[i]['mfo_name'] : 'No ORS'
                     var mfo_description = res[i]['mfo_description'] ? res[i]['mfo_description'] : ''
                     var row = `<tr>
 
@@ -225,7 +225,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td class='amount'>  ${thousands_separators(parseFloat(total_conso_obligation).toFixed(2))}</td>
                         <td class='amount'>  ${thousands_separators(parseFloat(total_conso_disbursement).toFixed(2))}</td>
                         <td class='amount'>  ${thousands_separators(parseFloat(total_conso_tax).toFixed(2))}</td>
-                        <td>${mfo_description}</td>
+                        <td></td>
                     </tr>`
 
                 $('#data_table tbody').append(row)
@@ -242,9 +242,9 @@ $this->params['breadcrumbs'][] = $this->title;
     })
 </script>
 <?php
-$this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-$this->registerJsFile(yii::$app->request->baseUrl . "/js/jquery.dataTables.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/jquery.dataTables.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 <?php
