@@ -240,9 +240,9 @@ class RecordAllotmentsController extends Controller
                 if ($flag) {
                     $transaction->commit();
                     return json_encode(['isSuccess' => true, 'view_id' => $recordAllotment->id]);
-                    return $this->render('view', [
-                        'model' => $this->findModel($recordAllotment->id),
-                    ]);
+                    // return $this->render('view', [
+                    //     'model' => $this->findModel($recordAllotment->id),
+                    // ]);
                 }
             } catch (Exception $e) {
                 $transaction->rollBack();
