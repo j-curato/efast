@@ -42,7 +42,7 @@ $this->title = 'Dashboard';
             ")->queryOne();
 
     $total_cash_disbursed = Yii::$app->db->createCommand("SELECT books.`name`,
-                         cash_disbursement.book_id
+                         cash_disbursement.book_id,
                         SUM(dv_aucs_entries.amount_disbursed)as total_disbursed 
                         FROM cash_disbursement,dv_aucs,dv_aucs_entries,books
                         WHERE cash_disbursement.dv_aucs_id = dv_aucs.id
