@@ -6,7 +6,7 @@ use yii\bootstrap\Modal;
 /* @var $content string */
 
 
-if (Yii::$app->user->isGuest) {
+if (Yii::$app->controller->action->id === 'login') {
     /**
      * Do not use this code in your template. Remove it. 
      * Instead, use the code  $this->layout = '//main-login'; in your controller.
@@ -26,7 +26,7 @@ if (Yii::$app->user->isGuest) {
     dmstr\web\AdminLteAsset::register($this);
 
     $directoryAsset = Yii::$app->assetManager->getPublishedUrl('@vendor/almasaeed2010/adminlte/dist');
-?>
+    ?>
     <?php $this->beginPage() ?>
     <!DOCTYPE html>
     <html lang="<?= Yii::$app->language ?>">
