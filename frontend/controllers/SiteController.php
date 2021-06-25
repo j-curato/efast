@@ -1,4 +1,5 @@
 <?php
+
 namespace frontend\controllers;
 
 use frontend\models\ResendVerificationEmailForm;
@@ -28,23 +29,18 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['login', 'logout', 'signup'],
+                'only' => ['logout', 'signup'],
                 'rules' => [
                     [
+                        'actions' => ['signup'],
                         'allow' => true,
-                        'actions' => ['login', 'signup'],
                         'roles' => ['?'],
                     ],
                     [
-                        'allow' => true,
                         'actions' => ['logout'],
+                        'allow' => true,
                         'roles' => ['@'],
                     ],
-                    // [
-                    //     'actions' => [],
-                    //     'allow' => true,
-                    //     'roles' => ['@'],
-                    // ],
                 ],
             ],
             'verbs' => [
@@ -91,14 +87,13 @@ class SiteController extends Controller
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
-        $this->layout = 'blank';
+
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
-            // return $this->redirect('');
         } else {
             $model->password = '';
-
+            
             return $this->render('login', [
                 'model' => $model,
             ]);
@@ -157,7 +152,7 @@ class SiteController extends Controller
      */
     public function actionSignup()
     {
-        $this->layout='register';
+        $this->layout = 'register';
         $model = new SignupForm();
         if ($model->load(Yii::$app->request->post()) && $model->signup()) {
             Yii::$app->session->setFlash('success', 'Thank you for registration. Please check your inbox for verification email.');
