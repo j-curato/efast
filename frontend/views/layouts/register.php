@@ -62,15 +62,7 @@ if (Yii::$app->controller->action->id === 'login') {
         <?php $this->endBody() ?>
     </body>
 
-    <?php
-    $js = <<<JS
-        // setTimeout(function () {
-        //     $('.page-loader-wrapper').fadeOut();
-        // }, 300);
-    JS;
-    $this->registerJs($js, \yii\web\View::POS_READY);
 
-    ?>
 
     </html>
     <?php $this->endPage() ?>
