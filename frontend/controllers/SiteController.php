@@ -21,6 +21,7 @@ use frontend\models\ContactForm;
  */
 class SiteController extends Controller
 {
+    // public $defaultIndex = 'login';
     /**
      * {@inheritdoc}
      */
@@ -89,14 +90,14 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
+        // $this->layout = 'main-login';
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
-
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             // return $this->render('index');
-            return $this->goHome();
+            return $this->goBack();
 
             // return $this->redirect('');
         } else {

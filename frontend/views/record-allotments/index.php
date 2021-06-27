@@ -86,6 +86,11 @@ $this->params['breadcrumbs'][] = $this->title;
     $gridColumns = [
         'id',
         [
+            'label' => "Reporting Period",
+
+            'value' => "recordAllotment.reporting_period"
+        ],
+        [
             'label' => "Serial Number",
             'attribute' => "record_allotment_id",
 
@@ -156,19 +161,18 @@ $this->params['breadcrumbs'][] = $this->title;
             'label' => "Amount",
             'attribute' => "amount",
             'format' => ['decimal', 2],
-            'hAlign'=>'right'
+            'hAlign' => 'right'
 
         ],
 
         [
 
             'label' => "NCA/NTA",
-            'value'=>function($model){
-                $x ='';
-                if ( $model->recordAllotment->documentRecieve->name === 'GARO'){
+            'value' => function ($model) {
+                $x = '';
+                if ($model->recordAllotment->documentRecieve->name === 'GARO') {
                     $x = 'NCA';
-                }
-                else{
+                } else {
                     $x = 'NTA';
                 }
                 return $x;
@@ -178,12 +182,11 @@ $this->params['breadcrumbs'][] = $this->title;
         [
 
             'label' => "CARP/101",
-            'value'=>function($model){
-                $x ='';
-                if ( $model->recordAllotment->mfoPapCode->name === 'CARP'){
+            'value' => function ($model) {
+                $x = '';
+                if ($model->recordAllotment->mfoPapCode->name === 'CARP') {
                     $x = 'CARP';
-                }
-                else{
+                } else {
                     $x = '101';
                 }
                 return $x;

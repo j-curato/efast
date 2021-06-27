@@ -11,6 +11,8 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
+    // 'defaultRoute' => 'site/login',
+
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
@@ -43,14 +45,16 @@ return [
             'class' => 'yii\rbac\DbManager',
             'defaultROles' => ['guest'],
         ],
-        /*
-        'urlManager' => [
-            'enablePrettyUrl' => true,
-            'showScriptName' => false,
-            'rules' => [
-            ],
-        ],
-        */
+
+        // 'urlManager' => [
+        //     'enablePrettyUrl' => false,
+        //     'showScriptName' => false,
+
+        //     'rules' => [
+        //         'index' => 'site/login'
+        //     ],
+        // ],
+
         'memem' => [
             'class' => 'frontend\components\MyComponent'
         ],
