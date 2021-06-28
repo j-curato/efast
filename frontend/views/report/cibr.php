@@ -273,15 +273,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td></td>
                 <td colspan='2' style='text-align:center;font-weight:bold'>Total</td>
                 <td style='text-align:right;font-weight:bold'>" . number_format($total_deposit, 2) . "</td>
-                <td style='text-align:right;font-weight:bold'>" . number_format($total_withdrawals,) . "</td>
-                <td style='text-align:right;font-weight:bold'>" . number_format($balance,) . "</td>
+                <td style='text-align:right;font-weight:bold'>" . number_format($total_withdrawals,2) . "</td>
+                <td style='text-align:right;font-weight:bold'>" . number_format($balance,2) . "</td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
              
-                <td style='text-align:right;font-weight:bold'>" . number_format($total_withdrawals,) . "</td>
+                <td style='text-align:right;font-weight:bold'>" . number_format($total_withdrawals,2) . "</td>
                 </tr>";
                 //     echo "<pre>";
                 //         var_dump($dataProvider);

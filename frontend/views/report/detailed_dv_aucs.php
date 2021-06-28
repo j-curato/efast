@@ -113,11 +113,11 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 0;
     }
 </style>
-<script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-<link href="/dti-afms-2/frontend/web/js/select2.min.js" />
-<link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
-<link href="/dti-afms-2/frontend/web/js/jquery.dataTables.js" />
-<link href="/dti-afms-2/frontend/web/css/jquery.dataTables.css" rel="stylesheet" />
+<script src="/js/jquery.min.js" type="text/javascript"></script>
+<link href="/js/select2.min.js" />
+<link href="/css/select2.min.css" rel="stylesheet" />
+<link href="/js/jquery.dataTables.js" />
+<link href="/css/jquery.dataTables.css" rel="stylesheet" />
 
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);

@@ -24,7 +24,7 @@ class m210507_010244_create_liquidation_entries_table extends Migration
             'advances_id' => $this->integer(),
             'withdrawals'=>$this->decimal(10,2),
             'vat_nonvat'=>$this->decimal(10,2),
-            'ewt_goods_services'=>$this->decimal(10,2)
+            'expanded_tax'=>$this->decimal(10,2)
         ]);
 
         // creates index for column `liquidation_id`
