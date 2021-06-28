@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\recordAllotmentEntries;
+use app\models\RecordAllotmentEntries;
 
 /**
  * recordAllotmentEntriesSearch represents the model behind the search form of `app\models\recordAllotmentEntries`.
  */
-class recordAllotmentEntriesSearch extends recordAllotmentEntries
+class recordAllotmentEntriesSearch extends RecordAllotmentEntries
 {
     /**
      * {@inheritdoc}
@@ -41,7 +41,7 @@ class recordAllotmentEntriesSearch extends recordAllotmentEntries
      */
     public function search($params)
     {
-        $query = recordAllotmentEntries::find();
+        $query = RecordAllotmentEntries::find();
 
         // add conditions that should always apply here
 
