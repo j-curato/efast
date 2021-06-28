@@ -16,17 +16,10 @@ return [
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
-            'cookieValidationKey' => '[HkqJFpgEch
-            NXhGwJG7EO
-            rEFYOtONI7
-            fbNd11vnkk
-            HABuNacprr
-            ivRUNz7ORr
-            MeLhGgJJ9a
-            Uxv6Jxuh4S
-            AEXKQcOLkU
-            aD0lGJStYx]',
-            'csrfParam' => '_frontendCSRF',
+            // 'csrfCookie' => [
+            //     'httpOnly' => true,
+            //     'path' => 'site/login',
+            // ],
         ],
         'user' => [
             'identityClass' => 'common\models\User',
@@ -35,9 +28,7 @@ return [
         ],
         'session' => [
             // this is the name of the session cookie used for login on the frontend
-            'name' => 'advanced-frontend',
-            'name' => 'PHPFRONTSESSID',
-            'savePath' => sys_get_temp_dir(),
+            // 'name' => 'advanced-frontend',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
