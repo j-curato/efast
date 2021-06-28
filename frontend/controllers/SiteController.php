@@ -21,7 +21,7 @@ use frontend\models\ContactForm;
  */
 class SiteController extends Controller
 {
-    // public $defaultIndex = 'login';
+    public $defaultIndex = 'login';
     /**
      * {@inheritdoc}
      */
@@ -30,7 +30,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup'],
+                'only' => ['logout', 'signup', 'index'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -38,7 +38,7 @@ class SiteController extends Controller
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout','index'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -90,7 +90,7 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
-        // $this->layout = 'main-login';
+        $this->layout = 'main-login';
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
