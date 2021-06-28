@@ -152,12 +152,12 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); ?>
 
 
-    <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <link href="/dti-afms-2/frontend/web/js/maskMoney.js" />
-    <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
-    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
-    <link href="/dti-afms-2/frontend/web/js/jquery.dataTables.js" />
-    <link href="/dti-afms-2/frontend/web/css/jquery.dataTables.css" rel="stylesheet" />
+    <script src="/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+    <link href="/frontend/web/js/maskMoney.js" />
+    <link href="/frontend/web/js/select2.min.js" />
+    <link href="/frontend/web/css/select2.min.css" rel="stylesheet" />
+    <link href="/frontend/web/js/jquery.dataTables.js" />
+    <link href="/frontend/web/css/jquery.dataTables.css" rel="stylesheet" />
     <!-- 
     <script>
         $(document).ready(function() {
