@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\FundClusterCode;
 use app\models\FundClusterCodeSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,8 +21,33 @@ class FundClusterCodeController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'update',
+                    'view',
+                    'create',
+                    'delete',
+                    'get-all-cluster'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'update',
+                            'view',
+                            'create',
+                            'delete',
+                            'get-all-cluster'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -131,4 +157,3 @@ class FundClusterCodeController extends Controller
         return json_encode($fc);
     }
 }
- 

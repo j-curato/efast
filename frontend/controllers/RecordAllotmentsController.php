@@ -17,6 +17,7 @@ use app\models\Transaction;
 use Codeception\Lib\Di;
 use Exception;
 use Mpdf\Tag\Em;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -32,6 +33,36 @@ class RecordAllotmentsController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'update',
+                    'delete',
+                    'create',
+                    'create-record-allotments',
+                    'update-record-allotment',
+                    'import',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'update',
+                            'delete',
+                            'create',
+                            'create-record-allotments',
+                            'update-record-allotment',
+                            'import',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -303,11 +334,7 @@ class RecordAllotmentsController extends Controller
         }
     }
 
-    public function actionQwe()
-    {
 
-        return Yii::$app->memem->hello('heelo');
-    }
     public function getSerialNumber($reporting_period, $book_name, $update_id)
     {
 
@@ -439,7 +466,7 @@ class RecordAllotmentsController extends Controller
                         ->from('fund_cluster_code')
                         ->where('name LIKE :name', ['name' => $fund_cluster_code_name])
                         ->one();
-                    
+
                     if (empty($fund_cluster_code)) {
                         $transaction->rollBack();
                         return json_encode(['error' => "Fund Cluster Code  Does Not Exist $key"]);
@@ -486,11 +513,11 @@ class RecordAllotmentsController extends Controller
                         return json_encode(['error' => 'Fund Source  Does Not Exist']);
                         die();
                     }
-                    $books=(new \yii\db\Query())
-                    ->select(['id','name'])
-                    ->from('books')
-                    ->where("books.name LIKE :book",['book'=>"%$fund_cluster_code_name"])
-                    ->one();
+                    $books = (new \yii\db\Query())
+                        ->select(['id', 'name'])
+                        ->from('books')
+                        ->where("books.name LIKE :book", ['book' => "%$fund_cluster_code_name"])
+                        ->one();
                     $exist = array_search($group_number, array_column($number_container, 'no'));
                     $reporting_period = "2021-01";
                     if ($exist === false) {
@@ -522,9 +549,9 @@ class RecordAllotmentsController extends Controller
                     if ($ra_entries->save(false)) {
                         $raoud = new Raouds();
                         $raoud->record_allotment_entries_id = $ra_entries->id;
-                        
-                        $raoud->serial_number=Yii::$app->memem->getRaoudSerialNumber($reporting_period,$fund_cluster_code['id'],'');
-                        $raoud->reporting_period= $reporting_period;
+
+                        $raoud->serial_number = Yii::$app->memem->getRaoudSerialNumber($reporting_period, $fund_cluster_code['id'], '');
+                        $raoud->reporting_period = $reporting_period;
                         if ($raoud->save(false)) {
                             $raoudEntry = new RaoudEntries();
                             $raoudEntry->raoud_id = $raoud->id;

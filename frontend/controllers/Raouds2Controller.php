@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\Raouds;
 use app\models\Raouds2Search;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,8 +21,32 @@ class Raouds2Controller extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'update',
+                    'delete',
+                    'create',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'update',
+                            'delete',
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
+
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -36,7 +61,7 @@ class Raouds2Controller extends Controller
     public function actionIndex()
     {
         $searchModel = new Raouds2Search();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,$sample=1);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $sample = 1);
 
         return $this->render('index', [
             'searchModel' => $searchModel,

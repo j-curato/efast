@@ -6,6 +6,7 @@ use Yii;
 use app\models\CashFlow;
 use app\models\CashFlowSearch;
 use app\models\DvAucsEntries;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -21,6 +22,31 @@ class CashFlowController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'update',
+                    'delete',
+                    'create',
+                    'get-all-cashflow'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'update',
+                            'delete',
+                            'create',
+                            'get-all-cashflow'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -133,5 +159,4 @@ class CashFlowController extends Controller
 
         return  json_encode($cf);
     }
-
 }

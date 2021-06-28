@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\MrdClassification;
 use app\models\MrdClassificationSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,8 +21,34 @@ class MrdClassificationController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'delete',
+                    'update',
+                    'create',
+                    'get-mrd-classification'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'delete',
+                            'update',
+                            'create',
+                            'get-mrd-classification'
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -126,14 +153,10 @@ class MrdClassificationController extends Controller
     }
     public function actionGetMrdClassification()
     {
-        $query=(new \yii\db\Query())
-        ->select('*')
-        ->from('mrd_classification')
-        ->all();
+        $query = (new \yii\db\Query())
+            ->select('*')
+            ->from('mrd_classification')
+            ->all();
         return json_encode($query);
-    }
-    public function actionInsertDv()
-    {
-            
     }
 }

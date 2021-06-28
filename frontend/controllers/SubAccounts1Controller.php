@@ -7,6 +7,7 @@ use Yii;
 use app\models\SubAccounts1;
 use app\models\SubAccounts1Search;
 use app\models\SubAccounts2;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -22,6 +23,38 @@ class SubAccounts1Controller extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'update',
+                    'delete',
+                    'view',
+                    'create',
+                    'create-sub-account',
+                    'import',
+
+                    'get-all-sub-account1',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'update',
+                            'delete',
+                            'view',
+                            'create',
+                            'create-sub-account',
+                            'import',
+
+                            'get-all-sub-account1',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [

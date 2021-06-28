@@ -10,6 +10,7 @@ use app\models\SubAccounts1;
 use app\models\SubMajorAccounts;
 use app\models\SubMajorAccounts2;
 use Exception;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -25,6 +26,44 @@ class ChartOfAccountsController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'create',
+                    'update',
+                    'create',
+                    'delete',
+                    'import',
+                    'create-sub-account',
+                    'get-all-account',
+                    'sample-index',
+                    'get-general-ledger',
+                    'chart-of-accounts',
+
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'create',
+                            'delete',
+                            'import',
+                            'create-sub-account',
+                            'get-all-account',
+                            'sample-index',
+                            'get-general-ledger',
+                            'chart-of-accounts',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [

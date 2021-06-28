@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\AuthorizationCode;
 use app\models\AuthorizationCodeSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,6 +21,34 @@ class AuthorizationCodeController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'create',
+                    'view',
+                    'update',
+                    'delete',
+                    'get-authorization-codes'
+                ],
+                'rules' => [
+                    [
+
+                        'actions' => [
+                            'index',
+                            'create',
+                            'view',
+                            'update',
+                            'delete',
+                            'get-authorization-codes'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+
+                ]
+            ],
+
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [

@@ -13,6 +13,7 @@ use app\models\RaoudEntries;
 use app\models\Raouds;
 use app\models\Raouds2Search;
 use ErrorException;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -28,6 +29,38 @@ class ProcessBursController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'delete',
+                    'view',
+                    'update',
+                    'create',
+                    're-align',
+                    'get-raoud',
+                    'insert-process-burs',
+                    'update-burs',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'delete',
+                            'view',
+                            'update',
+                            'create',
+                            're-align',
+                            'get-raoud',
+                            'insert-process-burs',
+                            'update-burs',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [

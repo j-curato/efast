@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\Raouds;
 use app\models\RaoudsSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,6 +21,31 @@ class RaoudsController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'update',
+                    'delete',
+                    'create',
+                    'get-raoud'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'update',
+                            'delete',
+                            'create',
+                            'get-raoud'
+                        ],
+                        'allow' => true,
+                        'roles' => ["@"]
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [

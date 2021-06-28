@@ -34,12 +34,12 @@ if (Yii::$app->controller->action->id === 'login') {
     <head>
         <meta charset="<?= Yii::$app->charset ?>" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script src="/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+        <script src="/afms/js/jquery.min.js" type="text/javascript"></script>
         <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
         <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
          <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
-        <link href="/frontend/web/js/select2.min.js" />
-        <link href="/frontend/web/css/select2.min.css" rel="stylesheet" />
+        <link href="/afms/js/select2.min.js" />
+        <link href="/afms/css/select2.min.css" rel="stylesheet" />
         <?= Html::csrfMetaTags() ?>
         <title><?= Html::encode($this->title) ?></title>
         <?php $this->head() ?>

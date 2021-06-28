@@ -46,10 +46,65 @@ class JevPreparationController extends Controller
 
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout', 'signup', 'index'],
+                'only' => [
+                    'index',
+                    'view',
+                    'delete',
+                    'update',
+                    'create',
+                    'general-ledger',
+                    'import',
+                    'general-journal',
+
+                    'adadj-filter',
+                    'adadj',
+                    'ckdj',
+                    'trial-alance',
+                    'insert-jev',
+                    'IsCurrent',
+                    'detailed-financial-position',
+                    'consolidated-financial-position',
+                    'get-subsidiary-ledger',
+                    'detailed-financial-performance',
+                    'consolidated-financial-erformance',
+                    'update-jev',
+                    'detailed-cashflow',
+                    'consolidated-cashflow',
+                    'changes-netasset-equity',
+                    'export-jev',
+                    'cdr-jev',
+
+                ],
                 'rules' => [
                     [
-                        'actions' => ['index'],
+                        'actions' => [
+                            'index',
+                            'view',
+                            'delete',
+                            'update',
+                            'create',
+                            'general-ledger',
+                            'import',
+                            'general-journal',
+
+                            'adadj-filter',
+                            'adadj',
+                            'ckdj',
+                            'trial-alance',
+                            'insert-jev',
+                            'IsCurrent',
+                            'detailed-financial-position',
+                            'consolidated-financial-position',
+                            'get-subsidiary-ledger',
+                            'detailed-financial-performance',
+                            'consolidated-financial-erformance',
+                            'update-jev',
+                            'detailed-cashflow',
+                            'consolidated-cashflow',
+                            'changes-netasset-equity',
+                            'export-jev',
+                            'cdr-jev',
+                        ],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -471,23 +526,23 @@ class JevPreparationController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    // public function actionDelete($id)
-    // {
+    public function actionDelete($id)
+    {
 
-    //     if (Yii::$app->user->can('delete-jev')) {
+        // if (Yii::$app->user->can('delete-jev')) {
 
-    //         $q =  $this->findModel($id);
-    //         foreach ($q->jevAccountingEntries as $val) {
-    //             $val->delete();
-    //         }
+        //     $q =  $this->findModel($id);
+        //     foreach ($q->jevAccountingEntries as $val) {
+        //         $val->delete();
+        //     }
 
-    //         $q->delete();
+        //     $q->delete();
 
-    //         return $this->redirect(['index']);
-    //     } else {
-    //         throw new ForbiddenHttpException();
-    //     }
-    // }
+        //     return $this->redirect(['index']);
+        // } else {
+        //     throw new ForbiddenHttpException();
+        // }
+    }
 
     /**
      * Finds the JevPreparation model based on its primary key value.
@@ -1289,13 +1344,13 @@ class JevPreparationController extends Controller
 
 
 
-    public function actionGetA()
-    {
-        // echo "<pre>";
-        // var_dump($_POST['name']);
-        // echo "</pre>";
-        return json_encode($_POST['x']);
-    }
+    // public function actionGetA()
+    // {
+    //     // echo "<pre>";
+    //     // var_dump($_POST['name']);
+    //     // echo "</pre>";
+    //     return json_encode($_POST['x']);
+    // }
 
     public function actionInsertJev()
     {

@@ -37,19 +37,17 @@ class ReportController extends \yii\web\Controller
                     'unpaid-obligation',
                     'saob',
                     'get-cash',
-                    'export-jev',
                     'cibr',
                     'cdr',
-                    // actionPendingOrs
-                    // actionUnobligatedTransaction
-                    // actionPendingDv
-                    // actionUnpaidObligation
-                    // actionSaob
-                    // actionGetCash
-                    // actionSample
-                    // actionExportJev
-                    // actionCibr
-                    // actionCdr
+
+                    'advances-liquidation',
+                    'insert-cdr',
+                    'get-cdr',
+                    'temp',
+                    'temp-import',
+                    'detailed-dv-aucs',
+                    'conso-detailed-dv',
+
                 ],
                 'rules' => [
                     [
@@ -61,9 +59,16 @@ class ReportController extends \yii\web\Controller
                             'unpaid-obligation',
                             'saob',
                             'get-cash',
-                            'export-jev',
                             'cibr',
                             'cdr',
+
+                            'advances-liquidation',
+                            'insert-cdr',
+                            'get-cdr',
+                            'temp',
+                            'temp-import',
+                            'detailed-dv-aucs',
+                            'conso-detailed-dv',
                         ],
                         'allow' => true,
                         'roles' => ['@']
@@ -232,281 +237,281 @@ class ReportController extends \yii\web\Controller
 
     }
 
-    public function actionExportJev()
-    {
+    // public function actionExportJev()
+    // {
 
-        // if ($_POST) {
-        //     $reporting_period = date('Y',strtotime($_POST['reporting_period']));
-        $query = JevAccountingEntries::find()
-            ->joinWith('jevPreparation')
-            ->where('jev_preparation.reporting_period >=:reporting_period', ['reporting_period' => '2021'])
-            ->all();
-        $q1 = (new \yii\db\Query())
-            ->select([
-                'SUM(jev_accounting_entries.debit) as total_debit',
-                'SUM(jev_accounting_entries.credit) as total_credit',
-                'jev_accounting_entries.object_code',
-                'jev_accounting_entries.lvl',
-            ])
-            ->from('jev_accounting_entries')
-            ->join('LEFT JOIN', 'jev_preparation', 'jev_accounting_entries.jev_preparation_id = jev_preparation.id')
-            ->where("jev_preparation.reporting_period <:reporting_period", ['reporting_period' => '2021'])
-            ->groupBy("jev_accounting_entries.object_code")
-            ->all();
+    //     // if ($_POST) {
+    //     //     $reporting_period = date('Y',strtotime($_POST['reporting_period']));
+    //     $query = JevAccountingEntries::find()
+    //         ->joinWith('jevPreparation')
+    //         ->where('jev_preparation.reporting_period >=:reporting_period', ['reporting_period' => '2021'])
+    //         ->all();
+    //     $q1 = (new \yii\db\Query())
+    //         ->select([
+    //             'SUM(jev_accounting_entries.debit) as total_debit',
+    //             'SUM(jev_accounting_entries.credit) as total_credit',
+    //             'jev_accounting_entries.object_code',
+    //             'jev_accounting_entries.lvl',
+    //         ])
+    //         ->from('jev_accounting_entries')
+    //         ->join('LEFT JOIN', 'jev_preparation', 'jev_accounting_entries.jev_preparation_id = jev_preparation.id')
+    //         ->where("jev_preparation.reporting_period <:reporting_period", ['reporting_period' => '2021'])
+    //         ->groupBy("jev_accounting_entries.object_code")
+    //         ->all();
 
-        $sub1 = (new \yii\db\Query())
-            ->select('*')
-            ->from('sub_accounts1')
-            ->all();
+    //     $sub1 = (new \yii\db\Query())
+    //         ->select('*')
+    //         ->from('sub_accounts1')
+    //         ->all();
 
-        $sub2 = (new \yii\db\Query())
-            ->select('*')
-            ->from('sub_accounts2')
-            ->all();
-        $chart = (new \yii\db\Query())
-            ->select('*')
-            ->from('chart_of_accounts')
-            ->all();
+    //     $sub2 = (new \yii\db\Query())
+    //         ->select('*')
+    //         ->from('sub_accounts2')
+    //         ->all();
+    //     $chart = (new \yii\db\Query())
+    //         ->select('*')
+    //         ->from('chart_of_accounts')
+    //         ->all();
 
-        // $rrr = array_search("1030501000_00052", array_column($sub1, 'object_code'));
-        // ob_clean();
-        // echo "<pre>";
-        // var_dump($q1);
-        // echo "</pre>";
-        // return ob_get_clean();
-
-
+    //     // $rrr = array_search("1030501000_00052", array_column($sub1, 'object_code'));
+    //     // ob_clean();
+    //     // echo "<pre>";
+    //     // var_dump($q1);
+    //     // echo "</pre>";
+    //     // return ob_get_clean();
 
 
 
 
 
-        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        // header
-        $sheet->setAutoFilter('A1:N1');
-        $sheet->setCellValue('A1', "JEV Number");
-        $sheet->setCellValue('B1', "DV Number");
-        $sheet->setCellValue('C1', "Check/ADA Number");
-        $sheet->setCellValue('D1', "Payee");
-        $sheet->setCellValue('E1', "UACS");
-        $sheet->setCellValue('F1', "General Ledger");
-        $sheet->setCellValue('G1', 'Entry Object Code');
-        $sheet->setCellValue('H1', 'Entry Account Title');
-        $sheet->setCellValue('I1', 'Reporting Period');
-        $sheet->setCellValue('J1', 'Date');
-        $sheet->setCellValue('K1', 'Particular');
-        $sheet->setCellValue('L1', 'Debit');
-        $sheet->setCellValue('M1', 'Credit');
-        $sheet->setCellValue('N1', 'Reference');
-
-        // BEGINNING BALANCE
-        $sheet->setCellValue('K2', 'Beginning Balance');
-        // $sheet->setCellValue('L2', $q1['total_debit']);
-        // $sheet->setCellValue('M2', $q1['total_credit']);
-        $x = 7;
-        $styleArray = array(
-            'borders' => array(
-                'allBorders' => array(
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
-                    'color' => array('argb' => 'FFFF0000'),
-                ),
-            ),
-        );
 
 
-        $row = 2;
-        foreach ($q1 as $x) {
-            $general_ledger = '';
-            $object_code = '';
-            if (intval($x['lvl']) === 1) {
-                $index = array_search($x['object_code'], array_column($chart, 'uacs'));
-                // $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $x['object_code']])->one();
-                $general_ledger = $chart[$index]['general_ledger'];
-                $object_code =  $chart[$index]['uacs'];
-            } else if (intval($x['lvl']) === 2) {
-                $index = array_search($x['object_code'], array_column($sub1, 'object_code'));
-                // $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $x['object_code']])->one();
-                $general_ledger = $sub1[$index]['name'];
-                $object_code =  $sub1[$index]['object_code'];
-            } else if (intval($x['lvl']) === 3) {
-                $index = array_search($x['object_code'], array_column($sub2, 'object_code'));
-                // $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $x['object_code']])->one();
-                $general_ledger =  $sub2[$index]['name'];
-                $object_code =  $sub2[$index]['object_code'];
-            }
-            $sheet->setCellValueByColumnAndRow(
-                7,
-                $row,
-                $object_code
-            );
-            //ENTRY ACCOUNT TITLE
-            $sheet->setCellValueByColumnAndRow(
-                8,
-                $row,
-                $general_ledger
-            );
-            $sheet->setCellValueByColumnAndRow(
-                11,
-                $row,
-                'Beginning Balance'
-            );
-            //DEBIT
-            $sheet->setCellValueByColumnAndRow(
-                12,
-                $row,
-                !empty($x['total_debit']) ? $x['total_debit'] : ''
-            );
-            //CREDIT
-            $sheet->setCellValueByColumnAndRow(
-                13,
-                $row,
-                !empty($x['total_credit']) ? $x['total_credit'] : ''
-            );
-            $row++;
-        }
-        foreach ($query  as  $val) {
+    //     $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    //     $sheet = $spreadsheet->getActiveSheet();
+    //     // header
+    //     $sheet->setAutoFilter('A1:N1');
+    //     $sheet->setCellValue('A1', "JEV Number");
+    //     $sheet->setCellValue('B1', "DV Number");
+    //     $sheet->setCellValue('C1', "Check/ADA Number");
+    //     $sheet->setCellValue('D1', "Payee");
+    //     $sheet->setCellValue('E1', "UACS");
+    //     $sheet->setCellValue('F1', "General Ledger");
+    //     $sheet->setCellValue('G1', 'Entry Object Code');
+    //     $sheet->setCellValue('H1', 'Entry Account Title');
+    //     $sheet->setCellValue('I1', 'Reporting Period');
+    //     $sheet->setCellValue('J1', 'Date');
+    //     $sheet->setCellValue('K1', 'Particular');
+    //     $sheet->setCellValue('L1', 'Debit');
+    //     $sheet->setCellValue('M1', 'Credit');
+    //     $sheet->setCellValue('N1', 'Reference');
 
-            // jev_number
-            $sheet->setCellValueByColumnAndRow(1, $row,  !empty($val->jevPreparation->jev_number) ? $val->jevPreparation->jev_number : '');
-            // dv number
-            $sheet->setCellValueByColumnAndRow(2, $row,  !empty($val->jevPreparation->dv_number) ? $val->jevPreparation->dv_number : '');
-            // check ada number
-            $sheet->setCellValueByColumnAndRow(3, $row,  !empty($val->jevPreparation->check_ada_number) ? $val->jevPreparation->check_ada_number : '');
-            //payee
-            $sheet->setCellValueByColumnAndRow(
-                4,
-                $row,
-                !empty($val->jevPreparation->payee_id) ? $val->jevPreparation->payee->account_name : ''
-            );
-            //UACS
-            $sheet->setCellValueByColumnAndRow(
-                5,
-                $row,
-                !empty($val->chart_of_account_id) ? $val->chartOfAccount->uacs : ''
-            );
-            //GENERAL LEDGER
-            $sheet->setCellValueByColumnAndRow(
-                6,
-                $row,
-                !empty($val->chart_of_account_id) ? $val->chartOfAccount->general_ledger : ''
-            );
-            $general_ledger = '';
-            $object_code = '';
-            if ($val->lvl === 1) {
-                $general_ledger = $val->chartOfAccount->general_ledger;
-                $object_code = $val->chartOfAccount->uacs;
-            } else if ($val->lvl === 2) {
-                // $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $val->object_code])->one();
-                // $general_ledger = $q->name;
-                // $object_code = $q->object_code;
+    //     // BEGINNING BALANCE
+    //     $sheet->setCellValue('K2', 'Beginning Balance');
+    //     // $sheet->setCellValue('L2', $q1['total_debit']);
+    //     // $sheet->setCellValue('M2', $q1['total_credit']);
+    //     $x = 7;
+    //     $styleArray = array(
+    //         'borders' => array(
+    //             'allBorders' => array(
+    //                 'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+    //                 'color' => array('argb' => 'FFFF0000'),
+    //             ),
+    //         ),
+    //     );
 
-                $eee = array_search($val->object_code, array_column($sub1, 'object_code'));
-                $general_ledger = $sub1[$eee]['name'];
-                $object_code = $sub1[$eee]['object_code'];
-                // ob_clean();
-                // echo "<pre>";
-                // var_dump($sub1[$eee]['object_code']);
-                // echo "</pre>";
-                // return ob_get_clean();
-            } else if ($val->lvl === 3) {
-                // $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $val->object_code])->one();
-                // $general_ledger = $q->name;
-                // $object_code = $q->object_code;
-                $y = array_search($val->object_code, array_column($sub2, 'object_code'));
-                $general_ledger = $sub2[$y]['name'];
-                $object_code = $sub2[$y]['object_code'];
-            }
-            //ENTRY OBJECT CODE
 
-            $sheet->setCellValueByColumnAndRow(
-                7,
-                $row,
-                $object_code
-            );
-            //ENTRY ACCOUNT TITLE
-            $sheet->setCellValueByColumnAndRow(
-                8,
-                $row,
-                $general_ledger
-            );
-            //REPORTING PERIOD
-            $sheet->setCellValueByColumnAndRow(
-                9,
-                $row,
-                !empty($val->jevPreparation->reporting_period) ? $val->jevPreparation->reporting_period : ''
-            );
-            //DATE
-            $sheet->setCellValueByColumnAndRow(
-                10,
-                $row,
-                !empty($val->jevPreparation->date) ? $val->jevPreparation->date : ''
-            );
-            //PARTICULAR
-            $sheet->setCellValueByColumnAndRow(
-                11,
-                $row,
-                !empty($val->jevPreparation->explaination) ? $val->jevPreparation->explaination : ''
-            );
-            //DEBIT
-            $sheet->setCellValueByColumnAndRow(
-                12,
-                $row,
-                !empty($val->debit) ? $val->debit : ''
-            );
-            //CREDIT
-            $sheet->setCellValueByColumnAndRow(
-                13,
-                $row,
-                !empty($val->credit) ? $val->credit : ''
-            );
-            //REFERENCE
-            $sheet->setCellValueByColumnAndRow(
-                14,
-                $row,
-                !empty($val->jevPreparation->ref_number) ? $val->jevPreparation->ref_number : ''
-            );
+    //     $row = 2;
+    //     foreach ($q1 as $x) {
+    //         $general_ledger = '';
+    //         $object_code = '';
+    //         if (intval($x['lvl']) === 1) {
+    //             $index = array_search($x['object_code'], array_column($chart, 'uacs'));
+    //             // $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $x['object_code']])->one();
+    //             $general_ledger = $chart[$index]['general_ledger'];
+    //             $object_code =  $chart[$index]['uacs'];
+    //         } else if (intval($x['lvl']) === 2) {
+    //             $index = array_search($x['object_code'], array_column($sub1, 'object_code'));
+    //             // $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $x['object_code']])->one();
+    //             $general_ledger = $sub1[$index]['name'];
+    //             $object_code =  $sub1[$index]['object_code'];
+    //         } else if (intval($x['lvl']) === 3) {
+    //             $index = array_search($x['object_code'], array_column($sub2, 'object_code'));
+    //             // $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $x['object_code']])->one();
+    //             $general_ledger =  $sub2[$index]['name'];
+    //             $object_code =  $sub2[$index]['object_code'];
+    //         }
+    //         $sheet->setCellValueByColumnAndRow(
+    //             7,
+    //             $row,
+    //             $object_code
+    //         );
+    //         //ENTRY ACCOUNT TITLE
+    //         $sheet->setCellValueByColumnAndRow(
+    //             8,
+    //             $row,
+    //             $general_ledger
+    //         );
+    //         $sheet->setCellValueByColumnAndRow(
+    //             11,
+    //             $row,
+    //             'Beginning Balance'
+    //         );
+    //         //DEBIT
+    //         $sheet->setCellValueByColumnAndRow(
+    //             12,
+    //             $row,
+    //             !empty($x['total_debit']) ? $x['total_debit'] : ''
+    //         );
+    //         //CREDIT
+    //         $sheet->setCellValueByColumnAndRow(
+    //             13,
+    //             $row,
+    //             !empty($x['total_credit']) ? $x['total_credit'] : ''
+    //         );
+    //         $row++;
+    //     }
+    //     foreach ($query  as  $val) {
 
-            $row++;
-        }
+    //         // jev_number
+    //         $sheet->setCellValueByColumnAndRow(1, $row,  !empty($val->jevPreparation->jev_number) ? $val->jevPreparation->jev_number : '');
+    //         // dv number
+    //         $sheet->setCellValueByColumnAndRow(2, $row,  !empty($val->jevPreparation->dv_number) ? $val->jevPreparation->dv_number : '');
+    //         // check ada number
+    //         $sheet->setCellValueByColumnAndRow(3, $row,  !empty($val->jevPreparation->check_ada_number) ? $val->jevPreparation->check_ada_number : '');
+    //         //payee
+    //         $sheet->setCellValueByColumnAndRow(
+    //             4,
+    //             $row,
+    //             !empty($val->jevPreparation->payee_id) ? $val->jevPreparation->payee->account_name : ''
+    //         );
+    //         //UACS
+    //         $sheet->setCellValueByColumnAndRow(
+    //             5,
+    //             $row,
+    //             !empty($val->chart_of_account_id) ? $val->chartOfAccount->uacs : ''
+    //         );
+    //         //GENERAL LEDGER
+    //         $sheet->setCellValueByColumnAndRow(
+    //             6,
+    //             $row,
+    //             !empty($val->chart_of_account_id) ? $val->chartOfAccount->general_ledger : ''
+    //         );
+    //         $general_ledger = '';
+    //         $object_code = '';
+    //         if ($val->lvl === 1) {
+    //             $general_ledger = $val->chartOfAccount->general_ledger;
+    //             $object_code = $val->chartOfAccount->uacs;
+    //         } else if ($val->lvl === 2) {
+    //             // $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $val->object_code])->one();
+    //             // $general_ledger = $q->name;
+    //             // $object_code = $q->object_code;
 
-        $id = uniqid();
-        $file_name = "ckdj_excel_$id.xlsx";
-        // header('Content-Type: application/vnd.ms-excel');
-        // header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
-        // header('Content-Transfer-Encoding: binary');
-        // header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-        // header('Pragma: public'); // HTTP/1.0
-        // echo readfile($file);
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
-        $file = "transaction\ckdj_excel_$id.xlsx";
-        $file2 = "transaction/ckdj_excel_$id.xlsx";
+    //             $eee = array_search($val->object_code, array_column($sub1, 'object_code'));
+    //             $general_ledger = $sub1[$eee]['name'];
+    //             $object_code = $sub1[$eee]['object_code'];
+    //             // ob_clean();
+    //             // echo "<pre>";
+    //             // var_dump($sub1[$eee]['object_code']);
+    //             // echo "</pre>";
+    //             // return ob_get_clean();
+    //         } else if ($val->lvl === 3) {
+    //             // $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $val->object_code])->one();
+    //             // $general_ledger = $q->name;
+    //             // $object_code = $q->object_code;
+    //             $y = array_search($val->object_code, array_column($sub2, 'object_code'));
+    //             $general_ledger = $sub2[$y]['name'];
+    //             $object_code = $sub2[$y]['object_code'];
+    //         }
+    //         //ENTRY OBJECT CODE
 
-        $writer->save($file);
-        // return ob_get_clean();
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename="' . basename($file2) . '"');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header('Content-Length: ' . filesize($file2));
-        flush(); // Flush system output buffer
-        readfile($file2);
-        // flush();
-        // ob_clean();
-        // flush();
+    //         $sheet->setCellValueByColumnAndRow(
+    //             7,
+    //             $row,
+    //             $object_code
+    //         );
+    //         //ENTRY ACCOUNT TITLE
+    //         $sheet->setCellValueByColumnAndRow(
+    //             8,
+    //             $row,
+    //             $general_ledger
+    //         );
+    //         //REPORTING PERIOD
+    //         $sheet->setCellValueByColumnAndRow(
+    //             9,
+    //             $row,
+    //             !empty($val->jevPreparation->reporting_period) ? $val->jevPreparation->reporting_period : ''
+    //         );
+    //         //DATE
+    //         $sheet->setCellValueByColumnAndRow(
+    //             10,
+    //             $row,
+    //             !empty($val->jevPreparation->date) ? $val->jevPreparation->date : ''
+    //         );
+    //         //PARTICULAR
+    //         $sheet->setCellValueByColumnAndRow(
+    //             11,
+    //             $row,
+    //             !empty($val->jevPreparation->explaination) ? $val->jevPreparation->explaination : ''
+    //         );
+    //         //DEBIT
+    //         $sheet->setCellValueByColumnAndRow(
+    //             12,
+    //             $row,
+    //             !empty($val->debit) ? $val->debit : ''
+    //         );
+    //         //CREDIT
+    //         $sheet->setCellValueByColumnAndRow(
+    //             13,
+    //             $row,
+    //             !empty($val->credit) ? $val->credit : ''
+    //         );
+    //         //REFERENCE
+    //         $sheet->setCellValueByColumnAndRow(
+    //             14,
+    //             $row,
+    //             !empty($val->jevPreparation->ref_number) ? $val->jevPreparation->ref_number : ''
+    //         );
 
-        // // echo "<script> window.location.href = '$file';</script>";
-        // echo "<script>window.open('$file2','_self')</script>";
+    //         $row++;
+    //     }
 
-        //    echo readfile("../../frontend/web/transaction/" . $file_name);
-        exit();
-        // return json_encode(['res' => "transaction\ckdj_excel_$id.xlsx"]);
-        // return json_encode($file);
-        // exit;
-        // }
-    }
+    //     $id = uniqid();
+    //     $file_name = "ckdj_excel_$id.xlsx";
+    //     // header('Content-Type: application/vnd.ms-excel');
+    //     // header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
+    //     // header('Content-Transfer-Encoding: binary');
+    //     // header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+    //     // header('Pragma: public'); // HTTP/1.0
+    //     // echo readfile($file);
+    //     $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+    //     $file = "transaction\ckdj_excel_$id.xlsx";
+    //     $file2 = "transaction/ckdj_excel_$id.xlsx";
+
+    //     $writer->save($file);
+    //     // return ob_get_clean();
+    //     header('Content-Description: File Transfer');
+    //     header('Content-Type: application/octet-stream');
+    //     header('Content-Disposition: attachment; filename="' . basename($file2) . '"');
+    //     header('Expires: 0');
+    //     header('Cache-Control: must-revalidate');
+    //     header('Pragma: public');
+    //     header('Content-Length: ' . filesize($file2));
+    //     flush(); // Flush system output buffer
+    //     readfile($file2);
+    //     // flush();
+    //     // ob_clean();
+    //     // flush();
+
+    //     // // echo "<script> window.location.href = '$file';</script>";
+    //     // echo "<script>window.open('$file2','_self')</script>";
+
+    //     //    echo readfile("../../frontend/web/transaction/" . $file_name);
+    //     exit();
+    //     // return json_encode(['res' => "transaction\ckdj_excel_$id.xlsx"]);
+    //     // return json_encode($file);
+    //     // exit;
+    //     // }
+    // }
 
     public function actionCibr()
     {
@@ -928,57 +933,3 @@ class ReportController extends \yii\web\Controller
         }
     }
 }
-
-
-
-// saobl last query
-// $query = Yii::$app->db->createCommand("SELECT ors.*,
-// record_allotment_entries.amount,
-
-// chart_of_accounts.uacs,
-// chart_of_accounts.major_account_id,
-// chart_of_accounts.general_ledger from record_allotment_entries,chart_of_accounts,
-// (
-
-// SELECT q1.record_allotment_entries_id as allotment_id,
-// q1.total_obligation,q1.reporting_period,
-// q2.total_obligation1,q2.reporting_period1
-// FROM (
-//     SELECT SUM(raoud_entries.amount) as total_obligation,
-//     raouds.record_allotment_entries_id,
-//     process_ors.reporting_period
-//     from raouds,raoud_entries,process_ors
-//     where raouds.id = raoud_entries.raoud_id
-    
-//     AND raouds.process_ors_id = process_ors.id
-//     AND process_ors.reporting_period = :last_month
-//     GROUP BY raouds.record_allotment_entries_id
-// ) as q1
-// ,(
-//     SELECT SUM(raoud_entries.amount) total_obligation1,raouds.record_allotment_entries_id,
-//     process_ors.reporting_period as reporting_period1
-//     from raouds,raoud_entries,process_ors
-//     where raouds.id = raoud_entries.raoud_id
-    
-//     AND raouds.process_ors_id = process_ors.id
-//     AND process_ors.reporting_period = :this_month
-//     GROUP BY raouds.record_allotment_entries_id
-    
-// ) as q2
-
-// WHERE q1.record_allotment_entries_id = q2.record_allotment_entries_id
-
-// ) as ors
-// where record_allotment_entries.id = ors.allotment_id
-// AND record_allotment_entries.chart_of_account_id =chart_of_accounts.id
-
-// ORDER BY record_allotment_entries.id
-
-// ")
-//     ->bindValue(':this_month', $reporting_period_this_month)
-//     ->bindValue(':last_month', $reporting_period_last_month)
-
-//     ->queryAll();
-// $result = ArrayHelper::index($query, null, [function ($element) {
-//     return $element['uacs'];
-// },]);

@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\Cdr;
 use app\models\CdrSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -21,6 +22,35 @@ class CdrController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'create',
+                    'view',
+                    'update',
+                    'delete',
+                    'cdr',
+                    'cdr-final',
+                    'insert-cdr'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'create',
+                            'view',
+                            'update',
+                            'delete',
+                            'cdr',
+                            'cdr-final',
+                            'insert-cdr'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -324,7 +354,7 @@ class CdrController extends Controller
         // $report_type = 'Advances for Operating Expenses';
         // $province = 'ADN';
         // $reporting_period = '2021-02';
-        
+
         $serial_number = 'CDR ';
         if ($report_type === 'Advances for Operating Expenses') {
             $type = 'OPEX';

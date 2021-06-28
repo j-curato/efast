@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\FundCategoryAndClassificationCode;
 use app\models\FundCategoryAndClassificationCodeSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,8 +21,31 @@ class FundCategoryAndClassificationCodeController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'create',
+                    'view',
+                    'update',
+                    'delete'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'create',
+                            'view',
+                            'update',
+                            'delete'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],

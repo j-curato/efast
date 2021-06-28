@@ -12,6 +12,7 @@ use app\models\Raouds;
 use app\models\Raouds2Search;
 use app\models\RaoudsSearch;
 use yii\db\ForeignKeyConstraint;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -27,6 +28,35 @@ class ProcessOrsController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'create',
+                    'delete',
+                    'update',
+                    'view',
+                    'sample',
+                    'insert-process-ors',
+                    'qwe',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'create',
+                            'delete',
+                            'update',
+                            'view',
+                            'sample',
+                            'insert-process-ors',
+                            'qwe',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [

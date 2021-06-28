@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\FundSource;
 use app\models\FundSourceSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,8 +21,33 @@ class FundSourceController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'update',
+                    'create',
+                    'view',
+                    'delete',
+                    'get-fund-sources'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'update',
+                            'create',
+                            'view',
+                            'delete',
+                            'get-fund-sources'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -129,5 +155,4 @@ class FundSourceController extends Controller
         $na = (new \yii\db\Query())->select('*')->from('fund_source')->all();
         return json_encode($na);
     }
-
 }

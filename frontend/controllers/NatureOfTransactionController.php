@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\NatureOfTransaction;
 use app\models\NatureOfTransactionSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,8 +21,33 @@ class NatureOfTransactionController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'get-nature-of-transaction',
+                    'index',
+                    'create',
+                    'delete',
+                    'view',
+                    'update'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'get-nature-of-transaction',
+                            'index',
+                            'create',
+                            'delete',
+                            'view',
+                            'update'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],

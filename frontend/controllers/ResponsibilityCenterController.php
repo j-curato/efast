@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\ResponsibilityCenter;
 use app\models\ResponsibilityCenterSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,8 +21,34 @@ class ResponsibilityCenterController extends Controller
     public function behaviors()
     {
         return [
+
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'get-responsibility-center',
+                    'index',
+                    'view',
+                    'update',
+                    'delete',
+                    'create',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'get-responsibility-center',
+                            'index',
+                            'view',
+                            'update',
+                            'delete',
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],

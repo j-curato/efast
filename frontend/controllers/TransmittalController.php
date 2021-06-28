@@ -6,6 +6,7 @@ use Yii;
 use app\models\Transmittal;
 use app\models\TransmittalEntries;
 use app\models\TransmittalSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -21,8 +22,33 @@ class TransmittalController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'update',
+                    'delete',
+                    'view',
+                    'create',
+                    'insert-transmittal'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'update',
+                            'delete',
+                            'view',
+                            'create',
+                            'insert-transmittal'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -105,9 +131,9 @@ class TransmittalController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        // $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        // return $this->redirect(['index']);
     }
 
     /**
@@ -136,10 +162,9 @@ class TransmittalController extends Controller
 
             if (!empty($update_id)) {
                 $tr = Transmittal::findOne($update_id);
-                foreach($tr->transmittalEntries as $q){
+                foreach ($tr->transmittalEntries as $q) {
                     $q->delete();
                 }
-
             } else {
 
                 $tr = new Transmittal();
@@ -168,7 +193,7 @@ class TransmittalController extends Controller
                 return json_encode(['isSucces' => false, 'error' => $tr->errors]);
             }
 
-            return json_encode(['isSuccess'=>true,'id'=>$tr->id]);
+            return json_encode(['isSuccess' => true, 'id' => $tr->id]);
         }
     }
     public function getTransmittalNumber($date)

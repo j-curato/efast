@@ -12,6 +12,7 @@ return [
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
     // 'defaultRoute' => 'site/login',
+    
 
     'components' => [
         'request' => [

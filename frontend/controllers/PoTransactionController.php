@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\PoTransaction;
 use app\models\PoTransactionSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,6 +21,31 @@ class PoTransactionController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'delete',
+                    'update',
+                    'create',
+                    'get-transaction'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'delete',
+                            'update',
+                            'create',
+                            'get-transaction'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [

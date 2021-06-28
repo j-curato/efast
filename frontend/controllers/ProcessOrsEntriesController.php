@@ -17,6 +17,7 @@ use app\models\RaoudsSearch2;
 use app\models\RecordAllotmentEntries;
 use ErrorException;
 use Exception;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -32,6 +33,48 @@ class ProcessOrsEntriesController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'update',
+                    'delete',
+                    'view',
+                    'create',
+                    'adjust',
+                    're-align',
+                    'delete',
+                    'add-data',
+                    'insert-process-ors',
+                    'import',
+                    'get-raoud',
+                    'cancel',
+                    'update-ors',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'update',
+                            'delete',
+                            'view',
+                            'create',
+                            'adjust',
+                            're-align',
+                            'delete',
+                            'add-data',
+                            'insert-process-ors',
+                            'import',
+                            'get-raoud',
+                            'cancel',
+                            'update-ors',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -87,7 +130,7 @@ class ProcessOrsEntriesController extends Controller
         //     'model' => $model,
         // ]);
         $searchModel = new Raouds2Search();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,'ors');
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
 
         return $this->render('create', [
             'searchModel' => $searchModel,
@@ -117,7 +160,7 @@ class ProcessOrsEntriesController extends Controller
         // ]);
         $raoud = Raouds::findOne($id);
         $searchModel = new Raouds2Search();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,'ors');
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -130,7 +173,7 @@ class ProcessOrsEntriesController extends Controller
     {
         $raoud = Raouds::findOne($id);
         $searchModel = new Raouds2Search();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,'ors');
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -143,7 +186,7 @@ class ProcessOrsEntriesController extends Controller
     public function actionReAlign($id)
     {
         $searchModel = new Raouds2Search();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,'ors');
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -162,10 +205,10 @@ class ProcessOrsEntriesController extends Controller
      */
     public function actionDelete($id)
     {
-        if (Yii::$app->user->can('delete-ors')) {
-            $this->findModel($id)->delete();
-            return $this->redirect(['index']);
-        }
+        // if (Yii::$app->user->can('delete-ors')) {
+        //     $this->findModel($id)->delete();
+        //     return $this->redirect(['index']);
+        // }
     }
 
     /**
@@ -293,7 +336,7 @@ class ProcessOrsEntriesController extends Controller
                         // $raoud->record_allotment_id = $raoud_to_charge_adjustment->record_allotment_id;
                         // $amount = intval(str_replace(', .', '', $_POST['obligation_amount'][$index]));
                         // $t = explode(',', $_POST['obligation_amount'][$index]);
-                         
+
                         // $amount = number_format(implode($t),2);
                         $t = explode(',', $_POST['obligation_amount'][$index]);
                         list($amount) = sscanf(implode($t), "%f");
@@ -358,7 +401,7 @@ class ProcessOrsEntriesController extends Controller
                 } catch (ErrorException $e) {
                     return json_encode(["error" => $e]);
                 }
-            } 
+            }
             // else if ($_POST['update'] === 'adjust') {
             //     $reporting_period = $_POST['new_reporting_period'][0];
             //     $raoud = Raouds::findOne($_POST['update_id']);
@@ -516,14 +559,14 @@ class ProcessOrsEntriesController extends Controller
     public function getOrsSerialNumber($reporting_period, $book_id)
     {
         $book = Books::findOne($book_id);
-//         select substring_index(substring(serial_number, instr(serial_number, "-")+9), " ", 1) as q from process_ors
+        //         select substring_index(substring(serial_number, instr(serial_number, "-")+9), " ", 1) as q from process_ors
 
-// WHERE process_ors.type LIKE 'ors'
-// ORDER BY q DESC
+        // WHERE process_ors.type LIKE 'ors'
+        // ORDER BY q DESC
         $query = (new \yii\db\Query())
             ->select("serial_number")
             ->from('process_ors')
-            ->where("process_ors.type=:type",['type'=>'ors'])
+            ->where("process_ors.type=:type", ['type' => 'ors'])
             ->orderBy("id DESC")
             ->one();
         // $reporting_period = "2021-01";
@@ -534,7 +577,7 @@ class ProcessOrsEntriesController extends Controller
             $last_number = explode('-', $query['serial_number']);
             $x = intval($last_number[3]) + 1;
         }
-        
+
         $serial_number = $book->name . '-' . $reporting_period . '-' . $x;
         // ob_start();
         // echo "<pre>";
@@ -619,7 +662,7 @@ class ProcessOrsEntriesController extends Controller
                 $date = $cells[2];
                 $transaction_number = $cells[3];
                 $obligation_number = $cells[4];
-                $allotment_number = explode("-",trim($cells[5]))[3];
+                $allotment_number = explode("-", trim($cells[5]))[3];
                 $allotment_uacs = trim($cells[6]);
                 $obligation_uacs = trim($cells[7]);
                 $amount = $cells[11];

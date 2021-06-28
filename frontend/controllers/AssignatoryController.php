@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\Assignatory;
 use app\models\AssignatorySearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,6 +21,31 @@ class AssignatoryController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'update',
+                    'delete',
+                    'create',
+                    'get-all-assignatory'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'update',
+                            'delete',
+                            'create',
+                            'get-all-assignatory'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -126,11 +152,11 @@ class AssignatoryController extends Controller
     }
     public function actionGetAllAssignatory()
     {
-        
+
         $query = (new \yii\db\Query())
-        ->select('*')
-        ->from("assignatory")
-        ->all();
+            ->select('*')
+            ->from("assignatory")
+            ->all();
 
         return  json_encode($query);
     }

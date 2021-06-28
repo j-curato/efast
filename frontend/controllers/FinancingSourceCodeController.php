@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\FinancingSourceCode;
 use app\models\FinancingSourceCodeSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,8 +21,33 @@ class FinancingSourceCodeController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'update',
+                    'delete',
+                    'create',
+                    'view',
+                    'get-financing-source-codes'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'update',
+                            'delete',
+                            'create',
+                            'view',
+                            'get-financing-source-codes'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],

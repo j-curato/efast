@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\DocumentRecieve;
 use app\models\DocumentRecieveSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,8 +21,35 @@ class DocumentRecieveController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'create',
+                    'update',
+                    'delete',
+                    'get-document-recieves',
+                    'get-document-recieves',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'delete',
+                            'get-document-recieves',
+                            'get-document-recieves',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -132,9 +160,9 @@ class DocumentRecieveController extends Controller
     }
     public function actionFindDocument()
     {
-        $doc=$this->findModel($_POST['document_id'])->name;
-        $type = explode('-',$doc);
+        $doc = $this->findModel($_POST['document_id'])->name;
+        $type = explode('-', $doc);
 
-        return json_encode(['result'=>strtolower(trim($type[0])) ]);
+        return json_encode(['result' => strtolower(trim($type[0]))]);
     }
 }

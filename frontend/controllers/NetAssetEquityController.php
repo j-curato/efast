@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\NetAssetEquity;
 use app\models\NetAssetEquitySearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,8 +21,33 @@ class NetAssetEquityController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'get-all-netasset',
+                    'index',
+                    'view',
+                    'update',
+                    'create',
+                    'delete'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'get-all-netasset',
+                            'index',
+                            'view',
+                            'update',
+                            'create',
+                            'delete'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],

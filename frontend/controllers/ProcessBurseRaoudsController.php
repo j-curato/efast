@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\Raouds;
 use app\models\ProcessBurseRaoudsSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,8 +21,31 @@ class ProcessBurseRaoudsController extends Controller
     public function behaviors()
     {
         return [
+            'access'    => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'delete',
+                    'update',
+                    'create',
+                    'view',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'delete',
+                            'update',
+                            'create',
+                            'view',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -33,16 +57,16 @@ class ProcessBurseRaoudsController extends Controller
      * Lists all Raouds models.
      * @return mixed
      */
-    public function actionIndex()
-    {
-        $searchModel = new ProcessBurseRaoudsSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+    // public function actionIndex()
+    // {
+    //     $searchModel = new ProcessBurseRaoudsSearch();
+    //     $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-    }
+    //     return $this->render('index', [
+    //         'searchModel' => $searchModel,
+    //         'dataProvider' => $dataProvider,
+    //     ]);
+    // }
 
     /**
      * Displays a single Raouds model.

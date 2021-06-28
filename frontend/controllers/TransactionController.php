@@ -27,10 +27,34 @@ class TransactionController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['index'],
+                'only' => [
+                    'index',
+                    'update',
+                    'delete',
+                    'view',
+                    'create',
+                    'ors-form',
+                    'voucher',
+                    'get-all-transaction',
+                    'import-transaction',
+                    'sample',
+                    'get-transaction'
+                ],
                 'rules' => [
                     [
-                        'actions' => ['index'],
+                        'actions' => [
+                            'index',
+                            'update',
+                            'delete',
+                            'view',
+                            'create',
+                            'ors-form',
+                            'voucher',
+                            'get-all-transaction',
+                            'import-transaction',
+                            'sample',
+                            'get-transaction'
+                        ],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -148,9 +172,9 @@ class TransactionController extends Controller
     {
         // if (Yii::$app->user->can('delete-transaction')) {
 
-        $this->findModel($id)->delete();
+        // $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        // return $this->redirect(['index']);
         // } else {
 
         //     throw new ForbiddenHttpException();

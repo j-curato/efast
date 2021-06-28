@@ -156,15 +156,16 @@ $this->params['breadcrumbs'][] = $this->title;
 
     }
 </style>
-<!-- <script src="/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+<script src="/frontend/web/js/jquery.min.js" type="text/javascript"></script>
 <link href="/frontend/web/js/select2.min.js" />
 <link href="/frontend/web/css/select2.min.css" rel="stylesheet" />
 <link href="/frontend/web/js/jquery.dataTables.js" />
-<link href="/frontend/web/css/jquery.dataTables.css" rel="stylesheet" /> -->
+<link href="/frontend/web/css/jquery.dataTables.css" rel="stylesheet" />
 
 
 <script>
-    $('#generate').click(function(e) {
+
+$('#generate').click(function(e) {
         e.preventDefault()
         $('#con').hide()
         $('#dots5').show()
@@ -202,7 +203,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     total_conso_tax += parseFloat(taxes_withheld)
                     console.log(total_conso_total_allotment_recieve)
                     var mfo_code = res[i]['mfo_code'] ? res[i]['mfo_code'] : ''
-                    var mfo_name = res[i]['mfo_name'] ? res[i]['mfo_name'] : 'No ORS'
+                    var mfo_name = res[i]['mfo_name'] ? res[i]['mfo_name'] : 'Prior Year Accounts Payable'
                     var mfo_description = res[i]['mfo_description'] ? res[i]['mfo_description'] : ''
                     var row = `<tr>
 
@@ -225,7 +226,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td class='amount'>  ${thousands_separators(parseFloat(total_conso_obligation).toFixed(2))}</td>
                         <td class='amount'>  ${thousands_separators(parseFloat(total_conso_disbursement).toFixed(2))}</td>
                         <td class='amount'>  ${thousands_separators(parseFloat(total_conso_tax).toFixed(2))}</td>
-                        <td></td>
+                        <td>${mfo_description}</td>
                     </tr>`
 
                 $('#data_table tbody').append(row)

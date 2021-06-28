@@ -8,13 +8,11 @@ use Yii;
 use app\models\DvAucs;
 use app\models\DvAucsEntries;
 use app\models\DvAucsSearch;
-use app\models\ProcessOrs;
 use app\models\ProcessOrsSearch;
-use app\models\Raouds;
-use app\models\Raouds2Search;
-use app\models\RaoudsSearchForProcessOrsSearch;
+
 use app\models\SubAccounts2;
 use ErrorException;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -30,6 +28,42 @@ class DvAucsController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'create',
+                    'update',
+                    'delete',
+                    'view',
+                    'get-dv',
+                    'insert-dv',
+                    'update-dv',
+                    'import',
+                    'cancel',
+                    'dv-form',
+
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'create',
+                            'update',
+                            'delete',
+                            'view',
+                            'get-dv',
+                            'insert-dv',
+                            'update-dv',
+                            'import',
+                            'cancel',
+                            'dv-form',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -781,7 +815,7 @@ class DvAucsController extends Controller
 
         if ($_POST) {
             $id = $_POST['id'];
-            
+
             $model = DvAucs::findOne($id);
             if (!empty($model->cashDisbursement->id)) {
 

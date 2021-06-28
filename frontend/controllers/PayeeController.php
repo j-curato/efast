@@ -7,6 +7,7 @@ use app\models\Payee;
 use app\models\PayeeSearch;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use yii\db\conditions\LikeCondition;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -22,8 +23,36 @@ class PayeeController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'create',
+                    'delete',
+                    'update',
+                    'view',
+                    'get-payee',
+                    'import',
+                ],
+                'rules' => [
+                    [
+
+                        'actions' => [
+                            'index',
+                            'create',
+                            'delete',
+                            'update',
+                            'view',
+                            'get-payee',
+                            'import',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -176,7 +205,6 @@ class PayeeController extends Controller
 
                         $payee_data[] = $rowData;
                     }
-            
                 }
 
                 // if ($key == 30) {
@@ -198,12 +226,12 @@ class PayeeController extends Controller
     }
     public function actionGetPayee()
     {
-            $p = Yii::$app->db->createCommand("SELECT * FROM payee WHERE isEnable=1")->queryAll();
-            return json_encode($p);
+        $p = Yii::$app->db->createCommand("SELECT * FROM payee WHERE isEnable=1")->queryAll();
+        return json_encode($p);
     }
     public function getPayee()
     {
-            $p = Yii::$app->db->createCommand("SELECT * FROM payee WHERE isEnable=1")->queryAll();
-            return json_encode($p);
+        $p = Yii::$app->db->createCommand("SELECT * FROM payee WHERE isEnable=1")->queryAll();
+        return json_encode($p);
     }
 }
