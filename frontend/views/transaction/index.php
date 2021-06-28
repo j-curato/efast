@@ -179,7 +179,12 @@ Modal::end();
 SweetAlertAsset::register($this);
 $script = <<<JS
             var i=false;
-
+        $('#modalButtoncreate').click(function(){
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+        });
+        $('.modalButtonedit').click(function(){
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+        });
         
             $('#import').submit(function(e){
                 // $(this).unbind();
@@ -241,21 +246,8 @@ $script = <<<JS
             })
             $(document).ready(function(){
              })
+             
         
         JS;
 $this->registerJs($script);
-?>
-<?php
-
-$js = "
-        $('#modalButtoncreate').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-        $('.modalButtonedit').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-
-
-";
-$this->registerJs($js, $this::POS_END);
 ?>
