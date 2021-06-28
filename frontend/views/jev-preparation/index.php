@@ -292,7 +292,32 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $script = <<< JS
       
-
+      $('#modalButtoncreate').click(function(){
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+        });
+        $('.modalButtonedit').click(function(){
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+        });
+        $(function() {
+            $(document).on('click', '.btn-add', function(e) {
+              e.preventDefault();
+          
+              var dynaForm = $('.dynamic-wrap form:first'),
+                currentEntry = $(this).parents('.entry:first'),
+                newEntry = $(currentEntry.clone()).appendTo(dynaForm);
+          
+              newEntry.find('input').val('');
+              dynaForm.find('.entry:not(:last) .btn-add')
+                .removeClass('btn-add').addClass('btn-remove')
+                .removeClass('btn-success').addClass('btn-danger')
+                .html('<span class=`glyphicon glyphicon-minus`></span>');
+            }).on('click', '.btn-remove', function(e) {
+              $(this).parents('.entry:first').remove();
+          
+              e.preventDefault();
+              return false;
+            });
+          });
 
 
     
@@ -326,36 +351,3 @@ $script = <<< JS
 $this->registerJs($script);
 ?>
 
-<?php
-
-$js = "
-        $('#modalButtoncreate').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-        $('.modalButtonedit').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-        $(function() {
-            $(document).on('click', '.btn-add', function(e) {
-              e.preventDefault();
-          
-              var dynaForm = $('.dynamic-wrap form:first'),
-                currentEntry = $(this).parents('.entry:first'),
-                newEntry = $(currentEntry.clone()).appendTo(dynaForm);
-          
-              newEntry.find('input').val('');
-              dynaForm.find('.entry:not(:last) .btn-add')
-                .removeClass('btn-add').addClass('btn-remove')
-                .removeClass('btn-success').addClass('btn-danger')
-                .html('<span class=`glyphicon glyphicon-minus`></span>');
-            }).on('click', '.btn-remove', function(e) {
-              $(this).parents('.entry:first').remove();
-          
-              e.preventDefault();
-              return false;
-            });
-          });
-
-";
-$this->registerJs($js, $this::POS_END);
-?>
