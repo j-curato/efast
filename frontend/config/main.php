@@ -16,6 +16,7 @@ return [
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
+            'baseUrl' => '',
             // 'csrfCookie' => [
             //     'httpOnly' => true,
             //     'path' => 'site/login',
