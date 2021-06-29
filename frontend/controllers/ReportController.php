@@ -929,14 +929,28 @@ class ReportController extends \yii\web\Controller
             $year = "$q%";
             $allotment_class = $_POST['allotment_class'];
             $book_id = $_POST['book_id'];
+            if (
+                empty($reporting_period) &&
+                empty($allotment_class) &&
+                empty($book_id)
+
+            ) {
+                $x = date('Y');
+                $year = "$x%";
+                $dataProvider = Yii::$app->db->createCommand("CALL conso_dv_all(:year)")
+                    ->bindValue(':year', $year)
+                    ->queryAll();
+            } else {
+                $dataProvider = Yii::$app->db->createCommand("CALL conso_dv(:reporting_period,:year,:book_id,:allotment_class)")
+                    ->bindValue(':reporting_period', $reporting_period)
+                    ->bindValue(':year', $year)
+                    ->bindValue(':allotment_class', $allotment_class)
+                    ->bindValue(':book_id', $book_id)
+                    ->queryAll();
+            }
 
             // return json_encode($allotment_class);
-            $dataProvider = Yii::$app->db->createCommand("CALL conso_dv(:reporting_period,:year,:book_id,:allotment_class)")
-                ->bindValue(':reporting_period', $reporting_period)
-                ->bindValue(':year', $year)
-                ->bindValue(':allotment_class', $allotment_class)
-                ->bindValue(':book_id', $book_id)
-                ->queryAll();
+
             return json_encode($dataProvider);
         } else {
 
