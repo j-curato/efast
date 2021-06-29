@@ -42,7 +42,7 @@ class FundSourceController extends Controller
                             'get-fund-sources'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

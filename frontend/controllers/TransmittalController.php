@@ -43,7 +43,7 @@ class TransmittalController extends Controller
                             'insert-transmittal'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

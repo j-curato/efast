@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\SubMajorAccounts;
 use app\models\SubMajorAccountsSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,6 +21,30 @@ class SubMajorAccountsController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'delete',
+                    'update',
+                    'create',
+                    'view',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'delete',
+                            'update',
+                            'create',
+                            'view',
+                            'index',
+                        ],
+                        'allow' => true,
+                        'roles' => ['super-user']
+                    ],
+
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [

@@ -34,7 +34,7 @@ class MajorAccountsController extends Controller
                             'view'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

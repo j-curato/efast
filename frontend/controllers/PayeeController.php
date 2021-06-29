@@ -47,7 +47,7 @@ class PayeeController extends Controller
                             'import',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['accounting']
                     ]
                 ]
             ],

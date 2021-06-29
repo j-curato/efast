@@ -42,7 +42,7 @@ class FundClusterCodeController extends Controller
                             'get-all-cluster'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

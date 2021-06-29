@@ -42,7 +42,7 @@ class BooksController extends Controller
                             'get-books'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

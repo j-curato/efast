@@ -54,7 +54,7 @@ class LiquidationController extends Controller
                             'import',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

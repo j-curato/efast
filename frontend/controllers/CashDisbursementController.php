@@ -61,8 +61,16 @@ class CashDisbursementController extends Controller
                             'cancel',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
-                    ]
+                        'roles' => ['super-user']
+                    ],
+                    // [
+                    //     'actions' => [
+                    //         'index',
+
+                    //     ],
+                    //     'allow' => true,
+                    //     'roles' => ['department-offices']
+                    // ]
                 ]
             ],
             'verbs' => [

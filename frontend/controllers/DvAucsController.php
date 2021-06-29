@@ -60,7 +60,7 @@ class DvAucsController extends Controller
                             'dv-form',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

@@ -106,7 +106,7 @@ class JevPreparationController extends Controller
                             'cdr-jev',
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['super-user'],
                     ],
                     // [
                     //     'actions' => ['create'],

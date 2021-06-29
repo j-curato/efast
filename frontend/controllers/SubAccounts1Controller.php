@@ -51,7 +51,7 @@ class SubAccounts1Controller extends Controller
                             'get-all-sub-account1',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

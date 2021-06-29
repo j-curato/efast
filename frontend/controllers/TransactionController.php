@@ -56,7 +56,7 @@ class TransactionController extends Controller
                             'get-transaction'
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['department-offices', 'super-user'],
                     ],
                     // [
                     //     'actions' => ['create'],

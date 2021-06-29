@@ -33,7 +33,6 @@ class ChartOfAccountsController extends Controller
                     'view',
                     'create',
                     'update',
-                    'create',
                     'delete',
                     'import',
                     'create-sub-account',
@@ -50,7 +49,6 @@ class ChartOfAccountsController extends Controller
                             'view',
                             'create',
                             'update',
-                            'create',
                             'delete',
                             'import',
                             'create-sub-account',
@@ -60,7 +58,7 @@ class ChartOfAccountsController extends Controller
                             'chart-of-accounts',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['accounting']
                     ]
                 ]
             ],

@@ -44,7 +44,7 @@ class DocumentRecieveController extends Controller
                             'get-document-recieves',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

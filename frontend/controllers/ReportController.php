@@ -39,7 +39,6 @@ class ReportController extends \yii\web\Controller
                     'get-cash',
                     'cibr',
                     'cdr',
-
                     'advances-liquidation',
                     'insert-cdr',
                     'get-cdr',
@@ -61,7 +60,6 @@ class ReportController extends \yii\web\Controller
                             'get-cash',
                             'cibr',
                             'cdr',
-
                             'advances-liquidation',
                             'insert-cdr',
                             'get-cdr',
@@ -71,8 +69,21 @@ class ReportController extends \yii\web\Controller
                             'conso-detailed-dv',
                         ],
                         'allow' => true,
+                        'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'pending-ors',
+                            'unobligated-transaction',
+                            'pending-dv',
+                            'unpaid-obligation',
+                            'conso-detailed-dv',
+                        ],
+                        'allow' => true,
                         'roles' => ['@']
                     ],
+
 
 
                 ]

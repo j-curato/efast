@@ -53,7 +53,7 @@ class ProcessOrsController extends Controller
                             'qwe',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

@@ -43,14 +43,14 @@ class AuthorizationCodeController extends Controller
                             'get-authorization-codes'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
 
                 ]
             ],
 
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],

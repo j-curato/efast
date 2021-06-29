@@ -50,7 +50,7 @@ class AdvancesController extends Controller
                             'import',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['accounting']
                     ],
 
 
@@ -303,14 +303,14 @@ class AdvancesController extends Controller
     public function getNftNumber()
     {
         // $q = Advances::find()->orderBy('id DESC')->one();
-        $q= Yii::$app->db->createCommand("SELECT substring_index(substring(nft_number, instr(nft_number, '-')+1), ' ', 1) as q 
+        $q = Yii::$app->db->createCommand("SELECT substring_index(substring(nft_number, instr(nft_number, '-')+1), ' ', 1) as q 
         from advances
         ORDER BY q DESC LIMIT 1")->queryScalar();
-    
+
         $num = 0;
         if (!empty($q)) {
             // $x = explode('-', $q->nft_number);
-            $num =(int) $q + 1;
+            $num = (int) $q + 1;
         } else {
             $num = 1;
         }

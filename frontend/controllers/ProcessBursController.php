@@ -57,7 +57,7 @@ class ProcessBursController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

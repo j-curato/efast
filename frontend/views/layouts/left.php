@@ -40,7 +40,7 @@
                         'icon' => 'share',
                         'url' => '#',
                         'items' => [
-                            [
+                            Yii::$app->user->can('super-user') ? [
                                 'label' => 'Master Records',
                                 'icon' => 'circle-o',
                                 'url' => '#',
@@ -61,22 +61,22 @@
 
 
                                 ],
-                            ],
+                            ] : ['label' => ''],
                             [
                                 'label' => 'Transaction',
                                 'icon' => 'circle-o',
                                 'url' => '#',
                                 'items' => [
                                     ['label' => 'Transactions', 'icon' => 'circle-o', 'url' => ['/transaction'],],
-                                    ['label' => 'Jev', 'icon' => 'circle-o', 'url' => ['/jev-preparation'],],
+                                    Yii::$app->user->can('super-user') ?  ['label' => 'Jev', 'icon' => 'circle-o', 'url' => ['/jev-preparation'],] : [],
 
-                                    ['label' => 'Process Dv', 'icon' => 'circle-o', 'url' => ['/dv-aucs'],],
-                                    ['label' => 'Transmittal', 'icon' => 'circle-o', 'url' => ['/transmittal'],],
+                                    Yii::$app->user->can('super-user') ? ['label' => 'Process Dv', 'icon' => 'circle-o', 'url' => ['/dv-aucs'],] : [],
+                                    Yii::$app->user->can('super-user') ? ['label' => 'Transmittal', 'icon' => 'circle-o', 'url' => ['/transmittal'],] : [],
 
                                 ],
                             ],
 
-                            [
+                            Yii::$app->user->can('super-user') ?  [
                                 'label' => 'Reports',
                                 'icon' => 'circle-o',
                                 'url' => '#',
@@ -97,7 +97,7 @@
                                     ['label' => 'Net Asset Changes', 'icon' => 'circle-o', 'url' => ['/jev-preparation/changes-netasset-equity'],],
 
                                 ],
-                            ],
+                            ] : ['label' => ''],
                         ],
 
 
@@ -107,7 +107,7 @@
                         'icon' => 'share',
                         'url' => '#',
                         'items' => [
-                            [
+                            Yii::$app->user->can('super-user') ? [
                                 'label' => 'Master Records',
                                 'icon' => 'circle-o',
                                 'url' => '#',
@@ -122,7 +122,7 @@
                                     ['label' => 'Fund Source', 'icon' => 'circle-o', 'url' => ['/fund-source'],],
 
                                 ],
-                            ],
+                            ] : ['label' => ''],
                             [
                                 'label' => 'Transaction',
                                 'icon' => 'circle-o',

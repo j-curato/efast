@@ -42,7 +42,7 @@ class FinancingSourceCodeController extends Controller
                             'get-financing-source-codes'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

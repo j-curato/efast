@@ -42,7 +42,7 @@ class PoTransactionController extends Controller
                             'get-transaction'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],
