@@ -19,7 +19,7 @@ use yii\helpers\ArrayHelper;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = "List of Pending DV's";
+$this->title = "Conso DV's";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index panel" style="background-color: white;padding:20px">
@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'autoclose' => true,
                         'format' => 'yyyy-mm',
                         'required' => true,
-
+                        'allowClear'=>true
                     ]
                 ])
                 ?>
@@ -52,13 +52,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 echo Select2::widget([
                     'data' => ArrayHelper::map(Books::find()
-                        
+
                         ->asArray()->all(), 'id', 'name'),
                     'name' => 'book_id',
                     'id' => 'book_id',
                     'pluginOptions' => [
                         'placeholder' => 'Select Book',
                         'required' => true,
+                        'allowClear'=>true
                     ]
                 ])
                 ?>
@@ -79,7 +80,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     'id' => 'allotment_class',
                     'pluginOptions' => [
                         'required' => true,
-                        'placeholder' => 'Select Allotment'
+                        'placeholder' => 'Select Allotment',
+                        'allowClear'=>true
                     ]
                 ])
                 ?>
@@ -88,6 +90,9 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-sm-3" style="margin-top: 2.5rem;">
                 <button class="btn btn-success" id="generate">Generate</button>
             </div>
+
+        </div>
+        <div class="col-sm-3">
 
         </div>
     </form>
