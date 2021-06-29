@@ -22,7 +22,7 @@ class m210504_020207_create_advances_table extends Migration
             'report_type' => $this->string(50),
             'particular' => $this->string(500),
             'nft_number' => $this->string(),
-            'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
+  
 
         ]);
     }
