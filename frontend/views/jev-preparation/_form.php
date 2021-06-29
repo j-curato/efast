@@ -804,6 +804,7 @@ $script = <<< JS
                 data:{cash_id:$('#dv').val()},
                 success:function(data){
                     var res = JSON.parse(data)
+                    console.log(res)
                     $('#dv_number').val(res.results.dv_number)
                     $('#book').val(res.results.book_id).trigger('change')
                     $('#reference').prop('disabled',true)
@@ -837,7 +838,7 @@ $script = <<< JS
 
                     }
             
-                    if (res.results.mode_of_payment ==='ADA'){
+                    if (res.results.mode_of_payment.toLowerCase() =='ada'){
                         $("#check_ada").val('ADA').trigger('change')
                     }
                     else {
