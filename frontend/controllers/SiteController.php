@@ -267,4 +267,18 @@ class SiteController extends Controller
             'model' => $model
         ]);
     }
+    public function actionMigrateUp()
+    {
+        // https://github.com/yiisoft/yii2/issues/1764#issuecomment-42436905
+        $oldApp = \Yii::$app;
+        new \yii\console\Application([
+            'id'            => 'Command runner',
+            'basePath'      => '@app',
+            'components'    => [
+                'db' => $oldApp->db,
+            ],
+        ]);
+        \Yii::$app->runAction('migrate/up', ['migrationPath' => '@console/migrations/', 'interactive' => false]);
+        \Yii::$app = $oldApp;
+    }
 }
