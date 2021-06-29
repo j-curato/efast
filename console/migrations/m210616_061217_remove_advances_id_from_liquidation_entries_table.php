@@ -23,7 +23,7 @@ class m210616_061217_remove_advances_id_from_liquidation_entries_table extends M
             '{{%idx-liquidation_entries-advances_id}}',
             '{{%liquidation_entries}}'
         );
-        $this->dropColumn('liquidation_entries','advances_id');
+        $this->dropColumn('liquidation_entries', 'advances_id');
     }
 
     /**
@@ -38,12 +38,12 @@ class m210616_061217_remove_advances_id_from_liquidation_entries_table extends M
             'advances_id'
         );
 
-        // add foreign key for table `{{%advances}}`
+        // add foreign key for table `{{%transaction}}`
         $this->addForeignKey(
             '{{%fk-liquidation_entries-advances_id}}',
             '{{%liquidation_entries}}',
             'advances_id',
-            '{{%advances}}',
+            '{{%liquidation}}',
             'id',
             'CASCADE'
         );
