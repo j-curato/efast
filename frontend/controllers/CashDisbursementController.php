@@ -420,6 +420,7 @@ class CashDisbursementController extends Controller
                     'cash_disbursement.check_or_ada_no',
                     'cash_disbursement.mode_of_payment',
                     'cash_disbursement.issuance_date',
+                    'cash_disbursement.ada_number',
                     'responsibility_center.id as rc_id',
                     'transaction.id as transaction_id',
                     'SUM(dv_aucs_entries.amount_disbursed) as total_disbursed',

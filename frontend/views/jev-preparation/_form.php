@@ -840,10 +840,14 @@ $script = <<< JS
             
                     if (res.results.mode_of_payment.toLowerCase() =='ada'){
                         $("#check_ada").val('ADA').trigger('change')
+                        $("#ada_number").val(res.results.ada_number).trigger('change')
+
                     }
                     else {
                         
                         $("#check_ada").val('Check').trigger('change')
+                        $("#ada_number").val(res.results.check_or_ada_no).trigger('change')
+
                     }
                     $("#check_ada option:not(:selected)").attr("disabled", true)
 
