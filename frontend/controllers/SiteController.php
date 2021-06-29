@@ -279,7 +279,7 @@ class SiteController extends Controller
             ],
         ]);
         // yii migrate --migrationPath=@yii/rbac/migrations
-        \Yii::$app->runAction('migrate/up', ['migrationPath' => '@yii/rbac/migrations/', 'interactive' => false]);
+        \Yii::$app->runAction('migrate', ['migrationPath' => '@yii/rbac/migrations/', 'interactive' => false]);
         \Yii::$app->runAction('migrate/up', ['migrationPath' => '@console/migrations/', 'interactive' => false]);
         \Yii::$app = $oldApp;
     }
