@@ -18,16 +18,13 @@ class m210504_020207_create_advances_table extends Migration
     {
         $this->createTable('{{%advances}}', [
             'id' => $this->primaryKey(),
-            
-            'province'=>$this->string(50),
-            'report_type'=>$this->string(50),
-            'particular'=>$this->string(500),
-            'nft_number'=>$this->string()
+            'province' => $this->string(50),
+            'report_type' => $this->string(50),
+            'particular' => $this->string(500),
+            'nft_number' => $this->string(),
+            'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
+
         ]);
-
-
-
-  
     }
 
     /**
@@ -35,8 +32,6 @@ class m210504_020207_create_advances_table extends Migration
      */
     public function safeDown()
     {
-
-
 
         $this->dropTable('{{%advances}}');
     }
