@@ -20,7 +20,7 @@ class m210325_065320_add_parent_id_from_raoud_to_raoud_entries_table extends Mig
      */
     public function safeDown()
     {
-        $this->dropColumn('raoud_entries','parent-id_from_raoud');
+        $this->dropColumn('raoud_entries','parent_id_from_raoud');
     }
 
     /*
