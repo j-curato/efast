@@ -18,7 +18,7 @@ class DvAucsSearch extends DvAucs
     {
         return [
             [['id'], 'integer'],
-            [['dv_number', 'reporting_period', 'tax_withheld', 'other_trust_liability_withheld','particular'], 'safe'],
+            [['dv_number', 'reporting_period', 'tax_withheld', 'other_trust_liability_withheld', 'particular', 'payee_id'], 'safe'],
             [['net_amount_paid'], 'number'],
         ];
     }
@@ -51,6 +51,7 @@ class DvAucsSearch extends DvAucs
 
         $this->load($params);
 
+        $query->joinWith('payee');
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
@@ -68,6 +69,7 @@ class DvAucsSearch extends DvAucs
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
             ->andFilterWhere(['like', 'particular', $this->particular])
             ->andFilterWhere(['like', 'tax_withheld', $this->tax_withheld])
+            ->andFilterWhere(['like', 'payee.account_name', $this->payee_id])
             ->andFilterWhere(['like', 'other_trust_liability_withheld', $this->other_trust_liability_withheld]);
 
         return $dataProvider;

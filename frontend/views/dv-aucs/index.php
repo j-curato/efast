@@ -219,6 +219,7 @@ $this->params['breadcrumbs'][] = $this->title;
             // },
             [
                 'label' => "Payee",
+                'attribute' => 'payee_id',
                 'value' => "payee.account_name"
             ],
             [
