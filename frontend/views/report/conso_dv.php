@@ -237,7 +237,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td class='amount'>  ${thousands_separators(parseFloat(total_conso_obligation).toFixed(2))}</td>
                         <td class='amount'>  ${thousands_separators(parseFloat(total_conso_disbursement).toFixed(2))}</td>
                         <td class='amount'>  ${thousands_separators(parseFloat(total_conso_tax).toFixed(2))}</td>
-                        <td>${mfo_description}</td>
+                        <td></td>
                     </tr>`
 
                 $('#data_table tbody').append(row)
