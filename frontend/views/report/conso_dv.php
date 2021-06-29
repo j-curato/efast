@@ -51,7 +51,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
 
                 echo Select2::widget([
-                    'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
+                    'data' => ArrayHelper::map(Books::find()
+                        
+                        ->asArray()->all(), 'id', 'name'),
                     'name' => 'book_id',
                     'id' => 'book_id',
                     'pluginOptions' => [
@@ -60,6 +62,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]
                 ])
                 ?>
+                <!-- 
+                        5010000000
+5060000000
+                    5020000000
+                 -->
 
             </div>
             <div class="col-sm-3">
@@ -67,7 +74,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
 
                 echo Select2::widget([
-                    'data' => ArrayHelper::map(MajorAccounts::find()->asArray()->all(), 'name', 'name'),
+                    'data' => ArrayHelper::map(Yii::$app->db->createCommand("SELECT * FROM `major_accounts` WHERE object_code IN (5010000000,5060000000,5020000000)")->queryAll(), 'name', 'name'),
                     'name' => 'allotment_class',
                     'id' => 'allotment_class',
                     'pluginOptions' => [
@@ -164,8 +171,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 <script>
-
-$('#generate').click(function(e) {
+    $('#generate').click(function(e) {
         e.preventDefault()
         $('#con').hide()
         $('#dots5').show()

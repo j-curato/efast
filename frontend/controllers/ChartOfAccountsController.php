@@ -58,7 +58,7 @@ class ChartOfAccountsController extends Controller
                             'chart-of-accounts',
                         ],
                         'allow' => true,
-                        'roles' => ['accounting']
+                        'roles' => ['accounting','super-user']
                     ]
                 ]
             ],

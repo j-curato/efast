@@ -61,6 +61,14 @@ class DvAucsController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                           
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
                     ]
                 ]
             ],

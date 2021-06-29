@@ -34,7 +34,7 @@
             [
                 'options' => ['class' => 'sidebar-menu tree text-truncate', 'data-widget' => 'tree', 'style' => 'width: inherit'],
                 'items' => [
-                    ['label' => 'Gii', 'icon' => 'book', 'url' => ['/gii'],],
+                    Yii::$app->user->can('super-user') ? ['label' => 'Gii', 'icon' => 'book', 'url' => ['/gii'],]:[],
                     [
                         'label' => 'Accounting',
                         'icon' => 'share',
@@ -102,12 +102,12 @@
 
 
                     ],
-                    [
+                    Yii::$app->user->can('super-user') ?  [
                         'label' => 'Budget',
                         'icon' => 'share',
                         'url' => '#',
                         'items' => [
-                            Yii::$app->user->can('super-user') ? [
+                            [
                                 'label' => 'Master Records',
                                 'icon' => 'circle-o',
                                 'url' => '#',
@@ -122,7 +122,7 @@
                                     ['label' => 'Fund Source', 'icon' => 'circle-o', 'url' => ['/fund-source'],],
 
                                 ],
-                            ] : ['label' => ''],
+                            ],
                             [
                                 'label' => 'Transaction',
                                 'icon' => 'circle-o',
@@ -136,8 +136,8 @@
                                 ],
                             ],
                         ],
-                    ],
-                    [
+                    ] : ['label' => ''],
+                    Yii::$app->user->can('super-user') ?  [
                         'label' => 'Cash',
                         'icon' => 'share',
                         'url' => '#',
@@ -159,25 +159,25 @@
                                 ],
                             ],
                         ],
-                    ],
+                    ] : ['label' => ''],
                     [
                         'label' => 'Report',
                         'icon' => 'share',
                         'url' => '#',
                         'items' => [
 
-                            ['label' => 'Pending ORS', 'icon' => 'circle-o', 'url' => ['/report/pending-ors'],],
-                            ['label' => "Pending DV's", 'icon' => 'circle-o', 'url' => ['/report/pending-dv'],],
-                            ['label' => 'UnObligated Transaction', 'icon' => 'circle-o', 'url' => ['/report/unobligated-transaction'],],
-                            ['label' => 'UnPaid Obligation', 'icon' => 'circle-o', 'url' => ['/report/unpaid-obligation'],],
-                            ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/report/saob'],],
-                            ['label' => 'Advances', 'icon' => 'circle-o', 'url' => ['/advances'],],
-                            ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ['/liquidation'],],
-                            ['label' => 'Advances/Liquidation', 'icon' => 'circle-o', 'url' => ['/report/advances-liquidation'],],
-                            ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/report/cibr'],],
-                            ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/cdr'],],
-                            ['label' => 'PO Transaction', 'icon' => 'circle-o', 'url' => ['/po-transaction'],],
-                            ['label' => 'Detailed Dv', 'icon' => 'circle-o', 'url' => ['/report/detailed-dv-aucs'],],
+                            Yii::$app->user->can('super-user') ?     ['label' => 'Pending ORS', 'icon' => 'circle-o', 'url' => ['/report/pending-ors'],] : [],
+                            Yii::$app->user->can('super-user') ?     ['label' => "Pending DV's", 'icon' => 'circle-o', 'url' => ['/report/pending-dv'],] : [],
+                            Yii::$app->user->can('super-user') ?     ['label' => 'UnObligated Transaction', 'icon' => 'circle-o', 'url' => ['/report/unobligated-transaction'],] : [],
+                            Yii::$app->user->can('super-user') ?     ['label' => 'UnPaid Obligation', 'icon' => 'circle-o', 'url' => ['/report/unpaid-obligation'],] : [],
+                            Yii::$app->user->can('super-user') ?     ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/report/saob'],] : [],
+                            Yii::$app->user->can('super-user') ?     ['label' => 'Advances', 'icon' => 'circle-o', 'url' => ['/advances'],] : [],
+                            Yii::$app->user->can('super-user') ?     ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ['/liquidation'],] : [],
+                            Yii::$app->user->can('super-user') ?     ['label' => 'Advances/Liquidation', 'icon' => 'circle-o', 'url' => ['/report/advances-liquidation'],] : [],
+                            Yii::$app->user->can('super-user') ?     ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/report/cibr'],] : [],
+                            Yii::$app->user->can('super-user') ?     ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/cdr'],] : [],
+                            Yii::$app->user->can('super-user') ?     ['label' => 'PO Transaction', 'icon' => 'circle-o', 'url' => ['/po-transaction'],] : [],
+                            Yii::$app->user->can('super-user') ?     ['label' => 'Detailed Dv', 'icon' => 'circle-o', 'url' => ['/report/detailed-dv-aucs'],] : [],
                             ['label' => 'Conso Dv', 'icon' => 'circle-o', 'url' => ['/report/conso-detailed-dv'],],
 
                         ],
