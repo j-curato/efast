@@ -490,6 +490,8 @@ use yii\helpers\ArrayHelper;
 
             i++
 
+
+
         }
 
 
@@ -872,12 +874,14 @@ $script = <<< JS
                                 if (x < dv_accounting_entries.length -1){
                                     add()
                                 }
+                                getTotal()
                             }
                     
                 }
             })
+          
         }
-      getTotal()
+      
 
     })
 
