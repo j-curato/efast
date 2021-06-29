@@ -880,11 +880,12 @@ $script = <<< JS
       getTotal()
 
     })
+
      $(document).ready(function() {
         update_id = $('#update_id').val();
         var type = $('#type').val();
         // KUNG NAAY SULOD ANG UPDATE ID KUHAON ANG IYANG MGA DATA
-        if (update_id > 0 && type=='update') {
+        if (update_id > 0 && type=='update' ) {
                  $('#container').hide();
 
                 $.ajax({
@@ -902,7 +903,11 @@ $script = <<< JS
                         var jev_accounting_entries = JSON.parse(data).jev_accounting_entries
                         var d = "2020-12-01"
                         // document.querySelector("#reporting_period").value=jev['reporting_period']
+                     
                         $('#dv').val(jev['cash_disbursement_id']).trigger('change');
+                        console.log($('#dv').val())
+                        if ($('#dv').val() ==''){
+
                         $('#reporting_period').val(jev['reporting_period'])
                         $('#check_ada_date').val(jev['check_ada_date'])
                         $('#particular').val(jev['explaination'])
@@ -940,6 +945,8 @@ $script = <<< JS
                                 add()
                             }
                         }
+                    }
+               
 
                     },
                     complete: function(){

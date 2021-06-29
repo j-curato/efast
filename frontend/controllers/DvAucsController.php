@@ -65,7 +65,7 @@ class DvAucsController extends Controller
                     [
                         'actions' => [
                             'index',
-                           
+
                         ],
                         'allow' => true,
                         'roles' => ['@']
@@ -285,6 +285,10 @@ class DvAucsController extends Controller
             $payee_id = $_POST['payee'];
             $book_id = !empty($_POST['book']) ? $_POST['book'] : 5;
             $transaction_type = strtolower($_POST['transaction_type']);
+            // if (array_sum($_POST['debit']) != array_sum($_POST['credit'])) {
+            //     return json_encode(['isSuccess' => false, 'error' => 'Not Equal Debit and Credit']);
+            // }
+            // die();
 
             $account_entries =  !empty($_POST['chart_of_account_id']) ? count($_POST['chart_of_account_id']) : 0;
             if ($account_entries === 1 && $_POST['chart_of_account_id'][0] === '') {
