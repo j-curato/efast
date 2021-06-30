@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Class m210630_042212_create_sub_accounts_view
  */
-class m210630_042212_create_sub_accounts_view extends Migration
+class m210630_041654_create_sub_accounts_view extends Migration
 {
     /**
      * {@inheritdoc}
