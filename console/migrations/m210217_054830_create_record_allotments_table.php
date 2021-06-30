@@ -34,9 +34,7 @@ class m210217_054830_create_record_allotments_table extends Migration
             'serial_number'=>$this->string(255),
             'allotment_number'=>$this->string(255),
             'date_issued'=>$this->string(50),
-            'valid_until'=>$this->string(50),
-            'particulars'=>$this->text(),
-
+            'valid_until'=>$this->string(50)
         ]);
 
         // creates index for column `document_recieved_id`
@@ -107,22 +105,7 @@ class m210217_054830_create_record_allotments_table extends Migration
             'CASCADE'
         );
 
-        // creates index for column `fund_category_id`
-        $this->createIndex(
-            '{{%idx-record_allotments-fund_category_id}}',
-            '{{%record_allotments}}',
-            'fund_category_id'
-        );
 
-        // add foreign key for table `{{%fund_category_and_classification_code}}`
-        $this->addForeignKey(
-            '{{%fk-record_allotments-fund_category_id}}',
-            '{{%record_allotments}}',
-            'fund_category_id',
-            '{{%fund_category_and_classification_code}}',
-            'id',
-            'CASCADE'
-        );
 
         // creates index for column `mfo_pap_code_id`
         $this->createIndex(
@@ -213,16 +196,7 @@ class m210217_054830_create_record_allotments_table extends Migration
         );
 
         // drops foreign key for table `{{%fund_category_and_classification_code}}`
-        $this->dropForeignKey(
-            '{{%fk-record_allotments-fund_category_id}}',
-            '{{%record_allotments}}'
-        );
 
-        // drops index for column `fund_category_id`
-        $this->dropIndex(
-            '{{%idx-record_allotments-fund_category_id}}',
-            '{{%record_allotments}}'
-        );
 
         // drops foreign key for table `{{%mfo_pap_code}}`
         $this->dropForeignKey(
