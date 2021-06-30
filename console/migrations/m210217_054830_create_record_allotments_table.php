@@ -27,16 +27,16 @@ class m210217_054830_create_record_allotments_table extends Migration
             'fund_cluster_code_id' => $this->integer()->notNull(),
             'financing_source_code_id' => $this->integer()->notNull(),
             'fund_category_and_classification_code_id' => $this->integer()->notNull(),
-            
             'authorization_code_id' => $this->integer()->notNull(),
-            'fund_category_id' => $this->integer()->notNull(),
             'mfo_pap_code_id' => $this->integer()->notNull(),
             'fund_source_id' => $this->integer()->notNull(),
+            'reporting_period'=>$this->string(20),
             'serial_number'=>$this->string(255),
             'allotment_number'=>$this->string(255),
             'date_issued'=>$this->string(50),
-            'reporting_period'=>$this->string(20),
-            'valid_until'=>$this->string(50)
+            'valid_until'=>$this->string(50),
+            'particulars'=>$this->text(),
+
         ]);
 
         // creates index for column `document_recieved_id`

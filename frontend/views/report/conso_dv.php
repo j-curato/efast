@@ -220,7 +220,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <td>${mfo_code}</td>
                         <td>${mfo_name}</td>
-                        <td class='amount' >${thousands_separators(total_allotment_recieve)}</td>
+                        <td class='amount' >${thousands_separators(parseFloat(total_allotment_recieve).toFixed(2))}</td>
                         <td class='amount'>  ${thousands_separators(parseFloat(obligation).toFixed(2))}</td>
                         <td class='amount'>  ${thousands_separators(parseFloat(disbursement).toFixed(2))}</td>
                         <td class='amount'>  ${thousands_separators(parseFloat(taxes_withheld).toFixed(2))}</td>
@@ -233,7 +233,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <td></td>
                         <td>TOTAL</td>
-                        <td class='amount' >${thousands_separators(total_conso_total_allotment_recieve)}</td>
+                        <td class='amount' >${thousands_separators(parseFloat(total_conso_total_allotment_recieve).toFixed(2))}</td>
                         <td class='amount'>  ${thousands_separators(parseFloat(total_conso_obligation).toFixed(2))}</td>
                         <td class='amount'>  ${thousands_separators(parseFloat(total_conso_disbursement).toFixed(2))}</td>
                         <td class='amount'>  ${thousands_separators(parseFloat(total_conso_tax).toFixed(2))}</td>

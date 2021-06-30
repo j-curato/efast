@@ -12,6 +12,7 @@ class m210223_024203_add_mrd_classification_id_to_jev_preparation_table extends 
      */
     public function safeUp()
     {
+        $this->addColumn('jev_preparation', 'cash_flow_id', $this->integer());
         $this->addColumn('jev_preparation', 'mrd_classification_id', $this->integer());
     }
 
@@ -20,7 +21,8 @@ class m210223_024203_add_mrd_classification_id_to_jev_preparation_table extends 
      */
     public function safeDown()
     {
-        $this->dropColumn('jev_preparation','mrd_classification_id');
+        $this->dropColumn('jev_preparation', 'cash_flow_id');
+        $this->dropColumn('jev_preparation', 'mrd_classification_id');
     }
 
     /*
