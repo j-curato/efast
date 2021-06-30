@@ -24,7 +24,7 @@ class m210412_072733_create_cash_disbursement_table extends Migration
             'reporting_period' => $this->string(50),
             'mode_of_payment' => $this->string(50),
             'check_or_ada_no' => $this->string(100),
-            'is_cancelled' => $this->boolean(),
+            'is_cancelled' => $this->boolean()->defaultValue(false),
             'issuance_date' => $this->string(50),
         ]);
 

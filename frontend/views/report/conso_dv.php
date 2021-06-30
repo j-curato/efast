@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'autoclose' => true,
                         'format' => 'yyyy-mm',
                         'required' => true,
-                        'allowClear'=>true
+                        'allowClear' => true
                     ]
                 ])
                 ?>
@@ -59,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'pluginOptions' => [
                         'placeholder' => 'Select Book',
                         'required' => true,
-                        'allowClear'=>true
+                        'allowClear' => true
                     ]
                 ])
                 ?>
@@ -81,7 +81,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'pluginOptions' => [
                         'required' => true,
                         'placeholder' => 'Select Allotment',
-                        'allowClear'=>true
+                        'allowClear' => true
                     ]
                 ])
                 ?>
@@ -237,6 +237,19 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td class='amount'>  ${thousands_separators(parseFloat(total_conso_obligation).toFixed(2))}</td>
                         <td class='amount'>  ${thousands_separators(parseFloat(total_conso_disbursement).toFixed(2))}</td>
                         <td class='amount'>  ${thousands_separators(parseFloat(total_conso_tax).toFixed(2))}</td>
+                        <td></td>
+                    </tr>`
+
+                $('#data_table tbody').append(row)
+                var q = (parseFloat(total_conso_disbursement) + parseFloat(total_conso_tax)) / parseFloat(total_conso_obligation)
+                var row = `<tr>
+
+                        <td></td>
+                        <td>Utilization Rates: </td>
+                        <td class='amount' ></td>
+                        <td class='amount'>  ${thousands_separators(parseFloat(total_conso_obligation/total_conso_total_allotment_recieve).toFixed(2))}</td>
+                        <td class='amount'>  ${thousands_separators(parseFloat(q).toFixed(2))}</td>
+                        <td class='amount'> </td>
                         <td></td>
                     </tr>`
 
