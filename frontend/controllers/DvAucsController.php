@@ -357,7 +357,10 @@ class DvAucsController extends Controller
                     }
                     $x = explode('-', $dv->dv_number);
                     $bok = Books::findone($book_id);
+
                     $x[0] = $bok->name;
+                    $x[1] = date('Y', strtotime($reporting_period));
+                    $x[2] = explode('-', $reporting_period)[1];
                     $dv->dv_number = implode('-', $x);
                 } else {
                     $dv = new DvAucs();
