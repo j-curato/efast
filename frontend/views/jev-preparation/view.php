@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
         //     'method' => 'post',
         // ],
         // ])
-            $q=JevReportingPeriod::find()->all();
+        $q = JevReportingPeriod::find()->all();
         ?>
 
         <?= Html::button('Print', ['onclick' => 'window.print()', 'class' => 'btn btn-success print']) ?>
@@ -482,7 +482,12 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     </style>
 </div>
-
+<?php
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/jquery.dataTables.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
+?>
 <?php
 SweetAlertAsset::register($this);
 $script = <<< JS
