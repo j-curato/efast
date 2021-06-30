@@ -23,6 +23,7 @@ class m210505_033130_create_advances_entries_table extends Migration
             'cash_disbursement_id' => $this->integer(),
             'sub_account1_id' => $this->integer(),
             'fund_source' => $this->text(),
+            'object_code' => $this->string()->defaultValue(null),
             'amount'=>$this->decimal(10,2)
         ]);
 
