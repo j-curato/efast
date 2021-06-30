@@ -24,6 +24,8 @@ class m210505_033130_create_advances_entries_table extends Migration
             'sub_account1_id' => $this->integer(),
             'amount'=>$this->decimal(10,2),
             'object_code' => $this->string()->defaultValue(null),
+            'fund_source' => $this->text(),
+            'book_id' => $this->integer(),
         ]);
 
         // creates index for column `advances_id`
