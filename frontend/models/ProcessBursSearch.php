@@ -48,7 +48,7 @@ class ProcessBursSearch extends ProcessBurs
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
-
+        $query->joinWith('')
         $this->load($params);
 
         if (!$this->validate()) {

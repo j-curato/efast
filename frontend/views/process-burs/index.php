@@ -141,7 +141,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         [
             'label' => 'BURS Number',
-            'attribute' => 'process_ors_id',
+            'attribute' => 'id',
             'value' => 'processOrs.serial_number',
             // 'value' => 'processOrs.reporting_period'
         ],
