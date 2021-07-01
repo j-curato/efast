@@ -423,7 +423,7 @@ class CashDisbursementController extends Controller
                     'cash_disbursement.ada_number',
                     'responsibility_center.id as rc_id',
                     'transaction.id as transaction_id',
-                    'SUM(dv_aucs_entries.amount_disbursed) as total_disbursed',
+                    // 'SUM(dv_aucs_entries.amount_disbursed) as total_disbursed',
                     'jev_preparation.id as jev_id'
 
                 ])
