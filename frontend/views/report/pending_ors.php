@@ -118,16 +118,16 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); ?>
 
 
-    <script src="/js/jquery.min.js" type="text/javascript"></script>
-    <link href="/js/select2.min.js" />
-    <link href="/css/select2.min.css" rel="stylesheet" />
-    <link href="/js/jquery.dataTables.js" />
-    <link href="/css/jquery.dataTables.css" rel="stylesheet" />
+    <script src="/afms/js/jquery.min.js" type="text/javascript"></script>
+    <link href="/afms/js/select2.min.js" />
+    <link href="/afms/css/select2.min.css" rel="stylesheet" />
+    <link href="/afms/js/jquery.dataTables.js" />
+    <link href="/afms/css/jquery.dataTables.css" rel="stylesheet" />
     <!-- 
     <script>
         $(document).ready(function() {
             $('#myTable').DataTable({
-
+ 
                 processing: true,
                 // serverSide: true,
                 ajax: {
