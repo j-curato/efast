@@ -1521,7 +1521,7 @@ class JevPreparationController extends Controller
                             //     $s = [];
                             for ($i = 0; $i < $account_entries; $i++) {
 
-                                $x = explode('-', $_POST['chart_of_account_id'][$i]);
+                                // $x = explode('-', $_POST['chart_of_account_id'][$i]);
                                 $credit_decimal_places = 0;
                                 $debit_decimal_places = 0;
                                 // if (floor($_POST['credit']) != $_POST['credit'] ? true : false) {
@@ -1537,31 +1537,31 @@ class JevPreparationController extends Controller
 
 
 
-                                $chart_id = 0;
-                                if ($x[2] == 2) {
-                                    $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
-                                        ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
-                                        ->where('sub_accounts1.id =:id', ['id' => intval($x[0])])->one()['id'];
-                                } else if ($x[2] == 3) {
-                                    // $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
-                                    //     ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
-                                    //     ->where('sub_accounts1.id =:id', ['id' => intval($x[0])])->one()['id'];
-                                    $chart_id = SubAccounts2::findOne(intval($x[0]))->subAccounts1->chart_of_account_id;
-                                } else {
-                                    $chart_id = $x[0];
-                                }
+                                // $chart_id = 0;
+                                // if ($x[2] == 2) {
+                                //     $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
+                                //         ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+                                //         ->where('sub_accounts1.id =:id', ['id' => intval($x[0])])->one()['id'];
+                                // } else if ($x[2] == 3) {
+                                //     // $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
+                                //     //     ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+                                //     //     ->where('sub_accounts1.id =:id', ['id' => intval($x[0])])->one()['id'];
+                                //     $chart_id = SubAccounts2::findOne(intval($x[0]))->subAccounts1->chart_of_account_id;
+                                // } else {
+                                //     $chart_id = $x[0];
+                                // }
 
                                 $jv = new JevAccountingEntries();
                                 $jv->jev_preparation_id = $jev_preparation_id;
-                                $jv->chart_of_account_id = intval($chart_id);
+                                // $jv->chart_of_account_id = intval($chart_id);
                                 $jv->debit = !empty($_POST['debit'][$i]) ? $_POST['debit'][$i] : 0;
                                 $jv->credit = !empty($_POST['credit'][$i]) ? $_POST['credit'][$i] : 0;
                                 // $jv->current_noncurrent=$jev_preparation->id;
                                 $jv->cashflow_id =  !empty($_POST['cash_flow_id'][$i]) ? $_POST['cash_flow_id'][$i] : '';
                                 $jv->net_asset_equity_id =  !empty($_POST['isEquity'][$i]) ? $_POST['isEquity'][$i] : '';
                                 $jv->closing_nonclosing = $isClosing;
-                                $jv->lvl = $x[2];
-                                $jv->object_code = $x[1];
+                                // $jv->lvl = $x[2];
+                                $jv->object_code = $_POST['chart_of_account_id'][$i];
 
                                 if (!($flag = $jv->save(false))) {
                                     //  return json_encode();
@@ -1618,26 +1618,26 @@ class JevPreparationController extends Controller
 
     public function actionIsCurrent()
     {
-        $x = explode('-', $_POST['chart_id']);
-        $chart_id = $x[0];
-        $chart = (new \yii\db\Query())
-            ->select(['chart_of_accounts.id', 'chart_of_accounts.current_noncurrent', 'chart_of_accounts.account_group', 'major_accounts.object_code'])
-            ->from('chart_of_accounts')
-            ->join('LEFT JOIN', 'major_accounts', 'chart_of_accounts.major_account_id=major_accounts.id')
-            ->join('LEFT JOIN', 'sub_accounts1', 'chart_of_accounts.id=sub_accounts1.chart_of_account_id')
-            ->join('LEFT JOIN', 'sub_accounts2', 'sub_accounts1.id=sub_accounts2.sub_accounts1_id');
+        $x =  $_POST['chart_id'];
+        // $chart_id = $x[0];
+        // $chart = (new \yii\db\Query())
+        //     ->select(['chart_of_accounts.id', 'chart_of_accounts.current_noncurrent', 'chart_of_accounts.account_group', 'major_accounts.object_code'])
+        //     ->from('chart_of_accounts')
+        //     ->join('LEFT JOIN', 'major_accounts', 'chart_of_accounts.major_account_id=major_accounts.id')
+        //     ->join('LEFT JOIN', 'sub_accounts1', 'chart_of_accounts.id=sub_accounts1.chart_of_account_id')
+        //     ->join('LEFT JOIN', 'sub_accounts2', 'sub_accounts1.id=sub_accounts2.sub_accounts1_id');
 
 
 
-        if (intval($x[2]) === 1) {
-            $chart->where("chart_of_accounts.id = :id", ['id' =>  intval($chart_id)]);
-        } else if ($x[2] === 2) {
-            $chart->where("sub_accounts1.id = :id", ['id' => intval($chart_id)]);
-        } else if ($x[2] === 3) {
-            $chart->where("sub_accounts2.id = :id", ['id' => intval($chart_id)]);
-        }
+        // if (intval($x[2]) === 1) {
+        //     $chart->where("chart_of_accounts.id = :id", ['id' =>  intval($chart_id)]);
+        // } else if ($x[2] === 2) {
+        //     $chart->where("sub_accounts1.id = :id", ['id' => intval($chart_id)]);
+        // } else if ($x[2] === 3) {
+        //     $chart->where("sub_accounts2.id = :id", ['id' => intval($chart_id)]);
+        // }
 
-        $q = $chart->one();
+        // $q = $chart->one();
         // $res = Yii::$app->db->createCommand("SELECT  current_noncurrent,account_group FROM chart_of_accounts where id = {$_POST['chart_id']}")->queryOne();
 
         //   print_r($chart);
@@ -1647,21 +1647,23 @@ class JevPreparationController extends Controller
         //     ->where("chart_of_accounts.id = :id", [
         //         'id' => $_POST['chart_id']
         //     ])->one();
-
+        $query = Yii::$app->db->createCommand("SELECT *  FROM accounting_codes WHERE object_code = :object_code")
+            ->bindValue(':object_code', $x)
+            ->queryOne();
         $isEquity = false;
         $isCashEquivalent = false;
-        if ($q['object_code'] == 1010000000) {
+        if ($query['major_object_code'] == 1010000000) {
             $isCashEquivalent = true;
         }
-        if (strtolower($q['account_group']) === 'equity') {
+        if (strtolower($query['account_group']) === 'equity') {
             $isEquity = true;
         }
 
-        return json_encode(['result' => $q, 'isEquity' => $isEquity, 'isCashEquivalent' => $isCashEquivalent]);
+        return json_encode(['result' => $query, 'isEquity' => $isEquity, 'isCashEquivalent' => $isCashEquivalent,'current_noncurrent'=>$query['current_noncurrent']]);
 
         // ob_clean();
         // echo "<pre>";
-        // var_dump($q  );
+        // var_dump($query  );
         // echo "</pre>";
         // return ob_get_clean();
     }

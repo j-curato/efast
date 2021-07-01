@@ -58,7 +58,7 @@ class ChartOfAccountsController extends Controller
                             'chart-of-accounts',
                         ],
                         'allow' => true,
-                        'roles' => ['accounting','super-user']
+                        'roles' => ['accounting', 'super-user']
                     ]
                 ]
             ],
@@ -434,6 +434,13 @@ class ChartOfAccountsController extends Controller
     {
         $res = Yii::$app->db->createCommand('SELECT chart_of_accounts.id,uacs,
          general_ledger FROM chart_of_accounts 
+        
+        ')->queryAll();
+        return json_encode($res);
+    }
+    public function actionAccountingCodes()
+    {
+        $res = Yii::$app->db->createCommand('SELECT object_code, account_title FROM accounting_codes 
         
         ')->queryAll();
         return json_encode($res);

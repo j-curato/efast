@@ -414,32 +414,32 @@ class DvAucsController extends Controller
                         if (!empty($account_entries)) {
                             for ($i = 0; $i < $account_entries; $i++) {
 
-                                $x = explode('-', $_POST['chart_of_account_id'][$i]);
+                                // $x = explode('-', $_POST['chart_of_account_id'][$i]);
 
-                                $chart_id = 0;
-                                if ($x[2] == 2) {
-                                    $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
-                                        ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
-                                        ->where('sub_accounts1.id =:id', ['id' => intval($x[0])])->one()['id'];
-                                } else if ($x[2] == 3) {
-                                    // $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
-                                    //     ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
-                                    //     ->where('sub_accounts1.id =:id', ['id' => intval($x[0])])->one()['id'];
-                                    $chart_id = SubAccounts2::findOne(intval($x[0]))->subAccounts1->chart_of_account_id;
-                                } else {
-                                    $chart_id = $x[0];
-                                }
+                                // $chart_id = 0;
+                                // if ($x[2] == 2) {
+                                //     $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
+                                //         ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+                                //         ->where('sub_accounts1.id =:id', ['id' => intval($x[0])])->one()['id'];
+                                // } else if ($x[2] == 3) {
+                                //     // $chart_id = (new \yii\db\Query())->select(['chart_of_accounts.id'])->from('sub_accounts1')
+                                //     //     ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+                                //     //     ->where('sub_accounts1.id =:id', ['id' => intval($x[0])])->one()['id'];
+                                //     $chart_id = SubAccounts2::findOne(intval($x[0]))->subAccounts1->chart_of_account_id;
+                                // } else {
+                                //     $chart_id = $x[0];
+                                // }
 
                                 $dv_accounting_entries = new DvAccountingEntries();
                                 $dv_accounting_entries->dv_aucs_id = $dv->id;
-                                $dv_accounting_entries->chart_of_account_id = intval($chart_id);
+                                // $dv_accounting_entries->chart_of_account_id = intval($chart_id);
                                 $dv_accounting_entries->debit = !empty($_POST['debit'][$i]) ? $_POST['debit'][$i] : 0;
                                 $dv_accounting_entries->credit = !empty($_POST['credit'][$i]) ? $_POST['credit'][$i] : 0;
                                 // $dv_accounting_entries->current_noncurrent=$jev_preparation->id;
                                 $dv_accounting_entries->cashflow_id =  !empty($_POST['cash_flow_id'][$i]) ? $_POST['cash_flow_id'][$i] : '';
                                 $dv_accounting_entries->net_asset_equity_id =  !empty($_POST['isEquity'][$i]) ? $_POST['isEquity'][$i] : '';
-                                $dv_accounting_entries->lvl = $x[2];
-                                $dv_accounting_entries->object_code = $x[1];
+                                // $dv_accounting_entries->lvl = $x[2];
+                                $dv_accounting_entries->object_code = $_POST['chart_of_account_id'][$i];
 
                                 if (!($flag = $dv_accounting_entries->save(false))) {
                                     //  return json_encode();

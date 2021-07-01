@@ -379,7 +379,7 @@ use yii\helpers\ArrayHelper;
                 },
                 dataType: 'json',
                 success: function(data) {
-                    $('#isCurrent-' + i).val(data.result.current_noncurrent)
+                    $('#isCurrent-' + i).val(data.current_noncurrent)
                     // data.isCashEquivalent ? : $('#cash_flow_id-' + i).hide()
                     data.isEquity ? $('#isEquity-' + i).show() : $('#isEquity-' + i).hide()
                     if (data.isCashEquivalent == true) {
@@ -502,13 +502,13 @@ use yii\helpers\ArrayHelper;
 
 
             // GET ALL CHART OF accounts
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-all-account')
+            $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/accounting-codes')
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {
                         array.push({
-                            id: val.id + '-' + val.object_code + '-' + val.lvl,
-                            text: val.object_code + ' ' + val.title
+                            id: val.object_code,
+                            text: val.object_code + ' ' + val.account_title
                         })
                     })
                     accounts = array
@@ -937,7 +937,7 @@ $script = <<< JS
                             
                             var cashflow = jev_accounting_entries[x]['cashflow_id'];
                             var net_asset= jev_accounting_entries[x]['net_asset_equity_id'];
-                            $("#chart-"+x).val(chart).trigger('change');
+                            $("#chart-"+x).val(jev_accounting_entries[x]['object_code']).trigger('change');
                             $("#isEquity-"+x).val(jev_accounting_entries[x]['net_asset_equity_id']).trigger('change');
                             $("#cashflow-"+x).val(cashflow).trigger('change');
                             if ($( "#cashflow-"+x ).length ){

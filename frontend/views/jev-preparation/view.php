@@ -210,18 +210,23 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php
                     $general_ledger = '';
                     $object_code = '';
-                    if ($value->lvl === 1) {
-                        $general_ledger = $value->chartOfAccount->general_ledger;
-                        $object_code = $value->chartOfAccount->uacs;
-                    } else if ($value->lvl === 2) {
-                        $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
-                        $general_ledger = $q->name;
-                        $object_code = $q->object_code;
-                    } else if ($value->lvl === 3) {
-                        $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
-                        $general_ledger = $q->name;
-                        $object_code = $q->object_code;
-                    }
+                    // if ($value->lvl === 1) {
+                    //     $general_ledger = $value->chartOfAccount->general_ledger;
+                    //     $object_code = $value->chartOfAccount->uacs;
+                    // } else if ($value->lvl === 2) {
+                    //     $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
+                    //     $general_ledger = $q->name;
+                    //     $object_code = $q->object_code;
+                    // } else if ($value->lvl === 3) {
+                    //     $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
+                    //     $general_ledger = $q->name;
+                    //     $object_code = $q->object_code;
+                    // }
+                    $q = Yii::$app->db->createCommand('SELECT * FROM accounting_codes where object_code =:object_code')
+                        ->bindValue(":object_code", $value->object_code)
+                        ->queryOne();
+                    $general_ledger = $q['account_title'];
+                    $object_code = $q['object_code'];
                     $arr[] = [
                         'general_ledger' => $general_ledger,
                         'object_code' => $object_code,
