@@ -746,6 +746,7 @@ use yii\helpers\Html;
         var transaction_type = $("#transaction").val();
         var dv_count = 1;
         $(document).ready(function() {
+
             $("#bok").hide();
             $.getJSON('/dti-afms-2/frontend/web/index.php?r=mrd-classification/get-mrd-classification')
                 .then(function(data) {
@@ -936,6 +937,7 @@ use yii\helpers\Html;
 
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 <?php SweetAlertAsset::register($this); ?>
 <?php
@@ -980,23 +982,7 @@ $script = <<< JS
     })
 
       $(document).ready(function() {
-        $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/accounting-codes')
-                .then(function(data) {
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id:  val.object_code ,
-                            text: val.object_code + ' ' + val.account_title
-                        })
-                    })
-                    accounts = array
-                    $('#chart-0').select2({
 
-                        data: accounts,
-                        placeholder: "Select Chart of Account",
-
-                    })
-                })
         // CHART OF ACCOUNTS
 
         // $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')

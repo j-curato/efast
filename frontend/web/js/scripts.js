@@ -47,27 +47,23 @@ $.getJSON(url + '?r=books/get-books')
 
 
 // GET CHART OF ACCOUNTS
-// var accounts = [];
-// $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
-//     .then(function (data) {
-//         var array = []
-//         $.each(data, function (key, val) {
-//             array.push({
-//                 id: val.id,
-//                 text: val.object_code + ' ' + val.title
-//             })
-//         })
-//         accounts = array
-//         // var y=JSON.parse(accounts)
-//         $('#chart-0').select2({
+$.getJSON(url + '?r=chart-of-accounts/accounting-codes')
+    .then(function (data) {
+        var array = []
+        $.each(data, function (key, val) {
+            array.push({
+                id: val.object_code,
+                text: val.object_code + ' ' + val.account_title
+            })
+        })
+        accounts = array
+        $('#chart-0').select2({
 
-//             data: accounts,
-//             placeholder: "Select Chart of Account",
+            data: accounts,
+            placeholder: "Select Chart of Account",
 
-//         })
-//         chart_of_accounts = data
-
-//     })
+        })
+    })
 
 // RESPONSIBILITY CENTERS
 $.getJSON(url + '?r=responsibility-center/get-responsibility-center')
