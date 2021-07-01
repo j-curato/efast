@@ -749,6 +749,23 @@ use yii\helpers\Html;
         var dv_count = 1;
         $(document).ready(function() {
             $("#bok").hide();
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-all-account')
+                .then(function(data) {
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id + '-' + val.object_code + '-' + val.lvl,
+                            text: val.object_code + ' ' + val.title
+                        })
+                    })
+                    accounts = array
+                    $('#chart-0').select2({
+
+                        data: accounts,
+                        placeholder: "Select Chart of Account",
+
+                    })
+                })
             // $.getJSON('/dti-afms-2/frontend/web/index.php?r=mrd-classification/get-mrd-classification')
             //     .then(function(data) {
             //         var array = []
@@ -964,23 +981,7 @@ $script = <<< JS
     })
 
       $(document).ready(function() {
-        $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-all-account')
-                .then(function(data) {
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id + '-' + val.object_code + '-' + val.lvl,
-                            text: val.object_code + ' ' + val.title
-                        })
-                    })
-                    accounts = array
-                    $('#chart-0').select2({
 
-                        data: accounts,
-                        placeholder: "Select Chart of Account",
-
-                    })
-                })
         // CHART OF ACCOUNTS
 
         // $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
