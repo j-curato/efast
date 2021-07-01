@@ -9,7 +9,6 @@ function thousands_separators(num) {
 const url = window.location.pathname
 $.getJSON(url + '?r=books/get-books')
     .then(function (data) {
-        console.log(data)
         var array = []
         $.each(data, function (key, val) {
             array.push({
@@ -167,7 +166,7 @@ $.getJSON(url + '?r=mrd-classification/get-mrd-classification')
     })
 
 // GET ALL NATURE OF TRANSCTION
-$.getJSON(url+'?r=nature-of-transaction/get-nature-of-transaction')
+$.getJSON(url + '?r=nature-of-transaction/get-nature-of-transaction')
     .then(function (data) {
         var array = []
         $.each(data, function (key, val) {
@@ -185,7 +184,7 @@ $.getJSON(url+'?r=nature-of-transaction/get-nature-of-transaction')
     })
 
 // GET FINANCING SOURCE CODES
-$.getJSON(url+'?r=transaction/get-transaction')
+$.getJSON(url + '?r=transaction/get-transaction')
     .then(function (data) {
 
         var array = []
@@ -205,3 +204,19 @@ $.getJSON(url+'?r=transaction/get-transaction')
     });
 
 
+
+// GET DEBIT AND CREDIT TOTAL
+function getTotal() {
+    var total_credit = 0.00;
+    var total_debit = 0.00;
+    $(".credit").each(function () {
+        total_credit += Number($(this).val());
+    })
+    $(".debit").each(function () {
+        total_debit += Number($(this).val());
+    })
+
+    document.getElementById("d_total").innerHTML = "<h4>" + thousands_separators(total_debit) + "</h4>";
+    document.getElementById("c_total").innerHTML = "<h4>" + thousands_separators(total_credit) + "</h4>";
+
+}

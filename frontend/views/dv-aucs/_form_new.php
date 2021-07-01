@@ -59,7 +59,7 @@ use yii\helpers\Html;
 
                 <div class="col-sm-3" style="height:60x">
                     <label for="transaction">Transaction Type</label>
-                    <select required id="transaction_type" name="transaction_type" class="transaction select" style="width: 100%; margin-top:50px">
+                    <select required id="transaction" name="transaction_type" class="transaction select" style="width: 100%; margin-top:50px">
                         <option></option>
                     </select>
                 </div>
@@ -471,10 +471,9 @@ use yii\helpers\Html;
     <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" /> -->
 
     <?php
-    $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/jquery.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-    $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-    $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.min.css", ['depends' => [\yii\web\JqueryAsset::class]]);
+    $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
     ?>
+
     <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
     <script>
         var vacant = 0;
@@ -750,96 +749,96 @@ use yii\helpers\Html;
         var dv_count = 1;
         $(document).ready(function() {
             $("#bok").hide();
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=mrd-classification/get-mrd-classification')
-                .then(function(data) {
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.name
-                        })
-                    })
-                    mrd_classification = array
-                    $('#mrd_classification').select2({
-                        data: mrd_classification,
-                        placeholder: "Select MRD Classification"
-                    })
+            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=mrd-classification/get-mrd-classification')
+            //     .then(function(data) {
+            //         var array = []
+            //         $.each(data, function(key, val) {
+            //             array.push({
+            //                 id: val.id,
+            //                 text: val.name
+            //             })
+            //         })
+            //         mrd_classification = array
+            //         $('#mrd_classification').select2({
+            //             data: mrd_classification,
+            //             placeholder: "Select MRD Classification"
+            //         })
 
-                })
+            //     })
 
             // BOOKS
 
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
-                .then(function(data) {
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.name
-                        })
-                    })
-                    books = array
-                    $('#book').select2({
-                        data: books,
-                        placeholder: "Select Book"
-                    })
+            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
+            //     .then(function(data) {
+            //         var array = []
+            //         $.each(data, function(key, val) {
+            //             array.push({
+            //                 id: val.id,
+            //                 text: val.name
+            //             })
+            //         })
+            //         books = array
+            //         $('#book').select2({
+            //             data: books,
+            //             placeholder: "Select Book"
+            //         })
 
-                })
+            //     })
             // GET ALL NATURE OF TRANSCTION
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=nature-of-transaction/get-nature-of-transaction')
-                .then(function(data) {
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.name
-                        })
-                    })
-                    nature_of_transaction = array
-                    $('#nature_of_transaction').select2({
-                        data: nature_of_transaction,
-                        placeholder: "Select Nature of Transaction"
-                    })
+            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=nature-of-transaction/get-nature-of-transaction')
+            //     .then(function(data) {
+            //         var array = []
+            //         $.each(data, function(key, val) {
+            //             array.push({
+            //                 id: val.id,
+            //                 text: val.name
+            //             })
+            //         })
+            //         nature_of_transaction = array
+            //         $('#nature_of_transaction').select2({
+            //             data: nature_of_transaction,
+            //             placeholder: "Select Nature of Transaction"
+            //         })
 
-                })
+            //     })
             // GET FINANCING SOURCE CODES
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-transaction')
-                .then(function(data) {
+            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-transaction')
+            //     .then(function(data) {
 
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.tracking_number
-                        })
-                    })
-                    transaction = array
-                    $('#transaction_id').select2({
-                        data: transaction,
-                        placeholder: "Select Transaction",
+            //         var array = []
+            //         $.each(data, function(key, val) {
+            //             array.push({
+            //                 id: val.id,
+            //                 text: val.tracking_number
+            //             })
+            //         })
+            //         transaction = array
+            //         $('#transaction_id').select2({
+            //             data: transaction,
+            //             placeholder: "Select Transaction",
 
-                    })
+            //         })
 
-                });
+            //     });
             // GET PAYEE
-            var payee = [];
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=payee/get-payee')
-                .then(function(data) {
+            // var payee = [];
+            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=payee/get-payee')
+            //     .then(function(data) {
 
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.account_name
-                        })
-                    })
-                    payee = array
-                    $('#payee').select2({
-                        data: payee,
-                        placeholder: "Select Payee",
-                    })
+            //         var array = []
+            //         $.each(data, function(key, val) {
+            //             array.push({
+            //                 id: val.id,
+            //                 text: val.account_name
+            //             })
+            //         })
+            //         payee = array
+            //         $('#payee').select2({
+            //             data: payee,
+            //             placeholder: "Select Payee",
+            //         })
 
-                });
+            //     });
 
             // MAG ADD OG DATA NA BUHATAN OG DV
             $('#submit').click(function(e) {
@@ -872,64 +871,48 @@ use yii\helpers\Html;
             })
 
             // GET ALL CASHFLOW
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=cash-flow/get-all-cashflow')
-                .then(function(data) {
+            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=cash-flow/get-all-cashflow')
+            //     .then(function(data) {
 
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.specific_cashflow
-                        })
-                    })
-                    cashflow = array
-                    $('#cashflow-0').select2({
-                        data: cashflow,
-                        placeholder: 'Select Cash Flow'
-                    }).next().hide()
-
-
-                })
-            // GET ALL NETASSETS
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=net-asset-equity/get-all-netasset')
-                .then(function(data) {
-
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.specific_change
-                        })
-                    })
-                    net_asset = array
-                    $('#isEquity-0').select2({
-                        data: net_asset,
-                        placeholder: 'Select Net Asset'
-
-                    }).next().hide();
+            //         var array = []
+            //         $.each(data, function(key, val) {
+            //             array.push({
+            //                 id: val.id,
+            //                 text: val.specific_cashflow
+            //             })
+            //         })
+            //         cashflow = array
+            //         $('#cashflow-0').select2({
+            //             data: cashflow,
+            //             placeholder: 'Select Cash Flow'
+            //         }).next().hide()
 
 
-                })
+            //     })
+            // // GET ALL NETASSETS
+            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=net-asset-equity/get-all-netasset')
+            //     .then(function(data) {
+
+            //         var array = []
+            //         $.each(data, function(key, val) {
+            //             array.push({
+            //                 id: val.id,
+            //                 text: val.specific_change
+            //             })
+            //         })
+            //         net_asset = array
+            //         $('#isEquity-0').select2({
+            //             data: net_asset,
+            //             placeholder: 'Select Net Asset'
+
+            //         }).next().hide();
+
+
+            //     })
 
         })
 
-        function getTotal() {
-            var total_credit = 0.00;
-            var total_debit = 0.00;
-            $(".credit").each(function() {
-                total_credit += Number($(this).val());
-            })
-            $(".debit").each(function() {
-                total_debit += Number($(this).val());
-            })
 
-            document.getElementById("d_total").innerHTML = "<h4>" + thousands_separators(total_debit) + "</h4>";
-            document.getElementById("c_total").innerHTML = "<h4>" + thousands_separators(total_credit) + "</h4>";
-            //  $(".debit").change(function(){
-            //     $(this).val() =  thousands_separators(total_debit)
-            //  })
-            // $(this).val().replact
-        }
         $(document).on("keyup change", ".credit, .debit", function() {
             getTotal()
         })
@@ -1015,9 +998,9 @@ $script = <<< JS
                 // GET ALL MRD CLASSIFICATIOn
 
             // TRANSACTION TYPE
-           var w = ["Single", "Multiple","No Ors"]
-            $('#transaction_type').select2({
-                data: w,
+           var transaction = ["Single", "Multiple","No Ors"]
+            $('#transaction').select2({
+                data: transaction,
                 placeholder: "Select transaction",
 
             })      
