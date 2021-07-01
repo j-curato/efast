@@ -60,7 +60,7 @@ class DvAucsSearch extends DvAucs
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
+            'dv_aucs.id' => $this->id,
             'net_amount_paid' => $this->net_amount_paid,
             'is_cancelled' => $this->is_cancelled,
         ]);
