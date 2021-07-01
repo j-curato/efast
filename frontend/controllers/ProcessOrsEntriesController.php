@@ -251,13 +251,13 @@ class ProcessOrsEntriesController extends Controller
                     ->join("LEFT JOIN", "mfo_pap_code", "record_allotments.mfo_pap_code_id=mfo_pap_code.id")
                     ->join("LEFT JOIN", "raoud_entries", "raouds.id=raoud_entries.raoud_id")
                     ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount) as total,
-                raouds.id, raouds.process_ors_id,
-                raouds.record_allotment_entries_id
-                FROM raouds,raoud_entries,process_ors
-                WHERE raouds.process_ors_id= process_ors.id
-                AND raouds.id = raoud_entries.raoud_id
-                AND raouds.process_ors_id IS NOT NULL 
-                GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
+                               
+                                raouds.record_allotment_entries_id
+                                FROM raouds,raoud_entries,process_ors
+                                WHERE raouds.process_ors_id= process_ors.id
+                                AND raouds.id = raoud_entries.raoud_id
+                                AND raouds.process_ors_id IS NOT NULL 
+                                GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
                     // ->join("LEFT JOIN","","raouds.process_ors_id=process_ors.id")
 
                     ->where("raouds.id = :id", ['id' => $val])->one();
