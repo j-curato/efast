@@ -1143,6 +1143,7 @@ $script = <<< JS
             getTotal()
         }
     })
+     
     
 
 
