@@ -572,6 +572,28 @@ use kartik\select2\Select2;
         }
 
         $(document).ready(function() {
+            // GET CHART OF ACCOUNTS
+            $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
+                .then(function(data) {
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.object_code + ' ' + val.title
+                        })
+                    })
+                    accounts = array
+                    // var y=JSON.parse(accounts)
+                    chart_of_accounts = data
+
+                })
+
+
+
+            // GET TRANSACTIONs
+
+            // GET ALL BOOKS
+
 
             $('#add_data').submit(function(e) {
 

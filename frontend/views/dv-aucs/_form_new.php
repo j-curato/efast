@@ -59,7 +59,7 @@ use yii\helpers\Html;
 
                 <div class="col-sm-3" style="height:60x">
                     <label for="transaction">Transaction Type</label>
-                    <select required id="transaction" name="transaction_type" class="transaction select" style="width: 100%; margin-top:50px">
+                    <select required id="transaction_type" name="transaction_type" class="transaction select" style="width: 100%; margin-top:50px">
                         <option></option>
                     </select>
                 </div>
@@ -463,13 +463,18 @@ use yii\helpers\Html;
 
     <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script> -->
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-    <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+    <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script> -->
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
-    <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
-    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
+    <!-- <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
+    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" /> -->
 
+    <?php
+    $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/jquery.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+    $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+    $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.min.css", ['depends' => [\yii\web\JqueryAsset::class]]);
+    ?>
     <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
     <script>
         var vacant = 0;
@@ -932,9 +937,7 @@ use yii\helpers\Html;
 </div>
 
 
-<?php
-$this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-?>
+
 <?php SweetAlertAsset::register($this); ?>
 <?php
 
@@ -1012,9 +1015,9 @@ $script = <<< JS
                 // GET ALL MRD CLASSIFICATIOn
 
             // TRANSACTION TYPE
-           var transaction = ["Single", "Multiple","No Ors"]
-            $('#transaction').select2({
-                data: transaction,
+           var w = ["Single", "Multiple","No Ors"]
+            $('#transaction_type').select2({
+                data: w,
                 placeholder: "Select transaction",
 
             })      

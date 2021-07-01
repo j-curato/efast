@@ -6,10 +6,10 @@ function thousands_separators(num) {
     return num_parts.join(".");
 }
 // GET ALL BOOKS
-
-$.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
+const url = window.location.pathname
+$.getJSON(url + '?r=books/get-books')
     .then(function (data) {
-
+        console.log(data)
         var array = []
         $.each(data, function (key, val) {
             array.push({
@@ -18,7 +18,7 @@ $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
             })
         })
         book = array
-        $('#book_id').select2({
+        $('#book').select2({
             data: book,
             placeholder: "Select Book",
 
@@ -27,7 +27,165 @@ $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
     });
 // GET TRANSACTIONs
 
-$.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-all-transaction')
+// $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-all-transaction')
+//     .then(function (data) {
+
+//         var array = []
+//         $.each(data, function (key, val) {
+//             array.push({
+//                 id: val.id,
+//                 text: val.tracking_number
+//             })
+//         })
+//         transaction = array
+//         $('#transaction_id').select2({
+//             data: transaction,
+//             placeholder: "Select Transaction",
+
+//         })
+
+//     });
+
+
+// GET CHART OF ACCOUNTS
+// var accounts = [];
+// $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
+//     .then(function (data) {
+//         var array = []
+//         $.each(data, function (key, val) {
+//             array.push({
+//                 id: val.id,
+//                 text: val.object_code + ' ' + val.title
+//             })
+//         })
+//         accounts = array
+//         // var y=JSON.parse(accounts)
+//         $('#chart-0').select2({
+
+//             data: accounts,
+//             placeholder: "Select Chart of Account",
+
+//         })
+//         chart_of_accounts = data
+
+//     })
+
+// RESPONSIBILITY CENTERS
+$.getJSON(url + '?r=responsibility-center/get-responsibility-center')
+    .then(function (data) {
+        var array = []
+        $.each(data, function (key, val) {
+            array.push({
+                id: val.id,
+                text: val.name
+            })
+        })
+        r_center = array
+        $('#r_center_id').select2({
+            data: r_center,
+
+            placeholder: 'Select Responsibility Center'
+        })
+    })
+// GET ALL PAYEE
+$.getJSON(url + '?r=payee/get-payee')
+
+    .then(function (data) {
+
+        var array = []
+        $.each(data, function (key, val) {
+            array.push({
+                id: val.id,
+                text: val.account_name
+            })
+        })
+        payee = array
+        $('#payee').select2({
+            data: payee,
+            placeholder: "Select Payee",
+
+        })
+
+    })
+// GET ALL CASHFLOW
+$.getJSON(url + '?r=cash-flow/get-all-cashflow')
+    .then(function (data) {
+
+        var array = []
+        $.each(data, function (key, val) {
+            array.push({
+                id: val.id,
+                text: val.specific_cashflow
+            })
+        })
+        cashflow = array
+        $('#cashflow-0').select2({
+            data: cashflow,
+            placeholder: 'Select Cash Flow'
+        }).next().hide()
+
+
+    })
+
+// GET ALL NETASSETS
+$.getJSON(url + '?r=net-asset-equity/get-all-netasset')
+    .then(function (data) {
+
+        var array = []
+        $.each(data, function (key, val) {
+            array.push({
+                id: val.id,
+                text: val.specific_change
+            })
+        })
+        net_asset = array
+        $('#isEquity-0').select2({
+            data: net_asset,
+            placeholder: 'Select Net Asset'
+
+        }).next().hide();
+
+
+    })
+// MRD CLASSIFICATIOn
+var mrd_classification = []
+$.getJSON(url + '?r=mrd-classification/get-mrd-classification')
+    .then(function (data) {
+        var array = []
+        $.each(data, function (key, val) {
+            array.push({
+                id: val.id,
+                text: val.name
+            })
+        })
+        mrd_classification = array
+        $('#mrd_classification').select2({
+            data: mrd_classification,
+            placeholder: "Select MRD Classification"
+        })
+
+    })
+
+// GET ALL NATURE OF TRANSCTION
+$.getJSON(url+'?r=nature-of-transaction/get-nature-of-transaction')
+    .then(function (data) {
+        var array = []
+        $.each(data, function (key, val) {
+            array.push({
+                id: val.id,
+                text: val.name
+            })
+        })
+        nature_of_transaction = array
+        $('#nature_of_transaction').select2({
+            data: nature_of_transaction,
+            placeholder: "Select Nature of Transaction"
+        })
+
+    })
+
+// GET FINANCING SOURCE CODES
+$.getJSON(url+'?r=transaction/get-transaction')
     .then(function (data) {
 
         var array = []
@@ -46,18 +204,4 @@ $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-all-transaction'
 
     });
 
-// GET CHART OF ACCOUNTS
-$.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
-    .then(function (data) {
-        var array = []
-        $.each(data, function (key, val) {
-            array.push({
-                id: val.id,
-                text: val.object_code + ' ' + val.title
-            })
-        })
-        accounts = array
-        // var y=JSON.parse(accounts)
-        chart_of_accounts = data
 
-    })

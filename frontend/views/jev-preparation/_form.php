@@ -323,18 +323,19 @@ use yii\helpers\ArrayHelper;
             color: #61534e;
         }
     </style>
+    <?php
+    $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+    $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+    $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+    ?>
+    <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
 
-    <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
     <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
-    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
-    <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
+    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" /> -->
     <script>
         <?php SweetAlertAsset::register($this); ?>
         // global variable
-        var accounts = [];
+        // var accounts = [];
         var fund_clusters = [];
         var r_center = [];
         var payee = [];
@@ -540,102 +541,102 @@ use yii\helpers\ArrayHelper;
             //     })
             // })
             // GET ALL RESPONSIBILITY CENTERS
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=responsibility-center/get-responsibility-center')
-                .then(function(data) {
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.name
-                        })
-                    })
-                    r_center = array
-                    $('#r_center_id').select2({
-                        data: r_center,
+            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=responsibility-center/get-responsibility-center')
+            //     .then(function(data) {
+            //         var array = []
+            //         $.each(data, function(key, val) {
+            //             array.push({
+            //                 id: val.id,
+            //                 text: val.name
+            //             })
+            //         })
+            //         r_center = array
+            //         $('#r_center_id').select2({
+            //             data: r_center,
 
-                        placeholder: 'Select Responsibility Center'
-                    })
-                })
-            // GET ALL PAYEE
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=payee/get-payee')
+            //             placeholder: 'Select Responsibility Center'
+            //         })
+            //     })
+            // // GET ALL PAYEE
+            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=payee/get-payee')
 
-                .then(function(data) {
+            //     .then(function(data) {
 
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.account_name
-                        })
-                    })
-                    payee = array
-                    $('#payee').select2({
-                        data: payee,
-                        placeholder: "Select Payee",
+            //         var array = []
+            //         $.each(data, function(key, val) {
+            //             array.push({
+            //                 id: val.id,
+            //                 text: val.account_name
+            //             })
+            //         })
+            //         payee = array
+            //         $('#payee').select2({
+            //             data: payee,
+            //             placeholder: "Select Payee",
 
-                    })
+            //         })
 
-                })
+            //     })
 
-            // GET ALL CASHFLOW
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=cash-flow/get-all-cashflow')
-                .then(function(data) {
+            // // GET ALL CASHFLOW
+            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=cash-flow/get-all-cashflow')
+            //     .then(function(data) {
 
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.specific_cashflow
-                        })
-                    })
-                    cashflow = array
-                    $('#cashflow-0').select2({
-                        data: cashflow,
-                        placeholder: 'Select Cash Flow'
-                    }).next().hide()
-
-
-                })
-            // GET ALL NETASSETS
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=net-asset-equity/get-all-netasset')
-                .then(function(data) {
-
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.specific_change
-                        })
-                    })
-                    net_asset = array
-                    $('#isEquity-0').select2({
-                        data: net_asset,
-                        placeholder: 'Select Net Asset'
-
-                    }).next().hide();
+            //         var array = []
+            //         $.each(data, function(key, val) {
+            //             array.push({
+            //                 id: val.id,
+            //                 text: val.specific_cashflow
+            //             })
+            //         })
+            //         cashflow = array
+            //         $('#cashflow-0').select2({
+            //             data: cashflow,
+            //             placeholder: 'Select Cash Flow'
+            //         }).next().hide()
 
 
-                })
-            // GET ALL BOOKS WITH SELECT2 DROPDOWN
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
-                .then(function(data) {
+            //     })
+            // // GET ALL NETASSETS
+            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=net-asset-equity/get-all-netasset')
+            //     .then(function(data) {
 
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.name
-                        })
-                    })
-                    books = array
-                    $('#book').select2({
-                        data: books,
-                        placeholder: 'Select Book'
+            //         var array = []
+            //         $.each(data, function(key, val) {
+            //             array.push({
+            //                 id: val.id,
+            //                 text: val.specific_change
+            //             })
+            //         })
+            //         net_asset = array
+            //         $('#isEquity-0').select2({
+            //             data: net_asset,
+            //             placeholder: 'Select Net Asset'
 
-                    });
+            //         }).next().hide();
 
 
-                })
+            //     })
+            // // GET ALL BOOKS WITH SELECT2 DROPDOWN
+            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
+            //     .then(function(data) {
+
+            //         var array = []
+            //         $.each(data, function(key, val) {
+            //             array.push({
+            //                 id: val.id,
+            //                 text: val.name
+            //             })
+            //         })
+            //         books = array
+            //         $('#book').select2({
+            //             data: books,
+            //             placeholder: 'Select Book'
+
+            //         });
+
+
+            //     })
             // GET ALL DV 
             // $.getJSON('/dti-afms-2/frontend/web/index.php?r=cash-disbursement/get-all-dv')
             //     .then(function(data) {
@@ -759,9 +760,7 @@ use yii\helpers\ArrayHelper;
 </div>
 
 
-<?php
-$this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-?>
+
 
 <?php
 

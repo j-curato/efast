@@ -125,7 +125,7 @@ use kartik\select2\Select2;
         <!-- RAOUDS ANG MODEL ANI -->
         <!-- NAA SA CREATE CONTROLLER NAKO GE CHANGE -->
         <?php
-       $mfo= MfoPapCode::find()->asArray()->all()
+        $mfo = MfoPapCode::find()->asArray()->all()
         ?>
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
@@ -163,7 +163,7 @@ use kartik\select2\Select2;
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'is_parent',
-                        'name'=>'mfo',
+                        'name' => 'mfo',
                         'data' =>  ArrayHelper::map($mfo, 'id', 'code'),
                         'options' => ['placeholder' => 'Select '],
                         'pluginOptions' => [
@@ -346,6 +346,11 @@ use kartik\select2\Select2;
     <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
     <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
     <link href="/dti-afms-2/frontend/web/js/maskMoney.js" />
+    <?php
+    $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+    $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+    $this->registerJsFile(yii::$app->request->baseUrl . "/js/script.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+    ?>
     <script>
         var update_id = null;
         var account_name = undefined;
@@ -660,10 +665,7 @@ use kartik\select2\Select2;
 </div>
 
 
-<?php
-$this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-$this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-?>
+
 <?php SweetAlertAsset::register($this); ?>
 <?php
 
