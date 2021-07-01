@@ -512,7 +512,7 @@ class ProcessBursController extends Controller
                 ->join("LEFT JOIN", "major_accounts", "chart_of_accounts.major_account_id=major_accounts.id")
                 ->join("LEFT JOIN", "process_ors", "raouds.process_ors_id = process_ors.id")
                 ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount) as total,
-                    raouds.id, raouds.process_ors_id,
+       
                     raouds.record_allotment_entries_id
                     FROM raouds,raoud_entries,process_ors
                     WHERE raouds.process_ors_id= process_ors.id
