@@ -1119,6 +1119,7 @@ $script = <<< JS
                     var x=0
                
                         var dv_accounting_entries = res.dv_accounting_entries;
+                        console.log(dv_accounting_entries)
                         for (x; x<res.dv_accounting_entries.length;x++){
                             $("#debit-"+x).val(dv_accounting_entries[x]['debit'])
                             $("#credit-"+x).val(dv_accounting_entries[x]['credit'])
@@ -1144,7 +1145,7 @@ $script = <<< JS
         }
     })
      
-    
+
 
 
 JS;
