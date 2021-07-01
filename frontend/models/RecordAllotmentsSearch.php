@@ -17,7 +17,7 @@ class RecordAllotmentsSearch extends RecordAllotments
     public function rules()
     {
         return [
-            [['id', 'document_recieved_id', 'fund_cluster_code_id', 'financing_source_code_id', 'fund_category_and_classification_code_id', 'authorization_code_id', 'mfo_pap_code_id', 'fund_source_id'], 'integer'],
+            [['id', 'document_recieve_id', 'fund_cluster_code_id', 'financing_source_code_id', 'fund_category_and_classification_code_id', 'authorization_code_id', 'mfo_pap_code_id', 'fund_source_id'], 'integer'],
             [['reporting_period', 'serial_number', 'allotment_number', 'date_issued', 'valid_until', 'particulars'], 'safe'],
         ];
     }
@@ -59,7 +59,7 @@ class RecordAllotmentsSearch extends RecordAllotments
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'document_recieved_id' => $this->document_recieved_id,
+            'document_recieve_id' => $this->document_recieve_id,
             'fund_cluster_code_id' => $this->fund_cluster_code_id,
             'financing_source_code_id' => $this->financing_source_code_id,
             'fund_category_and_classification_code_id' => $this->fund_category_and_classification_code_id,
