@@ -591,43 +591,9 @@ use kartik\select2\Select2;
 
 
             // GET TRANSACTIONs
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-all-transaction')
-                .then(function(data) {
 
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.tracking_number
-                        })
-                    })
-                    transaction = array
-                    $('#transaction_id').select2({
-                        data: transaction,
-                        placeholder: "Select Transaction",
-
-                    })
-
-                });
             // GET ALL BOOKS
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
-                .then(function(data) {
 
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.name
-                        })
-                    })
-                    book = array
-                    $('#book_id').select2({
-                        data: book,
-                        placeholder: "Select Book",
-
-                    })
-
-                });
 
             $('#add_data').submit(function(e) {
 
@@ -659,6 +625,8 @@ use kartik\select2\Select2;
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+
 ?>
 <?php SweetAlertAsset::register($this); ?>
 <?php
