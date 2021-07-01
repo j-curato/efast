@@ -8,7 +8,7 @@ use Yii;
  * This is the model class for table "record_allotments".
  *
  * @property int $id
- * @property int|null $document_recieve_id
+ * @property int|null $document_recieved_id
  * @property int|null $fund_cluster_code_id
  * @property int|null $financing_source_code_id
  * @property int|null $fund_category_and_classification_code_id
@@ -46,13 +46,13 @@ class RecordAllotments extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['document_recieve_id', 'fund_cluster_code_id', 'financing_source_code_id', 'fund_category_and_classification_code_id', 'authorization_code_id', 'mfo_pap_code_id', 'fund_source_id'], 'integer'],
+            [['document_recieved_id', 'fund_cluster_code_id', 'financing_source_code_id', 'fund_category_and_classification_code_id', 'authorization_code_id', 'mfo_pap_code_id', 'fund_source_id'], 'integer'],
             [['reporting_period', 'serial_number'], 'required'],
             [['reporting_period'], 'string', 'max' => 20],
             [['serial_number', 'allotment_number', 'date_issued', 'valid_until'], 'string', 'max' => 50],
             [['particulars'], 'string', 'max' => 500],
             [['authorization_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => AuthorizationCode::class, 'targetAttribute' => ['authorization_code_id' => 'id']],
-            [['document_recieve_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentRecieve::class, 'targetAttribute' => ['document_recieve_id' => 'id']],
+            [['document_recieved_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentRecieve::class, 'targetAttribute' => ['document_recieved_id' => 'id']],
             [['financing_source_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinancingSourceCode::class, 'targetAttribute' => ['financing_source_code_id' => 'id']],
             [['fund_category_and_classification_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => FundCategoryAndClassificationCode::class, 'targetAttribute' => ['fund_category_and_classification_code_id' => 'id']],
             [['fund_cluster_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => FundClusterCode::class, 'targetAttribute' => ['fund_cluster_code_id' => 'id']],
@@ -68,7 +68,7 @@ class RecordAllotments extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'document_recieve_id' => 'Document Recieve ID',
+            'document_recieved_id' => 'Document Recieve ID',
             'fund_cluster_code_id' => 'Fund Cluster Code ID',
             'financing_source_code_id' => 'Financing Source Code ID',
             'fund_category_and_classification_code_id' => 'Fund Category And Classification Code ID',
@@ -101,7 +101,7 @@ class RecordAllotments extends \yii\db\ActiveRecord
      */
     public function getDocumentRecieve()
     {
-        return $this->hasOne(DocumentRecieve::class, ['id' => 'document_recieve_id']);
+        return $this->hasOne(DocumentRecieve::class, ['id' => 'document_recieved_id']);
     }
 
     /**
