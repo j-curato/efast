@@ -1,8 +1,8 @@
-<!-- <link href="/dti-afms-2/frontend/web/js/select2.min.js" rel="stylesheet" />
-<link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" /> -->
-<!-- <link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre.min.css">
-<link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre-exp.min.css">
-<link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre-icons.min.css"> -->
+<script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+    <script src="/afms/frontend/web/js/scripts.js" type="text/javascript"></script>
+
+    <link href="/afms/frontend/web/js/select2.min.js" />
+    <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
 <?php
 
 use kartik\date\DatePicker;
@@ -23,7 +23,6 @@ use yii\helpers\ArrayHelper;
                 $q = $model;
             }
             echo " <input type='text' id='update_id' name='update_id'  value='$q' style='display:none'>";
-            // echo " <input type='text' id='duplicate' name='duplicate'  value='$duplicate' style='display:none'>";
             if (!empty($type)) {
                 echo " <input type='text' id='type' name='type'  value='$type' style='display:none'>";
             }
@@ -69,7 +68,6 @@ use yii\helpers\ArrayHelper;
                     echo DatePicker::widget([
                         'name' => 'check_ada_date',
                         'id' => 'check_ada_date',
-                        // 'value' => '12/31/2010',
                         'pluginOptions' => [
                             'autoclose' => true,
                             'format' => 'yyyy-mm-dd',
@@ -84,7 +82,6 @@ use yii\helpers\ArrayHelper;
                     echo DatePicker::widget([
                         'name' => 'date',
                         'id' => 'date',
-                        // 'value' => '12/31/2010',
                         'pluginOptions' => [
                             'autoclose' => true,
                             'format' => 'yyyy-mm-dd',
@@ -99,7 +96,6 @@ use yii\helpers\ArrayHelper;
                     echo DatePicker::widget([
                         'name' => 'reporting_period',
                         'id' => 'reporting_period',
-                        // 'value' => '12/31/2010',
                         'options' => ['required' => true],
                         'pluginOptions' => [
                             'autoclose' => true,
@@ -121,12 +117,7 @@ use yii\helpers\ArrayHelper;
             <div class="row">
 
 
-                <!-- <div class="col-sm-2" style="height:60x">
-                    <label for="fund_cluster_code">Fund Cluster Code</label>
-                    <select id="fund_cluster_code" name="fund_cluster_code" class="fund_cluster_code select" style="width: 100%; margin-top:50px" >
-                        <option></option>
-                    </select>
-                </div> -->
+         
                 <div class="col-sm-3" style="height:60x">
                     <label for="book">Book</label>
                     <select id="book" name="book" class="book select" style="width: 100%; margin-top:50px" required>
@@ -180,17 +171,12 @@ use yii\helpers\ArrayHelper;
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <!-- <input type="text" name="particular" id="particular" placeholder="PARTICULAR" required> -->
                     <textarea name="particular" name="particular" id="particular" placeholder="PARTICULAR" required cols="151" rows="3"></textarea>
                 </div>
             </div>
 
             <!-- BUTTON -->
-            <!-- <div style="width: 100%; margin-bottom:50px;margin-right:25px;">
 
-                <button type="button" class=" add-btn btn btn-success btn-md" style="float:right;margin-right:20px"><i class="glyphicon glyphicon-plus"></i></button>
-                <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(0)"><i class="glyphicon glyphicon-minus"></i></button>
-            </div> -->
             <div id="form-0" class="accounting_entries" style="max-width: 100%;">
                 <!-- chart of accounts -->
 
@@ -244,10 +230,7 @@ use yii\helpers\ArrayHelper;
             <div class="total row">
 
                 <div class="col-sm-3 col-md-offset-5">
-                    <!-- <div class="form-group">
-                        <label for="exampleInputEmail1">TOTAL DEBIT</label>
-                        <input disabled type="text" style="background-color:white" class="form-control" id="d_total"  aria-describedby="emailHelp" placeholder="Total Dedit">
-                    </div> -->
+        
                     <div>
                         <label for="d_total"> Total Debit</label>
                         <div id="d_total">
@@ -324,11 +307,7 @@ use yii\helpers\ArrayHelper;
         }
     </style>
 
-    <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <script src="/dti-afms-2/frontend/web/js/scripts.js" type="text/javascript"></script>
 
-    <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
-    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
     <script>
         <?php SweetAlertAsset::register($this); ?>
         // global variable
@@ -348,10 +327,7 @@ use yii\helpers\ArrayHelper;
         var update_id = undefined;
 
         function removeItem(index) {
-            // $(`#form-${index}`).remove();
-            // arr_form.splice(index, 1);
-            // vacant = index
-            // $('#form' + index + '').remove();
+
 
             document.getElementById(`form-${index}`).remove()
             for (var y = 0; y < accounting_entries.length; y++) {
@@ -628,12 +604,7 @@ $script = <<< JS
         $("#check_ada option:not(:selected)").attr("disabled", false)
 
         if ($('#dv').val()===''){
-            // $('#add_data')[0].reset();
-            // $('#book').val('').trigger('change') 
-            // $('#payee').val('').trigger('change')
-            // $('#r_center_id').val('').trigger('change')
-            // $('#particular').val('').trigger('change')
-            // $("#check_ada").val('').trigger('change')
+         
             $('#total_disbursed').text('')
             $('#have_jev').text('')
             $('#submit').prop('disabled',false)
