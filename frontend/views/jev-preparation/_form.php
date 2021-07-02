@@ -467,7 +467,6 @@ use yii\helpers\ArrayHelper;
                         
                 </div>
                 `)
-            console.log(accounts)
             $(`#chart-${i}`).select2({
                 data: accounts,
                 placeholder: "Select Chart of Account",
@@ -502,23 +501,7 @@ use yii\helpers\ArrayHelper;
 
 
 
-            $.getJSON(url + '?r=chart-of-accounts/accounting-codes')
-                .then(function(data) {
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.object_code,
-                            text: val.object_code + ' ' + val.account_title
-                        })
-                    })
-                    accounts = array
-                    $('#chart-0').select2({
 
-                        data: accounts,
-                        placeholder: "Select Chart of Account",
-
-                    })
-                })
             // REFERENCE
             reference = ["CDJ", "CRJ", "GJ"]
             $('#reference').select2({
