@@ -686,48 +686,48 @@ use yii\helpers\ArrayHelper;
 
 
             // INSERT DATA TO DATABASE
-   
+
 
         })
         $('#add_data').submit(function(e) {
-                e.preventDefault();
-                $.ajax({
-                    url: window.location.pathname + '?r=jev-preparation/insert-jev',
-                    method: "POST",
-                    data: $('#add_data').serialize(),
-                    success: function(data) {
-                        //  alert(data);  
-                        // //  $('#add_name')[0].reset();  
-                        var res = JSON.parse(data)
+            e.preventDefault();
+            $.ajax({
+                url: window.location.pathname + '?r=jev-preparation/insert-jev',
+                method: "POST",
+                data: $('#add_data').serialize(),
+                success: function(data) {
+                    //  alert(data);  
+                    // //  $('#add_name')[0].reset();  
+                    var res = JSON.parse(data)
 
-                        if (res.isSuccess == "success") {
-                            swal({
-                                title: "Success",
-                                // text: "You will not be able to undo this action!",
-                                type: "success",
-                                timer: 3000,
-                                button: false
-                                // confirmButtonText: "Yes, delete it!",
-                            }, function() {
-                                window.location.href = window.location.pathname + '?r=jev-preparation/view&id=' + res.id
-                            });
-                            $('#add_data')[0].reset();
+                    if (res.isSuccess == "success") {
+                        swal({
+                            title: "Success",
+                            // text: "You will not be able to undo this action!",
+                            type: "success",
+                            timer: 3000,
+                            button: false
+                            // confirmButtonText: "Yes, delete it!",
+                        }, function() {
+                            window.location.href = window.location.pathname + '?r=jev-preparation/view&id=' + res.id
+                        });
+                        $('#add_data')[0].reset();
 
 
-                        } else if (res.isSuccess == false) {
-                            swal({
-                                title: res.error,
-                                // text: "You will not be able to undo this action!",
-                                type: "error",
-                                timer: 3000,
-                                button: false
-                                // confirmButtonText: "Yes, delete it!",
-                            }, function() {});
-                        }
-
+                    } else if (res.isSuccess == false) {
+                        swal({
+                            title: res.error,
+                            // text: "You will not be able to undo this action!",
+                            type: "error",
+                            timer: 3000,
+                            button: false
+                            // confirmButtonText: "Yes, delete it!",
+                        }, function() {});
                     }
-                });
-            })
+
+                }
+            });
+        })
 
         function getTotal() {
             var total_credit = 0.00;
@@ -864,7 +864,7 @@ $script = <<< JS
                                 
                                 var cashflow = dv_accounting_entries[x]['cashflow_id'];
                                 var net_asset= dv_accounting_entries[x]['net_asset_equity_id'];
-                                $("#chart-"+x).val(chart).trigger('change');
+                                $("#chart-"+x).val(dv_accounting_entries[x]['object_code']).trigger('change');
                                 $("#isEquity-"+x).val(dv_accounting_entries[x]['net_asset_equity_id']).trigger('change');
                                 $("#cashflow-"+x).val(cashflow).trigger('change');
                                 if ($( "#cashflow-"+x ).length ){
@@ -931,7 +931,9 @@ $script = <<< JS
                         var x=0
                         // for (i; i < jev_accounting_entries.length;) {
                         // }
+ 
                         for (x; x<jev_accounting_entries.length;x++){
+                  
                             $("#debit-"+x).val(jev_accounting_entries[x]['debit'])
                             $("#credit-"+x).val(jev_accounting_entries[x]['credit'])
                             var chart = jev_accounting_entries[x]['id'] +"-" +jev_accounting_entries[x]['object_code']+"-"+jev_accounting_entries[x]['lvl']
