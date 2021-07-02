@@ -502,23 +502,23 @@ use yii\helpers\ArrayHelper;
 
 
             // GET ALL CHART OF accounts
-            $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/accounting-codes')
-                .then(function(data) {
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.object_code,
-                            text: val.object_code + ' ' + val.account_title
-                        })
-                    })
-                    accounts = array
-                    $('#chart-0').select2({
+            // $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/accounting-codes')
+            //     .then(function(data) {
+            //         var array = []
+            //         $.each(data, function(key, val) {
+            //             array.push({
+            //                 id: val.object_code,
+            //                 text: val.object_code + ' ' + val.account_title
+            //             })
+            //         })
+            //         accounts = array
+            //         $('#chart-0').select2({
 
-                        data: accounts,
-                        placeholder: "Select Chart of Account",
+            //             data: accounts,
+            //             placeholder: "Select Chart of Account",
 
-                    })
-                })
+            //         })
+            //     })
 
             // GET ALL FUND CLUSTER CODES
             // $.getJSON('/dti-afms-2/frontend/web/index.php?r=fund-cluster-code/get-all-cluster')
@@ -686,7 +686,10 @@ use yii\helpers\ArrayHelper;
 
 
             // INSERT DATA TO DATABASE
-            $('#add_data').submit(function(e) {
+   
+
+        })
+        $('#add_data').submit(function(e) {
                 e.preventDefault();
                 $.ajax({
                     url: window.location.pathname + '?r=jev-preparation/insert-jev',
@@ -725,8 +728,6 @@ use yii\helpers\ArrayHelper;
                     }
                 });
             })
-
-        })
 
         function getTotal() {
             var total_credit = 0.00;
