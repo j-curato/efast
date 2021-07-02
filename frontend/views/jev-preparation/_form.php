@@ -335,7 +335,7 @@ use yii\helpers\ArrayHelper;
     <script>
         <?php SweetAlertAsset::register($this); ?>
         // global variable
-        var accounts = [];
+
         var fund_clusters = [];
         var r_center = [];
         var payee = [];
