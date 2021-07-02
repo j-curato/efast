@@ -856,8 +856,7 @@ $script = <<< JS
 
                     var x=0
                     var dv_accounting_entries = res.dv_accounting_entries;
-
-                    for (i; i < jev_accounting_entries.length;i++) {
+                    for (var i = 1; i < dv_accounting_entries.length;i++) {
                             add()
                         }
                             for (x; x<dv_accounting_entries.length;x++){
