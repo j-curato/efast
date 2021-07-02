@@ -360,7 +360,6 @@ use yii\helpers\ArrayHelper;
                     accounting_entries.splice(y, 1)
                 }
             }
-            // console.log(x, Math.max.apply(null, x))
             getTotal()
 
 
@@ -654,7 +653,6 @@ $script = <<< JS
                 data:{cash_id:$('#dv').val()},
                 success:function(data){
                     var res = JSON.parse(data)
-                    console.log(res)
                     $('#dv_number').val(res.results.dv_number)
                     $('#book').val(res.results.book_id).trigger('change')
                     $('#reference').prop('disabled',true)
@@ -713,8 +711,7 @@ $script = <<< JS
                                 var cashflow = dv_accounting_entries[x]['cashflow_id'];
                                 var net_asset= dv_accounting_entries[x]['net_asset_equity_id'];
                                 $("#chart-"+x).val(dv_accounting_entries[x]['object_code']).trigger('change');
-                                console.log( dv_accounting_entries[x]['object_code'])
-                                console.log( $("#chart-"+x).val())
+                         
                                 $("#isEquity-"+x).val(dv_accounting_entries[x]['net_asset_equity_id']).trigger('change');
                                 $("#cashflow-"+x).val(cashflow).trigger('change');
                                 if ($( "#cashflow-"+x ).length ){
@@ -762,7 +759,6 @@ $script = <<< JS
                         // document.querySelector("#reporting_period").value=jev['reporting_period']
                      
                         $('#dv').val(jev['cash_disbursement_id']).trigger('change');
-                        console.log($('#dv').val())
                         if ($('#dv').val() ==''){
 
                         $('#reporting_period').val(jev['reporting_period'])
@@ -826,7 +822,6 @@ $script = <<< JS
                        var d= JSON.parse(data)
                        var res=d.result
                         
-                       console.log(d)
                        var total_vat=0
                        var total_expanded=0
                        var total_gross=0
@@ -864,9 +859,7 @@ $script = <<< JS
                         $("#credit-"+x).val(parseFloat(total_expanded).toFixed(2))
                         $("#chart-"+x).val(d.vat['id'] + '-'+d.vat['object_code']+'-'+2).trigger('change');
                         x++
-                        console.log(total_gross)
-                        console.log(total_vat)
-                        console.log(total_expanded)
+          
                         getTotal()
                    }
                })
