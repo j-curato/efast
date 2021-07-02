@@ -347,7 +347,7 @@ use yii\helpers\ArrayHelper;
 
         var vacant = 0;
         var i = 1;
-        var x = [0];
+        var accounting_entries = [0];
         var update_id = undefined;
 
         function removeItem(index) {
@@ -357,10 +357,10 @@ use yii\helpers\ArrayHelper;
             // $('#form' + index + '').remove();
 
             document.getElementById(`form-${index}`).remove()
-            for (var y = 0; y < x.length; y++) {
-                if (x[y] === index) {
-                    delete x[y]
-                    x.splice(y, 1)
+            for (var y = 0; y < accounting_entries.length; y++) {
+                if (accounting_entries[y] === index) {
+                    delete accounting_entries[y]
+                    accounting_entries.splice(y, 1)
                 }
             }
             // console.log(x, Math.max.apply(null, x))
@@ -423,7 +423,7 @@ use yii\helpers\ArrayHelper;
 
         function add() {
 
-            var latest = Math.max.apply(null, x)
+            var latest = Math.max.apply(null, accounting_entries)
             $(`#form-${latest}`)
                 .after(`<div id="form-${i}" style="max-width:100%;border: 1px solid gray;width:100%; padding: 2rem; margin-top: 1rem;background-color:white;border-radius:5px" class="control-group input-group" class="accounting_entries">
                     <!-- chart of accounts -->
@@ -487,7 +487,7 @@ use yii\helpers\ArrayHelper;
             var deb = document.getElementsByName('debit[]');
             // arr_form.splice(latest, 0, latest + 1)
             // deb[1].value = 123
-            x.push(i)
+            accounting_entries.push(i)
 
             i++
 
@@ -501,162 +501,8 @@ use yii\helpers\ArrayHelper;
         $(document).ready(function() {
 
 
-            // GET ALL CHART OF accounts
-            // $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/accounting-codes')
-            //     .then(function(data) {
-            //         var array = []
-            //         $.each(data, function(key, val) {
-            //             array.push({
-            //                 id: val.object_code,
-            //                 text: val.object_code + ' ' + val.account_title
-            //             })
-            //         })
-            //         accounts = array
-            //         $('#chart-0').select2({
-
-            //             data: accounts,
-            //             placeholder: "Select Chart of Account",
-
-            //         })
-            //     })
-
-            // GET ALL FUND CLUSTER CODES
-            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=fund-cluster-code/get-all-cluster')
-            // .then(function(data) {
-            //     var array = []
-            //     $.each(data, function(key, val) {
-            //         array.push({
-            //             id: val.id,
-            //             text: val.name
-            //         })
-            //     })
-            //     fund_clusters = array
-            //     $('#fund_cluster_code').select2({
-            //         data: fund_clusters,
-            //         placeholder: "Select Fund Cluster Code",
-            //         containerCssClass: function(e) {
-            //             return $(e).attr('required') ? 'required' : '';
-            //         }
-
-            //     })
-            // })
-            // GET ALL RESPONSIBILITY CENTERS
-            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=responsibility-center/get-responsibility-center')
-            //     .then(function(data) {
-            //         var array = []
-            //         $.each(data, function(key, val) {
-            //             array.push({
-            //                 id: val.id,
-            //                 text: val.name
-            //             })
-            //         })
-            //         r_center = array
-            //         $('#r_center_id').select2({
-            //             data: r_center,
-
-            //             placeholder: 'Select Responsibility Center'
-            //         })
-            //     })
-            // // GET ALL PAYEE
-            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=payee/get-payee')
-
-            //     .then(function(data) {
-
-            //         var array = []
-            //         $.each(data, function(key, val) {
-            //             array.push({
-            //                 id: val.id,
-            //                 text: val.account_name
-            //             })
-            //         })
-            //         payee = array
-            //         $('#payee').select2({
-            //             data: payee,
-            //             placeholder: "Select Payee",
-
-            //         })
-
-            //     })
-
-            // // GET ALL CASHFLOW
-            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=cash-flow/get-all-cashflow')
-            //     .then(function(data) {
-
-            //         var array = []
-            //         $.each(data, function(key, val) {
-            //             array.push({
-            //                 id: val.id,
-            //                 text: val.specific_cashflow
-            //             })
-            //         })
-            //         cashflow = array
-            //         $('#cashflow-0').select2({
-            //             data: cashflow,
-            //             placeholder: 'Select Cash Flow'
-            //         }).next().hide()
 
 
-            //     })
-            // // GET ALL NETASSETS
-            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=net-asset-equity/get-all-netasset')
-            //     .then(function(data) {
-
-            //         var array = []
-            //         $.each(data, function(key, val) {
-            //             array.push({
-            //                 id: val.id,
-            //                 text: val.specific_change
-            //             })
-            //         })
-            //         net_asset = array
-            //         $('#isEquity-0').select2({
-            //             data: net_asset,
-            //             placeholder: 'Select Net Asset'
-
-            //         }).next().hide();
-
-
-            //     })
-            // // GET ALL BOOKS WITH SELECT2 DROPDOWN
-            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
-            //     .then(function(data) {
-
-            //         var array = []
-            //         $.each(data, function(key, val) {
-            //             array.push({
-            //                 id: val.id,
-            //                 text: val.name
-            //             })
-            //         })
-            //         books = array
-            //         $('#book').select2({
-            //             data: books,
-            //             placeholder: 'Select Book'
-
-            //         });
-
-
-            //     })
-            // GET ALL DV 
-            // $.getJSON('/dti-afms-2/frontend/web/index.php?r=cash-disbursement/get-all-dv')
-            //     .then(function(data) {
-
-            //         var array = []
-            //         $.each(data, function(key, val) {
-            //             array.push({
-            //                 id: val.cash_id,
-            //                 text: val.dv_number
-            //             })
-            //         })
-            //         dv = array
-            //         $('#dv').select2({
-            //             data: dv,
-            //             placeholder: 'Select dv'
-
-            //         });
-
-
-            //     })
 
 
             // REFERENCE
@@ -686,47 +532,46 @@ use yii\helpers\ArrayHelper;
 
 
             // INSERT DATA TO DATABASE
+            $('#add_data').submit(function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: window.location.pathname + '?r=jev-preparation/insert-jev',
+                    method: "POST",
+                    data: $('#add_data').serialize(),
+                    success: function(data) {
+                        //  alert(data);  
+                        // //  $('#add_name')[0].reset();  
+                        var res = JSON.parse(data)
+
+                        if (res.isSuccess == "success") {
+                            swal({
+                                title: "Success",
+                                // text: "You will not be able to undo this action!",
+                                type: "success",
+                                timer: 3000,
+                                button: false
+                                // confirmButtonText: "Yes, delete it!",
+                            }, function() {
+                                window.location.href = window.location.pathname + '?r=jev-preparation/view&id=' + res.id
+                            });
+                            $('#add_data')[0].reset();
 
 
-        })
-        $('#add_data').submit(function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: window.location.pathname + '?r=jev-preparation/insert-jev',
-                method: "POST",
-                data: $('#add_data').serialize(),
-                success: function(data) {
-                    //  alert(data);  
-                    // //  $('#add_name')[0].reset();  
-                    var res = JSON.parse(data)
+                        } else if (res.isSuccess == false) {
+                            swal({
+                                title: res.error,
+                                // text: "You will not be able to undo this action!",
+                                type: "error",
+                                timer: 3000,
+                                button: false
+                                // confirmButtonText: "Yes, delete it!",
+                            }, function() {});
+                        }
 
-                    if (res.isSuccess == "success") {
-                        swal({
-                            title: "Success",
-                            // text: "You will not be able to undo this action!",
-                            type: "success",
-                            timer: 3000,
-                            button: false
-                            // confirmButtonText: "Yes, delete it!",
-                        }, function() {
-                            window.location.href = window.location.pathname + '?r=jev-preparation/view&id=' + res.id
-                        });
-                        $('#add_data')[0].reset();
-
-
-                    } else if (res.isSuccess == false) {
-                        swal({
-                            title: res.error,
-                            // text: "You will not be able to undo this action!",
-                            type: "error",
-                            timer: 3000,
-                            button: false
-                            // confirmButtonText: "Yes, delete it!",
-                        }, function() {});
                     }
+                });
+            })
 
-                }
-            });
         })
 
         function getTotal() {
@@ -856,9 +701,7 @@ $script = <<< JS
 
                     var x=0
                     var dv_accounting_entries = res.dv_accounting_entries;
-                    for (var i = 1; i < dv_accounting_entries.length;i++) {
-                            add()
-                        }
+
                             for (x; x<dv_accounting_entries.length;x++){
                                 $("#debit-"+x).val(dv_accounting_entries[x]['debit'])
                                 $("#credit-"+x).val(dv_accounting_entries[x]['credit'])
@@ -866,16 +709,21 @@ $script = <<< JS
                                 
                                 var cashflow = dv_accounting_entries[x]['cashflow_id'];
                                 var net_asset= dv_accounting_entries[x]['net_asset_equity_id'];
-                                $("#chart-"+x).val(dv_accounting_entries[x]['object_code']).trigger('change');
+                                $("#chart-"+x).val(chart).trigger('change');
                                 $("#isEquity-"+x).val(dv_accounting_entries[x]['net_asset_equity_id']).trigger('change');
                                 $("#cashflow-"+x).val(cashflow).trigger('change');
                                 if ($( "#cashflow-"+x ).length ){
                                 }
                                 else{
                                 }
-            
+                                if (x < dv_accounting_entries.length -1){
+                                    add()
+                                }
                                 getTotal()
                             }
+                        // for(var ww = ){
+
+                        // }
                     
                 }
             })
@@ -908,7 +756,7 @@ $script = <<< JS
                         var d = "2020-12-01"
                         // document.querySelector("#reporting_period").value=jev['reporting_period']
                      
-                        jev['cash_disbursement_id']?$('#dv').val(jev['cash_disbursement_id']).trigger('change'):'';
+                        $('#dv').val(jev['cash_disbursement_id']).trigger('change');
                         console.log($('#dv').val())
                         if ($('#dv').val() ==''){
 
@@ -929,16 +777,12 @@ $script = <<< JS
                         $('#payee').trigger('change');
                         $('#book').val(jev['book_id']).trigger('change');
                         var x=0
-                        var i=1
-                        for (i; i < jev_accounting_entries.length;i++) {
-                            add()
-                        }
- 
+                        // for (i; i < jev_accounting_entries.length;) {
+                        // }
                         for (x; x<jev_accounting_entries.length;x++){
-                  
                             $("#debit-"+x).val(jev_accounting_entries[x]['debit'])
                             $("#credit-"+x).val(jev_accounting_entries[x]['credit'])
-                            // var chart = jev_accounting_entries[x]['id'] +"-" +jev_accounting_entries[x]['object_code']+"-"+jev_accounting_entries[x]['lvl']
+                            var chart = jev_accounting_entries[x]['id'] +"-" +jev_accounting_entries[x]['object_code']+"-"+jev_accounting_entries[x]['lvl']
                             
                             var cashflow = jev_accounting_entries[x]['cashflow_id'];
                             var net_asset= jev_accounting_entries[x]['net_asset_equity_id'];
@@ -949,7 +793,9 @@ $script = <<< JS
                             }
                             else{
                             }
-                   
+                            if (x < jev_accounting_entries.length -1){
+                                add()
+                            }
                         }
                     }
                
