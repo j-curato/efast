@@ -929,14 +929,16 @@ $script = <<< JS
                         $('#payee').trigger('change');
                         $('#book').val(jev['book_id']).trigger('change');
                         var x=0
-                        // for (i; i < jev_accounting_entries.length;) {
-                        // }
+                        var i=1
+                        for (i; i < jev_accounting_entries.length;i++) {
+                            add()
+                        }
  
                         for (x; x<jev_accounting_entries.length;x++){
                   
                             $("#debit-"+x).val(jev_accounting_entries[x]['debit'])
                             $("#credit-"+x).val(jev_accounting_entries[x]['credit'])
-                            var chart = jev_accounting_entries[x]['id'] +"-" +jev_accounting_entries[x]['object_code']+"-"+jev_accounting_entries[x]['lvl']
+                            // var chart = jev_accounting_entries[x]['id'] +"-" +jev_accounting_entries[x]['object_code']+"-"+jev_accounting_entries[x]['lvl']
                             
                             var cashflow = jev_accounting_entries[x]['cashflow_id'];
                             var net_asset= jev_accounting_entries[x]['net_asset_equity_id'];
@@ -947,9 +949,7 @@ $script = <<< JS
                             }
                             else{
                             }
-                            if (x < jev_accounting_entries.length -1){
-                                add()
-                            }
+                   
                         }
                     }
                
