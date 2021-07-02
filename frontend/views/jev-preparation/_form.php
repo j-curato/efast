@@ -709,7 +709,8 @@ $script = <<< JS
                                 
                                 var cashflow = dv_accounting_entries[x]['cashflow_id'];
                                 var net_asset= dv_accounting_entries[x]['net_asset_equity_id'];
-                                $("#chart-"+x).val(chart).trigger('change');
+                                $("#chart-"+x).val(dv_accounting_entries[x]['object_code']).trigger('change');
+                                console.log( $("#chart-"+x).val())
                                 $("#isEquity-"+x).val(dv_accounting_entries[x]['net_asset_equity_id']).trigger('change');
                                 $("#cashflow-"+x).val(cashflow).trigger('change');
                                 if ($( "#cashflow-"+x ).length ){
