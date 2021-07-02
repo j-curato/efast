@@ -46,8 +46,8 @@ $.getJSON(url + '?r=books/get-books')
 //     });
 
 
-// GET CHART OF ACCOUNTS 
-var accounts=
+// GET CHART OF ACCOUNTS
+var accounts=[]
 $.getJSON(url + '?r=chart-of-accounts/accounting-codes')
     .then(function (data) {
         var array = []

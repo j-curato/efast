@@ -494,7 +494,7 @@ use yii\helpers\ArrayHelper;
         }
 
 
-
+        var accounts = []
 
         $(document).ready(function() {
 
@@ -502,7 +502,23 @@ use yii\helpers\ArrayHelper;
 
 
 
+            $.getJSON(url + '?r=chart-of-accounts/accounting-codes')
+                .then(function(data) {
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.object_code,
+                            text: val.object_code + ' ' + val.account_title
+                        })
+                    })
+                    accounts = array
+                    $('#chart-0').select2({
 
+                        data: accounts,
+                        placeholder: "Select Chart of Account",
+
+                    })
+                })
             // REFERENCE
             reference = ["CDJ", "CRJ", "GJ"]
             $('#reference').select2({
@@ -606,7 +622,7 @@ use yii\helpers\ArrayHelper;
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-// $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 
 
