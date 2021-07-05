@@ -1,8 +1,7 @@
 <script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <script src="/afms/frontend/web/js/scripts.js" type="text/javascript"></script>
-
-    <link href="/afms/frontend/web/js/select2.min.js" />
-    <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
+<script src="/afms/frontend/web/js/scripts.js" type="text/javascript"></script>
+<link href="/afms/frontend/web/js/select2.min.js" />
+<link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
 <?php
 
 use kartik\date\DatePicker;
@@ -11,248 +10,252 @@ use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 
 ?>
-<div class="test">
+<div class="test" style="background-color:white;border:1px solid black;padding:20px">
 
 
-    <div id="container" class="container">
+    <!-- <div id="container" class="container"> -->
 
-        <form name="add_data" id="add_data">
-            <?php
-            $q = 0;
-            if (!empty($model)) {
-                $q = $model;
-            }
-            echo " <input type='text' id='update_id' name='update_id'  value='$q' style='display:none'>";
-            if (!empty($type)) {
-                echo " <input type='text' id='type' name='type'  value='$type' style='display:none'>";
-            }
-            ?>
+    <form name="add_data" id="add_data">
+        <?php
+        $q = 0;
+        if (!empty($model)) {
+            $q = $model;
+        }
+        echo " <input type='text' id='update_id' name='update_id'  value='$q' style='display:none'>";
+        if (!empty($type)) {
+            echo " <input type='text' id='type' name='type'  value='$type' style='display:none'>";
+        }
+        ?>
+        <div class="row">
+            <div class="col-sm-3">
+                <h4 id="have_jev" style='color:red'></h4>
+            </div>
+            <div class="col-sm-3">
+                <label for="dv">Select DV Number</label>
+                <?php
+                echo Select2::widget([
+                    'name' => "dv",
+                    'id' => 'dv',
+                    'value' => !empty($model->book_id) ? $model->book_id : '',
+                    'data' => ArrayHelper::map((new \yii\db\Query())
+                        ->select(['cash_disbursement.id as cash_id', 'dv_aucs.dv_number'])
+                        ->from('cash_disbursement')
+                        ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id  = dv_aucs.id')
+                        ->where('cash_disbursement.is_cancelled = :is_cancelled', ['is_cancelled' => false])
+                        ->all(), "cash_id", "dv_number"),
+                    'options' => [
+                        'placeholder' => "Select DV Number",
+                        'style' => "padding:20px"
+                    ],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                ])
+                ?>
+            </div>
+            <div class="col-sm-3">
+                <label for="total_disbursed"> Total Disbursed</label>
+                <h4 id="total_disbursed"></h4>
+            </div>
+
+        </div>
+        <div class="row">
+
+            <div class="col-sm-3">
+                <label for="check_ada_date">Check/ADA Date</label>
+
+                <?php
+                echo DatePicker::widget([
+                    'name' => 'check_ada_date',
+                    'id' => 'check_ada_date',
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd',
+                    ],
+                    'options' => [
+                     
+                    ]
+                ]);
+                ?>
+            </div>
+            <div class="col-sm-3">
+                <label for="date">Date</label>
+
+                <?php
+                echo DatePicker::widget([
+                    'name' => 'date',
+                    'id' => 'date',
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd',
+                    ],
+                    'options' => ['required' => true],
+                ]);
+                ?>
+            </div>
+            <div class="col-sm-3">
+                <label for="reporting_period">Reporting Period</label>
+                <?php
+                echo DatePicker::widget([
+                    'name' => 'reporting_period',
+                    'id' => 'reporting_period',
+                    'options' => ['required' => true],
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm',
+                        'startView' => "year",
+                        'minViewMode' => "months",
+                    ]
+                ]);
+                ?>
+            </div>
+            <div class="col-sm-3">
+                <label for="reference">Reference</label>
+
+                <select id="reference" name="reference" class="reference select" style="width: 100% ;margin-top:50px">
+                    <option></option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+
+
+
+            <div class="col-sm-3" style="height:60x">
+                <label for="book">Book</label>
+                <select id="book" name="book" class="book select" style="width: 100%; margin-top:50px" required>
+                    <option></option>
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <label for="r_center_id">Responisibility Center</label>
+                <select id="r_center_id" name="r_center_id" class="r_center_id select" style="width: 100%">
+                    <option></option>
+                </select>
+            </div>
+
+            <div class="col-sm-3">
+                <label for="check_ada">Check ADA</label>
+
+                <select id="check_ada" name="check_ada" class="check_ada select" style="width: 100%">
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <label for="payee">Payee</label>
+                <select id="payee" name="payee_id" class="payee select" style="width: 100%">
+                    <option></option>
+                </select>
+            </div>
+        </div>
+
+        <div class=" row">
+
+
+            <div class="col-sm-3">
+                <label for="lddap">LDDAP</label>
+
+                <input type="text" name="lddap" id="lddap" placeholder="LDDAP">
+            </div>
+            <div class="col-sm-3">
+                <label for="dv_number">DV Number</label>
+
+                <input type="text" name="dv_number" id="dv_number" placeholder="DV NUMBER">
+            </div>
+            <div class="col-sm-3">
+                <label for="cadadr_number">CADADR </label>
+
+                <input type="text" name="cadadr_number" id="cadadr_number" placeholder="CADADR NUMBER">
+            </div>
+            <div class="col-sm-3">
+                <label for="ada_number">Check/ADA Number </label>
+                <input type="text" name="ada_number" id="ada_number" placeholder="Check/ADA Number ">
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <textarea name="particular" name="particular" id="particular" placeholder="PARTICULAR" required cols="151" rows="3"></textarea>
+            </div>
+        </div>
+
+        <!-- BUTTON -->
+
+        <div id="form-0" class="accounting_entries" style="">
+            <!-- chart of accounts -->
+
             <div class="row">
-                <div class="col-sm-3">
-                    <h4 id="have_jev" style='color:red'></h4>
+                <div>
+                    <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(0)"><i class="glyphicon glyphicon-minus"></i></button>
+                    <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="glyphicon glyphicon-plus"></i></button>
                 </div>
-                <div class="col-sm-3">
-                    <label for="dv">Select DV Number</label>
-                    <?php
-                    echo Select2::widget([
-                        'name' => "dv",
-                        'id' => 'dv',
-                        'value' => !empty($model->book_id) ? $model->book_id : '',
-                        'data' => ArrayHelper::map((new \yii\db\Query())
-                            ->select(['cash_disbursement.id as cash_id', 'dv_aucs.dv_number'])
-                            ->from('cash_disbursement')
-                            ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id  = dv_aucs.id')
-                            ->where('cash_disbursement.is_cancelled = :is_cancelled', ['is_cancelled' => false])
-                            ->all(), "cash_id", "dv_number"),
-                        'options' => [
-                            'placeholder' => "Select DV Number",
-                        ],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ])
-                    ?>
-                </div>
-                <div class="col-sm-3">
-                    <label for="total_disbursed"> Total Disbursed</label>
-                    <h4 id="total_disbursed"></h4>
-                </div>
-
             </div>
             <div class="row">
+                <div class="col-sm-4">
+                    <label for="isCurrent">Current/NonCurrent </label>
 
-                <div class="col-sm-3">
-                    <label for="check_ada_date">Check/ADA Date</label>
-
-                    <?php
-                    echo DatePicker::widget([
-                        'name' => 'check_ada_date',
-                        'id' => 'check_ada_date',
-                        'pluginOptions' => [
-                            'autoclose' => true,
-                            'format' => 'yyyy-mm-dd',
-                        ]
-                    ]);
-                    ?>
+                    <input type="text" name="isCurrent[]" placeholder="Current/NonCurrent" id="isCurrent-0" />
                 </div>
                 <div class="col-sm-3">
-                    <label for="date">Date</label>
+                    <label for="cadadr_number">Cash Flow </label>
 
-                    <?php
-                    echo DatePicker::widget([
-                        'name' => 'date',
-                        'id' => 'date',
-                        'pluginOptions' => [
-                            'autoclose' => true,
-                            'format' => 'yyyy-mm-dd',
-                        ],
-                        'options' => ['required' => true],
-                    ]);
-                    ?>
+                    <select id="cashflow-0" name="cash_flow_id[]" style="width: 100% ;display:none">
+                        <option></option>
+                    </select>
                 </div>
                 <div class="col-sm-3">
-                    <label for="reporting_period">Reporting Period</label>
-                    <?php
-                    echo DatePicker::widget([
-                        'name' => 'reporting_period',
-                        'id' => 'reporting_period',
-                        'options' => ['required' => true],
-                        'pluginOptions' => [
-                            'autoclose' => true,
-                            'format' => 'yyyy-mm',
-                            'startView' => "year",
-                            'minViewMode' => "months",
-                        ]
-                    ]);
-                    ?>
-                </div>
-                <div class="col-sm-3">
-                    <label for="reference">Reference</label>
+                    <label for="cadadr_number">Changes in Net Asset and Equity </label>
 
-                    <select id="reference" name="reference" class="reference select" style="width: 100% ;margin-top:50px">
+                    <select id="isEquity-0" name="isEquity[]" style="width: 100% ;display:none">
                         <option></option>
                     </select>
                 </div>
             </div>
-            <div class="row">
 
+            <div class="row gap-1">
 
-         
-                <div class="col-sm-3" style="height:60x">
-                    <label for="book">Book</label>
-                    <select id="book" name="book" class="book select" style="width: 100%; margin-top:50px" required>
-                        <option></option>
-                    </select>
-                </div>
-                <div class="col-sm-3">
-                    <label for="r_center_id">Responisibility Center</label>
-                    <select id="r_center_id" name="r_center_id" class="r_center_id select" style="width: 100%">
-                        <option></option>
-                    </select>
-                </div>
+                <div class="col-sm-5 ">
 
-                <div class="col-sm-3">
-                    <label for="check_ada">Check ADA</label>
-
-                    <select id="check_ada" name="check_ada" class="check_ada select" style="width: 100%">
-                    </select>
-                </div>
-                <div class="col-sm-3">
-                    <label for="payee">Payee</label>
-                    <select id="payee" name="payee_id" class="payee select" style="width: 100%">
-                        <option></option>
-                    </select>
-                </div>
-            </div>
-
-            <div class=" row">
-
-
-                <div class="col-sm-3">
-                    <label for="lddap">LDDAP</label>
-
-                    <input type="text" name="lddap" id="lddap" placeholder="LDDAP">
-                </div>
-                <div class="col-sm-3">
-                    <label for="dv_number">DV Number</label>
-
-                    <input type="text" name="dv_number" id="dv_number" placeholder="DV NUMBER">
-                </div>
-                <div class="col-sm-3">
-                    <label for="cadadr_number">CADADR </label>
-
-                    <input type="text" name="cadadr_number" id="cadadr_number" placeholder="CADADR NUMBER">
-                </div>
-                <div class="col-sm-3">
-                    <label for="ada_number">Check/ADA Number </label>
-                    <input type="text" name="ada_number" id="ada_number" placeholder="Check/ADA Number ">
-                </div>
-
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <textarea name="particular" name="particular" id="particular" placeholder="PARTICULAR" required cols="151" rows="3"></textarea>
-                </div>
-            </div>
-
-            <!-- BUTTON -->
-
-            <div id="form-0" class="accounting_entries" style="max-width: 100%;">
-                <!-- chart of accounts -->
-
-                <div class="row">
                     <div>
-                        <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(0)"><i class="glyphicon glyphicon-minus"></i></button>
-                        <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="glyphicon glyphicon-plus"></i></button>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label for="isCurrent">Current/NonCurrent </label>
-
-                        <input type="text" name="isCurrent[]" placeholder="Current/NonCurrent" id="isCurrent-0" />
-                    </div>
-                    <div class="col-sm-3">
-                        <label for="cadadr_number">Cash Flow </label>
-
-                        <select id="cashflow-0" name="cash_flow_id[]" style="width: 100% ;display:none">
+                        <select id="chart-0" required name="chart_of_account_id[]" class="chart-of-account" onchange=isCurrent(this,0) style="width: 100%">
                             <option></option>
                         </select>
                     </div>
-                    <div class="col-sm-3">
-                        <label for="cadadr_number">Changes in Net Asset and Equity </label>
-
-                        <select id="isEquity-0" name="isEquity[]" style="width: 100% ;display:none">
-                            <option></option>
-                        </select>
-                    </div>
                 </div>
 
-                <div class="row gap-1">
-
-                    <div class="col-sm-5 ">
-
-                        <div>
-                            <select id="chart-0" required name="chart_of_account_id[]" class="chart-of-account" onchange=isCurrent(this,0) style="width: 100%">
-                                <option></option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-3">
-                        <input type="text" id="debit-0" name="debit[]" class="debit" placeholder="Debit">
-                    </div>
-                    <div class="col-sm-3">
-                        <input type="text" id="credit-0" name="credit[]" class="credit" placeholder="Credit">
-                    </div>
-                </div>
-            </div>
-            <div class="total row">
-
-                <div class="col-sm-3 col-md-offset-5">
-        
-                    <div>
-                        <label for="d_total"> Total Debit</label>
-                        <div id="d_total">
-                        </div>
-                    </div>
+                <div class="col-sm-3">
+                    <input type="text" id="debit-0" name="debit[]" class="debit" placeholder="Debit">
                 </div>
                 <div class="col-sm-3">
-                    <div class="form-group">
+                    <input type="text" id="credit-0" name="credit[]" class="credit" placeholder="Credit">
+                </div>
+            </div>
+        </div>
+        <div class="total row">
 
-                        <label for="c_total"> Total Credit</label>
-                        <div id="c_total">
-                        </div>
+            <div class="col-sm-3 col-md-offset-5">
+
+                <div>
+                    <label for="d_total"> Total Debit</label>
+                    <div id="d_total">
                     </div>
                 </div>
-
             </div>
-            <input type="submit" name="submit" id="submit" class="btn btn-info" value="Submit" />
+            <div class="col-sm-3">
+                <div class="form-group">
 
-        </form>
+                    <label for="c_total"> Total Credit</label>
+                    <div id="c_total">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <input type="submit" name="submit" id="submit" class="btn btn-info" value="Submit" />
+
+    </form>
 
 
-    </div>
+    <!-- </div> -->
 
     <style>
         textarea {
@@ -265,8 +268,12 @@ use yii\helpers\ArrayHelper;
             height: 2rem;
         }
 
-        #submit {
-            margin: 10px;
+        .accounting_entries {
+            max-width: 98%;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
 
         input {
@@ -397,7 +404,7 @@ use yii\helpers\ArrayHelper;
 
             var latest = Math.max.apply(null, accounting_entries)
             $(`#form-${latest}`)
-                .after(`<div id="form-${i}" style="max-width:100%;border: 1px solid gray;width:100%; padding: 2rem; margin-top: 1rem;background-color:white;border-radius:5px" class="control-group input-group" class="accounting_entries">
+                .after(`<div id="form-${i}" class="accounting_entries">
                     <!-- chart of accounts -->
                     <div class="row"  >
                         <div>
@@ -624,6 +631,7 @@ $script = <<< JS
                 data:{cash_id:$('#dv').val()},
                 success:function(data){
                     var res = JSON.parse(data)
+                    console.log(res)
                     $('#dv_number').val(res.results.dv_number)
                     $('#book').val(res.results.book_id).trigger('change')
                     $('#reference').prop('disabled',true)
@@ -730,7 +738,7 @@ $script = <<< JS
                         // document.querySelector("#reporting_period").value=jev['reporting_period']
                      
                         $('#dv').val(jev['cash_disbursement_id']).trigger('change');
-                        if ($('#dv').val() ==''){
+                        // if ($('#dv').val() ==''){
 
                         $('#reporting_period').val(jev['reporting_period'])
                         $('#check_ada_date').val(jev['check_ada_date'])
@@ -769,7 +777,7 @@ $script = <<< JS
                                 add()
                             }
                         }
-                    }
+                    // }
                
 
                     },

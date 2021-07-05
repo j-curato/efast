@@ -41,15 +41,15 @@ $this->title = 'Dashboard';
                 FROM dv_aucs_entries
             ")->queryOne();
 
-    // $total_cash_disbursed = Yii::$app->db->createCommand("SELECT books.`name`,
-    //                      cash_disbursement.book_id,
-    //                     SUM(dv_aucs_entries.amount_disbursed)as total_disbursed 
-    //                     FROM cash_disbursement,dv_aucs,dv_aucs_entries,books
-    //                     WHERE cash_disbursement.dv_aucs_id = dv_aucs.id
-    //                     AND dv_aucs.id = dv_aucs_entries.dv_aucs_id
-    //                     AND cash_disbursement.book_id = books.id
-    //                     AND cash_disbursement.is_cancelled = 0
-    //                     GROUP BY cash_disbursement.book_id")->queryAll();
+    $total_cash_disbursed = Yii::$app->db->createCommand("SELECT books.`name`,
+                         cash_disbursement.book_id,
+                        SUM(dv_aucs_entries.amount_disbursed)as total_disbursed 
+                        FROM cash_disbursement,dv_aucs,dv_aucs_entries,books
+                        WHERE cash_disbursement.dv_aucs_id = dv_aucs.id
+                        AND dv_aucs.id = dv_aucs_entries.dv_aucs_id
+                        AND cash_disbursement.book_id = books.id
+                        AND cash_disbursement.is_cancelled = 0
+                        GROUP BY cash_disbursement.book_id,books.`name`")->queryAll();
     $payable = Yii::$app->db->createCommand("SELECT SUM(dv_aucs_entries.amount_disbursed) as total_payable
                 FROM `dv_aucs`,dv_aucs_entries,mrd_classification 
                 where dv_aucs.mrd_classification_id = mrd_classification.id
@@ -208,8 +208,8 @@ $this->title = 'Dashboard';
                             <td style="text-align: right;">
                                 <span>
                                     <?php
-                                    // $result = ArrayHelper::index($total_cash_disbursed, null, 'name');
-                                    // echo number_format($result['Fund 01'][0]['total_disbursed'], 2);
+                                    $result = ArrayHelper::index($total_cash_disbursed, null, 'name');
+                                    echo number_format($result['Fund 01'][0]['total_disbursed'], 2);
                                     // ob_clean();
                                     // echo "<pre>";
                                     // var_dump($result['Fund 01'][0]['total_disbursed']);

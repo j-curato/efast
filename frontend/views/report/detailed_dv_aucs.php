@@ -14,7 +14,7 @@ use yii\data\ActiveDataProvider;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = "List of Pending DV's";
+$this->title = "Detailed Dv";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index" style="background-color: white;">
@@ -75,7 +75,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'List of Unobligated Transactions',
+            'heading' => 'Detailed DV',
         ],
         'floatHeaderOptions' => [
             'top' => 50,
@@ -88,7 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ExportMenu::widget([
                     'dataProvider' => $dataProvider,
                     'columns' => $gridColumn,
-                    'filename' => 'Advances/Liquidation',
+                    'filename' => 'Detailed_Dv',
                     'exportConfig' => [
                         ExportMenu::FORMAT_TEXT => false,
                         // ExportMenu::FORMAT_PDF => false,

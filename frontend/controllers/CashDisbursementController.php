@@ -423,7 +423,7 @@ class CashDisbursementController extends Controller
                     'cash_disbursement.ada_number',
                     'responsibility_center.id as rc_id',
                     'transaction.id as transaction_id',
-                    // 'SUM(dv_aucs_entries.amount_disbursed) as total_disbursed',
+                    'SUM(dv_aucs_entries.amount_disbursed) as total_disbursed',
                     'jev_preparation.id as jev_id'
 
                 ])
@@ -436,6 +436,14 @@ class CashDisbursementController extends Controller
                 ->join('LEFT JOIN', 'responsibility_center', 'transaction.responsibility_center_id = responsibility_center.id')
                 ->where("cash_disbursement.id = :id", [
                     'id' => $cash_id
+                ])
+                ->groupBy([
+                    'cash_disbursement.id',
+                    'cash_disbursement.book_id',
+                    'cash_disbursement.check_or_ada_no',
+                    'cash_disbursement.mode_of_payment',
+                    'cash_disbursement.issuance_date',
+                    'cash_disbursement.ada_number',
                 ])
                 ->one();
             $date = new DateTime($query['issuance_date']);

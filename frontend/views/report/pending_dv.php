@@ -12,6 +12,7 @@ use kartik\select2\Select2;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use aryelds\sweetalert\SweetAlertAsset;
+use kartik\export\ExportMenu;
 use yii\data\ActiveDataProvider;
 
 /* @var $this yii\web\View */
@@ -31,13 +32,12 @@ $this->params['breadcrumbs'][] = $this->title;
     // SELECT * from dv_aucs where dv_aucs.id NOT IN
     //(SELECT DISTINCT cash_disbursement.dv_aucs_id from cash_disbursement WHERE cash_disbursement.dv_aucs_id IS NOT NULL)
     $query = DvAucs::find()
-        ->join('LEFT JOIN',"(SELECT SUM(dv_aucs_entries.amount_disbursed) as total_disbursed
-        ,dv_aucs_entries.dv_aucs_id from dv_aucs_entries GROUP BY dv_aucs_entries.dv_aucs_id) as qwe",'dv_aucs.id = qwe.dv_aucs_id')
+        ->join('LEFT JOIN', "(SELECT SUM(dv_aucs_entries.amount_disbursed) as total_disbursed
+        ,dv_aucs_entries.dv_aucs_id from dv_aucs_entries GROUP BY dv_aucs_entries.dv_aucs_id) as qwe", 'dv_aucs.id = qwe.dv_aucs_id')
         ->where("dv_aucs.id NOT IN 
         (SELECT DISTINCT cash_disbursement.dv_aucs_id from cash_disbursement WHERE cash_disbursement.dv_aucs_id IS NOT NULL)")
         ->andWhere('qwe.total_disbursed >0')
-        ->andWhere('dv_aucs.is_cancelled =0')
-        ;
+        ->andWhere('dv_aucs.is_cancelled =0');
 
     // add conditions that should always apply here
 
@@ -51,6 +51,31 @@ $this->params['breadcrumbs'][] = $this->title;
     // echo "</pre>";
     // return ob_get_clean();
     // die();
+    $gridColumn = [
+
+        'id',
+        'reporting_period',
+        'dv_number',
+        'payee.account_name',
+        [
+            'label' => 'Amount Disbursed',
+            'value' => function ($model) {
+
+                $query = (new \yii\db\Query())
+                    ->select("SUM(dv_aucs_entries.amount_disbursed) total_disbursed")
+                    ->from("dv_aucs")
+                    ->join("LEFT JOIN", 'dv_aucs_entries', 'dv_aucs.id = dv_aucs_entries.dv_aucs_id')
+                    ->where("dv_aucs.id = :id", ['id' => $model->id])
+                    ->one();
+
+                return $query['total_disbursed'];
+            },
+            'format' => ['decimal', 2],
+            'hAlign' => 'right'
+        ],
+        'is_cancelled'
+
+    ];
     ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -63,31 +88,26 @@ $this->params['breadcrumbs'][] = $this->title;
             'top' => 50,
             'position' => 'absolute',
         ],
-        'columns' => [
-
-            'id',
-            'reporting_period',
-            'dv_number',
-            'payee.account_name',
+        'toolbar' =>  [
             [
-                'label'=>'Amount Disbursed',
-                'value'=>function($model){
+                'content' =>
+                ExportMenu::widget([
+                    'dataProvider' => $dataProvider,
+                    'columns' => $gridColumn,
+                    'filename' => 'Advances/Liquidation',
+                    'exportConfig' => [
+                        ExportMenu::FORMAT_TEXT => false,
+                        ExportMenu::FORMAT_PDF => false,
+                        ExportMenu::FORMAT_EXCEL => false,
+                        ExportMenu::FORMAT_HTML => false,
+                    ]
 
-                    $query= (new \yii\db\Query())
-                    ->select("SUM(dv_aucs_entries.amount_disbursed) total_disbursed")
-                    ->from("dv_aucs")
-                    ->join("LEFT JOIN",'dv_aucs_entries','dv_aucs.id = dv_aucs_entries.dv_aucs_id')
-                    ->where("dv_aucs.id = :id",['id'=>$model->id])
-                    ->one();
-
-                    return $query['total_disbursed'];
-                },
-                'format'=>['decimal',2],
-                'hAlign'=>'right'
+                ]),
+                'options' => ['class' => 'btn-group mr-2', 'style' => 'margin-right:20px']
             ],
-            'is_cancelled'
 
         ],
+        'columns' => $gridColumn
     ]); ?>
 
 
