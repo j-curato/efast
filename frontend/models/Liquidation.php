@@ -35,13 +35,14 @@ class Liquidation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['payee_id', 'responsibility_center_id'], 'integer'],
+            [['payee_id', 'responsibility_center_id','po_transaction_id'], 'integer'],
             [['particular'], 'string'],
             [['check_date', 'check_number'], 'string', 'max' => 50],
             [['reporting_period'], 'string', 'max' => 20],
             [['dv_number'], 'string', 'max' => 100],
             [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::class, 'targetAttribute' => ['payee_id' => 'id']],
             [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
+            [['po_transaction_id'], 'exist', 'skipOnError' => true, 'targetClass' => PoTransaction::class, 'targetAttribute' => ['po_transaction_id' => 'id']],
 
         ];
     }
@@ -60,6 +61,7 @@ class Liquidation extends \yii\db\ActiveRecord
             'dv_number' => 'Dv Number',
             'particular' => 'Particular',
             'reporting_period' => 'Reporting Period',
+            'po_transaction_id' => 'Transaction',
         ];
     }
 

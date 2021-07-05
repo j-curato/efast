@@ -211,6 +211,7 @@ class LiquidationController extends Controller
             $check_date = $_POST['check_date'];
             $check_number = $_POST['check_number'];
             $particular = $_POST['particular'];
+            $po_transaction_id = $_POST['transaction'];
             $chart_of_account = !empty($_POST['chart_of_account_id']) ? $_POST['chart_of_account_id'] : '';
             $withdrawal = !empty($_POST['withdrawal']) ? $_POST['withdrawal'] : '';
             $vat_nonvat = !empty($_POST['vat_nonvat']) ? $_POST['vat_nonvat'] : '';
@@ -230,6 +231,10 @@ class LiquidationController extends Controller
                 ->where("check_range.id = :id", ['id' => $check_range])
                 ->one();
             if ($check_number >= $check['from'] && $check_number <= ['to']) {
+            }
+            else {
+                return json_encode(['isSuccess' => false, 'error' => 'wala sa range']);
+                die();
             }
 
 
@@ -253,6 +258,8 @@ class LiquidationController extends Controller
             $liquidation->check_number = $check_number;
             $liquidation->particular = $particular;
             $liquidation->reporting_period = $reporting_period;
+            $liquidation->po_transaction_id = $po_transaction_id;
+            $liquidation->check_range_id = $check_range;
             $liquidation->dv_number = $this->getDvNumber($reporting_period);
             $r_per = $type === 're-align' ? $new_reporting_period[0] : $reporting_period;
             // list($withd) = sscanf(implode(explode(',', $withdrawal[0])), "%f");
@@ -340,16 +347,23 @@ class LiquidationController extends Controller
 
     public function getDvNumber($reporting_period)
     {
-        $q = (new \yii\db\Query())
-            ->select('liquidation.dv_number')
-            ->from('liquidation')
-            ->orderBy("liquidation.id DESC")
-            ->one();
+        // $reporting_period = '2021-02';
+        // $q = (new \yii\db\Query())
+        //     ->select('liquidation.dv_number')
+        //     ->from('liquidation')
+        //     ->orderBy("liquidation.id DESC")
+        //     ->one();
+        $q = Yii::$app->db->createCommand("SELECT substring_index(substring(dv_number, instr(dv_number, '-')+4), ' ', 1) as q 
+        from liquidation
+        
+        ORDER BY q DESC  LIMIT 1")->queryScalar();
+        // return $q;
+        // die();
         $num = 0;
 
-        if (!empty($q['dv_number'])) {
-            $x = explode('-', $q['dv_number']);
-            $num = $x[2] + 1;
+        if (!empty($q)) {
+            // $x = explode('-', $q['dv_number']);
+            $num = $q + 1;
         } else {
             $num = 1;
         }

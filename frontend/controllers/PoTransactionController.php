@@ -186,7 +186,7 @@ class PoTransactionController extends Controller
                 ->from('po_transaction')
                 ->where('id =:id', ['id', $id])
                 ->one();
-            return json_encode(['data' => $query]);
+            return json_encode($id);
         }
     }
 }

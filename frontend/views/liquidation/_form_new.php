@@ -54,7 +54,8 @@ use yii\helpers\ArrayHelper;
                             'autoclose' => true,
                             'startView' => 'months',
                             'minViewMode' => 'months'
-                        ]
+                        ],
+                        'options' => ['required' => true]
                     ])
                     ?>
                 </div>
@@ -69,7 +70,8 @@ use yii\helpers\ArrayHelper;
                         'pluginOptions' => [
                             'format' => 'yyyy-mm-dd',
                             'autoclose' => true
-                        ]
+                        ],
+                        'options' => ['required' => true]
                     ])
 
                     ?>
@@ -86,8 +88,10 @@ use yii\helpers\ArrayHelper;
                         'value' => $payee,
                         'id' => 'payee',
                         'pluginOptions' => [
-                            'placeholder' => 'Select Payee'
-                        ]
+                            'placeholder' => 'Select Payee',
+                            'required' => true
+                        ],
+                        // 'options'=>[]
                     ])
                     ?>
                 </div>
@@ -97,7 +101,7 @@ use yii\helpers\ArrayHelper;
 
                     <?php
 
-                    echo "<input type='text' class='form-control' id='check_number' name='check_number' value='$check_number'/>
+                    echo "<input type='text' class='form-control' id='check_number' required name='check_number' value='$check_number'/>
                     ";
                     ?>
                 </div>
@@ -476,9 +480,10 @@ $script = <<<JS
         $.ajax({
             type:"POST",
             url:window.location.pathname + '?=po-transaction/get-transaction',
-            data:{id:$('#transaction').val()},
+            data:{id:$("#transaction").val()},
             success:function(data){
-                var res = JSON.parse(data)
+                // var res = JSON.parse(data)
+                console.log(data)
                 
             }
         })

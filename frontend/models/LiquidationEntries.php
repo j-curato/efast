@@ -10,7 +10,7 @@ use Yii;
  * @property int $id
  * @property int|null $liquidation_id
  * @property int|null $chart_of_account_id
- * @property int|null $advances_id
+ * @property int|null $advances_entries_id
  * @property float|null $withdrawals
  * @property float|null $vat_nonvat
  * @property float|null $expanded_tax
@@ -35,9 +35,9 @@ class LiquidationEntries extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['liquidation_id', 'chart_of_account_id', 'advances_id'], 'integer'],
+            [['liquidation_id', 'chart_of_account_id', 'advances_entries_id'], 'integer'],
             [['withdrawals', 'vat_nonvat', 'expanded_tax'], 'number'],
-            [['advances_id'], 'exist', 'skipOnError' => true, 'targetClass' => Advances::class, 'targetAttribute' => ['advances_id' => 'id']],
+            [['advances_entries_id'], 'exist', 'skipOnError' => true, 'targetClass' => AdvancesEntries::class, 'targetAttribute' => ['advances_entries_id' => 'id']],
             [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
             [['liquidation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Liquidation::class, 'targetAttribute' => ['liquidation_id' => 'id']],
         ];
@@ -52,7 +52,7 @@ class LiquidationEntries extends \yii\db\ActiveRecord
             'id' => 'ID',
             'liquidation_id' => 'Liquidation ID',
             'chart_of_account_id' => 'Chart Of Account ID',
-            'advances_id' => 'Advances ID',
+            'advances_entries_id' => 'Advances ID',
             'withdrawals' => 'Withdrawals',
             'vat_nonvat' => 'Vat Nonvat',
             'expanded_tax' => 'Expanded Tax',
