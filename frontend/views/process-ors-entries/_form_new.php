@@ -123,8 +123,11 @@ use kartik\select2\Select2;
         <!-- RAOUDS ANG MODEL ANI -->
         <!-- NAA SA CREATE CONTROLLER NAKO GE CHANGE -->
         <?php
-        $mfo = MfoPapCode::find()->asArray()->all()
+        $mfo = MfoPapCode::find()->asArray()->all();
+        $dataProvider->pagination = ['pageSize' => 10];
+
         ?>
+
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'filterModel' => $searchModel,
@@ -138,6 +141,7 @@ use kartik\select2\Select2;
             ],
             'export' => false,
             'pjax' => true,
+            
 
             'columns' => [
 
