@@ -19,7 +19,7 @@ class AppAsset extends AssetBundle
         'maskmoney/dist/jquery.maskMoney.min.js',
         'js/jquery.min.js',
         'js/select2.min.js',
-        'js/scripts.js',
+        '/js/scripts.js',
         
         'manifest.webmanifest',
     ];

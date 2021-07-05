@@ -738,7 +738,7 @@ $script = <<< JS
                         // document.querySelector("#reporting_period").value=jev['reporting_period']
                      
                         $('#dv').val(jev['cash_disbursement_id']).trigger('change');
-                        // if ($('#dv').val() ==''){
+                        if ($('#dv').val() ==''){
 
                         $('#reporting_period').val(jev['reporting_period'])
                         $('#check_ada_date').val(jev['check_ada_date'])
@@ -777,7 +777,7 @@ $script = <<< JS
                                 add()
                             }
                         }
-                    // }
+                    }
                
 
                     },
