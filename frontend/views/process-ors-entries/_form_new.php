@@ -1,7 +1,5 @@
-<link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
-<!-- <link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre.min.css">
-<link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre-exp.min.css">
-<link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre-icons.min.css"> -->
+<link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
+
 
 <?php
 
@@ -342,14 +340,14 @@ use kartik\select2\Select2;
         }
     </style>
 
-    <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
-    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
-    <link href="/dti-afms-2/frontend/web/js/maskMoney.js" />
+    <script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+    <script src="/afms/frontend/web/js/scripts.js" type="text/javascript"></script>
+    <link href="/afms/frontend/web/js/select2.min.js" />
+    <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
+    <link href="/afms/frontend/web/js/maskMoney.js" />
     <?php
     $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
     $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-    $this->registerJsFile(yii::$app->request->baseUrl . "/js/script.js", ['depends' => [\yii\web\JqueryAsset::class]]);
     ?>
     <script>
         var update_id = null;
@@ -582,7 +580,7 @@ use kartik\select2\Select2;
 
         $(document).ready(function() {
             // GET CHART OF ACCOUNTS
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
+            $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {
@@ -600,7 +598,7 @@ use kartik\select2\Select2;
 
 
             // GET TRANSACTIONs
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-all-transaction')
+            $.getJSON('/afms/frontend/web/index.php?r=transaction/get-all-transaction')
                 .then(function(data) {
 
                     var array = []
@@ -619,7 +617,7 @@ use kartik\select2\Select2;
 
                 });
             // GET ALL BOOKS
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
+            $.getJSON('/afms/frontend/web/index.php?r=books/get-books')
                 .then(function(data) {
 
                     var array = []

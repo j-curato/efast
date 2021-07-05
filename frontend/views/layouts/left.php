@@ -15,7 +15,7 @@
 
 
         <!-- search form -->
-        <form action="#" method="get" class="sidebar-form">
+        <!-- <form action="#" method="get" class="sidebar-form">
             <div class="input-group">
                 <input type="text" name="q" class="form-control" placeholder="Search..." />
                 <span class="input-group-btn">
@@ -23,7 +23,7 @@
                     </button>
                 </span>
             </div>
-        </form>
+        </form> -->
         <!-- /.search form -->
         <style>
             .shit {
@@ -34,10 +34,8 @@
             [
                 'options' => ['class' => 'sidebar-menu tree text-truncate', 'data-widget' => 'tree', 'style' => 'width: inherit'],
                 'items' => [
-                    Yii::$app->user->can('super-user') ? ['label' => 'Gii', 'icon' => 'book', 'url' => ['/gii'],]:[],
                     [
                         'label' => 'Accounting',
-                        'icon' => 'share',
                         'url' => '#',
                         'items' => [
                             Yii::$app->user->can('super-user') ? [
@@ -104,7 +102,6 @@
                     ],
                     Yii::$app->user->can('super-user') ?  [
                         'label' => 'Budget',
-                        'icon' => 'share',
                         'url' => '#',
                         'items' => [
                             [
@@ -139,7 +136,6 @@
                     ] : ['label' => ''],
                     Yii::$app->user->can('super-user') ?  [
                         'label' => 'Cash',
-                        'icon' => 'share',
                         'url' => '#',
                         'items' => [
                             [
@@ -162,7 +158,6 @@
                     ] : ['label' => ''],
                     [
                         'label' => 'Report',
-                        'icon' => 'share',
                         'url' => '#',
                         'items' => [
 
@@ -179,6 +174,20 @@
                             Yii::$app->user->can('super-user') ?     ['label' => 'PO Transaction', 'icon' => 'circle-o', 'url' => ['/po-transaction'],] : [],
                             Yii::$app->user->can('super-user') ?     ['label' => 'Detailed Dv', 'icon' => 'circle-o', 'url' => ['/report/detailed-dv-aucs'],] : [],
                             ['label' => 'Conso Dv', 'icon' => 'circle-o', 'url' => ['/report/conso-detailed-dv'],],
+
+                        ],
+                    ],
+                    [
+                        'label' => 'Province',
+                        'url' => '#',
+                        'items' => [
+
+                            Yii::$app->user->can('super-user') ?     ['label' => 'Advances', 'icon' => 'circle-o', 'url' => ['/advances'],] : [],
+                            Yii::$app->user->can('super-user') ?     ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ['/liquidation'],] : [],
+                            Yii::$app->user->can('super-user') ?     ['label' => 'Advances/Liquidation', 'icon' => 'circle-o', 'url' => ['/report/advances-liquidation'],] : [],
+                            Yii::$app->user->can('super-user') ?     ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/report/cibr'],] : [],
+                            Yii::$app->user->can('super-user') ?     ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/cdr'],] : [],
+                            Yii::$app->user->can('super-user') ?     ['label' => 'PO Transaction', 'icon' => 'circle-o', 'url' => ['/po-transaction'],] : [],
 
                         ],
                     ],

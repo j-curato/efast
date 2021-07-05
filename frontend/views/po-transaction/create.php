@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\PoTransaction */
 
-$this->title = 'Create Po Transaction';
-$this->params['breadcrumbs'][] = ['label' => 'Po Transactions', 'url' => ['index']];
+$this->title = 'Create  Transaction';
+$this->params['breadcrumbs'][] = ['label' => ' Transactions', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="po-transaction-create">

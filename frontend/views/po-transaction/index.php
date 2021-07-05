@@ -9,7 +9,7 @@ use yii\helpers\Url;
 /* @var $searchModel app\models\PoTransactionSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Po Transactions';
+$this->title = ' Transactions';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="po-transaction-index">
@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
 SweetAlertAsset::register($this);
 $script = <<<JS
   
-  $('#modalButtoncreate').click(function(){
+         $('#modalButtoncreate').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         });
         $('.modalButtonedit').click(function(){
