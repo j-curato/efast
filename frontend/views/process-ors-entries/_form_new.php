@@ -90,7 +90,7 @@ use kartik\select2\Select2;
                 </thead>
                 <tr>
                     <td>
-                        <div id="payee"></div>
+                        <div id="payee_name"></div>
                     </td>
                     <td>
                         <div id="transaction_particular"></div>
@@ -691,7 +691,7 @@ $script = <<< JS
                 var amount = res.result['gross_amount']
                 // var x = document.getElementById("transaction_detail");
                 //  x.deleteRow(0);
-                $("#payee").text(res.result['account_name'])
+                $("#payee_name").text(res.result['account_name'])
                 $("#transaction_particular").text(res.result['particular'])
                 $("#transaction_amount").text(res.result['gross_amount'])
                 
