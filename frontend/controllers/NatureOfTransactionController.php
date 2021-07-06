@@ -48,7 +48,7 @@ class NatureOfTransactionController extends Controller
                             'get-nature-of-transaction',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['@']
                     ]
                 ]
             ],

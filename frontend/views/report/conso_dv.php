@@ -176,7 +176,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 <script>
-    $('#generate').click(function(e) {
+    $('#generate').click(function(e) { 
         e.preventDefault()
         $('#con').hide()
         $('#dots5').show()
