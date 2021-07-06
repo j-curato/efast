@@ -409,42 +409,47 @@ class CashDisbursementController extends Controller
         if (!empty($_POST)) {
             $cash_id = $_POST['cash_id'];
 
-            $query = (new \yii\db\Query())
-                ->select([
-                    'cash_disbursement.book_id',
-                    'dv_aucs.dv_number',
-                    'dv_aucs.id as dv_aucs_id',
-                    'dv_aucs.payee_id',
-                    'dv_aucs.particular',
-                    'dv_aucs.reporting_period',
-                    'cash_disbursement.check_or_ada_no',
-                    'cash_disbursement.mode_of_payment',
-                    'cash_disbursement.issuance_date',
-                    'cash_disbursement.ada_number',
-                    'responsibility_center.id as rc_id',
-                    'transaction.id as transaction_id',
-                    'SUM(dv_aucs_entries.amount_disbursed) as total_disbursed',
-                    'jev_preparation.id as jev_id'
+            // $query = (new \yii\db\Query())
+            //     ->select([
+            //         'cash_disbursement.book_id',
+            //         'dv_aucs.dv_number',
+            //         'dv_aucs.id as dv_aucs_id',
+            //         'dv_aucs.payee_id',
+            //         'dv_aucs.particular',
+            //         'dv_aucs.reporting_period',
+            //         'cash_disbursement.check_or_ada_no',
+            //         'cash_disbursement.mode_of_payment',
+            //         'cash_disbursement.issuance_date',
+            //         'cash_disbursement.ada_number',
+            //         'responsibility_center.id as rc_id',
+            //         'transaction.id as transaction_id',
+            //         'SUM(dv_aucs_entries.amount_disbursed) as total_disbursed',
+            //         'jev_preparation.id as jev_id'
 
-                ])
-                ->from("cash_disbursement")
-                ->join('LEFT JOIN', 'jev_preparation', 'cash_disbursement.id = jev_preparation.cash_disbursement_id')
-                ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id = dv_aucs.id')
-                ->join('LEFT JOIN', 'dv_aucs_entries', 'dv_aucs.id = dv_aucs_entries.dv_aucs_id')
-                ->join('LEFT JOIN', 'process_ors', 'dv_aucs_entries.process_ors_id = process_ors.id')
-                ->join('LEFT JOIN', 'transaction', 'process_ors.transaction_id = transaction.id')
-                ->join('LEFT JOIN', 'responsibility_center', 'transaction.responsibility_center_id = responsibility_center.id')
-                ->where("cash_disbursement.id = :id", [
-                    'id' => $cash_id
-                ])
-                ->groupBy([
-                    'cash_disbursement.id',
-                    'cash_disbursement.book_id',
-                    'cash_disbursement.check_or_ada_no',
-                    'cash_disbursement.mode_of_payment',
-                    'cash_disbursement.issuance_date',
-                    'cash_disbursement.ada_number',
-                ])
+            //     ])
+            //     ->from("cash_disbursement")
+            //     ->join('LEFT JOIN', 'jev_preparation', 'cash_disbursement.id = jev_preparation.cash_disbursement_id')
+            //     ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id = dv_aucs.id')
+            //     ->join('LEFT JOIN', 'dv_aucs_entries', 'dv_aucs.id = dv_aucs_entries.dv_aucs_id')
+            //     ->join('LEFT JOIN', 'process_ors', 'dv_aucs_entries.process_ors_id = process_ors.id')
+            //     ->join('LEFT JOIN', 'transaction', 'process_ors.transaction_id = transaction.id')
+            //     ->join('LEFT JOIN', 'responsibility_center', 'transaction.responsibility_center_id = responsibility_center.id')
+            //     ->where("cash_disbursement.id = :id", [
+            //         'id' => $cash_id
+            //     ])
+            //     ->groupBy([
+            //         'cash_disbursement.id',
+            //         'cash_disbursement.book_id',
+            //         'cash_disbursement.check_or_ada_no',
+            //         'cash_disbursement.mode_of_payment',
+            //         'cash_disbursement.issuance_date',
+            //         'cash_disbursement.ada_number',
+            //     ])
+            //     ->one();
+            $query = (new \yii\db\Query())
+                ->select('*')
+                ->from('detailed_cash_view')
+                ->where('cash_id = :cash_id', ['cash_id' => $cash_id])
                 ->one();
             $date = new DateTime($query['issuance_date']);
             // echo $date->format('Y-m-d H:i:s');
