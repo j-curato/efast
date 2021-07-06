@@ -168,11 +168,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
     }
 </style>
-<script src="/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-<link href="/frontend/web/js/select2.min.js" />
-<link href="/frontend/web/css/select2.min.css" rel="stylesheet" />
-<link href="/frontend/web/js/jquery.dataTables.js" />
-<link href="/frontend/web/css/jquery.dataTables.css" rel="stylesheet" />
+<script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+<link href="/afms/frontend/web/js/select2.min.js" />
+<link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
+<link href="/afms/frontend/web/js/jquery.dataTables.js" />
+<link href="/afms/frontend/web/css/jquery.dataTables.css" rel="stylesheet" />
 
 
 <script>

@@ -39,11 +39,18 @@ class MrdClassificationController extends Controller
                             'delete',
                             'update',
                             'create',
-                            'get-mrd-classification'
 
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'get-mrd-classification'
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
                     ]
                 ]
             ],

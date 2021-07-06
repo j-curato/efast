@@ -40,10 +40,17 @@ class CashFlowController extends Controller
                             'update',
                             'delete',
                             'create',
-                            'get-all-cashflow'
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                          
+                            'get-all-cashflow'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
                     ]
                 ]
             ],

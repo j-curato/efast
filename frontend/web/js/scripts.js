@@ -64,7 +64,7 @@ $.getJSON(url + '?r=chart-of-accounts/accounting-codes')
             placeholder: "Select Chart of Account",
 
         })
-    })
+    }).load
 
 // RESPONSIBILITY CENTERS
 $.getJSON(url + '?r=responsibility-center/get-responsibility-center')

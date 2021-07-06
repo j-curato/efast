@@ -34,12 +34,18 @@ class NatureOfTransactionController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-                            'get-nature-of-transaction',
                             'index',
                             'create',
                             'delete',
                             'view',
                             'update'
+                        ],
+                        'allow' => true,
+                        'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'get-nature-of-transaction',
                         ],
                         'allow' => true,
                         'roles' => ['super-user']

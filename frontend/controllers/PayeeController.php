@@ -43,11 +43,19 @@ class PayeeController extends Controller
                             'delete',
                             'update',
                             'view',
-                            'get-payee',
                             'import',
                         ],
                         'allow' => true,
                         'roles' => ['accounting']
+                    ],
+                    [
+
+                        'actions' => [
+
+                            'get-payee',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
                     ]
                 ]
             ],

@@ -35,7 +35,6 @@ class ResponsibilityCenterController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-                            'get-responsibility-center',
                             'index',
                             'view',
                             'update',
@@ -44,7 +43,14 @@ class ResponsibilityCenterController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
-                    ]
+                    ],
+                    [
+                        'actions' => [
+                            'get-responsibility-center',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
                 ]
             ],
             'verbs' => [

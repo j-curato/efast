@@ -255,14 +255,12 @@ use yii\helpers\ArrayHelper;
 
         function removeItem(index) {
             document.getElementById(`form-${index}`).remove()
-            // console.log(index)
             for (var y = 0; y < x.length; y++) {
                 if (x[y] === index) {
                     delete x[y]
                     x.splice(y, 1)
                 }
             }
-            console.log(x, Math.max.apply(null, x))
         }
 
 
@@ -271,7 +269,6 @@ use yii\helpers\ArrayHelper;
         function add() {
 
             var latest = Math.max.apply(null, x)
-            // console.log('index: '+latest)
             $(`#form-${latest}`)
                 .after(`<div id="form-${i}" style="border: 1px solid gray;width:100%; padding: 2rem; margin-top: 1rem;background-color:white;border-radius:5px;width: 96%;
             margin-left: auto;
@@ -308,11 +305,9 @@ use yii\helpers\ArrayHelper;
             var deb = document.getElementsByName('debit[]');
             // arr_form.splice(latest, 0, latest + 1)
             // deb[1].value = 123
-            // console.log(deb[1].value)
             x.push(i)
 
             i++
-            // console.log(i)
 
         }
         $(document).ready(function() {
@@ -510,7 +505,6 @@ use yii\helpers\ArrayHelper;
                     success: function(data) {
                         // //  $('#add_name')[0].reset();  
                         var res = JSON.parse(data)
-                        console.log(res)
                         if (res.isSuccess) {
                             swal({
                                 title: "Success",
@@ -557,7 +551,6 @@ $script = <<< JS
 
      $(document).ready(function() {
          $('#financing_source_code').change(function(){
-             console.log($(this).val())
          })
        
         update_id = $('#update_id').val()
@@ -565,7 +558,6 @@ $script = <<< JS
     // MAG API REQUEST KUNG NAAY SULOD ANG UPDATE_ID
         if (update_id > 0) {
             
-            // console.log(update_id)
         
             $.ajax({
                 url: window.location.pathname + '?r=record-allotments/update-record-allotment',
@@ -577,7 +569,6 @@ $script = <<< JS
                         var res = JSON.parse(data)
                         var record_allotment = res.record_allotments
                         var record_allotment_entries = res.record_allotment_entries
-                        console.log(record_allotment)
                         $('#reporting_period').val(record_allotment['reporting_period'])
                         $('#date_issued').val(record_allotment['date_issued']);
                         $('#valid_until').val(record_allotment['valid_until']);
@@ -592,13 +583,11 @@ $script = <<< JS
                         $('#responsibility_center').val(record_allotment['responsibility_center_id']).trigger('change');
                         $('#particular').val(record_allotment['particulars']);
 
-                        // console.log(record_allotment['particulars']) 
                         for (var y=0; y<record_allotment_entries.length;y++){
                             if (y>0){
                                 add();
                             }
                             $("#amount-"+y).val(record_allotment_entries[y]['amount']);
-                            console.log(record_allotment_entries[y]['chart_of_account_id'])
                             // $("#credit-"+x).val(jev_accounting_entries[x]['credit'])
                            
                             
