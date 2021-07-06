@@ -479,11 +479,6 @@ use yii\helpers\ArrayHelper;
 
         $(document).ready(function() {
 
-
-
-
-
-
             // REFERENCE
             reference = ["CDJ", "CRJ", "GJ"]
             $('#reference').select2({
@@ -800,7 +795,6 @@ $script = <<< JS
                     var debit_value=0
                        var d= JSON.parse(data)
                        var res=d.result
-                        
                        var total_vat=0
                        var total_expanded=0
                        var total_gross=0
@@ -838,7 +832,6 @@ $script = <<< JS
                         $("#credit-"+x).val(parseFloat(total_expanded).toFixed(2))
                         $("#chart-"+x).val(d.vat['id'] + '-'+d.vat['object_code']+'-'+2).trigger('change');
                         x++
-          
                         getTotal()
                    }
                })

@@ -85,7 +85,7 @@ $this->params['breadcrumbs'][] = $this->title;
         [
             'label' => "DV Number",
             "attribute" => "dv_aucs_id",
-            'value'=>'dvAucs.dv_number'
+            'value' => 'dvAucs.dv_number'
         ],
         [
             'label' => "Payee",
@@ -107,6 +107,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     ->one();
 
                 return $query['total_disbursed'];
+            }
+        ],
+        [
+            'label' => 'Good/Cancelled',
+            'attribute'=>'is_cancelled',
+            'value' => function ($model) {
+                $model->is_cancelled ? $q = 'cancelled' : $q = 'Good';
+                return $q;
             }
         ],
 
@@ -143,11 +151,11 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => $gridColumn
     ]); ?>
 
-        <style>
+    <style>
         .grid-view td {
             white-space: normal;
             width: 10rem;
             padding: 0;
         }
-        </style>
+    </style>
 </div>
