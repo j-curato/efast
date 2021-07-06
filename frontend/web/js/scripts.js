@@ -203,17 +203,4 @@ $.getJSON(url + '?r=transaction/get-transaction')
 
 
 // GET DEBIT AND CREDIT TOTAL
-function getTotal() {
-    var total_credit = 0.00;
-    var total_debit = 0.00;
-    $(".credit").each(function () {
-        total_credit += Number($(this).val());
-    })
-    $(".debit").each(function () {
-        total_debit += Number($(this).val());
-    })
 
-    document.getElementById("d_total").innerHTML = "<h4>" + thousands_separators(total_debit) + "</h4>";
-    document.getElementById("c_total").innerHTML = "<h4>" + thousands_separators(total_credit) + "</h4>";
-
-}

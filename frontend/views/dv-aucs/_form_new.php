@@ -788,7 +788,7 @@ use yii\helpers\Html;
 
         })
 
-        function getTotal() {
+        function getDebitCreditTotal() {
             var total_credit = 0.00;
             var total_debit = 0.00;
             $(".credit").each(function() {
@@ -806,7 +806,7 @@ use yii\helpers\Html;
             // $(this).val().replact
         }
         $(document).on("keyup change", ".credit, .debit", function() {
-            getTotal()
+            getDebitCreditTotal()
         })
     </script>
 </div>
@@ -829,10 +829,12 @@ $script = <<< JS
 
 
 
-    $('#transaction_table').on('change keyup', '.amount_disbursed', function() {
+    $('#transaction_table').on('change keyup', ['.amount_disbursed','.ewt','.vat','.compensation','.liabilities'], function() {
         getTotal()
 
      });
+
+
     
     $("#transaction").change(function(){
         var transaction_type=$("#transaction").val()
@@ -1002,10 +1004,10 @@ $script = <<< JS
                                 add()
                             }
                         }
+            getDebitCreditTotal()
                     
                 }
             })
-            getTotal()
         }
     })
      
