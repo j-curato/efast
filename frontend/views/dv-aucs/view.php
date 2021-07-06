@@ -166,20 +166,29 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     $debit = number_format($val->debit, 2);
                     $credit = number_format($val->credit, 2);
-                    if ($val->lvl === 2) {
-                        $x = SubAccounts1::find()->where('object_code =:object_code', ['object_code' => $val->object_code])
-                            ->one();
-                        $account_title = $x->name;
-                    } else if ($val->lvl === 3) {
-                        $y = SubAccounts2::find()->where('object_code =:object_code', ['object_code' => $val->object_code])
-                            ->one();
-                        $account_title = $y->name;
-                    } else if ($val->lvl === 1) {
-                        $account_title = $val->chartOfAccount->general_ledger;
-                    }
+                    // if ($val->lvl === 2) {
+                    //     $x = SubAccounts1::find()->where('object_code =:object_code', ['object_code' => $val->object_code])
+                    //         ->one();
+                    //     $account_title = $x->name;
+                    // } else if ($val->lvl === 3) {
+                    //     $y = SubAccounts2::find()->where('object_code =:object_code', ['object_code' => $val->object_code])
+                    //         ->one();
+                    //     $account_title = $y->name;
+                    // } else if ($val->lvl === 1) {
+                    //     $account_title = $val->chartOfAccount->general_ledger;
+                    // }
+
+                    $account_title = Yii::$app->db->createCommand("SELECT account_title FROM account_codes where object_code =:object_code")
+                        ->bindValue(':object_code', $val->object_code)
+                        ->queryOne();
+                    // ob_clean();
+                    // echo "<pre>";
+                    // var_dump($val->object_code);
+                    // echo "</pre>";
+                    // return ob_get_clean();
                     echo "<tr>
                         <td>{$val->object_code}</td>
-                        <td>{$account_title}</td>
+                        <td>{$account_title['account_title']}</td>
                         <td style='text-align:right'>$debit</td>
                         <td style='text-align:right'>$credit</td>
                     

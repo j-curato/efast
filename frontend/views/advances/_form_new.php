@@ -43,7 +43,8 @@ use kartik\select2\Select2;
                     'id' => 'report',
                     'pluginOptions' => [
                         'placeholder' => 'Select Report'
-                    ]
+                    ],
+                    'options' => []
                 ])
                 ?>
             </div>
@@ -65,7 +66,8 @@ use kartik\select2\Select2;
                     'id' => 'province',
                     'pluginOptions' => [
                         'placeholder' => 'Select Province'
-                    ]
+                    ],
+                    'options' => []
                 ])
                 ?>
             </div>
@@ -120,6 +122,7 @@ use kartik\select2\Select2;
 
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
+        $dataProvider->pagination = ['pageSize' => 10];
 
         $gridColumn = [
             // ['class' => 'yii\grid\SerialColumn'],

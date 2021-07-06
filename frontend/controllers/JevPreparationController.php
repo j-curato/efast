@@ -1602,6 +1602,7 @@ class JevPreparationController extends Controller
             } else {
                 return json_encode(
                     [
+                        'isSuccess' =>false,
                         'error' => 'Total Debit and Credit are Not Equal',
                         'debit' => $tt,
                         'credit' => $total_credit = $_POST['credit'],
@@ -1659,7 +1660,7 @@ class JevPreparationController extends Controller
             $isEquity = true;
         }
 
-        return json_encode(['result' => $query, 'isEquity' => $isEquity, 'isCashEquivalent' => $isCashEquivalent,'current_noncurrent'=>$query['current_noncurrent']]);
+        return json_encode(['result' => $query, 'isEquity' => $isEquity, 'isCashEquivalent' => $isCashEquivalent, 'current_noncurrent' => $query['current_noncurrent']]);
 
         // ob_clean();
         // echo "<pre>";

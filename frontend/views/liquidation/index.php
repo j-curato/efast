@@ -73,7 +73,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <?php
-
+    $dataProvider->pagination = ['pageSize' => 10];
     $gridColumn = [
         'id',
         [
@@ -190,5 +190,6 @@ $this->params['breadcrumbs'][] = $this->title;
 <style>
     .grid-view td {
         white-space: normal;
+        font-size: 12px;
     }
 </style>

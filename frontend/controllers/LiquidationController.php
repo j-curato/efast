@@ -233,7 +233,7 @@ class LiquidationController extends Controller
             if ($check_number >= $check['from'] && $check_number <= ['to']) {
             }
             else {
-                return json_encode(['isSuccess' => false, 'error' => 'wala sa range']);
+                return json_encode(['isSuccess' => false, 'error' => 'Check Number Not in Range']);
                 die();
             }
 

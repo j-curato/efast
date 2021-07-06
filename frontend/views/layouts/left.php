@@ -142,7 +142,9 @@
                                 'label' => 'Master Records',
                                 'icon' => 'circle-o',
                                 'url' => '#',
-                                'items' => [],
+                                'items' => [
+                                    ['label' => 'Check Range', 'icon' => 'circle-o', 'url' => ['/check-range'],],
+                                ],
                             ],
                             [
                                 'label' => 'Transaction',
@@ -166,12 +168,6 @@
                             Yii::$app->user->can('super-user') ?     ['label' => 'UnObligated Transaction', 'icon' => 'circle-o', 'url' => ['/report/unobligated-transaction'],] : [],
                             Yii::$app->user->can('super-user') ?     ['label' => 'UnPaid Obligation', 'icon' => 'circle-o', 'url' => ['/report/unpaid-obligation'],] : [],
                             Yii::$app->user->can('super-user') ?     ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/report/saob'],] : [],
-                            Yii::$app->user->can('super-user') ?     ['label' => 'Advances', 'icon' => 'circle-o', 'url' => ['/advances'],] : [],
-                            Yii::$app->user->can('super-user') ?     ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ['/liquidation'],] : [],
-                            Yii::$app->user->can('super-user') ?     ['label' => 'Advances/Liquidation', 'icon' => 'circle-o', 'url' => ['/report/advances-liquidation'],] : [],
-                            Yii::$app->user->can('super-user') ?     ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/report/cibr'],] : [],
-                            Yii::$app->user->can('super-user') ?     ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/cdr'],] : [],
-                            Yii::$app->user->can('super-user') ?     ['label' => 'PO Transaction', 'icon' => 'circle-o', 'url' => ['/po-transaction'],] : [],
                             Yii::$app->user->can('super-user') ?     ['label' => 'Detailed Dv', 'icon' => 'circle-o', 'url' => ['/report/detailed-dv-aucs'],] : [],
                             ['label' => 'Conso Dv', 'icon' => 'circle-o', 'url' => ['/report/conso-detailed-dv'],],
 

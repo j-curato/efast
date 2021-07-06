@@ -224,7 +224,10 @@ use yii\helpers\Html;
 
             <!-- PROCESS ORS ANG MODEL -->
             <!-- NAA SA CREATE CONTROLLER NAKO GE CHANGE -->
+            <?php
+            $dataProvider->pagination = ['pageSize' => 10];
 
+            ?>
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
@@ -781,7 +784,7 @@ use yii\helpers\Html;
                 $('.amounts').val(null);
             })
 
-         
+
 
         })
 

@@ -133,7 +133,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
   ];
-
+  $dataProvider->pagination = ['pageSize' => 10];
   // echo ExportMenu::widget([
   //   'dataProvider' => $w,
   //   'columns' => $gridColumn,
@@ -283,6 +283,7 @@ $this->params['breadcrumbs'][] = $this->title;
       white-space: normal;
       width: 5rem;
       padding: 0;
+      font-size: 12px;
     }
   </style>
 
@@ -350,4 +351,3 @@ $script = <<< JS
 JS;
 $this->registerJs($script);
 ?>
-

@@ -1,8 +1,6 @@
 <?php
 
 use app\models\AdvancesEntriesSearch;
-use app\models\AdvancesSearch;
-use app\models\CheckRange;
 use app\models\Payee;
 use app\models\PoTransaction;
 use aryelds\sweetalert\SweetAlertAsset;
@@ -21,7 +19,7 @@ use yii\helpers\ArrayHelper;
 
 
     <div class="">
-        <form id='save_data'>
+        <form id='save_data' >
             <?php
             !empty($model->id) ? $x = $model->id : $x = '';
             !empty($update_type) ? $t = $update_type : $t = '';
@@ -33,15 +31,19 @@ use yii\helpers\ArrayHelper;
             $check_date = '';
             $check_number = '';
             $reporting_period = '';
+            $check_range = '';
+            $transaction_id = '';
             if (!empty($model)) {
                 $particular = $model->particular;
                 $payee = $model->payee_id;
                 $check_date = $model->check_date;
                 $check_number = $model->check_number;
                 $reporting_period = $model->reporting_period;
+                $check_range = $model->check_range_id;
+                $transaction_id = $model->po_transaction_id;
             }
             ?>
-            <div class="row">
+            <div class="row ">
                 <div class="col-sm-3">
                     <label for="reporting_peirod">Reporting Period</label>
                     <?php
@@ -55,7 +57,11 @@ use yii\helpers\ArrayHelper;
                             'startView' => 'months',
                             'minViewMode' => 'months'
                         ],
-                        'options' => ['required' => true]
+                        'options' => [
+                            'required' => true,
+                            'readOnly' => true,
+                            'style' => 'background-color:white'
+                        ]
                     ])
                     ?>
                 </div>
@@ -71,44 +77,16 @@ use yii\helpers\ArrayHelper;
                             'format' => 'yyyy-mm-dd',
                             'autoclose' => true
                         ],
-                        'options' => ['required' => true]
+                        'options' => [
+                            'required' => true, 'readOnly' => true,
+                            'style' => 'background-color:white'
+                        ]
                     ])
 
                     ?>
 
 
                 </div>
-
-                <div class="col-sm-3">
-                    <label for="payee">Payee</label>
-                    <?php
-                    echo Select2::widget([
-                        'data' => ArrayHelper::map(Payee::find()->asArray()->all(), 'id', 'account_name'),
-                        'name' => 'payee',
-                        'value' => $payee,
-                        'id' => 'payee',
-                        'pluginOptions' => [
-                            'placeholder' => 'Select Payee',
-                            'required' => true
-                        ],
-                        // 'options'=>[]
-                    ])
-                    ?>
-                </div>
-
-                <div class="col-sm-3">
-                    <label for="check_number">Check Number</label>
-
-                    <?php
-
-                    echo "<input type='text' class='form-control' id='check_number' required name='check_number' value='$check_number'/>
-                    ";
-                    ?>
-                </div>
-
-            </div>
-            <div class="row">
-
                 <div class="col-sm-3">
                     <label for="check_range">Check Range</label>
                     <?php
@@ -123,9 +101,37 @@ use yii\helpers\ArrayHelper;
                         'data' => ArrayHelper::map($check, 'id', 'range'),
                         'name' => 'check_range',
                         'id' => 'check_range',
+                        'value' => $check_range,
                         'pluginOptions' => [
                             'placeholder' => 'Select Range'
+                        ],
+                        'options' => [
+                            'required' => true,
                         ]
+                    ])
+                    ?>
+                </div>
+
+
+
+            </div>
+            <div class="row">
+
+
+
+                <div class="col-sm-3">
+                    <label for="payee">Payee</label>
+                    <?php
+                    echo Select2::widget([
+                        'data' => ArrayHelper::map(Payee::find()->asArray()->all(), 'id', 'account_name'),
+                        'name' => 'payee',
+                        'value' => $payee,
+                        'id' => 'payee',
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Payee',
+                            'required' => true
+                        ],
+                        'options' => ['style' => 'height:34px']
                     ])
                     ?>
                 </div>
@@ -139,10 +145,24 @@ use yii\helpers\ArrayHelper;
                         'data' => ArrayHelper::map($po_transaction, 'id', 'tracking_number'),
                         'name' => 'transaction',
                         'id' => 'transaction',
+                        'value' => $transaction_id,
                         'pluginOptions' => [
                             'placeholder' => 'Select Transaction'
+                        ],
+                        'options' => [
+                            'required' => true
                         ]
+
                     ])
+                    ?>
+                </div>
+                <div class="col-sm-3">
+                    <label for="check_number">Check Number</label>
+
+                    <?php
+
+                    echo "<input type='number' class='form-control' id='check_number' required name='check_number' placeholder='Check Number' value='$check_number'/>
+                    ";
                     ?>
                 </div>
             </div>
@@ -182,9 +202,10 @@ use yii\helpers\ArrayHelper;
             <?php
             $searchModel = new AdvancesEntriesSearch();
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+            $dataProvider->pagination = ['pageSize' => 10];
             $gridColumn = [
 
-                'id',
+
 
 
                 [
@@ -202,6 +223,7 @@ use yii\helpers\ArrayHelper;
                 ],
                 [
                     'label' => 'NFT Number',
+                    'attribute' => 'advances_id',
                     'value' => 'advances.nft_number'
                 ],
                 [
@@ -242,6 +264,7 @@ use yii\helpers\ArrayHelper;
                     'type' => Gridview::TYPE_PRIMARY,
                     'heading' => 'List of Advances'
                 ],
+                'pjax' => true,
 
                 'columns' => $gridColumn
             ]); ?>
@@ -268,10 +291,23 @@ use yii\helpers\ArrayHelper;
         width: 100%;
     }
 
+    .form-control {
+        border-radius: 5px;
+    }
+
     #save {
         width: 100%;
         margin-top: 20px;
         margin-bottom: 20px;
+    }
+
+    .select2-container--krajee .select2-selection--single .select2-selection__arrow {
+        border-left: none;
+    }
+
+    .select2-container .select2-selection--single {
+
+        height: 34px;
     }
 </style>
 <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
@@ -337,7 +373,8 @@ SweetAlertAsset::register($this);
         if ($('#update').val() != 'create') {
             qwe = 'copy';
         }
-        addToTransactionTable([obj], copy)
+        console.log(qwe)
+        addToTransactionTable([obj], qwe)
 
     }
 
@@ -397,7 +434,11 @@ SweetAlertAsset::register($this);
                 placeholder: "Select Chart of Account",
 
             });
+            console.log(type)
+            if (type == 'copy') {
 
+                $(`#chart-${transaction_table_count} option:not(:selected)`).attr("disabled", true)
+            }
             if ($('#update_id') != null) {
                 $(`#chart-${transaction_table_count}`).val(result[i]['chart_of_account_id']).trigger('change')
                 $(`#withdrawal-${transaction_table_count}`).val(result[i]['withdrawals'])
@@ -533,10 +574,18 @@ $script = <<<JS
                         button:false,
 
                     }
-                  //  ,function(){
-                        // window.location.href = window.location.pathname +"?r=liquidation/view&id=" +res.id
-                   // }
+                   ,function(){
+                        window.location.href = window.location.pathname +"?r=liquidation/view&id=" +res.id
+                   }
                     )
+                }
+                else{
+                    swal({
+                        title:res.error,
+                        type:'error',
+                        button:false,
+
+                    })
                 }
 
             }
