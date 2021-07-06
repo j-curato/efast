@@ -54,7 +54,7 @@ class LiquidationController extends Controller
                             'import',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['super-user','liquidation']
                     ]
                 ]
             ],
@@ -261,7 +261,6 @@ class LiquidationController extends Controller
             $liquidation->po_transaction_id = $po_transaction_id;
             $liquidation->check_range_id = $check_range;
             $liquidation->dv_number = $this->getDvNumber($reporting_period);
-            $r_per = $type === 're-align' ? $new_reporting_period[0] : $reporting_period;
             // list($withd) = sscanf(implode(explode(',', $withdrawal[0])), "%f");
             // list($vat) = sscanf(implode(explode(',', $vat_nonvat[0])), "%f");
             // list($e) = sscanf(implode(explode(',', $ewt[0])), "%f");
@@ -295,7 +294,7 @@ class LiquidationController extends Controller
                                     }
                                 } else {
                                     $transaction->rollBack();
-                                    return json_encode(['isSuccess' => false, 'error' => $liq_entries->errors]);
+                                    return json_encode(['isSuccess' => false, 'error' => $liq_entries]);
                                 }
                             }
                         }

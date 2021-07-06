@@ -58,7 +58,6 @@ class ReportController extends \yii\web\Controller
                             'pending-dv',
                             'unpaid-obligation',
                             'saob',
-                            'get-cash',
                             'cibr',
                             'cdr',
                             'advances-liquidation',
@@ -80,6 +79,8 @@ class ReportController extends \yii\web\Controller
                             'pending-dv',
                             'unpaid-obligation',
                             'conso-detailed-dv',
+                            'get-cash',
+
                         ],
                         'allow' => true,
                         'roles' => ['@']

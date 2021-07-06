@@ -55,10 +55,20 @@ class ChartOfAccountsController extends Controller
                             'get-all-account',
                             'sample-index',
                             'get-general-ledger',
-                            'chart-of-accounts',
+
                         ],
                         'allow' => true,
                         'roles' => ['accounting', 'super-user']
+                    ],
+                    [
+                        'actions' => [
+
+                            'get-all-account',
+                            'chart-of-accounts',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
                     ]
                 ]
             ],

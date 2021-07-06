@@ -273,15 +273,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td></td>
                 <td colspan='2' style='text-align:center;font-weight:bold'>Total</td>
                 <td style='text-align:right;font-weight:bold'>" . number_format($total_deposit, 2) . "</td>
-                <td style='text-align:right;font-weight:bold'>" . number_format($total_withdrawals,2) . "</td>
-                <td style='text-align:right;font-weight:bold'>" . number_format($balance,2) . "</td>
+                <td style='text-align:right;font-weight:bold'>" . number_format($total_withdrawals, 2) . "</td>
+                <td style='text-align:right;font-weight:bold'>" . number_format($balance, 2) . "</td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
              
-                <td style='text-align:right;font-weight:bold'>" . number_format($total_withdrawals,2) . "</td>
+                <td style='text-align:right;font-weight:bold'>" . number_format($total_withdrawals, 2) . "</td>
                 </tr>";
                 //     echo "<pre>";
                 //         var_dump($dataProvider);
@@ -348,11 +348,11 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 </style>
 
-<script src="/js/jquery.min.js" type="text/javascript"></script>
-<link href="/js/select2.min.js" />
-<link href="/css/select2.min.css" rel="stylesheet" />
-<link href="/js/jquery.dataTables.js" />
-<link href="/css/jquery.dataTables.css" rel="stylesheet" />
+<script src="/afms/js/jquery.min.js" type="text/javascript"></script>
+<link href="/afms/js/select2.min.js" />
+<link href="/afms/css/select2.min.css" rel="stylesheet" />
+<link href="/afms/js/jquery.dataTables.js" />
+<link href="/afms/css/jquery.dataTables.css" rel="stylesheet" />
 
 
 

@@ -245,6 +245,17 @@ $this->params['breadcrumbs'][] = $this->title;
             },
             'format' => ['decimal', 2]
         ],
+        [
+            'label' => 'Total DV Amount',
+            'value' => function ($model) {
+                $query = Yii::$app->db->createCommand("SELECT SUM(dv_aucs_entries.amount_disbursed) as total
+                    FROM dv_aucs_entries
+                    WHERE  dv_aucs_entries.process_ors_id = $model->process_ors_id
+                     ")->queryScalar();
+                return $query;
+            },
+            'format' => ['decimal', 2]
+        ],
 
         // [
         //     'label' => 'Adjust',

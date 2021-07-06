@@ -19,7 +19,7 @@ use yii\helpers\ArrayHelper;
 
 
     <div class="">
-        <form id='save_data' >
+        <form id='save_data'>
             <?php
             !empty($model->id) ? $x = $model->id : $x = '';
             !empty($update_type) ? $t = $update_type : $t = '';
@@ -310,10 +310,10 @@ use yii\helpers\ArrayHelper;
         height: 34px;
     }
 </style>
-<script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-<link href="/dti-afms-2/frontend/web/js/select2.min.js" />
-<link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
-<link href="/dti-afms-2/frontend/web/js/maskMoney.js" />
+<script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+<link href="/afms/frontend/web/js/select2.min.js" />
+<link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
+<link href="/afms/frontend/web/js/maskMoney.js" />
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
@@ -435,10 +435,7 @@ SweetAlertAsset::register($this);
 
             });
             console.log(type)
-            if (type == 'copy') {
 
-                $(`#chart-${transaction_table_count} option:not(:selected)`).attr("disabled", true)
-            }
             if ($('#update_id') != null) {
                 $(`#chart-${transaction_table_count}`).val(result[i]['chart_of_account_id']).trigger('change')
                 $(`#withdrawal-${transaction_table_count}`).val(result[i]['withdrawals'])
@@ -461,6 +458,10 @@ SweetAlertAsset::register($this);
                 $(`#date_${transaction_table_count}`).prop('disabled', true)
 
             }
+            if (type == 'copy') {
+
+                $(`#chart-${transaction_table_count} option:not(:selected)`).attr("disabled", true)
+            }
             transaction_table_count++;
         }
 
@@ -470,7 +471,7 @@ SweetAlertAsset::register($this);
 
 
     $(document).ready(function() {
-        $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/chart-of-accounts')
+        $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/chart-of-accounts')
             .then(function(data) {
                 var array = []
                 $.each(data, function(key, val) {
