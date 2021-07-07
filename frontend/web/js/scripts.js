@@ -6,7 +6,24 @@ function thousands_separators(num) {
     return num_parts.join(".");
 }
 // GET ALL BOOKS
-site
+const url = window.location.pathname
+$.getJSON(url + '?r=books/get-books')
+    .then(function (data) {
+        var array = []
+        $.each(data, function (key, val) {
+            array.push({
+                id: val.id,
+                text: val.name
+            })
+        })
+        book = array
+        $('#book').select2({
+            data: book,
+            placeholder: "Select Book",
+
+        })
+
+    });
 // GET TRANSACTIONs
 
 // $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-all-transaction')
@@ -47,7 +64,7 @@ $.getJSON(url + '?r=chart-of-accounts/accounting-codes')
             placeholder: "Select Chart of Account",
 
         })
-    })
+    }).load
 
 // RESPONSIBILITY CENTERS
 $.getJSON(url + '?r=responsibility-center/get-responsibility-center')

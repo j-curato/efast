@@ -89,7 +89,7 @@ class SiteController extends Controller
 
             $event = new \edofre\fullcalendar\models\Event();
             $event->id = $e->id;
-            
+
             $event->title = $e->title;
             $event->start = $e->created_at;
             $event->end =  '2021-7-10';
@@ -299,18 +299,20 @@ class SiteController extends Controller
     //     \Yii::$app->runAction('migrate/up', ['migrationPath' => '@console/migrations/', 'interactive' => false]);
     //     \Yii::$app = $oldApp;
     // }
-    // public function actionCreate($date)
-    // {
-    //     $model = new Event();
-    //     $model->created_at = $date;
-    //     if ($model->load(Yii::$app->request->post()) && $model->save()) {
-    //         $url='http://google.com?'.http_build_query(['param' => 12]);
-    //         return $this->redirect($url);
-    //     } else {
+    public function actionQ()
+    {
+        $ev = Event::find()->all();
+        $events = [];
+        foreach ($ev as $e) {
+            $event = [
+                'id' => $e->id,
+                'title' => $e->title,
+                'start' => $e->created_at,
+                'end' =>  '2021-7-10'
+            ];
 
-    //         return $this->renderAjax('create', [
-    //             'model' => $model,
-    //         ]);
-    //     }
-    // }
+            $events[] = $event;
+        }
+        return json_encode($events);
+    }
 }

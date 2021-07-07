@@ -633,28 +633,29 @@ use kartik\select2\Select2;
                 });
 
 
-            $('#add_data').submit(function(e) {
 
 
-                e.preventDefault();
-                $.ajax({
-                    url: window.location.pathname + '?r=process-ors-entries/add-data',
-                    method: "POST",
-                    data: $('#add_data').serialize(),
-                    success: function(data) {
-                        var result = JSON.parse(data).results
-                        console.log(result)
-                        var object_code = ''
-                        var chart_id = ''
-                        addData(result, false)
-                    }
-                });
-                $('.checkbox').prop('checked', false); // Checks it
-                $('.amounts').prop('disabled', true);
-                $('.amounts').val(null);
-            })
 
+        })
+        $('#add_data').submit(function(e) {
 
+           console.log( $('#add_data').serialize()),
+            e.preventDefault();
+            $.ajax({
+                url: window.location.pathname + '?r=process-ors-entries/add-data',
+                method: "POST",
+                data: $('#add_data').serialize(),
+                success: function(data) {
+                    var result = JSON.parse(data).results
+                    console.log(result)
+                    var object_code = ''
+                    var chart_id = ''
+                    addData(result, false)
+                }
+            });
+            $('.checkbox').prop('checked', false); // Checks it
+            $('.amounts').prop('disabled', true);
+            $('.amounts').val(null);
         })
     </script>
 </div>

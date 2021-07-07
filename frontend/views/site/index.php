@@ -61,13 +61,26 @@ $this->title = 'Dashboard';
 
     ?>
     <div class="body-content">
-        <div style="height:400px;width:400px">
-            <?= edofre\fullcalendar\Fullcalendar::widget([
-                'events' => $events,
-                
-            ]);
+        <div style="height:400px;width:400px" id="calendar">
+            <?php
+            // echo edofre\fullcalendar\Fullcalendar::widget([
+            //     'events' => $events,
+            //     'clientOptions' => [
+            //         'editable' => true,
+            //         'droppable' => true,
+            //         'eventDrop' => function ($data) {
+            //             ob_clean();
+            //             echo "<pre>";
+            //             var_dump($data);
+            //             echo "</pre>";
+            //             return ob_get_clean();
+            //         }
+            //     ],
+
+            // ]);
             ?>
         </div>
+
         <div class="row justify-content-around">
 
 
@@ -484,8 +497,7 @@ $this->title = 'Dashboard';
     td {
         padding: 12px;
     }
-</style>
-<style>
+
     .fc-day-number {
         font-size: 12px;
     }
@@ -497,8 +509,68 @@ $this->title = 'Dashboard';
     .fc-button-group {
         font-size: 12px;
     }
+
+    .fc .fc-toolbar-title {
+        font-size: 1.5em;
+    }
+
+    .btn {
+        position: relative;
+        display: block;
+        font-size: 10px;
+    }
 </style>
+
+
+<script>
+    let x = undefined;
+    $(document).ready(function() {
+        $.getJSON(window.location.pathname + '?r=site/q').then(function(data) {
+            cal(data)
+        })
+    })
+
+    function cal(data) {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            themeSystem: 'bootstrap',
+            height: 400,
+            editable: true,
+            droppable: true,
+            headerToolbar: {
+                left: 'prev,next,today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: data,
+            eventClick: function(info) {
+
+                $('#genericModal').modal('show').find('#modalContent').load(window.location.pathname + '?r=event/update&id=' + info.event.id)
+            }
+        });
+        calendar.render();
+    }
+
+    function allowDrop(ev) {
+        ev.preventDefault();
+        console.log('qwe')
+    }
+
+    function drag(ev) {
+        console.log('qwe')
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        console.log('qwe')
+        var data = ev.dataTransfer.getData("text");
+        ev.target.appendChild(document.getElementById(data));
+    }
+</script>
 <?php
+
 
 $script = <<<JS
       function thousands_separators(num) {
@@ -509,6 +581,12 @@ $script = <<<JS
             return num_parts.join(".");
             console.log(num)
         }
+
+
+        
+        // $('.fc-sticky').click(function(){
+        //     console.log(this)
+        // })
     $(document).ready(function(){
 
         // CASH RECIEVED AND DISBURSEMENT
@@ -526,9 +604,9 @@ $script = <<<JS
     })
 
 
-        $(document).on('click','.fc-day-number',function(){
+        $(document).on('click','.fc-daygrid-day-number',function(){
             var date = $(this).closest('td').attr('data-date');
-              console.log( $(this).closest('.fc-day'))
+            //   console.log( $(this).closest('.fc-day'))
               var url = window.location.pathname + '?r=event/create&date='+date
             $('#genericModal').modal('show').find('#modalContent').load(url);
         })
