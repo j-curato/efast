@@ -89,8 +89,10 @@ class SiteController extends Controller
 
             $event = new \edofre\fullcalendar\models\Event();
             $event->id = $e->id;
+            
             $event->title = $e->title;
             $event->start = $e->created_at;
+            $event->end =  '2021-7-10';
             $events[] = $event;
         }
         return $this->render('index', [

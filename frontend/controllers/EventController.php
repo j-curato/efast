@@ -73,7 +73,7 @@ class EventController extends Controller
         $model = new Event();
         $model->created_at = $date;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $url=Yii::$app->baseUrl.'?r=site';
+            $url=Yii::$app->request->baseUrl.'?r=site';
             return $this->redirect($url);
         }
 

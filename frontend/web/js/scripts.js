@@ -6,24 +6,7 @@ function thousands_separators(num) {
     return num_parts.join(".");
 }
 // GET ALL BOOKS
-const url = window.location.pathname
-$.getJSON(url + '?r=books/get-books')
-    .then(function (data) {
-        var array = []
-        $.each(data, function (key, val) {
-            array.push({
-                id: val.id,
-                text: val.name
-            })
-        })
-        book = array
-        $('#book').select2({
-            data: book,
-            placeholder: "Select Book",
-
-        })
-
-    });
+site
 // GET TRANSACTIONs
 
 // $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-all-transaction')

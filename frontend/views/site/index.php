@@ -63,7 +63,8 @@ $this->title = 'Dashboard';
     <div class="body-content">
         <div style="height:400px;width:400px">
             <?= edofre\fullcalendar\Fullcalendar::widget([
-                'events' => $events
+                'events' => $events,
+                
             ]);
             ?>
         </div>

@@ -72,7 +72,7 @@ use kartik\select2\Select2;
             </div>
             <div class="col-sm-3" style="height:60x">
                 <label for="book_id">Book</label>
-                <select id="book_id" name="book_id" class="book_id select" style="width: 100%; margin-top:50px">
+                <select id="book" name="book_id" class="book_id select" style="width: 100%; margin-top:50px">
                     <option></option>
                 </select>
             </div>
@@ -338,10 +338,10 @@ use kartik\select2\Select2;
         }
     </style>
 
-    <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
-    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
-    <link href="/dti-afms-2/frontend/web/js/maskMoney.js" />
+    <script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+    <link href="/afms/frontend/web/js/select2.min.js" />
+    <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
+    <link href="/afms/frontend/web/js/maskMoney.js" />
     <script>
         var update_id = null;
         var account_name = undefined;
@@ -587,12 +587,50 @@ use kartik\select2\Select2;
                     chart_of_accounts = data
 
                 })
+            // GET TRANSACTIONs
+
+            $.getJSON('/afms/frontend/web/index.php?r=transaction/get-all-transaction')
+                .then(function(data) {
+
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.tracking_number
+                        })
+                    })
+                    transaction = array
+                    $('#transaction_id').select2({
+                        data: transaction,
+                        placeholder: "Select Transaction",
+
+                    })
+
+                });
 
 
 
             // GET TRANSACTIONs
 
             // GET ALL BOOKS
+            const url = window.location.pathname
+            $.getJSON(url + '?r=books/get-books')
+                .then(function(data) {
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.name
+                        })
+                    })
+                    book = array
+                    $('#book').select2({
+                        data: book,
+                        placeholder: "Select Book",
+
+                    })
+
+                });
 
 
             $('#add_data').submit(function(e) {
@@ -625,7 +663,7 @@ use kartik\select2\Select2;
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+// $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 
 ?>
 <?php SweetAlertAsset::register($this); ?>
@@ -740,7 +778,7 @@ $script = <<< JS
                     console.log(res.result)
                     $("#reporting_period").val(res.result[0]['reporting_period']).trigger('change')
                     $("#date").val(res.result[0]['date']).trigger('change')
-                    $("#book_id").val(res.result[0]['book_id']).trigger('change')
+                    $("#book").val(res.result[0]['book_id']).trigger('change')
                     $("#transaction_id").val(res.result[0]['transaction_id']).trigger('change')
                     addData(res.result,true)
                 }
