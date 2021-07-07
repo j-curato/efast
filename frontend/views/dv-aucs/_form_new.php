@@ -858,6 +858,98 @@ $script = <<< JS
             
         }
     })
+    function chart(){
+        return  $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-all-transaction')
+    .then(function (data) {
+
+        var array = []
+        $.each(data, function (key, val) {
+            array.push({
+                id: val.id,
+                text: val.tracking_number
+            })
+        })
+        transaction = array
+        $('#transaction_id').select2({
+            data: transaction,
+            placeholder: "Select Transaction",
+
+        })
+
+    });
+    }
+    $.when(chart() ).done(function(chart){
+
+        var update_id= $('#update_id').val()
+        if (update_id>0){
+            $.ajax({
+                url:window.location.pathname + "?r=dv-aucs/update-dv",
+                type:"POST",
+                data:{dv_id:update_id},
+                success:function(data){
+
+                    var res = JSON.parse(data)
+                    console.log(res.result)
+                    var transaction_type=res.result[0]['transaction_type']
+                    var type='';
+
+                        if (!transaction_type){
+                            if (res.result.length >1){
+                                type='Multiple'
+                            }
+                            else if(res.result.length ===1){
+                                type='Single'
+                            }
+                            else if(res.result.length ===0){
+                                type='No Ors'
+                            }
+                        }
+                        else{
+                            type = transaction_type
+                        }
+                        // if (type !='No Ors'){
+
+                            addDvToTable(res.result)
+                        // }
+                    
+  
+                    $("#particular").val(res.result[0]['particular'])
+                    $("#payee").val(res.result[0]['payee_id']).trigger('change');
+                    $("#mrd_classification").val(res.result[0]['mrd_classification_id']).trigger("change");
+                    $("#nature_of_transaction").val(res.result[0]['nature_of_transaction_id']).trigger("change");
+                    $("#reporting_period").val(res.result[0]['reporting_period'])
+                    $('#transaction').val(type).trigger('change')
+                    $('#book').val(res.result[0]['book_id']).trigger('change')
+
+                    var x=0
+               
+                        var dv_accounting_entries = res.dv_accounting_entries;
+                        console.log(dv_accounting_entries)
+                        for (x; x<res.dv_accounting_entries.length;x++){
+                            $("#debit-"+x).val(dv_accounting_entries[x]['debit'])
+                            $("#credit-"+x).val(dv_accounting_entries[x]['credit'])
+                            var chart = dv_accounting_entries[x]['id'] +"-" +dv_accounting_entries[x]['object_code']+"-"+dv_accounting_entries[x]['lvl']
+                            
+                            var cashflow = dv_accounting_entries[x]['cashflow_id'];
+                            var net_asset= dv_accounting_entries[x]['net_asset_equity_id'];
+                            $("#chart-"+x).val(dv_accounting_entries[x]['object_code']).trigger('change');
+                            $("#isEquity-"+x).val(dv_accounting_entries[x]['net_asset_equity_id']).trigger('change');
+                            $("#cashflow-"+x).val(cashflow).trigger('change');
+                            if ($( "#cashflow-"+x ).length ){
+                            }
+                            else{
+                            }
+                            if (x < res.dv_accounting_entries.length -1){
+                                add()
+                            }
+                        }
+            getDebitCreditTotal()
+                    
+                }
+            })
+        }
+    });
+
 
       $(document).ready(function() {
 
@@ -941,74 +1033,6 @@ $script = <<< JS
         })
 
 
-        var update_id= $('#update_id').val()
-        if (update_id>0){
-            $.ajax({
-                url:window.location.pathname + "?r=dv-aucs/update-dv",
-                type:"POST",
-                data:{dv_id:update_id},
-                success:function(data){
-
-                    var res = JSON.parse(data)
-                    console.log(res.result)
-                    var transaction_type=res.result[0]['transaction_type']
-                    var type='';
-
-                        if (!transaction_type){
-                            if (res.result.length >1){
-                                type='Multiple'
-                            }
-                            else if(res.result.length ===1){
-                                type='Single'
-                            }
-                            else if(res.result.length ===0){
-                                type='No Ors'
-                            }
-                        }
-                        else{
-                            type = transaction_type
-                        }
-                        // if (type !='No Ors'){
-
-                            addDvToTable(res.result)
-                        // }
-                    
-  
-                    $("#particular").val(res.result[0]['particular'])
-                    $("#payee").val(res.result[0]['payee_id']).trigger('change');
-                    $("#mrd_classification").val(res.result[0]['mrd_classification_id']).trigger("change");
-                    $("#nature_of_transaction").val(res.result[0]['nature_of_transaction_id']).trigger("change");
-                    $("#reporting_period").val(res.result[0]['reporting_period'])
-                    $('#transaction').val(type).trigger('change')
-                    $('#book').val(res.result[0]['book_id']).trigger('change')
-
-                    var x=0
-               
-                        var dv_accounting_entries = res.dv_accounting_entries;
-                        console.log(dv_accounting_entries)
-                        for (x; x<res.dv_accounting_entries.length;x++){
-                            $("#debit-"+x).val(dv_accounting_entries[x]['debit'])
-                            $("#credit-"+x).val(dv_accounting_entries[x]['credit'])
-                            var chart = dv_accounting_entries[x]['id'] +"-" +dv_accounting_entries[x]['object_code']+"-"+dv_accounting_entries[x]['lvl']
-                            
-                            var cashflow = dv_accounting_entries[x]['cashflow_id'];
-                            var net_asset= dv_accounting_entries[x]['net_asset_equity_id'];
-                            $("#chart-"+x).val(dv_accounting_entries[x]['object_code']).trigger('change');
-                            $("#isEquity-"+x).val(dv_accounting_entries[x]['net_asset_equity_id']).trigger('change');
-                            $("#cashflow-"+x).val(cashflow).trigger('change');
-                            if ($( "#cashflow-"+x ).length ){
-                            }
-                            else{
-                            }
-                            if (x < res.dv_accounting_entries.length -1){
-                                add()
-                            }
-                        }
-            getDebitCreditTotal()
-                    
-                }
-            })
-        }
     })
      
 
