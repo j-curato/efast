@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\ProcessBurs;
+use app\models\Event;
 
 /**
- * ProcessBursSearch represents the model behind the search form of `app\models\ProcessBurs`.
+ * EventSearch represents the model behind the search form of `app\models\Event`.
  */
-class ProcessBursSearch extends ProcessBurs
+class EventSearch extends Event
 {
     /**
      * {@inheritdoc}
@@ -17,8 +17,8 @@ class ProcessBursSearch extends ProcessBurs
     public function rules()
     {
         return [
-            [['id', 'transaction_id', 'document_recieve_id', 'mfo_pap_code_id', 'fund_source_id'], 'integer'],
-            [['reporting_period', 'serial_number', 'obligation_number', 'funding_code'], 'safe'],
+            [['id'], 'integer'],
+            [['title', 'descriptions', 'created_at'], 'safe'],
         ];
     }
 
@@ -40,15 +40,14 @@ class ProcessBursSearch extends ProcessBurs
      */
     public function search($params)
     {
-        $query = ProcessBurs::find();
-        // $query= Raouds::find()->where("process_burs_id IS NOT NULL");
+        $query = Event::find();
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
-        // $query->joinWith('')
+
         $this->load($params);
 
         if (!$this->validate()) {
@@ -60,16 +59,11 @@ class ProcessBursSearch extends ProcessBurs
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'transaction_id' => $this->transaction_id,
-            'document_recieve_id' => $this->document_recieve_id,
-            'mfo_pap_code_id' => $this->mfo_pap_code_id,
-            'fund_source_id' => $this->fund_source_id,
+            'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
-            ->andFilterWhere(['like', 'serial_number', $this->serial_number])
-            ->andFilterWhere(['like', 'obligation_number', $this->obligation_number])
-            ->andFilterWhere(['like', 'funding_code', $this->funding_code]);
+        $query->andFilterWhere(['like', 'title', $this->title])
+            ->andFilterWhere(['like', 'descriptions', $this->descriptions]);
 
         return $dataProvider;
     }

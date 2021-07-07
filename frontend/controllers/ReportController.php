@@ -58,9 +58,8 @@ class ReportController extends \yii\web\Controller
                             'pending-dv',
                             'unpaid-obligation',
                             'saob',
-                            'cibr',
-                            'cdr',
-                            'advances-liquidation',
+                
+                          
                             'insert-cdr',
                             'get-cdr',
                             'temp',
@@ -84,6 +83,16 @@ class ReportController extends \yii\web\Controller
                         ],
                         'allow' => true,
                         'roles' => ['@']
+                    ],
+                    [
+                        'actions' => [
+                            'cibr',
+                            'cdr',
+                            'advances-liquidation',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['province','super-user']
                     ],
 
 

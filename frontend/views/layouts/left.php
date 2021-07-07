@@ -34,11 +34,11 @@
             [
                 'options' => ['class' => 'sidebar-menu tree text-truncate', 'data-widget' => 'tree', 'style' => 'width: inherit'],
                 'items' => [
-                    [
+                    Yii::$app->user->can('accounting') ? [
                         'label' => 'Accounting',
                         'url' => '#',
                         'items' => [
-                            Yii::$app->user->can('super-user') ? [
+                            Yii::$app->user->can('accounting_master_records') ? [
                                 'label' => 'Master Records',
                                 'icon' => 'circle-o',
                                 'url' => '#',
@@ -60,7 +60,7 @@
 
                                 ],
                             ] : ['label' => ''],
-                            [
+                            Yii::$app->user->can('accounting_transaction') ? [
                                 'label' => 'Transaction',
                                 'icon' => 'circle-o',
                                 'url' => '#',
@@ -71,7 +71,7 @@
                                     Yii::$app->user->can('super-user') ? ['label' => 'Transmittal', 'icon' => 'circle-o', 'url' => ['/transmittal'],] : [],
 
                                 ],
-                            ],
+                            ]:[],
 
                             Yii::$app->user->can('super-user') ?  [
                                 'label' => 'Reports',
@@ -98,7 +98,7 @@
                         ],
 
 
-                    ],
+                    ] : [],
                     Yii::$app->user->can('super-user') ?  [
                         'label' => 'Budget',
                         'url' => '#',
@@ -157,7 +157,7 @@
                             ],
                         ],
                     ] : ['label' => ''],
-                    [
+                    Yii::$app->user->can('report') ?    [
                         'label' => 'Report',
                         'url' => '#',
                         'items' => [
@@ -171,7 +171,7 @@
                             Yii::$app->user->can('conso_dv') ?    ['label' => 'Conso Dv', 'icon' => 'circle-o', 'url' => ['/report/conso-detailed-dv'],] : [],
 
                         ],
-                    ],
+                    ] : [],
                     Yii::$app->user->can('province') ? [
                         'label' => 'Province',
                         'url' => '#',
@@ -179,9 +179,9 @@
 
                             Yii::$app->user->can('super-user') ?     ['label' => 'Advances', 'icon' => 'circle-o', 'url' => ['/advances'],] : [],
                             Yii::$app->user->can('liquidation') ?     ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ['/liquidation'],] : [],
-                            Yii::$app->user->can('super-user') ?     ['label' => 'Advances/Liquidation', 'icon' => 'circle-o', 'url' => ['/report/advances-liquidation'],] : [],
-                            Yii::$app->user->can('super-user') ?     ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/report/cibr'],] : [],
-                            Yii::$app->user->can('super-user') ?     ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/cdr'],] : [],
+                            Yii::$app->user->can('province') ?     ['label' => 'Advances/Liquidation', 'icon' => 'circle-o', 'url' => ['/report/advances-liquidation'],] : [],
+                            Yii::$app->user->can('province') ?     ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/report/cibr'],] : [],
+                            Yii::$app->user->can('province') ?     ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/cdr'],] : [],
                             Yii::$app->user->can('po_transaction') ?     ['label' => 'PO Transaction', 'icon' => 'circle-o', 'url' => ['/po-transaction'],] : [],
 
                         ],

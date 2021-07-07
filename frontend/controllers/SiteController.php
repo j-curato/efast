@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\models\Event;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\VerifyEmailForm;
 use Yii;
@@ -80,8 +81,21 @@ class SiteController extends Controller
      * @return mixed
      */
     public function actionIndex()
+
     {
-        return $this->render('index');
+        $ev = Event::find()->all();
+        $events = [];
+        foreach ($ev as $e) {
+
+            $event = new \edofre\fullcalendar\models\Event();
+            $event->id = $e->id;
+            $event->title = $e->title;
+            $event->start = $e->created_at;
+            $events[] = $event;
+        }
+        return $this->render('index', [
+            'events' => $events
+        ]);
     }
     /**
      * Logs in a user.
@@ -267,20 +281,34 @@ class SiteController extends Controller
             'model' => $model
         ]);
     }
-    public function actionMigrateUp()
-    {
-        // https://github.com/yiisoft/yii2/issues/1764#issuecomment-42436905
-        $oldApp = \Yii::$app;
-        new \yii\console\Application([
-            'id'            => 'Command runner',
-            'basePath'      => '@app',
-            'components'    => [
-                'db' => $oldApp->db,
-            ],
-        ]);
-        // yii migrate --migrationPath=@yii/rbac/migrations
-        \Yii::$app->runAction('migrate', ['migrationPath' => '@yii/rbac/migrations/', 'interactive' => false]);
-        \Yii::$app->runAction('migrate/up', ['migrationPath' => '@console/migrations/', 'interactive' => false]);
-        \Yii::$app = $oldApp;
-    }
+    // public function actionMigrateUp()
+    // {
+    //     // https://github.com/yiisoft/yii2/issues/1764#issuecomment-42436905
+    //     $oldApp = \Yii::$app;
+    //     new \yii\console\Application([
+    //         'id'            => 'Command runner',
+    //         'basePath'      => '@app',
+    //         'components'    => [
+    //             'db' => $oldApp->db,
+    //         ],
+    //     ]);
+    //     // yii migrate --migrationPath=@yii/rbac/migrations
+    //     \Yii::$app->runAction('migrate', ['migrationPath' => '@yii/rbac/migrations/', 'interactive' => false]);
+    //     \Yii::$app->runAction('migrate/up', ['migrationPath' => '@console/migrations/', 'interactive' => false]);
+    //     \Yii::$app = $oldApp;
+    // }
+    // public function actionCreate($date)
+    // {
+    //     $model = new Event();
+    //     $model->created_at = $date;
+    //     if ($model->load(Yii::$app->request->post()) && $model->save()) {
+    //         $url='http://google.com?'.http_build_query(['param' => 12]);
+    //         return $this->redirect($url);
+    //     } else {
+
+    //         return $this->renderAjax('create', [
+    //             'model' => $model,
+    //         ]);
+    //     }
+    // }
 }

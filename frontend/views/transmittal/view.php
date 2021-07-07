@@ -53,8 +53,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
 
         <div class="row" style="float:right">
-
-            <?= Html::img('@web/dti3.png', ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width: 100px;height:100px;margin-left:auto']); ?>
+            <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/dti3.png', ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width: 100px;height:100px;margin-left:auto']); ?>
         </div>
         <div class="row" style="margin-top: 130px;">
             <div class="row head" style=" margin-bottom:2rem"><?php echo date('F d, Y', strtotime($model->date)) ?></div>
@@ -120,7 +119,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="head">Regional Director</div>
         </div>
         <div class="row" style="margin-top:2rem">
-            <div class="head" id ="for_rd"></div>
+            <div class="head" id="for_rd"></div>
         </div>
         <div class="row" style="margin-top: 2rem;">
             <div class="head" id='ass' style="font-weight: bold;"></div>

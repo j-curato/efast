@@ -61,7 +61,12 @@ $this->title = 'Dashboard';
 
     ?>
     <div class="body-content">
-
+        <div style="height:400px;width:400px">
+            <?= edofre\fullcalendar\Fullcalendar::widget([
+                'events' => $events
+            ]);
+            ?>
+        </div>
         <div class="row justify-content-around">
 
 
@@ -479,7 +484,19 @@ $this->title = 'Dashboard';
         padding: 12px;
     }
 </style>
+<style>
+    .fc-day-number {
+        font-size: 12px;
+    }
 
+    .fc-center h2 {
+        font-size: 20px;
+    }
+
+    .fc-button-group {
+        font-size: 12px;
+    }
+</style>
 <?php
 
 $script = <<<JS
@@ -506,6 +523,14 @@ $script = <<<JS
             }
         })
     })
+
+
+        $(document).on('click','.fc-day-number',function(){
+            var date = $(this).closest('td').attr('data-date');
+              console.log( $(this).closest('.fc-day'))
+              var url = window.location.pathname + '?r=event/create&date='+date
+            $('#genericModal').modal('show').find('#modalContent').load(url);
+        })
 JS;
 $this->registerJs($script);
 ?>

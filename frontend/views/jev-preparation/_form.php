@@ -180,7 +180,7 @@ use yii\helpers\ArrayHelper;
 
         <!-- BUTTON -->
 
-        <div id="form-0" class="accounting_entries" style="">
+        <div id="form-0" class="accounting_entries" >
             <!-- chart of accounts -->
 
             <div class="row">
