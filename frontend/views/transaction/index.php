@@ -144,7 +144,8 @@ Modal::end();
             // ],
             [
                 'label' => 'Payee',
-                'attribute' => 'payee.account_name'
+                'attribute' => 'payee_id',
+                'value'=>'payee.account_name'
             ],
             'particular',
             // 'gross_amount',
