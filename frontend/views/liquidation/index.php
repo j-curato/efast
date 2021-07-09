@@ -1,5 +1,6 @@
 <?php
 
+use app\models\LiquidationViewSearch;
 use kartik\export\ExportMenu;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
@@ -73,7 +74,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <?php
-    $dataProvider->pagination = ['pageSize' => 10];
+
     $gridColumn = [
         'id',
         [
@@ -154,11 +155,67 @@ $this->params['breadcrumbs'][] = $this->title;
 
         // ],
     ];
+    $viewSearchModel = new LiquidationViewSearch();
+    $viewDataProvider = $viewSearchModel->search(Yii::$app->request->queryParams);
+    $viewDataProvider->pagination = ['pageSize' => 10];
+    $viewColumn = [
+        'province',
+
+        'check_date',
+        'check_number',
+        'dv_number',
+        'reporting_period',
+        'payee',
+        'particular',
+
+        [
+            'label' => 'Total Disbursements',
+            'attribute' => 'total_withdrawal',
+            'format' => ['decimal', 2],
+            'hAlign' => 'right'
+        ],
+        [
+            'label' => 'Total Sales Tax (VAT/Non-VAT)',
+            'attribute' => 'total_vat',
+            'format' => ['decimal', 2],
+            'hAlign' => 'right'
+        ],
+        [
+            'label' => 'Income Tax (Expanded Tax)',
+            'attribute' => 'total_expanded',
+            'format' => ['decimal', 2],
+            'hAlign' => 'right'
+        ],
+        [
+            'label' => 'Total Liquidation',
+            'attribute' => 'total_liquidation_damage',
+            'format' => ['decimal', 2],
+            'hAlign' => 'right'
+        ],
+        [
+            'label' => 'Gross Payment',
+            'attribute' => 'gross_payment',
+            'format' => ['decimal', 2],
+            'hAlign' => 'right'
+        ],
+
+        [
+            'label' => 'View',
+            'format' => 'raw',
+            'value' => function ($model) {
+
+                return Html::a("", ['view', 'id' => $model->id], ['class' => 'btn-xs  fa fa-eye']);
+                // return $query['total'];
+            },
+            'hiddenFromExport' => true,
+            'vAlign' => 'middle',
+        ],
+    ];
     ?>
     <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => $gridColumn,
+        'dataProvider' => $viewDataProvider,
+        'filterModel' => $viewSearchModel,
+        'columns' => $viewColumn,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
             'heading' => 'Liquidations',

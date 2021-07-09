@@ -42,7 +42,7 @@ class PoTransactionController extends Controller
                             'get-transaction'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user','po_transaction']
+                        'roles' => ['super-user', 'po_transaction']
                     ]
                 ]
             ],
@@ -182,11 +182,30 @@ class PoTransactionController extends Controller
         if ($_POST) {
             $id = $_POST['id'];
             $query = (new \yii\db\Query())
-                ->select('*')
+                ->select([
+                    'po_transaction.particular',
+                    'po_transaction.payee',
+                    'po_transaction.amount',
+                    'po_responsibility_center.name as r_center_name',
+                ])
                 ->from('po_transaction')
-                ->where('id =:id', ['id', $id])
+                ->join('LEFT JOIN','po_responsibility_center','po_transaction.po_responsibility_center_id =po_responsibility_center.id')
+                ->where('po_transaction.id =:id', ['id'=>$id])
                 ->one();
-            return json_encode($id);
+            // ob_clean();
+            // echo "<pre>";
+            // var_dump($id);
+            // echo "</pre>";
+            // return ob_get_clean();
+            return json_encode($query);
         }
+    }
+    public function actionGetAllTransaction()
+    {
+        $query = (new \yii\db\Query())
+            ->select('*')
+            ->from('po_transaction')
+            ->all();
+        return json_encode($query);
     }
 }

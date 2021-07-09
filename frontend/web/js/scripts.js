@@ -180,7 +180,7 @@ $.getJSON(url + '?r=nature-of-transaction/get-nature-of-transaction')
 
     })
 
-// GET FINANCING SOURCE CODES
+// GET TRANSCTIONS
 $.getJSON(url + '?r=transaction/get-transaction')
     .then(function (data) {
 

@@ -1,5 +1,6 @@
 <?php
 
+use app\models\AdvancesEntriesForLiquidationSearch;
 use app\models\AdvancesEntriesSearch;
 use app\models\Payee;
 use app\models\PoTransaction;
@@ -124,22 +125,28 @@ use yii\helpers\ArrayHelper;
 
                     <label for="transaction">Transaction</label>
                     <?php
-                    $po_transaction = PoTransaction::find()->asArray()
-                        ->all();
-                    echo Select2::widget([
-                        'data' => ArrayHelper::map($po_transaction, 'id', 'tracking_number'),
-                        'name' => 'transaction',
-                        'id' => 'transaction',
-                        'value' => $transaction_id,
-                        'pluginOptions' => [
-                            'placeholder' => 'Select Transaction'
-                        ],
-                        'options' => [
-                            'required' => true
-                        ]
+                    // $po_transaction = PoTransaction::find()->asArray()
+                    //     ->all();
+                    // echo Select2::widget([
+                    //     'data' => ArrayHelper::map($po_transaction, 'id', 'tracking_number'),
+                    //     'name' => 'transaction',
+                    //     'id' => 'transaction',
+                    //     'value' => $transaction_id,
+                    //     'pluginOptions' => [
+                    //         'placeholder' => 'Select Transaction'
+                    //     ],
+                    //     'options' => [
+                    //         'required' => true
+                    //     ]
 
-                    ])
+                    // ])
                     ?>
+                </div>
+                <div class="col-sm-3" style="height:60x">
+                    <label for="transaction">Transactions</label>
+                    <select id="transaction" name="transaction" class="transaction select" style="width: 100%; margin-top:50px">
+                        <option></option>
+                    </select>
                 </div>
                 <div class="col-sm-3">
                     <label for="check_number">Check Number</label>
@@ -152,23 +159,61 @@ use yii\helpers\ArrayHelper;
                 </div>
             </div>
 
+            <table id="transaction_details" class="table
+            ">
+                <thead>
+
+                    <th>Payee</th>
+                    <th>Particular</th>
+                    <th>Responsibility Center</th>
+                    <th>Amount</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="transaction_payee"></td>
+                        <td id="transaction_particular"></td>
+                        <td id="transaction_r_center"></td>
+                        <td id="transaction_amount"></td>
+
+
+                    </tr>
+                </tbody>
+            </table>
+
 
             <table class="table table-striped" id="transaction_table">
 
                 <thead>
                     <th>Reporting Period</th>
-                    <th>NFT Number</th>
-                    <th>Report</th>
+
                     <th>Province</th>
                     <th>Fund Source</th>
                     <th>Chart of Account</th>
+                    <th>Miscellaneous Income</th>
                     <th>Withdrawals</th>
-                    <th>Vat/Non-Vat</th>
-                    <th>Expanded Tax</th>
+                    <th>Sales Tax(Vat/Non-Vat)</th>
+                    <th>Income Tax (Expanded Tax)</th>
                 </thead>
                 <tbody>
 
                 </tbody>
+                <tfoot>
+                    <tr>
+
+                        <td class="total_row" colspan="4">Total</td>
+                        <td class="total_row" id="total_liquidation"></td>
+                        <td class="total_row" id="total_withdrawal"></td>
+                        <td class="total_row" id="total_vat"></td>
+                        <td class="total_row" id="total_expanded"></td>
+
+                    </tr>
+                    <tr>
+                        <td class="total_row" colspan="4">Grand Total</td>
+                        <td class="total_row" id="grand_total"></td>
+
+                    </tr>
+
+                </tfoot>
             </table>
             <button class="btn btn-success" id='save' type="submit">Save</button>
         </form>
@@ -176,8 +221,13 @@ use yii\helpers\ArrayHelper;
         <form id="add_data">
 
             <?php
-            $searchModel = new AdvancesEntriesSearch();
+            $searchModel = new AdvancesEntriesForLiquidationSearch();
+            if (!empty(\Yii::$app->user->identity->province)) {
+                $searchModel->province = \Yii::$app->user->identity->province;
+                // echo \Yii::$app->user->identity->province;
+            }
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
             $dataProvider->pagination = ['pageSize' => 10];
             $gridColumn = [
 
@@ -197,40 +247,17 @@ use yii\helpers\ArrayHelper;
                         ];
                     }
                 ],
+                'province',
+                'fund_source',
                 [
-                    'label' => 'NFT Number',
-                    'attribute' => 'advances_id',
-                    'value' => 'advances.nft_number'
+                    'label' => 'Amount',
+                    'attribute' => 'amount',
+                    'format' => ['decimal', 2]
                 ],
-                [
-                    "label" => "Report Type",
-                    "value" => "advances.report_type"
-                ],
+                'particular'
 
-                [
-                    "label" => "Province",
-                    "attribute" => "advances.province"
-                ],
-                [
-                    "label" => "Fund Source",
-                    "attribute" => "fund_source"
-                ],
-                [
-                    "label" => "Check Number",
-                    "attribute" => "cashDisbursement.check_or_ada_no"
-                ],
-                [
-                    "label" => "SL Object Code",
-                    "attribute" => "subAccountView.object_code"
-                ],
-                [
-                    "label" => "SL Account Title",
-                    "attribute" => "subAccountView.account_title"
-                ],
-                [
-                    "label" => "Amount",
-                    "attribute" => "amount"
-                ],
+
+
             ];
             ?>
             <?= GridView::widget([
@@ -252,6 +279,11 @@ use yii\helpers\ArrayHelper;
 
 </div>
 <style>
+    .total_row {
+        text-align: center;
+        font-weight: bold;
+    }
+
     .liquidation-form {
         padding: 2rem;
         background-color: white;
@@ -287,9 +319,9 @@ use yii\helpers\ArrayHelper;
     }
 </style>
 <script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+<script src="/afms/js/maskMoney.js" type="text/javascript"></script>
 <link href="/afms/frontend/web/js/select2.min.js" />
 <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
-<link href="/afms/frontend/web/js/maskMoney.js" />
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
@@ -317,6 +349,38 @@ SweetAlertAsset::register($this);
 
     function remove(i) {
         i.closest("tr").remove()
+
+    }
+
+    function getTotalAmounts() {
+        var total_liquidation = 0;
+        var total_withdrawal = 0;
+        var total_vat = 0;
+        var total_expanded = 0;
+        var grand_total = 0;
+
+        $('.liq_damages').maskMoney('unmasked');
+
+        $(".liq_damages").each(function() {
+            // console.log($(this).val().split(",").join(""))
+            total_liquidation += parseFloat($(this).val().split(",").join("")) || 0;
+        });
+        $(".withdrawal").each(function() {
+            total_withdrawal += parseFloat($(this).val().split(",").join("")) || 0;
+        });
+        $(".vat_nonvat").each(function() {
+            total_vat += parseFloat($(this).val().split(",").join("")) || 0;
+        });
+        $(".expanded_tax").each(function() {
+            total_expanded += parseFloat($(this).val().split(",").join("")) || 0;
+        });
+
+        $("#total_liquidation").text(thousands_separators(total_liquidation))
+        $("#total_withdrawal").text(thousands_separators(total_withdrawal))
+        $("#total_vat").text(thousands_separators(total_vat))
+        $("#total_expanded").text(thousands_separators(total_expanded))
+        grand_total = total_liquidation + total_withdrawal + total_vat + total_expanded
+        $("#grand_total").text(thousands_separators(grand_total))
 
     }
 
@@ -362,8 +426,8 @@ SweetAlertAsset::register($this);
             var row = `<tr>
                     <td style='display:none'> <input value='${result[i]['id']}' id='advances_${transaction_table_count}' class='advances_id' type='text' name='advances_id[]'/></td>
                     <td > <input style='width:140px' type='month'data-date='' data-date-format='yyyy-mm' id='date_${transaction_table_count}' name='new_reporting_period[]' required /></td>
-                    <td class='nft_number'> ${result[i]['nft_number']}</td>
-                    <td class='report_type'> ${result[i]['report_type']}</td>
+                    <td class='nft_number' style='display:none'> ${result[i]['nft_number']}</td>
+                    <td class='report_type' style='display:none'> ${result[i]['report_type']}</td>
                     <td class=''province> ${result[i]['province']}</td>
                     <td class='fund_source'> ${result[i]['fund_source']}</td>
 
@@ -373,6 +437,11 @@ SweetAlertAsset::register($this);
                         </select>
                     </td>
                     
+                    <td> 
+                        <div class='form-group' style='width:150px'>
+                        <input type='text' id='liq_damages-${transaction_table_count}' class='form-control liq_damages' name='liq_damages[]'>
+                        </div>
+                    </td>
                     <td> 
                         <div class='form-group' style='width:150px'>
                         <input type='text' id='withdrawal-${transaction_table_count}' class='form-control withdrawal' name='withdrawal[]'>
@@ -396,6 +465,9 @@ SweetAlertAsset::register($this);
                     <td><button  class='btn btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
                 `
             $("#transaction_table tbody").append(row)
+            $(`#liq_damages-${transaction_table_count}`).maskMoney({
+                allowNegative: true
+            });
             $(`#withdrawal-${transaction_table_count}`).maskMoney({
                 allowNegative: true
             });
@@ -445,7 +517,7 @@ SweetAlertAsset::register($this);
 
     }
 
-
+    var transaction = [];
     $(document).ready(function() {
         $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/chart-of-accounts')
             .then(function(data) {
@@ -458,6 +530,24 @@ SweetAlertAsset::register($this);
                 })
                 accounts = array
             })
+        $.getJSON(window.location.pathname + '?r=po-transaction/get-all-transaction')
+            .then(function(data) {
+
+                var array = []
+                $.each(data, function(key, val) {
+                    array.push({
+                        id: val.id,
+                        text: val.tracking_number
+                    })
+                })
+                transaction = array
+                $('#transaction').select2({
+                    data: transaction,
+                    placeholder: "Select Transaction",
+
+                })
+
+            });
 
     })
 
@@ -494,18 +584,34 @@ SweetAlertAsset::register($this);
 <?php
 $script = <<<JS
     // ON change transction dropdown
-    $("#transaction").change(function(){
+    $("#transaction").change(function(e){
+        e.preventDefault();
+        
+          console.log('qwer')
         $.ajax({
             type:"POST",
-            url:window.location.pathname + '?=po-transaction/get-transaction',
+            url:window.location.pathname + '?r=po-transaction/get-transaction',
             data:{id:$("#transaction").val()},
             success:function(data){
-                // var res = JSON.parse(data)
-                console.log(data)
+                var res = JSON.parse(data)
+                console.log(res)
+                $("#transaction_payee").text(res.payee)
+                $("#transaction_particular").text(res.particular)
+                $("#transaction_amount").text(res.amount)
+                $("#transaction_r_center").text(res.r_center_name)
+
                 
             }
         })
     })
+
+    $('#transaction_table').on('change keyup',['.liq_damages',
+        '.withdrawal',
+        '.vat_nonvat',
+        '.expanded_tax'],()=>{
+           getTotalAmounts()
+        })
+
 
 //  ADD DATA TO TRANSACTION TABLE
     $('#add_data').submit(function(e) {

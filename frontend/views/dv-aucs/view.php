@@ -53,18 +53,22 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
                     </div>
                     <form id="add_link">
                         <div class='modal-body'>
                             <hr>
-                            <label for="ledger"> SELECT GENERAL LEDGER</label>
+                            <label for="ledger"> Insert Link</label>
 
                             <input type="text " style="display: none;" class="form-control" name="id" value='<?= $model->id ?>'>
 
                             <input type="text " class="form-control" name="link" value='<?= $dv_link ?>'>
                         </div>
-                        <button type="submit" id='add_link_save' class="btn btn-success">Save</button>
+                        <div class="row" style="margin: 10px;padding:12px">
+                            <div class="col-sm-3">
+
+                                <button type="submit" id='add_link_save' class="btn btn-success">Save</button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>

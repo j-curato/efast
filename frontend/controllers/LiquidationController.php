@@ -215,6 +215,7 @@ class LiquidationController extends Controller
             $chart_of_account = !empty($_POST['chart_of_account_id']) ? $_POST['chart_of_account_id'] : '';
             $withdrawal = !empty($_POST['withdrawal']) ? $_POST['withdrawal'] : '';
             $vat_nonvat = !empty($_POST['vat_nonvat']) ? $_POST['vat_nonvat'] : '';
+            $liq_damages = !empty($_POST['liq_damages']) ? $_POST['liq_damages'] : '';
             $expanded_tax = !empty($_POST['ewt']) ? $_POST['ewt'] : '';
             $update_id = !empty($_POST['update_id']) ? $_POST['update_id'] : '';
             $type = !empty($_POST['update_type']) ? $_POST['update_type'] : '';
@@ -280,6 +281,7 @@ class LiquidationController extends Controller
                                 list($withd) = sscanf(implode(explode(',', $withdrawal[$index])), "%f");
                                 list($vat) = sscanf(implode(explode(',', $vat_nonvat[$index])), "%f");
                                 list($e) = sscanf(implode(explode(',', $expanded_tax[$index])), "%f");
+                                list($liq) = sscanf(implode(explode(',', $liq_damages[$index])), "%f");
                                 $liq_entries = new LiquidationEntries();
                                 $liq_entries->liquidation_id = $liquidation->id;
                                 $liq_entries->chart_of_account_id = $chart_of_account[$index];
@@ -287,6 +289,7 @@ class LiquidationController extends Controller
                                 $liq_entries->withdrawals = $withd;
                                 $liq_entries->vat_nonvat = $vat;
                                 $liq_entries->expanded_tax = $e;
+                                $liq_entries->liquidation_damage = $liq;
                                 $liq_entries->reporting_period = !empty($new_reporting_period) ? $new_reporting_period[$index] : $reporting_period;
 
                                 if ($liq_entries->validate()) {

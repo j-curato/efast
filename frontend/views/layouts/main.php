@@ -38,7 +38,9 @@ if (Yii::$app->controller->action->id === 'login') {
         <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
         <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
          <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
-        <link href="<?php echo yii::$app->request->baseUrl ?>/js/select2.min.js" />
+         <script src='<?php echo yii::$app->request->baseUrl ?>/js/maskMoney.js'></script>
+         <script src='<?php echo yii::$app->request->baseUrl ?>/js/select2.min.js'></script>
+        <!-- <link href="<?php echo yii::$app->request->baseUrl ?>/js/select2.min.js" /> -->
         <link href="<?php echo yii::$app->request->baseUrl ?>/css/select2.min.css" rel="stylesheet" />
 
         <link href='<?php echo yii::$app->request->baseUrl ?>/js/fullcalendar/main.css' rel='stylesheet' />
