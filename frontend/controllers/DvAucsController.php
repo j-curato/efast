@@ -861,4 +861,18 @@ class DvAucsController extends Controller
             'model' => $this->findModel($id),
         ]);
     }
+    public function actionAddLink()
+    {
+        if ($_POST) {
+            $link = $_POST['link'];
+            $id = $_POST['id'];
+            $dv  = DvAucs::findOne($id);
+
+            $dv->dv_link = $link;
+            if ($dv->save(false)) {
+                return json_encode(['isSuccess' => true, 'cancelled' => 'save success']);
+            }
+            return json_encode(['isSuccess' => true, 'cancelled' => $link]);
+        }
+    }
 }

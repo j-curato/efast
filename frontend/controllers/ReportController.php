@@ -58,8 +58,8 @@ class ReportController extends \yii\web\Controller
                             'pending-dv',
                             'unpaid-obligation',
                             'saob',
-                
-                          
+
+
                             'insert-cdr',
                             'get-cdr',
                             'temp',
@@ -79,6 +79,7 @@ class ReportController extends \yii\web\Controller
                             'unpaid-obligation',
                             'conso-detailed-dv',
                             'get-cash',
+                            'tax-remittance'
 
                         ],
                         'allow' => true,
@@ -92,7 +93,7 @@ class ReportController extends \yii\web\Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['province','super-user']
+                        'roles' => ['province', 'super-user']
                     ],
 
 
@@ -1020,5 +1021,43 @@ class ReportController extends \yii\web\Controller
         $backupFile = 'transaction/transaction.xlxs';
 
         return Yii::$app->db->createCommand("SELECT * INTO OUTFILE '$backupFile' FROM $tableName");
+    }
+    public function actionFur()
+    {
+        return $this->render('fur');
+    }
+    public function actionTaxRemittance()
+    {
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $book = $_POST['book'];
+            $province = $_POST['province'];
+
+            $query = Yii::$app->db->createCommand("SELECT 
+
+            dv_number,
+            ROUND(SUM(advances_liquidation.vat_nonvat),2) as total_vat,
+            ROUND(SUM(advances_liquidation.expanded_tax),2) as total_expanded
+             FROM `advances_liquidation`
+            
+            WHERE 
+             (  advances_liquidation.expanded_tax >0
+            OR advances_liquidation.vat_nonvat>0)
+            AND reporting_period =:reporting_period
+            AND province LIKE :province
+            AND book_name =:book
+            GROUP BY advances_liquidation.dv_number
+            ")
+                ->bindValue(':reporting_period', $reporting_period)
+                ->bindValue(':book', $book)
+                ->bindValue(':province', $province)
+                ->queryAll();
+            return $this->render('tax_remittance', [
+                'dataProvider' => $query
+            ]);
+        } else {
+
+            return $this->render('tax_remittance');
+        }
     }
 }

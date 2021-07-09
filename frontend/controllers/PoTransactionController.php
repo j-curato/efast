@@ -93,7 +93,7 @@ class PoTransactionController extends Controller
         $model = new PoTransaction();
 
         if ($model->load(Yii::$app->request->post())) {
-            $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id);
+            $model->tracking_number = $this->getTrackingNumber($model->po_responsibility_center_id);
             if ($model->save(false)) {
             }
             return $this->redirect(['view', 'id' => $model->id]);

@@ -15,76 +15,7 @@ use yii\widgets\ActiveForm;
 ?>
 
 <div class="transmittal-form">
-    <form id="save_data">
-        <div class="row">
-
-            <div class="col-sm-3" style="margin:12px">
-
-                <label for="date">Date</label>
-                <?php
-                $val = !empty($model) ? $model->id : '';
-                echo "<input value='$val' name='update_id' style='display:none'/>";
-                echo DatePicker::widget([
-                    'name' => 'date',
-                    'id' => 'date',
-                    'value' => !empty($model->date) ? $model->date : date('Y-m-d'),
-                    'options' => ['required' => true],
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'format' => 'yyyy-mm-dd',
-
-                    ]
-                ]);
-                ?>
-            </div>
-        </div>
-        <table class="table table-striped" id="transaction_table" style="background-color: white;">
-            <thead>
-                <th>DV Number</th>
-                <th>Check/ADA Number</th>
-                <th>Payee</th>
-                <th>Particular</th>
-                <th>Amount</th>
-            </thead>
-            <tbody>
-            </tbody>
-            <tfoot>
-                <?php
-                if (!empty($model)) {
-                    echo "<tr>";
-                    foreach ($model->transmittalEntries as $val) {
-                        $query = (new \yii\db\Query())
-                            ->select("SUM(dv_aucs_entries.amount_disbursed) as total_disbursed")
-                            ->from("dv_aucs")
-                            ->join("LEFT JOIN", 'dv_aucs_entries', 'dv_aucs.id = dv_aucs_entries.dv_aucs_id')
-                            ->where("dv_aucs.id = :id", [
-                                'id' => $val->cashDisbursement->dv_aucs_id
-                            ])
-                            ->one();
-                        echo "<td style='display:none'><input  value='$val->cash_disbursement_id' type='text' name='cash_disbursement_id[]'/></td>
-                        <td>{$val->cashDisbursement->dvAucs->dv_number}</td>
-                        <td>{$val->cashDisbursement->check_or_ada_no}</td>
-                        <td>{$val->cashDisbursement->dvAucs->payee->account_name}</td>
-                        <td>{$val->cashDisbursement->dvAucs->particular}</td>
-                        <td>{$query['total_disbursed']}</td>
-                        <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class='glyphicon glyphicon-minus'></i></button></td></tr>
-                    ";
-                    }
-                    echo  "</tr>";
-                }
-                ?>
-
-                </tr>
-                <tr>
-                    <td colspan="7">
-                        <button type="submit" class="btn btn-success" style="width: 100%;" id="save" name="save"> SAVE</button>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
-    </form>
-
-    <form id="add_data">
+<form id="add_data">
         <?php
         $searchModel = new ForTransmittalSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -156,6 +87,76 @@ use yii\widgets\ActiveForm;
 
         <button type="button" class="btn btn-primary" name="add" id="add" style="width: 100%;"> ADD</button>
     </form>
+    <form id="save_data">
+        <div class="row">
+
+            <div class="col-sm-3" style="margin:12px">
+
+                <label for="date">Date</label>
+                <?php
+                $val = !empty($model) ? $model->id : '';
+                echo "<input value='$val' name='update_id' style='display:none'/>";
+                echo DatePicker::widget([
+                    'name' => 'date',
+                    'id' => 'date',
+                    'value' => !empty($model->date) ? $model->date : date('Y-m-d'),
+                    'options' => ['required' => true],
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd',
+
+                    ]
+                ]);
+                ?>
+            </div>
+        </div>
+        <table class="table table-striped" id="transaction_table" style="background-color: white;">
+            <thead>
+                <th>DV Number</th>
+                <th>Check/ADA Number</th>
+                <th>Payee</th>
+                <th>Particular</th>
+                <th>Amount</th>
+            </thead>
+            <tbody>
+            </tbody>
+            <tfoot>
+                <?php
+                if (!empty($model)) {
+                    echo "<tr>";
+                    foreach ($model->transmittalEntries as $val) {
+                        $query = (new \yii\db\Query())
+                            ->select("SUM(dv_aucs_entries.amount_disbursed) as total_disbursed")
+                            ->from("dv_aucs")
+                            ->join("LEFT JOIN", 'dv_aucs_entries', 'dv_aucs.id = dv_aucs_entries.dv_aucs_id')
+                            ->where("dv_aucs.id = :id", [
+                                'id' => $val->cashDisbursement->dv_aucs_id
+                            ])
+                            ->one();
+                        echo "<td style='display:none'><input  value='$val->cash_disbursement_id' type='text' name='cash_disbursement_id[]'/></td>
+                        <td>{$val->cashDisbursement->dvAucs->dv_number}</td>
+                        <td>{$val->cashDisbursement->check_or_ada_no}</td>
+                        <td>{$val->cashDisbursement->dvAucs->payee->account_name}</td>
+                        <td>{$val->cashDisbursement->dvAucs->particular}</td>
+                        <td>{$query['total_disbursed']}</td>
+                        <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class='glyphicon glyphicon-minus'></i></button></td></tr>
+                    ";
+                    }
+                    echo  "</tr>";
+                }
+                ?>
+
+                </tr>
+                <tr>
+                    <td colspan="7">
+                        <button type="submit" class="btn btn-success" style="width: 100%;" id="save" name="save"> SAVE</button>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </form>
+
+    
 </div>
 <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script> -->
 <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->

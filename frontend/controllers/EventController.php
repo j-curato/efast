@@ -39,11 +39,12 @@ class EventController extends Controller
         $events = [];
         foreach ($ev as $e) {
 
-        $event = new \edofre\fullcalendar\models\Event();
-        $event->id = $e->id;
-        $event->title = $e->title;
-        $event->start = $e->created_at;
-        $events[] = $event;
+            $event = new \edofre\fullcalendar\models\Event();
+            $event->id = $e->id;
+            $event->title = $e->title;
+            $event->start = $e->created_at;
+            $event->end = $e->end_date;
+            $events[] = $event;
         }
         return $this->renderAjax('index', [
             'events' => $events
@@ -73,7 +74,7 @@ class EventController extends Controller
         $model = new Event();
         $model->created_at = $date;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $url=Yii::$app->request->baseUrl.'?r=site';
+            $url = Yii::$app->request->baseUrl . '?r=site';
             return $this->redirect($url);
         }
 
@@ -94,7 +95,8 @@ class EventController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            $url = Yii::$app->request->baseUrl . '?r=site';
+            return $this->redirect($url);
         }
 
         return $this->renderAjax('update', [
@@ -113,7 +115,8 @@ class EventController extends Controller
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        $url = Yii::$app->request->baseUrl . '?r=site';
+        return $this->redirect($url);
     }
 
     /**

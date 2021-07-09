@@ -55,6 +55,7 @@ class CashDisbursementSearch extends CashDisbursement
             // $query->where('0=1');
             return $dataProvider;
         }
+        $query->joinWith('dvAucs');
 
         // grid filtering conditions
         $query->andFilterWhere([

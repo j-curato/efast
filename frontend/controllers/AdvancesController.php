@@ -7,6 +7,7 @@ use app\models\Advances;
 use app\models\AdvancesEntries;
 use app\models\AdvancesEntriesSearch;
 use app\models\AdvancesSearch;
+use app\models\AdvancesViewSearch;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -72,7 +73,7 @@ class AdvancesController extends Controller
     public function actionIndex()
     {
 
-        $searchModel = new AdvancesEntriesSearch();
+        $searchModel = new AdvancesViewSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         // $searchModel = new AdvancesSearch();
         // $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -217,9 +218,10 @@ class AdvancesController extends Controller
             $sub_account1_id = $_POST['sub_account1'];
             $amount = $_POST['amount'];
             $fund_source = $_POST['fund_source'];
+            $new_reporting_period = $_POST['new_reporting_period'];
 
             $transaction = Yii::$app->db->beginTransaction();
-
+            // return json_encode(['isSuccess' => false, 'error' => $reporting_period[1]]);
 
 
             if (!empty($update_id)) {
@@ -245,6 +247,7 @@ class AdvancesController extends Controller
                         $ad_entry->cash_disbursement_id = $cash_disbursement_id[$index];
                         $ad_entry->object_code = $sub_account1_id[$index];
                         $ad_entry->fund_source = $fund_source[$index];
+                        $ad_entry->reporting_period = $new_reporting_period[$index];
                         $ad_entry->amount = floatval(preg_replace('/[^\d.]/', '', $amount[$index]));
                         $ad_entry->book_id = $ad_entry->cashDisbursement->book->id;
                         if ($ad_entry->validate()) {

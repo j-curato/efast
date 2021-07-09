@@ -12,7 +12,7 @@ use Yii;
  * @property string|null $province
  * @property string|null $fund_source
  * @property string|null $advance_type
- * @property string|null $object_code
+ * @property string|null $sl_object_code
  */
 class OtherReciepts extends \yii\db\ActiveRecord
 {
@@ -32,8 +32,7 @@ class OtherReciepts extends \yii\db\ActiveRecord
         return [
             [['fund_source'], 'string'],
             [['report', 'province'], 'string', 'max' => 50],
-            [['advance_type'], 'string', 'max' => 100],
-            [['object_code'], 'string', 'max' => 255],
+            [['sl_object_code'], 'string', 'max' => 255],
         ];
     }
 
@@ -47,8 +46,7 @@ class OtherReciepts extends \yii\db\ActiveRecord
             'report' => 'Report',
             'province' => 'Province',
             'fund_source' => 'Fund Source',
-            'advance_type' => 'Advance Type',
-            'object_code' => 'Object Code',
+            'sl_object_code' => 'Object Code',
         ];
     }
 }

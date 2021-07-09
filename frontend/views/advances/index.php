@@ -71,76 +71,39 @@ $this->params['breadcrumbs'][] = $this->title;
     // ADVANCE ACCOUNTING ENTRIES AND MODEL NAA SA CONTROLLER GE CHANGE
     $gridColumn = [
 
-        'id',
         // 'advances.nft_number',
-        [
-            'label' => 'NFT Number',
-            'attribute' => 'advances.nft_number',
-        ],
-        [
-            'label' => 'Reporting Period',
-            // 'attribute' => '',
-            'value' => 'advances.reporting_period'
-        ],
-        [
-            "label" => "DV Number",
-            "attribute" => "att3",
-            "value" => "cashDisbursement.dvAucs.dv_number"
-        ],
-        [
-            "label" => "Mode of Payment",
-            "attribute" => "cashDisbursement.mode_of_payment"
-        ],
-        [
-            "label" => "Check Number",
-            "attribute" => "cashDisbursement.check_or_ada_no"
-        ],
-        // [
-        //     "label" => "ADA Number",
-        //     "attribute" => "cashDisbursement.ada_number"
-        // ],
-        [
-            "label" => "Check Date",
-            "attribute" => "cashDisbursement.issuance_date"
-        ],
-        [
-            "label" => "Payee",
-            "attribute" => "cashDisbursement.dvAucs.payee.account_name"
-        ],
-        [
-            "label" => "Particular",
-            "attribute" => "cashDisbursement.dvAucs.particular"
-        ],
-        [
-            "label" => "Amount",
-            "attribute" => "amount",
-            'hAlign' => 'right'
-        ],
-        [
-            "label" => "Book",
-            "attribute" => "cashDisbursement.book.name"
-        ],
-        [
-            "label" => "Report",
-            "attribute" => "advances.report_type"
-        ],
 
+        'nft_number',
+        'r_center_name',
+        'province',
+        'fund_source',
         [
-            "label" => "Province",
-            "attribute" => "advances.province"
+            'label'=>'Amount',
+            'attribute'=>'amount',
+            'hAlign'=>'right',
+            'format'=>['decimal',2]
         ],
         [
-            "label" => "Fund Source",
-            "attribute" => "fund_source"
+            'label'=>'Total Liquidation',
+            'attribute'=>'total_liquidation',
+            'hAlign'=>'right',
+            'format'=>['decimal',2]
         ],
         [
-            "label" => "Object Code",
-            "attribute" => "subAccountView.object_code"
+            'label'=>'Balance',
+            'hAlign'=>'right',
+            'value'=>function($model){
+                return $model->amount - $model->total_liquidation;
+            },
+            'format'=>['decimal',2]
         ],
-        [
-            "label" => "Account Title",
-            "attribute" => "subAccountView.account_title"
-        ],
+        'dv_number',
+        'payee',
+        'particular',
+        'reporting_period',
+        'mode_of_payment',
+        'check_number',
+        'check_date',
         [
             'label' => 'action',
             'format' => 'raw',

@@ -8,7 +8,7 @@ use Yii;
  * This is the model class for table "po_transaction".
  *
  * @property int $id
- * @property int|null $responsibility_center_id
+ * @property int|null $po_responsibility_center_id
  * @property string|null $payee
  * @property string|null $particular
  * @property float|null $amount
@@ -32,12 +32,12 @@ class PoTransaction extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['responsibility_center_id'], 'integer'],
-            [['responsibility_center_id', 'amount', 'particular'], 'required'],
+            [['po_responsibility_center_id'], 'integer'],
+            [['po_responsibility_center_id', 'amount', 'particular'], 'required'],
             [['payee', 'particular'], 'string'],
             [['amount'], 'number'],
             [['payroll_number', 'tracking_number'], 'string', 'max' => 100],
-            [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
+            [['po_responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => PoResponsibilityCenter::class, 'targetAttribute' => ['po_responsibility_center_id' => 'id']],
         ];
     }
 
@@ -48,7 +48,7 @@ class PoTransaction extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'responsibility_center_id' => 'Responsibility Center ID',
+            'po_responsibility_center_id' => 'Responsibility Center ID',
             'payee' => 'Payee',
             'particular' => 'Particular',
             'amount' => 'Amount',
@@ -62,8 +62,8 @@ class PoTransaction extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getResponsibilityCenter()
+    public function getPoResponsibilityCenter()
     {
-        return $this->hasOne(ResponsibilityCenter::class, ['id' => 'responsibility_center_id']);
+        return $this->hasOne(PoResponsibilityCenter::class, ['id' => 'po_responsibility_center_id']);
     }
 }

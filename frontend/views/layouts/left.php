@@ -171,6 +171,7 @@
                             Yii::$app->user->can('conso_dv') ?    ['label' => 'Conso Dv', 'icon' => 'circle-o', 'url' => ['/report/conso-detailed-dv'],] : [],
                             Yii::$app->user->can('super-user') ?     ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/report/cibr'],] : [],
                             Yii::$app->user->can('super-user') ?     ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/cdr'],] : [],
+                            Yii::$app->user->can('super-user') ?     ['label' => 'Tax Remittance', 'icon' => 'circle-o', 'url' => ['/report/tax-remittance'],] : [],
                         ],
                     ] : [],
                     Yii::$app->user->can('province') ? [
@@ -178,6 +179,8 @@
                         'url' => '#',
                         'items' => [
 
+                            Yii::$app->user->can('province') ?     ['label' => 'PO Asignatory', 'icon' => 'circle-o', 'url' => ['/po-assignatory'],] : [],
+                            Yii::$app->user->can('province') ?     ['label' => 'PO Responsibility Center', 'icon' => 'circle-o', 'url' => ['/po-responsibility-center'],] : [],
                             Yii::$app->user->can('super-user') ?     ['label' => 'Advances', 'icon' => 'circle-o', 'url' => ['/advances'],] : [],
                             Yii::$app->user->can('liquidation') ?     ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ['/liquidation'],] : [],
                             Yii::$app->user->can('province') ?     ['label' => 'Advances/Liquidation', 'icon' => 'circle-o', 'url' => ['/report/advances-liquidation'],] : [],

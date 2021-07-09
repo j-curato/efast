@@ -29,7 +29,7 @@ class Event extends \yii\db\ActiveRecord
     {
         return [
             [['descriptions'], 'string'],
-            [['created_at'], 'safe'],
+            [['created_at','end_date'], 'safe'],
             [['title'], 'string', 'max' => 255],
         ];
     }
@@ -43,7 +43,8 @@ class Event extends \yii\db\ActiveRecord
             'id' => 'ID',
             'title' => 'Title',
             'descriptions' => 'Descriptions',
-            'created_at' => 'Created At',
+            'created_at' => 'Start Date',
+            'end_date'=>'End Date'
         ];
     }
 }

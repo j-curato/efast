@@ -860,23 +860,23 @@ $script = <<< JS
     })
     function chart(){
         return  $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-all-transaction')
-    .then(function (data) {
+        .then(function (data) {
 
-        var array = []
-        $.each(data, function (key, val) {
-            array.push({
-                id: val.id,
-                text: val.tracking_number
+            var array = []
+            $.each(data, function (key, val) {
+                array.push({
+                    id: val.id,
+                    text: val.tracking_number
+                })
             })
-        })
-        transaction = array
-        $('#transaction_id').select2({
-            data: transaction,
-            placeholder: "Select Transaction",
+            transaction = array
+            $('#transaction_id').select2({
+                data: transaction,
+                placeholder: "Select Transaction",
 
-        })
+            })
 
-    });
+        });
     }
     $.when(chart() ).done(function(chart){
 

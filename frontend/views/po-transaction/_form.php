@@ -14,11 +14,11 @@ use yii\widgets\ActiveForm;
 <div class="po-transaction-form">
 
     <?php
-    $respons_center = (new \yii\db\Query())->select('*')->from('responsibility_center')->all();
+    $respons_center = (new \yii\db\Query())->select('*')->from('po_responsibility_center')->all();
     ?>
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'responsibility_center_id')->widget(Select2::class, [
+    <?= $form->field($model, 'po_responsibility_center_id')->widget(Select2::class, [
         'data' => ArrayHelper::map($respons_center, 'id', 'name'),
         'options' => ['placeholder' => 'Select  Responsibility Center'],
         'pluginOptions' => [

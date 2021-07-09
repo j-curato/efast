@@ -84,6 +84,10 @@ class Liquidation extends \yii\db\ActiveRecord
     {
         return $this->hasOne(ResponsibilityCenter::class, ['id' => 'responsibility_center_id']);
     }
+    public function getPoTransaction()
+    {
+        return $this->hasOne(PoTransaction::class, ['id' => 'po_transaction_id']);
+    }
 
     /**
      * Gets query for [[LiquidationEntries]].

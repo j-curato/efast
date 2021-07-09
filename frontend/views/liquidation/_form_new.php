@@ -119,22 +119,7 @@ use yii\helpers\ArrayHelper;
 
 
 
-                <div class="col-sm-3">
-                    <label for="payee">Payee</label>
-                    <?php
-                    echo Select2::widget([
-                        'data' => ArrayHelper::map(Payee::find()->asArray()->all(), 'id', 'account_name'),
-                        'name' => 'payee',
-                        'value' => $payee,
-                        'id' => 'payee',
-                        'pluginOptions' => [
-                            'placeholder' => 'Select Payee',
-                            'required' => true
-                        ],
-                        'options' => ['style' => 'height:34px']
-                    ])
-                    ?>
-                </div>
+
                 <div class="col-sm-3">
 
                     <label for="transaction">Transaction</label>
@@ -166,16 +151,7 @@ use yii\helpers\ArrayHelper;
                     ?>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <label for="particular">Particular</label>
 
-                    <?php
-
-                    echo "<textarea name='particular' id='particular' rows='2' style='width: 100%;max-width:100%' value'>$particular</textarea>";
-                    ?>
-                </div>
-            </div>
 
             <table class="table table-striped" id="transaction_table">
 

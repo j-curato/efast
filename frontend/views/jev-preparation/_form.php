@@ -1,5 +1,5 @@
 <script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-<script src="/afms/frontend/web/js/scripts.js" type="text/javascript"></script>
+<!-- <script src="/afms/frontend/web/js/scripts.js" type="text/javascript"></script> -->
 <link href="/afms/frontend/web/js/select2.min.js" />
 <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
 <?php
@@ -582,7 +582,7 @@ use yii\helpers\ArrayHelper;
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-// $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 
 

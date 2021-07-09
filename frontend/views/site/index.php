@@ -536,8 +536,7 @@ $this->title = 'Dashboard';
             initialView: 'dayGridMonth',
             themeSystem: 'bootstrap',
             height: 400,
-            editable: true,
-            droppable: true,
+     
             headerToolbar: {
                 left: 'prev,next,today',
                 center: 'title',

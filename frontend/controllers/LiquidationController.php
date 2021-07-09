@@ -207,10 +207,10 @@ class LiquidationController extends Controller
     {
         if ($_POST) {
             $advances_id = !empty($_POST['advances_id']) ? $_POST['advances_id'] : '';
-            $payee_id = $_POST['payee'];
+            // $payee_id = $_POST['payee'];
             $check_date = $_POST['check_date'];
             $check_number = $_POST['check_number'];
-            $particular = $_POST['particular'];
+            // $particular = $_POST['particular'];
             $po_transaction_id = $_POST['transaction'];
             $chart_of_account = !empty($_POST['chart_of_account_id']) ? $_POST['chart_of_account_id'] : '';
             $withdrawal = !empty($_POST['withdrawal']) ? $_POST['withdrawal'] : '';
@@ -254,9 +254,9 @@ class LiquidationController extends Controller
                 $liquidation = new Liquidation();
             }
             $liquidation->check_date = $check_date;
-            $liquidation->payee_id = $payee_id;
+            // $liquidation->payee_id = $payee_id;
             $liquidation->check_number = $check_number;
-            $liquidation->particular = $particular;
+            // $liquidation->particular = $particular;
             $liquidation->reporting_period = $reporting_period;
             $liquidation->po_transaction_id = $po_transaction_id;
             $liquidation->check_range_id = $check_range;

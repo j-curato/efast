@@ -1,6 +1,7 @@
 <?php
 
 use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -11,14 +12,31 @@ use yii\widgets\ActiveForm;
 
 <div class="other-reciepts-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin();
+
+    $province = [
+        'ADN' => 'ADN',
+        'ADS' => 'ADS',
+        'SDN' => 'SDN',
+        'SDS' => 'SDS',
+        'PDI' => 'PDI'
+    ];
+    $report = [
+        'Advances for Operating Expenses' => '101 OPEX CDR',
+        'Advances to Special Disbursing Officer' => '101 SDO CDR',
+        'RAPID LP SDO CDR' => 'RAPID LP SDO CDR',
+        'GJ' => 'GJ'
+    ];
+    $sub_accounts = Yii::$app->db->createCommand("SELECT * FROM sub_accounts_view")->queryAll();
+    ?>
 
     <?= $form->field($model, 'report')->widget(
-        Select2::class,[
-            'data'=>['gj','ss'],
-            'name'=>'report',
-            'pluginOptions'=>[
-                'placeholder'=>'Select Report'
+        Select2::class,
+        [
+            'data' => $report,
+            'name' => 'report',
+            'pluginOptions' => [
+                'placeholder' => 'Select Report'
             ]
         ]
     ) ?>
@@ -26,10 +44,10 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'province')->widget(
         Select2::class,
         [
-            'data' => ['adn', 'sdb'],
+            'data' => $province,
             'name' => 'province',
-            'pluginOptions'=>[
-                'placeholder'=>'Select Province'
+            'pluginOptions' => [
+                'placeholder' => 'Select Province'
             ]
 
         ]
@@ -37,17 +55,13 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'fund_source')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'advance_type')->widget(
-        Select2::class,[
-            'data'=>['q','w'],
-            'name'=>'advance_type',
-            'pluginOptions'=>[
-                'placeholder'=>'Select Advance Type'
-            ]
-        ]
-    ) ?>
 
-    <?= $form->field($model, 'object_code')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'sl_object_code')->widget(Select2::class,
+    [
+
+        'data'=>ArrayHelper::map($sub_accounts,'object_code','object_code')
+    ]
+    ) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

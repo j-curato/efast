@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'responsibility_center_id',
+            'po_responsibility_center_id',
             'payee:ntext',
             'particular:ntext',
             'amount',

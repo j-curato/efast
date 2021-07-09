@@ -1,5 +1,6 @@
 <?php
 
+use app\models\AdvancesCashDisbursementSearch;
 use app\models\CashDisbursementSearch;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
@@ -96,8 +97,8 @@ use kartik\select2\Select2;
 
         <table class="table tabl-striped" id='transaction_table'>
             <thead>
+                <th>Reporting Period</th>
                 <th>DV Number</th>
-                <!-- <th>Mode of Payment</th> -->
                 <th>Check Number</th>
                 <!-- <th>Ada Number</th> -->
                 <th>Check Date</th>
@@ -117,12 +118,13 @@ use kartik\select2\Select2;
     <form id="add_data">
 
         <?php
-        $searchModel = new CashDisbursementSearch();
-        $searchModel->is_cancelled = 0;
+        $searchModel = new AdvancesCashDisbursementSearch();
 
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
         $dataProvider->pagination = ['pageSize' => 10];
+
+        
 
         $gridColumn = [
             // ['class' => 'yii\grid\SerialColumn'],
@@ -139,8 +141,7 @@ use kartik\select2\Select2;
             ],
             [
                 "label" => "Book",
-                "attribute" => "book_id",
-                "value" => "book.name"
+                "attribute" => "book_name"
             ],
             'mode_of_payment',
             'check_or_ada_no',
@@ -148,30 +149,31 @@ use kartik\select2\Select2;
             'issuance_date',
             [
                 'label' => "DV Number",
-                "attribute" => "dv_aucs_id",
-                'value' => 'dvAucs.dv_number'
+                "attribute" => "dv_number",
+             
             ],
             [
                 'label' => "Payee",
-                "attribute" => "dvAucs.payee.account_name"
+                "attribute" => "payee"
             ],
             [
                 'label' => "Particular",
-                "attribute" => "dvAucs.particular"
+                "attribute" => "particular"
             ],
             [
                 'label' => "Amount Disbursed",
+                'attribute' => "total_amount_disbursed",
                 'format' => ['decimal', 2],
-                'value' => function ($model) {
-                    $query = (new \yii\db\Query())
-                        ->select(["SUM(dv_aucs_entries.amount_disbursed) as total_disbursed"])
-                        ->from('dv_aucs')
-                        ->join("LEFT JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
-                        ->where("dv_aucs.id =:id", ['id' => $model->dv_aucs_id])
-                        ->one();
+                // 'value' => function ($model) {
+                //     $query = (new \yii\db\Query())
+                //         ->select(["SUM(dv_aucs_entries.amount_disbursed) as total_disbursed"])
+                //         ->from('dv_aucs')
+                //         ->join("LEFT JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
+                //         ->where("dv_aucs.id =:id", ['id' => $model->dv_aucs_id])
+                //         ->one();
 
-                    return $query['total_disbursed'];
-                }
+                //     return $query['total_disbursed'];
+                // }
             ],
 
 
@@ -286,7 +288,7 @@ use kartik\select2\Select2;
                     <td style='display:none' >
                      <input value='${result[i]['cash_disbursement_id']}'
                       type='text' name='cash_disbursement_id[]' class='cash_disbursement_id'/></td>
-
+                      <td > <input  type='month' id='date_${i}' name='new_reporting_period[]' required /></td>
                     <td class='dv_number'> ${result[i]['dv_number']}</td>
                     <td class='check_number'> ${result[i]['check_or_ada_no']}</td>
                     <td class='issuance_date'> ${result[i]['issuance_date']}</td>

@@ -4,6 +4,7 @@ use app\models\Raouds;
 use app\models\SubAccounts1;
 use app\models\SubAccounts2;
 use aryelds\sweetalert\SweetAlertAsset;
+use kartik\form\ActiveForm;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\widgets\Pjax;
@@ -21,8 +22,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
     <div class="container panel panel-default">
         <p>
-            <?= Html::a('Print', ['dv-form', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('Print', ['dv-form', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Add Link</button>
+
             <?php
 
             if (!empty($model->cashDisbursement)) {
@@ -36,8 +39,36 @@ $this->params['breadcrumbs'][] = $this->title;
                 echo "<button class='btn btn-danger' id='cancel' style='margin:5px'>Cancel</button>";
             }
             echo "<input type='text' id='cancel_id' value='$model->id' style='display:none;'/>";
+            $dv_link = '';
+            if (!empty($model->dv_link)) {
+                $dv_link = $model->dv_link;
+                echo Html::a('Soft Copy Link', $dv_link, ['class' => 'btn btn-info ']);;
+            }
             ?>
+
         </p>
+
+        <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
+                    </div>
+                    <form id="add_link">
+                        <div class='modal-body'>
+                            <hr>
+                            <label for="ledger"> SELECT GENERAL LEDGER</label>
+
+                            <input type="text " style="display: none;" class="form-control" name="id" value='<?= $model->id ?>'>
+
+                            <input type="text " class="form-control" name="link" value='<?= $dv_link ?>'>
+                        </div>
+                        <button type="submit" id='add_link_save' class="btn btn-success">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
         <table class="table table-striped">
 
             <tbody>
@@ -306,9 +337,43 @@ $this->params['breadcrumbs'][] = $this->title;
     </style>
 
 </div>
+<script>
+
+</script>
 <?php
 SweetAlertAsset::register($this);
 $script = <<<JS
+    $('#add_link').submit((e) => {
+        e.preventDefault();
+        console.log('qwe')
+        $.ajax({
+            type: 'POST',
+            url: window.location.pathname + '?r=dv-aucs/add-link',
+            data: $("#add_link").serialize(),
+            success: function(data) {
+                $('#uploadmodal').modal('toggle');
+                var res = JSON.parse(data)
+                            if(res.isSuccess){
+                                swal({
+                                        title:'Success',
+                                        type:'success',
+                                        button:false,
+                                        timer:3000,
+                                    },function(){
+                                        location.reload(true)
+                                    })
+                            }
+                            else{
+                                swal({
+                                        title:"Error Adding Fail",
+                                        type:'error',
+                                        button:false,
+                                        timer:3000,
+                                    })
+                            }
+            }
+        })
+    })
     $("#cancel").click(function(){
         swal({
             title: "Are you sure?",

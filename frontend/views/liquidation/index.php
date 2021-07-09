@@ -95,12 +95,12 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         [
             'label' => 'Particular',
-            'attribute' => 'liquidation.particular'
+            'attribute' => 'liquidation.poTransaction.particular'
         ],
 
         [
             'label' => 'Payee',
-            'value' => 'liquidation.payee.account_name'
+            'value' => 'liquidation.poTransaction.payee'
         ],
         [
             'label' => 'Object Code',

@@ -17,8 +17,24 @@ class AdvancesViewSearch extends AdvancesView
     public function rules()
     {
         return [
-            // [[ 'payee_id', 'responsibility_center_id'], 'integer'],
-            [['check_date', 'check_number', 'dv_number', 'particular','reporting_period'], 'safe'],
+
+            [[
+                'check_date', 'check_number', 'dv_number', 'particular', 'reporting_period',
+                'nft_number',
+                'r_center_name',
+                'mode_of_payment',
+                'payee',
+                'particular',
+                'book_name',
+                'province',
+                'fund_source',
+                'report_type',
+                'object_code',
+                'account_title',
+                'fund_source',
+
+            ], 'safe'],
+            [['total_liquidation'], 'number'],
         ];
     }
 
@@ -58,16 +74,29 @@ class AdvancesViewSearch extends AdvancesView
 
         // grid filtering conditions
         // $query->andFilterWhere([
-        //     'id' => $this->id,
-        //     'payee_id' => $this->payee_id,
-        //     'responsibility_center_id' => $this->responsibility_center_id,
+
         // ]);
 
+
         $query
-            ->andFilterWhere(['like', 'check_number', $this->check_number])
+            ->andFilterWhere(['like', 'nft_number', $this->nft_number])
+            ->andFilterWhere(['like', 'r_center_name', $this->r_center_name])
+            ->andFilterWhere(['like', 'mode_of_payment', $this->mode_of_payment])
             ->andFilterWhere(['like', 'dv_number', $this->dv_number])
+            ->andFilterWhere(['like', 'check_number', $this->check_number])
+            ->andFilterWhere(['like', 'payee', $this->payee])
+            ->andFilterWhere(['like', 'particular', $this->particular])
+            ->andFilterWhere(['like', 'amount', $this->amount])
+            ->andFilterWhere(['like', 'total_liquidation', $this->total_liquidation])
+            ->andFilterWhere(['like', 'book_name', $this->book_name])
+            ->andFilterWhere(['like', 'province', $this->province])
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
-            ->andFilterWhere(['like', 'particular', $this->particular]);
+            ->andFilterWhere(['like', 'fund_source', $this->fund_source])
+            ->andFilterWhere(['like', 'report_type', $this->report_type])
+            ->andFilterWhere(['like', 'object_code', $this->object_code])
+            ->andFilterWhere(['like', 'account_title', $this->account_title])
+            ->andFilterWhere(['like', 'object_code', $this->object_code])
+            ->andFilterWhere(['like', 'check_date', $this->check_date]);
 
         return $dataProvider;
     }

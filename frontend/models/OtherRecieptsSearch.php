@@ -18,7 +18,7 @@ class OtherRecieptsSearch extends OtherReciepts
     {
         return [
             [['id'], 'integer'],
-            [['report', 'province', 'fund_source', 'advance_type', 'object_code'], 'safe'],
+            [['report', 'province', 'fund_source',  'sl_object_code'], 'safe'],
         ];
     }
 
@@ -64,8 +64,7 @@ class OtherRecieptsSearch extends OtherReciepts
         $query->andFilterWhere(['like', 'report', $this->report])
             ->andFilterWhere(['like', 'province', $this->province])
             ->andFilterWhere(['like', 'fund_source', $this->fund_source])
-            ->andFilterWhere(['like', 'advance_type', $this->advance_type])
-            ->andFilterWhere(['like', 'object_code', $this->object_code]);
+            ->andFilterWhere(['like', 'sl_object_code', $this->sl_object_code]);
 
         return $dataProvider;
     }

@@ -17,7 +17,7 @@ class PoTransactionSearch extends PoTransaction
     public function rules()
     {
         return [
-            [['id', 'responsibility_center_id'], 'integer'],
+            [['id', 'po_responsibility_center_id'], 'integer'],
             [['payee', 'particular', 'payroll_number'], 'safe'],
             [['amount'], 'number'],
         ];
@@ -60,7 +60,7 @@ class PoTransactionSearch extends PoTransaction
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'responsibility_center_id' => $this->responsibility_center_id,
+            'po_responsibility_center_id' => $this->po_responsibility_center_id,
             'amount' => $this->amount,
         ]);
 

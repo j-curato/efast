@@ -31,25 +31,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <div class="container">
-        <div class="row assignatory">
+        <div class="row as">
 
-            <div class="col-sm-4">
-                <label for="assignatory"></label>
-                <!-- <select id="assignatory" onchange="sample(this)" name="assignatory" class=" select" style="width: 100%">
-                    <option></option>
-                </select> -->
-                <?php
-                echo Select2::widget([
-                    'data' => ArrayHelper::map(Assignatory::find()->asArray()->all(), 'name', 'name'),
-                    'name' => 'assignatory',
-                    'options' => ['id' => 'assignatory', 'onChange' => 'sample(this)'],
-                    'pluginOptions' => [
-                        'placeholder' => 'select',
-                        'allowClear' => true
-                    ]
-                ])
-                ?>
-            </div>
+
         </div>
 
         <div class="row" style="float:right">
@@ -115,8 +99,10 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row head" style="margin-top:1rem">Thank you.</div>
         <div class="row head" style="margin-top:4rem">Very truly yours,</div>
         <div class="row head" style="margin-top:2rem">
-            <div class="head" style="font-weight:bold">EDWIN O. BANQUERIGO</div>
-            <div class="head">Regional Director</div>
+            <div class="head" style="font-weight:bold;right:10;" id="asig_1">
+
+            </div>
+            <div class="head" id="oic">Regional Director</div>
         </div>
         <div class="row" style="margin-top:2rem">
             <div class="head" id="for_rd"></div>
@@ -124,10 +110,43 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row" style="margin-top: 2rem;">
             <div class="head" id='ass' style="font-weight: bold;"></div>
         </div>
+        <div class="row" style="margin-top: 20px;">
+
+            <div class="col-sm-3 as">
+                <label for="assignatory_1">Regional Director </label>
+                <select name="" id="assignatory_1" class="assignatory" onchange="regionalDirector(this)" style="width: 100%;">
+                    <option value=""></option>
+                </select>
+            </div>
+            <div class="col-sm-4 as">
+                <label for="qwe">OIC</label>
+                <!-- <select id="assignatory" onchange="sample(this)" name="assignatory" class=" select" style="width: 100%">
+                    <option></option>
+                </select> -->
+                <?php
+                echo Select2::widget([
+                    'data' => ArrayHelper::map(Assignatory::find()->asArray()->all(), 'name', 'name'),
+                    'name' => 'ass',
+                    'options' => ['id' => 'assignatory', 'onChange' => 'sample(this)'],
+                    'pluginOptions' => [
+                        'placeholder' => 'select',
+                        'allowClear' => true,
+
+                    ],
+                ])
+                ?>
+            </div>
+            <div class="col-sm-3 as">
+                <label for="oic">Regional Director </label>
+                <select name="" id="oic_rd" onchange="oicRd(this)" style="width: 100%;">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
     </div>
-    <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+    <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
     <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
-    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
+    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" /> -->
     <script>
         var reference = []
         // $(document).ready(function() {
@@ -142,13 +161,56 @@ $this->params['breadcrumbs'][] = $this->title;
         //     console.log("qwe")
         // })
 
+        function oicRd(x) {
+            $("#oic").text(x.value)
+        }
+
+        function regionalDirector(x) {
+            $("#asig_1").text(x.value)
+        }
+
         function sample(q) {
             console.log(q.value)
 
             $("#ass").text(q.value)
-            $("#for_rd").text('For the Regional Director')
+            if (q.value == '') {
+                $("#for_rd").text('')
+            } else {
+
+                $("#for_rd").text('For the Regional Director')
+            }
+
 
         }
+        $(document).ready(function() {
+            var oic_rd = ['Officer-in-Charge', 'Regional Director']
+            $('#oic_rd').select2({
+                data: oic_rd,
+                placeholder: "Select ",
+                allowClear: true,
+                closeOnSelect: true
+            })
+            $.getJSON('/afms/frontend/web/index.php?r=assignatory/get-all-assignatory')
+
+                .then(function(data) {
+
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.name,
+                            text: val.name
+                        })
+                    })
+                    assignatory = array
+                    $('.assignatory').select2({
+                        data: assignatory,
+                        placeholder: "Select ",
+                        allowClear: true,
+                        closeOnSelect: true
+                    })
+
+                })
+        })
     </script>
 </div>
 
@@ -188,6 +250,10 @@ $this->params['breadcrumbs'][] = $this->title;
             font-size: 10px;
         }
 
+        .as {
+            display: none;
+        }
+
         .assignatory {
             display: none;
         }
@@ -210,6 +276,116 @@ $this->params['breadcrumbs'][] = $this->title;
         }
 
 
+        .actions {
+            display: none;
+        }
+
+        .select2-container--default .select2-selection--single,
+        .select2-selection .select2-selection--single {
+            /* border: 1px solid #d2d6de; */
+            /* border-radius: 0; */
+            padding: 0;
+
+        }
+
+        .select2-container {
+            height: 20px;
+        }
+
+        .links {
+            display: none;
+        }
+
+        .btn {
+            display: none;
+        }
+
+        .krajee-datepicker {
+            border: 1px solid white;
+            font-size: 10px;
+            padding-left: 9px;
+        }
+
+        /* .select2-selection__rendered{
+            text-decoration: underline;
+        } */
+        .select2-container--default .select2-selection--single {
+            background-color: #fff;
+            border: none;
+            padding-left: 0;
+        }
+
+        .select2-selection__arrow {
+            display: none;
+        }
+
+
+        .select2-selection {
+            border: 1px solid white;
+        }
+
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            text-indent: 1px;
+            text-overflow: '';
+            border: none;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            padding: 5px;
+            font-size: 10px;
+        }
+
+        @page {
+            size: auto;
+            margin: 0;
+            margin-top: 0.5cm;
+        }
+
+
+
+        .container {
+            margin: 0;
+            top: 0;
+        }
+
+        .entity_name {
+            font-size: 5pt;
+        }
+
+
+
+        .container {
+
+            border: none;
+        }
+
+
+        table {
+            page-break-after: auto
+        }
+
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto
+        }
+
+        td {
+            page-break-inside: avoid;
+            page-break-after: auto
+        }
+
+        /* thead {
+                display: table-header-group
+            } */
+
+        .main-footer {
+            display: none;
+        }
     }
 </style>
 

@@ -308,7 +308,7 @@ class SiteController extends Controller
                 'id' => $e->id,
                 'title' => $e->title,
                 'start' => $e->created_at,
-                'end' =>  '2021-7-10'
+                'end' =>  $e->end_date,
             ];
 
             $events[] = $event;

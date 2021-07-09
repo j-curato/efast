@@ -19,7 +19,7 @@ class AdvancesEntriesSearch extends AdvancesEntries
         return [
             [['id',  'cash_disbursement_id', 'sub_account1_id'], 'integer'],
             [['amount'], 'number'],
-            [['advances_id'], 'safe'],
+            [['advances_id', 'reporting_period'], 'safe'],
         ];
     }
 
@@ -39,7 +39,7 @@ class AdvancesEntriesSearch extends AdvancesEntries
      *
      * @return ActiveDataProvider
      */
-    
+
     public function search($params)
     {
         $query = AdvancesEntries::find();
@@ -49,7 +49,7 @@ class AdvancesEntriesSearch extends AdvancesEntries
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
-            
+
         $this->load($params);
 
         if (!$this->validate()) {
@@ -65,7 +65,8 @@ class AdvancesEntriesSearch extends AdvancesEntries
             'sub_account1_id' => $this->sub_account1_id,
             'amount' => $this->amount,
         ]);
-        $query->andFilterWhere(['like', 'advances.nft_number', $this->advances_id]);
+        $query->andFilterWhere(['like', 'advances.nft_number', $this->advances_id])
+            ->andFilterWhere(['like', 'reporting_period', $this->reporting_period]);
 
         return $dataProvider;
     }

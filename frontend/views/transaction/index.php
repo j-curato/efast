@@ -109,7 +109,7 @@ Modal::end();
 
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'List of Areas',
+            'heading' => 'List of Transactions',
         ],
         'floatHeaderOptions' => [
             'top' => 50,
@@ -182,9 +182,8 @@ $script = <<<JS
         $('#modalButtoncreate').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         });
-        $('.modalButtonedit').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
+        'autclose'=>true
+
         
             $('#import').submit(function(e){
                 // $(this).unbind();
