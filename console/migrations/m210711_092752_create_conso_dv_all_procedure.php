@@ -83,12 +83,7 @@ class m210711_092752_create_conso_dv_all_procedure extends Migration
         AND detailed_dv_aucs.mfo_code IS NOT NULL
         GROUP BY detailed_dv_aucs.mfo_code 
         
-
-        
-        
-        
-        FROM `detailed_dv_aucs` WHERE detailed_dv_aucs.allotment_class IS NULL
-        GROUP BY mrd_name) as q ON mfo_pap_code.code = q.mfo_code;
+        ) as q ON mfo_pap_code.code = q.mfo_code;
         UNION
         
         SELECT 
@@ -101,6 +96,11 @@ class m210711_092752_create_conso_dv_all_procedure extends Migration
         SUM(total_ewt) as conso_total_ewt,
         SUM(total_dv) as conso_total_dv,
             SUM(total_vat) as conso_total_vat
+        
+        
+        
+        FROM `detailed_dv_aucs` WHERE detailed_dv_aucs.allotment_class IS NULL
+        GROUP BY mrd_name;
         
         END
 
