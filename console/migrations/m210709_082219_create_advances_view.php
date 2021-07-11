@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Class m210630_041942_create_advances_view
  */
-class m210630_041942_create_advances_view extends Migration
+class m210709_082219_create_advances_view extends Migration
 {
     /**
      * {@inheritdoc}
@@ -13,7 +13,7 @@ class m210630_041942_create_advances_view extends Migration
     public function safeUp()
     {
         Yii::$app->db->createCommand("CREATE VIEW advances_view AS 
-           SELECT 
+          SELECT 
 advances_entries.advances_id,
 advances.nft_number,
 dv_aucs.dv_number,
