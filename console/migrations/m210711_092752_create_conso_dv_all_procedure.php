@@ -87,10 +87,9 @@ class m210711_092752_create_conso_dv_all_procedure extends Migration
         UNION
         
         SELECT 
-        ''as mfo_code,
-        
         'No ORS'as mfo_name,
         mrd_name as mfo_description,
+        ''as mfo_code,
         0 as total_allotment_recieve,
         0 as conso_total_obligation,
         SUM(total_ewt) as conso_total_ewt,
