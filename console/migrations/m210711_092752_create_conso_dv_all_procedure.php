@@ -17,10 +17,14 @@ class m210711_092752_create_conso_dv_all_procedure extends Migration
          CREATE PROCEDURE conso_dv_all (r_year VARCHAR(20))    
         BEGIN
 
+        SELECT mfo_pap_code.name,
+        mfo_pap_code.description
+        FROM mfo_pap_code
+        RIGHT JOIN
+        (
         SELECT
         detailed_dv_aucs.mfo_code,
-        detailed_dv_aucs.mfo_name,
-        detailed_dv_aucs.mfo_description,
+
         r_allotment.total_allotment as total_allotment_recieve,
         t_obligation.total as conso_total_obligation,
         SUM(detailed_dv_aucs.dv_ewt) as conso_total_ewt,
@@ -43,9 +47,9 @@ class m210711_092752_create_conso_dv_all_procedure extends Migration
         AND chart_of_accounts.major_account_id =major_accounts.id
         AND record_allotments.mfo_pap_code_id = mfo_pap_code.id
                     
-                        AND record_allotments.reporting_period  LIKE  r_year
+         AND record_allotments.reporting_period  LIKE  r_year
         
-        GROUP BY mfo_pap_code.`name`
+        GROUP BY mfo_pap_code.`code`
         
         
         
@@ -67,7 +71,7 @@ class m210711_092752_create_conso_dv_all_procedure extends Migration
         AND chart_of_accounts.major_account_id = major_accounts.id
         AND record_allotment_entries.record_allotment_id = record_allotments.id
         AND record_allotments.mfo_pap_code_id = mfo_pap_code.`id`
-        AND	process_ors.reporting_period  LIKE '2021%'
+        AND	process_ors.reporting_period  LIKE r_year
         
         GROUP BY mfo_pap_code.`code`
         
@@ -95,7 +99,7 @@ class m210711_092752_create_conso_dv_all_procedure extends Migration
         
         
         FROM `detailed_dv_aucs` WHERE detailed_dv_aucs.allotment_class IS NULL
-        GROUP BY mrd_name;
+        GROUP BY mrd_name) as q ON mfo_pap_code.code = q.mfo_code;
         
         END
 
