@@ -962,6 +962,7 @@ class ReportController extends \yii\web\Controller
             }
 
             // return json_encode($allotment_class);
+            ArrayHelper::multisort($dataProvider, ['mfo_code'], [SORT_ASC]);
 
             return json_encode($dataProvider);
         } else {
