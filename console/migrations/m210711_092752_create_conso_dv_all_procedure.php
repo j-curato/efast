@@ -78,7 +78,6 @@ class m210711_092752_create_conso_dv_all_procedure extends Migration
         GROUP BY detailed_dv_aucs.mfo_code,
         detailed_dv_aucs.mfo_description,
         detailed_dv_aucs.mfo_name
-        ORDER BY detailed_dv_aucs.mfo_code
 
         UNION
 
