@@ -78,7 +78,7 @@ class m210711_092752_create_conso_dv_all_procedure extends Migration
         
         AND detailed_dv_aucs.reporting_period  LIKE  r_year
         AND detailed_dv_aucs.mfo_code IS NOT NULL
-        GROUP BY detailed_dv_aucs.mfo_code 
+        GROUP BY detailed_dv_aucs.mfo_code;
         
         UNION
         
@@ -96,7 +96,7 @@ class m210711_092752_create_conso_dv_all_procedure extends Migration
         
         
         FROM `detailed_dv_aucs` WHERE detailed_dv_aucs.allotment_class IS NULL
-        GROUP BY mrd_name
+        GROUP BY mrd_name;
         
         END
 
