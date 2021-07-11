@@ -18,7 +18,7 @@ class m210711_092752_create_conso_dv_all_procedure extends Migration
         BEGIN
 
         SELECT mfo_pap_code.name,
-        mfo_pap_code.description
+        mfo_pap_code.description,q.*
         FROM mfo_pap_code
         RIGHT JOIN
         (
