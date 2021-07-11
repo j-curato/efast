@@ -91,7 +91,7 @@ class PoTransactionController extends Controller
     public function actionCreate()
     {
         $model = new PoTransaction();
-
+        // $model->po_responsibility_center_id = strtoupper(\Yii::$app->user->identity->province) .'-'. $model->po_responsibility_center_id ;
         if ($model->load(Yii::$app->request->post())) {
             $model->tracking_number = $this->getTrackingNumber($model->po_responsibility_center_id);
             if ($model->save(false)) {
@@ -162,7 +162,7 @@ class PoTransactionController extends Controller
             ->where("id =:id", ['id' => $responsibility_center_id])
             ->one();
 
-        $latest_tracking_no = Yii::$app->db->createCommand("SELECT substring_index(substring(tracking_number,instr(tracking_number,'-')+6),' ',1)as q
+        $latest_tracking_no = Yii::$app->db->createCommand("SELECT substring_index(substring(tracking_number,instr(tracking_number,'-')+10),' ',1)as q
         FROM `po_transaction` ORDER BY q DESC LIMIT 1")->queryScalar();
         if (!empty($latest_tracking_no)) {
             $last_number = $latest_tracking_no + 1;
@@ -174,7 +174,7 @@ class PoTransactionController extends Controller
             $final_number .= 0;
         }
         $final_number .= $last_number;
-        $tracking_number = $responsibility_center['name'] . '-' . $date . '-' . $final_number;
+        $tracking_number = strtoupper(\Yii::$app->user->identity->province) . '-' . $responsibility_center['name'] . '-' . $date . '-' . $final_number;
         return  $tracking_number;
     }
     public function actionGetTransaction()
@@ -189,8 +189,8 @@ class PoTransactionController extends Controller
                     'po_responsibility_center.name as r_center_name',
                 ])
                 ->from('po_transaction')
-                ->join('LEFT JOIN','po_responsibility_center','po_transaction.po_responsibility_center_id =po_responsibility_center.id')
-                ->where('po_transaction.id =:id', ['id'=>$id])
+                ->join('LEFT JOIN', 'po_responsibility_center', 'po_transaction.po_responsibility_center_id =po_responsibility_center.id')
+                ->where('po_transaction.id =:id', ['id' => $id])
                 ->one();
             // ob_clean();
             // echo "<pre>";

@@ -31,7 +31,7 @@ class AdvancesController extends Controller
                     'index',
                     'create',
                     'update',
-                    'view',
+                    
                     'add-data',
                     'insert-advances',
                     'get-all-advances',
@@ -51,7 +51,15 @@ class AdvancesController extends Controller
                             'import',
                         ],
                         'allow' => true,
-                        'roles' => ['accounting']
+                        'roles' => ['super-user','create_advances']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                        ],
+                        'allow' => true,
+                        'roles' => ['province', 'super-user']
                     ],
 
 
@@ -74,6 +82,9 @@ class AdvancesController extends Controller
     {
 
         $searchModel = new AdvancesViewSearch();
+        if (Yii::$app->user->identity->province !== 'admin') {
+            $searchModel->province = Yii::$app->user->identity->province;
+        }
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         // $searchModel = new AdvancesSearch();
         // $dataProvider = $searchModel->search(Yii::$app->request->queryParams);

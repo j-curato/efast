@@ -19,7 +19,8 @@ class m210709_064158_create_advances_entries_for_liquidation_view extends Migrat
         advances_entries.fund_source,
         advances_entries.amount,
         liq.total_liquidation,
-        
+
+        advances_entries.amount -COALESCE(liq.total_liquidation, 0) as balance,
         dv_aucs.particular
         FROM advances_entries
         INNER JOIN advances ON advances_entries.advances_id =advances.id
@@ -29,7 +30,7 @@ class m210709_064158_create_advances_entries_for_liquidation_view extends Migrat
         LEFT JOIN(SELECT SUM(liquidation_entries.withdrawals)as total_liquidation,
         liquidation_entries.advances_entries_id
         FROM liquidation_entries GROUP BY liquidation_entries.advances_entries_id) as liq
-        ON advances_entries.id = liq.advances_entries_id")->query();
+        ON advances_entries.id = liq.advances_entries_id ")->query();
     }
 
     /**

@@ -156,8 +156,15 @@ $this->params['breadcrumbs'][] = $this->title;
         // ],
     ];
     $viewSearchModel = new LiquidationViewSearch();
+    if (!empty(\Yii::$app->user->identity->province)) {
+        $viewSearchModel->province = \Yii::$app->user->identity->province;
+        // echo \Yii::$app->user->identity->province;
+    }
+
     $viewDataProvider = $viewSearchModel->search(Yii::$app->request->queryParams);
+
     $viewDataProvider->pagination = ['pageSize' => 10];
+    // echo \Yii::$app->user->identity->province;
     $viewColumn = [
         'province',
 

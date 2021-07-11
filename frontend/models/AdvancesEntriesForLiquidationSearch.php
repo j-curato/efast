@@ -22,7 +22,8 @@ class AdvancesEntriesForLiquidationSearch extends AdvancesEntriesForLiquidation
         }
         return [
             [['id'], 'integer'],
-            [[$province, 'fund_source', 'amount', 'total_liquidation', 'reporting_period', 'particular'], 'safe'],
+            [['amount', 'balance'], 'number'],
+            [[$province, 'fund_source', 'total_liquidation', 'reporting_period', 'particular'], 'safe'],
         ];
     }
 
@@ -69,6 +70,7 @@ class AdvancesEntriesForLiquidationSearch extends AdvancesEntriesForLiquidation
         $query->andFilterWhere(['like', 'province', $this->province])
             ->andFilterWhere(['like', 'fund_source', $this->fund_source])
             ->andFilterWhere(['like', 'amount', $this->amount])
+            ->andFilterWhere(['like', 'balance', $this->balance])
             ->andFilterWhere(['like', 'particular', $this->particular])
             ->andFilterWhere(['like', 'total_liquidation', $this->total_liquidation]);
 

@@ -15,57 +15,58 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="advances-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <?php if (Yii::$app->user->can('create_advances')) { ?>
+        <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Create Advances', ['create'], ['class' => 'btn btn-success']) ?>
-        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
-    </p>
+        <p>
+            <?= Html::a('Create Advances', ['create'], ['class' => 'btn btn-success']) ?>
+            <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
+        </p>
 
-    <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">UPLOAD Cash Disbursement</h4>
-                </div>
-                <div class='modal-body'>
-                    <center><a href="import_formats/Cash_Disbursement and DV Format.xlsx">Download Template Here to avoid error during Upload.</a></center>
-                    <hr>
-                    <?php
-
-
-                    $form = ActiveForm::begin([
-                        'action' => ['advances/import'],
-                        'method' => 'post',
-                        'id' => 'formupload',
-                        'options' => [
-                            'enctype' => 'multipart/form-data',
-                        ], // important
-                    ]);
-                    // echo '<input type="file">';
-                    echo FileInput::widget([
-                        'name' => 'file',
-                        // 'options' => ['multiple' => true],
-                        'id' => 'fileupload',
-                        'pluginOptions' => [
-                            'showPreview' => true,
-                            'showCaption' => true,
-                            'showRemove' => true,
-                            'showUpload' => true,
-                        ]
-                    ]);
-
-                    ActiveForm::end();
+        <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">UPLOAD Cash Disbursement</h4>
+                    </div>
+                    <div class='modal-body'>
+                        <center><a href="import_formats/Cash_Disbursement and DV Format.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                        <hr>
+                        <?php
 
 
-                    ?>
+                        $form = ActiveForm::begin([
+                            'action' => ['advances/import'],
+                            'method' => 'post',
+                            'id' => 'formupload',
+                            'options' => [
+                                'enctype' => 'multipart/form-data',
+                            ], // important
+                        ]);
+                        // echo '<input type="file">';
+                        echo FileInput::widget([
+                            'name' => 'file',
+                            // 'options' => ['multiple' => true],
+                            'id' => 'fileupload',
+                            'pluginOptions' => [
+                                'showPreview' => true,
+                                'showCaption' => true,
+                                'showRemove' => true,
+                                'showUpload' => true,
+                            ]
+                        ]);
 
+                        ActiveForm::end();
+
+
+                        ?>
+
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
+    <?php } ?>
     <?php
 
     // ADVANCE ACCOUNTING ENTRIES AND MODEL NAA SA CONTROLLER GE CHANGE
@@ -78,24 +79,24 @@ $this->params['breadcrumbs'][] = $this->title;
         'province',
         'fund_source',
         [
-            'label'=>'Amount',
-            'attribute'=>'amount',
-            'hAlign'=>'right',
-            'format'=>['decimal',2]
+            'label' => 'Amount',
+            'attribute' => 'amount',
+            'hAlign' => 'right',
+            'format' => ['decimal', 2]
         ],
         [
-            'label'=>'Total Liquidation',
-            'attribute'=>'total_liquidation',
-            'hAlign'=>'right',
-            'format'=>['decimal',2]
+            'label' => 'Total Liquidation',
+            'attribute' => 'total_liquidation',
+            'hAlign' => 'right',
+            'format' => ['decimal', 2]
         ],
         [
-            'label'=>'Balance',
-            'hAlign'=>'right',
-            'value'=>function($model){
+            'label' => 'Balance',
+            'hAlign' => 'right',
+            'value' => function ($model) {
                 return $model->amount - $model->total_liquidation;
             },
-            'format'=>['decimal',2]
+            'format' => ['decimal', 2]
         ],
         'dv_number',
         'payee',
@@ -124,7 +125,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => $gridColumn,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'Liquidations',
+            'heading' => 'Advances',
         ],
         'toolbar' => [
             [

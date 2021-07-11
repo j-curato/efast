@@ -16,6 +16,10 @@ class LiquidationViewSearch extends LiquidationView
      */
     public function rules()
     {
+        $province = 'province';
+        if (\Yii::$app->user->identity->province != '') {
+            $province = '';
+        }
         return [
             [['id',], 'integer'],
             [['total_withdrawal', 'total_expanded', 'total_liquidation_damage', 'total_vat'], 'number'],
@@ -26,7 +30,7 @@ class LiquidationViewSearch extends LiquidationView
                 'dv_number',
                 'reporting_period',
                 'payee', 'particular', 'gross_payment',
-                'province',
+                $province,
             ], 'safe'],
 
         ];

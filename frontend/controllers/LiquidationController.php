@@ -336,6 +336,7 @@ class LiquidationController extends Controller
                     'liquidation_entries.expanded_tax',
                     'liquidation_entries.vat_nonvat',
                     'liquidation_entries.withdrawals',
+                    'liquidation_entries.liquidation_damage',
                     'liquidation_entries.reporting_period'
                 ])
                 ->from('liquidation_entries')

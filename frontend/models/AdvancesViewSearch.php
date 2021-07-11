@@ -16,6 +16,10 @@ class AdvancesViewSearch extends AdvancesView
      */
     public function rules()
     {
+        $province = 'province';
+        if (\Yii::$app->user->identity->province !== 'admin') {
+            $province = '';
+        }
         return [
 
             [[
@@ -26,7 +30,7 @@ class AdvancesViewSearch extends AdvancesView
                 'payee',
                 'particular',
                 'book_name',
-                'province',
+                $province,
                 'fund_source',
                 'report_type',
                 'object_code',

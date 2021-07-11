@@ -254,6 +254,15 @@ use yii\helpers\ArrayHelper;
                     'attribute' => 'amount',
                     'format' => ['decimal', 2]
                 ],
+                [
+                    'attribute' => 'total_liquidation',
+                    'format' => ['decimal', 2]
+                ],
+                [
+                    'label' => 'Balance',
+                    'attribute' => 'balance',
+                    'format' => ['decimal', 2]
+                ],
                 'particular'
 
 
@@ -487,14 +496,16 @@ SweetAlertAsset::register($this);
             if ($('#update_id') != null) {
                 $(`#chart-${transaction_table_count}`).val(result[i]['chart_of_account_id']).trigger('change')
                 $(`#withdrawal-${transaction_table_count}`).val(result[i]['withdrawals'])
+                $(`#liq_damages-${transaction_table_count}`).val(result[i]['liquidation_damage'])
                 $(`#vat_nonvat-${transaction_table_count}`).val(result[i]['vat_nonvat'])
-                $(`#ewt-${transaction_table_count}`).val(result[i]['ewt_goods_services'])
+                $(`#ewt-${transaction_table_count}`).val(result[i]['expanded_tax'])
                 $(`#date_${transaction_table_count}`).val(result[i]['reporting_period'])
             }
             if (type == 're-align') {
                 $(`#chart-${transaction_table_count}`).prop('disabled', true)
                 $(`#withdrawal-${transaction_table_count}`).prop('disabled', true)
                 $(`#vat_nonvat-${transaction_table_count}`).prop('disabled', true)
+                $(`#liq_damages-${transaction_table_count}`).prop('disabled', true)
                 $(`#ewt-${transaction_table_count}`).prop('disabled', true)
                 $(`#advances_${transaction_table_count}`).prop('disabled', true)
                 $(`#date_${transaction_table_count}`).prop('disabled', true)
@@ -687,6 +698,7 @@ $script = <<<JS
                     console.log(res)
                     
                     addToTransactionTable(res,$("#update_type").val())
+                    getTotalAmounts()
                 }
 
             })
