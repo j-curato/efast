@@ -729,10 +729,13 @@ class ReportController extends \yii\web\Controller
     public function actionGetCdr()
 
     {
-        // if ($_POST) {
-        // $id = $_POST['id'];
-        $id = 10;
-        $cdr  = Cdr::findOne($id);
+        if ($_POST) {
+        $id = $_POST['update_id'];
+
+
+        $cdr  =Cdr::findOne($id);
+        
+        // return json_encode(['qwe'=>$cdr]);
         // $query = (new \yii\db\Query())
         //     ->select('id')
         //     ->from('cdr')
@@ -816,7 +819,7 @@ class ReportController extends \yii\web\Controller
         if (!empty($cdr)) {
             return json_encode(['result' => $q, 'vat' => $vat, 'expanded' => $expanded]);
         }
-        // }
+        }
     }
 
     public function actionTemp()

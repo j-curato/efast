@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\Cdr;
 use app\models\CdrSearch;
+use app\models\LiquidationReportingPeriod;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -37,18 +38,28 @@ class CdrController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-                            'index',
+
                             'create',
-                            'view',
+
                             'update',
                             'delete',
-                            'cdr',
+
                             'cdr-final',
                             'insert-cdr'
                         ],
                         'allow' => true,
+                        'roles' => ['create_cdr']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'cdr',
+
+                        ],
+                        'allow' => true,
                         'roles' => ['@']
-                    ]
+                    ],
                 ]
             ],
             'verbs' => [
@@ -89,7 +100,7 @@ class CdrController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('update', [
+        return $this->render('view', [
             'model' => $model,
             'dataProvider' => '',
             'reporting_period' => '',
@@ -312,7 +323,14 @@ class CdrController extends Controller
             $cdr->is_final = $cdr->is_final === 0 ? true : false;
             $cdr->serial_number = $this->getSerialNumber($cdr->reporting_period, $cdr->report_type, $cdr->book_name, $cdr->province);
             if ($cdr->save(false)) {
-                return json_encode(['isScuccess' => true, 'message' => 'success']);
+
+                $liq_reporting_period = new LiquidationReportingPeriod();
+                $liq_reporting_period->reporting_period = $cdr->reporting_period;
+                $liq_reporting_period->province = $cdr->province;
+                if ($liq_reporting_period->save(false)) {
+
+                    return json_encode(['isScuccess' => true, 'message' => 'success']);
+                }
             }
         }
     }

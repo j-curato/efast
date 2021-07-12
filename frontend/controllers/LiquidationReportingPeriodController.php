@@ -3,17 +3,16 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\CheckRange;
-use app\models\CheckRangeSearch;
-use yii\filters\AccessControl;
+use app\models\LiquidationReportingPeriod;
+use app\models\LiquidationReportingPeriodSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * CheckRangeController implements the CRUD actions for CheckRange model.
+ * LiquidationReportingPeriodController implements the CRUD actions for LiquidationReportingPeriod model.
  */
-class CheckRangeController extends Controller
+class LiquidationReportingPeriodController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -21,38 +20,8 @@ class CheckRangeController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::class,
-                'only' => [
-                    'index',
-                    'view',
-                    'update',
-                    'create',
-                    'delete'
-                ],
-                'rules' => [
-                    [
-                        'actions' => [
-                            'index',
-                            'view',
-                            'update',
-                            'create',
-                            'delete'
-                        ],
-                        'allow' => true,
-                        'roles' => ['province_admin_1']
-                    ],
-                    [
-                        'actions' => [
-                            'index',
-                        ],
-                        'allow' => true,
-                        'roles' => ['@']
-                    ],
-                ]
-            ],
             'verbs' => [
-                'class' => VerbFilter::class,
+                'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -61,12 +30,12 @@ class CheckRangeController extends Controller
     }
 
     /**
-     * Lists all CheckRange models.
+     * Lists all LiquidationReportingPeriod models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new CheckRangeSearch();
+        $searchModel = new LiquidationReportingPeriodSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -76,7 +45,7 @@ class CheckRangeController extends Controller
     }
 
     /**
-     * Displays a single CheckRange model.
+     * Displays a single LiquidationReportingPeriod model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -89,13 +58,13 @@ class CheckRangeController extends Controller
     }
 
     /**
-     * Creates a new CheckRange model.
+     * Creates a new LiquidationReportingPeriod model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new CheckRange();
+        $model = new LiquidationReportingPeriod();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -107,7 +76,7 @@ class CheckRangeController extends Controller
     }
 
     /**
-     * Updates an existing CheckRange model.
+     * Updates an existing LiquidationReportingPeriod model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -127,7 +96,7 @@ class CheckRangeController extends Controller
     }
 
     /**
-     * Deletes an existing CheckRange model.
+     * Deletes an existing LiquidationReportingPeriod model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -141,15 +110,15 @@ class CheckRangeController extends Controller
     }
 
     /**
-     * Finds the CheckRange model based on its primary key value.
+     * Finds the LiquidationReportingPeriod model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return CheckRange the loaded model
+     * @return LiquidationReportingPeriod the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = CheckRange::findOne($id)) !== null) {
+        if (($model = LiquidationReportingPeriod::findOne($id)) !== null) {
             return $model;
         }
 

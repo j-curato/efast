@@ -38,6 +38,7 @@ class LiquidationController extends Controller
                     'update-liquidation',
                     'cancel',
                     'import',
+                    'view'
                 ],
                 'rules' => [
                     [
@@ -54,8 +55,16 @@ class LiquidationController extends Controller
                             'import',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user','liquidation']
-                    ]
+                        'roles' => ['super-user', 'create_liquidation']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view'
+                        ],
+                        'allow' => true,
+                        'roles' => ['super-user', 'liquidation']
+                    ],
                 ]
             ],
             'verbs' => [
@@ -232,13 +241,42 @@ class LiquidationController extends Controller
                 ->where("check_range.id = :id", ['id' => $check_range])
                 ->one();
             if ($check_number >= $check['from'] && $check_number <= ['to']) {
-            }
-            else {
+            } else {
                 return json_encode(['isSuccess' => false, 'error' => 'Check Number Not in Range']);
                 die();
             }
 
+            if (date('Y', strtotime($reporting_period)) < date('Y')) {
+                return json_encode(['isSuccess' => false, 'error' => "Invalid Reporting Period"]);
+            } else {
+                $xyz = (new \yii\db\Query())
+                    ->select('*')
+                    ->from('liquidation_reporting_period')
+                    ->where('liquidation_reporting_period.reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+                    ->andWhere('liquidation_reporting_period.province LIKE :province', ['province' => Yii::$app->user->identity->province])
+                    ->one();
+                if (!empty($xyz)) {
+                    return json_encode(['isSuccess' => false, 'error' => " Reporting Period is Disabled"]);
+                }
+                // else
+                // {
+                //     return json_encode(['isSuccess' => false, 'error' => ]);
+                // }
 
+            }
+
+            // $liq_r_period = (new \yii\db\Query())
+            //     ->select('reporting_period,province')
+            //     ->from('liquidation_reporting_period')
+            //     ->all();
+            // ob_clean();
+            // echo "<pre>";
+            // var_dump($liq_r_period);
+            // echo "</pre>";
+            // die();
+
+            // if (in_array($reporting_period, $liq_r_period)) {
+            // }
             // ob_clean();
             // echo "<pre>";
             // var_dump($ewt);
@@ -248,6 +286,10 @@ class LiquidationController extends Controller
             $id = '';
             if (!empty($update_id)) {
                 $liquidation = Liquidation::findOne($update_id);
+
+                if ($liquidation->is_locked === 1) {
+                    return json_encode(['isSuccess' => false, 'error' => "Liquidation is Disabled"]);
+                }
                 // foreach ($liquidation->liquidationEntries as $val) {
                 //     $val->delete();
                 // }

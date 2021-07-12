@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\Event;
 use app\models\EventSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,6 +21,25 @@ class EventController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['create', 'delete'],
+                'rules' => [
+
+                    [
+                        'actions' => ['create', 'delete'],
+                        'allow' => true,
+                        'roles' => ['super-user'],
+                    ],
+
+                    [
+                        'actions' => ['update'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -71,6 +91,7 @@ class EventController extends Controller
      */
     public function actionCreate($date)
     {
+        
         $model = new Event();
         $model->created_at = $date;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -94,14 +115,20 @@ class EventController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $url = Yii::$app->request->baseUrl . '?r=site';
-            return $this->redirect($url);
-        }
+        if (Yii::$app->user->can('super-user')) {
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                $url = Yii::$app->request->baseUrl . '?r=site';
+                return $this->redirect($url);
+            }
 
-        return $this->renderAjax('update', [
-            'model' => $model,
-        ]);
+            return $this->renderAjax('update', [
+                'model' => $model,
+            ]);
+        } else {
+            return $this->renderAjax('view', [
+                'model' => $model,
+            ]);
+        }
     }
 
     /**

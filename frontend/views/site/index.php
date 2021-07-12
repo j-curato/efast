@@ -536,7 +536,7 @@ $this->title = 'Dashboard';
             initialView: 'dayGridMonth',
             themeSystem: 'bootstrap',
             height: 400,
-     
+
             headerToolbar: {
                 left: 'prev,next,today',
                 center: 'title',
@@ -611,4 +611,4 @@ $script = <<<JS
         })
 JS;
 $this->registerJs($script);
-?>
+?>if (Yii::$app->user->can('super-user')) {

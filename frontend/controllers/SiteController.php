@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use app\models\Event;
+use app\models\Password;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\VerifyEmailForm;
 use Yii;
@@ -12,6 +13,7 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\LoginForm;
+use common\models\User;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
@@ -31,7 +33,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup', 'index'],
+                'only' => ['logout', 'signup', 'index', 'q'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -39,7 +41,7 @@ class SiteController extends Controller
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout', 'index'],
+                        'actions' => ['logout', 'index', 'q'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -314,5 +316,106 @@ class SiteController extends Controller
             $events[] = $event;
         }
         return json_encode($events);
+    }
+    public function actionX()
+    {
+
+        $arr = [
+            [
+                'username' => 'adnadmin1',
+                'password' => uniqid(),
+                'email' => 'adnadmin1@gmail.com',
+                'province' => 'adn',
+                'ass'=>'province_admin_1'
+            ],
+            [
+                'username' => 'adnadmin2',
+                'password' => uniqid(),
+                'email' => 'adnadmin2@gmail.com',
+                'province' => 'adn',
+                'ass'=>'province_admin_2'
+            ],
+            [
+                'username' => 'adsadmin1',
+                'password' => uniqid(),
+                'email' => 'adsadmin1@gmail.com',
+                'province' => 'ads',
+                'ass'=>'province_admin_1'
+                
+            ],
+            [
+                'username' => 'adsadmin2',
+                'password' => uniqid(),
+                'email' => 'adsadmin2@gmail.com',
+                'province' => 'ads',
+                'ass'=>'province_admin_2'
+            ],
+            [
+                'username' => 'sdsadmin1',
+                'password' => uniqid(),
+                'email' => 'sdsadmin1@gmail.com',
+                'province' => 'sds',
+                'ass'=>'province_admin_1'
+            ],
+            [
+                'username' => 'sdsadmin2',
+                'password' => uniqid(),
+                'email' => 'sdsadmin2@gmail.com',
+                'province' => 'sds',
+                'ass'=>'province_admin_2'
+            ],
+            [
+                'username' => 'sdnadmin1',
+                'password' => uniqid(),
+                'email' => 'sdnadmin1@gmail.com',
+                'province' => 'sdn',
+                'ass'=>'province_admin_1'
+            ],
+            [
+                'username' => 'sdnadmin2',
+                'password' => uniqid(),
+                'email' => 'sdnadmin2@gmail.com',
+                'province' => 'sdn',
+                'ass'=>'province_admin_2'
+            ],
+            [
+                'username' => 'pdiadmin1',
+                'password' => uniqid(),
+                'email' => 'pdiadmin1@gmail.com',
+                'province' => 'pdi',
+                'ass'=>'province_admin_1'
+            ],
+            [
+                'username' => 'pdiadmin2',
+                'password' => uniqid(),
+                'email' => 'pdiadmin2@gmail.com',
+                'province' => 'pdi',
+                'ass'=>'province_admin_2'
+            ],
+        ];
+
+        foreach ($arr as $ar) {
+            $q = uniqid();
+            $model = new User();
+            $model->username = $ar['username'];
+            $model->email = $ar['email'];
+            $model->province = $ar['province'];
+            $model->setPassword($q);
+            $model->generateAuthKey();
+            $model->generateEmailVerificationToken();
+
+            if ($model->save(false)) {
+                $p = new Password();
+                $p->username = $ar['username'];
+                $p->password =   $q;
+                Yii::$app->db->createCommand("
+                INSERT INTO auth_assignment (item_name,user_id)
+                VALUES ('{$ar['ass']}',$model->id);
+                ")->query();
+                if ($p->save(false)) {
+                }
+            }
+        }
+        return json_encode($arr);
     }
 }

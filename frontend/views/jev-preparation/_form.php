@@ -789,12 +789,13 @@ $script = <<< JS
                $.ajax({
                    type:"POST",
                    url:window.location.pathname + "?r=report/get-cdr",
-                   data:{id:update_id},
+                   data:{update_id:update_id},
                    success:function(data){
                     var x=0 
                     var debit_value=0
                        var d= JSON.parse(data)
                        var res=d.result
+                       console.log(res)
                        var total_vat=0
                        var total_expanded=0
                        var total_gross=0
@@ -806,7 +807,7 @@ $script = <<< JS
                             
                             // var cashflow = jev_accounting_entries[x]['cashflow_id'];
                             // var net_asset= jev_accounting_entries[x]['net_asset_equity_id'];
-                            $("#chart-"+x).val(res[x]['code']).trigger('change');
+                            $("#chart-"+x).val(res[x]['gl_object_code']).trigger('change');
                             // $("#isEquity-"+x).val(jev_accounting_entries[x]['net_asset_equity_id']).trigger('change');
                             // $("#cashflow-"+x).val(cashflow).trigger('change');
                             if ($( "#cashflow-"+x ).length ){

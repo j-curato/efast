@@ -44,7 +44,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'amount',
             //'payroll_number',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => '\kartik\grid\ActionColumn',
+                'deleteOptions' => ['style' => "display:none"],
+            ],
         ],
     ]); ?>
 

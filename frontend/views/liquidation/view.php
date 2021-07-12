@@ -19,18 +19,20 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="container panel panel-default">
 
-        <p>
-            <?= Html::a('Re-Align/Update', ['re-align', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-            <?php
+        <?php if (\Yii::$app->user->can('create_liquidation')) { ?>
+            <p>
+                <?= Html::a('Re-Align/Update', ['re-align', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+                <?php
 
-            if ($model->is_cancelled) {
-                echo "<button class='btn btn-success' id='cancel' style='margin:5px'>Activate</button>";
-            } else {
-                echo "<button class='btn btn-danger' id='cancel' style='margin:5px'>Cancel</button>";
-            }
-            echo "<input type='text' id='cancel_id' value='$model->id' style='display:none;'/>";
-            ?>
-        </p>
+                if ($model->is_cancelled) {
+                    echo "<button class='btn btn-success' id='cancel' style='margin:5px'>Activate</button>";
+                } else {
+                    echo "<button class='btn btn-danger' id='cancel' style='margin:5px'>Cancel</button>";
+                }
+                echo "<input type='text' id='cancel_id' value='$model->id' style='display:none;'/>";
+                ?>
+            </p>
+        <?php } ?>
         <table class="table table-striped">
             <thead>
                 <th>Reporting Period</th>
