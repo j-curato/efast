@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\Cibr;
 use app\models\CibrSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,6 +21,39 @@ class CibrController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'create',
+                    'view',
+                    'update',
+                    'delete',
+                    'insert-cibr',
+                    'final'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'create',
+                            'update',
+                            'delete',
+                            'insert-cibr',
+                            'final'
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_cibr']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -51,9 +85,41 @@ class CibrController extends Controller
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionView($id)
+
     {
+        $model = $this->findModel($id);
+        $dataProvider = Yii::$app->db->createCommand("SELECT 
+        check_date,
+        check_number,
+        particular,
+        amount,
+        withdrawals,
+        gl_object_code,
+        gl_account_title,
+        reporting_period
+    from advances_liquidation
+     where reporting_period <=:reporting_period AND province LIKE :province
+     AND book_name LIKE :book
+     ORDER BY reporting_period,check_date,check_number
+    ")
+            ->bindValue(':reporting_period',   $model->reporting_period)
+            ->bindValue(':province',   $model->province)
+            ->bindValue(':book',   $model->book_name)
+            ->queryAll();
+        // return $reporting_period;
+
+        // ob_clean();
+        // echo "<pre>";
+        // var_dump($result);
+        // echo "</pre>";
+        // return ob_get_clean();
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'dataProvider' => $dataProvider,
+            'province' =>   $model->province,
+            'reporting_period' =>   $model->reporting_period,
+            'book' =>   $model->book_name,
+            'model' => $model
+
         ]);
     }
 
@@ -126,12 +192,44 @@ class CibrController extends Controller
     }
     public function actionInsertCibr()
     {
-        if ($_POST){
-            $reporting_period=$_POST['reporting_period'];
-            $book=$_POST['book'];
-            $province=$_POST['province'];
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $book = $_POST['book'];
+            $province = $_POST['province'];
 
-            
+
+            $q = (new \yii\db\Query())
+                ->select('id')
+                ->from('cibr')
+                ->where('province =:province', ['province' => $province])
+                ->andWhere('reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+                ->andWhere('book_name =:book_name', ['book_name' => $book])
+                ->one();
+            if (!empty($q)) {
+                return json_encode(['isSuccess' => false, 'error' => 'CIBR already Exist']);
+            }
+            $cibr = new Cibr();
+            $cibr->reporting_period = $reporting_period;
+            $cibr->book_name = $book;
+            $cibr->province = $province;
+            if ($cibr->validate()) {
+                if ($cibr->save(false)) {
+                    return json_encode(['isSuccess' => true, 'Successfully Save']);
+                }
+            }
         }
+    }
+    public function actionFinal($id)
+    {
+        $model = $this->findModel($id);
+
+        $model->is_final === 0 ? $x = 1 : $x = 0;
+
+        $model->is_final = $x;
+
+        if ($model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+        return 'qwe';
     }
 }

@@ -13,6 +13,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 
 /**
  * LiquidationController implements the CRUD actions for Liquidation model.
@@ -265,21 +266,23 @@ class LiquidationController extends Controller
 
             }
 
-            // $liq_r_period = (new \yii\db\Query())
-            //     ->select('reporting_period,province')
-            //     ->from('liquidation_reporting_period')
-            //     ->all();
-            // ob_clean();
-            // echo "<pre>";
-            // var_dump($liq_r_period);
-            // echo "</pre>";
-            // die();
+            $liq_r_period = (new \yii\db\Query())
+                ->select('reporting_period')
+                ->from('liquidation_reporting_period')
+                ->where('province LIKE :province', ['province' => Yii::$app->user->identity->province])
+                ->all();
+            $r = ArrayHelper::getColumn($liq_r_period, 'reporting_period');
 
-            // if (in_array($reporting_period, $liq_r_period)) {
+            // if (in_array('2021-04', $r)) {
+            //     ob_clean();
+            //     echo "<pre>";
+            //     var_dump('qwer');
+            //     echo "</pre>";
+            //     die();
             // }
             // ob_clean();
             // echo "<pre>";
-            // var_dump($ewt);
+            // var_dump($r);
             // echo "</pre>";
             // die();
             $transaction = Yii::$app->db->beginTransaction();
@@ -335,8 +338,10 @@ class LiquidationController extends Controller
                                 $liq_entries->reporting_period = !empty($new_reporting_period) ? $new_reporting_period[$index] : $reporting_period;
 
                                 if ($liq_entries->validate()) {
+                                    // if (!in_array($liq_entries->reporting_period, $r)) {
                                     if ($liq_entries->save(false)) {
                                     }
+                                    // }
                                 } else {
                                     $transaction->rollBack();
                                     return json_encode(['isSuccess' => false, 'error' => $liq_entries]);

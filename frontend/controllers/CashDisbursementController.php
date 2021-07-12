@@ -189,7 +189,7 @@ class CashDisbursementController extends Controller
             $reporting_period = $_POST["reporting_period"];
             $book_id = $_POST["book"];
             $check_ada_no = $_POST["check_ada_no"];
-            $good_cancelled = $_POST["good_cancelled"];
+            $good_cancelled = empty($_POST["good_cancelled"]) ? $_POST['good_cancelled'] : 0;
             $issuance_date = $_POST["issuance_date"];
             $mode_of_payment = $_POST["mode_of_payment"];
             $ada_number = $_POST["ada_number"];

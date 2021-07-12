@@ -29,7 +29,7 @@ class Cibr extends \yii\db\ActiveRecord
     {
         return [
             [['reporting_period'], 'string', 'max' => 50],
-            [['province', 'book_name'], 'string', 'max' => 255],
+            [['province', 'book_name','serial_number'], 'string', 'max' => 255],
         ];
     }
 
@@ -42,6 +42,7 @@ class Cibr extends \yii\db\ActiveRecord
             'id' => 'ID',
             'reporting_period' => 'Reporting Period',
             'province' => 'Province',
+            'serial_number' => 'Serial Number',
             'book_name' => 'Book Name',
         ];
     }

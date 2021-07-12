@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
     <form id='filter'>
         <div class="row">
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <label for="reporting_period">Reporting Period</label>
                 <?php
 
@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ])
                 ?>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <label for="province">Province</label>
                 <?php
                 echo Select2::widget([
@@ -61,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 ?>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <label for="book">book</label>
                 <?php
                 echo Select2::widget([
@@ -76,11 +76,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 ?>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <button class="btn btn-success" style="margin-top: 23px;" id="generate">Generate</button>
                 <button class="btn btn-warning" style="margin-top: 23px;" id="save">Save</button>
             </div>
-
         </div>
     </form>
 
@@ -350,11 +349,6 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 </style>
 
-<script src="/afms/js/jquery.min.js" type="text/javascript"></script>
-<link href="/afms/js/select2.min.js" />
-<link href="/afms/css/select2.min.css" rel="stylesheet" />
-<link href="/afms/js/jquery.dataTables.js" />
-<link href="/afms/css/jquery.dataTables.css" rel="stylesheet" />
 
 
 
@@ -376,17 +370,6 @@ $script = <<< JS
         //             })
             
         // });
-        $("#save").click((e)=>{
-            e.preventDefault();
-            $.ajax({
-                type:'POST',
-                url:window.location.pathname + '?r=cibr/insert-cibr',
-                data:$('#filter').serialize(),
-                success:function(data){
-                    console.log(data)
-                }
-            })
-        })
         $('#generate').click(function(e){
             e.preventDefault();
             if ($("#reporting_period").val()==''
@@ -407,6 +390,37 @@ $script = <<< JS
                 type:'POST',
                 url:window.location.pathname +"?r=report/cibr",
                 data:$("#filter").serialize()
+            })
+        })
+        $("#save").click((e)=>{
+            e.preventDefault();
+            
+            $.ajax({
+                type:"POST",
+                url:window.location.pathname +'?r=cibr/insert-cibr',
+                data:$('#filter').serialize(),
+                success:function(data){
+                    var res =JSON.parse(data)
+
+                        if (res.isSuccess){
+                            swal({
+                                title: 'Save Successfully',
+                                type: "success",
+                                timer: 3000,
+                                button: false
+                                        // confirmButtonText: "Yes, delete it!",
+                            })
+                        }
+                        else{
+                            swal({
+                                title: res.error,
+                                type: "error",
+                                timer: 3000,
+                                button: false
+                                        // confirmButtonText: "Yes, delete it!",
+                            })
+                        }
+                }
             })
         })
 

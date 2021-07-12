@@ -182,7 +182,6 @@ $script = <<<JS
         $('#modalButtoncreate').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         });
-        'autclose'=>true
 
         
             $('#import').submit(function(e){

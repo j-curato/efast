@@ -1,7 +1,7 @@
 <?php
 
+use kartik\grid\GridView;
 use yii\helpers\Html;
-use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\CdrSearch */
@@ -15,14 +15,31 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Cdr', ['create'], ['class' => 'btn btn-success']) ?>
+
+
+        <?php
+
+        if (Yii::$app->user->can('create_cdr')) {
+            echo Html::a('Create Cdr', ['create'], ['class' => 'btn btn-success']);
+        }
+        ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
-        'dataProvider' => $dataProvider, 
+        'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel' => [
+            'type' => GridView::TYPE_PRIMARY,
+            'heading' => 'List of CDR',
+        ],
+        'floatHeaderOptions' => [
+            'top' => 50,
+            'position' => 'absolute',
+        ],
+        'export' => false,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 

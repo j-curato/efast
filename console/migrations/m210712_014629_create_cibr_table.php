@@ -14,9 +14,11 @@ class m210712_014629_create_cibr_table extends Migration
     {
         $this->createTable('{{%cibr}}', [
             'id' => $this->primaryKey(),
+            'serial_number'=>$this->string(),
             'reporting_period'=>$this->string(50),
             'province'=>$this->string(),
-            'book_name'=>$this->string()
+            'book_name'=>$this->string(),
+            'is_final'=>$this->boolean()->defaultValue(0),
         ]);
     }
 
