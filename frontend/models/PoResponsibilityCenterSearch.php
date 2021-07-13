@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\PoResponsibilityCenter;
+use Yii;
 
 /**
  * PoResponsibilityCenterSearch represents the model behind the search form of `app\models\PoResponsibilityCenter`.
@@ -40,7 +41,18 @@ class PoResponsibilityCenterSearch extends PoResponsibilityCenter
      */
     public function search($params)
     {
-        $query = PoResponsibilityCenter::find();
+        $province = Yii::$app->user->identity->province;
+        $q = PoResponsibilityCenter::find();
+        if (
+            $province === 'adn' ||
+            $province === 'sdn' ||
+            $province === 'sds' ||
+            $province === 'sdn' ||
+            $province === 'pdi'
+        ) {
+            $q->where('province LIKE :province', ['province' => $province]);
+        }
+        $query = $q;
 
         // add conditions that should always apply here
 
