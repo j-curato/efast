@@ -65,6 +65,7 @@ class PoResponsibilityCenterController extends Controller
     public function actionCreate()
     {
         $model = new PoResponsibilityCenter();
+        $model->province = Yii::$app->user->identity->province;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -97,7 +98,7 @@ class PoResponsibilityCenterController extends Controller
 
     /**
      * Deletes an existing PoResponsibilityCenter model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * If deletion is successful, the browser will be redirected to the 'index' page.5
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found

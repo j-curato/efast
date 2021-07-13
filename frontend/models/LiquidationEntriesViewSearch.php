@@ -4,42 +4,40 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\AdvancesView;
+use app\models\LiquidationEntriesView;
 use Yii;
 
 /**
- * AdvancesViewSearch represents the model behind the search form of `app\models\AdvancesView`.
+ * LiquidationEntriesViewSearch represents the model behind the search form of `app\models\LiquidationEntriesView`.
  */
-class AdvancesViewSearch extends AdvancesView
+class LiquidationEntriesViewSearch extends LiquidationEntriesView
 {
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
-        $province = 'province';
-        if (\Yii::$app->user->identity->province !== 'admin') {
-            $province = '';
-        }
-        return [
 
+
+        return [
             [[
-                'check_date', 'check_number', 'dv_number', 'particular', 'reporting_period',
-                'nft_number',
-                'r_center_name',
-                'mode_of_payment',
-                'payee',
-                'particular',
-                'book_name',
-                $province,
+                'dv_number',
+                'check_date',
+                'check_number',
                 'fund_source',
-                'report_type',
+                'particular',
+                'payee',
                 'object_code',
                 'account_title',
-                'fund_source',
+                'withdrawals',
+                'vat_nonvat',
+                'expanded_tax',
+                'liquidation_damage',
+                'gross_payment',
+                'reporting_period',
 
+                'province'
             ], 'safe'],
-            [['total_liquidation'], 'number'],
         ];
     }
 
@@ -62,7 +60,7 @@ class AdvancesViewSearch extends AdvancesView
     public function search($params)
     {
         $province = Yii::$app->user->identity->province;
-        $q = AdvancesView::find();
+        $q = LiquidationEntriesView::find();
         if (
             $province === 'adn' ||
             $province === 'sdn' ||
@@ -90,29 +88,25 @@ class AdvancesViewSearch extends AdvancesView
 
         // grid filtering conditions
         // $query->andFilterWhere([
-
+        //     'id' => $this->id,
+        //     'is_locked' => $this->is_locked,
         // ]);
 
-
-        $query
-            ->andFilterWhere(['like', 'nft_number', $this->nft_number])
-            ->andFilterWhere(['like', 'r_center_name', $this->r_center_name])
-            ->andFilterWhere(['like', 'mode_of_payment', $this->mode_of_payment])
+        $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
             ->andFilterWhere(['like', 'dv_number', $this->dv_number])
+            ->andFilterWhere(['like', 'check_date', $this->check_date])
             ->andFilterWhere(['like', 'check_number', $this->check_number])
-            ->andFilterWhere(['like', 'payee', $this->payee])
-            ->andFilterWhere(['like', 'particular', $this->particular])
-            ->andFilterWhere(['like', 'amount', $this->amount])
-            ->andFilterWhere(['like', 'total_liquidation', $this->total_liquidation])
-            ->andFilterWhere(['like', 'book_name', $this->book_name])
-            ->andFilterWhere(['like', 'province', $this->province])
-            ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
             ->andFilterWhere(['like', 'fund_source', $this->fund_source])
-            ->andFilterWhere(['like', 'report_type', $this->report_type])
+            ->andFilterWhere(['like', 'particular', $this->particular])
+            ->andFilterWhere(['like', 'payee', $this->payee])
             ->andFilterWhere(['like', 'object_code', $this->object_code])
             ->andFilterWhere(['like', 'account_title', $this->account_title])
-            ->andFilterWhere(['like', 'object_code', $this->object_code])
-            ->andFilterWhere(['like', 'check_date', $this->check_date]);
+            ->andFilterWhere(['like', 'withdrawals', $this->withdrawals])
+            ->andFilterWhere(['like', 'vat_nonvat', $this->vat_nonvat])
+            ->andFilterWhere(['like', 'expanded_tax', $this->expanded_tax])
+            ->andFilterWhere(['like', 'liquidation_damage', $this->liquidation_damage])
+            ->andFilterWhere(['like', 'gross_payment', $this->gross_payment])
+            ->andFilterWhere(['like', 'province', $this->province]);
 
         return $dataProvider;
     }

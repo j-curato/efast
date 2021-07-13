@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\PoAsignatory;
+use Yii;
 
 /**
  * PoAsignatorySearch represents the model behind the search form of `app\models\PoAsignatory`.
@@ -40,7 +41,18 @@ class PoAsignatorySearch extends PoAsignatory
      */
     public function search($params)
     {
-        $query = PoAsignatory::find();
+        $province = Yii::$app->user->identity->province;
+        $q = PoAsignatory::find();
+        if (
+            $province === 'adn' ||
+            $province === 'sdn' ||
+            $province === 'sds' ||
+            $province === 'sdn' ||
+            $province === 'pdi'
+        ) {
+            $q->where('province = :province', ['province' => $province]);
+        }
+        $query = $q;
 
         // add conditions that should always apply here
 

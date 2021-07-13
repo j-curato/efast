@@ -28,6 +28,7 @@ class CheckRange extends \yii\db\ActiveRecord
     {
         return [
             [['from', 'to'], 'integer'],
+            [['province'], 'string'],
         ];
     }
 
@@ -40,6 +41,7 @@ class CheckRange extends \yii\db\ActiveRecord
             'id' => 'ID',
             'from' => 'From',
             'to' => 'To',
+            'province' => 'Province',
         ];
     }
 }

@@ -7,6 +7,7 @@ use app\models\Liquidation;
 use app\models\LiquidataionSearch;
 use app\models\LiquidationEntries;
 use app\models\LiquidationEntriesSearch;
+use app\models\LiquidationEntriesViewSearch;
 use Exception;
 use Mpdf\Tag\Em;
 use yii\filters\AccessControl;
@@ -83,7 +84,7 @@ class LiquidationController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new LiquidationEntriesSearch();
+        $searchModel = new LiquidationEntriesViewSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [

@@ -1602,7 +1602,7 @@ class JevPreparationController extends Controller
             } else {
                 return json_encode(
                     [
-                        'isSuccess' =>false,
+                        'isSuccess' => false,
                         'error' => 'Total Debit and Credit are Not Equal',
                         'debit' => $tt,
                         'credit' => $total_credit = $_POST['credit'],
@@ -2394,9 +2394,13 @@ class JevPreparationController extends Controller
                 ->select('*')
                 ->from('chart_of_accounts')
                 ->all();
+            $accounting_codes = (new \yii\db\Query())
+                ->select('object_code,account_title,coa_object_code,coa_account_title')
+                ->from('accounting_codes')
+                ->all();
             // ob_clean();
             // echo "<pre>";
-            // var_dump($query->asArray()->all());
+            // var_dump($accounting_codes);
             // echo "</pre>";
             // return ob_get_clean();
 
@@ -2511,44 +2515,57 @@ class JevPreparationController extends Controller
                     $row,
                     !empty($val->jevPreparation->payee_id) ? $val->jevPreparation->payee->account_name : ''
                 );
+
+                $general_ledger = '';
+                $object_code = '';
+                $coa_object_code = '';
+                $coa_account_title = '';
+
+                $eee = array_search($val->object_code, array_column($accounting_codes, 'object_code'));
+
+                $general_ledger = $accounting_codes[$eee]['account_title'];
+                $object_code = $accounting_codes[$eee]['object_code'];
+                $coa_object_code = $accounting_codes[$eee]['coa_object_code'];
+                $coa_account_title = $accounting_codes[$eee]['coa_account_title'];
                 //UACS
                 $sheet->setCellValueByColumnAndRow(
                     5,
                     $row,
-                    !empty($val->chart_of_account_id) ? $val->chartOfAccount->uacs : ''
+                    $coa_object_code 
                 );
                 //GENERAL LEDGER
+
                 $sheet->setCellValueByColumnAndRow(
                     6,
                     $row,
-                    !empty($val->chart_of_account_id) ? $val->chartOfAccount->general_ledger : ''
+                    $coa_account_title
                 );
-                $general_ledger = '';
-                $object_code = '';
-                if ($val->lvl === 1) {
-                    $general_ledger = $val->chartOfAccount->general_ledger;
-                    $object_code = $val->chartOfAccount->uacs;
-                } else if ($val->lvl === 2) {
-                    // $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $val->object_code])->one();
-                    // $general_ledger = $q->name;
-                    // $object_code = $q->object_code;
 
-                    $eee = array_search($val->object_code, array_column($sub1, 'object_code'));
-                    $general_ledger = $sub1[$eee]['name'];
-                    $object_code = $sub1[$eee]['object_code'];
-                    // ob_clean();
-                    // echo "<pre>";
-                    // var_dump($sub1[$eee]['object_code']);
-                    // echo "</pre>";
-                    // return ob_get_clean();
-                } else if ($val->lvl === 3) {
-                    // $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $val->object_code])->one();
-                    // $general_ledger = $q->name;
-                    // $object_code = $q->object_code;
-                    $y = array_search($val->object_code, array_column($sub2, 'object_code'));
-                    $general_ledger = $sub2[$y]['name'];
-                    $object_code = $sub2[$y]['object_code'];
-                }
+                // if ($val->lvl === 1) {
+                //     $general_ledger = $val->chartOfAccount->general_ledger;
+                //     $object_code = $val->chartOfAccount->uacs;
+                // } else if ($val->lvl === 2) {
+                //     // $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $val->object_code])->one();
+                //     // $general_ledger = $q->name;
+                //     // $object_code = $q->object_code;
+
+                //     $eee = array_search($val->object_code, array_column($sub1, 'object_code'));
+                //     $general_ledger = $sub1[$eee]['name'];
+                //     $object_code = $sub1[$eee]['object_code'];
+                //     // ob_clean();
+                //     // echo "<pre>";
+                //     // var_dump($sub1[$eee]['object_code']);
+                //     // echo "</pre>";
+                //     // return ob_get_clean();
+                // } else if ($val->lvl === 3) {
+                //     // $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $val->object_code])->one();
+                //     // $general_ledger = $q->name;
+                //     // $object_code = $q->object_code;
+                //     $y = array_search($val->object_code, array_column($sub2, 'object_code'));
+                //     $general_ledger = $sub2[$y]['name'];
+                //     $object_code = $sub2[$y]['object_code'];
+                // }
+
                 //ENTRY OBJECT CODE
 
                 $sheet->setCellValueByColumnAndRow(

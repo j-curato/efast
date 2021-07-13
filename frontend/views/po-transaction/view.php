@@ -15,14 +15,15 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="po-transaction-view">
 
 
-    <p>
-        <?= Html::button('Update', [
-            'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=po-transaction/update&id=' . $model->id),
-            'id' => 'modalButtoncreate', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
-        ]); ?>
-    </p>
 
     <div class="container panel panel-default">
+
+        <p>
+            <?= Html::button('Update', [
+                'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=po-transaction/update&id=' . $model->id),
+                'id' => 'modalButtoncreate', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
+            ]); ?>
+        </p>
         <div style="float:right">
             <h6>
                 <?php

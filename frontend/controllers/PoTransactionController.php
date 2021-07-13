@@ -158,11 +158,12 @@ class PoTransactionController extends Controller
         $date = date("Y");
         $responsibility_center = (new \yii\db\Query())
             ->select("name")
-            ->from('responsibility_center')
+            ->from('po_responsibility_center')
             ->where("id =:id", ['id' => $responsibility_center_id])
             ->one();
 
-        $latest_tracking_no = Yii::$app->db->createCommand("SELECT substring_index(substring(tracking_number,instr(tracking_number,'-')+10),' ',1)as q
+        $latest_tracking_no = Yii::$app->db->createCommand(
+            "SELECT substring_index(substring(tracking_number,instr(tracking_number,'-')+10),' ',1)as q
         FROM `po_transaction` ORDER BY q DESC LIMIT 1")->queryScalar();
         if (!empty($latest_tracking_no)) {
             $last_number = $latest_tracking_no + 1;
@@ -202,9 +203,11 @@ class PoTransactionController extends Controller
     }
     public function actionGetAllTransaction()
     {
+        $province = strtoupper(Yii::$app->user->identity->province);
         $query = (new \yii\db\Query())
             ->select('*')
             ->from('po_transaction')
+            ->where('po_transaction.tracking_number LIKE :tracking_number',['tracking_number'=>"$province%"])
             ->all();
         return json_encode($query);
     }

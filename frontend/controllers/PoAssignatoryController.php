@@ -65,7 +65,7 @@ class PoAssignatoryController extends Controller
     public function actionCreate()
     {
         $model = new PoAsignatory();
-
+        $model->province = Yii::$app->user->identity->province;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -127,11 +127,24 @@ class PoAssignatoryController extends Controller
     public function actionGetAllAssignatory()
     {
 
+
+        $province = Yii::$app->user->identity->province;
         $query = (new \yii\db\Query())
             ->select('*')
-            ->from("po_asignatory")
-            ->all();
+            ->from("po_asignatory");
+        if (
+            $province === 'adn' ||
+            $province === 'sdn' ||
+            $province === 'sds' ||
+            $province === 'sdn' ||
+            $province === 'pdi'
+        ) {
+            $query->where('po_asignatory.province =:province', ['province' => $province]);
+        }
 
-        return  json_encode($query);
+
+        $q = $query->all();
+
+        return  json_encode($q);
     }
 }

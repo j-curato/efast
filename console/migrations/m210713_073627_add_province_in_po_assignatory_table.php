@@ -3,16 +3,16 @@
 use yii\db\Migration;
 
 /**
- * Class m210512_031423_add_created_at_in_dv_aucs_table
+ * Class m210713_073627_add_province_in_po_assignatory_table
  */
-class m210512_031423_add_created_at_in_dv_aucs_table extends Migration
+class m210713_073627_add_province_in_po_assignatory_table extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->addColumn('dv_aucs','created_at',$this->timestamp()->null());
+        $this->addColumn('po_asignatory','province',$this->string());
     }
 
     /**
@@ -20,7 +20,7 @@ class m210512_031423_add_created_at_in_dv_aucs_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropColumn('dv_aucs','created_at');
+        $this->dropColumn('po_asignatory','province');
     }
 
     /*
@@ -32,7 +32,7 @@ class m210512_031423_add_created_at_in_dv_aucs_table extends Migration
 
     public function down()
     {
-        echo "m210512_031423_add_created_at_in_dv_aucs_table cannot be reverted.\n";
+        echo "m210713_073627_add_province_in_po_assignatory_table cannot be reverted.\n";
 
         return false;
     }

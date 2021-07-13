@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use aryelds\sweetalert\SweetAlertAsset;
+use kartik\export\ExportMenu;
 use kartik\grid\GridView;
 use yii\helpers\Url;
 
@@ -23,7 +24,21 @@ $this->params['breadcrumbs'][] = $this->title;
         ]); ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    <?php
+    $gridColumn = [
+
+        'tracking_number',
+        'po_responsibility_center_id',
+        'payee:ntext',
+        'particular:ntext',
+        'amount',
+        'payroll_number',
+
+        [
+            'class' => '\kartik\grid\ActionColumn',
+            'deleteOptions' => ['style' => "display:none"],
+        ],
+    ];
     ?>
 
     <?= GridView::widget([
@@ -33,22 +48,26 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => Gridview::TYPE_PRIMARY,
             'heading' => 'List of Transactions'
         ],
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'tracking_number',
-
-            'po_responsibility_center_id',
-            'payee:ntext',
-            'particular:ntext',
-            'amount',
-            //'payroll_number',
-
+        'toolbar' => [
             [
-                'class' => '\kartik\grid\ActionColumn',
-                'deleteOptions' => ['style' => "display:none"],
-            ],
+                'content' =>
+                ExportMenu::widget([
+                    'dataProvider' => $dataProvider,
+                    'columns'  => $gridColumn,
+                    'filename' => 'Liquidations',
+                    'exportConfig' => [
+                        ExportMenu::FORMAT_CSV => false,
+                        ExportMenu::FORMAT_TEXT => false,
+                        ExportMenu::FORMAT_HTML => false,
+
+                    ]
+                ]),
+                'options' => [
+                    'class' => 'btn-group mr-2', 'style' => 'margin-right:20px'
+                ]
+            ]
         ],
+        'columns' => $gridColumn
     ]); ?>
 
 

@@ -96,12 +96,13 @@ class CheckRangeController extends Controller
     public function actionCreate()
     {
         $model = new CheckRange();
+        $model->province = Yii::$app->user->identity->province;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('create', [
+        return $this->renderAjax('create', [
             'model' => $model,
         ]);
     }

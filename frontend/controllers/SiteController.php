@@ -306,15 +306,19 @@ class SiteController extends Controller
         $ev = Event::find()->all();
         $events = [];
         foreach ($ev as $e) {
+            $day = date('d',strtotime($e->end_date))+1;
             $event = [
                 'id' => $e->id,
                 'title' => $e->title,
                 'start' => $e->created_at,
-                'end' =>  $e->end_date,
+                'end' => date("Y-m-$day", strtotime($e->end_date)),
             ];
 
             $events[] = $event;
         }
+
+
+        $events[] = $event;
         return json_encode($events);
     }
     public function actionX()
@@ -326,71 +330,71 @@ class SiteController extends Controller
                 'password' => uniqid(),
                 'email' => 'adnadmin1@gmail.com',
                 'province' => 'adn',
-                'ass'=>'province_admin_1'
+                'ass' => 'province_admin_1'
             ],
             [
                 'username' => 'adnadmin2',
                 'password' => uniqid(),
                 'email' => 'adnadmin2@gmail.com',
                 'province' => 'adn',
-                'ass'=>'province_admin_2'
+                'ass' => 'province_admin_2'
             ],
             [
                 'username' => 'adsadmin1',
                 'password' => uniqid(),
                 'email' => 'adsadmin1@gmail.com',
                 'province' => 'ads',
-                'ass'=>'province_admin_1'
-                
+                'ass' => 'province_admin_1'
+
             ],
             [
                 'username' => 'adsadmin2',
                 'password' => uniqid(),
                 'email' => 'adsadmin2@gmail.com',
                 'province' => 'ads',
-                'ass'=>'province_admin_2'
+                'ass' => 'province_admin_2'
             ],
             [
                 'username' => 'sdsadmin1',
                 'password' => uniqid(),
                 'email' => 'sdsadmin1@gmail.com',
                 'province' => 'sds',
-                'ass'=>'province_admin_1'
+                'ass' => 'province_admin_1'
             ],
             [
                 'username' => 'sdsadmin2',
                 'password' => uniqid(),
                 'email' => 'sdsadmin2@gmail.com',
                 'province' => 'sds',
-                'ass'=>'province_admin_2'
+                'ass' => 'province_admin_2'
             ],
             [
                 'username' => 'sdnadmin1',
                 'password' => uniqid(),
                 'email' => 'sdnadmin1@gmail.com',
                 'province' => 'sdn',
-                'ass'=>'province_admin_1'
+                'ass' => 'province_admin_1'
             ],
             [
                 'username' => 'sdnadmin2',
                 'password' => uniqid(),
                 'email' => 'sdnadmin2@gmail.com',
                 'province' => 'sdn',
-                'ass'=>'province_admin_2'
+                'ass' => 'province_admin_2'
             ],
             [
                 'username' => 'pdiadmin1',
                 'password' => uniqid(),
                 'email' => 'pdiadmin1@gmail.com',
                 'province' => 'pdi',
-                'ass'=>'province_admin_1'
+                'ass' => 'province_admin_1'
             ],
             [
                 'username' => 'pdiadmin2',
                 'password' => uniqid(),
                 'email' => 'pdiadmin2@gmail.com',
                 'province' => 'pdi',
-                'ass'=>'province_admin_2'
+                'ass' => 'province_admin_2'
             ],
         ];
 

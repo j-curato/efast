@@ -97,11 +97,11 @@ class CibrController extends Controller
         gl_object_code,
         gl_account_title,
         reporting_period
-    from advances_liquidation
-     where reporting_period <=:reporting_period AND province LIKE :province
-     AND book_name LIKE :book
-     ORDER BY reporting_period,check_date,check_number
-    ")
+        from advances_liquidation
+        where reporting_period <=:reporting_period AND province LIKE :province
+        AND book_name LIKE :book
+        ORDER BY reporting_period,check_date,check_number
+        ")
             ->bindValue(':reporting_period',   $model->reporting_period)
             ->bindValue(':province',   $model->province)
             ->bindValue(':book',   $model->book_name)
@@ -231,5 +231,59 @@ class CibrController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
         return 'qwe';
+    }
+    public function actionGetCibr()
+    {
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $province = $_POST['province'];
+            $book = $_POST['book'];
+
+            if (
+                empty($reporting_period)
+                || empty($province)
+                // || empty($book)
+            ) {
+                return json_encode(['error' => true, 'message' => 'Reporting Period,Province and Book are Required']);
+            }
+
+
+            $dataProvider = Yii::$app->db->createCommand("SELECT 
+                check_date,
+                check_number,
+                particular,
+                amount,
+                withdrawals,
+                gl_object_code,
+                gl_account_title,
+                reporting_period
+                from advances_liquidation
+                where reporting_period <=:reporting_period AND province LIKE :province
+                AND book_name LIKE :book
+                ORDER BY reporting_period,check_date,check_number
+            ")
+                //  AND book_name LIKE :book
+
+                ->bindValue(':reporting_period', $reporting_period)
+                ->bindValue(':province', $province)
+                ->bindValue(':book', $book)
+                ->queryAll();
+            // return $reporting_period;
+
+            // ob_clean();
+            // echo "<pre>";
+            // var_dump($result);
+            // echo "</pre>";
+            // return ob_get_clean();
+            return $this->render('_form', [
+                'dataProvider' => $dataProvider,
+                'province' => $province,
+                'reporting_period' => $reporting_period,
+                'book' => ''
+
+            ]);
+        } else {
+            return $this->render('_form');
+        }
     }
 }

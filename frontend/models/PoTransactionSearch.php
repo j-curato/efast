@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\PoTransaction;
+use Yii;
 
 /**
  * PoTransactionSearch represents the model behind the search form of `app\models\PoTransaction`.
@@ -18,7 +19,7 @@ class PoTransactionSearch extends PoTransaction
     {
         return [
             [['id', 'po_responsibility_center_id'], 'integer'],
-            [['payee', 'particular', 'payroll_number'], 'safe'],
+            [['payee', 'particular', 'payroll_number', 'tracking_number'], 'safe'],
             [['amount'], 'number'],
         ];
     }
@@ -41,8 +42,18 @@ class PoTransactionSearch extends PoTransaction
      */
     public function search($params)
     {
-        $query = PoTransaction::find();
-
+        $province = Yii::$app->user->identity->province;
+        $q = PoTransaction::find();
+        if (
+            $province === 'adn' ||
+            $province === 'sdn' ||
+            $province === 'sds' ||
+            $province === 'sdn' ||
+            $province === 'pdi'
+        ) {
+            $q->where('tracking_number LIKE :province', ['province' => "$province%"]);
+        }
+        $query = $q;
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
@@ -66,6 +77,7 @@ class PoTransactionSearch extends PoTransaction
 
         $query->andFilterWhere(['like', 'payee', $this->payee])
             ->andFilterWhere(['like', 'particular', $this->particular])
+            ->andFilterWhere(['like', 'tracking_number', $this->tracking_number])
             ->andFilterWhere(['like', 'payroll_number', $this->payroll_number]);
 
         return $dataProvider;

@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\CheckRange;
+use Yii;
 
 /**
  * CheckRangeSearch represents the model behind the search form of `app\models\CheckRange`.
@@ -39,9 +40,19 @@ class CheckRangeSearch extends CheckRange
      */
     public function search($params)
     {
-        $query = CheckRange::find();
+        $province = Yii::$app->user->identity->province;
+        $q = CheckRange::find();
+        if (
+            $province === 'adn' ||
+            $province === 'sdn' ||
+            $province === 'sds' ||
+            $province === 'sdn' ||
+            $province === 'pdi'
+        ) {
+            $q->where('province = :province', ['province' => $province]);
+        }
+        $query = $q;
 
-        // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

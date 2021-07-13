@@ -510,7 +510,7 @@ use kartik\select2\Select2;
 
                     } else if (result[i]['object_code'] == "5060000000") {
 
-                        var q = chart.object_code.match(/^502.*$/);
+                        var q = chart.object_code.match(/^506.*$/);
                         if (q != "5060000000") {
 
                             return q;

@@ -76,85 +76,24 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php
 
+
     $gridColumn = [
-        'id',
-        [
-            'label' => 'DV Number',
-            'attribute' => 'liquidation.dv_number'
+        'reporting_period',
+        'dv_number',
+        'check_date',
+        'check_number',
+        'fund_source',
+        'particular',
+        'payee',
+        'object_code',
+        'account_title',
+        'withdrawals',
+        'vat_nonvat',
+        'expanded_tax',
+        'liquidation_damage',
+        'gross_payment',
+        'province',
 
-        ],
-        [
-            'label' => 'Check Date',
-            'value' => 'liquidation.check_date',
-        ],
-        [
-            'label' => 'Check Number',
-            'value' => 'liquidation.check_number'
-        ],
-        [
-            'label' => 'Fund Source',
-            'attribute' => 'advancesEntries.fund_source'
-        ],
-        [
-            'label' => 'Particular',
-            'attribute' => 'liquidation.poTransaction.particular'
-        ],
-
-        [
-            'label' => 'Payee',
-            'value' => 'liquidation.poTransaction.payee'
-        ],
-        [
-            'label' => 'Object Code',
-            'value' => 'chartOfAccount.uacs'
-        ],
-        [
-            'label' => 'General Ledger',
-            'value' => 'chartOfAccount.general_ledger'
-        ],
-        [
-            'label' => 'Withrawals',
-            'attribute' => 'withdrawals',
-            'hAlign' => 'right'
-
-        ],
-        [
-            'label' => 'Vat/Non-vat',
-            'attribute' => 'vat_nonvat',
-            'hAlign' => 'right'
-
-        ],
-        [
-            'label' => 'EWT',
-            'attribute' => 'expanded_tax',
-            'hAlign' => 'right'
-
-        ],
-        [
-            'label' => 'Gross Payment',
-            'value' => function ($model) {
-                return $model->withdrawals + $model->vat_nonvat + $model->expanded_tax;
-            },
-            'hAlign' => 'right'
-        ],
-        [
-            'label' => 'View',
-            'format' => 'raw',
-            'value' => function ($model) {
-
-                return Html::a("", ['view', 'id' => $model->liquidation_id], ['class' => 'btn-xs  fa fa-eye']);
-                // return $query['total'];
-            },
-            'hiddenFromExport' => true,
-            'vAlign' => 'middle',
-        ],
-        // [
-        //     'class' => '\kartik\grid\ActionColumn',
-        //     'updateOptions' => [
-        //         'update' => false
-        //     ]
-
-        // ],
     ];
     $viewSearchModel = new LiquidationViewSearch();
     if (!empty(\Yii::$app->user->identity->province)) {

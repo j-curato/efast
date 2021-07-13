@@ -91,13 +91,33 @@ use yii\helpers\ArrayHelper;
                 <div class="col-sm-3">
                     <label for="check_range">Check Range</label>
                     <?php
-                    $check = (new \yii\db\Query())
-                        ->select([
-                            'id',
-                            "CONCAT(check_range.from,' to ',check_range.to) as range"
-                        ])
-                        ->from('check_range')
-                        ->all();
+                    $province = Yii::$app->user->identity->province;
+                    $q = PoTransaction::find();
+                    if (
+                        $province === 'adn' ||
+                        $province === 'sdn' ||
+                        $province === 'sds' ||
+                        $province === 'sdn' ||
+                        $province === 'pdi'
+                    ) {
+                        $check = (new \yii\db\Query())
+                            ->select([
+                                'id',
+                                "CONCAT(check_range.from,' to ',check_range.to) as range"
+                            ])
+                            ->from('check_range')
+                            ->where('province =:province', ['province' => $province])
+                            ->all();
+                    } else {
+                        $check = (new \yii\db\Query())
+                            ->select([
+                                'id',
+                                "CONCAT(check_range.from,' to ',check_range.to) as range"
+                            ])
+                            ->from('check_range')
+                            ->all();
+                    }
+
                     echo Select2::widget([
                         'data' => ArrayHelper::map($check, 'id', 'range'),
                         'name' => 'check_range',
@@ -529,8 +549,9 @@ SweetAlertAsset::register($this);
     }
 
     var transaction = [];
-    $(document).ready(function() {
-        $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/chart-of-accounts')
+
+    function chart() {
+        return $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/chart-of-accounts')
             .then(function(data) {
                 var array = []
                 $.each(data, function(key, val) {
@@ -541,6 +562,10 @@ SweetAlertAsset::register($this);
                 })
                 accounts = array
             })
+    }
+    $(document).ready(function() {
+
+        chart()
         $.getJSON(window.location.pathname + '?r=po-transaction/get-all-transaction')
             .then(function(data) {
 
@@ -687,7 +712,8 @@ $script = <<<JS
     })
     $(document).ready(function(){
         if ($("#update_id").val()>0){
-            $.ajax({
+            $.when(chart() ).done((chart)=>{
+                $.ajax({
                 type:'POST',
                 url:window.location.pathname + "?r=liquidation/update-liquidation",
                 data:{
@@ -702,6 +728,8 @@ $script = <<<JS
                 }
 
             })
+            })
+      
         }
     })
             

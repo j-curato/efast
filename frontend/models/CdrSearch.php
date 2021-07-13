@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Cdr;
+use Yii;
 
 /**
  * CdrSearch represents the model behind the search form of `app\models\Cdr`.
@@ -40,7 +41,18 @@ class CdrSearch extends Cdr
      */
     public function search($params)
     {
-        $query = Cdr::find();
+        $province = Yii::$app->user->identity->province;
+        $q = Cdr::find();
+        if (
+            $province === 'adn' ||
+            $province === 'sdn' ||
+            $province === 'sds' ||
+            $province === 'sdn' ||
+            $province === 'pdi'
+        ) {
+            $q->where('province LIKE :province', ['province' => $province]);
+        }
+        $query = $q;
 
         // add conditions that should always apply here
 

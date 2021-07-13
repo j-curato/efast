@@ -373,7 +373,7 @@ $script = <<< JS
         $('#generate').click(function(e){
             e.preventDefault();
             if ($("#reporting_period").val()==''
-            ||$("#book").val()==''
+            // ||$("#book").val()==''
             ||$("#province").val()==''
             ){
                swal({
@@ -388,7 +388,7 @@ $script = <<< JS
             $.pjax({
                 container:'#cibr',
                 type:'POST',
-                url:window.location.pathname +"?r=report/cibr",
+                url:window.location.pathname +"?r=cibr/get-cibr",
                 data:$("#filter").serialize()
             })
         })

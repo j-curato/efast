@@ -14,7 +14,21 @@ use yii\widgets\ActiveForm;
 <div class="po-transaction-form">
 
     <?php
-    $respons_center = (new \yii\db\Query())->select('*')->from('po_responsibility_center')->all();
+    $province = Yii::$app->user->identity->province;
+    if (
+        $province === 'adn' ||
+        $province === 'sdn' ||
+        $province === 'sds' ||
+        $province === 'sdn' ||
+        $province === 'pdi'
+    ) {
+        $respons_center = (new \yii\db\Query())->select('*')
+            ->from('po_responsibility_center')
+            ->where('province =:province', ['province' => $province])
+            ->all();
+    } else {
+        $respons_center = (new \yii\db\Query())->select('*')->from('po_responsibility_center')->all();
+    }
     ?>
     <?php $form = ActiveForm::begin(); ?>
 
