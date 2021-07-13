@@ -730,22 +730,22 @@ class ReportController extends \yii\web\Controller
 
     {
         if ($_POST) {
-        $id = $_POST['update_id'];
+            $id = $_POST['update_id'];
 
 
-        $cdr  =Cdr::findOne($id);
-        
-        // return json_encode(['qwe'=>$cdr]);
-        // $query = (new \yii\db\Query())
-        //     ->select('id')
-        //     ->from('cdr')
-        //     ->where('reporting_period =:reporting_period', ['reporting_period' => $cdr->reporting_period])
-        //     ->andWhere('province LIKE :province', ['province' => $cdr->province])
-        //     ->andWhere('book_name LIKE :book_name', ['book_name' => $cdr->book_name])
-        //     ->andWhere('report_type LIKE :report_type', ['report_type' => $cdr->report_type])
-        //     ->one();
+            $cdr  = Cdr::findOne($id);
 
-        $q = Yii::$app->db->createCommand("SELECT  gl_object_code, gl_account_title,
+            // return json_encode(['qwe'=>$cdr]);
+            // $query = (new \yii\db\Query())
+            //     ->select('id')
+            //     ->from('cdr')
+            //     ->where('reporting_period =:reporting_period', ['reporting_period' => $cdr->reporting_period])
+            //     ->andWhere('province LIKE :province', ['province' => $cdr->province])
+            //     ->andWhere('book_name LIKE :book_name', ['book_name' => $cdr->book_name])
+            //     ->andWhere('report_type LIKE :report_type', ['report_type' => $cdr->report_type])
+            //     ->one();
+
+            $q = Yii::$app->db->createCommand("SELECT  gl_object_code, gl_account_title,
                 reporting_period, vat_nonvat, expanded_tax,
                 ROUND(SUM(expanded_tax),2) as total_expanded,
                 ROUND(SUM(vat_nonvat),2) as total_vat,
@@ -761,64 +761,64 @@ class ReportController extends \yii\web\Controller
                 AND (report_type LIKE :report_type)
                 GROUP BY gl_object_code
             ")
-            ->bindValue(':reporting_period', $cdr->reporting_period)
-            ->bindValue(':book_name', $cdr->book_name)
-            ->bindValue(':province', $cdr->province)
-            ->bindValue(':report_type', $cdr->report_type)
-            ->queryAll();
+                ->bindValue(':reporting_period', $cdr->reporting_period)
+                ->bindValue(':book_name', $cdr->book_name)
+                ->bindValue(':province', $cdr->province)
+                ->bindValue(':report_type', $cdr->report_type)
+                ->queryAll();
 
-        $r  = date('F, Y', strtotime($cdr->reporting_period));
-        $acc = "Due to BIR - " . strtoupper($cdr->province) . " ($r)";
-        $v =  "Due to BIR VAT/NonVat - " . strtoupper($cdr->province) . " ($r)";
-        $e =   "Due to BIR Expanded - " . strtoupper($cdr->province) . " ($r)";
+            $r  = date('F, Y', strtotime($cdr->reporting_period));
+            $acc = "Due to BIR - " . strtoupper($cdr->province) . " ($r)";
+            $v =  "Due to BIR VAT/NonVat - " . strtoupper($cdr->province) . " ($r)";
+            $e =   "Due to BIR Expanded - " . strtoupper($cdr->province) . " ($r)";
 
-        $account = (new \yii\db\Query())
-            ->select('*')
-            ->from('sub_accounts1')
-            ->where('name LIKE :name', ['name' => $acc])
-            ->one();
-        $vat = (new \yii\db\Query())
-            ->select('*')
-            ->from('sub_accounts1')
-            ->where('name LIKE :name', ['name' => "Due to BIR VAT/NonVat - $cdr->province ($r)"])
-            ->one();
-        $expanded = (new \yii\db\Query())
-            ->select('*')
-            ->from('sub_accounts1')
-            ->where('name LIKE :name', ['name' => "Due to BIR Expanded - $cdr->province ($r)"])
-            ->one();
-        $advances = (new \yii\db\Query())
-            ->select('*')
-            ->from('sub_accounts1')
-            ->where('name LIKE :name', ['name' => "$cdr->report_type - $cdr->province%"])
-            ->one();
-        $c_id = (new \yii\db\Query())
-            ->select("id ")
-            ->from('chart_of_accounts')
-            ->where("uacs =:uacs", ['uacs' => 2020101000])
-            ->one();
+            $account = (new \yii\db\Query())
+                ->select('*')
+                ->from('sub_accounts1')
+                ->where('name LIKE :name', ['name' => $acc])
+                ->one();
+            $vat = (new \yii\db\Query())
+                ->select('*')
+                ->from('sub_accounts1')
+                ->where('name LIKE :name', ['name' => "Due to BIR VAT/NonVat - $cdr->province ($r)"])
+                ->one();
+            $expanded = (new \yii\db\Query())
+                ->select('*')
+                ->from('sub_accounts1')
+                ->where('name LIKE :name', ['name' => "Due to BIR Expanded - $cdr->province ($r)"])
+                ->one();
+            $advances = (new \yii\db\Query())
+                ->select('*')
+                ->from('sub_accounts1')
+                ->where('name LIKE :name', ['name' => "$cdr->report_type - $cdr->province%"])
+                ->one();
+            $c_id = (new \yii\db\Query())
+                ->select("id ")
+                ->from('chart_of_accounts')
+                ->where("uacs =:uacs", ['uacs' => 2020101000])
+                ->one();
 
-        if (empty($account)) {
+            if (empty($account)) {
 
-            $account = Yii::$app->memem->createSubAccount1($acc, $c_id['id']);
-        }
+                $account = Yii::$app->memem->createSubAccount1($acc, $c_id['id']);
+            }
 
-        if (empty($vat)) {
+            if (empty($vat)) {
 
-            $vat = Yii::$app->memem->createSubAccount1($v, $c_id['id']);
-        }
-        if (empty($expanded)) {
+                $vat = Yii::$app->memem->createSubAccount1($v, $c_id['id']);
+            }
+            if (empty($expanded)) {
 
-            $expanded = Yii::$app->memem->createSubAccount1($e, $c_id['id']);
-        }
-        // ob_clean();
-        // echo "<pre>";
-        // var_dump($advances);
-        // echo "</pre>";
-        // return ob_get_clean();
-        if (!empty($cdr)) {
-            return json_encode(['result' => $q, 'vat' => $vat, 'expanded' => $expanded]);
-        }
+                $expanded = Yii::$app->memem->createSubAccount1($e, $c_id['id']);
+            }
+            // ob_clean();
+            // echo "<pre>";
+            // var_dump($advances);
+            // echo "</pre>";
+            // return ob_get_clean();
+            if (!empty($cdr)) {
+                return json_encode(['result' => $q, 'vat' => $vat, 'expanded' => $expanded]);
+            }
         }
     }
 
@@ -1063,5 +1063,13 @@ class ReportController extends \yii\web\Controller
 
             return $this->render('tax_remittance');
         }
+    }
+    public function actionGetAllTransaction()
+    {
+        $query = (new \yii\db\Query())
+            ->select('*')
+            ->from('transaction')
+            ->all();
+        return json_encode($query);
     }
 }

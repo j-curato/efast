@@ -1,7 +1,3 @@
-<script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-<!-- <script src="/afms/frontend/web/js/scripts.js" type="text/javascript"></script> -->
-<link href="/afms/frontend/web/js/select2.min.js" />
-<link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
 <?php
 
 use kartik\date\DatePicker;
@@ -72,9 +68,7 @@ use yii\helpers\ArrayHelper;
                         'autoclose' => true,
                         'format' => 'yyyy-mm-dd',
                     ],
-                    'options' => [
-                     
-                    ]
+                    'options' => []
                 ]);
                 ?>
             </div>
@@ -180,7 +174,7 @@ use yii\helpers\ArrayHelper;
 
         <!-- BUTTON -->
 
-        <div id="form-0" class="accounting_entries" >
+        <div id="form-0" class="accounting_entries">
             <!-- chart of accounts -->
 
             <div class="row">
@@ -313,7 +307,10 @@ use yii\helpers\ArrayHelper;
             color: #61534e;
         }
     </style>
-
+    <script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+    <script src="/afms/frontend/web/js/scripts.js" type="text/javascript"></script>
+    <link href="/afms/frontend/web/js/select2.min.js" />
+    <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
 
     <script>
         <?php SweetAlertAsset::register($this); ?>
@@ -582,7 +579,7 @@ use yii\helpers\ArrayHelper;
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+// $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 
 

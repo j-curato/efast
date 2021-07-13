@@ -422,6 +422,7 @@ use yii\helpers\ArrayHelper;
                     $('#fund_cluster_code_id').select2({
                         data: books,
                         placeholder: 'Select Book'
+                        
 
                     });
 

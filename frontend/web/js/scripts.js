@@ -47,7 +47,7 @@ $.getJSON(url + '?r=books/get-books')
 
 
 // GET CHART OF ACCOUNTS
-var accounts=[]
+var accounts = []
 $.getJSON(url + '?r=chart-of-accounts/accounting-codes')
     .then(function (data) {
         var array = []
@@ -64,7 +64,7 @@ $.getJSON(url + '?r=chart-of-accounts/accounting-codes')
             placeholder: "Select Chart of Account",
 
         })
-    }).load
+    })
 
 // RESPONSIBILITY CENTERS
 $.getJSON(url + '?r=responsibility-center/get-responsibility-center')
@@ -204,3 +204,7 @@ $.getJSON(url + '?r=transaction/get-transaction')
 
 // GET DEBIT AND CREDIT TOTAL
 
+function chartOfAccounts() {
+    return $.getJSON('/afms/index.php?r=report/get-all-transaction')
+    
+}

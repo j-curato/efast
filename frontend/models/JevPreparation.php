@@ -43,7 +43,7 @@ class JevPreparation extends \yii\db\ActiveRecord
             [['date'], 'safe'],
             [['reporting_period'], 'string', 'max' => 50],
             [['jev_number', 'dv_number', 'lddap_number', 'ref_number'], 'string', 'max' => 100],
-            [[ 'explaination',], 'string', 'max' => 500],
+            [[ 'explaination',], 'string', 'max' => 1000],
             [['cadadr_serial_number', 'check_ada'], 'string', 'max' => 255],
             [['fund_cluster_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => FundClusterCode::class, 'targetAttribute' => ['fund_cluster_code_id' => 'id']],
             [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
@@ -114,6 +114,10 @@ class JevPreparation extends \yii\db\ActiveRecord
     public function getPayee()
     {
         return $this->hasOne(Payee::class, ['id' => 'payee_id']);
+    }
+    public function getCashDisbursement()
+    {
+        return $this->hasOne(CashDisbursement::class, ['id' => 'cash_disbursement_id']);
     }
 
 

@@ -102,12 +102,19 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div style="padding:5px ;align-items:center;">
 
                             <span>
-                                <?php if (!empty($model->payee_id)) {
+                                <?php
+
+                                if (!empty($model->cash_disbursement_id)) {
                                     echo "<span>Payee :</span>";
-                                    echo "<span>{$model->payee->account_name}</span>";
+                                    echo "<span>{$model->cashDisbursement->dvAucs->payee->account_name}</span>";
                                 } else {
-                                    echo   "<span>Entity Name :</span>";
-                                    echo   "<span>Department of Trade and Industry</span>";
+                                    if (!empty($model->payee_id)) {
+                                        echo "<span>Payee :</span>";
+                                        echo "<span>{$model->payee->account_name}</span>";
+                                    } else {
+                                        echo   "<span>Entity Name :</span>";
+                                        echo   "<span>Department of Trade and Industry</span>";
+                                    }
                                 }
 
                                 ?>
