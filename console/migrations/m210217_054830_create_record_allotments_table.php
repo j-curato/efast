@@ -23,7 +23,7 @@ class m210217_054830_create_record_allotments_table extends Migration
     {
         $this->createTable('{{%record_allotments}}', [
             'id' => $this->primaryKey(),
-            'document_recieve_id' => $this->integer()->notNull(),
+            'document_recieved_id' => $this->integer()->notNull(),
             'fund_cluster_code_id' => $this->integer()->notNull(),
             'financing_source_code_id' => $this->integer()->notNull(),
             'fund_category_and_classification_code_id' => $this->integer()->notNull(),
