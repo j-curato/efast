@@ -174,6 +174,11 @@ class JevPreparationController extends Controller
             $book_id = $_POST['book_id'];
             $reporting_period = $_POST['reporting_period'];
             $x = explode('-', $reporting_period);
+            $qwe = (new \yii\db\Query())
+                ->select('uacs')
+                ->from('chart_of_accounts')
+                ->where('id =:id', ['id' => $gen])
+                ->one();
             // GET THE BEGINNING BALANCE OF THE LAST YEAR OF INPUTED REPORTING PERIOD
             if ($reporting_period > 0) {
                 $q = $x[0] - 1;
@@ -191,14 +196,20 @@ class JevPreparationController extends Controller
             $begin_month = $x[0] . '-01';
             $general_ledger = (new \yii\db\Query());
             $general_ledger->select([
-                'jev_preparation.reporting_period', 'jev_preparation.explaination',
-                'chart_of_accounts.uacs', 'chart_of_accounts.general_ledger', 'jev_preparation.ref_number', 'jev_preparation.jev_number',
-                'jev_accounting_entries.credit', 'jev_accounting_entries.debit',
-                'chart_of_accounts.normal_balance', 'jev_preparation.date'
+                'jev_preparation.reporting_period',
+                'jev_preparation.explaination',
+                'accounting_codes.object_code as uacs',
+                'accounting_codes.account_title as general_ledger',
+                'jev_preparation.ref_number',
+                'jev_preparation.jev_number',
+                'jev_accounting_entries.credit',
+                'jev_accounting_entries.debit',
+                'accounting_codes.normal_balance',
+                'jev_preparation.date'
             ])
                 ->from('jev_accounting_entries')
                 ->join('LEFT JOIN', 'jev_preparation', 'jev_accounting_entries.jev_preparation_id=jev_preparation.id')
-                ->join('LEFT JOIN', 'chart_of_accounts', 'jev_accounting_entries.chart_of_account_id=chart_of_accounts.id');
+                ->join('LEFT JOIN', 'accounting_codes', 'jev_accounting_entries.object_code=accounting_codes.object_code');
             if (!empty($reporting_period)) {
 
 
@@ -206,8 +217,9 @@ class JevPreparationController extends Controller
                 $general_ledger->andwhere(['between', 'jev_preparation.reporting_period', $begin_month, $reporting_period]);
             }
             if (!empty($gen)) {
-                $general_ledger->andWhere("jev_accounting_entries.chart_of_account_id = :chart_of_account_id", [
-                    'chart_of_account_id' => $gen
+
+                $general_ledger->andWhere("jev_accounting_entries.object_code = :object_code", [
+                    'object_code' => $qwe['uacs']
                 ]);
             }
             if (!empty($book_id)) {
@@ -232,14 +244,30 @@ class JevPreparationController extends Controller
             }
             $query1 = (new \yii\db\Query());
             $query1->select([
-                'jev_preparation.reporting_period', 'jev_preparation.explaination',
-                'chart_of_accounts.uacs', 'chart_of_accounts.general_ledger', 'jev_preparation.ref_number', 'jev_preparation.jev_number',
-                ' SUM(jev_accounting_entries.credit) as credit', 'SUM(jev_accounting_entries.debit) as debit',
-                'chart_of_accounts.normal_balance', 'jev_preparation.date'
+                // 'jev_preparation.reporting_period',
+                //  'jev_preparation.explaination',
+                // 'chart_of_accounts.uacs',
+                //  'chart_of_accounts.general_ledger',
+                //   'jev_preparation.ref_number',
+                //    'jev_preparation.jev_number',
+                // ' SUM(jev_accounting_entries.credit) as credit',
+                //  'SUM(jev_accounting_entries.debit) as debit',
+                // 'chart_of_accounts.normal_balance',
+                //  'jev_preparation.date'
+                "IFNULL(NULL,'$prev_end_month') as reporting_period",
+                "IFNULL(NULL,'Beginning Balance') as explaination",
+                "IFNULL(NULL,'') as uacs",
+                "IFNULL(NULL,'') as general_ledger",
+                "IFNULL(NULL,'') as ref_number",
+                "IFNULL(NULL,'') as jev_number",
+                ' SUM(jev_accounting_entries.credit) as credit',
+                'SUM(jev_accounting_entries.debit) as debit',
+                "accounting_codes.normal_balance",
+                "IFNULL(NULL,'') as date",
             ])
                 ->from('jev_accounting_entries')
                 ->join('LEFT JOIN', 'jev_preparation', 'jev_accounting_entries.jev_preparation_id=jev_preparation.id')
-                ->join('LEFT JOIN', 'chart_of_accounts', 'jev_accounting_entries.chart_of_account_id=chart_of_accounts.id');
+                ->join('LEFT JOIN', 'accounting_codes', 'jev_accounting_entries.object_code=accounting_codes.object_code');
             if (!empty($reporting_period)) {
 
 
@@ -248,8 +276,8 @@ class JevPreparationController extends Controller
                 $query1->andwhere(['between', 'jev_preparation.reporting_period', $prev_begin_month, $prev_end_month]);
             }
             if (!empty($gen)) {
-                $query1->andWhere("jev_accounting_entries.chart_of_account_id = :chart_of_account_id", [
-                    'chart_of_account_id' => $gen
+                $query1->andWhere("jev_accounting_entries.object_code = :object_code", [
+                    'object_code' => $qwe['uacs']
                 ]);
             }
             if (!empty($fund)) {
@@ -259,7 +287,7 @@ class JevPreparationController extends Controller
             }
             // $query1->orderBy('jev_preparation.reporting_period');
             $query1
-                ->groupBy('jev_accounting_entries.chart_of_account_id')
+                ->groupBy('accounting_codes.coa_object_code')
                 ->orderBy('jev_preparation.reporting_period DESC')
                 ->orderBy('jev_preparation.date DESC')
 
@@ -1230,19 +1258,20 @@ class JevPreparationController extends Controller
                 ->select([
                     'SUM(jev_accounting_entries.credit) as total_credit',
                     'SUM(jev_accounting_entries.debit) as total_debit',
-                    'jev_accounting_entries.chart_of_account_id',
-                    'chart_of_accounts.uacs', 'chart_of_accounts.general_ledger',
+                    'jev_accounting_entries.object_code',
+                    'accounting_codes.coa_object_code as uacs',
+                    'accounting_codes.coa_account_title as general_ledger',
                     'jev_preparation.reporting_period'
                 ])
                 ->from(['jev_accounting_entries',])
-                ->join('LEFT JOIN', 'chart_of_accounts', 'jev_accounting_entries.chart_of_account_id =chart_of_accounts.id ')
+                ->join('LEFT JOIN', 'accounting_codes', 'jev_accounting_entries.object_code =accounting_codes.object_code ')
                 ->join('LEFT JOIN', "jev_preparation", 'jev_accounting_entries.jev_preparation_id=jev_preparation.id  ')
                 ->where(['between', 'jev_preparation.reporting_period', $begin_balance, $reporting_period])
                 ->andwhere("jev_preparation.book_id = :book_id", [
                     'book_id' => $book_id
                 ])
-                ->groupBy('chart_of_account_id')
-                ->orderBy('chart_of_accounts.uacs')
+                ->groupBy('accounting_codes.coa_object_code')
+                ->orderBy('accounting_codes.coa_object_code')
                 // ->limit(10)
                 ->all();
 
@@ -2531,7 +2560,7 @@ class JevPreparationController extends Controller
                 $sheet->setCellValueByColumnAndRow(
                     5,
                     $row,
-                    $coa_object_code 
+                    $coa_object_code
                 );
                 //GENERAL LEDGER
 

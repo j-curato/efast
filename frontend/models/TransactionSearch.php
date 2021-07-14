@@ -5,6 +5,8 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Transaction;
+use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * TransactionSearch represents the model behind the search form of `app\models\Transaction`.
@@ -41,7 +43,16 @@ class TransactionSearch extends Transaction
      */
     public function search($params)
     {
-        $query = Transaction::find()->orderBy("id DESC");
+        $q = Yii::$app->db->createCommand("SELECT tracking_number 
+        FROM transaction_totals 
+        WHERE 
+
+         total_dv <total_ors ")->queryAll();
+        $qwe= [];
+        $sql=Yii::$app->db->getQueryBuilder()->buildCondition(['IN','transaction.tracking_number',ArrayHelper::getColumn($q,'tracking_number')],$qwe);
+        $query = Transaction::find()
+        ->where("$sql",$qwe)
+        ->orderBy("id DESC");
 
         // add conditions that should always apply here
 
@@ -59,7 +70,7 @@ class TransactionSearch extends Transaction
         $query->joinWith('payee');
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
+            'transaction.id' => $this->id,
             'responsibility_center_id' => $this->responsibility_center_id,
             'gross_amount' => $this->gross_amount,
         ]);

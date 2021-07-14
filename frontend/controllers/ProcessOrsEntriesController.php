@@ -280,6 +280,9 @@ class ProcessOrsEntriesController extends Controller
             $transaction_id = $_POST['transaction_id'];
             $book_id = $_POST['book_id'];
             $date = $_POST['date'];
+            $transaction_timestamp =$_POST['transaction_timestamp'];
+
+            
 
             $q = OrsReportingPeriod::find()->where("reporting_period = :reporting_period", ['reporting_period' => $reporting_period])->one();
 
@@ -476,6 +479,7 @@ class ProcessOrsEntriesController extends Controller
                     $ors->transaction_id = $transaction_id;
                     $ors->book_id = $book_id;
                     $ors->date = $date;
+                    $ors->transaction_begin_time = $transaction_timestamp;
 
                     $ors->serial_number = $this->getOrsSerialNumber($reporting_period, $book_id);
                     if ($ors->validate()) {

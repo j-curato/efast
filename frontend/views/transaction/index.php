@@ -115,7 +115,7 @@ Modal::end();
             'top' => 50,
             'position' => 'absolute',
         ],
-
+        'pjax'=>true,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             // [

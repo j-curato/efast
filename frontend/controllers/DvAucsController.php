@@ -285,6 +285,7 @@ class DvAucsController extends Controller
             $payee_id = $_POST['payee'];
             $book_id = !empty($_POST['book']) ? $_POST['book'] : 5;
             $transaction_type = strtolower($_POST['transaction_type']);
+            $transaction_timestamp = $_POST['transaction_timestamp'];
             // if (array_sum($_POST['debit']) != array_sum($_POST['credit'])) {
             //     return json_encode(['isSuccess' => false, 'error' => 'Not Equal Debit and Credit']);
             // }
@@ -365,6 +366,7 @@ class DvAucsController extends Controller
                 } else {
                     $dv = new DvAucs();
                     $dv->dv_number = $this->getDvNumber($reporting_period, $book_id);
+                    $dv->transaction_begin_time = $transaction_timestamp;
                 }
                 // $dv->raoud_id = intval($raoud_id);
                 $dv->nature_of_transaction_id = $nature_of_transaction_id;

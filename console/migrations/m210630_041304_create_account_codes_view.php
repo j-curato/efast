@@ -18,7 +18,8 @@ class m210630_041304_create_account_codes_view extends Migration
         chart_of_accounts.account_group,
         chart_of_accounts.current_noncurrent,
         chart_of_accounts.uacs as coa_object_code,
-        chart_of_accounts.general_ledger as coa_account_title
+        chart_of_accounts.general_ledger as coa_account_title,
+        chart_of_accounts.normal_balance
 
         FROM chart_of_accounts,major_accounts
         WHERE chart_of_accounts.major_account_id = major_accounts.id
@@ -29,7 +30,8 @@ class m210630_041304_create_account_codes_view extends Migration
         major_accounts.`object_code` as major_object_code,
         chart_of_accounts.account_group,chart_of_accounts.current_noncurrent,
         chart_of_accounts.uacs as coa_object_code,
-        chart_of_accounts.general_ledger as coa_account_title
+        chart_of_accounts.general_ledger as coa_account_title,
+        chart_of_accounts.normal_balance
         FROM sub_accounts1,chart_of_accounts,major_accounts
         WHERE sub_accounts1.chart_of_account_id = chart_of_accounts.id
         AND chart_of_accounts.major_account_id = major_accounts.id
@@ -40,7 +42,8 @@ class m210630_041304_create_account_codes_view extends Migration
         major_accounts.`object_code` as major_object_code,
         chart_of_accounts.account_group,chart_of_accounts.current_noncurrent,
         chart_of_accounts.uacs as coa_object_code,
-        chart_of_accounts.general_ledger as coa_account_title
+        chart_of_accounts.general_ledger as coa_account_title,
+        chart_of_accounts.normal_balance
 
         FROM sub_accounts2,sub_accounts1,chart_of_accounts,major_accounts
 

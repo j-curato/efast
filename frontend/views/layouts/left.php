@@ -8,11 +8,11 @@
                 <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="img-circle" alt="User Image" />
             </div>
             <div class="pull-left info">
-                <p><?php echo Yii::$app->user->identity->username?></p>
+                <p><?php echo Yii::$app->user->identity->username ?></p>
                 <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
         </div>
-<!-- ?= $directoryAsset ?>/img/user2-160x160.jpg -->
+        <!-- ?= $directoryAsset ?>/img/user2-160x160.jpg -->
 
         <!-- search form -->
         <!-- <form action="#" method="get" class="sidebar-form">
@@ -129,6 +129,8 @@
                                         ['label' => 'Detailed Cashflow', 'icon' => 'circle-o', 'url' => ['/jev-preparation/detailed-cashflow'],],
                                         ['label' => 'Consolidated Cashflow', 'icon' => 'circle-o', 'url' => ['/jev-preparation/consolidated-cashflow'],],
                                         ['label' => 'Net Asset Changes', 'icon' => 'circle-o', 'url' => ['/jev-preparation/changes-netasset-equity'],],
+
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Transaction Archive', 'icon' => 'circle-o', 'url' => ['/report/transaction-archive'],] : [],
 
                                     ],
                                 ] : ['label' => ''],

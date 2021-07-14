@@ -68,19 +68,12 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-sm-2">
                 <button class="generate btn btn-success" style="margin-top: 25px;">Generate</button>
             </div>
--
         </div>
         <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>
-        <div class="col-sm-2">
-            <div id="bars1">
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-        <table class="table" style="margin-top:30px">
+
+
+
+        <table class="table" style="margin-top:30px" id="con">
             <thead>
                 <tr class="header" style="border: none;">
 
@@ -89,7 +82,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <div style="width: 100%; display:flex;align-items:center; justify-content: center;">
                             <div style="margin-right: 20px;left:-10px">
-                                <?= Html::img('@web/dti.jpg', ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width: 100px;height:100px;']); ?>
+                                <?= Html::img('frontend/web/dti.jpg', ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width: 100px;height:100px;']); ?>
                             </div>
                             <div style="text-align:center;" class="headerItems">
                                 <h6>DEPARTMENT OF TRADE AND INDUSTRY</h6>
@@ -236,6 +229,13 @@ $this->params['breadcrumbs'][] = $this->title;
         </table>
         <?php Pjax::end() ?>
 
+
+    </div>
+    <div id="dots5" style="display: none;">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
     </div>
     <style>
         #bars1 {
@@ -495,14 +495,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php
 SweetAlertAsset::register($this);
+$this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
 $script = <<< JS
 $(document).on("pjax:beforeSend",function(){
-    $('#bars1').show();
+    $('#dots5').show();
+    $('#con').hide()
     
 //    setTimeout(  $('#bars1').show(),10000)
 });
 $(document).on('ready pjax:success', function(){
-    $('.table').show();
+    $('#con').show();
+    $('#dots5').hide();
 });
 $(document).ready(function(){
     let gen = undefined

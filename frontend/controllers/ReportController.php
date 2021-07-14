@@ -15,6 +15,8 @@ use app\models\JevAccountingEntries;
 use app\models\Liquidation;
 use app\models\SubAccounts1;
 use app\models\SubAccounts2;
+use app\models\Transaction;
+use app\models\TransactionArchiveSearch;
 use kartik\grid\GridView;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -975,56 +977,18 @@ class ReportController extends \yii\web\Controller
     }
     public function actionDvNumber()
     {
-        // $reporting_period = "2021-01";
-        // $book_id = 5;
-        // $latest_dv = Yii::$app->db->createCommand("SELECT substring_index(substring(jev_number, instr(jev_number, '-')), ' ', 1) as q 
-        // from jev_preparation
 
-        // ORDER BY q DESC")->queryAll();
-        // ob_clean();
-        // echo "<pre>";
-        // var_dump($latest_dv);
-        // echo "</pre>";
-        // return ob_get_clean();
-        // !empty($book_id) ? $book_id : $book_id = 5;
-        // // $latest_dv = (new \yii\db\Query())
-        // //     ->select('dv_number')
-        // //     ->from('dv_aucs')
-        // //     ->orderBy('id DESC')
-        // //     ->one();
+        $query1 = (new \yii\db\Query());
+        $query1->select([
 
-        // // given array. 3 and 6 are missing.
-        // // construct a new array:1,2....max(given array).
-        // $array = array_column($latest_dv, 'q');
+        ])
+            ->from('jev_accounting_entries')
+            ->join('LEFT JOIN', 'jev_preparation', 'jev_accounting_entries.jev_preparation_id=jev_preparation.id')
+            ->join('LEFT JOIN', 'chart_of_accounts', 'jev_accounting_entries.chart_of_account_id=chart_of_accounts.id');
 
-        // $arr2 = range(1, max($array));
-
-        // // use array_diff to get the missing elements 
-        // $missing = array_diff($arr2, $array); // (3,6)
-
-        // $book = Books::findOne($book_id);
-        // $dv_number = $book->name . '-' . $reporting_period;
-
-        // if (!empty($latest_dv)) {
-        //     // $last_number = explode('-', $latest_dv['dv_number'])[3] + 1;
-        //     $last_number = (int) $latest_dv + 1;
-        // } else {
-        //     $last_number = 1;
-        // }
-        // $x = '';
-        // for ($i = strlen($last_number); $i < 4; $i++) {
-        //     $x .= 0;
-        // }
-        // $dv_number .= '-' . $x . $last_number;
-
-        // // echo "<pre>";
-        // // var_dump(explode('-',$latest_dv['dv_number']));
-        // // echo "</pre>";
-        // return $dv_number;
-        $tableName  = 'transaction';
-        $backupFile = 'transaction/transaction.xlxs';
-
-        return Yii::$app->db->createCommand("SELECT * INTO OUTFILE '$backupFile' FROM $tableName");
+        echo "<pre>";
+        var_dump($query1->one());
+        echo "</pre>";
     }
     public function actionFur()
     {
@@ -1071,5 +1035,15 @@ class ReportController extends \yii\web\Controller
             ->from('transaction')
             ->all();
         return json_encode($query);
+    }
+    public function actionTransactionArchive()
+    {
+        $searchModel = new TransactionArchiveSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('transaction_archive', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 }

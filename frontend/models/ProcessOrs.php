@@ -62,6 +62,7 @@ class ProcessOrs extends \yii\db\ActiveRecord
             'mfo_pap_code_id' => 'Mfo Pap Code ID',
             'fund_source_id' => 'Fund Source ID',
             'book_id' => 'Book ID',
+            'transaction_begin_time'=>'Transaction Timestamp'
         ];
     }
 

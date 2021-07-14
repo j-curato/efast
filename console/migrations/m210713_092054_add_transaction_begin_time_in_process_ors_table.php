@@ -5,14 +5,14 @@ use yii\db\Migration;
 /**
  * Class m210713_041221_add_transaction_begin_time_in_process_ors_table
  */
-class m210713_041221_add_transaction_begin_time_in_process_ors_table extends Migration
+class m210713_092054_add_transaction_begin_time_in_process_ors_table extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->addColumn('process_ors','transaction_begin_time',$this->string());
+        $this->addColumn('process_ors', 'transaction_begin_time', $this->timestamp()->null());
     }
 
     /**
@@ -20,7 +20,7 @@ class m210713_041221_add_transaction_begin_time_in_process_ors_table extends Mig
      */
     public function safeDown()
     {
-        $this->dropColumn('process_ors','transaction_begin_time');
+        $this->dropColumn('process_ors', 'transaction_begin_time');
     }
 
     /*

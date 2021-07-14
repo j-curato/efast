@@ -171,7 +171,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </th>
                 </tr>
                 <tr class="header" style="border: none;">
-                    <th colspan="3" style="border: none;">
+                    <th colspan="3" style="border:1px solid black;">
                         <span>
                             Entity Name:
 
@@ -251,27 +251,34 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         </tr>";
                         foreach ($val->jevAccountingEntries as $entry) {
+                            $q = (new \yii\db\Query())
+                                ->select(["account_title", "object_code"])
+                                ->from("accounting_codes")
+                                ->where("object_code =:object_code", ['object_code' => $entry->object_code])
+                                ->one();
+                            $account_title = $q['account_title'];
+                            $object_code = $q["object_code"];
 
-                            if ($entry->lvl === 1) {
-                                $account_title = $entry->chartOfAccount->general_ledger;
-                                $object_code = $entry->object_code;
-                            } else if ($entry->lvl === 2) {
-                                $q = (new \yii\db\Query())
-                                    ->select(["name", "object_code"])
-                                    ->from("sub_accounts1")
-                                    ->where("object_code =:object_code", ['object_code' => $entry->object_code])
-                                    ->one();
-                                $account_title = $q['name'];
-                                $object_code = $q["object_code"];
-                            } else if ($entry->lvl === 3) {
-                                $q = (new \yii\db\Query())
-                                    ->select(["name", "object_code"])
-                                    ->from("sub_accounts2")
-                                    ->where("object_code =:object_code", ['object_code' => $entry->object_code])
-                                    ->one();
-                                $account_title = $q['name'];
-                                $object_code = $q["object_code"];
-                            }
+                            // if ($entry->lvl === 1) {
+                            //     $account_title = $entry->chartOfAccount->general_ledger;
+                            //     $object_code = $entry->object_code;
+                            // } else if ($entry->lvl === 2) {
+                            //     $q = (new \yii\db\Query())
+                            //         ->select(["name", "object_code"])
+                            //         ->from("sub_accounts1")
+                            //         ->where("object_code =:object_code", ['object_code' => $entry->object_code])
+                            //         ->one();
+                            //     $account_title = $q['name'];
+                            //     $object_code = $q["object_code"];
+                            // } else if ($entry->lvl === 3) {
+                            //     $q = (new \yii\db\Query())
+                            //         ->select(["name", "object_code"])
+                            //         ->from("sub_accounts2")
+                            //         ->where("object_code =:object_code", ['object_code' => $entry->object_code])
+                            //         ->one();
+                            //     $account_title = $q['name'];
+                            //     $object_code = $q["object_code"];
+                            // }
 
 
 

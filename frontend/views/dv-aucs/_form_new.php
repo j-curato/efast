@@ -28,6 +28,8 @@ use yii\helpers\Html;
             </div>
         </div>
         <form id='save_data' method='POST'>
+
+            <input type="text" name='transaction_timestamp' id="transaction_timestamp" style="display: none;">
             <input type="text" name='book_id' id="book_id" style="display: none;">
             <?php
             $q = 0;
@@ -755,37 +757,45 @@ use yii\helpers\Html;
 
 
             // MAG ADD OG DATA NA BUHATAN OG DV
-            $('#submit').click(function(e) {
-                e.preventDefault();
-                $.ajax({
-                    url: window.location.pathname + '?r=dv-aucs/get-dv',
-                    method: "POST",
-                    data: $('#add_data').serialize(),
-                    success: function(data) {
-                        var res = JSON.parse(data)
-                        if (res.isSuccess) {
 
-                            addDvToTable(res.results)
-                        } else {
-                            swal({
-                                title: "Error",
-                                text: res.error,
-                                type: "error",
-                                timer: 6000,
-                                button: false
-                                // confirmButtonText: "Yes, delete it!",
-                            });
-                        }
 
+
+
+        })
+        $('#submit').click(function(e) {
+            var date = new Date()
+
+            var x = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+            if ($('#transaction_timestamp').val() == '') {
+                $('#transaction_timestamp').val(x)
+
+            }
+            e.preventDefault();
+            $.ajax({
+                url: window.location.pathname + '?r=dv-aucs/get-dv',
+                method: "POST",
+                data: $('#add_data').serialize(),
+                success: function(data) {
+                    var res = JSON.parse(data)
+                    if (res.isSuccess) {
+
+                        addDvToTable(res.results)
+                    } else {
+                        swal({
+                            title: "Error",
+                            text: res.error,
+                            type: "error",
+                            timer: 6000,
+                            button: false
+                            // confirmButtonText: "Yes, delete it!",
+                        });
                     }
-                });
-                $('.checkbox').prop('checked', false); // Checks it
-                $('.amounts').prop('disabled', true);
-                $('.amounts').val(null);
-            })
 
-
-
+                }
+            });
+            $('.checkbox').prop('checked', false); // Checks it
+            $('.amounts').prop('disabled', true);
+            $('.amounts').val(null);
         })
 
         function getDebitCreditTotal() {

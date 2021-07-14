@@ -34,6 +34,7 @@ use kartik\select2\Select2;
         echo " <input type='text' id='update_id' name='update_id' value='$q' style='display:none' >";
 
         ?>
+        <input type="text" name="transaction_timestamp" id="transaction_timestamp" style="display: none;">
         <div class="row">
 
             <div class="col-sm-3">
@@ -141,7 +142,7 @@ use kartik\select2\Select2;
             ],
             'export' => false,
             'pjax' => true,
-            
+
 
             'columns' => [
 
@@ -677,9 +678,12 @@ $script = <<< JS
         var book=[];
        
     $("#transaction_id").change(function(){
-        // console.log($("#transaction_id").val())
         var transaction_id = $("#transaction_id").val()
-        
+            var date = new Date()
+
+            var x = date.getFullYear()+'-'+date.getMonth() + '-'+ date.getDate() + ' ' + date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()
+            console.log(date.getFullYear())
+            $('#transaction_timestamp').val(x)
         $.ajax({
             url:window.location.pathname + "?r=transaction/get-transaction",
             type:"POST",
