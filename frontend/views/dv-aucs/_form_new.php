@@ -29,7 +29,7 @@ use yii\helpers\Html;
         </div>
         <form id='save_data' method='POST'>
 
-            <input type="text" name='transaction_timestamp' id="transaction_timestamp" style="display: none;">
+            <input type="text" name='transaction_timestamp' id="transaction_timestamp" style="display: none;" >
             <input type="text" name='book_id' id="book_id" style="display: none;">
             <?php
             $q = 0;
@@ -847,7 +847,15 @@ $script = <<< JS
 
     
     $("#transaction").change(function(){
+
+           var transaction_id = $("#transaction_id").val()
+            var date = new Date()
+
+            var x = date.getFullYear()+'-'+date.getMonth() + '-'+ date.getDate() + ' ' + date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()
+            console.log(date.getFullYear())
+            $('#transaction_timestamp').val(x)
         var transaction_type=$("#transaction").val()
+
         $("#transaction_type").val(transaction_type)
         // if (transaction_type =='Single'){
         var result=[1]

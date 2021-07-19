@@ -29,6 +29,7 @@ class LiquidationViewSearch extends LiquidationView
                 'check_number',
                 'dv_number',
                 'reporting_period',
+                'status',
                 'payee', 'particular', 'gross_payment',
                 $province,
             ], 'safe'],
@@ -86,6 +87,7 @@ class LiquidationViewSearch extends LiquidationView
             ->andFilterWhere(['like', 'payee', $this->payee])
             ->andFilterWhere(['like', 'particular', $this->particular])
             ->andFilterWhere(['like', 'gross_payment', $this->gross_payment])
+            ->andFilterWhere(['like', 'status', $this->status])
             ->andFilterWhere(['like', 'province', $this->province]);
 
         return $dataProvider;

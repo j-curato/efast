@@ -321,6 +321,8 @@ class LiquidationController extends Controller
             try {
                 if ($liquidation->validate()) {
                     if ($flag = $liquidation->save(false)) {
+                        
+
                         if (!empty($advances_id)) {
 
                             foreach ($advances_id as $index => $val) {
@@ -392,7 +394,11 @@ class LiquidationController extends Controller
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
                 ->where("liquidation_entries.liquidation_id =:liquidation_id", ['liquidation_id' => $id])
                 ->all();
-            return json_encode($query);
+            $liq = Yii::$app->db->createCommand("SELECT * FROM liquidation where id=:id")
+                ->bindValue(':id', $id)
+                ->queryOne();
+
+            return json_encode(['entries' => $query, 'liquidation' => $liq]);
         }
     }
 

@@ -387,6 +387,7 @@ use kartik\select2\Select2;
 
         function copy(q) {
             var qwer = $(q).closest('tr')
+            console.log(qwer)
             var raoud_id = qwer.find('.raoud_id').val();
             var mfo_pap_code = qwer.find('.mfo_pap_code').text();
             var mfo_pap_name = qwer.find('.mfo_pap_name').text();
@@ -678,7 +679,7 @@ $script = <<< JS
         var book=[];
        
     $("#transaction_id").change(function(){
-        var transaction_id = $("#transaction_id").val()
+            var transaction_id = $("#transaction_id").val()
             var date = new Date()
 
             var x = date.getFullYear()+'-'+date.getMonth() + '-'+ date.getDate() + ' ' + date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()

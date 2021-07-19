@@ -163,7 +163,7 @@ class PoTransactionController extends Controller
             ->one();
 
         $latest_tracking_no = Yii::$app->db->createCommand(
-            "SELECT substring_index(substring(tracking_number,instr(tracking_number,'-')+10),' ',1)as q
+        "SELECT substring_index(substring(tracking_number,instr(tracking_number,'-')+10),' ',1)as q
         FROM `po_transaction` ORDER BY q DESC LIMIT 1")->queryScalar();
         if (!empty($latest_tracking_no)) {
             $last_number = $latest_tracking_no + 1;

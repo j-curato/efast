@@ -720,9 +720,10 @@ $script = <<<JS
                     update_id:$('#update_id').val()
                 },
                 success:function(data){
-                    var res=JSON.parse(data)
-                    console.log(res)
-                    
+                    var res=JSON.parse(data).entries
+                    var liq = JSON.parse(data).liquidation
+                    console.log(liq)
+                    $("#transaction").val(liq['po_transaction_id']).trigger('change')
                     addToTransactionTable(res,$("#update_type").val())
                     getTotalAmounts()
                 }

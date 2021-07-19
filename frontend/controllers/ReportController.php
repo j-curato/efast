@@ -979,9 +979,7 @@ class ReportController extends \yii\web\Controller
     {
 
         $query1 = (new \yii\db\Query());
-        $query1->select([
-
-        ])
+        $query1->select([])
             ->from('jev_accounting_entries')
             ->join('LEFT JOIN', 'jev_preparation', 'jev_accounting_entries.jev_preparation_id=jev_preparation.id')
             ->join('LEFT JOIN', 'chart_of_accounts', 'jev_accounting_entries.chart_of_account_id=chart_of_accounts.id');
@@ -992,8 +990,66 @@ class ReportController extends \yii\web\Controller
     }
     public function actionFur()
     {
-        return $this->render('fur');
+        $dataProvider = [];
+        $conso_fur = [];
+        if ($_POST) {
+            $province = $_POST['province'];
+            $reporting_period = $_POST['reporting_period'];
+            $x = explode('-', $reporting_period);
+            $x[1] =  '0' . ($x[1] - 1);
+
+            $prev = implode('-', $x);
+
+            $query = Yii::$app->db->createCommand("CALL fur(:province,:reporting_period,:prev_r_period)")
+                ->bindValue(':province', $province)
+                ->bindValue(':reporting_period', $reporting_period)
+                ->bindValue(':prev_r_period', $prev)
+                ->queryAll();
+            $dataProvider = $query;
+            $conso_fur = YIi::$app->db->createCommand('CALL conso_fur(:province,:reporting_period,:prev_r_period)')
+                ->bindValue(':province', $province)
+                ->bindValue(':reporting_period', $reporting_period)
+                ->bindValue(':prev_r_period', $prev)
+                ->queryAll();
+        }
+
+
+        return $this->render('fur', [
+            'dataProvider' => $dataProvider,
+            'consoFur' => $conso_fur
+        ]);
     }
+    public function actionGetFur()
+    {
+        $dataProvider = [];
+        $conso_fur = [];
+        if ($_POST) {
+            $province = $_POST['province'];
+            $reporting_period = $_POST['reporting_period'];
+            $x = explode('-', $reporting_period);
+            $x[1] =  '0' . ($x[1] - 1);
+
+            $prev = implode('-', $x);
+
+            $query = Yii::$app->db->createCommand("CALL fur(:province,:reporting_period,:prev_r_period)")
+                ->bindValue(':province', $province)
+                ->bindValue(':reporting_period', $reporting_period)
+                ->bindValue(':prev_r_period', $prev)
+                ->queryAll();
+            $dataProvider = $query;
+            $conso_fur = YIi::$app->db->createCommand('CALL conso_fur(:province,:reporting_period,:prev_r_period)')
+                ->bindValue(':province', $province)
+                ->bindValue(':reporting_period', $reporting_period)
+                ->bindValue(':prev_r_period', $prev)
+                ->queryAll();
+        }
+        return json_encode([
+            'fur' => $dataProvider,
+            'conso_fur' => $conso_fur
+        ]);
+    }
+
+
     public function actionTaxRemittance()
     {
         if ($_POST) {
