@@ -22,13 +22,26 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row as">
             <p>
                 <?= Html::a('Update', ['update', 'id' => $model->transmittal_number], ['class' => 'btn btn-primary']) ?>
-                <?= Html::a('Delete', ['delete', 'id' => $model->transmittal_number], [
-                    'class' => 'btn btn-danger',
-                    'data' => [
-                        'confirm' => 'Are you sure you want to delete this item?',
-                        'method' => 'post',
-                    ],
-                ]) ?>
+                <?php
+                $color = '';
+                $action = '';
+                if (strtolower($model->status) == 'pending_at_ro') {
+                    $color = 'btn-success';
+                    $action = 'Accept';
+                } else {
+                    $color = 'btn-danger';
+                    $action = 'Pending';
+                }
+                if (Yii::$app->user->identity->province === 'ro_admin') {
+                    echo Html::a($action, ['accept', 'id' => $model->transmittal_number], [
+                        'class' => "btn $color",
+                        'data' => [
+                            'confirm' => "Are you sure you want to $action this item?",
+                            'method' => 'post',
+                        ],
+                    ]);
+                }
+                ?>
             </p>
 
         </div>
@@ -67,14 +80,42 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
                 $total = 0;
                 foreach ($model->poTransmittalEntries as $i => $val) {
-                    // $query = (new \yii\db\Query())
-                    //     ->select(["SUM(dv_aucs_entries.amount_disbursed) as total_disbursed"])
-                    //     ->from('dv_aucs')
-                    //     ->join("LEFT JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
-                    //     ->where("dv_aucs.id =:id", ['id' => $val->cashDisbursement->dv_aucs_id])
-                    //     ->one();
+                    $query = (new \yii\db\Query())
+                        ->select(["SUM(liquidation_entries.withdrawals) as total_disbursed"])
+                        ->from('liquidation')
+                        ->join("LEFT JOIN", "liquidation_entries", "liquidation.id = liquidation_entries.liquidation_id")
+                        ->where("liquidation.id =:id", ['id' => $val->liquidation_id])
+                        ->one();
                     $q = $i + 1;
-                    echo "<tr>
+                    $qwe = '';
+                    $display = 'display:none;';
+                    if (Yii::$app->user->identity->province === 'ro_admin') {
+                        $display = '';
+                        $qwe = Html::a($val->id, ['return', 'id' => $val->id], [
+                            'class' => "btn $color",
+                            'data' => [
+                                'confirm' => "Are you sure you want to $action this item?",
+                                'method' => 'post',
+                            ],
+                        ]);
+                        if ($val->liquidation->status !== 'at_po') {
+                            echo "<tr>
+                            <td>$q</td>
+                            <td>{$val->liquidation->dv_number}</td>
+                            <td>{$val->liquidation->check_number}</td>
+                            <td>{$val->liquidation->check_date}</td>
+                            <td>{$val->liquidation->poTransaction->payee}</td>
+                            <td>{$val->liquidation->poTransaction->particular}</td>
+           
+                            <td style='text-align:right'>" . number_format($query['total_disbursed'], 2) . "</td>
+                            <td style='$display'>" .
+                                $qwe
+                                . " </td>
+                        </tr>";
+                            $total += $query['total_disbursed'];
+                        }
+                    } else {
+                        echo "<tr>
                         <td>$q</td>
                         <td>{$val->liquidation->dv_number}</td>
                         <td>{$val->liquidation->check_number}</td>
@@ -82,10 +123,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td>{$val->liquidation->poTransaction->payee}</td>
                         <td>{$val->liquidation->poTransaction->particular}</td>
        
-                        <td style='text-align:right'>" . number_format(11000, 2)
-                        . "</td>
+                        <td style='text-align:right'>" . number_format($query['total_disbursed'], 2) . "</td>
+                        <td style='$display'>" .
+                            $qwe
+                            . " </td>
                     </tr>";
-                    // $total += $query['total_disbursed'];
+                        $total += $query['total_disbursed'];
+                    }
                 }
                 ?>
                 <tr>
@@ -113,7 +157,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <div class="col-sm-3 as">
                 <label for="assignatory_1">Regional Director </label>
-                <select name="" id="assignatory_1" class="assignatory" onchange="regionalDirector(this)" style="width: 100%;">
+                <select name="" id="assignatory_1" class="asignatory" onchange="regionalDirector(this)" style="width: 100%;">
                     <option value=""></option>
                 </select>
             </div>
@@ -365,7 +409,7 @@ $this->params['breadcrumbs'][] = $this->title;
             allowClear: true,
             closeOnSelect: true
         })
-        $.getJSON('/afms/frontend/web/index.php?r=assignatory/get-all-assignatory')
+        $.getJSON('/afms/frontend/web/index.php?r=po-assignatory/get-all-assignatory')
 
             .then(function(data) {
 
@@ -377,7 +421,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     })
                 })
                 assignatory = array
-                $('.assignatory').select2({
+                $('.asignatory').select2({
                     data: assignatory,
                     placeholder: "Select ",
                     allowClear: true,

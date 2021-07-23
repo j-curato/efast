@@ -31,7 +31,7 @@ class AdvancesController extends Controller
                     'index',
                     'create',
                     'update',
-                    
+
                     'add-data',
                     'insert-advances',
                     'get-all-advances',
@@ -51,7 +51,7 @@ class AdvancesController extends Controller
                             'import',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user','create_advances']
+                        'roles' => ['super-user', 'create_advances']
                     ],
                     [
                         'actions' => [
@@ -82,7 +82,7 @@ class AdvancesController extends Controller
     {
 
         $searchModel = new AdvancesViewSearch();
-        if (Yii::$app->user->identity->province !== 'admin') {
+        if (Yii::$app->user->identity->province !== 'ro_admin') {
             $searchModel->province = Yii::$app->user->identity->province;
         }
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -398,21 +398,23 @@ class AdvancesController extends Controller
                     }
                     $y++;
                 }
-                if (!empty($cells)) {
+                if ($key < 260) {
 
                     $nft_number = trim($cells[0]);
-                    $check_number = trim($cells[1]);
-                    $province =  $cells[2];
-                    $reporting_period = date("Y-m", strtotime($cells[3]));
-                    $fund_source = trim($cells[4]);
-                    $report_type = trim($cells[5]);
-                    $sl_object_code = trim($cells[6]);
-                    $amount = strtolower(trim($cells[8]));
+                    $check_number = trim($cells[3]);
+                    $province =  $cells[10];
+                    $reporting_period = date("Y-m", strtotime($cells[11]));
+                    $fund_source = trim($cells[13]);
+                    $report_type = trim($cells[14]);
+                    $sl_object_code = trim($cells[15]);
+                    $amount = $cells[17];
+                    $fund_source_type = $cells[12];
+                    $division = $cells[28];
 
                     $sl_id = (new \yii\db\Query())
                         ->select("object_code")
-                        ->from('sub_accounts_view')
-                        ->where("sub_accounts_view.object_code =:object_code", ['object_code' => $sl_object_code])
+                        ->from('accounting_codes')
+                        ->where("accounting_codes.object_code =:object_code", ['object_code' => $sl_object_code])
                         ->one();
                     $advances_id = null;
                     $q = (new \yii\db\Query())
@@ -425,6 +427,9 @@ class AdvancesController extends Controller
                         ->from('cash_disbursement')
                         ->where('cash_disbursement.check_or_ada_no =:check', ['check' => $check_number])
                         ->one();
+                    if (empty($sl_id)) {
+                        return json_encode("sl not exist $sl_object_code  row $key");
+                    }
                     if (empty($q)) {
                         $advances = new Advances();
                         $advances->nft_number = $nft_number;
@@ -432,7 +437,6 @@ class AdvancesController extends Controller
                         $advances->report_type = $report_type;
 
                         $advances->province = $province;
-
                         if ($advances->save(false)) {
                             $advances_id = $advances->id;
                         }
@@ -445,7 +449,11 @@ class AdvancesController extends Controller
                         // 'sub_account1_id' => $sl_id['id'],
                         'amount' =>  $amount,
                         'object_code' => $sl_id['object_code'],
-                        'fund_source' => $fund_source
+                        'fund_source' => $fund_source,
+                        'reporting_period'=>$reporting_period,
+                        'fund_source_type'=>$fund_source_type,
+                        'division'=>$division
+
                     ];
                 }
             }
@@ -456,7 +464,12 @@ class AdvancesController extends Controller
                 // 'sub_account1_id',
                 'amount',
                 'object_code',
-                'fund_source'
+                'fund_source',
+                'reporting_period',
+                'fund_source_type',
+                'division',
+
+
             ];
             $ja = Yii::$app->db->createCommand()->batchInsert('advances_entries', $column, $data)->execute();
 

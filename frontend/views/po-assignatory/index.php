@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => Gridview::TYPE_PRIMARY,
-            'heading' => 'List of Transactions'
+            'heading' => 'List of Asignatory'
         ],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
@@ -55,6 +55,11 @@ $script = <<<JS
         });
         $('.modalButtonedit').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+        });
+        $('a[title=Update]').click(function(e){
+            e.preventDefault();
+            
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
         });
 JS;
 $this->registerJs($script);

@@ -226,7 +226,9 @@
                                 Yii::$app->user->can('po_cibr') ?     ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/cibr'],] : [],
                                 Yii::$app->user->can('po_cdr') ?     ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/cdr'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'FUR', 'icon' => 'circle-o', 'url' => ['/report/fur'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Pending Transmittal', 'icon' => 'circle-o', 'url' => ['/po-transmittal/pending-at-ro'],] : [],
                                 ['label' => 'Transmittal', 'icon' => 'circle-o', 'url' => ['/po-transmittal'],],
+
                             ],
                         ] : ['label' => ''],
 

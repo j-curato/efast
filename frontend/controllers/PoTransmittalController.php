@@ -55,6 +55,8 @@ class PoTransmittalController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                    'accept' => ['POST'],
+                    'return' => ['POST'],
                 ],
             ],
         ];
@@ -113,7 +115,7 @@ class PoTransmittalController extends Controller
         if ($_POST) {
             $date = $_POST['date'];
             $transmittal_update_id = $_POST['transmittal_update_id'];
-            $liquidation_id = !empty($_POST['liquidation_id'])?$_POST['liquidation_id']:[];
+            $liquidation_id = !empty($_POST['liquidation_id']) ? $_POST['liquidation_id'] : [];
             $transaction = Yii::$app->db->beginTransaction();
 
             if (!empty($transmittal_update_id)) {
@@ -261,5 +263,32 @@ class PoTransmittalController extends Controller
                 ->queryAll();
             return json_encode(['entries' => $entries]);
         }
+    }
+    public function actionAccept($id)
+    {
+        $model = $this->findModel($id);
+        $model->status = $model->status === 'pending_at_ro' ? 'at_ro' : 'pending_at_ro';
+        if ($model->save(false)) {
+            return $this->redirect(['view', 'id' => $model->transmittal_number]);
+        }
+    }
+    public function actionReturn($id)
+    {
+        $model = PoTransmittalEntries::findOne($id);
+        $model->status = 'returned';
+        $liquidation = Liquidation::findOne($model->liquidation->id);
+        $liquidation->status = 'at_po';
+        if ($liquidation->save(false)) {
+        }
+        if ($model->save(false)) {
+        }
+
+        return $this->redirect(['view', 'id' => $model->poTransmittal->transmittal_number]);
+    }
+    public function actionPendingAtRo()
+    {
+        return $this->render(
+            'pending_at_ro'
+        );
     }
 }

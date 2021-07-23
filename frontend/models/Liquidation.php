@@ -37,7 +37,7 @@ class Liquidation extends \yii\db\ActiveRecord
         return [
             [['payee_id', 'responsibility_center_id','po_transaction_id'], 'integer'],
             [['particular'], 'string'],
-            [['check_date', 'check_number'], 'string', 'max' => 50],
+            [['check_date', 'check_number','province'], 'string', 'max' => 50],
             [['reporting_period'], 'string', 'max' => 20],
             [['dv_number'], 'string', 'max' => 100],
             [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::class, 'targetAttribute' => ['payee_id' => 'id']],
@@ -62,6 +62,8 @@ class Liquidation extends \yii\db\ActiveRecord
             'particular' => 'Particular',
             'reporting_period' => 'Reporting Period',
             'po_transaction_id' => 'Transaction',
+            'province' => 'Province',
+            'payee' => 'Payee',
         ];
     }
 

@@ -1,7 +1,7 @@
 <?php
 
+use kartik\grid\GridView;
 use yii\helpers\Html;
-use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\PoTransmittalSearch */
@@ -15,20 +15,36 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Po Transmittal', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php
+
+        if (Yii::$app->user->can('create_po_transmittal')) {
+            echo Html::a('Create Po Transmittal', ['create'], ['class' => 'btn btn-success']);
+        }
+        ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php
+
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel' => [
+            'type' => GridView::TYPE_PRIMARY,
+            'heading' => 'List of Transmittals',
+        ],
+        'floatHeaderOptions' => [
+            'top' => 50,
+            'position' => 'absolute',
+        ],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
             'transmittal_number',
             'date',
             'created_at',
+            'status',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

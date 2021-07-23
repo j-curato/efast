@@ -95,11 +95,19 @@ $this->params['breadcrumbs'][] = $this->title;
         'province',
 
     ];
+    $province = \Yii::$app->user->identity->province;
     $viewSearchModel = new LiquidationViewSearch();
-    if (!empty(\Yii::$app->user->identity->province)) {
-        $viewSearchModel->province = \Yii::$app->user->identity->province;
-        // echo \Yii::$app->user->identity->province;
-    }
+    // if (
+    //     $province === 'adn' ||
+    //     $province === 'sdn' ||
+    //     $province === 'sds' ||
+    //     $province === 'sdn' ||
+    //     $province === 'pdi'
+
+    // ) {
+    //     $viewSearchModel->province = \Yii::$app->user->identity->province;
+    //     // echo \Yii::$app->user->identity->province;
+    // }
 
     $viewDataProvider = $viewSearchModel->search(Yii::$app->request->queryParams);
 
@@ -107,7 +115,6 @@ $this->params['breadcrumbs'][] = $this->title;
     // echo \Yii::$app->user->identity->province;
     $viewColumn = [
         'province',
-
         'check_date',
         'check_number',
         'dv_number',
@@ -134,7 +141,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'hAlign' => 'right'
         ],
         [
-            'label' => 'Total Liquidation',
+            'label' => 'Total Liquidation Damage',
             'attribute' => 'total_liquidation_damage',
             'format' => ['decimal', 2],
             'hAlign' => 'right'

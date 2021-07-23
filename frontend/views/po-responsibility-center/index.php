@@ -54,6 +54,11 @@ $script = <<<JS
         $('#modalButtoncreate').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         });
+        $('a[title=Update]').click(function(e){
+            e.preventDefault();
+            
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
+        });
 JS;
 $this->registerJs($script);
 ?>

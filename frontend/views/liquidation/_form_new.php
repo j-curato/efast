@@ -242,7 +242,7 @@ use yii\helpers\ArrayHelper;
 
             <?php
             $searchModel = new AdvancesEntriesForLiquidationSearch();
-            if (!empty(\Yii::$app->user->identity->province)) {
+            if (\Yii::$app->user->identity->province!=='ro_admin') {
                 $searchModel->province = \Yii::$app->user->identity->province;
                 // echo \Yii::$app->user->identity->province;
             }
@@ -726,6 +726,7 @@ $script = <<<JS
                     $("#transaction").val(liq['po_transaction_id']).trigger('change')
                     addToTransactionTable(res,$("#update_type").val())
                     getTotalAmounts()
+
                 }
 
             })

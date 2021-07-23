@@ -19,6 +19,21 @@ $this->title = "CDR";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index" style="background-color: white;">
+    <div class="row">
+
+        <div class="col-sm-3">
+
+            <?php
+            $color = $model->is_final === 1 ? 'btn-danger' : 'btn-success';
+            if (Yii::$app->user->can('create_cdr')) {
+                
+                echo Html::a($model->is_final === 1 ? 'Draft' : 'Final',null, ['class' => "btn $color",'type'=>'button','id'=>'final']);
+            }
+            ?>
+
+        </div>
+    </div>
+
     <form id='filter' <?php if (!empty($model->id)) : ?> style="display:none" <?php endif; ?>>
         <div class="row">
             <div class="col-sm-2">
@@ -104,7 +119,6 @@ $this->params['breadcrumbs'][] = $this->title;
             // echo "<input type='text' value='$model->is_final'>";
         } else {
             echo "  <input type='text' id='cdr_id' value='$model->id' style='display:none'>";
-          
         }
 
         ?>
@@ -433,9 +447,11 @@ $this->params['breadcrumbs'][] = $this->title;
             font-size: 10px;
             padding: 2px;
         }
-        .btn{
+
+        .btn {
             display: none;
         }
+
         .amount {
             padding: 5px;
         }
@@ -719,6 +735,7 @@ $script = <<< JS
                     data:{id:$('#cdr_id').val()},
                     success:function(data){
                         var res = JSON.parse(data)
+                        console.log(res)
                         if (res.isScuccess){
                             swal({
                                 title:'Success',

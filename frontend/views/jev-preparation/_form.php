@@ -32,7 +32,6 @@ use yii\helpers\ArrayHelper;
                 echo Select2::widget([
                     'name' => "dv",
                     'id' => 'dv',
-                    'value' => !empty($model->book_id) ? $model->book_id : '',
                     'data' => ArrayHelper::map((new \yii\db\Query())
                         ->select(['cash_disbursement.id as cash_id', 'dv_aucs.dv_number'])
                         ->from('cash_disbursement')

@@ -6,6 +6,7 @@ use Yii;
 use app\models\Cdr;
 use app\models\CdrSearch;
 use app\models\LiquidationReportingPeriod;
+use ErrorException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -96,10 +97,30 @@ class CdrController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-
+        // if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        //     return $this->redirect(['view', 'id' => $model->id]);
+        // }
+        $query = (new \yii\db\Query())
+            ->select(
+                'check_date,
+            check_number,
+            particular,
+            amount,
+            withdrawals,
+            gl_object_code,
+            gl_account_title,
+            reporting_period,
+            vat_nonvat,
+            expanded_tax
+        '
+            )
+            ->from('advances_liquidation')
+            ->where('reporting_period <=:reporting_period', ['reporting_period' => $model->reporting_period])
+            ->andWhere('book_name =:book_name', ['book_name' => $model->book_name])
+            ->andWhere('province LIKE :province', ['province' => $model->province])
+            ->andWhere('report_type LIKE :report_type', ['report_type' => $model->report_type])
+            ->orderBy('reporting_period,check_date')
+            ->all();
         return $this->render('view', [
             'model' => $model,
             'dataProvider' => '',
@@ -241,7 +262,7 @@ class CdrController extends Controller
             }, 'gl_object_code']);
             // ob_clean();
             // echo "<pre>";
-            // var_dump($result);
+            // var_dump($result[$reporting_period]);
             // echo "</pre>";
 
             // return ob_get_clean();
@@ -318,19 +339,22 @@ class CdrController extends Controller
     {
         if ($_POST) {
             $id = $_POST['id'];
+            try {
+                $cdr = Cdr::findOne($id);
+                $cdr->is_final = $cdr->is_final === 0 ? true : false;
+                $cdr->serial_number = $this->getSerialNumber($cdr->reporting_period, $cdr->report_type, $cdr->book_name, $cdr->province);
+                if ($cdr->save(false)) {
 
-            $cdr = Cdr::findOne($id);
-            $cdr->is_final = $cdr->is_final === 0 ? true : false;
-            $cdr->serial_number = $this->getSerialNumber($cdr->reporting_period, $cdr->report_type, $cdr->book_name, $cdr->province);
-            if ($cdr->save(false)) {
-
-                $liq_reporting_period = new LiquidationReportingPeriod();
-                $liq_reporting_period->reporting_period = $cdr->reporting_period;
-                $liq_reporting_period->province = $cdr->province;
-                if ($liq_reporting_period->save(false)) {
-
+                    $liq_reporting_period = new LiquidationReportingPeriod();
+                    $liq_reporting_period->reporting_period = $cdr->reporting_period;
+                    $liq_reporting_period->province = $cdr->province;
+                    if ($liq_reporting_period->save(false)) {
+                    }
                     return json_encode(['isScuccess' => true, 'message' => 'success']);
+                } else {
                 }
+            } catch (ErrorException $e) {
+                return json_encode(['isScuccess' => false, 'message' => $e->getMessage()]);
             }
         }
     }

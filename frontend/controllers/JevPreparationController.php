@@ -199,8 +199,8 @@ class JevPreparationController extends Controller
             $general_ledger->select([
                 'jev_preparation.reporting_period',
                 'jev_preparation.explaination',
-                'accounting_codes.object_code as uacs',
-                'accounting_codes.account_title as general_ledger',
+                'accounting_codes.coa_object_code as uacs',
+                'accounting_codes.coa_account_title as general_ledger',
                 'jev_preparation.ref_number',
                 'jev_preparation.jev_number',
                 'jev_accounting_entries.credit',
@@ -219,7 +219,7 @@ class JevPreparationController extends Controller
             }
             if (!empty($gen)) {
 
-                $general_ledger->andWhere("jev_accounting_entries.object_code = :object_code", [
+                $general_ledger->andWhere("accounting_codes.coa_object_code = :object_code", [
                     'object_code' => $qwe['uacs']
                 ]);
             }
@@ -250,7 +250,7 @@ class JevPreparationController extends Controller
                 // 'chart_of_accounts.uacs',
                 //  'chart_of_accounts.general_ledger',
                 //   'jev_preparation.ref_number',
-                //    'jev_preparation.jev_number',
+                // 'jev_preparation.jev_number',
                 // ' SUM(jev_accounting_entries.credit) as credit',
                 //  'SUM(jev_accounting_entries.debit) as debit',
                 // 'chart_of_accounts.normal_balance',
@@ -277,7 +277,7 @@ class JevPreparationController extends Controller
                 $query1->andwhere(['between', 'jev_preparation.reporting_period', $prev_begin_month, $prev_end_month]);
             }
             if (!empty($gen)) {
-                $query1->andWhere("jev_accounting_entries.object_code = :object_code", [
+                $query1->andWhere("accounting_codes.coa_object_code = :object_code", [
                     'object_code' => $qwe['uacs']
                 ]);
             }
@@ -1263,6 +1263,7 @@ class JevPreparationController extends Controller
 
             $begin_balance = JevPreparation::find()
                 ->select('jev_preparation.reporting_period')
+                
                 ->orderBy('reporting_period ASC')->one()->reporting_period;
             $t_balance = (new \yii\db\Query())
                 ->select([
@@ -1933,13 +1934,17 @@ class JevPreparationController extends Controller
         $prev_year_begin_month =  $x[0] - 1 . '-' . '01';
         $reporting_period_last_year =  $x[0] - 1 . '-' . $x[1];
         $q = Yii::$app->db->createCommand("SELECT * from 
-            (SELECT chart_of_accounts.account_group,chart_of_accounts.uacs,chart_of_accounts.general_ledger,
-            chart_of_accounts.current_noncurrent,major_accounts.name,chart_of_accounts.normal_balance,
+            (SELECT chart_of_accounts.account_group,
+            chart_of_accounts.uacs,
+            chart_of_accounts.general_ledger,
+            chart_of_accounts.current_noncurrent,
+            major_accounts.name,
+            chart_of_accounts.normal_balance,
             jev_preparation.id as jev_id,
             jev_preparation.reporting_period,
-            SUM(jev_accounting_entries.debit) as total_debit, SUM(jev_accounting_entries.credit) as total_credit
+            SUM(jev_accounting_entries.debit) as total_debit,
+            SUM(jev_accounting_entries.credit) as total_credit
             FROM jev_accounting_entries,jev_preparation,chart_of_accounts,major_accounts
-
             WHERE jev_accounting_entries.chart_of_account_id = chart_of_accounts.id
             AND jev_accounting_entries.jev_preparation_id = jev_preparation.id
 
@@ -2084,7 +2089,7 @@ class JevPreparationController extends Controller
                 'ref_number' => $reference
             ])
             ->orderBy([
-                'jev_number' => SORT_DESC
+                'id' => SORT_DESC
             ])->one();
         $ff = Books::find()
             ->where("id = :id", [

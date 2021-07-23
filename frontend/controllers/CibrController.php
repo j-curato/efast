@@ -99,12 +99,12 @@ class CibrController extends Controller
         reporting_period
         from advances_liquidation
         where reporting_period <=:reporting_period AND province LIKE :province
-        AND book_name LIKE :book
+
         ORDER BY reporting_period,check_date,check_number
         ")
             ->bindValue(':reporting_period',   $model->reporting_period)
             ->bindValue(':province',   $model->province)
-            ->bindValue(':book',   $model->book_name)
+
             ->queryAll();
         // return $reporting_period;
 
@@ -194,7 +194,7 @@ class CibrController extends Controller
     {
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
-            $book = $_POST['book'];
+            // $book = $_POST['book'];
             $province = $_POST['province'];
 
 
@@ -203,14 +203,14 @@ class CibrController extends Controller
                 ->from('cibr')
                 ->where('province =:province', ['province' => $province])
                 ->andWhere('reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
-                ->andWhere('book_name =:book_name', ['book_name' => $book])
+                // ->andWhere('book_name =:book_name', ['book_name' => $book])
                 ->one();
             if (!empty($q)) {
                 return json_encode(['isSuccess' => false, 'error' => 'CIBR already Exist']);
             }
             $cibr = new Cibr();
             $cibr->reporting_period = $reporting_period;
-            $cibr->book_name = $book;
+            // $cibr->book_name = $book;
             $cibr->province = $province;
             if ($cibr->validate()) {
                 if ($cibr->save(false)) {
@@ -237,7 +237,7 @@ class CibrController extends Controller
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
             $province = $_POST['province'];
-            $book = $_POST['book'];
+            // $book = $_POST['book'];
 
             if (
                 empty($reporting_period)
@@ -259,14 +259,14 @@ class CibrController extends Controller
                 reporting_period
                 from advances_liquidation
                 where reporting_period <=:reporting_period AND province LIKE :province
-                AND book_name LIKE :book
+    
                 ORDER BY reporting_period,check_date,check_number
             ")
                 //  AND book_name LIKE :book
 
                 ->bindValue(':reporting_period', $reporting_period)
                 ->bindValue(':province', $province)
-                ->bindValue(':book', $book)
+
                 ->queryAll();
             // return $reporting_period;
 

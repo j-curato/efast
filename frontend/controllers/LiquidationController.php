@@ -86,7 +86,6 @@ class LiquidationController extends Controller
     {
         $searchModel = new LiquidationEntriesViewSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -233,6 +232,7 @@ class LiquidationController extends Controller
             $new_reporting_period = !empty($_POST['new_reporting_period']) ? $_POST['new_reporting_period'] : '';
             $reporting_period = $_POST['reporting_period'];
             $check_range = $_POST['check_range'];
+            $province = Yii::$app->user->identity->province;
 
             $check = (new \yii\db\Query())
                 ->select([
@@ -294,11 +294,13 @@ class LiquidationController extends Controller
                 if ($liquidation->is_locked === 1) {
                     return json_encode(['isSuccess' => false, 'error' => "Liquidation is Disabled"]);
                 }
-                // foreach ($liquidation->liquidationEntries as $val) {
-                //     $val->delete();
-                // }
+                $x = explode('-', $liquidation->dv_number);
+                $x[1] = date('Y', strtotime($reporting_period));
+                $x[2] = date('m', strtotime($reporting_period));
+                $liquidation->dv_number = implode('-', $x);
             } else {
                 $liquidation = new Liquidation();
+                $liquidation->dv_number = $this->getDvNumber($reporting_period);
             }
             $liquidation->check_date = $check_date;
             // $liquidation->payee_id = $payee_id;
@@ -307,7 +309,7 @@ class LiquidationController extends Controller
             $liquidation->reporting_period = $reporting_period;
             $liquidation->po_transaction_id = $po_transaction_id;
             $liquidation->check_range_id = $check_range;
-            $liquidation->dv_number = $this->getDvNumber($reporting_period);
+
             // list($withd) = sscanf(implode(explode(',', $withdrawal[0])), "%f");
             // list($vat) = sscanf(implode(explode(',', $vat_nonvat[0])), "%f");
             // list($e) = sscanf(implode(explode(',', $ewt[0])), "%f");
@@ -317,11 +319,12 @@ class LiquidationController extends Controller
             // $liquidation->ewt_goods_services = $e;
             // $liquidation->advances_entries_id = $advances_id[0];
             $liquidation->reporting_period =  $reporting_period;
+            $liquidation->province = $province;
 
             try {
                 if ($liquidation->validate()) {
                     if ($flag = $liquidation->save(false)) {
-                        
+
 
                         if (!empty($advances_id)) {
 
@@ -410,10 +413,13 @@ class LiquidationController extends Controller
         //     ->from('liquidation')
         //     ->orderBy("liquidation.id DESC")
         //     ->one();
-        $q = Yii::$app->db->createCommand("SELECT substring_index(substring(dv_number, instr(dv_number, '-')+4), ' ', 1) as q 
+        $province = Yii::$app->user->identity->province;
+        $q = Yii::$app->db->createCommand("SELECT substring_index(substring(dv_number, instr(dv_number, '-')+1), '-', -1) as q 
         from liquidation
-        
-        ORDER BY q DESC  LIMIT 1")->queryScalar();
+        WHERE liquidation.province = :province
+        ORDER BY q DESC  LIMIT 1")
+            ->bindValue(':province', $province)
+            ->queryScalar();
         // return $q;
         // die();
         $num = 0;
@@ -426,7 +432,7 @@ class LiquidationController extends Controller
         }
 
         $string = substr(str_repeat(0, 4) . $num, -4);
-        return $reporting_period . '-' . $string;
+        return strtoupper($province) . '-' . $reporting_period . '-' . $string;
     }
     public function actionCancel()
     {
@@ -488,7 +494,7 @@ class LiquidationController extends Controller
                 $y = 0;
                 foreach ($cellIterator as $x => $cell) {
                     $q = '';
-                    if ($y === 0) {
+                    if ($y === 1) {
                         $cells[] = $cell->getFormattedValue();
                     } else {
                         $cells[] =   $cell->getValue();
@@ -497,19 +503,20 @@ class LiquidationController extends Controller
                 }
                 if (!empty($cells)) {
 
-                    $check_date = date("Y-m-d", strtotime($cells[0]));
-                    $check_number = trim($cells[1]);
-                    $is_cancel =  $cells[2];
-                    $reporting_period = date("Y-m", strtotime($cells[3]));
-                    $fund_source = trim($cells[4]);
-                    $payee = trim($cells[5]);
-                    $particular = trim($cells[6]);
-                    $object_code = trim($cells[7]);
-                    $res_center = trim($cells[8]);
-                    $withdrawal = trim($cells[9]);
-                    $vat = trim($cells[10]);
-                    $expanded = trim($cells[11]);
-
+                    $province = $cells[0];
+                    $check_date = date("Y-m-d", strtotime($cells[1]));
+                    $check_number = trim($cells[2]);
+                    $is_cancel =  $cells[3];
+                    $reporting_period = date("Y-m", strtotime($cells[5]));
+                    $fund_source = trim($cells[6]);
+                    $payee = trim($cells[7]);
+                    $particular = trim($cells[8]);
+                    $object_code = trim($cells[9]);
+                    // $res_center = trim($cells[8]);
+                    $withdrawal = trim($cells[12]);
+                    $vat = trim($cells[13]);
+                    $expanded = trim($cells[14]);
+                    $advances_entries_id = null;
                     $chart_id = (new \yii\db\Query())
                         ->select("id")
                         ->from('chart_of_accounts')
@@ -519,38 +526,45 @@ class LiquidationController extends Controller
                     if (!empty($chart_id)) {
                         $c_id = $chart_id['id'];
                     }
-                    $payee_id = (new \yii\db\Query())
-                        ->select('id')
-                        ->from('payee')
-                        ->where("payee.account_name LIKE :account_name", ['account_name' => $payee])
-                        ->one();
+                    // $payee_id = (new \yii\db\Query())
+                    //     ->select('id')
+                    //     ->from('payee')
+                    //     ->where("payee.account_name LIKE :account_name", ['account_name' => $payee])
+                    //     ->one();
+                    if (strtolower($is_cancel) === 'good') {
+                        $advances_entries_id = (new \yii\db\Query())
+                            ->select("id")
+                            ->from("advances_entries")
+                            ->where("advances_entries.fund_source LIKE :fund_source", ['fund_source' => $fund_source])
+                            ->one();
+                        if (empty($advances_entries_id)) {
+                            ob_clean();
+                            echo "<pre>";
+                            var_dump($key . " " . $fund_source);
+                            echo "</pre>";
+                            return ob_get_clean();
+                        }
+                    }
+                    else{
+                        $advances_entries_id['id']=null;
+                    }
 
-                    $advances_entries_id = (new \yii\db\Query())
-                        ->select("id")
-                        ->from("advances_entries")
-                        ->where("advances_entries.fund_source LIKE :fund_source", ['fund_source' => $fund_source])
-                        ->one();
                     $liq_id = (new \yii\db\Query())
                         ->select('id')
                         ->from('liquidation')
                         ->where('liquidation.check_number =:check_number', ['check_number' => $check_number])
                         ->one();
-                    if (empty($payee_id)) {
-                        ob_clean();
-                        echo "<pre>";
-                        var_dump($key . " " . $payee);
-                        echo "</pre>";
-                        return ob_get_clean();
-                    }
+
 
                     $liquidation_id = null;
                     if (empty($liq_id)) {
                         $liquidation = new Liquidation();
+                        $liquidation->province = $province;
                         $liquidation->check_date = $check_date;
                         $liquidation->check_number = $check_number;
                         $liquidation->particular = $particular;
-                        $liquidation->is_cancelled = $is_cancel;
-                        $liquidation->payee_id = $payee_id['id'];
+                        $liquidation->is_cancelled = strtolower($is_cancel)==='good'?0:1;
+                        $liquidation->payee = $payee;
                         $liquidation->dv_number = $this->getDvNumber($reporting_period);
                         $liquidation->reporting_period = $reporting_period;
                         // $liquidation->advances_entries_id = $advances_entries_id['id'];

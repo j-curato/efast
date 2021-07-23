@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\LiquidationView;
+use Yii;
 
 /**
  * LiquidationViewSearch represents the model behind the search form of `app\models\LiquidationView`.
@@ -55,7 +56,19 @@ class LiquidationViewSearch extends LiquidationView
      */
     public function search($params)
     {
-        $query = LiquidationView::find()->orderBy('check_date DESC');
+
+        $province = Yii::$app->user->identity->province;
+        $q = LiquidationView::find();
+        if (
+            $province === 'adn' ||
+            $province === 'sdn' ||
+            $province === 'sds' ||
+            $province === 'sdn' ||
+            $province === 'pdi'
+        ) {
+            $q->where('province LIKE :province', ['province' => $province]);
+        }
+        $query = $q->orderBy('check_date DESC');
 
         // add conditions that should always apply here
 

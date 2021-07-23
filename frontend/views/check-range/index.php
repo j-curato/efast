@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => Gridview::TYPE_PRIMARY,
-            'heading' => 'List of Transactions'
+            'heading' => 'List of Check Range'
         ],
         'toolbar' => [
             [
@@ -80,6 +80,11 @@ $script = <<<JS
         $(document).ready(()=>{
             console.log(Date.now())
         })
+        $('a[title=Update]').click(function(e){
+            e.preventDefault();
+            
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
+        });
 
 JS;
 $this->registerJs($script);

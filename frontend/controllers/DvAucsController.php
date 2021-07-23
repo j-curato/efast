@@ -480,12 +480,14 @@ class DvAucsController extends Controller
 
     public function getDvNumber($reporting_period, $book_id)
     {
-        // $reporting_period = "2021-01";
+        $year = date('Y', strtotime($reporting_period));
         // $book_id=5;
-        $latest_dv = Yii::$app->db->createCommand("SELECT substring_index(substring(dv_number, instr(dv_number, '-')+9), ' ', 1) as q 
+        $latest_dv = Yii::$app->db->createCommand("SELECT substring_index(dv_number, '-', -1) as q 
         from dv_aucs
-        
-        ORDER BY q DESC  LIMIT 1")->queryScalar();
+        WHERE reporting_period LIKE :year
+        ORDER BY q DESC  LIMIT 1")
+            ->bindValue(':year', $year .'%')
+            ->queryScalar();
         !empty($book_id) ? $book_id : $book_id = 5;
         // $latest_dv = (new \yii\db\Query())
         //     ->select('dv_number')

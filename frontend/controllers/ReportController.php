@@ -1102,4 +1102,10 @@ class ReportController extends \yii\web\Controller
             'dataProvider' => $dataProvider,
         ]);
     }
+    public function actionPoTransmittalPendingAtRo()
+    {
+        return $this->render(
+            'po_transmittal_pending_at_ro'
+        );
+    }
 }

@@ -29,7 +29,7 @@ class PoTransmittal extends \yii\db\ActiveRecord
         return [
             [['transmittal_number'], 'required'],
             [['date', 'created_at'], 'safe'],
-            [['transmittal_number'], 'string', 'max' => 255],
+            [['transmittal_number','status'], 'string', 'max' => 255],
             [['transmittal_number'], 'unique'],
         ];
     }
@@ -43,6 +43,7 @@ class PoTransmittal extends \yii\db\ActiveRecord
             'transmittal_number' => 'Transmittal Number',
             'date' => 'Date',
             'created_at' => 'Created At',
+            'status' => 'Status',
         ];
     }
     public function getPoTransmittalEntries()

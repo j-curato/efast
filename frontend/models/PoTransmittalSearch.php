@@ -18,7 +18,7 @@ class PoTransmittalSearch extends PoTransmittal
     public function rules()
     {
         return [
-            [['transmittal_number', 'date', 'created_at'], 'safe'],
+            [['transmittal_number', 'date', 'created_at', 'status'], 'safe'],
         ];
     }
 
@@ -52,6 +52,11 @@ class PoTransmittalSearch extends PoTransmittal
         ) {
             $q->where('transmittal_number LIKE :province', ['province' => "$province%"]);
         }
+        // if (Yii::$app->user->identity->province === 'ro_admin') {
+
+        //     $q->where('status = :status', ['status' => "pending_at_ro"]);
+        // }
+
         $query = $q;
 
         // add conditions that should always apply here
@@ -74,7 +79,8 @@ class PoTransmittalSearch extends PoTransmittal
             'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['like', 'transmittal_number', $this->transmittal_number]);
+        $query->andFilterWhere(['like', 'transmittal_number', $this->transmittal_number])
+            ->andFilterWhere(['like', 'status', $this->status]);
 
         return $dataProvider;
     }

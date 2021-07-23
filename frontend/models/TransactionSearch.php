@@ -52,7 +52,7 @@ class TransactionSearch extends Transaction
         $sql=Yii::$app->db->getQueryBuilder()->buildCondition(['IN','transaction.tracking_number',ArrayHelper::getColumn($q,'tracking_number')],$qwe);
         $query = Transaction::find()
         // ->where("$sql",$qwe)
-        // ->orderBy("id DESC")
+        ->orderBy("id DESC")
         ;
 
         // add conditions that should always apply here

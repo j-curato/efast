@@ -306,7 +306,7 @@ class CashDisbursementController extends Controller
                 foreach ($cellIterator as $x => $cell) {
                     $q = '';
                     if ($y === 7) {
-                        $cells[] = $cell->getValue();
+                        $cells[] = $cell->getFormattedValue();
                     } else {
                         $cells[] =   $cell->getValue();
                     }

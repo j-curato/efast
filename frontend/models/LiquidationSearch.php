@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Liquidation;
+use Yii;
 
 /**
  * LiquidationSearch represents the model behind the search form of `app\models\Liquidation`.
@@ -40,6 +41,19 @@ class LiquidationSearch extends Liquidation
      */
     public function search($params)
     {
+        $province = Yii::$app->user->identity->province;
+        $q = Liquidation::find();
+        if (
+            $province === 'adn' ||
+            $province === 'sdn' ||
+            $province === 'sds' ||
+            $province === 'sdn' ||
+            $province === 'pdi'
+        ) {
+            $q->where('province LIKE :province', ['province' => $province]);
+        }
+        $query = $q;
+
         $query = Liquidation::find();
 
         // add conditions that should always apply here

@@ -62,17 +62,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
             </div>
             <div class="col-sm-3">
-                <label for="book">book</label>
+                <!-- <label for="book">book</label> -->
                 <?php
-                echo Select2::widget([
-                    'name' => 'book',
-                    'id' => 'book',
-                    'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'name', 'name'),
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'placeholder' => 'Select book'
-                    ]
-                ])
+                // echo Select2::widget([
+                //     'name' => 'book',
+                //     'id' => 'book',
+                //     'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'name', 'name'),
+                //     'pluginOptions' => [
+                //         'autoclose' => true,
+                //         'placeholder' => 'Select book'
+                //     ]
+                // ])
 
                 ?>
             </div>

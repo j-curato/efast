@@ -91,6 +91,8 @@ class PoTransactionController extends Controller
     public function actionCreate()
     {
         $model = new PoTransaction();
+
+        $model->province = Yii::$app->user->identity->province;
         // $model->po_responsibility_center_id = strtoupper(\Yii::$app->user->identity->province) .'-'. $model->po_responsibility_center_id ;
         if ($model->load(Yii::$app->request->post())) {
             $model->tracking_number = $this->getTrackingNumber($model->po_responsibility_center_id);
@@ -115,10 +117,20 @@ class PoTransactionController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+        if ($model->load(Yii::$app->request->post())) {
+            $x = explode('-', $model->tracking_number);
+            $responsibility_center = (new \yii\db\Query())
+                ->select("name")
+                ->from('po_responsibility_center')
+                ->where("id =:id", ['id' => $model->po_responsibility_center_id])
+                ->one();
+            $x[1] = $responsibility_center['name'];
+            $model->tracking_number = implode('-', $x);
+            if ($model->save(false)) {
 
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+        }
         return $this->renderAjax('update', [
             'model' => $model,
         ]);
@@ -161,10 +173,15 @@ class PoTransactionController extends Controller
             ->from('po_responsibility_center')
             ->where("id =:id", ['id' => $responsibility_center_id])
             ->one();
-
+        $province = Yii::$app->user->identity->province;
         $latest_tracking_no = Yii::$app->db->createCommand(
-        "SELECT substring_index(substring(tracking_number,instr(tracking_number,'-')+10),' ',1)as q
-        FROM `po_transaction` ORDER BY q DESC LIMIT 1")->queryScalar();
+            "SELECT substring_index(tracking_number,'-',-1)as q
+        FROM `po_transaction`
+        WHERE tracking_number LIKE :province
+         ORDER BY q DESC LIMIT 1"
+        )
+            ->bindValue(':province', $province . '%')
+            ->queryScalar();
         if (!empty($latest_tracking_no)) {
             $last_number = $latest_tracking_no + 1;
         } else {
@@ -207,7 +224,7 @@ class PoTransactionController extends Controller
         $query = (new \yii\db\Query())
             ->select('*')
             ->from('po_transaction')
-            ->where('po_transaction.tracking_number LIKE :tracking_number',['tracking_number'=>"$province%"])
+            ->where('po_transaction.tracking_number LIKE :tracking_number', ['tracking_number' => "$province%"])
             ->all();
         return json_encode($query);
     }

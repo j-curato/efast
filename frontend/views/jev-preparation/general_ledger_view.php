@@ -536,10 +536,10 @@ $(document).ready(function(){
             data = JSON.parse(result).results
             fund_cluster_code = JSON.parse(result).fund_cluster_code
             var object= Object.keys(data)
-            console.log(data)
+            // console.log(data)
             var mywindow = window.open('?r=jev-preparation/ledger', 'new div', 'height=700,width=1300');
             mywindow.document.write('<html><head><title></title>');
-            mywindow.document.write('<link rel="stylesheet" href="../web/print.css" type="text/css" media="all" />');
+            mywindow.document.write('<link rel="stylesheet" href="/afms/frontend/web/print.css" type="text/css" media="all" />');
 
             // mywindow.document.write('<style>');
             // mywindow.document.write('.style1 {font-size:11px; font-weight:bold; color:red; border:1px solid black}');
@@ -561,7 +561,7 @@ $(document).ready(function(){
 
                 mywindow.document.write("<tr class='header_logo' style='margin-bottom:5px;'>");
                 mywindow.document.write(" <th></th>");
-                mywindow.document.write(" <th colspan='2'> <div style='display:flex'><img src='../web/dti.jpg' style='width:80px;height:80px;margin-left:auto;margin-right:10px''><div style='margin-top:10px; text-align:center;'><h4 style='margin-top:13px'>Department of Trade and Industry</h4><h4>General Ledger</h4><h4>2020</h4></div></div></th>");
+                mywindow.document.write(" <th colspan='2'> <div style='display:flex'><img src='/afms/frontend/web/dti.jpg' style='width:80px;height:80px;margin-left:auto;margin-right:10px''><div style='margin-top:10px; text-align:center;'><h4 style='margin-top:13px'>Department of Trade and Industry</h4><h4>General Ledger</h4><h4>2020</h4></div></div></th>");
                 // mywindow.document.write(" <th colspan='2'><h4>Department of Trade and Industry</h4><h4>General Ledger</h4><h4>2020</h4></th>");
                
                 mywindow.document.write(" <th colspan='2' style='text-align:center;'>"+''+"</th>");

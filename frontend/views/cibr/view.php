@@ -23,15 +23,17 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php
     $prov = [];
     $color = $model->is_final === 1 ? 'btn-danger' : 'btn-success';
+
+    // return json_encode($dataProvider);
     ?>
     <div class="row">
 
         <div class="col-sm-3">
 
             <?php
-            if (Yii::$app->user->can('create_cibr')){
+            if (Yii::$app->user->can('create_cibr')) {
 
-                echo Html::a($model->is_final === 1 ? 'Draft' : 'Final', ['final', 'id' => $model->id], ['class' => "btn $color"  ]) ;
+                echo Html::a($model->is_final === 1 ? 'Draft' : 'Final', ['final', 'id' => $model->id], ['class' => "btn $color"]);
             }
             ?>
 
