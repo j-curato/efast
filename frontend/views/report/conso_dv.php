@@ -176,7 +176,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 <script>
-    $('#generate').click(function(e) { 
+    $('#generate').click(function(e) {
         e.preventDefault()
         $('#con').hide()
         $('#dots5').show()
@@ -186,7 +186,7 @@ $this->params['breadcrumbs'][] = $this->title;
             data: $('#filter').serialize(),
             success: function(data) {
                 var res = JSON.parse(data)
-                console.log(res)
+                // console.log(res)
                 $("#data_table > tbody").html("");
                 var taxes_withheld = 0
                 var obligation = 0
@@ -207,15 +207,17 @@ $this->params['breadcrumbs'][] = $this->title;
                     if (obligation == null) {
                         obligation = 0
                     }
-                    console.log
-                    total_conso_total_allotment_recieve += parseFloat(total_allotment_recieve)
-                    total_conso_obligation += parseFloat(obligation)
-                    total_conso_disbursement += parseFloat(disbursement)
-                    total_conso_tax += parseFloat(taxes_withheld)
-                    console.log(total_conso_total_allotment_recieve)
+
+                    // console.log(total_conso_total_allotment_recieve)
                     var mfo_code = res[i]['mfo_code'] ? res[i]['mfo_code'] : ''
                     var mfo_name = res[i]['mfo_name'] ? res[i]['mfo_name'] : 'Prior Year Accounts Payable'
                     var mfo_description = res[i]['mfo_description'] ? res[i]['mfo_description'] : ''
+                    if (mfo_code.toLowerCase() != '') {
+                        total_conso_total_allotment_recieve += parseFloat(total_allotment_recieve)
+                        total_conso_obligation += parseFloat(obligation)
+                        total_conso_disbursement += parseFloat(disbursement)
+                        total_conso_tax += parseFloat(taxes_withheld)
+                    }
                     var row = `<tr>
 
                         <td>${mfo_code}</td>
@@ -247,8 +249,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td></td>
                         <td>Utilization Rates: </td>
                         <td class='amount' ></td>
-                        <td class='amount'>  ${thousands_separators(parseFloat(total_conso_obligation/total_conso_total_allotment_recieve).toFixed(2))}</td>
-                        <td class='amount'>  ${thousands_separators(parseFloat(q).toFixed(2))}</td>
+                        <td class='amount'> % ${thousands_separators(parseFloat(total_conso_obligation/total_conso_total_allotment_recieve).toFixed(2))}</td>
+                        <td class='amount'> % ${thousands_separators(parseFloat(q).toFixed(2))}</td>
                         <td class='amount'> </td>
                         <td></td>
                     </tr>`

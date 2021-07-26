@@ -246,7 +246,10 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
 
             //'other_trust_liability_withheld',
-            //'net_amount_paid',
+            'created_at',
+            // [
+            //     'label'=>
+            // ],
 
             [
                 'class' => '\kartik\grid\ActionColumn',

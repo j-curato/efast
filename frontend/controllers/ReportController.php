@@ -13,6 +13,7 @@ use app\models\DetailedDvAucsSearch;
 use app\models\DvAucs;
 use app\models\JevAccountingEntries;
 use app\models\Liquidation;
+use app\models\PoTransmittalsPendingSearch;
 use app\models\SubAccounts1;
 use app\models\SubAccounts2;
 use app\models\Transaction;
@@ -1104,8 +1105,14 @@ class ReportController extends \yii\web\Controller
     }
     public function actionPoTransmittalPendingAtRo()
     {
+        $searchModel = new PoTransmittalsPendingSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render(
-            'po_transmittal_pending_at_ro'
+            'po_transmittal_pending_at_ro',
+            [
+                'dataProvider' => $dataProvider,
+                'searchModel' => $searchModel
+            ]
         );
     }
 }

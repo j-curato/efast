@@ -28,9 +28,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     // // add conditions that should always apply here
 
-    // $dataProvider = new ActiveDataProvider([
-    //     'query' => $query,
-    // ]);
 
     // ob_clean();
     // echo "<pre>";
@@ -39,28 +36,51 @@ $this->params['breadcrumbs'][] = $this->title;
     // return ob_get_clean();
     // die();
     $gridColumn = [
+        'province',
+        'check_date',
+        'check_number',
+        'dv_number',
+        'reporting_period',
+        'payee',
+        'particular',
 
-        'transmittal_number',
-        'date',
-        'status',
         [
-            'attribute' => 'total_withdrawals',
+            'label' => 'Total Disbursements',
+            'attribute' => 'total_withdrawal',
             'format' => ['decimal', 2],
             'hAlign' => 'right'
         ],
         [
-            'label' => 'action',
-            'format' => 'raw',
-            'value' => function ($model) {
-                $r = yii::$app->request->baseUrl . "/index.php?r=po-transmittal/view&id=$model->transmittal_number";
-                return ' ' . Html::a('', $r, ['class' => 'btn-xs fa fa-eye']);
-            }
+            'label' => 'Total Sales Tax (VAT/Non-VAT)',
+            'attribute' => 'total_vat',
+            'format' => ['decimal', 2],
+            'hAlign' => 'right'
         ],
+        [
+            'label' => 'Income Tax (Expanded Tax)',
+            'attribute' => 'total_expanded',
+            'format' => ['decimal', 2],
+            'hAlign' => 'right'
+        ],
+        [
+            'label' => 'Total Liquidation Damage',
+            'attribute' => 'total_liquidation_damage',
+            'format' => ['decimal', 2],
+            'hAlign' => 'right'
+        ],
+        [
+            'label' => 'Gross Payment',
+            'attribute' => 'gross_payment',
+            'format' => ['decimal', 2],
+            'hAlign' => 'right'
+        ],
+
     ];
+
     ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
+        // 'filterModel' => $searchModel,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
             'heading' => "List of Pending DV's",

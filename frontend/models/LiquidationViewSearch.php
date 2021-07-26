@@ -22,7 +22,7 @@ class LiquidationViewSearch extends LiquidationView
             $province = '';
         }
         return [
-            [['id',], 'integer'],
+            [['id','is_cancelled'], 'integer'],
             [['total_withdrawal', 'total_expanded', 'total_liquidation_damage', 'total_vat'], 'number'],
             [[
 
@@ -91,6 +91,7 @@ class LiquidationViewSearch extends LiquidationView
             'total_expanded' => $this->total_expanded,
             'total_liquidation_damage' => $this->total_liquidation_damage,
             'total_vat' => $this->total_vat,
+            'is_cancelled' => $this->is_cancelled,
         ]);
         $query
             ->andFilterWhere(['like', 'check_date', $this->check_date])

@@ -3,12 +3,15 @@
 namespace frontend\controllers;
 
 use app\models\Liquidation;
+use app\models\LiquidationView;
 use Yii;
 use app\models\PoTransmittal;
 use app\models\PoTransmittalEntries;
 use app\models\PoTransmittalSearch;
+use app\models\PoTransmittalsPendingSearch;
 use app\models\TransmittalEntries;
 use ErrorException;
+use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -33,7 +36,12 @@ class PoTransmittalController extends Controller
                     'update',
                     'create',
                     'insert-po-transmittal',
-                    'delete'
+                    'delete',
+                    'accept',
+                    'return',
+                    'returned-liquidation',
+
+
                 ],
                 'rules' => [
                     [
@@ -43,12 +51,21 @@ class PoTransmittalController extends Controller
                             'update',
                             'create',
                             'insert-po-transmittal',
-                            'delete'
+                            'delete',
+                            'returned-liquidation',
 
                         ],
                         'allow' => true,
-                        'roles' => ['@']
-                    ]
+                        'roles' => ['create_po_transmittal']
+                    ],
+                    [
+                        'actions' => [
+                            'accept',
+                            'return',
+                        ],
+                        'allow' => true,
+                        'roles' => ['accept_transmittal_in_ro']
+                    ],
                 ]
             ],
             'verbs' => [
@@ -236,7 +253,7 @@ class PoTransmittalController extends Controller
     public function getTransmittalNumber($date)
     {
         $province = Yii::$app->user->identity->province;
-        $query = Yii::$app->db->createCommand("SELECT substring_index(substring(transmittal_number,instr(transmittal_number,'-')*3+1),' ',1 ) as id 
+        $query = Yii::$app->db->createCommand("SELECT substring_index(transmittal_number,'-',-1 ) as id 
         FROM po_transmittal
         WHERE po_transmittal.transmittal_number LIKE :province
         ORDER BY id DESC LIMIT 1
@@ -276,19 +293,71 @@ class PoTransmittalController extends Controller
     {
         $model = PoTransmittalEntries::findOne($id);
         $model->status = 'returned';
+        $po_tr = PoTransmittal::findOne($model->po_transmittal_number);
+        $po_tr->edited = true;
         $liquidation = Liquidation::findOne($model->liquidation->id);
-        $liquidation->status = 'at_po';
+        $status = $liquidation->status == 'pending_at_ro' ? 'at_po' : 'pending_at_ro';
+        $liquidation->status = $status;
+       
         if ($liquidation->save(false)) {
+            // return json_encode($liquidation->status);
+
+        } else {
+            return json_encode('cant save');
         }
         if ($model->save(false)) {
+        }
+        if ($po_tr->save(false)) {
         }
 
         return $this->redirect(['view', 'id' => $model->poTransmittal->transmittal_number]);
     }
     public function actionPendingAtRo()
     {
+        $searchModel = new PoTransmittalsPendingSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render(
-            'pending_at_ro'
+            'pending_at_ro',
+            [
+                'dataProvider' => $dataProvider,
+                'searchModel' => $searchModel
+            ]
         );
+    }
+    public function actionReturnedLiquidation()
+    {
+        // $query = PoTransmittalEntries::find()
+        // ->joinWith('liquidation')
+        // ->where("liquidation.status = 'at_po'");
+
+        $query = LiquidationView::find()
+            ->where("id IN (SELECT
+        po_transmittal_entries.liquidation_id
+        FROM po_transmittal_entries
+        LEFT JOIN liquidation ON po_transmittal_entries.liquidation_id = liquidation.id
+        WHERE liquidation.`status`  ='at_po')");
+
+        $province =  strtolower(Yii::$app->user->identity->province);
+        if (
+            $province === 'adn' ||
+            $province === 'ads' ||
+            $province === 'sds' ||
+            $province === 'sdn' ||
+            $province === 'pdi'
+        ) {
+            $query->andWhere('province =:province', ['province' => $province]);
+        }
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+        // ob_clean();
+        // echo "<pre>";
+        // var_dump($query);
+        // echo "</pre>";
+        // return ob_get_clean();
+        // return json_encode($dataProvider);
+        return $this->render('returned_liquidations', [
+            'dataProvider' => $dataProvider
+        ]);
     }
 }

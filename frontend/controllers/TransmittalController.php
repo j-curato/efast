@@ -198,24 +198,21 @@ class TransmittalController extends Controller
     }
     public function getTransmittalNumber($date)
     {
-        $query = (new \yii\db\Query())
-            ->select("*")
-            ->from("transmittal")
-            ->orderBy('id DESC')
-            ->one();
-        $id = 0;
-        if (empty($query)) {
-            $id = 1;
-        } else {
-            $x = explode('-', $query['transmittal_number']);
-            $id = $x[1] + 1;
-        }
-        $final_id = '';
-        for ($y = strlen($id); $y < 4; $y++) {
-            $final_id .= 0;
-        }
-        $final_id .= $id;
-        $transmittal_number = date('Y', strtotime($date)) . '-' . $final_id;
+        $query = Yii::$app->db->createCommand("SELECT SUBSTRING_INDEX(transmittal_number,'-',-1) as q 
+        FROM transmittal
+        ORDER BY q DESC LIMIT 1")->queryScalar();
+        $id = 1;
+        if (!empty($query)) {
+            $id =$query + 1;
+        } 
+        // $final_id = '';
+        // for ($y = strlen($id); $y < 4; $y++) {
+        //     $final_id .= 0;
+        // }
+        // $final_id .= $id;
+
+        $final_id = substr(str_repeat(0,4).$id,-4);
+        $transmittal_number = 'RO-'.date('Y', strtotime($date)) . '-' . $final_id;
         return $transmittal_number;
     }
 }

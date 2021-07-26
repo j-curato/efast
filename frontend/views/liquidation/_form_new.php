@@ -143,24 +143,8 @@ use yii\helpers\ArrayHelper;
 
                 <div class="col-sm-3">
 
-                    <label for="transaction">Transaction</label>
-                    <?php
-                    // $po_transaction = PoTransaction::find()->asArray()
-                    //     ->all();
-                    // echo Select2::widget([
-                    //     'data' => ArrayHelper::map($po_transaction, 'id', 'tracking_number'),
-                    //     'name' => 'transaction',
-                    //     'id' => 'transaction',
-                    //     'value' => $transaction_id,
-                    //     'pluginOptions' => [
-                    //         'placeholder' => 'Select Transaction'
-                    //     ],
-                    //     'options' => [
-                    //         'required' => true
-                    //     ]
-
-                    // ])
-                    ?>
+                    <label for="transaction">DV Number</label>
+                    <input type="text" name="dv_number" class="form-control">
                 </div>
                 <div class="col-sm-3" style="height:60x">
                     <label for="transaction">Transactions</label>
@@ -724,6 +708,7 @@ $script = <<<JS
                     var liq = JSON.parse(data).liquidation
                     console.log(liq)
                     $("#transaction").val(liq['po_transaction_id']).trigger('change')
+                    $("input[name='dv_number']").val(liq['dv_number'])
                     addToTransactionTable(res,$("#update_type").val())
                     getTotalAmounts()
 

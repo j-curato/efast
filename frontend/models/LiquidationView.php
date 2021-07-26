@@ -64,6 +64,7 @@ class LiquidationView extends \yii\db\ActiveRecord
             'total_vat' => 'Total Vat',
             'gross_payment' => 'Gross Payment',
             'province' => 'Province',
+            'is_cancelled' => 'Is Cancelled',
         ];
     }
 }

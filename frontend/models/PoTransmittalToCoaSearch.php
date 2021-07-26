@@ -4,13 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\PoTransmittal;
-use Yii;
+use app\models\PoTransmittalToCoa;
 
 /**
- * PoTransmittalSearch represents the model behind the search form of `app\models\PoTransmittal`.
+ * PoTransmittalToCoaSearch represents the model behind the search form of `app\models\PoTransmittalToCoa`.
  */
-class PoTransmittalSearch extends PoTransmittal
+class PoTransmittalToCoaSearch extends PoTransmittalToCoa
 {
     /**
      * {@inheritdoc}
@@ -18,7 +17,7 @@ class PoTransmittalSearch extends PoTransmittal
     public function rules()
     {
         return [
-            [['transmittal_number', 'date', 'created_at', 'status'], 'safe'],
+            [['transmittal_number', 'date', 'created_at'], 'safe'],
         ];
     }
 
@@ -40,27 +39,7 @@ class PoTransmittalSearch extends PoTransmittal
      */
     public function search($params)
     {
-
-        $province = Yii::$app->user->identity->province;
-        $q = PoTransmittal::find();
-        if (
-            $province === 'adn' ||
-            $province === 'sdn' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
-            $q->where('transmittal_number LIKE :province', ['province' => "$province%"]);
-        }
-        if (!empty($this->status)) {
-            $q->where('status = :province', ['province' => $this->status]);
-        }
-        // if (Yii::$app->user->identity->province === 'ro_admin') {
-
-        //     $q->where('status = :status', ['status' => "pending_at_ro"]);
-        // }
-
-        $query = $q;
+        $query = PoTransmittalToCoa::find();
 
         // add conditions that should always apply here
 
@@ -82,8 +61,7 @@ class PoTransmittalSearch extends PoTransmittal
             'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['like', 'transmittal_number', $this->transmittal_number])
-            ->andFilterWhere(['like', 'status', $this->status]);
+        $query->andFilterWhere(['like', 'transmittal_number', $this->transmittal_number]);
 
         return $dataProvider;
     }

@@ -232,6 +232,7 @@ class LiquidationController extends Controller
             $new_reporting_period = !empty($_POST['new_reporting_period']) ? $_POST['new_reporting_period'] : '';
             $reporting_period = $_POST['reporting_period'];
             $check_range = $_POST['check_range'];
+            $dv_number = $_POST['dv_number'];
             $province = Yii::$app->user->identity->province;
 
             $check = (new \yii\db\Query())
@@ -309,6 +310,10 @@ class LiquidationController extends Controller
             $liquidation->reporting_period = $reporting_period;
             $liquidation->po_transaction_id = $po_transaction_id;
             $liquidation->check_range_id = $check_range;
+            
+            // TEMPORRARY RA NI SA AUG E CHANGE RA NI
+            $liquidation->dv_number = $dv_number;
+
 
             // list($withd) = sscanf(implode(explode(',', $withdrawal[0])), "%f");
             // list($vat) = sscanf(implode(explode(',', $vat_nonvat[0])), "%f");
@@ -506,7 +511,9 @@ class LiquidationController extends Controller
                     $province = $cells[0];
                     $check_date = date("Y-m-d", strtotime($cells[1]));
                     $check_number = trim($cells[2]);
+
                     $is_cancel =  $cells[3];
+                    $dv_number =$cells[4];
                     $reporting_period = date("Y-m", strtotime($cells[5]));
                     $fund_source = trim($cells[6]);
                     $payee = trim($cells[7]);
@@ -565,7 +572,7 @@ class LiquidationController extends Controller
                         $liquidation->particular = $particular;
                         $liquidation->is_cancelled = strtolower($is_cancel)==='good'?0:1;
                         $liquidation->payee = $payee;
-                        $liquidation->dv_number = $this->getDvNumber($reporting_period);
+                        $liquidation->dv_number = $dv_number;
                         $liquidation->reporting_period = $reporting_period;
                         // $liquidation->advances_entries_id = $advances_entries_id['id'];
                         // $liquidation->chart_of_account_id = $advances_entries_id['id'];

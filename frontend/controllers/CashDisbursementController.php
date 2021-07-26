@@ -231,6 +231,7 @@ class CashDisbursementController extends Controller
                     ->select("cash_disbursement.id")
                     ->from("cash_disbursement")
                     ->where("cash_disbursement.dv_aucs_id = :dv_aucs_id", ['dv_aucs_id' => $selected_items[0]])
+                    ->andWhere("cash_disbursement.is_cancelled=0")
                     ->one();
                 if (!empty($query)) {
                     return json_encode(['isSuccess' => 'exist', 'id' => $query['id']]);

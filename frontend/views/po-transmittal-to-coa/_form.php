@@ -5,6 +5,8 @@ use app\models\CashDisbursementSearch;
 use app\models\ForTransmittalSearch;
 use app\models\LiquidationEntriesViewSearch;
 use app\models\LiquidationViewSearch;
+use app\models\PoTransmittal;
+use app\models\PoTransmittalSearch;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\grid\GridView;
@@ -19,14 +21,12 @@ use yii\widgets\ActiveForm;
 <div class="transmittal-form">
     <form id="add_data">
         <?php
-        $viewSearchModel = new LiquidationViewSearch();
-        if (!empty(\Yii::$app->user->identity->province)) {
-            $viewSearchModel->province = \Yii::$app->user->identity->province;
-            // echo \Yii::$app->user->identity->province;
-        }
-        $viewSearchModel->status = 'at_po';
-        $viewSearchModel->is_cancelled = 0;
-
+        $viewSearchModel = new PoTransmittalSearch();
+        // if (!empty(\Yii::$app->user->identity->province)) {
+        //     $viewSearchModel->province = \Yii::$app->user->identity->province;
+        //     // echo \Yii::$app->user->identity->province;
+        // }
+        $viewSearchModel->status = 'at_ro';
         $viewDataProvider = $viewSearchModel->search(Yii::$app->request->queryParams);
 
         $viewDataProvider->pagination = ['pageSize' => 10];
@@ -35,48 +35,11 @@ use yii\widgets\ActiveForm;
             [
                 'class' => '\kartik\grid\CheckboxColumn',
                 'checkboxOptions' => function ($model, $key, $index, $column) {
-                    return ['value' => $model->id,  'style' => 'width:20px;', 'class' => 'checkbox', ''];
+                    return ['value' => $model->transmittal_number,  'style' => 'width:20px;', 'class' => 'checkbox', ''];
                 }
             ],
-            'province',
-
-            'check_date',
-            'check_number',
-            'dv_number',
-            'reporting_period',
-            'payee',
-            'particular',
-
-            [
-                'label' => 'Total Disbursements',
-                'attribute' => 'total_withdrawal',
-                'format' => ['decimal', 2],
-                'hAlign' => 'right'
-            ],
-            [
-                'label' => 'Total Sales Tax (VAT/Non-VAT)',
-                'attribute' => 'total_vat',
-                'format' => ['decimal', 2],
-                'hAlign' => 'right'
-            ],
-            [
-                'label' => 'Income Tax (Expanded Tax)',
-                'attribute' => 'total_expanded',
-                'format' => ['decimal', 2],
-                'hAlign' => 'right'
-            ],
-            [
-                'label' => 'Total Liquidation',
-                'attribute' => 'total_liquidation_damage',
-                'format' => ['decimal', 2],
-                'hAlign' => 'right'
-            ],
-            [
-                'label' => 'Gross Payment',
-                'attribute' => 'gross_payment',
-                'format' => ['decimal', 2],
-                'hAlign' => 'right'
-            ],
+            'transmittal_number',
+            'date',
 
 
         ];
@@ -123,18 +86,10 @@ use yii\widgets\ActiveForm;
         </div>
         <table class="table table-striped" id="transaction_table" style="background-color: white;">
             <thead>
-                <th>Province</th>
+                <th>Transmittal Number</th>
                 <th>Check Date</th>
                 <th>Check Number</th>
-                <th>DV Number</th>
-                <th>Reporting Period</th>
-                <th>Payee</th>
-                <th>Particular</th>
-                <th>Total Disbursements</th>
-                <th>Total Sales Tax</th>
-                <th>Total Income Tax</th>
-                <th>Total Liquidation Damage</th>
-                <th>Gross Payment</th>
+              
             </thead>
             <tbody>
             </tbody>
@@ -145,9 +100,8 @@ use yii\widgets\ActiveForm;
 
                 </tr>
                 <tr>
-                    <td colspan="14">
+                    <td colspan="7">
                         <button type="submit" class="btn btn-success" style="width: 100%;" id="save" name="save"> SAVE</button>
-
                     </td>
                 </tr>
             </tfoot>
@@ -234,7 +188,7 @@ use yii\widgets\ActiveForm;
             // console.log(clone.children('td').eq(0).find('.checkbox').val())
             // clone.children('td').eq(0).remove();
             clone.children('td').eq(0).find('.checkbox').prop('type', 'text');
-            clone.children('td').eq(0).find('.checkbox').prop('name', 'liquidation_id[]');
+            clone.children('td').eq(0).find('.checkbox').prop('name', 'po_transmittal_number[]');
             clone.children('td').eq(0).prop('style', 'display:none');
             clone.append(row)
 
@@ -243,7 +197,7 @@ use yii\widgets\ActiveForm;
 
         });
         $('.checkbox').prop('checked', false)
-
+        getTransmittalNumber
     })
 </script>
 
@@ -268,27 +222,12 @@ $script = <<< JS
         
         $.ajax({
             type:'POST',
-            url:window.location.pathname + "?r=po-transmittal/insert-po-transmittal",
+            url:window.location.pathname + "?r=po-transmittal-to-coa/insert-transmittal",
             data:$("#save_data").serialize(),
             success:function(data){
                 var res= JSON.parse(data)
                 console.log(res)
-                // if (res.isSuccess){
 
-                //     swal({
-                //         title: "Success",
-                //         // text: res.error,
-                //         type: "success",
-                //         timer: 3000,
-                //         button: false
-                //                 // confirmButtonText: "Yes, delete it!",
-                //     },
-                //     function(){
-                //         window.location.href  = window.location.pathname + "?r=transmittal/view&id="+res.id
-                //     }
-                    
-                //     );
-                // }
 
             }
         })

@@ -4,44 +4,35 @@ use app\models\Assignatory;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\PoTransmittal */
+/* @var $model app\models\Transmittal */
 
 $this->title = $model->transmittal_number;
-$this->params['breadcrumbs'][] = ['label' => 'Po Transmittals', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Transmittals', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="po-transmittal-view">
+<div class="transmittal-view">
 
+    <!-- <h1><?= Html::encode($this->title) ?></h1>
+
+    <p>
+        <?= Html::a('Update', ['update', 'id' => $model->transmittal_number], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Delete', ['delete', 'id' => $model->transmittal_number], [
+            'class' => 'btn btn-danger',
+            'data' => [
+                'confirm' => 'Are you sure you want to delete this item?',
+                'method' => 'post',
+            ],
+        ]) ?>
+    </p> -->
 
 
     <div class="container">
         <div class="row as">
-            <p>
-                <?= Html::a('Update', ['update', 'id' => $model->transmittal_number], ['class' => 'btn btn-primary']) ?>
-                <?php
-                $color = '';
-                $action = '';
-                if (strtolower($model->status) == 'pending_at_ro') {
-                    $color = 'btn-success';
-                    $action = 'Accept';
-                } else {
-                    $color = 'btn-danger';
-                    $action = 'Pending';
-                }
-                if (Yii::$app->user->identity->province === 'ro_admin') {
-                    echo Html::a($action, ['accept', 'id' => $model->transmittal_number], [
-                        'class' => "btn $color",
-                        'data' => [
-                            'confirm' => "Are you sure you want to $action this item?",
-                            'method' => 'post',
-                        ],
-                    ]);
-                }
-                ?>
-            </p>
+
 
         </div>
 
@@ -64,72 +55,42 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
         <table class="">
-            <thead style="border-top: 1px solid black;border-bottom: 1px solid black;">
+            <thead style="border-top: 1px solid black;">
                 <th>No.</th>
-                <th>DV Number</th>
-                <th>Check/ADA</th>
-                <th>Check/ADA Date</th>
-                <th>Payee</th>
-                <th>Particulars</th>
-                <th>Amount</th>
+                <th>Transmittal Number</th>
+                <th>Date</th>
+                <th>Total Withdrawals</th>
+                <th>Total Dv</th>
             </thead>
 
             <tbody>
 
                 <?php
                 $total = 0;
-                $q = 1;
-                foreach ($model->poTransmittalEntries as $i => $val) {
-                    $query = (new \yii\db\Query())
-                        ->select(["SUM(liquidation_entries.withdrawals) as total_disbursed"])
-                        ->from('liquidation')
-                        ->join("LEFT JOIN", "liquidation_entries", "liquidation.id = liquidation_entries.liquidation_id")
-                        ->where("liquidation.id =:id", ['id' => $val->liquidation_id])
-                        ->one();
-
-                    $qwe = '';
-                    $display = 'display:none;';
-
-
-
+                foreach ($dataProvider as $i => $val) {
+                    // $query = (new \yii\db\Query())
+                    //     ->select(["SUM(dv_aucs_entries.amount_disbursed) as total_disbursed"])
+                    //     ->from('dv_aucs')
+                    //     ->join("LEFT JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
+                    //     ->where("dv_aucs.id =:id", ['id' => $val->cashDisbursement->dv_aucs_id])
+                    //     ->one();
+                    $q = $i + 1;
+                    $edited = $val['edited'] == 1 ? 'Edited' : '';
                     echo "<tr>
                         <td>$q</td>
-                        <td>{$val->liquidation->dv_number}</td>
-                        <td>{$val->liquidation->check_number}</td>
-                        <td>{$val->liquidation->check_date}</td>
-                        <td>{$val->liquidation->payee}</td>
-                        <td>{$val->liquidation->particular}</td>
-       
-                        <td style='text-align:right'>" . number_format($query['total_disbursed'], 2) . "</td>
-                    ";
-                    if (Yii::$app->user->identity->province === 'ro_admin') {
-
-                        $status = 'Remove';
-                        $color = 'btn-danger';
-                        if ($val->liquidation->status ==='at_po'){
-                            $status='ibalik';
-                            $color='btn-success';
-                        }
-                        $qwe = Html::a($status, ['return', 'id' => $val->id], [
-                            'class' => "btn $color",
-                            'data' => [
-                                'confirm' => "Are you sure you want to  this item?",
-                                'method' => 'post',
-                            ],
-                        ]);
-                        echo "  <td>" .
-                            $qwe
-                            . " </td>";
-                    }
-                    echo " </tr>";
-                    $total += $query['total_disbursed'];
-                    $q++;
+                        <td>" . $val['transmittal_number'] . ' ' . $edited . "</td>
+                        <td>{$val['date']}</td>
+                        <td>{$val['total_dv']}</td>
+                        <td style='text-align:right'>" . number_format($val['total_withdrawals'], 2) . "</td>
+         
+           
+                    </tr>";
+                    $total+=$val['total_withdrawals'];
                 }
-                // }
                 ?>
                 <tr>
 
-                    <td colspan="6" style="font-weight: bold;text-align:center"> Total</td>
+                    <td colspan="4" style="font-weight: bold;text-align:center"> Total</td>
                     <td style='text-align:right'> <?php echo number_format($total, 2); ?></td>
                 </tr>
             </tbody>
@@ -152,7 +113,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <div class="col-sm-3 as">
                 <label for="assignatory_1">Regional Director </label>
-                <select name="" id="assignatory_1" class="asignatory" onchange="regionalDirector(this)" style="width: 100%;">
+                <select name="" id="assignatory_1" class="assignatory" onchange="regionalDirector(this)" style="width: 100%;">
                     <option value=""></option>
                 </select>
             </div>
@@ -182,12 +143,77 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </div>
-</div>
-<style>
-    table {
-        width: 100%;
-    }
+    <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+    <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
+    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" /> -->
+    <script>
+        var reference = []
+        // $(document).ready(function() {
+        //     reference = ["GAY A. TIDALGO"]
+        //     $('#assignatory').select2({
+        //         data: reference,
+        //         placeholder: "Select ",
 
+        //     })
+        // })
+        // $("#assignatory").change(function() {
+        //     console.log("qwe")
+        // })
+
+        function oicRd(x) {
+            $("#oic").text(x.value)
+        }
+
+        function regionalDirector(x) {
+            $("#asig_1").text(x.value)
+        }
+
+        function sample(q) {
+            console.log(q.value)
+
+            $("#ass").text(q.value)
+            if (q.value == '') {
+                $("#for_rd").text('')
+            } else {
+
+                $("#for_rd").text('For the Regional Director')
+            }
+
+
+        }
+        $(document).ready(function() {
+            var oic_rd = ['Officer-in-Charge', 'Regional Director']
+            $('#oic_rd').select2({
+                data: oic_rd,
+                placeholder: "Select ",
+                allowClear: true,
+                closeOnSelect: true
+            })
+            $.getJSON('/afms/frontend/web/index.php?r=assignatory/get-all-assignatory')
+
+                .then(function(data) {
+
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.name,
+                            text: val.name
+                        })
+                    })
+                    assignatory = array
+                    $('.assignatory').select2({
+                        data: assignatory,
+                        placeholder: "Select ",
+                        allowClear: true,
+                        closeOnSelect: true
+                    })
+
+                })
+        })
+    </script>
+</div>
+
+<style>
     table,
     td,
     th {
@@ -361,68 +387,17 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     }
 </style>
-<script>
-    var reference = []
-    // $(document).ready(function() {
-    //     reference = ["GAY A. TIDALGO"]
-    //     $('#assignatory').select2({
-    //         data: reference,
-    //         placeholder: "Select ",
 
-    //     })
-    // })
-    // $("#assignatory").change(function() {
-    //     console.log("qwe")
-    // })
-
-    function oicRd(x) {
-        $("#oic").text(x.value)
-    }
-
-    function regionalDirector(x) {
-        $("#asig_1").text(x.value)
-    }
-
-    function sample(q) {
-        console.log(q.value)
-
-        $("#ass").text(q.value)
-        if (q.value == '') {
-            $("#for_rd").text('')
-        } else {
-
-            $("#for_rd").text('For the Regional Director')
-        }
-
-
-    }
-    $(document).ready(function() {
-        var oic_rd = ['Officer-in-Charge', 'Regional Director']
-        $('#oic_rd').select2({
-            data: oic_rd,
-            placeholder: "Select ",
-            allowClear: true,
-            closeOnSelect: true
-        })
-        $.getJSON('/afms/frontend/web/index.php?r=po-assignatory/get-all-assignatory')
-
-            .then(function(data) {
-
-                var array = []
-                $.each(data, function(key, val) {
-                    array.push({
-                        id: val.name,
-                        text: val.name
-                    })
-                })
-                assignatory = array
-                $('.asignatory').select2({
-                    data: assignatory,
-                    placeholder: "Select ",
-                    allowClear: true,
-                    closeOnSelect: true
-                })
-
-            })
+<?php
+$this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+?>
+<?php
+$script = <<< JS
+    $("#assignatory").change(function(){
+      
+        console.log("qwe")
     })
-</script>
+
+JS;
+
+?>
