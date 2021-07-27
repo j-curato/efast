@@ -99,7 +99,9 @@ class LiquidationViewSearch extends LiquidationView
             ->andFilterWhere(['like', 'dv_number', $this->dv_number])
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
             ->andFilterWhere(['like', 'payee', $this->payee])
+            ->orFilterWhere(['like', 'tr_payee', $this->payee])
             ->andFilterWhere(['like', 'particular', $this->particular])
+            ->orFilterWhere(['like', 'tr_particular', $this->particular])
             ->andFilterWhere(['like', 'gross_payment', $this->gross_payment])
             ->andFilterWhere(['like', 'status', $this->status])
             ->andFilterWhere(['like', 'province', $this->province]);

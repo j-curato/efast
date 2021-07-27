@@ -203,8 +203,13 @@ $.getJSON(url + '?r=transaction/get-transaction')
 
 
 // GET DEBIT AND CREDIT TOTAL
+function getRoTransactions(){
+    return $.getJSON(url + '?r=transaction/get-transaction')
+}
+function getChartOfAccounts() {
+    return $.getJSON(url + '?r=chart-of-accounts/accounting-codes')
+}
+function getFundSourceType() {
+    return $.getJSON(url + '?r=fund-source-type/all-fund-source-type')
 
-function chartOfAccounts() {
-    return $.getJSON('/afms/index.php?r=report/get-all-transaction')
-    
 }

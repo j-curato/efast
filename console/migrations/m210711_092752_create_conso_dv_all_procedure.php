@@ -12,7 +12,7 @@ class m210711_092752_create_conso_dv_all_procedure extends Migration
      */
     public function safeUp()
     {
-      
+
         $createTriggerSql = <<< SQL
         CREATE PROCEDURE conso_dv_all (r_year VARCHAR(20)) 
         BEGIN
@@ -40,37 +40,29 @@ class m210711_092752_create_conso_dv_all_procedure extends Migration
         AND record_allotment_entries.chart_of_account_id = chart_of_accounts.id
         AND chart_of_accounts.major_account_id =major_accounts.id
         AND record_allotments.mfo_pap_code_id = mfo_pap_code.id
-                    
-                        AND record_allotments.reporting_period  LIKE  r_year
+        AND record_allotments.reporting_period  LIKE  r_year
 
         GROUP BY mfo_pap_code.`code`
-
-
-
-
         ) as r_allotment ON detailed_dv_aucs.mfo_code = r_allotment.mfo_code
 
         LEFT JOIN(
-        SELECT 
-        mfo_pap_code.`code` as mfo_code,
-        SUM(raoud_entries.amount) as total
+            SELECT 
+            mfo_pap_code.`code` as mfo_code,
+            SUM(raoud_entries.amount) as total
 
-        FROM process_ors,raouds,raoud_entries,record_allotment_entries,chart_of_accounts,major_accounts,
-        record_allotments,mfo_pap_code
+            FROM process_ors,raouds,raoud_entries,record_allotment_entries,chart_of_accounts,major_accounts,
+            record_allotments,mfo_pap_code
 
-        WHERE process_ors.id = raouds.process_ors_id
-        AND raouds.id = raoud_entries.raoud_id
-        AND raouds.record_allotment_entries_id = record_allotment_entries.id
-        AND record_allotment_entries.chart_of_account_id = chart_of_accounts.id
-        AND chart_of_accounts.major_account_id = major_accounts.id
-        AND record_allotment_entries.record_allotment_id = record_allotments.id
-        AND record_allotments.mfo_pap_code_id = mfo_pap_code.`id`
-        AND	process_ors.reporting_period  LIKE r_year
-
-        GROUP BY mfo_pap_code.`code`
-
-
-                        )as t_obligation ON detailed_dv_aucs.mfo_code = t_obligation.mfo_code
+            WHERE process_ors.id = raouds.process_ors_id
+            AND raouds.id = raoud_entries.raoud_id
+            AND raouds.record_allotment_entries_id = record_allotment_entries.id
+            AND record_allotment_entries.chart_of_account_id = chart_of_accounts.id
+            AND chart_of_accounts.major_account_id = major_accounts.id
+            AND record_allotment_entries.record_allotment_id = record_allotments.id
+            AND record_allotments.mfo_pap_code_id = mfo_pap_code.`id`
+            AND	process_ors.reporting_period  LIKE r_year
+            GROUP BY mfo_pap_code.`code`
+ 
         WHERE detailed_dv_aucs.check_or_ada_no IS NOT NULL
 
         AND detailed_dv_aucs.reporting_period  LIKE  r_year
@@ -95,6 +87,7 @@ class m210711_092752_create_conso_dv_all_procedure extends Migration
 
 
         FROM `detailed_dv_aucs` WHERE detailed_dv_aucs.allotment_class IS NULL
+        AND detailed_dv_aucs.reporting_period LIKE r_year
         GROUP BY mrd_name;
         END
 

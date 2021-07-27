@@ -611,4 +611,4 @@ $script = <<<JS
         })
 JS;
 $this->registerJs($script);
-?>if (Yii::$app->user->can('super-user')) {
+?>

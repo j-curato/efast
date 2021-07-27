@@ -230,9 +230,11 @@ class AdvancesController extends Controller
             $amount = $_POST['amount'];
             $fund_source = $_POST['fund_source'];
             $new_reporting_period = $_POST['new_reporting_period'];
+            $fund_source_type = $_POST['fund_source_type'];
+
 
             $transaction = Yii::$app->db->beginTransaction();
-            // return json_encode(['isSuccess' => false, 'error' => $reporting_period[1]]);
+            // return json_encode(['isSuccess' => false, 'error' => $fund_source_type]);
 
 
             if (!empty($update_id)) {
@@ -256,6 +258,7 @@ class AdvancesController extends Controller
                         $ad_entry = new AdvancesEntries();
                         $ad_entry->advances_id = $advances->id;
                         $ad_entry->cash_disbursement_id = $cash_disbursement_id[$index];
+                        $ad_entry->fund_source_type = $fund_source_type[$index];
                         $ad_entry->object_code = $sub_account1_id[$index];
                         $ad_entry->fund_source = $fund_source[$index];
                         $ad_entry->reporting_period = $new_reporting_period[$index];
@@ -301,6 +304,7 @@ class AdvancesController extends Controller
                     'advances_entries.amount',
                     'advances_entries.object_code',
                     'advances_entries.fund_source',
+                    'advances_entries.fund_source_type',
 
                 ])
                 ->from('advances_entries')

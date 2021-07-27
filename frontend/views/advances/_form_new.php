@@ -2,10 +2,12 @@
 
 use app\models\AdvancesCashDisbursementSearch;
 use app\models\CashDisbursementSearch;
+use app\models\FundSourceType;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\grid\GridView;
 use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Advances */
@@ -87,6 +89,7 @@ use kartik\select2\Select2;
                 ])
                 ?>
             </div>
+
         </div>
         <!-- <div class="row">
             <div class="col-sm-12">
@@ -104,6 +107,7 @@ use kartik\select2\Select2;
                 <th>Check Date</th>
                 <th>Payee</th>
                 <th>Particular</th>
+                <th>Fund Source Type</th>
                 <th>Fund Source</th>
                 <th>Sub Account</th>
                 <th>Amount</th>
@@ -124,7 +128,7 @@ use kartik\select2\Select2;
         $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
         $dataProvider->pagination = ['pageSize' => 10];
 
-        
+
 
         $gridColumn = [
             // ['class' => 'yii\grid\SerialColumn'],
@@ -150,7 +154,7 @@ use kartik\select2\Select2;
             [
                 'label' => "DV Number",
                 "attribute" => "dv_number",
-             
+
             ],
             [
                 'label' => "Payee",
@@ -202,7 +206,7 @@ use kartik\select2\Select2;
 
             'columns' => $gridColumn
         ]); ?>
-        <button type="submit" name="" id="add" class="btn btn-success" style="width: 100%;">Add</button>
+        <button type="submit" name="" id="add" class="btn btn-primary" style="width: 100%;">Add</button>
     </form>
     <!-- </div> -->
     <style>
@@ -219,10 +223,10 @@ use kartik\select2\Select2;
     </style>
 </div>
 
-<script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-<link href="/dti-afms-2/frontend/web/js/select2.min.js" />
-<link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
-<link href="/dti-afms-2/frontend/web/js/maskMoney.js" />
+<script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+<link href="/afms/frontend/web/js/select2.min.js" />
+<link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
+<link href="/afms/frontend/web/js/maskMoney.js" />
 
 <script>
     var vacant = 0;
@@ -294,6 +298,12 @@ use kartik\select2\Select2;
                     <td class='issuance_date'> ${result[i]['issuance_date']}</td>
                     <td class='payee'> ${result[i]['payee']}</td>
                     <td class='particular'>${result[i]['particular']}</td>
+                    
+                    <td> 
+                             <select id="fund_source_type-${transaction_table_count}" name="fund_source_type[]"  class="fund_source_type" style="width: 200px">
+                                <option></option>
+                            </select>
+                    </td>
                     <td> 
                          <textarea type='text' id='fund_source-${transaction_table_count}' class='fund_source' name='fund_source[]'>
                          ${result[i]['fund_source']}
@@ -322,16 +332,23 @@ use kartik\select2\Select2;
                 placeholder: "Select Chart of Account",
 
             });
+            $(`#fund_source_type-${transaction_table_count}`).select2({
+                data: fund_source_type,
+                placeholder: "Select Fund Source Type",
+
+            });
             if ($("#update_id").val() > 0) {
                 $(`#chart-${transaction_table_count}`).val(result[i]['object_code']).trigger('change')
                 $(`#amount-${transaction_table_count}`).val(result[i]['amount']).trigger('change')
+                $(`#fund_source_type-${transaction_table_count}`).val(result[i]['fund_source_type']).trigger('change')
             }
             transaction_table_count++;
         }
     }
+    var fund_source_typ = []
     $(document).ready(function() {
 
-        $.getJSON('/dti-afms-2/frontend/web/index.php?r=database-view/sub-accounts')
+        $.getJSON('/afms/frontend/web/index.php?r=database-view/sub-accounts')
             .then(function(data) {
                 var array = []
                 $.each(data, function(key, val) {
@@ -342,16 +359,20 @@ use kartik\select2\Select2;
                 })
                 accounts = array
             })
+
     })
 </script>
 <?php
 
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 
 ?>
 <?php
 SweetAlertAsset::register($this);
 $script = <<<JS
+
+
         var row=undefined
     // ADD DATA TO TRANSACTION TABLE
     $("#add_data").submit(function(e){
@@ -399,6 +420,17 @@ $script = <<<JS
     })
 
     $(document).ready(function(){
+        getFundSourceType().then((data) => {
+            var array = []
+            $.each(data, function(key, val) {
+                array.push({
+                    id: val.name,
+                    text: val.name 
+                })
+            })
+            fund_source_type = array
+            console.log(fund_source_type)
+        })
 
         // KUNG NAAY SULOD ANG UPDATE ID MAG POPULATE SA MGA DATA
 

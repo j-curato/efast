@@ -119,8 +119,35 @@ $this->params['breadcrumbs'][] = $this->title;
         'check_number',
         'dv_number',
         'reporting_period',
-        'payee',
-        'particular',
+        // 'particular',
+        [
+            'label'=>'Payee',
+            'attribute'=>'payee',
+            'value'=>function($model){
+                
+                if (!empty($model->tr_payee)){
+                    $payee= $model->tr_payee;
+                }
+                else{
+                    $payee =$model->payee;
+                }
+                return $payee;
+            }
+        ],
+        [
+            'label'=>'Particular',
+            'attribute'=>'particular',
+            'value'=>function($model){
+                
+                if (!empty($model->tr_particular)){
+                    $particular= $model->tr_particular;
+                }
+                else{
+                    $particular =$model->particular;
+                }
+                return $particular;
+            }
+        ],
 
         [
             'label' => 'Total Disbursements',

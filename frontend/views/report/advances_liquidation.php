@@ -55,8 +55,8 @@ $this->params['breadcrumbs'][] = $this->title;
         [
             'label' => "Total Tax",
             'value' => function ($model) {
-                $q= $model->vat_nonvat + $model->expanded_tax;
-                return $q;
+                // $q= $model->vat_nonvat + $model->expanded_tax;
+                return 1;
             }   
         ],
         [

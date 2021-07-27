@@ -1,5 +1,6 @@
 <?php
 
+use kartik\datetime\DateTimePicker;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -20,6 +21,20 @@ use yii\widgets\ActiveForm;
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>
 
-    <?php ActiveForm::end(); ?>
+    <?php ActiveForm::end();
+
+    // echo DateTimePicker::widget([
+    //     'name'=>'date',
+    //     'options' => ['placeholder' => 'Enter event time ...','readOnly'=>true],
+    //     'pluginOptions' => [
+    //         'autoclose' => true
+    //     ]
+    // ]);
+
+
+
+
+    ?>
+
 
 </div>
