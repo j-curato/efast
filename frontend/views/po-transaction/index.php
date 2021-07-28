@@ -31,7 +31,11 @@ $this->params['breadcrumbs'][] = $this->title;
         'po_responsibility_center_id',
         'payee:ntext',
         'particular:ntext',
-        'amount',
+        [
+            'attribute'=>'amount',
+            'hAlign'=>'right',
+            'format'=>['decimal',2]
+        ],
         'payroll_number',
 
         [

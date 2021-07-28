@@ -254,32 +254,41 @@ class CibrController extends Controller
                 particular,
                 amount,
                 withdrawals,
+                vat_nonvat,
+                expanded_tax,
                 gl_object_code,
-                gl_account_title,
+                gl_account_title, 
                 reporting_period
                 from advances_liquidation
                 where reporting_period <=:reporting_period AND province LIKE :province
-    
                 ORDER BY reporting_period,check_date,check_number
-            ")
-                //  AND book_name LIKE :book
-
-                ->bindValue(':reporting_period', $reporting_period)
+            ")->bindValue(':reporting_period', $reporting_period)
                 ->bindValue(':province', $province)
-
                 ->queryAll();
+            $beginning_balance =  Yii::$app->db->createCommand("SELECT 
+                SUM(amount)-SUM(withdrawals) as begin_balance
+                from advances_liquidation
+                where reporting_period <:reporting_period AND province LIKE :province
+                ORDER BY reporting_period,check_date,check_number
+               ")->bindValue(':reporting_period', $reporting_period)
+                ->bindValue(':province', $province)
+                ->queryScalar();
+            //  AND book_name LIKE :book
+
+
             // return $reporting_period;
 
             // ob_clean();
             // echo "<pre>";
-            // var_dump($result);
+            // var_dump($beginning_balance);
             // echo "</pre>";
             // return ob_get_clean();
             return $this->render('_form', [
                 'dataProvider' => $dataProvider,
                 'province' => $province,
                 'reporting_period' => $reporting_period,
-                'book' => ''
+                'book' => '',
+                'beginning_balace'=>$beginning_balance
 
             ]);
         } else {

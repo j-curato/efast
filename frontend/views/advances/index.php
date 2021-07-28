@@ -73,7 +73,6 @@ $this->params['breadcrumbs'][] = $this->title;
     $gridColumn = [
 
         // 'advances.nft_number',
-
         'nft_number',
         'r_center_name',
         'province',
@@ -133,7 +132,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ExportMenu::widget([
                     'dataProvider' => $dataProvider,
                     'columns'  => $gridColumn,
-                    'filename' => 'Liquidations',
+                    'filename' => 'Advances',
                     'exportConfig' => [
                         ExportMenu::FORMAT_CSV => false,
                         ExportMenu::FORMAT_TEXT => false,

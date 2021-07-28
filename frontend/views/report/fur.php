@@ -189,14 +189,13 @@ $script = <<< JS
 
     $(document).ready(()=>{
         var startDate = new Date(2021,07,13, 09,17,04);
-//         date2 = new Date( date1 );
-// // Do your operations
+
         var endDate   = new Date(2021,07,12, 18,39,09);
         var seconds = (endDate.getTime() - startDate.getTime())
         var diff =seconds/ 60;
         console.log(seconds)
     })
-    $('#filter').submit((e)=>{
+    $('#generate').click((e)=>{
         e.preventDefault();
         var reporting_period = new Date($('#reporting_period').val())
         month = reporting_period.toLocaleString('default',{month:'long'})

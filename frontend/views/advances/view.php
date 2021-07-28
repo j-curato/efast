@@ -35,9 +35,14 @@ $this->params['breadcrumbs'][] = $this->title;
         <tbody>
             <?php
             $total = 0;
-            foreach ($model->advancesEntries as $val) {
+            foreach ($model->advancesEntries as $i => $val) {
+                $payee = !empty($val->cashDisbursement->dvAucs->payee_id) ? $val->cashDisbursement->dvAucs->payee->account_name : '';
                 echo "
                 <tr>
+
+                <td>
+                {$val->fund_source}
+                </td>
                 <td>
                 {$val->cashDisbursement->dvAucs->dv_number}
                 </td>
@@ -51,16 +56,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 {$val->cashDisbursement->issuance_date}
                 </td>
                 <td>
-                {$val->cashDisbursement->dvAucs->payee->account_name}
+                {$payee}
                 </td>
                 <td>
-                {$val->subAccountView->object_code}
+                {$val->accountingCode->object_code}
                 </td>
                 <td>
-                {$val->subAccountView->account_title}
+                {$val->accountingCode->account_title}
                 </td>
                 <td style='text-align:right'>
-                {$val->amount}
+              
+                " . number_format($val->amount, 2) . "
                 </td>
 
                 </tr>

@@ -54,20 +54,40 @@ $this->params['breadcrumbs'][] = $this->title;
                 $total_vat_nonvat = 0;
                 $total_liquidation_damages = 0;
                 $total_ewt = 0;
-                foreach ($model->liquidationEntries as $val) {
 
+                foreach ($model->liquidationEntries as $val) {
+                    $nft_number = '';
+                    $report_type = '';
+                    $province = '';
+                    $fund_source = '';
+                    $uacs = '';
+                    $general_ledger = '';
                     $total_withdrawal += $val->withdrawals;
                     $total_vat_nonvat += $val->vat_nonvat;
                     $total_ewt += $val->expanded_tax;
                     $total_liquidation_damages += $val->liquidation_damage;
-                    echo "<tr>
+                    if (!empty($val->advances_entries_id)) {
+                        $nft_number =  $val->advancesEntries->advances->nft_number;
+                        $report_type = $val->advancesEntries->advances->report_type;
+                        $province = $val->advancesEntries->advances->province;
+                        $fund_source =  $val->advancesEntries->fund_source;
+                    }
+                    if (!empty($val->chart_of_account_id)) {
+
+                        $uacs = $val->chartOfAccount->uacs;
+                        $general_ledger =  $val->chartOfAccount->general_ledger;
+                    }
+
+
+
+                    echo "<tr></tr>
                 <td>{$val->reporting_period}</td>
-                <td>{$val->advancesEntries->advances->nft_number}</td>
-                <td>{$val->advancesEntries->advances->report_type}</td>
-                <td>{$val->advancesEntries->advances->province}</td>
-                <td>{$val->advancesEntries->fund_source}</td>
-                <td>{$val->chartOfAccount->uacs}</td>
-                <td>{$val->chartOfAccount->general_ledger}</td>
+                <td>{$nft_number}</td>
+                <td>{$report_type}</td>
+                <td>{$province}</td>
+                <td>{$fund_source}</td>
+                <td>{$uacs}</td>
+                <td>{$general_ledger}</td>
                 <td class='number'>" . number_format($val->liquidation_damage, 2) . "</td>
                 <td class='number'>" . number_format($val->withdrawals, 2) . "</td>
                 <td class='number'>" . number_format($val->vat_nonvat, 2) . "</td>

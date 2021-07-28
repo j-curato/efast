@@ -18,7 +18,10 @@ class AdvancesLiquidationSearch extends AdvancesLiquidation
     {
         return [
             // [[ 'payee_id', 'responsibility_center_id'], 'integer'],
-            [['check_date', 'check_number', 'dv_number', 'particular','reporting_period'], 'safe'],
+            [['check_date', 'check_number', 'dv_number', 'particular',
+            'reporting_period',
+            'fund_source',
+        ], 'safe'],
         ];
     }
 
@@ -67,6 +70,7 @@ class AdvancesLiquidationSearch extends AdvancesLiquidation
             ->andFilterWhere(['like', 'check_number', $this->check_number])
             ->andFilterWhere(['like', 'dv_number', $this->dv_number])
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
+            ->andFilterWhere(['like', 'fund_source', $this->fund_source])
             ->andFilterWhere(['like', 'particular', $this->particular]);
 
         return $dataProvider;

@@ -257,7 +257,7 @@ class JevPreparationController extends Controller
                 //  'jev_preparation.date'
                 "IFNULL(NULL,'$prev_end_month') as reporting_period",
                 "IFNULL(NULL,'Beginning Balance') as explaination",
-                "IFNULL(NULL,'') as uacs",
+                "accounting_codes.coa_object_code as uacs",
                 "IFNULL(NULL,'') as general_ledger",
                 "IFNULL(NULL,'') as ref_number",
                 "IFNULL(NULL,'') as jev_number",

@@ -61,8 +61,6 @@ class ReportController extends \yii\web\Controller
                             'pending-dv',
                             'unpaid-obligation',
                             'saob',
-
-
                             'insert-cdr',
                             'get-cdr',
                             'temp',

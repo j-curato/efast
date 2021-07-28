@@ -230,10 +230,10 @@ class CdrController extends Controller
                 )
                 ->from('advances_liquidation')
                 ->where('reporting_period <=:reporting_period', ['reporting_period' => $reporting_period])
-                ->andWhere('book_name =:book_name', ['book_name' => $book_name])
+                ->orWhere('book_name =:book_name', ['book_name' => $book_name])
                 ->andWhere('province LIKE :province', ['province' => $province])
                 ->andWhere('report_type LIKE :report_type', ['report_type' => $report_type])
-                ->orderBy('reporting_period,check_date')
+                ->orderBy('reporting_period,check_date,check_number')
                 ->all();
             // $query2 = (new \yii\db\Query())
             //     ->select(

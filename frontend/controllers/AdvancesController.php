@@ -397,9 +397,12 @@ class AdvancesController extends Controller
                     $q = '';
                     if ($y === 7) {
                         $cells[] = $cell->getValue();
+                    } else if ($y === 17) {
+                        $cells[] = $cell->getCalculatedValue();
                     } else {
                         $cells[] =   $cell->getValue();
                     }
+
                     $y++;
                 }
                 if ($key < 260) {
@@ -414,12 +417,15 @@ class AdvancesController extends Controller
                     $amount = $cells[17];
                     $fund_source_type = $cells[12];
                     $division = $cells[28];
-
+                    if (empty($nft_number)) {
+                        $nft_number = $province;
+                    }
                     $sl_id = (new \yii\db\Query())
                         ->select("object_code")
                         ->from('accounting_codes')
                         ->where("accounting_codes.object_code =:object_code", ['object_code' => $sl_object_code])
                         ->one();
+
                     $advances_id = null;
                     $q = (new \yii\db\Query())
                         ->select("nft_number,id")
@@ -454,9 +460,10 @@ class AdvancesController extends Controller
                         'amount' =>  $amount,
                         'object_code' => $sl_id['object_code'],
                         'fund_source' => $fund_source,
-                        'reporting_period'=>$reporting_period,
-                        'fund_source_type'=>$fund_source_type,
-                        'division'=>$division
+                        'reporting_period' => $reporting_period,
+                        'fund_source_type' => $fund_source_type,
+                        'division' => $division,
+                        'report_type'=>$report_type
 
                     ];
                 }
@@ -472,6 +479,7 @@ class AdvancesController extends Controller
                 'reporting_period',
                 'fund_source_type',
                 'division',
+                'report_type',
 
 
             ];

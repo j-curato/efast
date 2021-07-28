@@ -26,6 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
     // add conditions that should always apply here
 
     $gridColumn = [
+        'province',
         'check_date',
         'check_number',
         'is_cancelled',

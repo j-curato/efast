@@ -115,35 +115,41 @@ $this->params['breadcrumbs'][] = $this->title;
     // echo \Yii::$app->user->identity->province;
     $viewColumn = [
         'province',
+        // [
+        //     'attribute' => 'province',
+        //     'value' => function ($model) {
+
+    
+        //         return strtoupper($model->province);
+        //     }
+        // ],
         'check_date',
         'check_number',
         'dv_number',
         'reporting_period',
         // 'particular',
         [
-            'label'=>'Payee',
-            'attribute'=>'payee',
-            'value'=>function($model){
-                
-                if (!empty($model->tr_payee)){
-                    $payee= $model->tr_payee;
-                }
-                else{
-                    $payee =$model->payee;
+            'label' => 'Payee',
+            'attribute' => 'payee',
+            'value' => function ($model) {
+
+                if (!empty($model->tr_payee)) {
+                    $payee = $model->tr_payee;
+                } else {
+                    $payee = $model->payee;
                 }
                 return $payee;
             }
         ],
         [
-            'label'=>'Particular',
-            'attribute'=>'particular',
-            'value'=>function($model){
-                
-                if (!empty($model->tr_particular)){
-                    $particular= $model->tr_particular;
-                }
-                else{
-                    $particular =$model->particular;
+            'label' => 'Particular',
+            'attribute' => 'particular',
+            'value' => function ($model) {
+
+                if (!empty($model->tr_particular)) {
+                    $particular = $model->tr_particular;
+                } else {
+                    $particular = $model->particular;
                 }
                 return $particular;
             }
