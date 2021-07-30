@@ -89,19 +89,31 @@ class TrackingSheetController extends Controller
      */
     public function actionCreate()
     {
-        $model = new TrackingSheet();
-
+        $model = '';
         if ($_POST) {
-            $model->transaction_type = $_POST['transaction_type'];
-            $model->process_ors_id = $_POST['ors'];
-            $model->payee_id = $_POST['payee'];
-            $model->particular = $_POST['particular'];
-            $model->tracking_number = $this->getTrackingNumber();
+            $transaction_type =  $_POST['transaction_type'];
+            $ors =  $_POST['ors'];
+            $payee = $_POST['payee'];
+            $particular =  $_POST['particular'];
 
+            if (!empty($_POST['update_id'])) {
+                $model = $this->findModel($_POST['update_id']);
+            } else {
+                $model = new TrackingSheet();
+                $model->tracking_number = $this->getTrackingNumber();
+            }
+
+            $model->transaction_type = $transaction_type;
+            $model->process_ors_id = $ors;
+            $model->payee_id = $payee;
+            $model->particular = $particular;
             if ($model->save(false)) {
 
                 // return $this->redirect(['view', 'id' => $model->id]);
-                return json_encode('qwer');
+                return json_encode([
+                    'isSuccess' => true,
+                    'id' => $model->id
+                ]);
             }
         }
 
@@ -125,7 +137,7 @@ class TrackingSheetController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('update', [
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
     }
@@ -174,11 +186,34 @@ class TrackingSheetController extends Controller
             return json_encode($query);
         }
     }
-    public function actionGetAllOrs()
+    public function actionGetAllOrs($id)
     {
-        $ors = Yii::$app->db->createCommand("SELECT process_ors.id,process_ors.serial_number
-    FROM process_ors WHERE process_ors.id NOT IN (SELECT process_ors_id FROM tracking_sheet)")->queryAll();
-        return json_encode($ors);
+
+        $ors = (new \yii\db\Query())
+            ->select('process_ors.id,process_ors.serial_number')
+            ->from('process_ors')
+            ->join('LEFT JOIN', 'tracking_sheet', 'process_ors.id = tracking_sheet.process_ors_id')
+            ->where('tracking_sheet.process_ors_id IS NULL');
+        if (!empty($id)) {
+            // return $id;
+            $ors->orWhere('tracking_sheet.id = :id',['id'=>$id]);
+        }
+
+        $q = $ors->all();
+        // $query =Yii::$app->db->createCommand("SELECT process_ors.id,process_ors.serial_number
+        // FROM process_ors 
+
+        // LEFT JOIN tracking_sheet ON process_ors.id = tracking_sheet.process_ors_id
+        // WHERE tracking_sheet.process_ors_id  IS NULL OR tracking_sheet.id = :id")
+        // ->bindValue(':id',$id)
+        // ->queryAll();
+
+        // ob_clean();
+        // echo "<pre>";
+        // var_dump($q);
+        // echo "</pre>";
+        // return ob_get_clean();
+        return json_encode($q);
     }
     public function getTrackingNumber()
     {
@@ -202,6 +237,16 @@ class TrackingSheetController extends Controller
         if ($_POST) {
             $id = $_POST['id'];
             $query = Yii::$app->db->createCommand("SELECT * FROM tracking_sheet WHERE id =:")
+                ->bindValue(':id', $id)
+                ->queryOne();
+            return json_encode($query);
+        }
+    }
+    public function actionUpdateSheet()
+    {
+        if ($_POST) {
+            $id = $_POST['id'];
+            $query = Yii::$app->db->createCommand("SELECT * FROM tracking_sheet WHERE id =:id")
                 ->bindValue(':id', $id)
                 ->queryOne();
             return json_encode($query);

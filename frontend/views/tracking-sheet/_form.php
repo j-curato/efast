@@ -15,15 +15,22 @@ use yii\widgets\ActiveForm;
 <div class="tracking-sheet-form">
 
     <form id='tracking_form' style="padding: 30px;">
+        <?php
+        $id = '';
+        if (!empty($model)){
+            $id = $model->id;
+        }
+        echo "<input type='text' name='update_id' id='update_id' value='$id' style='display:none'/>";
+        ?>
         <div class="row">
             <label for="transaction_type">Transaction Type</label>
-            <select required id="transaction_type" name="transaction_type" class="transaction_type select" style="width: 100%; margin-top:50px">
+            <select required id="transaction_type"  name="transaction_type" class="transaction_type select" style="width: 100%; margin-top:50px">
                 <option></option>
             </select>
         </div>
         <div class="row">
             <label for="ors">ORS</label>
-            <select  id="ors" name="ors" class="ors select" style="width: 100%; margin-top:50px">
+            <select id="ors" name="ors" class="ors select" style="width: 100%; margin-top:50px">
                 <option></option>
             </select>
         </div>
@@ -59,7 +66,16 @@ SweetAlertAsset::register($this);
 <?php
 $script = <<<JS
 
-    var ors_id =$('#ors').val()
+    // var ors_id =$('#ors').val()
+    // $('#transaction_type').change(function(){
+    //     if ($('#transaction_type').val()!='Single'){
+    //         $('#ors').val('').trigger('change')
+    //         $('#ors').prop('disabled',true)
+    //     }
+    //     else{
+    //         $('#ors').prop('disabled',false)
+    //     }
+    // })
     $("#ors").change(()=>{
         console.log($('#ors').val())
 
@@ -77,6 +93,7 @@ $script = <<<JS
             })
         }
     })
+    
     // save to database
     $('#tracking_form').submit((e)=>{
         e.preventDefault();
@@ -88,12 +105,26 @@ $script = <<<JS
                 success:function(data){
                     var res = JSON.parse(data)
                     console.log(res)
+                    if (res.isSuccess){
+                        swal({
+                            title:'success',
+                            type:'success',
+                            button:false,
+                            timer:6000
+
+                        },function(){
+                            window.location.href= window.location.pathname + '?r=tracking-sheet/view&id='+res.id
+                        })
+                    }
+           
 
                 }
             })
     })
+    var all_ors=[]
+    var update_id = $('#update_id').val()
     $(document).ready(()=>{
-        getOrs().then(function (data) {
+        getOrs(update_id).then(function (data) {
             var array = []
             $.each(data, function (key, val) {
                 array.push({
@@ -101,10 +132,10 @@ $script = <<<JS
                     text: val.serial_number
                 })
             })
-            transaction = array
+            all_ors = array
             $('#ors').select2({
-                data: transaction,
-                placeholder: "Select Transaction",
+                data: all_ors,
+                placeholder: "Select ORS No.",
                 // allowClear:true
 
             })
@@ -115,7 +146,23 @@ $script = <<<JS
                 data: transaction,
                 placeholder: "Select transaction",
 
-            })    
+            })
+
+        if ($("#update_id").val()!=''){
+            $.ajax({
+                type:'POST',
+                url:window.location.pathname +'?r=tracking-sheet/update-sheet',
+                data:{id:$('#update_id').val()},
+                success:function(data){
+                    var res = JSON.parse(data)
+                    console.log(res[''])
+                    $("#transaction_type").val(res['transaction_type']).trigger('change')
+                    $("#ors").val(res['process_ors_id']).trigger('change')
+                    $("#payee").val(res['payee_id']).trigger('change')
+                    $("#particular").val(res['transaction_type'])
+                }
+            })
+        } 
     })
 
 JS;

@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary','id'=>'update']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
@@ -29,10 +29,8 @@ $this->params['breadcrumbs'][] = $this->title;
     $date = date('M d, Y', strtotime($model->created_at));
     $time = date('h:i A', strtotime($model->created_at));
     ?>
-    <div class="container panel panel-default">
+    <div class="container ">
         <table>
-
-
             <tbody>
 
                 <tr>
@@ -188,7 +186,11 @@ $this->params['breadcrumbs'][] = $this->title;
         border: none;
         padding: 0;
     }
-
+    .container{
+        background-color: white;
+        margin-bottom: 20px;
+    }
+    
     @media print {
 
         table,
@@ -200,5 +202,22 @@ $this->params['breadcrumbs'][] = $this->title;
         .btn {
             display: none;
         }
+        .main-footer{
+            display: none;
+        }
+        table{
+           margin-bottom: 10px;
+        }
     }
 </style>
+<?php
+$script = <<< JS
+
+        $('#update').click(function(e){
+            e.preventDefault();
+            
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
+        });
+JS;
+$this->registerJs($script);
+?>

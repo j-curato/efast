@@ -18,10 +18,12 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', [
             'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=tracking-sheet/create'), 'id' => 'modalButtoncreate',
-         'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+            'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
+        ]); ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -43,9 +45,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 <?php
-$script =<<< JS
+$script = <<< JS
         $('#modalButtoncreate').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+        });
+        $('a[title=Update]').click(function(e){
+            e.preventDefault();
+            
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
         });
 JS;
 $this->registerJs($script);

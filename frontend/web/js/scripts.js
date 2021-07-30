@@ -219,8 +219,8 @@ function getFundSourceType() {
     return $.getJSON(url + '?r=fund-source-type/all-fund-source-type')
 
 }
-function getOrs() {
-    return $.getJSON(url + '?r=tracking-sheet/get-all-ors')
+function getOrs(id) {
+    return $.getJSON(url + '?r=tracking-sheet/get-all-ors&id='+id)
 
 }
 function getAllTrackingSheet(){

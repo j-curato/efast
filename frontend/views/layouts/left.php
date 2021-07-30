@@ -109,6 +109,7 @@
                                         Yii::$app->user->can('super-user') ?  ['label' => 'Jev', 'icon' => 'circle-o', 'url' => ['/jev-preparation'],] : [],
                                         Yii::$app->user->can('super-user') ? ['label' => 'Process Dv', 'icon' => 'circle-o', 'url' => ['/dv-aucs'],] : [],
                                         Yii::$app->user->can('super-user') ? ['label' => 'Transmittal', 'icon' => 'circle-o', 'url' => ['/transmittal'],] : [],
+                                        Yii::$app->user->can('super-user') ? ['label' => 'Tracking Sheet', 'icon' => 'circle-o', 'url' => ['/tracking-sheet'],] : [],
                                         Yii::$app->user->can('super-user') ? ['label' => 'Turn Arround Time', 'icon' => 'circle-o', 'url' => ['/dv-aucs/turnarround-time'],] : [],
 
                                     ],

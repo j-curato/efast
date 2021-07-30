@@ -231,6 +231,7 @@ $this->params['breadcrumbs'][] = $this->title;
     .container {
         background-color: white;
         width: 80%;
+        margin-bottom: 10px;
     }
 
     .row {
