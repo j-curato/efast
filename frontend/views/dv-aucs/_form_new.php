@@ -771,25 +771,7 @@ use yii\helpers\Html;
             // $("#payee ").select2({'readonly'});
             // $("#particular").prop({disabled:'readonly'});
             $("#bok").hide();
-            getAllTrackingSheet().then(function(data) {
 
-                var array = []
-                sheet = data
-                $.each(data, function(key, val) {
-                    array.push({
-                        id: val.id,
-                        text: val.tracking_number
-                    })
-                })
-                tracking_sheet = array
-                $('#tracking_sheet').select2({
-                    data: tracking_sheet,
-                    placeholder: 'Select Tracking Sheet'
-                })
-            });
-            $('#payee_id').select2({
-                data: ''
-            })
 
 
             // MAG ADD OG DATA NA BUHATAN OG DV
@@ -1100,6 +1082,25 @@ $script = <<< JS
 
 
       $(document).ready(function() {
+        getAllTrackingSheet().then(function(data) {
+
+        var array = []
+        sheet = data
+        $.each(data, function(key, val) {
+            array.push({
+                id: val.id,
+                text: val.tracking_number
+            })
+        })
+        tracking_sheet = array
+        $('#tracking_sheet').select2({
+            data: tracking_sheet,
+            placeholder: 'Select Tracking Sheet'
+        })
+        });
+        $('#payee_id').select2({
+        data: ''
+        })
 
         // CHART OF ACCOUNTS
 
