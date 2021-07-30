@@ -226,14 +226,14 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php
             $total_deposit = 0;
             $total_withdrawals = 0;
-            $balance = 0;
+            $balance = !empty($beginning_balance) ? $beginning_balance : 0;
             $x = 0;
             if (!empty($dataProvider)) {
                 foreach ($dataProvider as $i => $data) {
                     $balance += (int)$data['amount'] - (int)$data['withdrawals'];
-                    if ($data['reporting_period'] === $reporting_period) {
-                        if ($x === 0) {
-                            echo "<tr>
+                    // if ($data['reporting_period'] === $reporting_period) {
+                    if ($x === 0) {
+                        echo "<tr>
                   
                             <td></td>
                             <td></td>
@@ -248,9 +248,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td></td>
                             <td ></td>
                          </tr>";
-                            $x++;
-                        }
-                        echo "<tr>
+                        $x++;
+                    }
+                    echo "<tr>
                   
                             <td>" . $data['check_date'] . "</td>
                             <td>" . $data['check_number'] . "</td>
@@ -265,9 +265,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td>" . $data['gl_object_code'] . "</td>
                             <td style='text-align:right'>" . number_format((int)$data['withdrawals'], 2)  . "</td>
                          </tr>";
-                        $total_deposit += intval((int)$data['amount']);
-                        $total_withdrawals += intval((int)$data['withdrawals']);
-                    }
+                    $total_deposit += intval((int)$data['amount']);
+                    $total_withdrawals += intval((int)$data['withdrawals']);
+                    // }
                 }
 
                 echo "<tr>

@@ -29,7 +29,7 @@ use yii\helpers\Html;
         </div>
         <form id='save_data' method='POST'>
 
-            <input type="text" name='transaction_timestamp' id="transaction_timestamp" style="display: none;" >
+            <input type="text" name='transaction_timestamp' id="transaction_timestamp" style="display: none;">
             <input type="text" name='book_id' id="book_id" style="display: none;">
             <?php
             $q = 0;
@@ -59,9 +59,9 @@ use yii\helpers\Html;
                     ?>
                 </div>
 
-                <div class="col-sm-3" style="height:60x">
-                    <label for="transaction">Transaction Type</label>
-                    <select required id="transaction" name="transaction_type" class="transaction select" style="width: 100%; margin-top:50px">
+                <div class="col-sm-3">
+                    <label for="tracking_sheet">Tracking Sheet NO.</label>
+                    <select id="tracking_sheet" name="tracking_sheet" class="tracking_sheet select" style="width: 100%; margin-top:50px">
                         <option></option>
                     </select>
                 </div>
@@ -86,17 +86,30 @@ use yii\helpers\Html;
                         <option></option>
                     </select>
                 </div>
+
+                <div class="col-sm-3" style="height:60x">
+                    <label for="transaction">Transaction Type</label>
+                    <select required id="transaction" name="transaction_type" class="transaction select" style="width: 100%; margin-top:50px">
+                        <option></option>
+                    </select>
+                </div>
                 <div class="col-sm-3" id='bok'>
                     <label for="book">Book</label>
                     <select id="book" name="book" class="book select" style="width: 100%; margin-top:50px">
                         <option></option>
                     </select>
                 </div>
+                <!-- <div class="col-sm-3" id='bok'>
+                    <label for="payee_id">payee_id</label>
+                    <select id="payee_id" name="payee_id" class="payee_id select" style="width: 100%; margin-top:50px">
+                        <option></option>
+                    </select>
+                </div> -->
 
 
             </div>
             <div class="row">
-                <textarea name="particular" name="particular" id="particular" placeholder="PARTICULAR" required rows="3"></textarea>
+                <textarea name="particular" readonly id="particular" placeholder="PARTICULAR" required rows="3"></textarea>
             </div>
 
             <table id="transaction_table" class="table table-striped">
@@ -702,8 +715,8 @@ use yii\helpers\Html;
 
         function addDvToTable(result) {
             if ($("#transaction").val() == 'Single') {
-                $('#particular').val(result[0]['transaction_particular'])
-                $('#payee').val(result[0]['transaction_payee_id']).trigger('change')
+                // $('#particular').val(result[0]['transaction_particular'])
+                // $('#payee').val(result[0]['transaction_payee_id']).trigger('change')
             }
             for (var i = 0; i < result.length; i++) {
                 if ($('#transaction').val() == 'Single' && i == 1) {
@@ -751,25 +764,45 @@ use yii\helpers\Html;
 
         var transaction_type = $("#transaction").val();
         var dv_count = 1;
-        $(document).ready(function() {
+        var tracking_sheet = []
+        var sheet = []
 
+        $(document).ready(function() {
+            // $("#payee ").select2({'readonly'});
+            // $("#particular").prop({disabled:'readonly'});
             $("#bok").hide();
+            getAllTrackingSheet().then(function(data) {
+
+                var array = []
+                sheet = data
+                $.each(data, function(key, val) {
+                    array.push({
+                        id: val.id,
+                        text: val.tracking_number
+                    })
+                })
+                tracking_sheet = array
+                $('#tracking_sheet').select2({
+                    data: tracking_sheet,
+                    placeholder: 'Select Tracking Sheet'
+                })
+            });
+            $('#payee_id').select2({
+                data: ''
+            })
 
 
             // MAG ADD OG DATA NA BUHATAN OG DV
-
-
-
 
         })
         $('#submit').click(function(e) {
             var date = new Date()
 
-            var x = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
-            if ($('#transaction_timestamp').val() == '') {
-                $('#transaction_timestamp').val(x)
+            // var x = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+            // if ($('#transaction_timestamp').val() == '') {
+            //     $('#transaction_timestamp').val(x)
 
-            }
+            // }
             e.preventDefault();
             $.ajax({
                 url: window.location.pathname + '?r=dv-aucs/get-dv',
@@ -777,6 +810,7 @@ use yii\helpers\Html;
                 data: $('#add_data').serialize(),
                 success: function(data) {
                     var res = JSON.parse(data)
+                    console.log(res)
                     if (res.isSuccess) {
 
                         addDvToTable(res.results)
@@ -817,6 +851,7 @@ use yii\helpers\Html;
         }
         $(document).on("keyup change", ".credit, .debit", function() {
             getDebitCreditTotal()
+
         })
     </script>
 </div>
@@ -837,6 +872,85 @@ $script = <<< JS
         var books=[];
         var bbb=undefined;
 
+        $("#tracking_sheet").change(function()  {
+            console.log(sheet)
+            var transaction_type ='';
+            var payee = 0;
+            var particular =''
+            var ors_id = []
+            var x={}
+            var pay= []
+            var y =1
+            var t_type=[]
+            // $('#transaction_table >tbody').html('')
+            // $('#transaction_table tbody').html()=''
+            $.each(sheet,function(key,val){
+                if (val.id ==$('#tracking_sheet').val()){
+                    transaction_type =val.transaction_type
+                    payee = val.payee_id
+                    particular =val.particular
+                    ors_id.push(val.process_ors_id) 
+                    x= '{'+val.process_ors_id+':0}'
+                    y = val.process_ors_id
+                    pay.push({
+                        id:val.p_id,
+                        text:val.account_name
+                    })
+                    t_type.push(transaction_type)
+                    return false
+                }
+            })
+            // $('#payee_id').select2({
+            //     data:pay,
+            // })
+            $("#payee").val(payee).trigger('change')
+            // $(`#transaction option:not(:selected)`).attr('disabled', false);
+            // $('#transaction').select2({
+            //     data:t_type
+            // })
+            $("#transaction").val(transaction_type).trigger('change')
+            // $(`#transaction option:not(:selected)`).attr('disabled', true);
+            $("#payee").val(payee).trigger('change')
+            $("#particular").val(particular).trigger('change')
+            // console.log(x)
+            // if (transaction_type =='Single'){
+            //     console.log(ors_id)
+            //         $.ajax({
+            //         url: window.location.pathname + '?r=dv-aucs/get-dv',
+            //         method: "POST",
+            //         data:{selection:ors_id,
+            //         transaction_type:transaction_type,
+            //         amount_disbursed:x,
+            //         vat_nonvat:x,
+            //         ewt_goods_services:x,
+            //         compensation:x,
+            //         other_trust_liabilities:x,
+
+
+                
+            //     },
+            //         success: function(data) {
+            //             var res = JSON.parse(data)
+            //             // console.log(data)
+            //             if (res.isSuccess) {
+
+            //                 addDvToTable(res.results)
+            //             } else {
+            //                 swal({
+            //                     title: "Error",
+            //                     text: res.error,
+            //                     type: "error",
+            //                     timer: 6000,
+            //                     button: false
+            //                     // confirmButtonText: "Yes, delete it!",
+            //                 });
+            //             }
+
+            //         }
+            //     });
+            // }
+       
+        })
 
 
     $('#transaction_table').on('change keyup', ['.amount_disbursed','.ewt','.vat','.compensation','.liabilities'], function() {
@@ -848,12 +962,14 @@ $script = <<< JS
     
     $("#transaction").change(function(){
 
-           var transaction_id = $("#transaction_id").val()
-            var date = new Date()
+        const date = new Date().toLocaleString( { timeZone: 'Asia/Manila' });
+            console.log(date);   
+        //    var transaction_id = $("#transaction_id").val()
+        //     var date = new Date()
 
-            var x = date.getFullYear()+'-'+date.getMonth() + '-'+ date.getDate() + ' ' + date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()
-            console.log(date.getFullYear())
-            $('#transaction_timestamp').val(x)
+            // var x = date.getFullYear()+'-'+date.getMonth() + '-'+ date.getDate() + ' ' + date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()
+            // console.log(x)
+            // $('#transaction_timestamp').val(x)
         var transaction_type=$("#transaction").val()
 
         $("#transaction_type").val(transaction_type)
@@ -877,6 +993,7 @@ $script = <<< JS
         }
     })
     function chart(){
+        
         return  $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-all-transaction')
         .then(function (data) {
 
@@ -897,7 +1014,9 @@ $script = <<< JS
         });
     }
     $.when(chart() ).done(function(chart){
-
+        // $('#payee option:not(:selected)').attr('disabled',true).
+        // disable payee
+        // $("#payee option:not(:selected)").attr('disabled',true)    
         var update_id= $('#update_id').val()
         if (update_id>0){
             $.ajax({
@@ -930,14 +1049,25 @@ $script = <<< JS
                             addDvToTable(res.result)
                         // }
                     
-  
-                    $("#particular").val(res.result[0]['particular'])
-                    $("#payee").val(res.result[0]['payee_id']).trigger('change');
+                      
+                    // $("#particular").val(res.result[0]['particular'])
+                    // $("#payee").val(res.result[0]['payee_id']).trigger('change');
                     $("#mrd_classification").val(res.result[0]['mrd_classification_id']).trigger("change");
                     $("#nature_of_transaction").val(res.result[0]['nature_of_transaction_id']).trigger("change");
                     $("#reporting_period").val(res.result[0]['reporting_period'])
-                    $('#transaction').val(type).trigger('change')
+                    // $('#transaction').val(type).trigger('change')
                     $('#book').val(res.result[0]['book_id']).trigger('change')
+                 
+                    if (res.result[0]['tracking_sheet_id'] ==null){
+                     $('#transaction').val(type).trigger('change')
+                                          
+                    $("#particular").val(res.result[0]['particular'])
+                    $("#payee").val(res.result[0]['payee_id']).trigger('change');
+                        
+                    }
+                    else{
+                        $('#tracking_sheet').val(res.result[0]['tracking_sheet_id']).trigger('change')
+                    }
 
                     var x=0
                
@@ -993,7 +1123,8 @@ $script = <<< JS
                 data: transaction,
                 placeholder: "Select transaction",
 
-            })      
+            })  
+            // $("#transaction option:not(:selected)").attr('disabled',true)    
             // INSERT ANG DATA SA DATABASE
         $('#save_data').submit(function(e) {
   
@@ -1052,6 +1183,7 @@ $script = <<< JS
 
 
     })
+
      
 
 

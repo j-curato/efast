@@ -18,7 +18,16 @@ class DvAucsSearch extends DvAucs
     {
         return [
             [['id'], 'integer'],
-            [['dv_number', 'reporting_period', 'tax_withheld', 'other_trust_liability_withheld', 'particular', 'payee_id'], 'safe'],
+            [[
+                'dv_number', 'reporting_period', 'tax_withheld', 'other_trust_liability_withheld',
+                'particular',
+                'transaction_begin_time',
+                'return_timestamp',
+                'accept_timestamp',
+                'out_timestamp',
+                'created_at',
+                'payee_id'
+            ], 'safe'],
             [['net_amount_paid'], 'number'],
         ];
     }
@@ -70,6 +79,11 @@ class DvAucsSearch extends DvAucs
             ->andFilterWhere(['like', 'particular', $this->particular])
             ->andFilterWhere(['like', 'tax_withheld', $this->tax_withheld])
             ->andFilterWhere(['like', 'payee.account_name', $this->payee_id])
+            ->andFilterWhere(['like', 'transaction_begin_time', $this->transaction_begin_time])
+            ->andFilterWhere(['like', 'return_timestamp', $this->return_timestamp])
+            ->andFilterWhere(['like', 'accept_timestamp', $this->accept_timestamp])
+            ->andFilterWhere(['like', 'out_timestamp', $this->out_timestamp])
+            ->andFilterWhere(['like', 'created_at', $this->created_at])
             ->andFilterWhere(['like', 'other_trust_liability_withheld', $this->other_trust_liability_withheld]);
 
         return $dataProvider;

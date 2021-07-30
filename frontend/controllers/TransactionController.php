@@ -56,7 +56,7 @@ class TransactionController extends Controller
                             'get-transaction'
                         ],
                         'allow' => true,
-                        'roles' => ['department-offices', 'super-user','ro_transaction'],
+                        'roles' => ['department-offices', 'super-user', 'ro_transaction'],
                     ],
                     // [
                     //     'actions' => ['create'],
@@ -117,11 +117,26 @@ class TransactionController extends Controller
         // if (Yii::$app->user->can('create-transaction')) {
 
         $model = new Transaction();
+        date_default_timezone_set('Asia/Manila');
 
         if ($model->load(Yii::$app->request->post())) {
 
             $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1);
             $model->transaction_date = date('m-d-Y');
+            // $model->created_at = date('2020-07-19 13:01:57');
+            $date = date('Y-m-d H:i:s');
+            if (
+                strtolower(date('l')) === 'saturday'
+
+            ) {
+                $model->created_at = date('Y-m-d H:i:s', strtotime($date . ' + 2 days'));
+            } else if (
+                strtolower(date('l')) === 'sunday'
+
+            ) {
+                $model->created_at = date('Y-m-d H:i:s', strtotime($date . ' + 1 days'));
+            }
+ 
             if ($model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
             }

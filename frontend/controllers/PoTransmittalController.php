@@ -292,7 +292,8 @@ class PoTransmittalController extends Controller
     public function actionReturn($id)
     {
         $model = PoTransmittalEntries::findOne($id);
-        $model->status = 'returned';
+        $q  =  $model->status === 'returned'?'':'returned';
+        $model->status = $q;
         $po_tr = PoTransmittal::findOne($model->po_transmittal_number);
         $po_tr->edited = true;
         $liquidation = Liquidation::findOne($model->liquidation->id);

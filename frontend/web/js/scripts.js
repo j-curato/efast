@@ -101,8 +101,10 @@ $.getJSON(url + '?r=payee/get-payee')
             placeholder: "Select Payee",
 
         })
+        
 
     })
+
 // GET ALL CASHFLOW
 $.getJSON(url + '?r=cash-flow/get-all-cashflow')
     .then(function (data) {
@@ -203,7 +205,7 @@ $.getJSON(url + '?r=transaction/get-transaction')
 
 
 // GET DEBIT AND CREDIT TOTAL
-function getRoTransactions(){
+function getRoTransactions() {
     return $.getJSON(url + '?r=transaction/get-transaction')
 }
 function getChartOfAccounts() {
@@ -212,4 +214,15 @@ function getChartOfAccounts() {
 function getFundSourceType() {
     return $.getJSON(url + '?r=fund-source-type/all-fund-source-type')
 
+}
+function getFundSourceType() {
+    return $.getJSON(url + '?r=fund-source-type/all-fund-source-type')
+
+}
+function getOrs() {
+    return $.getJSON(url + '?r=tracking-sheet/get-all-ors')
+
+}
+function getAllTrackingSheet(){
+    return $.getJSON(url+'?r=tracking-sheet/get-all-tracking-sheet')
 }

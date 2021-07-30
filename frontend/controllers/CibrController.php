@@ -99,20 +99,12 @@ class CibrController extends Controller
         reporting_period
         from advances_liquidation
         where reporting_period <=:reporting_period AND province LIKE :province
-
         ORDER BY reporting_period,check_date,check_number
         ")
             ->bindValue(':reporting_period',   $model->reporting_period)
             ->bindValue(':province',   $model->province)
-
             ->queryAll();
-        // return $reporting_period;
 
-        // ob_clean();
-        // echo "<pre>";
-        // var_dump($result);
-        // echo "</pre>";
-        // return ob_get_clean();
         return $this->render('view', [
             'dataProvider' => $dataProvider,
             'province' =>   $model->province,
@@ -260,23 +252,24 @@ class CibrController extends Controller
                 gl_account_title, 
                 reporting_period
                 from advances_liquidation
-                where reporting_period <=:reporting_period AND province LIKE :province
+                where reporting_period =:reporting_period AND province LIKE :province
                 ORDER BY reporting_period,check_date,check_number
             ")->bindValue(':reporting_period', $reporting_period)
                 ->bindValue(':province', $province)
                 ->queryAll();
-            $beginning_balance =  Yii::$app->db->createCommand("SELECT 
-                SUM(amount)-SUM(withdrawals) as begin_balance
-                from advances_liquidation
-                where reporting_period <:reporting_period AND province LIKE :province
-                ORDER BY reporting_period,check_date,check_number
-               ")->bindValue(':reporting_period', $reporting_period)
-                ->bindValue(':province', $province)
-                ->queryScalar();
-            //  AND book_name LIKE :book
 
 
-            // return $reporting_period;
+            $balance = Yii::$app->db->createCommand("SELECT 
+            SUM(advances_liquidation.amount) - SUM(advances_liquidation.withdrawals)  as balance
+             from advances_liquidation
+             where reporting_period <:reporting_period 
+             AND province LIKE :province
+            
+              ")
+                 ->bindValue(':reporting_period',   $reporting_period)
+                 ->bindValue(':province',   $province)
+                 ->queryScalar();
+
 
             // ob_clean();
             // echo "<pre>";
@@ -288,7 +281,7 @@ class CibrController extends Controller
                 'province' => $province,
                 'reporting_period' => $reporting_period,
                 'book' => '',
-                'beginning_balace'=>$beginning_balance
+                'beginning_balance' => $balance
 
             ]);
         } else {

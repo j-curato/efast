@@ -50,14 +50,29 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <div class="row" style="margin-top: 130px;">
             <div class="row head" style=" margin-bottom:2rem"><?php echo date('F d, Y', strtotime($model->date)) ?></div>
-            <div class="row head" style="font-weight: bold;">MARION T. MONROID</div>
+            <div class="row head" style="font-weight: bold;">GAY TIDALGO</div>
             <div class="row head">State Auditor III</div>
             <div class="row head">OIC - Audit Team Leader</div>
             <div class="row head">COA - DTI Caraga</div>
-            <div class="row head" style="padding-top: 2rem;padding-bottom: 2rem;">Dear Ma’am Monroid:</div>
+            <div class="row head" style="padding-top: 2rem;padding-bottom: 2rem;">Dear Ma’am Tidalgo:</div>
             <p style="font-size: 12pt;">
 
-                We are hereby submitting the following DVs, with assigned Transmittal # <?php echo $model->transmittal_number; ?> of DTI Regional Office:
+                We are hereby submitting the following DVs, with assigned Transmittal #
+                <?php echo $model->transmittal_number;
+
+                $po = [
+                    'adn' => 'Agusan Del Norte',
+                    'ads' => 'Agusan Del Sur',
+                    'sdn' => 'Surigao Del Norte',
+                    'sds' => 'Surigao Del Sur',
+                    'pdi' => 'Province of Dinagat Island',
+                ];
+                $x = explode('-', $model->transmittal_number)[0];
+
+                ?> of DTI
+                <?php
+                echo $po[strtolower($x)];
+                ?> Provincial Office:
             </p>
         </div>
 
@@ -72,6 +87,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>Payee</th>
                 <th>Particulars</th>
                 <th>Amount</th>
+                <th class='status'>Status</th>
             </thead>
 
             <tbody>
@@ -106,9 +122,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         $status = 'Remove';
                         $color = 'btn-danger';
-                        if ($val->liquidation->status ==='at_po'){
-                            $status='ibalik';
-                            $color='btn-success';
+                        if ($val->liquidation->status === 'at_po') {
+                            $status = 'ibalik';
+                            $color = 'btn-success';
                         }
                         $qwe = Html::a($status, ['return', 'id' => $val->id], [
                             'class' => "btn $color",
@@ -120,6 +136,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         echo "  <td>" .
                             $qwe
                             . " </td>";
+                    } else {
+                        if ($val->status === 'returned') {
+
+                            echo "<td class='status'> Returned</td>";
+                        }
                     }
                     echo " </tr>";
                     $total += $query['total_disbursed'];
@@ -140,7 +161,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="head" style="font-weight:bold;right:10;" id="asig_1">
 
             </div>
-            <div class="head" id="oic">Regional Director</div>
+            <div class="head" id="oic">Provincial Director</div>
         </div>
         <div class="row" style="margin-top:2rem">
             <div class="head" id="for_rd"></div>
@@ -151,31 +172,31 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row" style="margin-top: 20px;">
 
             <div class="col-sm-3 as">
-                <label for="assignatory_1">Regional Director </label>
+                <label for="assignatory_1">Provincial Director qqq</label>
                 <select name="" id="assignatory_1" class="asignatory" onchange="regionalDirector(this)" style="width: 100%;">
                     <option value=""></option>
                 </select>
             </div>
             <div class="col-sm-4 as">
                 <label for="qwe">OIC</label>
-                <!-- <select id="assignatory" onchange="sample(this)" name="assignatory" class=" select" style="width: 100%">
+                <select id="assignatory" onchange="sample(this)" name="" class=" asignatory" style="width: 100%">
                     <option></option>
-                </select> -->
+                </select>
                 <?php
-                echo Select2::widget([
-                    'data' => ArrayHelper::map(Assignatory::find()->asArray()->all(), 'name', 'name'),
-                    'name' => 'ass',
-                    'options' => ['id' => 'assignatory', 'onChange' => 'sample(this)'],
-                    'pluginOptions' => [
-                        'placeholder' => 'select',
-                        'allowClear' => true,
+                // echo Select2::widget([
+                //     'data' => ArrayHelper::map(Assignatory::find()->asArray()->all(), 'name', 'name'),
+                //     'name' => 'ass',
+                //     'options' => ['id' => 'assignatory', 'onChange' => 'sample(this)'],
+                //     'pluginOptions' => [
+                //         'placeholder' => 'select',
+                //         'allowClear' => true,
 
-                    ],
-                ])
+                //     ],
+                // ])
                 ?>
             </div>
             <div class="col-sm-3 as">
-                <label for="oic">Regional Director </label>
+                <label for="oic">Provincial Director </label>
                 <select name="" id="oic_rd" onchange="oicRd(this)" style="width: 100%;">
                     <option value=""></option>
                 </select>
@@ -184,8 +205,8 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 <style>
-    table {
-        width: 100%;
+    .container {
+        padding: 50px;
     }
 
     table,
@@ -221,6 +242,14 @@ $this->params['breadcrumbs'][] = $this->title;
     @media print {
         td {
             font-size: 10px;
+        }
+
+        .container {
+            padding: 0;
+        }
+
+        .status {
+            display: none;
         }
 
         .as {
@@ -361,6 +390,10 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     }
 </style>
+
+<!-- 
+<link href="/afms/frontend/web/js/select2.min.js" />
+    <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" /> -->
 <script>
     var reference = []
     // $(document).ready(function() {
@@ -400,7 +433,7 @@ $this->params['breadcrumbs'][] = $this->title;
         var oic_rd = ['Officer-in-Charge', 'Regional Director']
         $('#oic_rd').select2({
             data: oic_rd,
-            placeholder: "Select ",
+            placeholder: "Select OIC",
             allowClear: true,
             closeOnSelect: true
         })
@@ -416,6 +449,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     })
                 })
                 assignatory = array
+                console.log(assignatory)
                 $('.asignatory').select2({
                     data: assignatory,
                     placeholder: "Select ",
@@ -426,3 +460,6 @@ $this->params['breadcrumbs'][] = $this->title;
             })
     })
 </script>
+<?php
+$this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+?>

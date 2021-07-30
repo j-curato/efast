@@ -214,47 +214,62 @@ class CdrController extends Controller
             $report_type = $_POST['report_type'];
 
             $cdr = Yii::$app->memem->cdrFilterQuery($reporting_period, $book_name, $province, $report_type);
-            $query = (new \yii\db\Query())
-                ->select(
-                    'check_date,
-                    check_number,
-                    particular,
-                    amount,
-                    withdrawals,
-                    gl_object_code,
-                    gl_account_title,
-                    reporting_period,
-                    vat_nonvat,
-                    expanded_tax
-                '
-                )
-                ->from('advances_liquidation')
-                ->where('reporting_period <=:reporting_period', ['reporting_period' => $reporting_period])
-                ->orWhere('book_name =:book_name', ['book_name' => $book_name])
-                ->andWhere('province LIKE :province', ['province' => $province])
-                ->andWhere('report_type LIKE :report_type', ['report_type' => $report_type])
-                ->orderBy('reporting_period,check_date,check_number')
-                ->all();
-            // $query2 = (new \yii\db\Query())
+            // $query = (new \yii\db\Query())
             //     ->select(
-            //         " '' as check_date,
-            //         '' as check_number,
-            //         '' as  particular,
-            //         SUM() as  amount,
-            //         '' as withdrawals,
-            //         '' as gl_object_code,
-            //         '' as gl_account_title,
-            //         '' as reporting_period,
-            //         '' as vat_nonvat,
-            //         '' as expanded_tax
-            //     "
+            //         'check_date,
+            //         check_number,
+            //         particular,
+            //         amount,
+            //         withdrawals,
+            //         gl_object_code,
+            //         gl_account_title,
+            //         reporting_period,
+            //         vat_nonvat,
+            //         expanded_tax
+            //     '
             //     )
             //     ->from('advances_liquidation')
-            //     ->where('reporting_period <:reporting_period', ['reporting_period' => $reporting_period])
-            //     ->andWhere('book_name =:book_name', ['book_name' => $book_name])
+            //     ->where('reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+            //     ->orWhere('book_name =:book_name', ['book_name' => $book_name])
             //     ->andWhere('province LIKE :province', ['province' => $province])
             //     ->andWhere('report_type LIKE :report_type', ['report_type' => $report_type])
+            //     ->orderBy('reporting_period,check_date,check_number')
             //     ->all();
+            $query = Yii::$app->db->createCommand("SELECT
+                            check_date,
+                            check_number,
+                            particular,
+                            amount,
+                            withdrawals,
+                            gl_object_code,
+                            gl_account_title,
+                            reporting_period,
+                            vat_nonvat,
+                            expanded_tax
+
+                FROM advances_liquidation
+                WHERE reporting_period = :reporting_period
+                AND (book_name is NULL OR book_name =:book_name)
+                AND province LIKE :province
+                AND report_type LIKE :report_type
+            ")->bindValue(':reporting_period',  $reporting_period)
+                ->bindValue(':book_name', $book_name)
+                ->bindValue(':province', $province)
+                ->bindValue(':report_type', $report_type)
+                ->queryAll();
+
+
+            $balance = Yii::$app->db->createCommand("SELECT ROUND(SUM(amount),2)-ROUND(SUM(withdrawals ),2)as balance
+                    FROM advances_liquidation
+                    WHERE reporting_period <:reporting_period
+                    AND book_name =:book_name
+                    AND province LIKE :province
+                    AND report_type LIKE :report_type")
+                ->bindValue(':reporting_period',  $reporting_period)
+                ->bindValue(':book_name', $book_name)
+                ->bindValue(':province', $province)
+                ->bindValue(':report_type', $report_type)
+                ->queryScalar();
 
 
             $result = ArrayHelper::index($query, null, [function ($element) {
@@ -315,7 +330,8 @@ class CdrController extends Controller
                 'reporting_period' => date('F, Y', strtotime($reporting_period)),
                 'municipality' => $municipality,
                 'officer' => $officer,
-                'location' => $location
+                'location' => $location,
+                'balance' => $balance,
 
             ]);
 

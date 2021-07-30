@@ -439,9 +439,11 @@ $this->params['breadcrumbs'][] = $this->title;
             font-size: 10px;
             padding: 2px;
         }
-        .btn{
+
+        .btn {
             display: none;
         }
+
         .amount {
             padding: 5px;
         }
@@ -471,10 +473,14 @@ $this->params['breadcrumbs'][] = $this->title;
         var deposit = data['amount'] != '' ? thousands_separators(data['amount']) : ''
         var withdrawal = data['withdrawals'] != '' ? thousands_separators(data['withdrawals']) : ''
         var bal = thousands_separators(balance)
+        var x = ''
+        if (data['particular']=='Total') {
+            x = 'font-weight:bold;text-align:center'
+        }
         var row = `<tr>                 
                             <td>${data['reporting_period']}</td>
                             <td>${data['check_number']}</td>
-                            <td>${data['particular']}</td>
+                            <td style='${x}'>${data['particular']}</td>
                             <td class='amount'>${deposit}</td>
                             <td class='amount'>${withdrawal}</td>
                             <td class='amount'>${bal}</td>
@@ -490,9 +496,10 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 
     var x = 0;
+    let balance = 0;
 
     function addCdrRow(data) {
-        var balance = 0;
+
         var total_deposits = 0;
         var total_withdrawals = 0;
         $("#data_table > tbody").html("");
@@ -506,35 +513,38 @@ $this->params['breadcrumbs'][] = $this->title;
                 data[i]['withdrawals'] = 0
             }
             // balance += data[i]['amount'] - data[i]['withdrawals'];
-            balance += parseFloat(data[i]['amount'], 2) - parseFloat(data[i]['withdrawals'], 2)
+
+            // console.log(balance)
 
 
-            if (data[i]['reporting_period'] == $("#reporting_period").val()) {
+            // if (data[i]['reporting_period'] == $("#reporting_period").val()) {
 
-                if (x != 1) {
-                    var am = data[i]['amount']
-                    var wth = data[i]['withdrawals']
-                    var beginning_balance = parseFloat(balance, 2) - parseFloat(data[i]['amount'], 2) + parseFloat(data[i]['withdrawals'], 2)
-                    var d = []
-                    total_deposits += beginning_balance
-                    d['reporting_period'] = '';
-                    d['check_number'] = '';
-                    d['particular'] = 'Beginning Balance';
-                    d['amount'] = beginning_balance;
-                    d['withdrawals'] = 0;
-                    d['gl_account_title'] = '';
-                    d['gl_object_code'] = '';
-                    addToDataTable(d, beginning_balance)
-                    x++
 
-                }
-                var bal = parseFloat(balance).toFixed(2);
-                addToDataTable(data[i], bal)
-
-                total_deposits = parseFloat(total_deposits, 2) + parseFloat(data[i]['amount'], 2)
-                total_withdrawals = parseFloat(total_withdrawals, 2) + parseFloat(data[i]['withdrawals'], 2)
+            if (x != 1) {
+                var am = data[i]['amount']
+                var wth = data[i]['withdrawals']
+                var beginning_balance = parseFloat(balance, 2) - parseFloat(data[i]['amount'], 2) + parseFloat(data[i]['withdrawals'], 2)
+                var d = []
+                total_deposits += balance
+                d['reporting_period'] = '';
+                d['check_number'] = '';
+                d['particular'] = 'Beginning Balance';
+                d['amount'] = balance;
+                d['withdrawals'] = 0;
+                d['gl_account_title'] = '';
+                d['gl_object_code'] = '';
+                addToDataTable(d, balance)
+                x++
 
             }
+            balance = parseFloat(balance) + parseFloat(data[i]['amount'], 2) - parseFloat(data[i]['withdrawals'], 2)
+            var bal = parseFloat(balance).toFixed(2);
+            addToDataTable(data[i], bal)
+
+            total_deposits = parseFloat(total_deposits, 2) + parseFloat(data[i]['amount'], 2)
+            total_withdrawals = parseFloat(total_withdrawals, 2) + parseFloat(data[i]['withdrawals'], 2)
+
+            // }
 
 
         }
@@ -624,7 +634,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 var location = res.location
                 var municipality = res.municipality
                 var officer = res.officer
-                console.log(res)
+                balance = res.balance
+                // console.log(res)
                 $('.book').append(book)
                 $('.reporting_period').append(reporting_period)
                 $('.location').append(location)
@@ -653,6 +664,8 @@ $this->params['breadcrumbs'][] = $this->title;
         })
     }
     $('#generate').click(function(e) {
+        balance=0
+         x = 0;
         e.preventDefault()
         cdrAjaxRequest()
     })

@@ -199,6 +199,7 @@ class DvAucsController extends Controller
         $transaction_type = strtolower($_POST['transaction_type']);
         $selected_dv = $_POST['selection'];
         $dv_length = count($selected_dv);
+        // return json_encode(["isSuccess" => false, "error" => $_POST['amount_disbursed']]);
         if ($transaction_type === 'single') {
 
             if (intval(count($selected_dv)) > 1) {
@@ -285,7 +286,8 @@ class DvAucsController extends Controller
             $payee_id = $_POST['payee'];
             $book_id = !empty($_POST['book']) ? $_POST['book'] : 5;
             $transaction_type = strtolower($_POST['transaction_type']);
-            $transaction_timestamp = $_POST['transaction_timestamp'];
+            $transaction_timestamp = date('Y-m-d H:i:s',strtotime($_POST['transaction_timestamp']));
+            $tracking_sheet = $_POST['tracking_sheet'];
             // if (array_sum($_POST['debit']) != array_sum($_POST['credit'])) {
             //     return json_encode(['isSuccess' => false, 'error' => 'Not Equal Debit and Credit']);
             // }
@@ -375,6 +377,7 @@ class DvAucsController extends Controller
                 $dv->particular = $particular;
                 $dv->payee_id = $payee_id;
                 $dv->book_id = $book_id;
+                $dv->tracking_sheet_id = $tracking_sheet;
                 $dv->transaction_type = ucwords($transaction_type);
                 if ($dv->validate()) {
                     if ($flag = $dv->save(false)) {
@@ -486,7 +489,7 @@ class DvAucsController extends Controller
         from dv_aucs
         WHERE reporting_period LIKE :year
         ORDER BY q DESC  LIMIT 1")
-            ->bindValue(':year', $year .'%')
+            ->bindValue(':year', $year . '%')
             ->queryScalar();
         !empty($book_id) ? $book_id : $book_id = 5;
         // $latest_dv = (new \yii\db\Query())
@@ -536,6 +539,7 @@ class DvAucsController extends Controller
                     "dv_aucs.reporting_period",
                     "dv_aucs.transaction_type",
                     "dv_aucs.book_id",
+                    "dv_aucs.tracking_sheet_id",
                     "process_ors.serial_number",
                     "process_ors.id as ors_id",
                     "FORMAT(total_obligated.total,'N','en-us') as total",
@@ -878,5 +882,56 @@ class DvAucsController extends Controller
             }
             return json_encode(['isSuccess' => true, 'cancelled' => $link]);
         }
+    }
+    public function actionTurnarroundTime()
+    {
+        $searchModel = new DvAucsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
+
+        return $this->render('turnarround_time', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+    public function actionReturn($id)
+    {
+        date_default_timezone_set('Asia/Manila');
+        $timestamp  = date('Y-m-d H:i:s');
+
+        $model = $this->findModel($id);
+        // if (!empty($model->out_timestamp)) {
+        //     return $model->out_timestamp;
+        // }
+        $model->return_timestamp = $timestamp;
+        if ($model->save(false)) {
+        }
+    }
+    public function actionAccept($id)
+    {
+        date_default_timezone_set('Asia/Manila');
+        $timestamp  = date('Y-m-d H:i:s');
+        $model = $this->findModel($id);
+        // if (!empty($model->out_timestamp)) {
+        //     return $model->out_timestamp;
+        // }
+        $model->accept_timestamp = $timestamp;
+        if ($model->save(false)) {
+        }
+    }
+    public function actionOut($id)
+    {
+        date_default_timezone_set('Asia/Manila');
+        $timestamp  = date('Y-m-d H:i:s');
+        $model = $this->findModel($id);
+        $model->out_timestamp = $timestamp;
+        if ($model->save(false)) {
+        }
+    }
+    public function actionTurnarroundView($id)
+    {
+        return $this->render('turnarround_time_view', [
+            'model' => $this->findModel($id)
+        ]);
     }
 }
