@@ -1081,7 +1081,7 @@ $script = <<< JS
     });
 
 
-      $(document).ready(function() {
+    $(document).ready(function() {
         getAllTrackingSheet().then(function(data) {
 
         var array = []
@@ -1127,63 +1127,64 @@ $script = <<< JS
             })  
             // $("#transaction option:not(:selected)").attr('disabled',true)    
             // INSERT ANG DATA SA DATABASE
-        $('#save_data').submit(function(e) {
   
-
-            e.preventDefault();
-
-
-                $.ajax({
-                    url: window.location.pathname + '?r=dv-aucs/insert-dv',
-                    method: "POST",
-                    data: $('#save_data').serialize(),
-                    success: function(data) {
-                        var res=JSON.parse(data)
-                        if (res.isSuccess==true) {
-                            swal({
-                                title: "Success",
-                                // text: "You will not be able to undo this action!",
-                                type: "success",
-                                timer: 3000,
-                                button: false
-                                // confirmButtonText: "Yes, delete it!",
-                            }, function() {
-                                window.location.href = window.location.pathname + '?r=dv-aucs/view&id='+res.id
-                            });
-                            $('#save_data')[0].reset();
-                        }
-                        else if(res.isSuccess==false){
-
-                            swal({
-                                title: "Error",
-                                text: res.error,
-                                type: "error",
-                                timer: 6000,
-                                button: false
-                                // confirmButtonText: "Yes, delete it!",
-                            });
-                        }
-                        else if(res.isSuccess=='exist'){
-                            var dv_link = window.location.pathname + "?r=dv-aucs/view&id=" +res.id
-                            $('#link').text('NAA NAY DV ANG ORS ')
-                     bbb = $(`<a type="button" href='`+ dv_link+`' >link here</a>`);
-                                 bbb.appendTo($("#link"));
-                            swal({
-                                title: "Error",
-                                text: "Naa Nay DV",
-                                type: "error",
-                                timer: 6000,
-                                button: false
-                                // confirmButtonText: "Yes, delete it!",
-                            });
-                        }
-                    }
-                });
-      
-        })
 
 
     })
+    $('#save_data').submit(function(e) {
+  
+
+         e.preventDefault();
+
+
+         $.ajax({
+            url: window.location.pathname + '?r=dv-aucs/insert-dv',
+            method: "POST",
+            data: $('#save_data').serialize(),
+            success: function(data) {
+                var res=JSON.parse(data)
+                if (res.isSuccess==true) {
+                    swal({
+                        title: "Success",
+                        // text: "You will not be able to undo this action!",
+                        type: "success",
+                        timer: 3000,
+                        button: false
+                        // confirmButtonText: "Yes, delete it!",
+                    }, function() {
+                        window.location.href = window.location.pathname + '?r=dv-aucs/view&id='+res.id
+                    });
+                    $('#save_data')[0].reset();
+                }
+                else if(res.isSuccess==false){
+
+                    swal({
+                        title: "Error",
+                        text: res.error,
+                        type: "error",
+                        timer: 6000,
+                        button: false
+                        // confirmButtonText: "Yes, delete it!",
+                    });
+                }
+                else if(res.isSuccess=='exist'){
+                    var dv_link = window.location.pathname + "?r=dv-aucs/view&id=" +res.id
+                    $('#link').text('NAA NAY DV ANG ORS ')
+            bbb = $(`<a type="button" href='`+ dv_link+`' >link here</a>`);
+                        bbb.appendTo($("#link"));
+                    swal({
+                        title: "Error",
+                        text: "Naa Nay DV",
+                        type: "error",
+                        timer: 6000,
+                        button: false
+                        // confirmButtonText: "Yes, delete it!",
+                    });
+                }
+            }
+        });
+
+})
 
      
 
