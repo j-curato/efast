@@ -287,7 +287,7 @@ class JevPreparationController extends Controller
             // $query1->orderBy('jev_preparation.reporting_period');
             $query1
                 ->groupBy('accounting_codes.coa_object_code')
-                ->orderBy('jev_preparation.reporting_period DESC')
+                // ->orderBy('jev_preparation.reporting_period DESC')
 
                 // ->orderBy('jev_accounting_entries.chart_of_account_id')
             ;
