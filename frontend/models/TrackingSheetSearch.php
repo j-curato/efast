@@ -17,8 +17,8 @@ class TrackingSheetSearch extends TrackingSheet
     public function rules()
     {
         return [
-            [['id', 'payee_id', 'process_ors_id'], 'integer'],
-            [['tracking_number', 'particular', 'created_at'], 'safe'],
+            [['id'], 'integer'],
+            [['tracking_number', 'particular', 'created_at', 'process_ors_id', 'payee_id'], 'safe'],
         ];
     }
 
@@ -42,10 +42,12 @@ class TrackingSheetSearch extends TrackingSheet
     {
         $query = TrackingSheet::find();
 
+
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+
         ]);
 
         $this->load($params);
@@ -55,17 +57,18 @@ class TrackingSheetSearch extends TrackingSheet
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->joinWith('payee');
+        $query->joinWith('processOrs');
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'payee_id' => $this->payee_id,
-            'process_ors_id' => $this->process_ors_id,
+            'tracking_sheet.id' => $this->id,
             'created_at' => $this->created_at,
         ]);
 
         $query->andFilterWhere(['like', 'tracking_number', $this->tracking_number])
-            ->andFilterWhere(['like', 'particular', $this->particular]);
+            ->andFilterWhere(['like', 'particular', $this->particular])
+            ->andFilterWhere(['like', 'process_ors.serial_number', $this->process_ors_id])
+            ->andFilterWhere(['like', 'payee.account_name', $this->payee_id]);
 
         return $dataProvider;
     }

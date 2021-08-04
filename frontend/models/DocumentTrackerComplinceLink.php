@@ -9,6 +9,7 @@ use Yii;
  *
  * @property int $id
  * @property int|null $document_tracker_id
+ * @property string|null $link
  *
  * @property DocumentTracker $documentTracker
  */
@@ -29,6 +30,7 @@ class DocumentTrackerComplinceLink extends \yii\db\ActiveRecord
     {
         return [
             [['document_tracker_id'], 'integer'],
+            [['link'], 'string'],
             [['document_tracker_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentTracker::className(), 'targetAttribute' => ['document_tracker_id' => 'id']],
         ];
     }
@@ -41,6 +43,7 @@ class DocumentTrackerComplinceLink extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'document_tracker_id' => 'Document Tracker ID',
+            'link' => 'Link',
         ];
     }
 

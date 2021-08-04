@@ -119,7 +119,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => 'Account Group',
                 'attribute' => 'account_group',
-         
+
             ],
 
             [
@@ -136,7 +136,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filterType' => GridView::FILTER_SELECT2,
                 'filter' => ArrayHelper::map(MajorAccounts::find()->asArray()->all(), 'id', 'name'),
                 'filterWidgetOptions' => [
-                    'pluginOptions' => ['allowClear' => true,'placeholder'=>'Major Account'],
+                    'pluginOptions' => ['allowClear' => true, 'placeholder' => 'Major Account'],
                 ],
                 'format' => 'raw'
 
@@ -209,7 +209,14 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 SweetAlertAsset::register($this);
 $script = <<<JS
-
+            $('#modalButtoncreate').click(function(){
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+        });
+        $('a[title=Update]').click(function(e){
+            e.preventDefault();
+            
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
+        });
 
         $(document).ready(function(){
             var at =''
@@ -279,15 +286,10 @@ $this->registerJs($script);
 
 <?php
 
-$js = "
-        $('#modalButtoncreate').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-        $('.modalButtonedit').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
+$js = <<<JS
 
 
-";
-$this->registerJs($js, $this::POS_END);
+
+JS;
+$this->registerJs($js);
 ?>

@@ -64,6 +64,7 @@ class Transaction extends \yii\db\ActiveRecord
             'payroll_number' => 'Payroll Number',
             'transaction_date' => 'Transaction Date',
             'transaction_time' => 'Transaction Time',
+            'created_at' => 'created_at',
         ];
     }
 

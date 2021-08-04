@@ -255,6 +255,7 @@ class JevPreparationController extends Controller
                 //  'SUM(jev_accounting_entries.debit) as debit',
                 // 'chart_of_accounts.normal_balance',
                 //  'jev_preparation.date'
+                
                 "IFNULL(NULL,'$prev_end_month') as reporting_period",
                 "IFNULL(NULL,'Beginning Balance') as explaination",
                 "accounting_codes.coa_object_code as uacs",
@@ -263,15 +264,12 @@ class JevPreparationController extends Controller
                 "IFNULL(NULL,'') as jev_number",
                 ' SUM(jev_accounting_entries.credit) as credit',
                 'SUM(jev_accounting_entries.debit) as debit',
-                "accounting_codes.normal_balance",
                 "IFNULL(NULL,'') as date",
             ])
                 ->from('jev_accounting_entries')
                 ->join('LEFT JOIN', 'jev_preparation', 'jev_accounting_entries.jev_preparation_id=jev_preparation.id')
                 ->join('LEFT JOIN', 'accounting_codes', 'jev_accounting_entries.object_code=accounting_codes.object_code');
             if (!empty($reporting_period)) {
-
-
 
                 // KUHAAON ANG MGA DATA BETWEEN 
                 $query1->andwhere(['between', 'jev_preparation.reporting_period', $prev_begin_month, $prev_end_month]);
@@ -290,12 +288,29 @@ class JevPreparationController extends Controller
             $query1
                 ->groupBy('accounting_codes.coa_object_code')
                 ->orderBy('jev_preparation.reporting_period DESC')
-                ->orderBy('jev_preparation.date DESC')
 
                 // ->orderBy('jev_accounting_entries.chart_of_account_id')
             ;
+            $q = (new \yii\db\Query())
+            ->select([
+                "q.reporting_period",
+                "q.explaination",
+                "q.uacs",
+                "q.general_ledger",
+                "q.ref_number",
+                "q.jev_number",
+                'q.credit',
+                'q.debit',
+                "chart_of_accounts.normal_balance",
+                "q.date",
+            ])
+            ->from ('chart_of_accounts')
+            
+            ;
+            $qwe = $q->join('INNER JOIN',"({$query1->createCommand()->getRawSql()}) as q",'chart_of_accounts.uacs = q.uacs');
+            // return json_encode($qwe->all());
             // E UNION AND DUHA KA RESULT SA QUERY SA  
-            $chart = $query1->union($general_ledger, true)->all();
+            $chart = $qwe->union($general_ledger, true)->all();
 
             $balance_per_uacs = [];
             $final_ledger = [];

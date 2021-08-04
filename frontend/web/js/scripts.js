@@ -101,7 +101,7 @@ $.getJSON(url + '?r=payee/get-payee')
             placeholder: "Select Payee",
 
         })
-        
+
 
     })
 
@@ -220,9 +220,13 @@ function getFundSourceType() {
 
 }
 function getOrs(id) {
-    return $.getJSON(url + '?r=tracking-sheet/get-all-ors&id='+id)
+    return $.getJSON(url + '?r=tracking-sheet/get-all-ors&id=' + id)
 
 }
-function getAllTrackingSheet(){
-    return $.getJSON(url+'?r=tracking-sheet/get-all-tracking-sheet')
+function getAllTrackingSheet() {
+    return $.getJSON(url + '?r=tracking-sheet/get-all-tracking-sheet')
 }
+function getAllPayee() {
+    return $.getJSON(url + '?r=payee/get-payee')
+}
+

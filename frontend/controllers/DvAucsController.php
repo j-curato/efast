@@ -286,7 +286,7 @@ class DvAucsController extends Controller
             $payee_id = $_POST['payee'];
             $book_id = !empty($_POST['book']) ? $_POST['book'] : 5;
             $transaction_type = strtolower($_POST['transaction_type']);
-            $transaction_timestamp = date('Y-m-d H:i:s',strtotime($_POST['transaction_timestamp']));
+            $transaction_timestamp = date('Y-m-d H:i:s', strtotime($_POST['transaction_timestamp']));
             $tracking_sheet = $_POST['tracking_sheet'];
             // if (array_sum($_POST['debit']) != array_sum($_POST['credit'])) {
             //     return json_encode(['isSuccess' => false, 'error' => 'Not Equal Debit and Credit']);
@@ -847,6 +847,13 @@ class DvAucsController extends Controller
                     die();
                 }
             }
+            if (!empty($model->dvAucsEntries)) {
+                foreach ($model->dvAucsEntries as $val) {
+                    if ($val->processOrs->is_cancelled === 1) {
+                        return json_encode(['isSuccess' => false, 'cancelled' =>  "{$val->processOrs->serial_number} is not Activated"]);
+                    }
+                }
+            }
             $model->is_cancelled ? $model->is_cancelled = false : $model->is_cancelled = true;
             if ($model->save(false)) {
                 return json_encode(['isSuccess' => true, 'cancelled' => $model->is_cancelled]);
@@ -896,36 +903,58 @@ class DvAucsController extends Controller
     }
     public function actionReturn($id)
     {
-        date_default_timezone_set('Asia/Manila');
-        $timestamp  = date('Y-m-d H:i:s');
+        if ($_POST) {
 
-        $model = $this->findModel($id);
-        // if (!empty($model->out_timestamp)) {
-        //     return $model->out_timestamp;
-        // }
-        $model->return_timestamp = $timestamp;
-        if ($model->save(false)) {
+            date_default_timezone_set('Asia/Manila');
+            $time =  $_POST['time'];
+
+            $timestamp  = date('Y-m-d H:i:s', strtotime($_POST['time'] . ' ' . $_POST['date']));
+
+            $model = $this->findModel($id);
+            // if (!empty($model->out_timestamp)) {
+            //     return $model->out_timestamp;
+            // }
+            $model->return_timestamp = $timestamp;
+            if ($model->save(false)) {
+                return json_encode(['success' => true]);
+            }
         }
     }
     public function actionAccept($id)
     {
-        date_default_timezone_set('Asia/Manila');
-        $timestamp  = date('Y-m-d H:i:s');
-        $model = $this->findModel($id);
-        // if (!empty($model->out_timestamp)) {
-        //     return $model->out_timestamp;
-        // }
-        $model->accept_timestamp = $timestamp;
-        if ($model->save(false)) {
+        if ($_POST) {
+            date_default_timezone_set('Asia/Manila');
+            $time =  $_POST['time'];
+            $timestamp  = date('Y-m-d H:i:s', strtotime($_POST['time'] . ' ' . $_POST['date']));
+            $model = $this->findModel($id);
+
+            if (empty($model->out_timestamp)) {
+                return json_encode(['success' => false, 'error' => 'DV is not returned']);
+            }
+            $model->accept_timestamp = $timestamp;
+            if ($model->save(false)) {
+                return json_encode(['success' => true]);
+            }
         }
     }
     public function actionOut($id)
     {
-        date_default_timezone_set('Asia/Manila');
-        $timestamp  = date('Y-m-d H:i:s');
-        $model = $this->findModel($id);
-        $model->out_timestamp = $timestamp;
-        if ($model->save(false)) {
+
+        if ($_POST) {
+
+            date_default_timezone_set('Asia/Manila');
+            $time =  $_POST['time'];
+            $timestamp  = date('Y-m-d H:i:s', strtotime($_POST['time'] . ' ' . $_POST['date']));
+            $model = $this->findModel($id);
+            if (!empty($model->return_timestamp)) {
+               if (empty($model->accept_timestamp)){
+                   return json_encode(['success'=>false,'error'=>'Cannot Out Dv is not Accepted Yet']);
+               }
+            }
+            $model->out_timestamp = $timestamp;
+            if ($model->save(false)) {
+                return json_encode(['success' => true]);
+            }
         }
     }
     public function actionTurnarroundView($id)

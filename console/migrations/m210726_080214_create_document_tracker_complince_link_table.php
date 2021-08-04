@@ -18,6 +18,7 @@ class m210726_080214_create_document_tracker_complince_link_table extends Migrat
         $this->createTable('{{%document_tracker_complince_link}}', [
             'id' => $this->primaryKey(),
             'document_tracker_id' => $this->integer(),
+            'link' => $this->text(),
         ]);
 
         // creates index for column `document_tracker_id`

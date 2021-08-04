@@ -1,74 +1,76 @@
 <?php
 
 use app\models\DvAucsEntriesSearch;
+use aryelds\sweetalert\SweetAlertAsset;
+use kartik\date\DatePicker;
 use kartik\export\ExportMenu;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
 use kartik\grid\GridView;
+use kartik\time\TimePicker;
+use yii\bootstrap\Modal;
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\DvAucsSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Dv Aucs';
+$this->title = 'Turn Arround Time';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="dv-aucs-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Create Dv Aucs', ['create'], ['class' => 'btn btn-success']) ?>
-        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
-    </p>
 
-    <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
-                </div>
-                <div class='modal-body'>
-                    <center><a href="/afms/frontend/web/import_formats/DV_Format.xlsx">Download Template Here to avoid error during Upload.</a></center>
-                    <hr>
-                    <label for="ledger"> SELECT GENERAL LEDGER</label>
-                    <?php
-                    $ledger = Yii::$app->db->createCommand("SELECT chart_of_accounts.id, CONCAT(chart_of_accounts.uacs,' - ',chart_of_accounts.general_ledger) as name FROM chart_of_accounts")->queryAll();
-                    ?>
-                    <?php
 
-                    $form = ActiveForm::begin([
-                        'action' => ['dv-aucs/import'],
-                        'method' => 'POST',
-                        'id' => 'import',
-                        'options' => [
-                            'enctype' => 'multipart/form-data',
-                        ], // important
-                    ]);
-
-                    // echo '<input type="file">';
-                    echo "<br>";
-                    echo FileInput::widget([
-                        'name' => 'file',
-                        // 'options' => ['multiple' => true],
-                        'id' => 'fileupload',
-                        'pluginOptions' => [
-                            'showPreview' => true,
-                            'showCaption' => true,
-                            'showRemove' => true,
-                            'showUpload' => true,
-                        ]
-                    ]);
-                    ActiveForm::end();
-                    ?>
-
-                </div>
-            </div>
-        </div>
-    </div>
     <?php
+    date_default_timezone_set('Asia/Manila');
+    $time = date('h:i:s A');
+    $date = date('Y-M-d');
+    Modal::begin(
+        [
+            //'header' => '<h2>Create New Region</h2>',
+            'id' => 'qwe',
+            'size' => 'modal-md',
+            'clientOptions' => ['backdrop' => 'static', 'keyboard' => TRUE, 'class' => 'modal modal-primary '],
+            'options' => [
+                'tabindex' => false // important for Select2 to work properly
+            ],
+        ]
+    );
+    echo "<div class='box box-success' id='modalContent'></div>";
+    echo "<form id='timestampForm'>";
+    echo "<a id='link' href=''></a>";
+    echo "<div class='row'>";
+    echo "<div class='col-sm-6'>";
+    echo "<label for='time'> Time</label>";
+    echo TimePicker::widget([
+        'name' => 'time',
+        'id' => 'time',
+        'value' => $time
+    ]);
+    echo "</div >";
+    echo "<div class='col-sm-6'>";
+    echo "<label for='date' style='text-align:center'>Date</label>";
+    echo DatePicker::widget([
+        'name' => 'date',
+        'id' => 'date',
+        'value' => $date,
+        'options' => [
+            'readOnly' => true,
+        ],
+        'pluginOptions' => [
+            'format' => 'yyyy-M-dd',
+            'autoclose' => true
+        ]
+    ]);
+    echo "</div >";
+    echo "</div>";
+
+    echo "<button type='submit' class='btn btn-success' id='save'>Save</button>";
+    echo '<form>';
+    Modal::end();
     $exportSearchModel = new DvAucsEntriesSearch();
     $exportDataProvider = $exportSearchModel->search(Yii::$app->request->queryParams);
     $exportColumns = [
@@ -190,32 +192,34 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'value' => function ($model) {
 
-                    $t = yii::$app->request->baseUrl . "/index.php?r=advances/update&id=$model->id";
-                    $r = yii::$app->request->baseUrl . "/index.php?r=advances/view&id=$model->id";
 
                     return ' '
-                        . Html::a('View', ['turnarround-view', 'id' => $model->id], ['class' => 'btn-sm btn-primary'])
-                        . Html::a('Return', ['return', 'id' => $model->id], [
-                            'class' => 'btn-sm btn-danger',
-                            'data' => [
-                                'confirm' => 'Are you sure you want to return this item?',
-                                'method' => 'post',
-                            ],
-                        ])
-                        . Html::a('Accept', ['accept', 'id' => $model->id], [
-                            'class' => 'btn-sm btn-success',
-                            'data' => [
-                                'confirm' => 'Are you sure you want to accept this item?',
-                                'method' => 'post',
-                            ],
-                        ])
-                        . Html::a('Out', ['out', 'id' => $model->id], [
-                            'class' => 'btn-sm btn-warning',
-                            'data' => [
-                                'confirm' => 'Are you sure you want to out this item?',
-                                'method' => 'post',
-                            ],
-                        ]);
+                        // . Html::a('View', ['turnarround-view', 'id' => $model->id], ['class' => 'btn-sm btn-primary'])
+                        . Html::button(
+                            'Accept',
+                            [
+                                'value' => '/?r=dv-aucs/accept&id=' . $model->id,
+                                'class' => 'btn-sm btn-success turn-arround-btn',
+                                'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
+                            ]
+                        )
+                        . Html::button(
+                            'Return',
+                            [
+                                'value' => Url::to('?r=dv-aucs/return&id=' . $model->id),
+                                'class' => 'btn-sm btn-danger  turn-arround-btn',
+                                'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
+                            ]
+                        )
+                        . Html::button(
+                            'Out',
+
+                            [
+                                'value' => Url::to('?r=dv-aucs/out&id=' . $model->id),
+                                'class' => 'btn-sm btn-warning  turn-arround-btn',
+                                'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
+                            ]
+                        );
                 }
             ],
         ];
@@ -258,11 +262,50 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); ?>
 
 
-    <style>
-        .grid-view td {
-            white-space: normal;
-            width: 5rem;
-            padding: 0;
-        }
-    </style>
+
 </div>
+<style>
+    .grid-view td {
+        white-space: normal;
+        width: 5rem;
+        padding: 0;
+    }
+
+    .turn-arround-btn {
+        margin: 1px;
+    }
+</style>
+<?php
+SweetAlertAsset::register($this);
+$script = <<<JS
+    $('.turn-arround-btn').click(function() {    
+        $('#qwe').modal('show').find('#link').attr('href',$(this).attr('value'))
+    });
+    $("#timestampForm").submit(function(e){
+        e.preventDefault();
+        var link =$('#link').attr('href')
+        console.log(link)
+        $.ajax({
+            type:'POST',
+            url:window.location.pathname + link,
+            data:$('#timestampForm').serialize(),
+            success:function(data){
+                console.log(data)
+                var res = JSON.parse(data)
+                if (res.success){
+                    location.reload()
+                }
+                else{
+                    swal({
+                        type:'error',
+                        button:false,
+                        time:3000,
+                        title:res.error
+                    })
+                }
+            }
+        })
+    })
+JS;
+$this->registerJs($script);
+?>

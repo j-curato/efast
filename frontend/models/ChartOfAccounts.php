@@ -36,9 +36,9 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['uacs', 'general_ledger', 'major_account_id', 'sub_major_account', 'account_group', 'current_noncurrent', 'enable_disable'], 'required'],
+            [['uacs', 'general_ledger', 'major_account_id', 'sub_major_account', 'account_group', 'current_noncurrent', 'enable_disable','normal_balance'], 'required'],
             [['major_account_id', 'sub_major_account'], 'integer'],
-            [['uacs'], 'string', 'max' => 30],
+            [['uacs','normal_balance'], 'string', 'max' => 30],
             [['general_ledger', 'account_group', 'current_noncurrent', 'enable_disable'], 'string', 'max' => 255],
             [['major_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => MajorAccounts::class, 'targetAttribute' => ['major_account_id' => 'id']],
             [['sub_major_account'], 'exist', 'skipOnError' => true, 'targetClass' => SubMajorAccounts::class, 'targetAttribute' => ['sub_major_account' => 'id']],

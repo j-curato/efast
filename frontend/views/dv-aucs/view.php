@@ -415,7 +415,7 @@ $script = <<<JS
                             else{
                                 swal({
                                         title:"Error Cannot Cancel",
-                                        text:"Dili Ma  Cancel ang Disbursment Niya",
+                                        text:res.cancelled,
                                         type:'error',
                                         button:false,
                                         timer:3000,

@@ -951,7 +951,8 @@ $script = <<< JS
 
             // var x = date.getFullYear()+'-'+date.getMonth() + '-'+ date.getDate() + ' ' + date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()
             // console.log(x)
-            // $('#transaction_timestamp').val(x)
+            $('#transaction_timestamp').val(date)
+          
         var transaction_type=$("#transaction").val()
 
         $("#transaction_type").val(transaction_type)

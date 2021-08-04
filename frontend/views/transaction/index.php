@@ -115,7 +115,7 @@ Modal::end();
             'top' => 50,
             'position' => 'absolute',
         ],
-        'pjax'=>true,
+        'pjax' => true,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             // [
@@ -144,7 +144,7 @@ Modal::end();
             [
                 'label' => 'Payee',
                 'attribute' => 'payee_id',
-                'value'=>'payee.account_name'
+                'value' => 'payee.account_name'
             ],
             'particular',
             // 'gross_amount',
@@ -168,12 +168,12 @@ Modal::end();
 
 </div>
 <style>
-        .grid-view td {
-            white-space: normal;
-            width: 5rem;
-            padding: 0;
-        }
-    </style>
+    .grid-view td {
+        white-space: normal;
+        width: 5rem;
+        padding: 0;
+    }
+</style>
 
 <?php
 SweetAlertAsset::register($this);
@@ -181,6 +181,11 @@ $script = <<<JS
             var i=false;
         $('#modalButtoncreate').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+        });
+        $('a[title=Update]').click(function(e){
+            e.preventDefault();
+            
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
         });
 
         

@@ -280,9 +280,9 @@ class ProcessOrsEntriesController extends Controller
             $transaction_id = $_POST['transaction_id'];
             $book_id = $_POST['book_id'];
             $date = $_POST['date'];
-            $transaction_timestamp =$_POST['transaction_timestamp'];
+            $transaction_timestamp = $_POST['transaction_timestamp'];
 
-            
+
 
             $q = OrsReportingPeriod::find()->where("reporting_period = :reporting_period", ['reporting_period' => $reporting_period])->one();
 
@@ -858,10 +858,10 @@ class ProcessOrsEntriesController extends Controller
 
                 foreach ($model->dvAucsEntries as $val) {
                     $is_cancelled_dv = $val->dvAucs->is_cancelled;
-                    break;
-                }
-                if ($is_cancelled_dv === 0) {
-                    return json_encode(['isSuccess' => false, "error" => "error"]);
+                    if ($is_cancelled_dv === 0) {
+                        return json_encode(['isSuccess' => false, "error" => 'DV Number ' . $val->dvAucs->dv_number . 'is not Cancelled']);
+                        break;
+                    }
                 }
             }
             if ($model->is_cancelled) {

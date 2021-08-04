@@ -77,4 +77,8 @@ class TrackingSheet extends \yii\db\ActiveRecord
     {
         return $this->hasOne(ProcessOrs::class, ['id' => 'process_ors_id']);
     }
+    public function getDvAucs()
+    {
+        return $this->hasOne(DvAucs::class, [ 'tracking_sheet_id'=>'id']);
+    }
 }

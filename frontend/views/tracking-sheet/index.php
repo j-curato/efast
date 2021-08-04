@@ -1,7 +1,7 @@
 <?php
 
+use kartik\grid\GridView;
 use yii\helpers\Html;
-use yii\grid\GridView;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
@@ -13,7 +13,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="tracking-sheet-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', [
@@ -28,12 +27,29 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel' => [
+            'type' => GridView::TYPE_PRIMARY,
+            'heading' => 'List of Tracking Sheets',
+        ],
+        'floatHeaderOptions' => [
+            'top' => 50,
+            'position' => 'absolute',
+        ],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
             'id',
-            'payee_id',
-            'process_ors_id',
+
+            [
+                'label' => 'Payee',
+                'attribute'=>'payee_id',
+                'value' =>  'payee.account_name',
+            ],
+            [
+                'label' => 'Ors Number',
+                'attribute'=>'process_ors_id',
+                'value' =>  'processOrs.serial_number',
+            ],
+            
             'tracking_number',
             'particular:ntext',
             //'created_at',

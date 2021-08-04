@@ -92,10 +92,11 @@ class TrackingSheetController extends Controller
         $model = '';
         if ($_POST) {
             $transaction_type =  $_POST['transaction_type'];
-            $ors =  $_POST['ors'];
+            $ors =  empty($_POST['ors']) ? '' : $_POST['ors'];
             $payee = $_POST['payee'];
             $particular =  $_POST['particular'];
-
+            $gross_amount = $_POST['gross_amount'];
+            // return json_encode($gross_amount);
             if (!empty($_POST['update_id'])) {
                 $model = $this->findModel($_POST['update_id']);
             } else {
@@ -107,6 +108,7 @@ class TrackingSheetController extends Controller
             $model->process_ors_id = $ors;
             $model->payee_id = $payee;
             $model->particular = $particular;
+            $model->gross_amount = $gross_amount;
             if ($model->save(false)) {
 
                 // return $this->redirect(['view', 'id' => $model->id]);
@@ -176,9 +178,17 @@ class TrackingSheetController extends Controller
         if ($_POST) {
             $id = $_POST['id'];
             $query = Yii::$app->db->createCommand("SELECT `transaction`.particular,
-            `transaction`.payee_id
+            `transaction`.payee_id,
+            total.total_ors
             FROM process_ors
             LEFT JOIN `transaction` ON process_ors.transaction_id = `transaction`.id
+            LEFT JOIN (SELECT SUM(raoud_entries.amount) as total_ors,
+            process_ors.id 
+            FROM process_ors
+                                LEFT JOIN raouds ON process_ors.id = raouds.process_ors_id
+                                LEFT JOIN raoud_entries ON raouds.id = raoud_entries.raoud_id
+                                WHERE process_ors.id =:id
+            ) as total ON process_ors.id= total.id
             WHERE process_ors.id = :id
             ")
                 ->bindValue(':id', $id)
@@ -193,10 +203,11 @@ class TrackingSheetController extends Controller
             ->select('process_ors.id,process_ors.serial_number')
             ->from('process_ors')
             ->join('LEFT JOIN', 'tracking_sheet', 'process_ors.id = tracking_sheet.process_ors_id')
+
             ->where('tracking_sheet.process_ors_id IS NULL');
         if (!empty($id)) {
             // return $id;
-            $ors->orWhere('tracking_sheet.id = :id',['id'=>$id]);
+            $ors->orWhere('tracking_sheet.id = :id', ['id' => $id]);
         }
 
         $q = $ors->all();

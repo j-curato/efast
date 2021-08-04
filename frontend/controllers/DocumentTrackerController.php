@@ -8,6 +8,7 @@ use app\models\DocumentTrackerComplinceLink;
 use app\models\DocumentTrackerLinks;
 use app\models\DocumentTrackerResponsibleOffice;
 use app\models\DocumentTrackerSearch;
+use ErrorException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -157,5 +158,107 @@ class DocumentTrackerController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    public function actionInsert()
+    {
+        if ($_POST) {
+            $date_recieve = date('Y-m-d', strtotime($_POST['date_recieved']));
+            $document_type = $_POST['document_type'];
+            $status = $_POST['status'];
+            $office = $_POST['office'];
+            $document_number = $_POST['document_number'];
+            $document_date = date('Y-m-d', strtotime($_POST['document_date']));
+            $details = $_POST['details'];
+            $link = $_POST['link'];
+            $compliance = $_POST['compliance'];
+            $update_id = $_POST['update_id'];
+            // 
+
+
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if (!empty($update_id)) {
+                    $documentTracker = DocumentTracker::findOne($update_id);
+                    foreach($documentTracker->documentTrackerComplinceLinks as $val)
+                    {
+                        $val->delete();
+                    }
+                    foreach($documentTracker->documentTrackerLinks as $val)
+                    {
+                        $val->delete();
+                    }
+                    foreach($documentTracker->documentTrackerOffice as $val)
+                    {
+                        $val->delete();
+                    }
+                    
+
+                }
+                else
+                {
+                    $documentTracker = new DocumentTracker();
+
+                }
+
+                $documentTracker->date_recieved = $date_recieve;
+                $documentTracker->document_type = $document_type;
+                $documentTracker->status = $status;
+                $documentTracker->document_number = $document_number;
+                $documentTracker->document_date = $document_date;
+                $documentTracker->details = $details;
+                if ($documentTracker->validate()) {
+                    if ($flag = $documentTracker->save(false)) {
+                        foreach ($link as $i => $val) {
+                            $doc_link = new DocumentTrackerLinks();
+                            $doc_link->document_tracker_id = $documentTracker->id;
+                            $doc_link->link = $val;
+                            if ($doc_link->validate()) {
+                                if ($doc_link->save(false)) {
+                                } else {
+                                    return json_encode(['success'=>false,'error' => 'wala na save sa doc links']);
+                                }
+                            } else {
+                                return json_encode(['success'=>false,'error' => $doc_link->errors]);
+                            }
+                        }
+                        foreach ($compliance as $i => $val) {
+                            $doc_compliance = new DocumentTrackerComplinceLink();
+                            $doc_compliance->document_tracker_id = $documentTracker->id;
+                            $doc_compliance->link = $val;
+                            if ($doc_compliance->validate()) {
+                                if ($doc_compliance->save(false)) {
+                                } else {
+                                    return json_encode(['success'=>false,'error' => 'wala na save sa doc compliance']);
+                                }
+                            } else {
+                                return json_encode(['success'=>false,'error' => $doc_compliance->errors]);
+                            }
+                        }
+                        foreach ($office as $i => $val) {
+                            $office = new DocumentTrackerResponsibleOffice();
+                            $office->document_tracker_id = $documentTracker->id;
+                            $office->office = $val;
+                            if ($office->validate()) {
+                                if ($office->save(false)) {
+                                } else {
+                                    return json_encode(['success'=>false,'error' => 'wala na save sa doc office']);
+                                }
+                            } else {
+                                return json_encode(['success'=>false,'error' => $office->errors]);
+                            }
+                        }
+                    }
+                    if ($flag) {
+                        $transaction->commit();
+                        return json_encode(['success' => true,'id'=>$documentTracker->id]);
+                    }
+                } else {
+                    return json_encode(['success'=>false,'error' => $documentTracker->errors]);
+                }
+            } catch (ErrorException $e) {
+                $transaction->rollBack();
+                return json_encode(['error' => $e->getMessage()]);
+            }
+        }
     }
 }

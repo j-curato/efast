@@ -44,7 +44,25 @@ use yii\helpers\ArrayHelper;
 
     <?= $form->field($model, 'current_noncurrent')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'enable_disable')->textInput(['maxlength' => true,'value'=>'Enable',]) ?>
+    <div class="row">
+        <div class="col-sm-3">
+
+            <?= $form->field($model, 'enable_disable')->textInput(['maxlength' => true, 'value' => 'Enable',]) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'normal_balance')->widget(
+                Select2::class,
+                [
+                    'data' => ['Debit'=>'Debit','Credit'=>'Credit'],
+                    
+                    'options' => ['placeholder' => 'Select a Normal Balance'],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                ]
+            ) ?>
+        </div>
+    </div>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

@@ -101,4 +101,8 @@ class DvAucs extends \yii\db\ActiveRecord
     {
         return $this->hasMany(DvAccountingEntries::class, ['dv_aucs_id' => 'id']);
     }
+    public function getTrackingSheet()
+    {
+        return $this->hasOne(TrackingSheet::class, ['id' => 'tracking_sheet_id']);
+    }
 }

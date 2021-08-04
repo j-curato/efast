@@ -13,7 +13,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="document-tracker-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -25,19 +24,94 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
     </p>
+<div class="container">
 
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
-            'date_recieved',
+            [
+                'attribute'=>'date_recieved',
+                'value'=>function($model){
+                    return date('F d, Y',strtotime($model->date_recieved));
+                }
+            ],
             'document_type',
             'status',
             'document_number',
-            'document_date',
+            [
+                'attribute'=>'document_date',
+                'value'=>function($model){
+                    return date('F d,Y',strtotime($model->document_date));
+                }
+
+            ],
+            [
+                'label'=>'Responsible Office',
+                'value'=>function($model){
+                    $office = '';
+                    foreach($model->documentTrackerOffice as $val){
+
+                        if ($office !==''){
+                            $office .= ', ';
+                        }
+                        $office .=  $val->office;
+
+                    }
+                    return $office;
+                }
+
+            ],
             'details:ntext',
-            'responsible_office_id',
         ],
     ]) ?>
 
+    <table class="">
+        <thead>
+            <th>
+                Document Links
+            </th>
+        </thead>
+        <tbody>
+            <?php
+            foreach ($model->documentTrackerLinks as $val) {
+                echo "<tr>
+                <td><a href='{$val->link}' target='_blank'>{$val->link}</a></td>
+                </tr>";
+            }
+            ?>
+        </tbody>
+    </table>
+    <table class="">
+        <thead>
+            <th>
+                Document Compliance Links
+            </th>
+        </thead>
+        <tbody>
+            <?php
+            foreach ($model->documentTrackerComplinceLinks as $val) {
+                echo "<tr>
+                <td><a href='{$val->link}' target='_blank'>{$val->link}</a></td>
+                </tr>";
+            }
+            ?>
+        </tbody>
+    </table>
+
 </div>
+</div>
+
+<style>
+    table,
+    th,
+    td {
+        padding: 15px;
+
+    }
+    table{
+        width: 100%;
+    }
+    .container{
+        background-color: white;
+    }
+</style>

@@ -71,7 +71,7 @@ class DocumentTracker extends \yii\db\ActiveRecord
      */
     public function getDocumentTrackerComplinceLinks()
     {
-        return $this->hasMany(DocumentTrackerComplinceLink::className(), ['document_tracker_id' => 'id']);
+        return $this->hasMany(DocumentTrackerComplinceLink::class, ['document_tracker_id' => 'id']);
     }
 
     /**
@@ -81,6 +81,10 @@ class DocumentTracker extends \yii\db\ActiveRecord
      */
     public function getDocumentTrackerLinks()
     {
-        return $this->hasMany(DocumentTrackerLinks::className(), ['document_tracker_id' => 'id']);
+        return $this->hasMany(DocumentTrackerLinks::class, ['document_tracker_id' => 'id']);
+    }
+    public function getDocumentTrackerOffice()
+    {
+        return $this->hasMany(DocumentTrackerResponsibleOffice::class, ['document_tracker_id' => 'id']);
     }
 }

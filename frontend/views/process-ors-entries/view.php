@@ -44,7 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
             $t = yii::$app->request->baseUrl . "/index.php?r=transaction/view&id=$ors->transaction_id";
             echo  Html::a('Transaction', $t, ['class' => 'btn btn-info']);
             $adjust = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/re-align&id=$model->id";
-            echo Html::a('Adjust/Re-align', $adjust, ['class' => 'btn btn-warning ','style'=>'margin:5px']);
+            echo Html::a('Adjust/Re-align', $adjust, ['class' => 'btn btn-warning ', 'style' => 'margin:5px']);
             ?>
         </p>
         <table class="table table-striped">
@@ -212,7 +212,7 @@ $script = <<< JS
                         //     button:false,
                         //     timer:3000,
                         //  })
-                        // console.log(data)
+                        console.log(data)
                         var cancelled = res.cancelled?"Successfuly Cancelled":"Successfuly Activated";
                         if(res.isSuccess){
                             swal({
@@ -226,7 +226,7 @@ $script = <<< JS
                         }else{
                             swal({
                                 title:"Error",
-                                text:"DV is Not canceleed",
+                                text:res.error,
                                 type:'error',
                                 button:false,
                                 timer:3000,
