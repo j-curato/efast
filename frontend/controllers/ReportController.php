@@ -1113,4 +1113,62 @@ class ReportController extends \yii\web\Controller
             ]
         );
     }
+    public function actionRsmi()
+    {
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $book = $_POST['book'];
+            $province = $_POST['province'];
+
+            $query = Yii::$app->db->createCommand("SELECT 
+					advances_liquidation.gl_object_code,
+                    dv_number,
+                    ROUND(SUM(advances_liquidation.withdrawals),2) as total_withdrawal
+                    FROM `advances_liquidation`
+                    WHERE 
+                    reporting_period =:reporting_period
+                    AND province LIKE :province
+                    AND book_name =:book
+                    GROUP BY dv_number, advances_liquidation.gl_object_code
+                    ")
+                ->bindValue(':reporting_period', $reporting_period)
+                ->bindValue(':book', $book)
+                ->bindValue(':province', $province)
+                // ->queryAll()
+            ;
+            $query2 = (new \yii\db\Query())
+                ->select([
+                    "CONCAT(chart_of_accounts.uacs,' ',chart_of_accounts.general_ledger) as account",
+                    'query1.*q'
+                    
+                ])
+                ->from('chart_of_accounts')
+                ->orderBy('chart_of_accounts.uacs');
+            $query2->join('INNER JOIN', "({$query->getRawSql()}) as query1", 'query1.gl_object_code = chart_of_accounts.uacs');
+         $res =   $query2->join('INNER JOIN', "liquidation", 'query1.dv_number = liquidation.dv_number')->all();
+            // $query3 = (new \yii\db\Query())
+            //     ->select(' advances_liquidation.dv_number,
+            //     advances_liquidation.check_date,
+            //     advances_liquidation.check_number,
+            //     advances_liquidation.payee,
+            //     q.*')
+            //     ->from('advances_liquidation')
+            //     ->where('advances_liquidation.reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+            //     ->andWhere('advances_liquidation.province =:province', ['province' => $province])
+            //     ->andWhere('advances_liquidation.book_name =:name', ['name' => $book]);
+            // $res = $query3->join('INNER JOIN', "({$query2->createCommand()->getRawSql()}) as q", 'advances_liquidation.dv_number = q.dv_number')->all();
+            $result = ArrayHelper::index($res, null, 'account');
+            // ob_clean();
+            // echo "<pre>";
+            // var_dump($result);
+            // echo "</pre>";
+            // return ob_get_clean();
+            return $this->render('rsmi', [
+                'dataProvider' => $result
+            ]);
+        } else {
+
+            return $this->render('rsmi');
+        }
+    }
 }

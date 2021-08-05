@@ -157,7 +157,7 @@ Modal::end();
             'payroll_number',
             'transaction_date',
             //'transaction_time',
-
+     
             [
                 'class' => '\kartik\grid\ActionColumn',
                 'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],

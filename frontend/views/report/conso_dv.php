@@ -128,10 +128,7 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 0;
     }
 
-    #con {
-        display: none;
-        margin-top: 20px;
-    }
+
 
     table,
     th,

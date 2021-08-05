@@ -15,7 +15,21 @@ use kartik\select2\Select2;
 <div class="transaction-form">
 
     <?php
-    $respons_center = (new \yii\db\Query())->select('*')->from('responsibility_center')->all();
+    $r_center = (new \yii\db\Query())->select('*')
+    ->from('responsibility_center');
+    
+   
+    $user = Yii::$app->user->identity->province;
+    if (
+        strtolower($user)==='ro_idd'||
+        strtolower($user)==='ro_sdd'||
+        strtolower($user)==='ro_ord'||
+        strtolower($user)==='ro_cpd'
+    
+    ){
+        $r_center->where('name LIKE :name',['name'=>explode('_',$user)[1]]);
+    }
+    $respons_center=$r_center->all();
     $payee = (new \yii\db\Query())->select('*')->from('payee')->all();
     ?>
 

@@ -185,7 +185,7 @@ use yii\helpers\ArrayHelper;
             </table>
 
 
-            <table class="table table-striped" id="transaction_table">
+            <table class="" id="transaction_table">
 
                 <thead>
                     <th>Reporting Period</th>
@@ -194,7 +194,7 @@ use yii\helpers\ArrayHelper;
                     <th>Fund Source</th>
                     <th>Chart of Account</th>
                     <th>Miscellaneous Income</th>
-                    <th>Withdrawals</th>
+                    <th style="padding-left:30px">Withdrawals</th>
                     <th>Sales Tax(Vat/Non-Vat)</th>
                     <th>Income Tax (Expanded Tax)</th>
                 </thead>
@@ -292,6 +292,12 @@ use yii\helpers\ArrayHelper;
 
 </div>
 <style>
+    table,tr{
+        max-width: 100%;
+    }
+    td{
+        padding: 5px;
+    }
     .total_row {
         text-align: center;
         font-weight: bold;
@@ -329,6 +335,11 @@ use yii\helpers\ArrayHelper;
     .select2-container .select2-selection--single {
 
         height: 34px;
+    }
+    .amount{
+        margin-top: 15px;
+  
+
     }
 </style>
 <script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
@@ -452,30 +463,30 @@ SweetAlertAsset::register($this);
                     
                     <td> 
                         <div class='form-group' style='width:150px'>
-                        <input type='text' id='liq_damages-${transaction_table_count}' class='form-control liq_damages' name='liq_damages[]'>
+                        <input type='text' id='liq_damages-${transaction_table_count}' class='form-control liq_damages amount' name='liq_damages[]'>
                         </div>
                     </td>
                     <td> 
                         <div class='form-group' style='width:150px'>
-                        <input type='text' id='withdrawal-${transaction_table_count}' class='form-control withdrawal' name='withdrawal[]'>
+                        <input type='text' id='withdrawal-${transaction_table_count}' class='form-control withdrawal amount' name='withdrawal[]'>
                         </div>
                     </td>
                     <td> 
                         <div class='form-group' style='width:150px'>
 
-                            <input type='text' id='vat_nonvat-${transaction_table_count}' class='form-control vat_nonvat' name='vat_nonvat[]'>
+                            <input type='text' id='vat_nonvat-${transaction_table_count}' class='form-control vat_nonvat amount' name='vat_nonvat[]'>
                         </div>
 
                     </td>
                     <td> 
                          <div class='form-group' style='width:150px'>
-                            <input type='text' id='ewt-${transaction_table_count}' class='form-control expanded_tax' name='ewt[]'>
+                            <input type='text' id='ewt-${transaction_table_count}' class='form-control expanded_tax amount' name='ewt[]'>
                          </div>
 
                     </td>
-                    <td><a id='copy_${transaction_table_count}' class='btn btn-success ' type='button' onclick='copy(this)'><i class="fa fa-copy "></i></a></td>
+                    <td><button id='copy_${transaction_table_count}' class='btn-xs btn-success ' type='button' onclick='copy(this)'><i class="fa fa-copy "></i></button></td>
                   
-                    <td><button  class='btn btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
+                    <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
                 `
             $("#transaction_table tbody").append(row)
             $(`#liq_damages-${transaction_table_count}`).maskMoney({

@@ -14,7 +14,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="liquidation-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
 
     <div class="container panel panel-default">

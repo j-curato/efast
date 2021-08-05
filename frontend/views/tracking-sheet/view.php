@@ -96,7 +96,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             Gross Amount:
 
                         </span>
-                        <span><?php echo number_format($model->gross_amount) ?></span>
+                        <span><?php echo number_format($model->gross_amount,2) ?></span>
 
                     </td>
                 </tr>

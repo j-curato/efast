@@ -111,6 +111,7 @@
                                         Yii::$app->user->can('super-user') ? ['label' => 'Transmittal', 'icon' => 'circle-o', 'url' => ['/transmittal'],] : [],
                                         Yii::$app->user->can('super-user') ? ['label' => 'Tracking Sheet', 'icon' => 'circle-o', 'url' => ['/tracking-sheet'],] : [],
                                         Yii::$app->user->can('super-user') ? ['label' => 'Turn Arround Time', 'icon' => 'circle-o', 'url' => ['/dv-aucs/turnarround-time'],] : [],
+                                        Yii::$app->user->can('super-user') ? ['label' => 'Document Tracking', 'icon' => 'circle-o', 'url' => ['/document-tracker'],] : [],
 
                                     ],
                                 ] : [],

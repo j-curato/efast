@@ -346,13 +346,13 @@ use kartik\select2\Select2;
     </style>
 
     <script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <script src="/afms/frontend/web/js/scripts.js" type="text/javascript"></script>
     <link href="/afms/frontend/web/js/select2.min.js" />
     <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
     <link href="/afms/frontend/web/js/maskMoney.js" />
     <?php
     $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
     $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+    $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
     ?>
     <script>
         var update_id = null;
@@ -585,43 +585,8 @@ use kartik\select2\Select2;
         }
 
         $(document).ready(function() {
-            // GET CHART OF ACCOUNTS
-            $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
-                .then(function(data) {
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.object_code + ' ' + val.title
-                        })
-                    })
-                    accounts = array
-                    // var y=JSON.parse(accounts)
-                    chart_of_accounts = data
-
-                })
 
 
-
-            // GET TRANSACTIONs
-            $.getJSON('/afms/frontend/web/index.php?r=transaction/get-all-transaction')
-                .then(function(data) {
-
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.tracking_number
-                        })
-                    })
-                    transaction = array
-                    $('#transaction_id').select2({
-                        data: transaction,
-                        placeholder: "Select Transaction",
-
-                    })
-
-                });
             // GET ALL BOOKS
             $.getJSON('/afms/frontend/web/index.php?r=books/get-books')
                 .then(function(data) {
@@ -711,86 +676,122 @@ $script = <<< JS
 
         })
     })
-    $(document).ready(function() {
-        console.log("qwerty".substring(0,3))
-       
-
-            // SAVE DATA TO DATABASE
-        $('#save_data').submit(function(e) {
+    $('#save_data').submit(function(e) {
   
 
-            e.preventDefault();
+        e.preventDefault();
 
-            // $('.amount').maskMoney('unmasked');
-                $.ajax({
-                    url: window.location.pathname + '?r=process-ors-entries/insert-process-ors',
-                    method: "POST",
-                    data: $('#save_data').serialize(),
-                    success: function(data) {
-                        // console.log(data)
-                        var res=JSON.parse(data)
-   
+    
+        $.ajax({
+            url: window.location.pathname + '?r=process-ors-entries/insert-process-ors',
+            method: "POST",
+            data: $('#save_data').serialize(),
+            success: function(data) {
+                // console.log(data)
+                var res=JSON.parse(data)
 
-                        if (res.isSuccess) {
-                            swal({
-                                title: "Success",
-                                // text: "You will not be able to undo this action!",
-                                type: "success",
-                                timer: 30000,
-                                button: false
-                                // confirmButtonText: "Yes, delete it!",
-                            }, function() {
-                                window.location.href = window.location.pathname + '?r=process-ors-entries/view&id='+res.id
-                            });
-                            $('#add_data')[0].reset();
-                        }
-                        else{
-                            var length = Object.keys(res.error).length
-                            var keys = Object.keys(res.error)
-                            var text=''
-                            console.log(keys[0])
-                            for(var i = 0;i<length;i++){
-                                var x=keys[i]
-                                text += res.error[x] 
-                            }
-                            console.log(text)
-                            swal({
-                                title: "Error",
-                                text: text,
-                                type: "error",
-                                timer: 3000,
-                                button: false
-                                // confirmButtonText: "Yes, delete it!",
-                            }, function() {
-                            });
-                        }
-                    }
-                });
-      
-        })
-        update_id = $('#update_id').val()
-        console.log(update_id)
-        //   update_id.change(function(){
-        //       console.log(update_id.val())
-        //   })
-          if (update_id!=0 ){
-            //   $('#add').prop('disabled',true)
-            $.ajax({
-                type:"POST",
-                url:window.location.pathname + "?r=process-ors-entries/update-ors",
-                data:{update_id:update_id},
-                success:function(data){
-                    var res = JSON.parse(data)
-                    // console.log(res)
-                    console.log(res.result)
-                    $("#reporting_period").val(res.result[0]['reporting_period']).trigger('change')
-                    $("#date").val(res.result[0]['date']).trigger('change')
-                    $("#book_id").val(res.result[0]['book_id']).trigger('change')
-                    $("#transaction_id").val(res.result[0]['transaction_id']).trigger('change')
-                    addData(res.result,true)
+
+                if (res.isSuccess) {
+                    swal({
+                        title: "Success",
+                        // text: "You will not be able to undo this action!",
+                        type: "success",
+                        timer: 30000,
+                        button: false
+                        // confirmButtonText: "Yes, delete it!",
+                    }, function() {
+                        window.location.href = window.location.pathname + '?r=process-ors-entries/view&id='+res.id
+                    });
+                    $('#add_data')[0].reset();
                 }
+                else{
+                    var length = Object.keys(res.error).length
+                    var keys = Object.keys(res.error)
+                    var text=''
+                    console.log(keys[0])
+                    for(var i = 0;i<length;i++){
+                        var x=keys[i]
+                        text += res.error[x] 
+                    }
+                    console.log(text)
+                    swal({
+                        title: "Error",
+                        text: text,
+                        type: "error",
+                        timer: 3000,
+                        button: false
+                        // confirmButtonText: "Yes, delete it!",
+                    }, function() {
+                    });
+                }
+            }
+        });
+
+    })
+    $(document).ready(function() {
+        // GET CHART OF ACCOUNTS
+        getAllGeneralLedger().then(function(data) {
+            var array = []
+            $.each(data, function(key, val) {
+            array.push({
+                id: val.id,
+                text: val.object_code + ' ' + val.title
+                })
             })
-        }
+            accounts = array
+                    // var y=JSON.parse(accounts)
+            chart_of_accounts = data
+
+        })
+
+
+            // GET TRANSACTIONs
+            getAllTransaction()
+                .then(function(data) {
+
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.tracking_number
+                        })
+                    })
+                    transaction = array
+                    $('#transaction_id').select2({
+                        data: transaction,
+                        placeholder: "Select Transaction",
+
+                    })
+
+                });
+
+            // SAVE DATA TO DATABASE
+        $.when(getAllGeneralLedger(),getAllTransaction()).done(function(a,b){
+            update_id = $('#update_id').val()
+            console.log(update_id)
+            //   update_id.change(function(){
+            //       console.log(update_id.val())
+            //   })
+            if (update_id!=0 ){
+                //   $('#add').prop('disabled',true)
+                $.ajax({
+                    type:"POST",
+                    url:window.location.pathname + "?r=process-ors-entries/update-ors",
+                    data:{update_id:update_id},
+                    success:function(data){
+                        var res = JSON.parse(data)
+                        // console.log(res)
+                        console.log(res.result)
+                        $("#reporting_period").val(res.result[0]['reporting_period']).trigger('change')
+                        $("#date").val(res.result[0]['date']).trigger('change')
+                        $("#book_id").val(res.result[0]['book_id']).trigger('change')
+                        $("#transaction_id").val(res.result[0]['transaction_id']).trigger('change')
+                        addData(res.result,true)
+                    }
+                })
+            }
+        })
+
         //   if (update_id!=null && $('#update').val()==='adjust'){
         //     $.ajax({
         //         type:"POST",

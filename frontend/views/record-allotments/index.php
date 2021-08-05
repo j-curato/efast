@@ -194,11 +194,57 @@ $this->params['breadcrumbs'][] = $this->title;
 
         ],
         [
+            'label'=>'Total ORS',
+            'value'=>function($model){
+                $query = Yii::$app->db->createCommand("SELECT 
+                SUM(raoud_entries.amount) as total_dv
+                FROM raouds
+                LEFT JOIN raoud_entries ON raouds.id = raoud_entries.raoud_id
+                LEFT JOIN process_ors ON raouds.process_ors_id = process_ors.id
+                WHERE 
+                raouds.process_ors_id IS NOT NULL
+                AND process_ors.is_cancelled = 0
+                AND raouds.record_allotment_entries_id = :allotment_id
+                
+                ")->bindValue(':allotment_id',$model->id)
+                ->queryScalar();
+                return $query;
+            },
+            'format'=>['decimal',2]
+        ],
+        [
+            'label'=>'Total DV',
+            'value'=>function($model){
+                $query = Yii::$app->db->createCommand("SELECT 
+               
+                SUM(raoud_entries.amount) as dv
+                FROM raouds
+                LEFT JOIN raoud_entries ON raouds.id = raoud_entries.raoud_id
+                RIGHT  JOIN(
+                SELECT 
+                process_ors.id
+                FROM process_ors
+                LEFT JOIN dv_aucs_entries ON process_ors.id = dv_aucs_entries.process_ors_id
+                LEFT JOIN dv_aucs ON dv_aucs_entries.dv_aucs_id = dv_aucs.id
+                WHERE process_ors.is_cancelled = 0 
+                AND dv_aucs.is_cancelled = 0
+                GROUP BY process_ors.id
+                ) as dv ON raouds.process_ors_id = dv.id
+                WHERE raouds.record_allotment_entries_id= :allotment_id
+                GROUP BY raouds.record_allotment_entries_id
+                ORDER BY raouds.record_allotment_entries_id
+                
+                ")->bindValue(':allotment_id',$model->id)
+                ->queryScalar();
+                return $query;
+            },
+            'format'=>['decimal',2],
+            'hAlign'=>'right'
+        ],
+        [
             'label' => 'Update',
             'format' => 'raw',
             'value' => function ($model) {
-
-
 
                 $t = yii::$app->request->baseUrl . "/index.php?r=record-allotments/update&id=$model->record_allotment_id";
                 return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-primary fa fa-pencil-square-o']);

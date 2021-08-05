@@ -229,4 +229,10 @@ function getAllTrackingSheet() {
 function getAllPayee() {
     return $.getJSON(url + '?r=payee/get-payee')
 }
+function getAllTransaction(){
+    return $.getJSON(url + '?r=transaction/get-all-transaction')
+}
 
+function   getAllGeneralLedger(){
+    return $.getJSON(url + '?r=chart-of-accounts/get-general-ledger')
+}

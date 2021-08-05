@@ -1,4 +1,3 @@
-
 <?php
 
 use app\models\ChartOfAccounts;
@@ -129,113 +128,114 @@ $this->params['breadcrumbs'][] = $this->title;
                 <h6>As Of November 30,2020</h6>
             </div>
         </div> -->
-        <?php Pjax::begin(['id' => 'employee', 'clientOptions' => ['method' => 'POST']]) ?>
+        <div id='con'>
+            <?php Pjax::begin(['id' => 'employee', 'clientOptions' => ['method' => 'POST']]) ?>
 
-        <br>
-        <table class="table" style="margin-top:30px">
-            <thead>
+            <br>
+            <table class="table" style="margin-top:30px">
+                <thead>
 
 
-                <tr class="document_header1">
-                    <th colspan="2">
-                        Entity Name:
-                    </th>
-                    <th>
-                        DEPARTMENT OF TRADE AND INDUSTRY
-                    </th>
-                    <!-- <th>
+                    <tr class="document_header1">
+                        <th colspan="2">
+                            Entity Name:
+                        </th>
+                        <th>
+                            DEPARTMENT OF TRADE AND INDUSTRY
+                        </th>
+                        <!-- <th>
                     </th> -->
-                    <th colspan="2">
-                        Fund Cluster Code:
-                    </th>
-                    <th colspan="2">
-                        <?php
-                        if (!empty($fund_cluster_code)) {
-                            echo $fund_cluster_code;
-                        }
-                        ?>
-                    </th>
-                </tr>
+                        <th colspan="2">
+                            Fund Cluster Code:
+                        </th>
+                        <th colspan="2">
+                            <?php
+                            if (!empty($fund_cluster_code)) {
+                                echo $fund_cluster_code;
+                            }
+                            ?>
+                        </th>
+                    </tr>
 
 
-                <tr class="document_header1">
-                    <th colspan="2">
-                        Account Title:
-                    </th>
-                    <th>
-                        <?php
-                        if (!empty($account_title)) {
-                            echo $account_title;
-                        }
-                        ?>
-                    </th>
-                    <th colspan="2">
-                        UACS Object Code:
-                    </th>
-                    <!-- <th>
+                    <tr class="document_header1">
+                        <th colspan="2">
+                            Account Title:
+                        </th>
+                        <th>
+                            <?php
+                            if (!empty($account_title)) {
+                                echo $account_title;
+                            }
+                            ?>
+                        </th>
+                        <th colspan="2">
+                            UACS Object Code:
+                        </th>
+                        <!-- <th>
                     </th> -->
-                    <th colspan="2">
-                        <?php
-                        if (!empty($object_code)) {
-                            echo $object_code;
-                        }
-                        ?>
+                        <th colspan="2">
+                            <?php
+                            if (!empty($object_code)) {
+                                echo $object_code;
+                            }
+                            ?>
 
 
-                    </th>
-                </tr>
-                <tr class="head">
+                        </th>
+                    </tr>
+                    <tr class="head">
 
-                    <th rowspan="3">
-                        Reporting Period
-                    </th>
-                    <th rowspan="3">
-                        Date
-                    </th>
-                    <th rowspan="3">
-                        Particulars
-                    </th>
-                    <th rowspan="3">
-                        Reference No.
-                    </th>
-                    <th rowspan="1" colspan="3">
-                        Amount
-                    </th>
+                        <th rowspan="3">
+                            Reporting Period
+                        </th>
+                        <th rowspan="3">
+                            Date
+                        </th>
+                        <th rowspan="3">
+                            Particulars
+                        </th>
+                        <th rowspan="3">
+                            Reference No.
+                        </th>
+                        <th rowspan="1" colspan="3">
+                            Amount
+                        </th>
 
-                </tr>
-                <tr>
-                    <th rowspan="1">
-                        Debit
-                    </th>
-                    <th rowspan="1">
-                        Credit
-                    </th>
-                    <th rowspan="1">
-                        Balance
-                    </th>
+                    </tr>
+                    <tr>
+                        <th rowspan="1">
+                            Debit
+                        </th>
+                        <th rowspan="1">
+                            Credit
+                        </th>
+                        <th rowspan="1">
+                            Balance
+                        </th>
 
-                </tr>
-                <?php
+                    </tr>
+                    <?php
 
-                ?>
-            </thead>
-            <tbody id="ledgerTable">
-                <?php
-                $balance = 0;
-                $balance_per_uacs = [];
-                if (!empty($data)) {
-                    // var_dump($data);
-                    foreach ($data as $key => $val) {
+                    ?>
+                </thead>
+                <tbody id="ledgerTable">
+                    <?php
+                    $balance = 0;
+                    $balance_per_uacs = [];
+                    if (!empty($data)) {
+                        // var_dump($data);
+                        foreach ($data as $key => $val) {
 
-                        $credit = $val['credit'] ? number_format($val['credit'], 2) : '';
-                        $debit = $val['debit'] ? number_format($val['debit'], 2) : '';
-                        $balance = $val['balance'] ? number_format($val['balance'], 2) : '';
-                        // $reporting_period = $val['reporting_period']?date('F Y',strtotime($val['reporting_period'])):'';
-                        if (!empty($val['reporting_period'])) {
-                            // if ($data[$key - 1]['reporting_period'] != $val['reporting_period']) {
+                            $credit = $val['credit'] ? number_format($val['credit'], 2) : '';
+                            $debit = $val['debit'] ? number_format($val['debit'], 2) : '';
+                            $balance = $val['balance'] ? number_format($val['balance'], 2) : '';
+                            // $reporting_period = $val['reporting_period']?date('F Y',strtotime($val['reporting_period'])):'';
+                            if (!empty($val['reporting_period'])) {
+                                // if ($data[$key - 1]['reporting_period'] != $val['reporting_period']) {
 
                                 echo "<tr>
-                            <td>" .$val['reporting_period'] . "</td>
+                            <td>" . $val['reporting_period'] . "</td>
                             <td></td>
                             <td></td>
                             <td></td>
@@ -244,9 +244,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td></td>
 
                         </tr>";
-                            // }
-                        }
-                        echo "<tr>
+                                // }
+                            }
+                            echo "<tr>
                             <td></td>
                             <td>{$val['date']}</td>
                             <td>{$val['explaination']}</td>
@@ -256,38 +256,52 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td  style='text-align:right'>$balance</td>
 
                         </tr>";
-                    };
+                        };
+                        // echo '<pre>';
+                        // var_dump($data);
+                        // echo '</pre>';
+                    }
+
                     // echo '<pre>';
                     // var_dump($data);
                     // echo '</pre>';
-                }
 
-                // echo '<pre>';
-                // var_dump($data);
-                // echo '</pre>';
-
-                ?>
+                    ?>
 
 
-            </tbody>
-        </table>
+                </tbody>
+            </table>
 
 
-        <?php Pjax::end() ?>
+            <?php Pjax::end() ?>
+        </div>
+
     </div>
-    <style>
-        #reporting_period {
-            background-color: white;
-            border-radius: 3px;
-        }
+    <div id="dots5" style="display:none">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+</div>
 
-        .table>thead>tr>th {
-            border-bottom: 1px solid black;
-            border-top: 1px solid black;
-        }
+<style>
+    #reporting_period {
+        background-color: white;
+        border-radius: 3px;
+    }
 
+    .table>thead>tr>th {
+        border-bottom: 1px solid black;
+        border-top: 1px solid black;
+    }
 
-        /* .header{
+    #con {
+        display: none;
+        margin-top: 20px;
+    }
+
+    /* .header{
             border:none;
 
         }
@@ -295,158 +309,158 @@ $this->params['breadcrumbs'][] = $this->title;
             border: none;
         } */
 
-        .table {
-            position: relative;
-            margin-top: 20px;
+    .table {
+        position: relative;
+        margin-top: 20px;
+    }
+
+    .head>th {
+        border-top: 1px solid black
+    }
+
+    table,
+    th,
+    td {
+        border: 1px solid black;
+        padding: 12px;
+        background-color: white;
+        text-align: center;
+    }
+
+
+
+    table {
+        border: 1px solid black;
+        width: 100%;
+    }
+
+    .container {
+        margin-top: 5px;
+        position: relative;
+        padding: 10px;
+        /* overflow: scroll; */
+
+        overflow-y: hidden;
+        overflow-x: auto;
+
+
+    }
+
+    .head>th {
+        display: table-cell;
+        vertical-align: text-top;
+        text-align: center;
+    }
+
+    thead>tr>td {
+        border: 1px solid black;
+        padding: 10px;
+        font-weight: bold;
+    }
+
+    #fund {
+        display: none;
+    }
+
+    .actions {
+        padding: 20px;
+        position: relative;
+    }
+
+    /* .document_header>th {}
+
+        .document_header {} */
+
+    .document_header1>th {
+
+        padding: 10px;
+    }
+
+    .document_header1>th {
+        border: 0;
+    }
+
+    @media print {
+        .actions {
+            display: none;
         }
 
-        .head>th {
-            border-top: 1px solid black
+        table,
+        th,
+        td {
+            padding: 5px;
+            font-size: 10px;
+        }
+
+        thead>tr>td {
+            border: 1px solid black;
+            padding: 5px;
+            font-weight: bold;
+        }
+
+        @page {
+            size: auto;
+            margin: 0cm;
+            margin-top: 0.5cm;
+        }
+
+
+
+        .container {
+            margin: 0;
+            top: 0;
+
+        }
+
+        .entity_name {
+            font-size: 5pt;
         }
 
         table,
         th,
         td {
             border: 1px solid black;
-            padding: 12px;
+            padding: 5px;
             background-color: white;
-            text-align: center;
-        }
-
-
-
-        table {
-            border: 1px solid black;
-            width: 100%;
         }
 
         .container {
-            margin-top: 5px;
-            position: relative;
-            padding: 10px;
-            /* overflow: scroll; */
 
-            overflow-y: hidden;
-            overflow-x: auto;
-
-
+            border: none;
         }
 
-        .head>th {
-            display: table-cell;
-            vertical-align: text-top;
-            text-align: center;
+
+        table {
+            page-break-after: auto
         }
 
-        thead>tr>td {
-            border: 1px solid black;
-            padding: 10px;
-            font-weight: bold;
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto
         }
 
-        #fund {
-            display: none;
+        td {
+            page-break-inside: avoid;
+            page-break-after: auto
         }
 
-        .actions {
-            padding: 20px;
-            position: relative;
-        }
-
-        /* .document_header>th {}
-
-        .document_header {} */
-
-        .document_header1>th {
-
-            padding: 10px;
-        }
-
-        .document_header1>th {
-            border: 0;
-        }
-
-        @media print {
-            .actions {
-                display: none;
-            }
-
-            table,
-            th,
-            td {
-                padding: 5px;
-                font-size: 10px;
-            }
-
-            thead>tr>td {
-                border: 1px solid black;
-                padding: 5px;
-                font-weight: bold;
-            }
-
-            @page {
-                size: auto;
-                margin: 0cm;
-                margin-top: 0.5cm;
-            }
-
-
-
-            .container {
-                margin: 0;
-                top: 0;
-
-            }
-
-            .entity_name {
-                font-size: 5pt;
-            }
-
-            table,
-            th,
-            td {
-                border: 1px solid black;
-                padding: 5px;
-                background-color: white;
-            }
-
-            .container {
-
-                border: none;
-            }
-
-
-            table {
-                page-break-after: auto
-            }
-
-            tr {
-                page-break-inside: avoid;
-                page-break-after: auto
-            }
-
-            td {
-                page-break-inside: avoid;
-                page-break-after: auto
-            }
-
-            /* thead {
+        /* thead {
                 display: table-header-group
             } */
 
-            .main-footer {
-                display: none;
-            }
+        .main-footer {
+            display: none;
         }
-    </style>
+    }
+</style>
 
-</div>
-
+<?php
+$this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
+?>
 
 <?php
 $script = <<< JS
 
-$(document).ready(function(){
     let gen = undefined
     let book_id = undefined
     let reporting_period=undefined
@@ -473,7 +487,9 @@ $(document).ready(function(){
         var y = $(this).val()
         console.log(y)
     })
-    $("#generate").click(function(){
+    $("#generate").click(function(e){
+        e.preventDefault();
+        
         query()
     })
     
@@ -490,8 +506,14 @@ $(document).ready(function(){
     function query(){
         // console.log(fund+gen)
         // console.log(fund)
+        $('#con').hide()
+        $('#dots5').show()
         $("#employee").on("pjax:success", function(data) {
-            console.log(data)
+            setTimeout(() => {
+                $('#con').show()
+           $('#dots5').hide()
+            }, 2000);
+        
         });
         $.pjax({container: "#employee", 
         url: window.location.pathname + '?r=jev-preparation/general-ledger',
@@ -645,7 +667,6 @@ $(document).ready(function(){
 
 
 
-});
 // function PrintElem(elem) {
 //     Popup($('#'+elem).html());
 // }

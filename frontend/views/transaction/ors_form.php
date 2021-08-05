@@ -673,9 +673,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- FORM 2 END-->
 
 
-    <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
-    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
+    <script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+    <link href="/afms/frontend/web/js/select2.min.js" />
+    <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
     <script>
         var assignatory = []
         var positions = []
@@ -691,7 +691,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 placeholder: "Select Position",
 
             })
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=assignatory/get-all-assignatory')
+            $.getJSON('/afms/frontend/web/index.php?r=assignatory/get-all-assignatory')
 
                 .then(function(data) {
 

@@ -42,7 +42,7 @@ class AssignatoryController extends Controller
                             'get-all-assignatory'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['@']
                     ]
                 ]
             ],

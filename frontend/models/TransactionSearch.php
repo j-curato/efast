@@ -43,18 +43,28 @@ class TransactionSearch extends Transaction
      */
     public function search($params)
     {
+        $province = Yii::$app->user->identity->province;
         $q = Yii::$app->db->createCommand("SELECT tracking_number 
         FROM transaction_totals 
         WHERE 
-
          total_dv <total_ors ")->queryAll();
-        $qwe= [];
-        $sql=Yii::$app->db->getQueryBuilder()->buildCondition(['IN','transaction.tracking_number',ArrayHelper::getColumn($q,'tracking_number')],$qwe);
-        $query = Transaction::find()
-        // ->where("$sql",$qwe)
-        ->orderBy("id DESC")
-        ;
 
+        $qwe = [];
+        $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'transaction.tracking_number', ArrayHelper::getColumn($q, 'tracking_number')], $qwe);
+        $q = Transaction::find();
+        // ->where("$sql",$qwe)
+
+        if (
+            strtolower($province) === 'ro_idd' ||
+            strtolower($province) === 'ro_cpd' ||
+            strtolower($province) === 'ro_sdd' ||
+            strtolower($province) === 'ro_ord'
+
+        ) {
+            $q->joinWith('responsibilityCenter')
+                ->where('responsibility_center.name LIKE :province', ['province' => explode('_', $province)[1]]);
+        }
+        $query = $q->orderBy("id DESC");;
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
@@ -77,7 +87,7 @@ class TransactionSearch extends Transaction
         ]);
 
         $query->andFilterWhere(['like', 'particular', $this->particular])
-        
+
             ->andFilterWhere(['like', 'payee.account_name', $this->payee_id])
             ->andFilterWhere(['like', 'tracking_number', $this->tracking_number])
             ->andFilterWhere(['like', 'earmark_no', $this->earmark_no])
