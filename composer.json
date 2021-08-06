@@ -38,7 +38,9 @@
         "phpoffice/phpspreadsheet": "*",
         "philippfrenzel/yii2fullcalendar":"*",
         "edofre/yii2-fullcalendar": "V1.0.11",
-        "kartik-v/yii2-export": "@dev"
+        "kartik-v/yii2-export": "@dev",
+        "2amigos/qrcode-library": "^2.0"
+
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

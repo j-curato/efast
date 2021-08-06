@@ -928,7 +928,7 @@ class DvAucsController extends Controller
             $timestamp  = date('Y-m-d H:i:s', strtotime($_POST['time'] . ' ' . $_POST['date']));
             $model = $this->findModel($id);
 
-            if (empty($model->out_timestamp)) {
+            if (empty($model->return_timestamp)) {
                 return json_encode(['success' => false, 'error' => 'DV is not returned']);
             }
             $model->accept_timestamp = $timestamp;

@@ -345,10 +345,6 @@ use kartik\select2\Select2;
         }
     </style>
 
-    <script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <link href="/afms/frontend/web/js/select2.min.js" />
-    <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
-    <link href="/afms/frontend/web/js/maskMoney.js" />
     <?php
     $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
     $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);

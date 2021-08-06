@@ -1,25 +1,28 @@
 <?php
 
-use app\models\Assignatory;
-use kartik\select2\Select2;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Transmittal */
 
-$this->title = 'Supplies Ledger card';
-$this->params['breadcrumbs'][] = ['label' => 'Transmittals', 'url' => ['index']];
+use BaconQrCode\Encoder\QrCode;
+use Picqer\Barcode\BarcodeGeneratorPNG;
+
+$this->title = 'Stock Card card';
+// $this->params['breadcrumbs'][] = ['label' => 'Transmittals', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="transmittal-view">
-
-
     <div class="container">
 
-        <table class="table">
+        <table class="table">.
+            <?php
+            $redColor = [255, 0, 0];
+
+            $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
+            echo '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode('081231723897', $generator::TYPE_CODE_128, 3, 50, $redColor)) . '">';
+            
+            ?>
             <tbody>
                 <tr>
                     <th colspan="7" class="head" style="border: none;font-size:large">STOCK CARD</th>
@@ -150,6 +153,11 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <style>
+    .container {
+        background-color: white;
+        padding: 20px;
+    }
+
     .head {
         font-weight: bold;
         text-align: center;

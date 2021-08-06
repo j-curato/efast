@@ -104,13 +104,25 @@ class CibrController extends Controller
             ->bindValue(':reporting_period',   $model->reporting_period)
             ->bindValue(':province',   $model->province)
             ->queryAll();
+        $balance = Yii::$app->db->createCommand("SELECT 
+            SUM(advances_liquidation.amount) - SUM(advances_liquidation.withdrawals)  as balance
+             from advances_liquidation
+             where reporting_period <:reporting_period 
+             AND province LIKE :province
+            
+              ")
+            ->bindValue(':reporting_period',   $model->reporting_period)
+            ->bindValue(':province',   $model->province)
+            ->queryScalar();
+
 
         return $this->render('view', [
             'dataProvider' => $dataProvider,
             'province' =>   $model->province,
             'reporting_period' =>   $model->reporting_period,
             'book' =>   $model->book_name,
-            'model' => $model
+            'model' => $model,
+            'beginning_balance' => $balance
 
         ]);
     }
@@ -266,9 +278,9 @@ class CibrController extends Controller
              AND province LIKE :province
             
               ")
-                 ->bindValue(':reporting_period',   $reporting_period)
-                 ->bindValue(':province',   $province)
-                 ->queryScalar();
+                ->bindValue(':reporting_period',   $reporting_period)
+                ->bindValue(':province',   $province)
+                ->queryScalar();
 
 
             // ob_clean();

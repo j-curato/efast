@@ -18,7 +18,7 @@ class AdvancesViewSearch extends AdvancesView
     public function rules()
     {
         $province = 'province';
-        if (\Yii::$app->user->identity->province !== 'admin') {
+        if (\Yii::$app->user->identity->province !== 'ro_admin') {
             $province = '';
         }
         return [

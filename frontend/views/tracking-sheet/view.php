@@ -51,17 +51,17 @@ $this->params['breadcrumbs'][] = $this->title;
         $acc_2_in_time = date('h:i A', strtotime($model->dvAucs->transaction_begin_time));
         $acc_2_out_time = date('h:i A', strtotime($model->dvAucs->created_at));
     }
-    $acc_3_date ='';
-    $acc_3_in_time ='';
-    $acc_3_out_time ='';
-    if (!empty($model->dvAucs->out_timestamp)){
-        $acc_3_out_time = date('h:i A',strtotime($model->dvAucs->out_timestamp));
+    $acc_3_date = '';
+    $acc_3_in_time = '';
+    $acc_3_out_time = '';
+    if (!empty($model->dvAucs->out_timestamp)) {
+        $acc_3_out_time = date('h:i A', strtotime($model->dvAucs->out_timestamp));
     }
-    if (!empty($model->dvAucs->accept_timestamp)){
-        $acc_3_date = date('F d, Y',strtotime($model->dvAucs->accept_timestamp));
-        $acc_3_in_time = date('h:i A',strtotime($model->dvAucs->accept_timestamp));
+    if (!empty($model->dvAucs->accept_timestamp)) {
+        $acc_3_date = date('F d, Y', strtotime($model->dvAucs->accept_timestamp));
+        $acc_3_in_time = date('h:i A', strtotime($model->dvAucs->accept_timestamp));
     }
-    
+
     ?>
     <div class="container">
         <table id="page">
@@ -96,7 +96,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             Gross Amount:
 
                         </span>
-                        <span><?php echo number_format($model->gross_amount,2) ?></span>
+                        <span><?php echo number_format($model->gross_amount, 2) ?></span>
 
                     </td>
                 </tr>
@@ -213,9 +213,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         <span class="note" s>TIme in left blank unless if Accountant II is on leave or upon compliance of lacking documents, if any</span><br>
                         <span class="note">Time out when the DV's were acknowledged to be complete,correct and consistent or upon compliance of lacking documents, whichever is later</span>
                     </td>
-                    <td><?php echo $acc_3_date;?></td>
-                    <td><?php echo $acc_3_in_time?></td>
-                    <td><?php echo $acc_3_out_time?></td>
+                    <td><?php echo $acc_3_date; ?></td>
+                    <td><?php echo $acc_3_in_time ?></td>
+                    <td><?php echo $acc_3_out_time ?></td>
                     <td></td>
                 </tr>
                 <tr>
@@ -228,7 +228,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
 
-                    <td class="bold">Cashier</td>
+                    <td class="bold">
+                        <span>
+                            Cashier
+                        </span>
+                        <br>
+                        <span class="note">(Date and Time for acknowledgin Reciept of DV's from Accounting)</span>
+                    </td>
                     <td><?php
 
                         if (!empty($model->dvAucs->cashDisbursement->issuance_date)) {
@@ -241,7 +247,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
 
-                    <td class="bold">Cashier</td>
+                    <td>
+                        <span class="bold">
+                            Cashier
+                        </span>
+                        <br>
+                        <span class="note">
+                            (Date and TIme For Check Issuance)
+                        </span>
+
+                    </td>
                     <td></td>
                     <td></td>
                     <td></td>

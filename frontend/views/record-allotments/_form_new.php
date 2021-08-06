@@ -166,6 +166,13 @@ use yii\helpers\ArrayHelper;
                     <div class="col-sm-3">
                         <input type="text" id="amount-0" name="amount[]" class="amount" placeholder="amount">
                     </div>
+                    <div class="col-sm-3 " style="display: none;">
+                        <div>
+                            <select name="type[]" class="type" style="width: 100%">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- total row -->
@@ -250,6 +257,8 @@ use yii\helpers\ArrayHelper;
         var vacant = 0;
         var i = 1;
         var x = [0];
+        var type_display = 'display:none;'
+        var type_required =''
 
         var update_id = undefined;
 
@@ -291,6 +300,13 @@ use yii\helpers\ArrayHelper;
                         <div class="col-sm-3">
                             <div >  <input type="text"   id="amount-${i}" name="amount[]" class="amount" placeholder="amount"></div>
                         </div>
+                        <div class="col-sm-3 " style='${type_display}'>
+                        <div>
+                            <select  name="type[]"  class="type" style="width: 100%;">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
                     </div>
 
                         
@@ -299,6 +315,11 @@ use yii\helpers\ArrayHelper;
             $(`#chart-${i}`).select2({
                 data: accounts,
                 placeholder: "Select Chart of Account",
+
+            });
+            $('.type').select2({
+                data: q,
+                placeholder: 'Select Fund Source'
 
             });
 
@@ -310,9 +331,14 @@ use yii\helpers\ArrayHelper;
             i++
 
         }
+        var q = ['qwe', 'w', 'e']
         $(document).ready(function() {
 
+            $('.type').select2({
+                data: q,
+                placeholder: 'Select Fund Source'
 
+            });
 
             // GET ALL DOCUMENT RECIEVES
             $.getJSON('/dti-afms-2/frontend/web/index.php?r=document-recieve/get-document-recieves')
@@ -422,7 +448,7 @@ use yii\helpers\ArrayHelper;
                     $('#fund_cluster_code_id').select2({
                         data: books,
                         placeholder: 'Select Book'
-                        
+
 
                     });
 
@@ -547,7 +573,24 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depe
 <?php
 
 $script = <<< JS
-      
+        function getMfo(id) {
+            return mfo_pap_code.filter(
+                function(mfo_pap_code){ return mfo_pap_code.id == id }
+            );
+        }
+      $('#mfo_pap_code').change(function(){
+
+
+        var mfo = getMfo($(this).val());
+        var code =mfo[0].text.split(' ')[0]
+        
+        if (code == '330100300003000' || code == '330100300001000'){
+            console.log('qwe')
+            $('.type').show()
+        }
+
+    })
+
 
 
      $(document).ready(function() {
@@ -555,7 +598,8 @@ $script = <<< JS
          })
        
         update_id = $('#update_id').val()
- 
+        
+
     // MAG API REQUEST KUNG NAAY SULOD ANG UPDATE_ID
         if (update_id > 0) {
             
