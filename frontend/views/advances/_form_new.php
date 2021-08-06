@@ -34,10 +34,9 @@ use yii\helpers\ArrayHelper;
                 <?php
 
                 $report = [
-                    'Advances for Operating Expenses' => '101 OPEX CDR',
-                    'Advances to Special Disbursing Officer' => '101 SDO CDR',
-                    'RAPID LP SDO CDR' => 'RAPID LP SDO CDR',
-                    'GJ' => 'GJ'
+                    'Advances for Operating Expenses' => 'Advances for Operating Expenses',
+                    'Advances to Special Disbursing Officer' => 'Advances to Special Disbursing Officer',
+                  
                 ];
 
                 echo Select2::widget([
@@ -430,6 +429,11 @@ $script = <<<JS
             fund_source_type = array
             console.log(fund_source_type)
         })
+        // $('#report').change(function(){
+        //     addToTransactionTable()
+        // })
+
+        
 
         // KUNG NAAY SULOD ANG UPDATE ID MAG POPULATE SA MGA DATA
 
@@ -445,7 +449,7 @@ $script = <<<JS
                     var res= JSON.parse(data)
                     console.log(res)
 
-                    $('#report').val(res[0]['report_type']).trigger('change');
+                    $('#report').val(res[0]['advances_type']).trigger('change');
                     $('#province').val(res[0]['province']).trigger('change');
                     $('#particular').val(res[0]['particular']).trigger('change');
                     $('#reporting_period').val(res[0]['reporting_period'])

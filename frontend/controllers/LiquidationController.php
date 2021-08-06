@@ -547,7 +547,7 @@ class LiquidationController extends Controller
                         if (empty($advances_entries_id)) {
                             ob_clean();
                             echo "<pre>";
-                            var_dump($key . " " . $fund_source);
+                            var_dump($key . " yawa" . $fund_source);
                             echo "</pre>";
                             return ob_get_clean();
                         }

@@ -105,6 +105,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'check_number',
         'check_date',
         'report_type',
+        'object_code',
 
         [
             'label' => 'action',

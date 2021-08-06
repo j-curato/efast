@@ -102,7 +102,7 @@ class CdrController extends Controller
         // }
         $query = (new \yii\db\Query())
             ->select(
-                'check_date,
+            'check_date,
             check_number,
             particular,
             amount,
@@ -118,7 +118,7 @@ class CdrController extends Controller
             ->where('reporting_period <=:reporting_period', ['reporting_period' => $model->reporting_period])
             ->andWhere('book_name =:book_name', ['book_name' => $model->book_name])
             ->andWhere('province LIKE :province', ['province' => $model->province])
-            ->andWhere('report_type LIKE :report_type', ['report_type' => $model->report_type])
+            ->andWhere('advances_type LIKE :advances_type', ['advances_type' => $model->report_type])
             ->orderBy('reporting_period,check_date')
             ->all();
         return $this->render('view', [

@@ -20,24 +20,27 @@ $this->params['breadcrumbs'][] = $this->title;
 
         </p>
     <?php } ?>
-    <table class="table table-striped">
-        <thead>
+    <div class="con">
 
-            <th>DV Number</th>
-            <th>Check Number</th>
-            <th>ADA Number</th>
-            <th>Check Date</th>
-            <th>Payee</th>
-            <th>Object Code</th>
-            <th> Account Title</th>
-            <th style="text-align: right;">Amount</th>
-        </thead>
-        <tbody>
-            <?php
-            $total = 0;
-            foreach ($model->advancesEntries as $i => $val) {
-                $payee = !empty($val->cashDisbursement->dvAucs->payee_id) ? $val->cashDisbursement->dvAucs->payee->account_name : '';
-                echo "
+        <table class="table table-striped">
+            <thead>
+
+                <th>Fund Source</th>
+                <th>DV Number</th>
+                <th>Check Number</th>
+                <th>ADA Number</th>
+                <th>Check Date</th>
+                <th>Payee</th>
+                <th>Object Code</th>
+                <th> Account Title</th>
+                <th style="text-align: right;">Amount</th>
+            </thead>
+            <tbody>
+                <?php
+                $total = 0;
+                foreach ($model->advancesEntries as $i => $val) {
+                    $payee = !empty($val->cashDisbursement->dvAucs->payee_id) ? $val->cashDisbursement->dvAucs->payee->account_name : '';
+                    echo "
                 <tr>
 
                 <td>
@@ -71,18 +74,25 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </tr>
                 ";
-                $total += $val->amount;
-            }
+                    $total += $val->amount;
+                }
 
-            ?>
+                ?>
 
-            <tr>
+                <tr>
 
-                <td colspan="7" style="text-align: center;font-weight:bold">Total</td>
-                <td style="text-align: right;"> <?php echo number_format($total, 2); ?></td>
-            </tr>
+                    <td colspan="8" style="text-align: center;font-weight:bold">Total</td>
+                    <td style="text-align: right;font-weigth:bold"> <?php echo number_format($total, 2); ?></td>
+                </tr>
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 
 </div>
+<style>
+    .con {
+        background-color: white;
+        padding: 15px;
+    }
+</style>

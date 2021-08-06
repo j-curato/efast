@@ -285,7 +285,7 @@ class CibrController extends Controller
 
             // ob_clean();
             // echo "<pre>";
-            // var_dump($beginning_balance);
+            // var_dump($dataProvider);
             // echo "</pre>";
             // return ob_get_clean();
             return $this->render('_form', [
