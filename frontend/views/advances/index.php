@@ -104,6 +104,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'mode_of_payment',
         'check_number',
         'check_date',
+        'report_type',
+
         [
             'label' => 'action',
             'format' => 'raw',

@@ -345,7 +345,7 @@ use yii\helpers\ArrayHelper;
             transaction_table_count++;
         }
     }
-    var fund_source_typ = []
+    var fund_source_type = []
     $(document).ready(function() {
 
         $.getJSON('/afms/frontend/web/index.php?r=database-view/sub-accounts')
@@ -418,7 +418,6 @@ $script = <<<JS
             }
         })
     })
-
     $(document).ready(function(){
         getFundSourceType().then((data) => {
             var array = []

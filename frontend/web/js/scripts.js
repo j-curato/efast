@@ -215,10 +215,10 @@ function getFundSourceType() {
     return $.getJSON(url + '?r=fund-source-type/all-fund-source-type')
 
 }
-function getFundSourceType() {
-    return $.getJSON(url + '?r=fund-source-type/all-fund-source-type')
+// function getFundSourceType() {
+//     return $.getJSON(url + '?r=fund-source-type/all-fund-source-type')
 
-}
+// }
 function getOrs(id) {
     return $.getJSON(url + '?r=tracking-sheet/get-all-ors&id=' + id)
 
