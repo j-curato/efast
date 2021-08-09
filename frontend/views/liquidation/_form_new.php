@@ -91,11 +91,11 @@ use yii\helpers\ArrayHelper;
                 <div class="col-sm-3">
                     <label for="check_range">Check Range</label>
                     <?php
-                    $province = Yii::$app->user->identity->province;
+                    $province =strtolower( Yii::$app->user->identity->province);
                     $q = PoTransaction::find();
                     if (
                         $province === 'adn' ||
-                        $province === 'sdn' ||
+                        $province === 'ads' ||
                         $province === 'sds' ||
                         $province === 'sdn' ||
                         $province === 'pdi'

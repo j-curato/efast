@@ -223,7 +223,8 @@ class AdvancesController extends Controller
             $update_id = !empty($_POST['update_id']) ? $_POST['update_id'] : '';
 
             $cash_disbursement_id = $_POST['cash_disbursement_id'];
-            $report = $_POST['report'];
+            $advances_type = $_POST['report'];
+            $report_type = $_POST['report'];
             $province = $_POST['province'];
             $reporting_period = $_POST['reporting_period'];
             $sub_account1_id = $_POST['sub_account1'];
@@ -247,8 +248,7 @@ class AdvancesController extends Controller
                 $advances->nft_number = $this->getNftNumber();
             }
 
-
-            $advances->report_type = $report;
+            $advances->report_type = $advances_type;
             $advances->province = $province;
             $advances->reporting_period = $reporting_period;
             if ($advances->validate()) {
@@ -264,6 +264,8 @@ class AdvancesController extends Controller
                         $ad_entry->reporting_period = $new_reporting_period[$index];
                         $ad_entry->amount = floatval(preg_replace('/[^\d.]/', '', $amount[$index]));
                         $ad_entry->book_id = $ad_entry->cashDisbursement->book->id;
+                        $ad_entry->advances_type = $advances_type;
+                        $ad_entry->report_type = $report_type;
                         if ($ad_entry->validate()) {
                             if ($ad_entry->save(false)) {
                             }
@@ -305,7 +307,7 @@ class AdvancesController extends Controller
                     'advances_entries.object_code',
                     'advances_entries.fund_source',
                     'advances_entries.fund_source_type',
-
+                    'advances_entries.reporting_period as entry_reporting_period'
                 ])
                 ->from('advances_entries')
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')

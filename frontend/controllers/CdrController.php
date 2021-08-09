@@ -251,11 +251,11 @@ class CdrController extends Controller
                 WHERE reporting_period = :reporting_period
                 AND (book_name is NULL OR book_name =:book_name)
                 AND province LIKE :province
-                AND report_type LIKE :report_type
+                AND advances_type LIKE :advances_type
             ")->bindValue(':reporting_period',  $reporting_period)
                 ->bindValue(':book_name', $book_name)
                 ->bindValue(':province', $province)
-                ->bindValue(':report_type', $report_type)
+                ->bindValue(':advances_type', $report_type)
                 ->queryAll();
 
 
@@ -264,11 +264,11 @@ class CdrController extends Controller
                     WHERE reporting_period <:reporting_period
                     AND book_name =:book_name
                     AND province LIKE :province
-                    AND report_type LIKE :report_type")
+                    AND advances_type LIKE :advances_type")
                 ->bindValue(':reporting_period',  $reporting_period)
                 ->bindValue(':book_name', $book_name)
                 ->bindValue(':province', $province)
-                ->bindValue(':report_type', $report_type)
+                ->bindValue(':advances_type', $report_type)
                 ->queryScalar();
 
 

@@ -220,12 +220,22 @@ class PoTransactionController extends Controller
     }
     public function actionGetAllTransaction()
     {
-        $province = strtoupper(Yii::$app->user->identity->province);
+        $province = strtolower(Yii::$app->user->identity->province);
         $query = (new \yii\db\Query())
             ->select('*')
-            ->from('po_transaction')
-            ->where('po_transaction.tracking_number LIKE :tracking_number', ['tracking_number' => "$province%"])
-            ->all();
-        return json_encode($query);
+            ->from('po_transaction');
+            if (
+                $province === 'adn' ||
+                $province === 'ads' ||
+                $province === 'sds' ||
+                $province === 'sdn' ||
+                $province === 'pdi'
+            ) {
+                $query  ->where('po_transaction.tracking_number LIKE :tracking_number', ['tracking_number' => "$province%"]);
+
+            }
+        $q =    $query ->all();
+
+        return json_encode($q);
     }
 }

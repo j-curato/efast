@@ -252,28 +252,31 @@ class CibrController extends Controller
             }
 
 
-            $dataProvider = Yii::$app->db->createCommand("SELECT 
-                check_date,
-                check_number,
-                particular,
-                amount,
-                withdrawals,
-                vat_nonvat,
-                expanded_tax,
-                gl_object_code,
-                gl_account_title, 
-                reporting_period
-                from advances_liquidation
-                where reporting_period =:reporting_period AND province LIKE :province
-                ORDER BY reporting_period,check_date,check_number
-            ")->bindValue(':reporting_period', $reporting_period)
+            // $dataProvider = Yii::$app->db->createCommand("SELECT 
+            //     check_date,
+            //     check_number,
+            //     particular,
+            //     amount,
+            //     withdrawals,
+            //     vat_nonvat,
+            //     expanded_tax,
+            //     gl_object_code,
+            //     gl_account_title, 
+            //     reporting_period
+            //     from advances_liquidation
+            //     where reporting_period =:reporting_period AND province LIKE :province
+            //     ORDER BY reporting_period,check_date,check_number 
+            // ")->bindValue(':reporting_period', $reporting_period)
+            //     ->bindValue(':province', $province)
+            //     ->queryAll();
+            $dataProvider = Yii::$app->db->createCommand('CALL cibr_function(:province,:reporting_period)')
+                ->bindValue(':reporting_period', $reporting_period)
                 ->bindValue(':province', $province)
                 ->queryAll();
 
-
-            $balance = Yii::$app->db->createCommand("SELECT 
-            SUM(advances_liquidation.amount) - SUM(advances_liquidation.withdrawals)  as balance
-             from advances_liquidation
+            $q1 = Yii::$app->db->createCommand("SELECT 
+             SUM(advances_balances.balance) as advances_balances
+             from advances_balances
              where reporting_period <:reporting_period 
              AND province LIKE :province
             
@@ -281,6 +284,18 @@ class CibrController extends Controller
                 ->bindValue(':reporting_period',   $reporting_period)
                 ->bindValue(':province',   $province)
                 ->queryScalar();
+
+            $q2 = Yii::$app->db->createCommand("SELECT 
+                SUM(liquidation_balances.balance)  as liquidation_balances
+                from liquidation_balances
+                where reporting_period <:reporting_period 
+                AND province LIKE :province
+               
+                 ")
+                ->bindValue(':reporting_period',   $reporting_period)
+                ->bindValue(':province',   $province)
+                ->queryScalar();
+            $balance = $q1 - $q2;
 
 
             // ob_clean();
