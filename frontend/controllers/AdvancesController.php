@@ -224,7 +224,7 @@ class AdvancesController extends Controller
 
             $cash_disbursement_id = $_POST['cash_disbursement_id'];
             $advances_type = $_POST['report'];
-            $report_type = $_POST['report'];
+            $report_type = $_POST['report_type'];
             $province = $_POST['province'];
             $reporting_period = $_POST['reporting_period'];
             $sub_account1_id = $_POST['sub_account1'];
@@ -265,7 +265,7 @@ class AdvancesController extends Controller
                         $ad_entry->amount = floatval(preg_replace('/[^\d.]/', '', $amount[$index]));
                         $ad_entry->book_id = $ad_entry->cashDisbursement->book->id;
                         $ad_entry->advances_type = $advances_type;
-                        $ad_entry->report_type = $report_type;
+                        $ad_entry->report_type = $report_type[$index];
                         if ($ad_entry->validate()) {
                             if ($ad_entry->save(false)) {
                             }
@@ -301,6 +301,7 @@ class AdvancesController extends Controller
                     'payee.account_name as payee',
                     'dv_aucs.particular',
                     'advances.report_type',
+                    'advances_entries.report_type as entry_report_type',
                     'advances.reporting_period',
                     'advances.province',
                     'advances_entries.amount',

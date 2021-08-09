@@ -36,7 +36,7 @@ use yii\helpers\ArrayHelper;
                 $report = [
                     'Advances for Operating Expenses' => 'Advances for Operating Expenses',
                     'Advances to Special Disbursing Officer' => 'Advances to Special Disbursing Officer',
-                  
+
                 ];
 
                 echo Select2::widget([
@@ -106,6 +106,7 @@ use yii\helpers\ArrayHelper;
                 <th>Check Date</th>
                 <th>Payee</th>
                 <th>Particular</th>
+                <th>Report Type</th>
                 <th>Fund Source Type</th>
                 <th>Fund Source</th>
                 <th>Sub Account</th>
@@ -235,7 +236,26 @@ use yii\helpers\ArrayHelper;
     var cashflow = [];
     var accounts = [];
     var transaction_table_count = 0;
+    var report_types = [{
+            'id': '101 SDO CDR',
+            'text': '101 SDO CDR'
+        },
+        {
 
+            'id': '101 OPEX CDR',
+            'text': '101 OPEX CDR',
+        },
+        {
+
+            'id': 'RAPID LP SDO CDR',
+            'text': 'RAPID LP SDO CDR',
+        },
+        {
+
+            'id': 'Fund 07 SDO CDR',
+            'text': 'Fund 07 SDO CDR',
+        }
+    ]
 
     function thousands_separators(num) {
 
@@ -299,6 +319,11 @@ use yii\helpers\ArrayHelper;
                     <td class='particular'>${result[i]['particular']}</td>
                     
                     <td> 
+                             <select id="report_type-${transaction_table_count}" name="report_type[]"  class="report_type" style="width: 200px">
+                                <option></option>
+                            </select>
+                    </td>
+                    <td> 
                              <select id="fund_source_type-${transaction_table_count}" name="fund_source_type[]"  class="fund_source_type" style="width: 200px">
                                 <option></option>
                             </select>
@@ -336,14 +361,23 @@ use yii\helpers\ArrayHelper;
                 placeholder: "Select Fund Source Type",
 
             });
+            $(`#report_type-${transaction_table_count}`).select2({
+                data: report_types,
+                placeholder: "Select Report Type Type",
+
+            });
             if ($("#update_id").val() > 0) {
                 $(`#chart-${transaction_table_count}`).val(result[i]['object_code']).trigger('change')
                 $(`#amount-${transaction_table_count}`).val(result[i]['amount']).trigger('change')
                 $(`#fund_source_type-${transaction_table_count}`).val(result[i]['fund_source_type']).trigger('change')
+                $(`#report_type-${transaction_table_count}`).val(result[i]['entry_report_type']).trigger('change')
             }
             transaction_table_count++;
         }
     }
+
+
+
     var fund_source_type = []
     $(document).ready(function() {
 
@@ -427,12 +461,14 @@ $script = <<<JS
                 })
             })
             fund_source_type = array
+            
             console.log(fund_source_type)
         })
         // $('#report').change(function(){
         //     addToTransactionTable()
         // })
 
+        // $('.report_type').select2()
         
 
         // KUNG NAAY SULOD ANG UPDATE ID MAG POPULATE SA MGA DATA

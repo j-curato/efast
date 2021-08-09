@@ -36,6 +36,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         'startView' => 'months',
                         'minViewMode' => 'months',
                         'format' => 'yyyy-mm'
+                    ],
+                    'options'=>[
+                        'readOnly'=>true,
+                        'style'=>'background-color:white;'
                     ]
                 ])
                 ?>
