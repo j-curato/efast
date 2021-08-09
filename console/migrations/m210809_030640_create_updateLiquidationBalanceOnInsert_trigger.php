@@ -44,21 +44,8 @@ class m210809_030640_create_updateLiquidationBalanceOnInsert_trigger extends Mig
                     WHERE liquidation_balances.reporting_period = NEW.reporting_period
                         AND liquidation_balances.province =prov;
             ELSE
-            INSERT INTO liquidation_balances (reporting_period,province,balance,total_vat_nonvat,total_expanded,total_liquidation_damage)
-            SELECT 
-            liquidation_entries.reporting_period,
-            advances.province,
-            SUM(liquidation_entries.withdrawals) as total_withdrawals,
-            SUM(liquidation_entries.vat_nonvat) as total_vat_nonvat,
-            SUM(liquidation_entries.expanded_tax) as total_expanded,
-            SUM(liquidation_entries.liquidation_damage) as total_liquidation_damage
-            FROM liquidation_entries
-            LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id = advances_entries.id
-            LEFT JOIN advances ON advances_entries.advances_id = advances.id
-
-            WHERE 
-            advances.province = prov
-            AND liquidation_entries.reporting_period = NEW.reporting_period;
+            INSERT INTO liquidation_balances (liquidation_balances.reporting_period,liquidation_balances.balance,liquidation_balances.province)
+                    VALUE (NEW.reporting_period,bal,prov);
             END IF;
 
 
