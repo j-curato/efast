@@ -24,9 +24,6 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 </style>
 <?php
-
-
-
 Modal::begin(
     [
         //'header' => '<h2>Create New Region</h2>',

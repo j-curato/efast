@@ -8,6 +8,7 @@ use app\models\LiquidataionSearch;
 use app\models\LiquidationEntries;
 use app\models\LiquidationEntriesSearch;
 use app\models\LiquidationEntriesViewSearch;
+use ErrorException;
 use Exception;
 use Mpdf\Tag\Em;
 use yii\filters\AccessControl;
@@ -295,13 +296,13 @@ class LiquidationController extends Controller
                 if ($liquidation->is_locked === 1) {
                     return json_encode(['isSuccess' => false, 'error' => "Liquidation is Disabled"]);
                 }
-                $x = explode('-', $liquidation->dv_number);
-                $x[1] = date('Y', strtotime($reporting_period));
-                $x[2] = date('m', strtotime($reporting_period));
-                $liquidation->dv_number = implode('-', $x);
+                // $x = explode('-', $liquidation->dv_number);
+                // $x[1] = date('Y', strtotime($reporting_period));
+                // $x[2] = date('m', strtotime($reporting_period));
+                // $liquidation->dv_number = implode('-', $x);
             } else {
                 $liquidation = new Liquidation();
-                $liquidation->dv_number = $this->getDvNumber($reporting_period);
+                // $liquidation->dv_number = $this->getDvNumber($reporting_period);
             }
             $liquidation->check_date = $check_date;
             // $liquidation->payee_id = $payee_id;
@@ -310,7 +311,7 @@ class LiquidationController extends Controller
             $liquidation->reporting_period = $reporting_period;
             $liquidation->po_transaction_id = $po_transaction_id;
             $liquidation->check_range_id = $check_range;
-            
+
             // TEMPORRARY RA NI SA AUG E CHANGE RA NI
             $liquidation->dv_number = $dv_number;
 
@@ -442,14 +443,53 @@ class LiquidationController extends Controller
     public function actionCancel()
     {
         if ($_POST) {
-            $id = $_POST['id'];
-            $l = Liquidation::findOne($id);
-            $l->is_cancelled = $l->is_cancelled === 0 ? 1 : 0;
+            $id = $_POST['cancelId'];
+            $reporting_period = date('Y-m',strtotime($_POST['reporting_period']));
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                $l = Liquidation::findOne($id);
+                // $l->is_cancelled = $l->is_cancelled === 0 ? 1 : 0;
 
-            if ($l->save(false)) {
-                return json_encode(['isSuccess' => true, 'cancelled' => $l->is_cancelled]);
+                if ($flag = $l->save(false)) {
+                    if ($l->is_cancelled === 0) {
+
+                        $liquidation = new Liquidation();
+                        $liquidation->check_date = $l->check_date;
+                        $liquidation->check_number = $l->check_number;
+                        $liquidation->reporting_period = $reporting_period;
+                        $liquidation->po_transaction_id = $l->po_transaction_id;
+                        $liquidation->check_range_id = $l->check_range_id;
+                        $liquidation->dv_number = $l->dv_number;
+                        $liquidation->province = $l->province;
+                        // $liquidation->is_cancelled = 1;
+                        if ($liquidation->save(false)) {
+                            foreach ($l->liquidationEntries as $val) {
+                                $liq_entries = new LiquidationEntries();
+                                $liq_entries->liquidation_id = $liquidation->id;
+                                $liq_entries->chart_of_account_id = $val->chart_of_account_id;
+                                $liq_entries->advances_entries_id = $val->advances_entries_id;
+                                $liq_entries->withdrawals = 0 - $val->withdrawals;
+                                $liq_entries->vat_nonvat = 0 - $val->vat_nonvat;
+                                $liq_entries->expanded_tax = 0 - $val->expanded_tax;
+                                $liq_entries->liquidation_damage = 0 - $val->liquidation_damage;
+                                $liq_entries->reporting_period = $reporting_period;
+                                if ($liq_entries->save(false)){
+
+                                }
+                            }
+                        }
+                    } else {
+                        $transaction->rollBack();
+                        return json_encode(['isSuccess' => false, 'error' => 'save error in liquidation entries']);
+                    }
+                }
+                if ($flag) {
+                    $transaction->commit();
+                    return json_encode(['isSuccess' => true, 'error' => 'none']);
+                }
+            } catch (ErrorException $e) {
+                return json_encode(['isSuccess' => false, 'error' => $e->getMessage()]);
             }
-            return json_encode(['isSuccess' => false, 'cancelled' => false]);
         }
     }
 
@@ -513,7 +553,7 @@ class LiquidationController extends Controller
                     $check_number = trim($cells[2]);
 
                     $is_cancel =  $cells[3];
-                    $dv_number =$cells[4];
+                    $dv_number = $cells[4];
                     $reporting_period = date("Y-m", strtotime($cells[5]));
                     $fund_source = trim($cells[6]);
                     $payee = trim($cells[7]);
@@ -551,9 +591,8 @@ class LiquidationController extends Controller
                             echo "</pre>";
                             return ob_get_clean();
                         }
-                    }
-                    else{
-                        $advances_entries_id['id']=null;
+                    } else {
+                        $advances_entries_id['id'] = null;
                     }
 
                     $liq_id = (new \yii\db\Query())
@@ -570,7 +609,7 @@ class LiquidationController extends Controller
                         $liquidation->check_date = $check_date;
                         $liquidation->check_number = $check_number;
                         $liquidation->particular = $particular;
-                        $liquidation->is_cancelled = strtolower($is_cancel)==='good'?0:1;
+                        $liquidation->is_cancelled = strtolower($is_cancel) === 'good' ? 0 : 1;
                         $liquidation->payee = $payee;
                         $liquidation->dv_number = $dv_number;
                         $liquidation->reporting_period = $reporting_period;

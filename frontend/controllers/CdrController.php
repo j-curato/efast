@@ -102,7 +102,7 @@ class CdrController extends Controller
         // }
         $query = (new \yii\db\Query())
             ->select(
-            'check_date,
+                'check_date,
             check_number,
             particular,
             amount,
@@ -236,33 +236,68 @@ class CdrController extends Controller
             //     ->orderBy('reporting_period,check_date,check_number')
             //     ->all();
             $query = Yii::$app->db->createCommand("SELECT
-                            check_date,
-                            check_number,
-                            particular,
-                            amount,
-                            withdrawals,
-                            gl_object_code,
-                            gl_account_title,
-                            reporting_period,
-                            vat_nonvat,
-                            expanded_tax
-
-                FROM advances_liquidation
-                WHERE reporting_period = :reporting_period
-                AND (book_name is NULL OR book_name =:book_name)
-                AND province LIKE :province
-                AND advances_type LIKE :advances_type
+                    liquidation.check_date,
+                    liquidation.check_number,
+                    liquidation.particular,
+                     0 as amount,
+                    liquidation_entries.withdrawals,
+                    liquidation_entries.vat_nonvat,
+                    liquidation_entries.expanded_tax,
+                    liquidation_entries.reporting_period,
+                    chart_of_accounts.uacs as gl_object_code,
+                    chart_of_accounts.general_ledger as gl_account_title
+                    
+                    
+                    
+                    FROM liquidation_entries
+                    LEFT JOIN chart_of_accounts ON liquidation_entries.chart_of_account_id= chart_of_accounts.id
+                    LEFT JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
+                    LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id  = advances_entries.id
+                    LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id =  cash_disbursement.id
+                    WHERE liquidation_entries.reporting_period = :reporting_period
+                    AND cash_disbursement.book_id = :book_name
+                    AND liquidation.province = :province
+                    AND advances_entries.advances_type =:advances_type
+                    
+                    
+                    UNION ALL
+                    
+                    SELECT 
+                    cash_disbursement.issuance_date as check_date,
+                    cash_disbursement.check_or_ada_no as check_number,
+                    dv_aucs.particular,
+                    advances_entries.amount ,
+                     0 as withdrawals,
+                    0 as vat_nonvat,
+                    0 as expanded_tax,
+                    advances_entries.reporting_period,
+                    '' as gl_object_code,
+                    '' as gl_account_title
+                    FROM 
+                    advances_entries
+                    LEFT JOIN advances ON advances_entries.advances_id = advances.id
+                    LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
+                    LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
+                    WHERE advances_entries.reporting_period = :reporting_period
+                    AND cash_disbursement.book_id = :book_name
+                    AND advances.province = :province
+                    AND advances_entries.advances_type =:advances_type 
+            
+            
+            
+ 
             ")->bindValue(':reporting_period',  $reporting_period)
                 ->bindValue(':book_name', $book_name)
                 ->bindValue(':province', $province)
                 ->bindValue(':advances_type', $report_type)
                 ->queryAll();
 
-
-            $balance = Yii::$app->db->createCommand("SELECT ROUND(SUM(amount),2)-ROUND(SUM(withdrawals ),2)as balance
-                    FROM advances_liquidation
+            $advances_balance=0;
+            $liquidation_balance=0;
+            $advances_balance = Yii::$app->db->createCommand("SELECT ROUND(SUM(balance),2)as balance
+                    FROM cdr_advances_balance
                     WHERE reporting_period <:reporting_period
-                    AND book_name =:book_name
+                    AND book_id =:book_name
                     AND province LIKE :province
                     AND advances_type LIKE :advances_type")
                 ->bindValue(':reporting_period',  $reporting_period)
@@ -270,6 +305,18 @@ class CdrController extends Controller
                 ->bindValue(':province', $province)
                 ->bindValue(':advances_type', $report_type)
                 ->queryScalar();
+            $liquidation_balance = Yii::$app->db->createCommand("SELECT ROUND(SUM(total_withdrawals),2)as balance
+                    FROM cdr_liquidation_balance
+                    WHERE reporting_period <:reporting_period
+                    AND book_id =:book_name
+                    AND province LIKE :province
+                    AND advances_type LIKE :advances_type")
+                ->bindValue(':reporting_period',  $reporting_period)
+                ->bindValue(':book_name', $book_name)
+                ->bindValue(':province', $province)
+                ->bindValue(':advances_type', $report_type)
+                ->queryScalar();
+            $balance  = $advances_balance - $liquidation_balance;
 
 
             $result = ArrayHelper::index($query, null, [function ($element) {
@@ -277,7 +324,7 @@ class CdrController extends Controller
             }, 'gl_object_code']);
             // ob_clean();
             // echo "<pre>";
-            // var_dump($result[$reporting_period]);
+            // var_dump($liquidation_balance);
             // echo "</pre>";
 
             // return ob_get_clean();
@@ -319,9 +366,8 @@ class CdrController extends Controller
             // return (['res' => $q]);
             // ob_clean();
             // echo "<pre>";
-            // var_dump($consolidated);
+            // var_dump($query);
             // echo "</pre>";
-
             // return ob_get_clean();
             return json_encode([
                 'cdr' => $query,

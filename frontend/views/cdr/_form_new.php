@@ -64,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <label for="book">Book</label>
                 <?php
                 echo Select2::widget([
-                    'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'name', 'name'),
+                    'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
                     'id' => 'book',
                     'value' => !empty($model->book_name) ? $model->book_name : '',
                     'name' => 'book',
@@ -150,9 +150,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td colspan="8" class="header">
                     <span> Entity Name:Department of Trade and Industry</span>
                 </td>
-                <td colspan="4" class="header officer">
+                <td colspan="4" class="header ">
                     <span>
                         Name of Accountable Officer:
+                    </span>
+                    <span class="officer">
+
                     </span>
                 </td>
             </tr>
@@ -164,6 +167,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     <span class="">
                         Official Designation: Special Disbursing Officer
                     </span>
+                    <span class="advance_type">
+
+                    </span>
                 </td>
             </tr>
             <tr style="border:1px solid white">
@@ -171,14 +177,17 @@ $this->params['breadcrumbs'][] = $this->title;
                     <span> Municipality/City/Province: <?php echo $municipality; ?></span>
                 </td>
                 <td colspan="4" class="header">
-                    <span class="municipality">
+                    <span >
                         Station:DTI -
+                    </span>
+                    <span class="municipality">
                     </span>
                 </td>
             </tr>
             <tr>
                 <td colspan="8" rowspan="2" style="border-left:1px solid white;border-right:1px solid white;" class="header">
-                    <span class="book"> Fund Cluster : <?= !empty($book) ? $book : '' ?></span>
+                    <span> Fund Cluster : </span>
+                    <span class="book"><?= !empty($book) ? $book : '' ?></span>
                 </td>
                 <td colspan="4" class="header" style="border-left:1px solid white;border-right:1px solid white;">
                     <span>
@@ -474,7 +483,7 @@ $this->params['breadcrumbs'][] = $this->title;
         var withdrawal = data['withdrawals'] != '' ? thousands_separators(data['withdrawals']) : ''
         var bal = thousands_separators(balance)
         var x = ''
-        if (data['particular']=='Total') {
+        if (data['particular'] == 'Total') {
             x = 'font-weight:bold;text-align:center'
         }
         var row = `<tr>                 
@@ -636,11 +645,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 var officer = res.officer
                 balance = res.balance
                 // console.log(res)
-                $('.book').append(book)
+                $('.book').text(book)
                 $('.reporting_period').append(reporting_period)
                 $('.location').append(location)
                 $('.officer').append(officer)
-                $('.municipality').append(municipality)
+                $('.municipality').text(municipality)
                 addCdrRow(cdr)
                 data_table.append(`
                 <tr>
@@ -664,9 +673,15 @@ $this->params['breadcrumbs'][] = $this->title;
         })
     }
     $('#generate').click(function(e) {
-        balance=0
-         x = 0;
+        balance = 0
+        x = 0;
+
         e.preventDefault()
+        $('.book').text('')
+        $('.reporting_period').text('')
+        $('.location').text('')
+        $('.officer').text('')
+        $('.municipality').text('')
         cdrAjaxRequest()
     })
 </script>

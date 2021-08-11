@@ -1,6 +1,8 @@
 <?php
 
 use aryelds\sweetalert\SweetAlertAsset;
+use kartik\date\DatePicker;
+use yii\bootstrap\Modal;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -11,6 +13,48 @@ $this->title = $model->dv_number;
 $this->params['breadcrumbs'][] = ['label' => 'Liquidations', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+?>
+
+<?php
+date_default_timezone_set('Asia/Manila');
+$time = date('h:i:s A');
+$date = date('Y-M-d');
+$id = $model->id;
+Modal::begin(
+    [
+        //'header' => '<h2>Create New Region</h2>',
+        'id' => 'cancelModal',
+        'size' => 'modal-md',
+        'clientOptions' => ['backdrop' => 'static', 'keyboard' => TRUE, 'class' => 'modal modal-primary '],
+        'options' => [
+            'tabindex' => false // important for Select2 to work properly
+        ],
+    ]
+);
+echo "<div class='box box-success' id='modalContent'></div>";
+echo "<form id='cancelForm'>";
+echo "<div class='row'>";
+echo "<input type='hidden' name='cancelId' value='$id' style='display:none;'/>";
+echo "<label for='date' style='text-align:center'>Date</label>";
+echo DatePicker::widget([
+    'name' => 'reporting_period',
+    'id' => 'reporting_period',
+    'options' => [
+        'readOnly' => true,
+        'style' => 'background-color:white;'
+    ],
+    'pluginOptions' => [
+        'format' => 'yyyy-M',
+        'autoclose' => true,
+        'startView'=>'months',
+        'minViewMode'=>'months'
+    ]
+]);
+echo "</div>";
+
+echo "<button type='submit' class='btn btn-success' id='save'>Save</button>";
+echo '<form>';
+Modal::end();
 ?>
 <div class="liquidation-view">
 
@@ -123,61 +167,79 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 SweetAlertAsset::register($this);
 $script = <<<JS
-    $("#cancel").click(function(){
-        swal({
-            title: "Are you sure?",
-            text: "You will not be able to recover this imaginary file!",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: '#DD6B55',
-            confirmButtonText: 'Yes, I am sure!',
-            cancelButtonText: "No, cancel it!",
-            closeOnConfirm: false,
-            closeOnCancel: true
-         },
-         function(isConfirm){
 
-           if (isConfirm){
-                    $.ajax({
-                        type:"POST",
-                        url:window.location.pathname + "?r=liquidation/cancel",
-                        data:{
-                            id:$("#cancel_id").val()
-                        },
-                        success:function(data){
-                            console.log(data)
-                            var res = JSON.parse(data)
-                            var cancelled = res.cancelled?"Successfuly Cancelled":"Successfuly Activated";
-                            if(res.isSuccess){
-                                swal({
-                                        title:cancelled,
-                                        type:'success',
-                                        button:false,
-                                        timer:3000,
-                                    },function(){
-                                        location.reload(true)
-                                    })
-                            }
-                            else{
-                                swal({
-                                        title:"Error Cannot Cancel",
-                                        text:"Dili Ma  Cancel ang Disbursment Niya",
-                                        type:'error',
-                                        button:false,
-                                        timer:3000,
-                                    })
-                            }
-
-                        }
-                    })
-
-
-            } 
+    $('#cancel').click(function(e) {
+        e.preventDefault();    
+        $('#cancelModal').modal('show').find('#link').attr('href',$(this).attr('value'))
+    });
+    
+    $('#cancelForm').submit(function(e){
+        e.preventDefault();
+        
+        $.ajax({
+            type:'POST',
+            url:window.location.pathname + '?r=liquidation/cancel',
+            data:$('#cancelForm').serialize(),
+            success:function(data){
+                console.log(data)
+            }
         })
+    })
+    // $("#cancel").click(function(){
+    //     swal({
+    //         title: "Are you sure?",
+    //         text: "You will not be able to recover this imaginary file!",
+    //         type: "warning",
+    //         showCancelButton: true,
+    //         confirmButtonColor: '#DD6B55',
+    //         confirmButtonText: 'Yes, I am sure!',
+    //         cancelButtonText: "No, cancel it!",
+    //         closeOnConfirm: false,
+    //         closeOnCancel: true
+    //      },
+    //      function(isConfirm){
+
+    //        if (isConfirm){
+    //                 $.ajax({
+    //                     type:"POST",
+    //                     url:window.location.pathname + "?r=liquidation/cancel",
+    //                     data:{
+    //                         id:$("#cancel_id").val()
+    //                     },
+    //                     success:function(data){
+    //                         console.log(data)
+    //                         var res = JSON.parse(data)
+    //                         var cancelled = res.cancelled?"Successfuly Cancelled":"Successfuly Activated";
+    //                         if(res.isSuccess){
+    //                             swal({
+    //                                     title:cancelled,
+    //                                     type:'success',
+    //                                     button:false,
+    //                                     timer:3000,
+    //                                 },function(){
+    //                                     location.reload(true)
+    //                                 })
+    //                         }
+    //                         else{
+    //                             swal({
+    //                                     title:"Error Cannot Cancel",
+    //                                     text:"Dili Ma  Cancel ang Disbursment Niya",
+    //                                     type:'error',
+    //                                     button:false,
+    //                                     timer:3000,
+    //                                 })
+    //                         }
+
+    //                     }
+    //                 })
+
+
+    //         } 
+    //     })
 
     
 
-    })
+    // })
 
 JS;
 

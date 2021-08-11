@@ -526,6 +526,7 @@ $this->title = 'Dashboard';
     let x = undefined;
     $(document).ready(function() {
         $.getJSON(window.location.pathname + '?r=site/q').then(function(data) {
+            console.log(data)
             cal(data)
         })
     })

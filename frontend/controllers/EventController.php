@@ -91,7 +91,7 @@ class EventController extends Controller
      */
     public function actionCreate($date)
     {
-        
+
         $model = new Event();
         $model->created_at = $date;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {

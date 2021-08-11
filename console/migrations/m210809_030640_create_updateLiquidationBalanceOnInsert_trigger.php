@@ -29,20 +29,20 @@ class m210809_030640_create_updateLiquidationBalanceOnInsert_trigger extends Mig
             AND liquidation_balances.province = prov
             ));
 
-            SET BAL =		(SELECT SUM(liquidation_entries.withdrawals) 
+            SET BAL =(SELECT SUM(liquidation_entries.withdrawals) 
                     FROM liquidation_entries
                     LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id = advances_entries.id
                     LEFT JOIN advances ON advances_entries.advances_id = advances.id
-                
-                            WHERE 
+                    LEFT JOIN liquidation ON liquidation_entries.liquidation_id=liquidation.id
+                    WHERE 
                     advances.province = prov
                     AND liquidation_entries.reporting_period = NEW.reporting_period
-
+                    AND liquidation.is_cancelled =0
                     );
             IF(nb > 0) THEN
             UPDATE liquidation_balances SET liquidation_balances.balance = bal
                     WHERE liquidation_balances.reporting_period = NEW.reporting_period
-                        AND liquidation_balances.province =prov;
+                    AND liquidation_balances.province =prov;
             ELSE
             INSERT INTO liquidation_balances (liquidation_balances.reporting_period,liquidation_balances.balance,liquidation_balances.province)
                     VALUE (NEW.reporting_period,bal,prov);
