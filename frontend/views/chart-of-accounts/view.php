@@ -11,9 +11,9 @@ use aryelds\sweetalert\SweetAlertAsset;
 /* @var $this yii\web\View */
 /* @var $model app\models\ChartOfAccounts */
 
-$this->title = $model->id;
-// $this->params['breadcrumbs'][] = ['label' => 'Chart Of Accounts', 'url' => ['index']];
-// $this->params['breadcrumbs'][] = $this->title;
+$this->title = $model->uacs;
+$this->params['breadcrumbs'][] = ['label' => 'Chart Of Accounts', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="chart-of-accounts-view">
@@ -21,14 +21,10 @@ $this->title = $model->id;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
+        <?= Html::button('Update', 
+        ['value' => Url::to(Yii::$app->request->baseUrl . '?r=chart-of-accounts/update&id='.$model->id),
+         'class' => 'btn btn-primary modalButtoncreate']); ?>
+
         <?php
         $t = yii::$app->request->baseUrl . '/index.php?r=sub-accounts1/create&id=' . $model->id;
 

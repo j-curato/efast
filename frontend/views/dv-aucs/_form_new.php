@@ -422,166 +422,168 @@ use yii\helpers\Html;
 
 
     </div>
-    <style>
-        textarea {
-            max-width: 100%;
-            width: 100%;
-        }
+</div>
 
-        .grid-view td {
-            white-space: normal;
-        }
+<style>
+    textarea {
+        max-width: 100%;
+        width: 100%;
+    }
 
-        .select {
-            width: 500px;
-            height: 2rem;
-        }
+    .grid-view td {
+        white-space: normal;
+    }
 
-        #submit {
-            margin: 10px;
-        }
+    .select {
+        width: 500px;
+        height: 2rem;
+    }
 
-        input {
-            width: 100%;
-            font-size: 15px;
-            padding: 5px;
-            border-radius: 5px;
-            border: 1px solid black;
+    #submit {
+        margin: 10px;
+    }
 
-        }
+    input {
+        width: 100%;
+        font-size: 15px;
+        padding: 5px;
+        border-radius: 5px;
+        border: 1px solid black;
 
-        .row {
-            margin: 5px;
-        }
+    }
 
-        .container {
-            background-color: white;
-            height: auto;
-            padding: 10px;
-            border-radius: 2px;
-        }
+    .row {
+        margin: 5px;
+    }
 
-        .accounting_entries {
-            background-color: white;
-            padding: 2rem;
-            border: 1px solid black;
-            border-radius: 5px;
-        }
+    .container {
+        background-color: white;
+        height: auto;
+        padding: 10px;
+        border-radius: 2px;
+    }
 
-        .swal-text {
-            background-color: #FEFAE3;
-            padding: 17px;
-            border: 1px solid #F0E1A1;
-            display: block;
-            margin: 22px;
-            text-align: center;
-            color: #61534e;
-        }
-    </style>
+    .accounting_entries {
+        background-color: white;
+        padding: 2rem;
+        border: 1px solid black;
+        border-radius: 5px;
+    }
 
-    <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script> -->
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-    <script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <script src="/afms/frontend/web/js/scripts.js" type="text/javascript"></script>
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
+    .swal-text {
+        background-color: #FEFAE3;
+        padding: 17px;
+        border: 1px solid #F0E1A1;
+        display: block;
+        margin: 22px;
+        text-align: center;
+        color: #61534e;
+    }
+</style>
+
+<!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script> -->
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+<script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+<script src="/afms/frontend/web/js/scripts.js" type="text/javascript"></script>
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
-    <link href="/afms/frontend/web/js/select2.min.js" />
-    <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
+<link href="/afms/frontend/web/js/select2.min.js" />
+<link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
 
-    <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
-    <script>
-        var vacant = 0;
-        var i = 1;
-        var x = [0];
-        var update_id = undefined;
-        var cashflow = [];
-        var accounts = [];
+<!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
+<script>
+    var vacant = 0;
+    var i = 1;
+    var x = [0];
+    var update_id = undefined;
+    var cashflow = [];
+    var accounts = [];
 
-        function enableDisable(checkbox) {
-            var isDisable = true
-            if (checkbox.checked) {
-                isDisable = false
-            }
-            enableInput(isDisable, checkbox.value)
-
+    function enableDisable(checkbox) {
+        var isDisable = true
+        if (checkbox.checked) {
+            isDisable = false
         }
+        enableInput(isDisable, checkbox.value)
 
-        function removeItem(index) {
-            // $(`#form-${index}`).remove();
-            // arr_form.splice(index, 1);
-            // vacant = index
-            // $('#form' + index + '').remove();
+    }
 
-            document.getElementById(`form-${index}`).remove()
-            for (var y = 0; y < x.length; y++) {
-                if (x[y] === index) {
-                    delete x[y]
-                    x.splice(y, 1)
+    function removeItem(index) {
+        // $(`#form-${index}`).remove();
+        // arr_form.splice(index, 1);
+        // vacant = index
+        // $('#form' + index + '').remove();
+
+        document.getElementById(`form-${index}`).remove()
+        for (var y = 0; y < x.length; y++) {
+            if (x[y] === index) {
+                delete x[y]
+                x.splice(y, 1)
+            }
+        }
+        // console.log(x, Math.max.apply(null, x))
+        getTotal()
+
+
+    }
+
+    function isCurrent(index, i) {
+        // var chart_id = document.getElementById('chart-0').val()
+        $.ajax({
+            type: 'POST',
+            url: window.location.pathname + '?r=jev-preparation/is-current',
+            data: {
+                chart_id: index.value
+            },
+            dataType: 'json',
+            success: function(data) {
+
+                $('#isCurrent-' + i).val(data.current_noncurrent)
+                // console.log(data)
+                // data.isCashEquivalent ? : $('#cash_flow_id-' + i).hide()
+                data.isEquity ? $('#isEquity-' + i).show() : $('#isEquity-' + i).hide()
+                if (data.isCashEquivalent == true) {
+                    // $('#cashflow-' + i).select2({
+                    //     data: cashflow,
+                    //     placeholder: 'Select Cash Flow'
+                    // })
+                    // $('#cashflow-' + i).val(2).trigger('change');
+                    $('#cashflow-' + i).next().show()
+                } else {
+
+                    $('#cashflow-' + i).val(null).trigger('change');
+                    // document.getElementById('isEquity-' + i).value = 'null'
+                    $('#cashflow-' + i).select2().next().hide();
+
+
+                }
+                if (data.isEquity == true) {
+                    // $('#isEquity-' + i).select2({
+                    //     data: net_asset,
+                    //     placeholder: 'Select Net Asset'
+
+                    // })
+
+                    $('#isEquity-' + i).next().show()
+                } else {
+
+                    $('#isEquity-' + i).val(null).trigger('change');
+                    // document.getElementById('isEquity-' + i).value = 'null'
+                    $('#isEquity-' + i).select2().next().hide();
+
+
                 }
             }
-            // console.log(x, Math.max.apply(null, x))
-            getTotal()
+        })
+    }
 
 
-        }
+    function add() {
 
-        function isCurrent(index, i) {
-            // var chart_id = document.getElementById('chart-0').val()
-            $.ajax({
-                type: 'POST',
-                url: window.location.pathname + '?r=jev-preparation/is-current',
-                data: {
-                    chart_id: index.value
-                },
-                dataType: 'json',
-                success: function(data) {
-
-                    $('#isCurrent-' + i).val(data.current_noncurrent)
-                    // console.log(data)
-                    // data.isCashEquivalent ? : $('#cash_flow_id-' + i).hide()
-                    data.isEquity ? $('#isEquity-' + i).show() : $('#isEquity-' + i).hide()
-                    if (data.isCashEquivalent == true) {
-                        // $('#cashflow-' + i).select2({
-                        //     data: cashflow,
-                        //     placeholder: 'Select Cash Flow'
-                        // })
-                        // $('#cashflow-' + i).val(2).trigger('change');
-                        $('#cashflow-' + i).next().show()
-                    } else {
-
-                        $('#cashflow-' + i).val(null).trigger('change');
-                        // document.getElementById('isEquity-' + i).value = 'null'
-                        $('#cashflow-' + i).select2().next().hide();
-
-
-                    }
-                    if (data.isEquity == true) {
-                        // $('#isEquity-' + i).select2({
-                        //     data: net_asset,
-                        //     placeholder: 'Select Net Asset'
-
-                        // })
-
-                        $('#isEquity-' + i).next().show()
-                    } else {
-
-                        $('#isEquity-' + i).val(null).trigger('change');
-                        // document.getElementById('isEquity-' + i).value = 'null'
-                        $('#isEquity-' + i).select2().next().hide();
-
-
-                    }
-                }
-            })
-        }
-
-
-        function add() {
-
-            var latest = Math.max.apply(null, x)
-            $(`#form-${latest}`)
-                .after(`<div id="form-${i}" style="max-width:100%;border: 1px solid gray;width:100%; padding: 2rem; margin-top: 1rem;background-color:white;border-radius:5px" class="control-group input-group" class="accounting_entries">
+        var latest = Math.max.apply(null, x)
+        $(`#form-${latest}`)
+            .after(`<div id="form-${i}" style="max-width:100%;border: 1px solid gray;width:100%; padding: 2rem; margin-top: 1rem;background-color:white;border-radius:5px" class="control-group input-group" class="accounting_entries">
                 <!-- chart of accounts -->
                 <div class="row"  >
                     <div>
@@ -626,109 +628,109 @@ use yii\helpers\Html;
                     
             </div>
             `)
-            $(`#chart-${i}`).select2({
-                data: accounts,
-                placeholder: "Select Chart of Account",
+        $(`#chart-${i}`).select2({
+            data: accounts,
+            placeholder: "Select Chart of Account",
 
-            });
-            $(`#cashflow-${i}`).select2({
-                data: cashflow,
-                placeholder: 'Select Cash Flow'
-            }).next().hide()
-            $(`#isEquity-${i}`).select2({
-                data: net_asset,
-                placeholder: 'Select Net Asset'
+        });
+        $(`#cashflow-${i}`).select2({
+            data: cashflow,
+            placeholder: 'Select Cash Flow'
+        }).next().hide()
+        $(`#isEquity-${i}`).select2({
+            data: net_asset,
+            placeholder: 'Select Net Asset'
 
-            }).next().hide();
-            var deb = document.getElementsByName('debit[]');
-            // arr_form.splice(latest, 0, latest + 1)
-            // deb[1].value = 123
-            x.push(i)
+        }).next().hide();
+        var deb = document.getElementsByName('debit[]');
+        // arr_form.splice(latest, 0, latest + 1)
+        // deb[1].value = 123
+        x.push(i)
 
-            i++
+        i++
 
+    }
+    $('.add-btn').click(function() {
+        add()
+        getTotal()
+    })
+
+    function getTotal() {
+        var total_disbursed = 0;
+        var total_vat = 0;
+        var total_ewt = 0;
+        var total_compensation = 0;
+        var total_liabilities = 0;
+        $(".amount_disbursed").each(function() {
+            total_disbursed += parseFloat($(this).val()) || 0;
+        });
+        $(".vat").each(function() {
+            total_vat += parseFloat($(this).val()) || 0;
+        });
+        $(".ewt").each(function() {
+            total_ewt += parseFloat($(this).val()) || 0;
+        });
+        $(".compensation").each(function() {
+            total_compensation += parseFloat($(this).val()) || 0;
+        });
+        $(".liabilities").each(function() {
+            total_liabilities += parseFloat($(this).val()) || 0;
+        });
+        $("#total_disbursed").text(thousands_separators(total_disbursed))
+        $("#total_vat").text(thousands_separators(total_vat))
+        $("#total_ewt").text(thousands_separators(total_ewt))
+        $("#total_compensation").text(thousands_separators(total_compensation))
+        $("#total_liabilities").text(thousands_separators(total_liabilities))
+
+    }
+
+    function thousands_separators(num) {
+
+        var number = Number(Math.round(num + 'e2') + 'e-2')
+        var num_parts = number.toString().split(".");
+        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return num_parts.join(".");
+    }
+
+    function enableInput(isDisable, index) {
+        $(`#amount_${index}-disp`).prop('disabled', isDisable);
+        $(`#amount_${index}`).prop('disabled', isDisable);
+        $(`#amount_disbursed_${index}-disp`).prop('disabled', isDisable);
+        $(`#amount_disbursed_${index}`).prop('disabled', isDisable);
+        $(`#vat_nonvat_${index}-disp`).prop('disabled', isDisable);
+        $(`#vat_nonvat_${index}`).prop('disabled', isDisable);
+        $(`#ewt_goods_services_${index}-disp`).prop('disabled', isDisable);
+        $(`#ewt_goods_services_${index}`).prop('disabled', isDisable);
+        $(`#compensation_${index}-disp`).prop('disabled', isDisable);
+        $(`#compensation_${index}`).prop('disabled', isDisable);
+        $(`#other_trust_liabilities_${index}-disp`).prop('disabled', isDisable);
+        $(`#other_trust_liabilities_${index}`).prop('disabled', isDisable);
+        // button = document.querySelector('.amount_1').disabled=false;
+
+    }
+
+    function remove(i) {
+        i.closest("tr").remove()
+        dv_count--
+        getTotal()
+    }
+
+    function addDvToTable(result) {
+        if ($("#transaction").val() == 'Single') {
+            // $('#particular').val(result[0]['transaction_particular'])
+            // $('#payee').val(result[0]['transaction_payee_id']).trigger('change')
         }
-        $('.add-btn').click(function() {
-            add()
-            getTotal()
-        })
-
-        function getTotal() {
-            var total_disbursed = 0;
-            var total_vat = 0;
-            var total_ewt = 0;
-            var total_compensation = 0;
-            var total_liabilities = 0;
-            $(".amount_disbursed").each(function() {
-                total_disbursed += parseFloat($(this).val()) || 0;
-            });
-            $(".vat").each(function() {
-                total_vat += parseFloat($(this).val()) || 0;
-            });
-            $(".ewt").each(function() {
-                total_ewt += parseFloat($(this).val()) || 0;
-            });
-            $(".compensation").each(function() {
-                total_compensation += parseFloat($(this).val()) || 0;
-            });
-            $(".liabilities").each(function() {
-                total_liabilities += parseFloat($(this).val()) || 0;
-            });
-            $("#total_disbursed").text(thousands_separators(total_disbursed))
-            $("#total_vat").text(thousands_separators(total_vat))
-            $("#total_ewt").text(thousands_separators(total_ewt))
-            $("#total_compensation").text(thousands_separators(total_compensation))
-            $("#total_liabilities").text(thousands_separators(total_liabilities))
-
-        }
-
-        function thousands_separators(num) {
-
-            var number = Number(Math.round(num + 'e2') + 'e-2')
-            var num_parts = number.toString().split(".");
-            num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            return num_parts.join(".");
-        }
-
-        function enableInput(isDisable, index) {
-            $(`#amount_${index}-disp`).prop('disabled', isDisable);
-            $(`#amount_${index}`).prop('disabled', isDisable);
-            $(`#amount_disbursed_${index}-disp`).prop('disabled', isDisable);
-            $(`#amount_disbursed_${index}`).prop('disabled', isDisable);
-            $(`#vat_nonvat_${index}-disp`).prop('disabled', isDisable);
-            $(`#vat_nonvat_${index}`).prop('disabled', isDisable);
-            $(`#ewt_goods_services_${index}-disp`).prop('disabled', isDisable);
-            $(`#ewt_goods_services_${index}`).prop('disabled', isDisable);
-            $(`#compensation_${index}-disp`).prop('disabled', isDisable);
-            $(`#compensation_${index}`).prop('disabled', isDisable);
-            $(`#other_trust_liabilities_${index}-disp`).prop('disabled', isDisable);
-            $(`#other_trust_liabilities_${index}`).prop('disabled', isDisable);
-            // button = document.querySelector('.amount_1').disabled=false;
-
-        }
-
-        function remove(i) {
-            i.closest("tr").remove()
-            dv_count--
-            getTotal()
-        }
-
-        function addDvToTable(result) {
-            if ($("#transaction").val() == 'Single') {
-                // $('#particular').val(result[0]['transaction_particular'])
-                // $('#payee').val(result[0]['transaction_payee_id']).trigger('change')
+        for (var i = 0; i < result.length; i++) {
+            if ($('#transaction').val() == 'Single' && i == 1) {
+                break;
             }
-            for (var i = 0; i < result.length; i++) {
-                if ($('#transaction').val() == 'Single' && i == 1) {
-                    break;
-                }
-                $('#book_id').val(result[0]['book_id'])
-                var amount_disbursed = result[i]['amount_disbursed'] ? result[i]['amount_disbursed'] : 0;
-                var vat_nonvat = result[i]['vat_nonvat'] ? result[i]['vat_nonvat'] : 0;
-                var ewt_goods_services = result[i]['ewt_goods_services'] ? result[i]['ewt_goods_services'] : 0;
-                var compensation = result[i]['compensation'] ? result[i]['compensation'] : 0;
-                var other_trust_liabilities = result[i]['other_trust_liabilities'] ? result[i]['other_trust_liabilities'] : 0;
-                var row = `<tr>
+            $('#book_id').val(result[0]['book_id'])
+            var amount_disbursed = result[i]['amount_disbursed'] ? result[i]['amount_disbursed'] : 0;
+            var vat_nonvat = result[i]['vat_nonvat'] ? result[i]['vat_nonvat'] : 0;
+            var ewt_goods_services = result[i]['ewt_goods_services'] ? result[i]['ewt_goods_services'] : 0;
+            var compensation = result[i]['compensation'] ? result[i]['compensation'] : 0;
+            var other_trust_liabilities = result[i]['other_trust_liabilities'] ? result[i]['other_trust_liabilities'] : 0;
+            var row = `<tr>
                             
  
                             <td > <input style='display:none' value='${result[i]['ors_id']}' type='text' name='process_ors_id[]'/></td>
@@ -746,97 +748,111 @@ use yii\helpers\Html;
                             <td> <input value='${other_trust_liabilities}' type='text' name='other_trust_liabilities[]' class='liabilities'/></td>
                             <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
                         `
-                $('#transaction_table tbody').append(row);
-                // total += amount_disbursed
-                select_id++;
-                dv_count++;
+            $('#transaction_table tbody').append(row);
+            // total += amount_disbursed
+            select_id++;
+            dv_count++;
+
+        }
+
+
+        getTotal()
+        $("#dv_count").val(dv_count)
+
+    }
+
+
+    var select_id = 0;
+
+    var transaction_type = $("#transaction").val();
+    var dv_count = 1;
+    var tracking_sheet = []
+    var sheet = []
+
+    $(document).ready(function() {
+        // $("#payee ").select2({'readonly'});
+        // $("#particular").prop({disabled:'readonly'});
+        $("#bok").hide();
+
+        getChartOfAccountsDv($('#update_id').val()).then(function(data) {
+            var array = []
+            $.each(data, function(key, val) {
+                array.push({
+                    id: val.object_code,
+                    text: val.object_code + ' ' + val.account_title
+                })
+                accounts = array
+
+            })
+            $("#chart-0").select2({
+                data: accounts,
+                placeholder: 'Select Account'
+            })
+        })
+
+        // MAG ADD OG DATA NA BUHATAN OG DV
+
+    })
+    $('#submit').click(function(e) {
+        var date = new Date()
+
+        // var x = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+        // if ($('#transaction_timestamp').val() == '') {
+        //     $('#transaction_timestamp').val(x)
+
+        // }
+        e.preventDefault();
+        $.ajax({
+            url: window.location.pathname + '?r=dv-aucs/get-dv',
+            method: "POST",
+            data: $('#add_data').serialize(),
+            success: function(data) {
+                var res = JSON.parse(data)
+                console.log(res)
+                if (res.isSuccess) {
+
+                    addDvToTable(res.results)
+                } else {
+                    swal({
+                        title: "Error",
+                        text: res.error,
+                        type: "error",
+                        timer: 6000,
+                        button: false
+                        // confirmButtonText: "Yes, delete it!",
+                    });
+                }
 
             }
+        });
+        $('.checkbox').prop('checked', false); // Checks it
+        $('.amounts').prop('disabled', true);
+        $('.amounts').val(null);
+    })
 
-
-            getTotal()
-            $("#dv_count").val(dv_count)
-
-        }
-
-
-        var select_id = 0;
-
-        var transaction_type = $("#transaction").val();
-        var dv_count = 1;
-        var tracking_sheet = []
-        var sheet = []
-
-        $(document).ready(function() {
-            // $("#payee ").select2({'readonly'});
-            // $("#particular").prop({disabled:'readonly'});
-            $("#bok").hide();
-
-
-
-            // MAG ADD OG DATA NA BUHATAN OG DV
-
+    function getDebitCreditTotal() {
+        var total_credit = 0.00;
+        var total_debit = 0.00;
+        $(".credit").each(function() {
+            total_credit += Number($(this).val());
         })
-        $('#submit').click(function(e) {
-            var date = new Date()
-
-            // var x = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
-            // if ($('#transaction_timestamp').val() == '') {
-            //     $('#transaction_timestamp').val(x)
-
-            // }
-            e.preventDefault();
-            $.ajax({
-                url: window.location.pathname + '?r=dv-aucs/get-dv',
-                method: "POST",
-                data: $('#add_data').serialize(),
-                success: function(data) {
-                    var res = JSON.parse(data)
-                    console.log(res)
-                    if (res.isSuccess) {
-
-                        addDvToTable(res.results)
-                    } else {
-                        swal({
-                            title: "Error",
-                            text: res.error,
-                            type: "error",
-                            timer: 6000,
-                            button: false
-                            // confirmButtonText: "Yes, delete it!",
-                        });
-                    }
-
-                }
-            });
-            $('.checkbox').prop('checked', false); // Checks it
-            $('.amounts').prop('disabled', true);
-            $('.amounts').val(null);
+        $(".debit").each(function() {
+            total_debit += Number($(this).val());
         })
 
-        function getDebitCreditTotal() {
-            var total_credit = 0.00;
-            var total_debit = 0.00;
-            $(".credit").each(function() {
-                total_credit += Number($(this).val());
-            })
-            $(".debit").each(function() {
-                total_debit += Number($(this).val());
-            })
+        document.getElementById("d_total").innerHTML = "<h4>" + thousands_separators(total_debit) + "</h4>";
+        document.getElementById("c_total").innerHTML = "<h4>" + thousands_separators(total_credit) + "</h4>";
+        //  $(".debit").change(function(){
+        //     $(this).val() =  thousands_separators(total_debit)
+        //  })
+        // $(this).val().replact
+    }
+    $(document).on("keyup change", ".credit, .debit", function() {
+        getDebitCreditTotal()
 
-            document.getElementById("d_total").innerHTML = "<h4>" + thousands_separators(total_debit) + "</h4>";
-            document.getElementById("c_total").innerHTML = "<h4>" + thousands_separators(total_credit) + "</h4>";
-            //  $(".debit").change(function(){
-            //     $(this).val() =  thousands_separators(total_debit)
-            //  })
-            // $(this).val().replact
-        }
-        $(document).on("keyup change", ".credit, .debit", function() {
-            getDebitCreditTotal()
-
-        })
-    </script>
-</div>
+    })
+    
+</script>
 
 
 <?php
@@ -853,6 +869,7 @@ $script = <<< JS
         var mrd_classification=[];
         var books=[];
         var bbb=undefined;
+        var accounts = []
 
         $("#tracking_sheet").change(function()  {
             console.log(sheet)
@@ -977,7 +994,7 @@ $script = <<< JS
     })
     function chart(){
         
-        return  $.getJSON('/dti-afms-2/frontend/web/index.php?r=transaction/get-all-transaction')
+        return  $.getJSON('/afms/frontend/web/index.php?r=transaction/get-all-transaction')
         .then(function (data) {
 
             var array = []
@@ -996,7 +1013,7 @@ $script = <<< JS
 
         });
     }
-    $.when(chart() ).done(function(chart){
+    $.when(chart(),getChartOfAccounts() ).done(function(chart,c){
         // $('#payee option:not(:selected)').attr('disabled',true).
         // disable payee
         // $("#payee option:not(:selected)").attr('disabled',true)    
@@ -1083,6 +1100,7 @@ $script = <<< JS
 
 
     $(document).ready(function() {
+
         getAllTrackingSheet().then(function(data) {
 
         var array = []

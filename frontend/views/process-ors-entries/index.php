@@ -174,113 +174,37 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ];
     $gridColumns = [
-
-        [
-            'label' => 'id',
-            'attribute' => 'process_ors_id',
-            'value' => 'processOrs.id',
-            // 'value' => 'processOrs.reporting_period'
-        ],
-
-
-        [
-            'label' => 'Obligation Number',
-            'attribute' => 'process_ors_id',
-            'value' => 'processOrs.serial_number',
-            // 'value' => 'processOrs.reporting_period'
-        ],
+        'id',
+        'serial_number',
         'reporting_period',
-        [
-            'label' => "Transaction",
-            'attribute' => "processOrs.transaction.tracking_number"
-        ],
-
-        [
-            'label' => 'Allotment Number',
-            'attribute' => 'recordAllotmentEntries.recordAllotment.serial_number',
-        ],
-        [
-            'label' => 'Allotment UACS Code',
-            'attribute' => 'recordAllotmentEntries.chartOfAccount.uacs',
-        ],
-        [
-            'label' => 'Allotment General Ledger',
-            'attribute' => 'recordAllotmentEntries.chartOfAccount.general_ledger',
-        ],
-
-        [
-            'label' => 'ORS UACS Object Code',
-            'value' => 'raoudEntries.chartOfAccount.uacs',
-        ],
-        [
-            'label' => 'General Ledger',
-            'value' => 'raoudEntries.chartOfAccount.general_ledger',
-        ],
+        'tracking_number',
+        'particular',
         [
             'label' => 'Payee',
-            'value' => 'processOrs.transaction.payee.account_name',
+            'attribute' =>  'account_name',
         ],
-
+        'allotment_uacs',
+        'allotment_general_ledger',
+        'ors_uacs',
+        'ors_general_ledger',
+      
         [
-            'label' => 'Amount',
-            'attribute' => 'raoudEntries.amount',
-            'format' => ['decimal', 2],
-            'pageSummary' => true,
+            'attribute'=>  'amount',
+            'hAlign'=>'right',
+            'format'=>['decimal',2]
         ],
-        [
-            'label' => 'Adjust Amount',
-            'value' => function ($model) {
-                $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total
-                    FROM `raouds`,raoud_entries
-                    WHERE raouds.id=raoud_entries.raoud_id
-                    AND raoud_entries.amount >0
-                    AND raoud_entries.parent_id_from_raoud = $model->id
-                     ")->queryOne();
-                if (!empty($query['total'])) {
-                    return $query['total'];
-                } else {
-                    return '';
-                }
-            },
-            'format' => ['decimal', 2]
-        ],
-
-
-        // [
-        //     'label' => 'Adjust',
-        //     'format' => 'raw',
-        //     'value' => function ($model) {
-
-        //         $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total
-        //             FROM `raouds`,raoud_entries
-        //             WHERE raouds.id=raoud_entries.raoud_id
-        //             AND raoud_entries.amount >0
-        //             AND raoud_entries.parent_id_from_raoud = $model->id
-        //              ")->queryOne();
-        //         $amount = $model->raoudEntries->amount;
-        //         if ($query['total'] < $amount  && $amount > 0) {
-
-        //             $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/adjust&id=$model->id";
-        //             return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-primary fa fa-pencil-square-o']);
-        //         } else {
-        //             return "";
-        //         }
-        //         // return $query['total'];
-        //     },
-        //     'hiddenFromExport' => true,
-        // ],
         [
             'label' => 'Adjust',
             'format' => 'raw',
             'value' => function ($model) {
 
                 $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total
-                    FROM `raouds`,raoud_entries
-                    WHERE raouds.id=raoud_entries.raoud_id
-                    AND raoud_entries.amount >0
-                    AND raoud_entries.parent_id_from_raoud = $model->id
-                     ")->queryOne();
-                $amount = $model->raoudEntries->amount;
+                        FROM `raouds`,raoud_entries
+                        WHERE raouds.id=raoud_entries.raoud_id
+                        AND raoud_entries.amount >0
+                        AND raoud_entries.parent_id_from_raoud = $model->id
+                         ")->queryOne();
+                $amount = $model->amount;
                 if ($query['total'] < $amount  && $amount > 0) {
 
                     $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/re-align&id=$model->id";
@@ -303,16 +227,147 @@ $this->params['breadcrumbs'][] = $this->title;
             },
             'hiddenFromExport' => true,
         ],
-
-
-        // ['class' => 'yii\grid\ActionColumn'],
-        // [
-        //     'class' => '\kartik\grid\ActionColumn',
-        //     // 'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
-        //     // 'delete' => false
-
-        // ]
     ];
+    // $gridColumns = [
+
+    //     [
+    //         'label' => 'id',
+    //         'attribute' => 'process_ors_id',
+    //         'value' => 'processOrs.id',
+    //         // 'value' => 'processOrs.reporting_period'
+    //     ],
+
+
+    //     [
+    //         'label' => 'Obligation Number',
+    //         'attribute' => 'process_ors_id',
+    //         'value' => 'processOrs.serial_number',
+    //         // 'value' => 'processOrs.reporting_period'
+    //     ],
+    //     'reporting_period',
+    //     [
+    //         'label' => "Transaction",
+    //         'attribute' => "processOrs.transaction.tracking_number"
+    //     ],
+
+    //     [
+    //         'label' => 'Allotment Number',
+    //         'attribute' => 'recordAllotmentEntries.recordAllotment.serial_number',
+    //     ],
+    //     [
+    //         'label' => 'Allotment UACS Code',
+    //         'attribute' => 'recordAllotmentEntries.chartOfAccount.uacs',
+    //     ],
+    //     [
+    //         'label' => 'Allotment General Ledger',
+    //         'attribute' => 'recordAllotmentEntries.chartOfAccount.general_ledger',
+    //     ],
+
+    //     [
+    //         'label' => 'ORS UACS Object Code',
+    //         'value' => 'raoudEntries.chartOfAccount.uacs',
+    //     ],
+    //     [
+    //         'label' => 'General Ledger',
+    //         'value' => 'raoudEntries.chartOfAccount.general_ledger',
+    //     ],
+    //     [
+    //         'label' => 'Payee',
+    //         'value' => 'processOrs.transaction.payee.account_name',
+    //     ],
+
+    //     [
+    //         'label' => 'Amount',
+    //         'attribute' => 'raoudEntries.amount',
+    //         'format' => ['decimal', 2],
+    //         'pageSummary' => true,
+    //     ],
+    //     [
+    //         'label' => 'Adjust Amount',
+    //         'value' => function ($model) {
+    //             $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total
+    //                 FROM `raouds`,raoud_entries
+    //                 WHERE raouds.id=raoud_entries.raoud_id
+    //                 AND raoud_entries.amount >0
+    //                 AND raoud_entries.parent_id_from_raoud = $model->id
+    //                  ")->queryOne();
+    //             if (!empty($query['total'])) {
+    //                 return $query['total'];
+    //             } else {
+    //                 return '';
+    //             }
+    //         },
+    //         'format' => ['decimal', 2]
+    //     ],
+
+
+    //     // [
+    //     //     'label' => 'Adjust',
+    //     //     'format' => 'raw',
+    //     //     'value' => function ($model) {
+
+    //     //         $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total
+    //     //             FROM `raouds`,raoud_entries
+    //     //             WHERE raouds.id=raoud_entries.raoud_id
+    //     //             AND raoud_entries.amount >0
+    //     //             AND raoud_entries.parent_id_from_raoud = $model->id
+    //     //              ")->queryOne();
+    //     //         $amount = $model->raoudEntries->amount;
+    //     //         if ($query['total'] < $amount  && $amount > 0) {
+
+    //     //             $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/adjust&id=$model->id";
+    //     //             return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-primary fa fa-pencil-square-o']);
+    //     //         } else {
+    //     //             return "";
+    //     //         }
+    //     //         // return $query['total'];
+    //     //     },
+    //     //     'hiddenFromExport' => true,
+    //     // ],
+    //     [
+    //         'label' => 'Adjust',
+    //         'format' => 'raw',
+    //         'value' => function ($model) {
+
+    //             $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total
+    //                 FROM `raouds`,raoud_entries
+    //                 WHERE raouds.id=raoud_entries.raoud_id
+    //                 AND raoud_entries.amount >0
+    //                 AND raoud_entries.parent_id_from_raoud = $model->id
+    //                  ")->queryOne();
+    //             $amount = $model->raoudEntries->amount;
+    //             if ($query['total'] < $amount  && $amount > 0) {
+
+    //                 $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/re-align&id=$model->id";
+    //                 return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-success fa fa-pencil-square-o']);
+    //             } else {
+    //                 return "";
+    //             }
+    //             // return $query['total'];
+    //         },
+    //         'hiddenFromExport' => true
+    //     ],
+    //     [
+    //         'label' => 'View',
+    //         'format' => 'raw',
+    //         'value' => function ($model) {
+    //             $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$model->id";
+    //             return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-primary fa fa-eye']);
+
+    //             // return $query['total'];
+    //         },
+    //         'hiddenFromExport' => true,
+    //     ],
+
+
+    //     // ['class' => 'yii\grid\ActionColumn'],
+    //     // [
+    //     //     'class' => '\kartik\grid\ActionColumn',
+    //     //     // 'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
+    //     //     // 'delete' => false
+
+    //     // ]
+    // ];
 
     ?>
     <?= GridView::widget([

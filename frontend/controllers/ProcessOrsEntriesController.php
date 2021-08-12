@@ -9,12 +9,14 @@ use Yii;
 use app\models\ProcessOrsEntries;
 use app\models\ProcessOrsEntriesSearch;
 use app\models\ProcessOrsRaoudsSearch;
+use app\models\ProcessOrsViewSearch;
 use app\models\RaoudEntries;
 use app\models\Raouds;
 use app\models\Raouds2Search;
 use app\models\RaoudsSearch;
 use app\models\RaoudsSearch2;
 use app\models\RecordAllotmentEntries;
+use app\models\RecordAllotmentForOrsSearch;
 use ErrorException;
 use Exception;
 use yii\filters\AccessControl;
@@ -90,9 +92,9 @@ class ProcessOrsEntriesController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new ProcessOrsRaoudsSearch();
+        $searchModel = new ProcessOrsViewSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->sort = ['defaultOrder' => ['process_ors_id' => 'DESC']];
+        // $dataProvider->sort = ['defaultOrder' => ['process_ors_id' => 'DESC']];
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -129,8 +131,8 @@ class ProcessOrsEntriesController extends Controller
         // return $this->render('create', [
         //     'model' => $model,
         // ]);
-        $searchModel = new Raouds2Search();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
+        $searchModel = new RecordAllotmentForOrsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('create', [
             'searchModel' => $searchModel,
@@ -159,8 +161,8 @@ class ProcessOrsEntriesController extends Controller
         //     'model' => $model,
         // ]);
         $raoud = Raouds::findOne($id);
-        $searchModel = new Raouds2Search();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
+        $searchModel = new RecordAllotmentForOrsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -172,8 +174,8 @@ class ProcessOrsEntriesController extends Controller
     public function actionAdjust($id)
     {
         $raoud = Raouds::findOne($id);
-        $searchModel = new Raouds2Search();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
+        $searchModel = new RecordAllotmentForOrsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -185,8 +187,8 @@ class ProcessOrsEntriesController extends Controller
     // MAG RE ALIGN SA CHARGING SA ORS OG ORS
     public function actionReAlign($id)
     {
-        $searchModel = new Raouds2Search();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
+        $searchModel = new RecordAllotmentForOrsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -236,31 +238,33 @@ class ProcessOrsEntriesController extends Controller
 
                 $query = (new \yii\db\Query())
                     ->select([
-                        'mfo_pap_code.code AS mfo_pap_code_code', 'mfo_pap_code.name AS mfo_pap_name', 'fund_source.name AS fund_source_name',
-                        'chart_of_accounts.uacs as object_code', 'chart_of_accounts.general_ledger', 'major_accounts.name',
-                        'chart_of_accounts.id as chart_of_account_id', 'raouds.id AS raoud_id',
-                        'chart_of_accounts.uacs as record_allotment_object_code',
-                        'entry.total', 'record_allotment_entries.amount', '(record_allotment_entries.amount - entry.total) AS remain'
-                    ])
-                    ->from('raouds')
-                    ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
-                    ->join("LEFT JOIN", "record_allotments", "record_allotment_entries.record_allotment_id=record_allotments.id")
-                    ->join("LEFT JOIN", "chart_of_accounts", "record_allotment_entries.chart_of_account_id=chart_of_accounts.id")
-                    ->join("LEFT JOIN", "major_accounts", "chart_of_accounts.major_account_id=major_accounts.id")
-                    ->join("LEFT JOIN", "fund_source", "record_allotments.fund_source_id=fund_source.id")
-                    ->join("LEFT JOIN", "mfo_pap_code", "record_allotments.mfo_pap_code_id=mfo_pap_code.id")
-                    ->join("LEFT JOIN", "raoud_entries", "raouds.id=raoud_entries.raoud_id")
-                    ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount) as total,
-                               
-                                raouds.record_allotment_entries_id
-                                FROM raouds,raoud_entries,process_ors
-                                WHERE raouds.process_ors_id= process_ors.id
-                                AND raouds.id = raoud_entries.raoud_id
-                                AND raouds.process_ors_id IS NOT NULL 
-                                GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
-                    // ->join("LEFT JOIN","","raouds.process_ors_id=process_ors.id")
+                        // 'mfo_pap_code.code AS mfo_pap_code_code',
+                        // 'mfo_pap_code.name AS mfo_pap_name',
+                        // 'fund_source.name AS fund_source_name',
+                        // 'chart_of_accounts.uacs as object_code',
+                        // 'chart_of_accounts.general_ledger',
+                        // 'major_accounts.name',
+                        // 'chart_of_accounts.id as chart_of_account_id',
+                        // // 'raouds.id AS raoud_id',
+                        // 'chart_of_accounts.uacs as record_allotment_object_code',
 
-                    ->where("raouds.id = :id", ['id' => $val])->one();
+                        'raouds.id as raoud_id',
+                        'record_allotment_for_ors.serial_number',
+                        'record_allotment_for_ors.mfo_code as mfo_pap_code_code',
+                        'record_allotment_for_ors.mfo_name as mfo_pap_name',
+                        'record_allotment_for_ors.fund_source_name as fund_source_name',
+                        'record_allotment_for_ors.uacs as object_code',
+                        'record_allotment_for_ors.general_ledger',
+                        'record_allotment_for_ors.amount',
+                        'record_allotment_for_ors.balance as remain',
+                        'record_allotment_for_ors.chart_of_account_id',
+                    ])
+                    ->from('record_allotment_for_ors')
+                    ->join("LEFT JOIN", "raouds", "record_allotment_for_ors.id = raouds.record_allotment_entries_id ")
+            
+                    ->where("record_allotment_for_ors.id = :id", ['id' => $val])
+                    ->andWhere('raouds.process_ors_id IS NULL')
+                    ->one();
                 $query['obligation_amount'] =  $_POST['amount'][$val];
                 $x[] = $query;
             }

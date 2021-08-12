@@ -475,6 +475,25 @@ use yii\helpers\ArrayHelper;
 
         $(document).ready(function() {
 
+
+            getChartOfAccounts($('#update_id').val()).then(function(data) {
+                var array = []
+                $.each(data, function(key, val) {
+                    array.push({
+                        id: val.object_code,
+                        text: val.object_code + ' ' + val.account_title
+                    })
+
+                })
+                accounts = array
+                $('#chart-0').select2({
+
+                        data: accounts,
+                        placeholder: 'Select Account'
+                    }
+
+                )
+            })
             // REFERENCE
             reference = ["CDJ", "CRJ", "GJ"]
             $('#reference').select2({
@@ -501,47 +520,48 @@ use yii\helpers\ArrayHelper;
             // SUBMIT DATA
 
 
-            // INSERT DATA TO DATABASE
-            $('#add_data').submit(function(e) {
-                e.preventDefault();
-                $.ajax({
-                    url: window.location.pathname + '?r=jev-preparation/insert-jev',
-                    method: "POST",
-                    data: $('#add_data').serialize(),
-                    success: function(data) {
-                        //  alert(data);  
-                        // //  $('#add_name')[0].reset();  
-                        var res = JSON.parse(data)
-
-                        if (res.isSuccess == "success") {
-                            swal({
-                                title: "Success",
-                                // text: "You will not be able to undo this action!",
-                                type: "success",
-                                timer: 3000,
-                                button: false
-                                // confirmButtonText: "Yes, delete it!",
-                            }, function() {
-                                window.location.href = window.location.pathname + '?r=jev-preparation/view&id=' + res.id
-                            });
-                            $('#add_data')[0].reset();
 
 
-                        } else if (res.isSuccess == false) {
-                            swal({
-                                title: res.error,
-                                // text: "You will not be able to undo this action!",
-                                type: "error",
-                                timer: 3000,
-                                button: false
-                                // confirmButtonText: "Yes, delete it!",
-                            }, function() {});
-                        }
+        })
+        // INSERT DATA TO DATABASE
+        $('#add_data').submit(function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: window.location.pathname + '?r=jev-preparation/insert-jev',
+                method: "POST",
+                data: $('#add_data').serialize(),
+                success: function(data) {
+                    //  alert(data);  
+                    // //  $('#add_name')[0].reset();  
+                    var res = JSON.parse(data)
 
+                    if (res.isSuccess == "success") {
+                        swal({
+                            title: "Success",
+                            // text: "You will not be able to undo this action!",
+                            type: "success",
+                            timer: 3000,
+                            button: false
+                            // confirmButtonText: "Yes, delete it!",
+                        }, function() {
+                            window.location.href = window.location.pathname + '?r=jev-preparation/view&id=' + res.id
+                        });
+                        $('#add_data')[0].reset();
+
+
+                    } else if (res.isSuccess == false) {
+                        swal({
+                            title: res.error,
+                            // text: "You will not be able to undo this action!",
+                            type: "error",
+                            timer: 3000,
+                            button: false
+                            // confirmButtonText: "Yes, delete it!",
+                        }, function() {});
                     }
-                });
-            })
 
+                }
+            });
         })
 
         function getTotal() {
@@ -791,7 +811,7 @@ $script = <<< JS
                     var debit_value=0
                        var d= JSON.parse(data)
                        var res=d.result
-                       console.log(res)
+                       console.log(d)
                        var total_vat=0
                        var total_expanded=0
                        var total_gross=0

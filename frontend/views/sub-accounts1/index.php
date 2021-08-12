@@ -49,7 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'enctype' => 'multipart/form-data',
                         ], // important
                     ]);
-          
+
                     // echo '<input type="file">';
                     echo "<br>";
                     echo FileInput::widget([
@@ -110,7 +110,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'data-toggle' => "modal", 'class' => '"btn btn-info btn-xs add-sub',
                         'data-toggle' => "modal", 'data-target' => "#myModal",
                         'value' => $model->id,
-                    ]);
+                    ])
+                    ;
                 },
                 'hiddenFromExport' => true,
             ],
@@ -157,7 +158,12 @@ $this->params['breadcrumbs'][] = $this->title;
 SweetAlertAsset::register($this);
 $script = <<<JS
 
+        $("a[title=Update]").click(function(e){
+            e.preventDefault();
+            // console.log()
 
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
+        })
         $(document).ready(function(){
             var at =''
             var id=''

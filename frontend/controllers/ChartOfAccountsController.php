@@ -433,10 +433,13 @@ class ChartOfAccountsController extends Controller
     public function actionGetGeneralLedger()
     {
         // 	Personnel Services, Maintenance and Other Operating Expenses ,Capital Outlays
-        $res = Yii::$app->db->createCommand('SELECT chart_of_accounts.id,uacs as object_code, general_ledger as title 
+        $res = Yii::$app->db->createCommand('SELECT 
+        chart_of_accounts.id,uacs as object_code, 
+        general_ledger as title 
         FROM chart_of_accounts,major_accounts
         WHERE chart_of_accounts.major_account_id = major_accounts.id
         AND major_accounts.name IN ("Personnel Services","Maintenance and Other Operating Expenses","Capital Outlays")
+        AND chart_of_accounts.is_active = 1
         ')->queryAll();
         return json_encode($res);
     }
@@ -448,11 +451,46 @@ class ChartOfAccountsController extends Controller
         ')->queryAll();
         return json_encode($res);
     }
-    public function actionAccountingCodes()
+    public function actionAccountingCodes($id)
     {
+
+        $params = [];
+        $query1 = Yii::$app->db->createCommand("SELECT object_code FROM jev_accounting_entries WHERE jev_preparation_id =:id")
+            ->bindValue(':id', $id)
+            ->queryAll();
+        $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'object_code', $query1], $params);
+
+        $query2 = (new \yii\db\Query())
+            ->select('*')
+            ->from('accounting_codes')
+            ->where('is_active =1 AND coa_is_active = 1 AND sub_account_is_active = 1');
+        if (!empty($query1)) {
+            $query2->orWhere("$sql", $params);
+        }
         $res = Yii::$app->db->createCommand('SELECT object_code, account_title FROM accounting_codes 
         
         ')->queryAll();
-        return json_encode($res);
+        return json_encode($query2->all());
+    }
+    public function actionAccountingCodesDv($id)
+    {
+        $params = [];
+        $query1 = Yii::$app->db->createCommand("SELECT object_code FROM dv_accounting_entries WHERE dv_aucs_id =:id")
+            ->bindValue(':id', $id)
+            ->queryAll();
+        $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'object_code', $query1], $params);
+
+        $query2 = (new \yii\db\Query())
+            ->select('*')
+            ->from('accounting_codes')
+            ->where('is_active =1 AND coa_is_active = 1 AND sub_account_is_active = 1');
+        if (!empty($query1)) {
+            $query2->orWhere("$sql", $params);
+        }
+        $res = Yii::$app->db->createCommand('SELECT object_code, account_title FROM accounting_codes 
+        
+        ')->queryAll();
+
+        return json_encode($query2->all());
     }
 }

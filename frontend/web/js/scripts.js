@@ -47,24 +47,24 @@ $.getJSON(url + '?r=books/get-books')
 
 
 // GET CHART OF ACCOUNTS
-var accounts = []
-$.getJSON(url + '?r=chart-of-accounts/accounting-codes')
-    .then(function (data) {
-        var array = []
-        $.each(data, function (key, val) {
-            array.push({
-                id: val.object_code,
-                text: val.object_code + ' ' + val.account_title
-            })
-        })
-        accounts = array
-        $('#chart-0').select2({
+// var accounts = []
+// $.getJSON(url + '?r=chart-of-accounts/accounting-codes')
+//     .then(function (data) {
+//         var array = []
+//         $.each(data, function (key, val) {
+//             array.push({
+//                 id: val.object_code,
+//                 text: val.object_code + ' ' + val.account_title
+//             })
+//         })
+//         accounts = array
+//         $('#chart-0').select2({
 
-            data: accounts,
-            placeholder: "Select Chart of Account",
+//             data: accounts,
+//             placeholder: "Select Chart of Account",
 
-        })
-    })
+//         })
+//     })
 
 // RESPONSIBILITY CENTERS
 $.getJSON(url + '?r=responsibility-center/get-responsibility-center')
@@ -208,8 +208,14 @@ $.getJSON(url + '?r=transaction/get-transaction')
 function getRoTransactions() {
     return $.getJSON(url + '?r=transaction/get-transaction')
 }
-function getChartOfAccounts() {
-    return $.getJSON(url + '?r=chart-of-accounts/accounting-codes')
+function getChartOfAccounts(id) {
+    console.log(id)
+    return $.getJSON(url + '?r=chart-of-accounts/accounting-codes&id='+id)
+}
+function getChartOfAccountsDv(id) {
+    var csrfToken = $('meta[name="csrf-token"]').attr("content");
+
+    return $.getJSON(url + '?r=chart-of-accounts/accounting-codes-dv&id='+id)
 }
 function getFundSourceType() {
     return $.getJSON(url + '?r=fund-source-type/all-fund-source-type')

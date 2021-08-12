@@ -455,7 +455,7 @@ use yii\helpers\ArrayHelper;
 
                 })
             // GET ALL CHART OF accounts
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
+            $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {

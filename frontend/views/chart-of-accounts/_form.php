@@ -47,7 +47,10 @@ use yii\helpers\ArrayHelper;
     <div class="row">
         <div class="col-sm-3">
 
-            <?= $form->field($model, 'enable_disable')->textInput(['maxlength' => true, 'value' => 'Enable',]) ?>
+            <?= $form->field($model, 'is_active')->widget(Select2::class,[
+                'data'=>[1=>'True',0=>'false'],
+                'name'=>'is_active',
+            ]) ?>
         </div>
         <div class="col-sm-3">
             <?= $form->field($model, 'normal_balance')->widget(

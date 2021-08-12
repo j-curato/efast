@@ -41,7 +41,6 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
     <?php Pjax::begin(['id' => 'cibr', 'clientOptions' => ['method' => 'POST']]) ?>
-
     <table>
 
         <thead>
@@ -187,7 +186,7 @@ $this->params['breadcrumbs'][] = $this->title;
             $x = 0;
             if (!empty($dataProvider)) {
                 foreach ($dataProvider as $i => $data) {
-                    $balance += (int)$data['amount'] - (int)$data['withdrawals'];
+                    $balance += (float)$data['amount'] - (float)$data['withdrawals'];
                     // if ($data['reporting_period'] === $reporting_period) {
                     if ($x === 0) {
                         echo "<tr>
@@ -197,7 +196,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td style='text-align:center'>Beginning Balance</td>
                             <td ></td>
                             <td ></td>
-                            <td style='text-align:right'>" . number_format($balance - (int)$data['amount'] + (int)$data['withdrawals'], 2) . "</td>
+                            <td style='text-align:right'>" . number_format($balance - (float)$data['amount'] + (float)$data['withdrawals'], 2) . "</td>
                             <td></td>
                             <td></td>
                             <td></td>
@@ -212,18 +211,18 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td>" . $data['check_date'] . "</td>
                             <td>" . $data['check_number'] . "</td>
                             <td >" . $data['particular'] . "</td>
-                            <td style='text-align:right'>" . number_format((int)$data['amount'], 2) . "</td>
-                            <td style='text-align:right'>" . number_format((int)$data['withdrawals'], 2) . "</td>
+                            <td style='text-align:right'>" . number_format((float)$data['amount'], 2) . "</td>
+                            <td style='text-align:right'>" . number_format((float)$data['withdrawals'], 2) . "</td>
                             <td>" . number_format($balance, 2) . "</td>
                             <td></td>
                             <td></td>
                             <td></td>
                             <td>" . $data['gl_account_title'] . "</td>
                             <td>" . $data['gl_object_code'] . "</td>
-                            <td style='text-align:right'>" . number_format((int)$data['withdrawals'], 2)  . "</td>
+                            <td style='text-align:right'>" . number_format((float)$data['withdrawals'], 2)  . "</td>
                          </tr>";
-                    $total_deposit += intval((int)$data['amount']);
-                    $total_withdrawals += intval((int)$data['withdrawals']);
+                    $total_deposit += floatval((float)$data['amount']);
+                    $total_withdrawals += floatval((float)$data['withdrawals']);
                     // }
                 }
 

@@ -688,9 +688,6 @@ class ReportController extends \yii\web\Controller
 
 
             ]);
-        } else {
-
-            return $this->render('cdr');
         }
     }
 
@@ -736,31 +733,21 @@ class ReportController extends \yii\web\Controller
 
             $cdr  = Cdr::findOne($id);
 
-            // return json_encode(['qwe'=>$cdr]);
-            // $query = (new \yii\db\Query())
-            //     ->select('id')
-            //     ->from('cdr')
-            //     ->where('reporting_period =:reporting_period', ['reporting_period' => $cdr->reporting_period])
-            //     ->andWhere('province LIKE :province', ['province' => $cdr->province])
-            //     ->andWhere('book_name LIKE :book_name', ['book_name' => $cdr->book_name])
-            //     ->andWhere('report_type LIKE :report_type', ['report_type' => $cdr->report_type])
-            //     ->one();
+         
 
-            $q = Yii::$app->db->createCommand("SELECT  gl_object_code, gl_account_title,
-                reporting_period, vat_nonvat, expanded_tax,
-                ROUND(SUM(expanded_tax),2) as total_expanded,
-                ROUND(SUM(vat_nonvat),2) as total_vat,
-                ROUND(SUM(withdrawals),2) as total_withdrawals,
-                CONCAT(chart_of_accounts.id,'-',chart_of_accounts.uacs,'-',1) as code,
-                ROUND(SUM(withdrawals),2)+ROUND(SUM(vat_nonvat),2)+ROUND(SUM(expanded_tax),2) as debit
-                FROM advances_liquidation,chart_of_accounts
-                WHERE 
-                advances_liquidation.gl_object_code = chart_of_accounts.uacs
-                AND(reporting_period = :reporting_period) 
-                AND (book_name = :book_name)
-                AND (province LIKE :province) 
-                AND (report_type LIKE :report_type)
-                GROUP BY gl_object_code
+            $q = Yii::$app->db->createCommand("SELECT
+            chart_of_accounts.uacs as gl_object_code,
+            ROUND(SUM(withdrawals),2)+ROUND(SUM(vat_nonvat),2)+ROUND(SUM(expanded_tax),2) as debit
+            FROM liquidation_entries
+            LEFT JOIN chart_of_accounts ON liquidation_entries.chart_of_account_id= chart_of_accounts.id
+            LEFT JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
+            LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id  = advances_entries.id
+            LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id =  cash_disbursement.id
+            WHERE liquidation_entries.reporting_period = :reporting_period
+            AND cash_disbursement.book_id = :book_name
+            AND liquidation.province = :province
+            AND advances_entries.advances_type = :report_type
+            GROUP BY chart_of_accounts.uacs
             ")
                 ->bindValue(':reporting_period', $cdr->reporting_period)
                 ->bindValue(':book_name', $cdr->book_name)
@@ -799,19 +786,19 @@ class ReportController extends \yii\web\Controller
                 ->where("uacs =:uacs", ['uacs' => 2020101000])
                 ->one();
 
-            if (empty($account)) {
+            // if (empty($account)) {
 
-                $account = Yii::$app->memem->createSubAccount1($acc, $c_id['id']);
-            }
+            //     $account = Yii::$app->memem->createSubAccount1($acc, $c_id['id']);
+            // }
 
-            if (empty($vat)) {
+            // if (empty($vat)) {
 
-                $vat = Yii::$app->memem->createSubAccount1($v, $c_id['id']);
-            }
-            if (empty($expanded)) {
+            //     $vat = Yii::$app->memem->createSubAccount1($v, $c_id['id']);
+            // }
+            // if (empty($expanded)) {
 
-                $expanded = Yii::$app->memem->createSubAccount1($e, $c_id['id']);
-            }
+            //     $expanded = Yii::$app->memem->createSubAccount1($e, $c_id['id']);
+            // }
             // ob_clean();
             // echo "<pre>";
             // var_dump($advances);
@@ -1140,12 +1127,12 @@ class ReportController extends \yii\web\Controller
                 ->select([
                     "CONCAT(chart_of_accounts.uacs,' ',chart_of_accounts.general_ledger) as account",
                     'query1.*q'
-                    
+
                 ])
                 ->from('chart_of_accounts')
                 ->orderBy('chart_of_accounts.uacs');
             $query2->join('INNER JOIN', "({$query->getRawSql()}) as query1", 'query1.gl_object_code = chart_of_accounts.uacs');
-         $res =   $query2->join('INNER JOIN', "liquidation", 'query1.dv_number = liquidation.dv_number')->all();
+            $res =   $query2->join('INNER JOIN', "liquidation", 'query1.dv_number = liquidation.dv_number')->all();
             // $query3 = (new \yii\db\Query())
             //     ->select(' advances_liquidation.dv_number,
             //     advances_liquidation.check_date,
@@ -1170,5 +1157,24 @@ class ReportController extends \yii\web\Controller
 
             return $this->render('rsmi');
         }
+    }
+    public function actionC()
+    {
+        $params = [];
+        $query1 = Yii::$app->db->createCommand("SELECT object_code FROM jev_accounting_entries WHERE jev_preparation_id = 4480226")->queryAll();
+        $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'object_code', $query1], $params);
+
+        $query2 = (new \yii\db\Query())
+            ->select('*')
+            ->from('accounting_codes')
+            ->where('is_active =1 AND coa_is_active = 1 AND sub_account_is_active = 1')
+            ->orWhere("$sql", $params)
+            ->orderBy('sub_account_is_active')
+            ->all();
+        ob_clean();
+        echo '<pre>';
+        var_dump($query2);
+        echo '<\pre>';
+        return ob_get_clean();
     }
 }

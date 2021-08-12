@@ -31,7 +31,7 @@ class SubAccounts2 extends \yii\db\ActiveRecord
     {
         return [
             [['sub_accounts1_id', 'object_code', 'name'], 'required'],
-            [['sub_accounts1_id'], 'integer'],
+            [['sub_accounts1_id','is_active'], 'integer'],
             [['object_code', 'name'], 'string', 'max' => 255],
             [['sub_accounts1_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubAccounts1::class, 'targetAttribute' => ['sub_accounts1_id' => 'id']],
         ];
@@ -47,6 +47,7 @@ class SubAccounts2 extends \yii\db\ActiveRecord
             'sub_accounts1_id' => 'Sub Accounts1 ID',
             'object_code' => 'Object Code',
             'name' => 'Name',
+            'is_active'=>'Active'
         ];
     }
 

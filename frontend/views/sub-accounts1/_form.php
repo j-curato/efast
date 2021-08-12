@@ -1,5 +1,6 @@
 <?php
 
+use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -17,6 +18,13 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'object_code')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'is_active')->widget(
+        Select2::class,
+        [
+            'data' => [1 => 'True', 0 => 'False'],
+            'name' => 'is_active'
+        ]
+    ) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

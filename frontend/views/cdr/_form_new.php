@@ -60,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 ?>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <label for="book">Book</label>
                 <?php
                 echo Select2::widget([
@@ -92,29 +92,30 @@ $this->params['breadcrumbs'][] = $this->title;
                 ])
                 ?>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <button class="btn btn-success" id="generate" style="margin-top:23px">Generate</button>
+
+                <?php
+                if (empty($model->id)) {
+                    echo "<button class='btn btn-success' id='save' style='margin-top:23px'>Save</button>";
+                    // echo "<input type='text' value='$model->is_final'>";
+                } else {
+                    echo "  <input type='text' id='cdr_id' value='$model->id' style='display:none'>";
+                    if ($model->is_final === 1) {
+                        echo "  <button class='btn btn-success' id='cdr_jev'  style='margin-top:23px'>Create Jev</button>";
+                    }
+                    if ($model->is_final === 0) {
+                        echo "  <button class='btn btn-success' id='final'  style='margin-top:23px' >Final</button>";
+                    }
+                }
+
+                ?>
             </div>
         </div>
+
+
+
     </form>
-
-    <div class="row">
-        <?php
-        if (empty($model->id)) {
-            echo "<button class='btn btn-success' id='save'>Save</button>";
-            // echo "<input type='text' value='$model->is_final'>";
-        } else {
-            echo "  <input type='text' id='cdr_id' value='$model->id' style='display:none'>";
-            if ($model->is_final === 1) {
-                echo "  <button class='btn btn-success' id='cdr_jev'>Create Jev</button>";
-            }
-            if ($model->is_final === 0) {
-                echo "  <button class='btn btn-success' id='final'>Final</button>";
-            }
-        }
-
-        ?>
-    </div>
 
     <?php Pjax::begin(['id' => 'cibr', 'clientOptions' => ['method' => 'POST']]) ?>
     <?php
@@ -177,7 +178,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <span> Municipality/City/Province: <?php echo $municipality; ?></span>
                 </td>
                 <td colspan="4" class="header">
-                    <span >
+                    <span>
                         Station:DTI -
                     </span>
                     <span class="municipality">
