@@ -483,13 +483,11 @@ use yii\helpers\Html;
 
 <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script> -->
 <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-<script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
 <script src="/afms/frontend/web/js/scripts.js" type="text/javascript"></script>
 <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
 <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
-<link href="/afms/frontend/web/js/select2.min.js" />
-<link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
+
 
 <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
 <script>
