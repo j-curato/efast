@@ -470,18 +470,21 @@ class ChartOfAccountsController extends Controller
         if (!empty($query1)) {
             $query2->orWhere("$sql", $params);
         }
-        $res = Yii::$app->db->createCommand('SELECT object_code, account_title FROM accounting_codes 
+        // $res = Yii::$app->db->createCommand('SELECT object_code, account_title FROM accounting_codes 
         
-        ')->queryAll();
+        // ')->queryAll();
         return json_encode($query2->all());
     }
     public function actionAccountingCodesDv($id)
     {
         $params = [];
-        $query1 = Yii::$app->db->createCommand("SELECT object_code FROM dv_accounting_entries WHERE dv_aucs_id =:id")
-            ->bindValue(':id', $id)
-            ->queryAll();
-        $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'object_code', $query1], $params);
+        if (!empty($id)) {
+
+            $query1 = Yii::$app->db->createCommand("SELECT object_code FROM dv_accounting_entries WHERE dv_aucs_id =:id")
+                ->bindValue(':id', $id)
+                ->queryAll();
+            $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'object_code', $query1], $params);
+        }
 
         $query2 = (new \yii\db\Query())
             ->select('*')
@@ -490,9 +493,9 @@ class ChartOfAccountsController extends Controller
         if (!empty($query1)) {
             $query2->orWhere("$sql", $params);
         }
-        $res = Yii::$app->db->createCommand('SELECT object_code, account_title FROM accounting_codes 
+        // $res = Yii::$app->db->createCommand('SELECT object_code, account_title FROM accounting_codes 
         
-        ')->queryAll();
+        // ')->queryAll();
 
         return json_encode($query2->all());
     }

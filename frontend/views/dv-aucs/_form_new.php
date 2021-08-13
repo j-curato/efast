@@ -990,28 +990,28 @@ $script = <<< JS
             
         }
     })
-    function chart(){
+    // function chart(){
         
-        return  $.getJSON('/afms/frontend/web/index.php?r=transaction/get-all-transaction')
-        .then(function (data) {
+    //     return  $.getJSON('/afms/frontend/web/index.php?r=transaction/get-all-transaction')
+    //     .then(function (data) {
 
-            var array = []
-            $.each(data, function (key, val) {
-                array.push({
-                    id: val.id,
-                    text: val.tracking_number
-                })
-            })
-            transaction = array
-            $('#transaction_id').select2({
-                data: transaction,
-                placeholder: "Select Transaction",
+    //         var array = []
+    //         $.each(data, function (key, val) {
+    //             array.push({
+    //                 id: val.id,
+    //                 text: val.tracking_number
+    //             })
+    //         })
+    //         transaction = array
+    //         $('#transaction_id').select2({
+    //             data: transaction,
+    //             placeholder: "Select Transaction",
 
-            })
+    //         })
 
-        });
-    }
-    $.when(chart(),getChartOfAccounts() ).done(function(chart,c){
+    //     });
+    // }
+    $.when(getChartOfAccounts() ).done(function(chart,c){
         // $('#payee option:not(:selected)').attr('disabled',true).
         // disable payee
         // $("#payee option:not(:selected)").attr('disabled',true)    
