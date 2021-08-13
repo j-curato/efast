@@ -455,10 +455,13 @@ class ChartOfAccountsController extends Controller
     {
 
         $params = [];
-        $query1 = Yii::$app->db->createCommand("SELECT object_code FROM jev_accounting_entries WHERE jev_preparation_id =:id")
-            ->bindValue(':id', $id)
-            ->queryAll();
-        $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'object_code', $query1], $params);
+        if (!empty($id)) {
+            $query1 = Yii::$app->db->createCommand("SELECT object_code FROM jev_accounting_entries WHERE jev_preparation_id =:id")
+                ->bindValue(':id', $id)
+                ->queryAll();
+            $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'object_code', $query1], $params);
+        }
+
 
         $query2 = (new \yii\db\Query())
             ->select('*')
