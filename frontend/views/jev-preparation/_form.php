@@ -476,24 +476,24 @@ use yii\helpers\ArrayHelper;
         $(document).ready(function() {
 
 
-            // getChartOfAccounts($('#update_id').val()).then(function(data) {
-            //     var array = []
-            //     $.each(data, function(key, val) {
-            //         array.push({
-            //             id: val.object_code,
-            //             text: val.object_code + ' ' + val.account_title
-            //         })
+            getChartOfAccounts($('#update_id').val()).then(function(data) {
+                var array = []
+                $.each(data, function(key, val) {
+                    array.push({
+                        id: val.object_code,
+                        text: val.object_code + ' ' + val.account_title
+                    })
 
-            //     })
-            //     accounts = array
-            //     $('#chart-0').select2({
+                })
+                accounts = array
+                $('#chart-0').select2({
 
-            //             data: accounts,
-            //             placeholder: 'Select Account'
-            //         }
+                        data: accounts,
+                        placeholder: 'Select Account'
+                    }
 
-            //     )
-            // })
+                )
+            })
             // REFERENCE
             reference = ["CDJ", "CRJ", "GJ"]
             $('#reference').select2({
