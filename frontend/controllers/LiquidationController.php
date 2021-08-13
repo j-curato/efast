@@ -234,7 +234,7 @@ class LiquidationController extends Controller
             $reporting_period = $_POST['reporting_period'];
             $check_range = $_POST['check_range'];
             $dv_number = $_POST['dv_number'];
-            $province ='adn';
+            $province =Yii::$app->user->identity->province;
 
             $check = (new \yii\db\Query())
                 ->select([
