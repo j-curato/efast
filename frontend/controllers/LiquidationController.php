@@ -234,7 +234,7 @@ class LiquidationController extends Controller
             $reporting_period = $_POST['reporting_period'];
             $check_range = $_POST['check_range'];
             $dv_number = $_POST['dv_number'];
-            $province = strtoupper(Yii::$app->user->identity->province);
+            $province ='adn';
 
             $check = (new \yii\db\Query())
                 ->select([
@@ -257,7 +257,7 @@ class LiquidationController extends Controller
                     ->select('*')
                     ->from('liquidation_reporting_period')
                     ->where('liquidation_reporting_period.reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
-                    ->andWhere('liquidation_reporting_period.province LIKE :province', ['province' => Yii::$app->user->identity->province])
+                    ->andWhere('liquidation_reporting_period.province LIKE :province', ['province' => $province])
                     ->one();
                 if (!empty($xyz)) {
                     return json_encode(['isSuccess' => false, 'error' => " Reporting Period is Disabled"]);
@@ -335,6 +335,26 @@ class LiquidationController extends Controller
                         if (!empty($advances_id)) {
 
                             foreach ($advances_id as $index => $val) {
+
+                                if (!empty($new_reporting_period)) {
+                                    $r_period = date('Y-m', strtotime($new_reporting_period[$index]));
+                                    $line = $index + 1;
+                                    if (date('Y', strtotime($r_period)) < date('Y')) {
+                                        return json_encode(['isSuccess' => false, 'error' => "Invalid Reporting Period On Line $line"  ]);
+                                    } else {
+                                        $qqq = (new \yii\db\Query())
+                                            ->select('*')
+                                            ->from('liquidation_reporting_period')
+                                            ->where('liquidation_reporting_period.reporting_period =:reporting_period', ['reporting_period' => $r_period])
+                                            ->andWhere('liquidation_reporting_period.province LIKE :province', ['province' => $province])
+                                            ->one();
+                                        if (!empty($qqq)) {
+                                            return json_encode(['isSuccess' => false, 'error' => " Reporting Period is Disabled in Line $line " ]);
+                                        }
+                                    }
+                                } else {
+                                    $r_period = $reporting_period;
+                                }
                                 list($withd) = sscanf(implode(explode(',', $withdrawal[$index])), "%f");
                                 list($vat) = sscanf(implode(explode(',', $vat_nonvat[$index])), "%f");
                                 list($e) = sscanf(implode(explode(',', $expanded_tax[$index])), "%f");
@@ -347,7 +367,7 @@ class LiquidationController extends Controller
                                 $liq_entries->vat_nonvat = $vat;
                                 $liq_entries->expanded_tax = $e;
                                 $liq_entries->liquidation_damage = $liq;
-                                $liq_entries->reporting_period = !empty($new_reporting_period) ? $new_reporting_period[$index] : $reporting_period;
+                                $liq_entries->reporting_period = $r_period;
 
                                 if ($liq_entries->validate()) {
                                     // if (!in_array($liq_entries->reporting_period, $r)) {
@@ -444,7 +464,7 @@ class LiquidationController extends Controller
     {
         if ($_POST) {
             $id = $_POST['cancelId'];
-            $reporting_period = date('Y-m',strtotime($_POST['reporting_period']));
+            $reporting_period = date('Y-m', strtotime($_POST['reporting_period']));
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 $l = Liquidation::findOne($id);
@@ -473,8 +493,7 @@ class LiquidationController extends Controller
                                 $liq_entries->expanded_tax = 0 - $val->expanded_tax;
                                 $liq_entries->liquidation_damage = 0 - $val->liquidation_damage;
                                 $liq_entries->reporting_period = $reporting_period;
-                                if ($liq_entries->save(false)){
-
+                                if ($liq_entries->save(false)) {
                                 }
                             }
                         }

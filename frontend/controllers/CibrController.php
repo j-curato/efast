@@ -291,7 +291,6 @@ class CibrController extends Controller
                 from liquidation_balances
                 where reporting_period <:reporting_period 
                 AND province LIKE :province
-               
                  ")
                 ->bindValue(':reporting_period',   $reporting_period)
                 ->bindValue(':province',   $province)
@@ -344,6 +343,5 @@ class CibrController extends Controller
             ->bindValue(':province',   $province)
             ->queryScalar();
         $balance = $q1 - $q2;
-
     }
 }
