@@ -724,8 +724,7 @@ $script = <<< JS
       
 
     })
-
-     $(document).ready(function() {
+    $.when(getChartOfAccounts()).done(function(c){
         update_id = $('#update_id').val();
         var type = $('#type').val();
         // KUNG NAAY SULOD ANG UPDATE ID KUHAON ANG IYANG MGA DATA
@@ -799,9 +798,9 @@ $script = <<< JS
                     },
         
                 })
-            }
+        }
 
-            if (update_id >0 && type=='cdr'){
+        if (update_id >0 && type=='cdr'){
                $.ajax({
                    type:"POST",
                    url:window.location.pathname + "?r=report/get-cdr",
@@ -852,8 +851,11 @@ $script = <<< JS
                         getTotal()
                    }
                })
-            }
-        })
+        }
+    })
+     $(document).ready(function() {
+
+    })
 
     
 
