@@ -47,24 +47,24 @@ $.getJSON(url + '?r=books/get-books')
 
 
 // GET CHART OF ACCOUNTS
-// var accounts = []
-// $.getJSON(url + '?r=chart-of-accounts/accounting-codes')
-//     .then(function (data) {
-//         var array = []
-//         $.each(data, function (key, val) {
-//             array.push({
-//                 id: val.object_code,
-//                 text: val.object_code + ' ' + val.account_title
-//             })
-//         })
-//         accounts = array
-//         $('#chart-0').select2({
+var accounts = []
+$.getJSON(url + '?r=chart-of-accounts/accounting-codes')
+    .then(function (data) {
+        var array = []
+        $.each(data, function (key, val) {
+            array.push({
+                id: val.object_code,
+                text: val.object_code + ' ' + val.account_title
+            })
+        })
+        accounts = array
+        $('#chart-0').select2({
 
-//             data: accounts,
-//             placeholder: "Select Chart of Account",
+            data: accounts,
+            placeholder: "Select Chart of Account",
 
-//         })
-//     })
+        })
+    })
 
 // RESPONSIBILITY CENTERS
 $.getJSON(url + '?r=responsibility-center/get-responsibility-center')
