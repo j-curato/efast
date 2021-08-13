@@ -475,25 +475,54 @@ use yii\helpers\ArrayHelper;
 
         $(document).ready(function() {
 
-
-            getChartOfAccounts($('#update_id').val()).then(function(data) {
+            getResponsibilityCenters().then(function(data) {
                 var array = []
                 $.each(data, function(key, val) {
                     array.push({
-                        id: val.object_code,
-                        text: val.object_code + ' ' + val.account_title
+                        id: val.id,
+                        text: val.name
                     })
+                })
+                book = array
+                r_center = array
+                $('#r_center_id').select2({
+                    data: r_center,
+                    placeholder: 'Select Responsibility Center'
+                })
+            })
+            getBooks().then(function(data) {
+                var array = []
+                $.each(data, function(key, val) {
+                    array.push({
+                        id: val.id,
+                        text: val.name
+                    })
+                })
+                book = array
+                $('#book').select2({
+                    data: book,
+                    placeholder: 'Select Book'
+                })
+            })
+            getPayee().then(function(data) {
+
+                var array = []
+                $.each(data, function(key, val) {
+                    array.push({
+                        id: val.id,
+                        text: val.account_name
+                    })
+                })
+                payee = array
+                $('#payee').select2({
+                    data: payee,
+                    placeholder: "Select Payee",
 
                 })
-                accounts = array
-                $('#chart-0').select2({
 
-                        data: accounts,
-                        placeholder: 'Select Account'
-                    }
 
-                )
             })
+  
             // REFERENCE
             reference = ["CDJ", "CRJ", "GJ"]
             $('#reference').select2({
@@ -724,9 +753,24 @@ $script = <<< JS
       
 
     })
+    $.when(getChartOfAccounts($('#update_id').val())).done(function(charts){
+                var array = []
+                $.each(charts, function(key, val) {
+                    array.push({
+                        id: val.object_code,
+                        text: val.object_code + ' ' + val.account_title
+                    })
 
-     $(document).ready(function() {
-        update_id = $('#update_id').val();
+                })
+                accounts = array
+                $('#chart-0').select2({
+
+                        data: accounts,
+                        placeholder: 'Select Account'
+                    }
+
+                )
+                update_id = $('#update_id').val();
         var type = $('#type').val();
         // KUNG NAAY SULOD ANG UPDATE ID KUHAON ANG IYANG MGA DATA
         if (update_id > 0 && type=='update' ) {
@@ -799,9 +843,9 @@ $script = <<< JS
                     },
         
                 })
-            }
+        }
 
-            if (update_id >0 && type=='cdr'){
+        if (update_id >0 && type=='cdr'){
                $.ajax({
                    type:"POST",
                    url:window.location.pathname + "?r=report/get-cdr",
@@ -852,8 +896,12 @@ $script = <<< JS
                         getTotal()
                    }
                })
-            }
-        })
+        }
+    })
+     $(document).ready(function() { 
+  
+        
+    })
 
     
 

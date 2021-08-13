@@ -124,6 +124,193 @@ use kartik\select2\Select2;
     <form name="add_data" id="add_data">
         <!-- RAOUDS ANG MODEL ANI -->
         <!-- NAA SA CREATE CONTROLLER NAKO GE CHANGE -->
+
+        <?php
+        $col = [
+            'id',
+            'serial_number',
+            'mfo_code',
+            'mfo_name',
+            'fund_source_name',
+            'uacs',
+            'general_ledger',
+            [
+                'attribute' => 'amount',
+                'format' => ['decimal', 2],
+                'hAlign' => 'right'
+            ],
+            [
+                'attribute' => 'balance',
+                'format' => ['decimal', 2],
+                'hAlign' => 'right'
+            ],
+
+            [
+                'class' => '\kartik\grid\CheckboxColumn',
+                'checkboxOptions' => function ($model, $key, $index, $column) {
+                    return ['value' => $model->id, 'onchange' => 'enableDisable(this)', 'style' => 'width:20px;', 'class' => 'checkbox'];
+                }
+            ],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+
+                'value' => function ($model) {
+                    return ' ' .  MaskMoney::widget([
+                        'name' => "amount[$model->id]",
+                        'disabled' => true,
+                        'id' => "amount_$model->id",
+                        'options' => [
+                            'class' => 'amounts',
+                        ],
+                        'pluginOptions' => [
+                            'prefix' => '₱ ',
+                            'allowNegative' => true
+                        ],
+                    ]);
+                },
+                'contentOptions' => ['style' => 'width:200px; white-space: normal;'],
+            ]
+        ];
+        // $columns = [
+
+        //     // 'id',
+        //     [
+        //         'label' => 'ID',
+
+        //         'attribute' => 'recordAllotmentEntries.id'
+
+        //     ],
+        //     [
+        //         'label' => 'Serial Number',
+
+        //         'attribute' => 'recordAllotmentEntries.recordAllotment.serial_number'
+
+        //     ],
+
+        //     [
+        //         'label' => 'MFO/PAP Code',
+        //         'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.code',
+        //         'filter' => Select2::widget([
+        //             'model' => $searchModel,
+        //             'attribute' => 'is_parent',
+        //             'data' =>  ArrayHelper::map(MfoPapCode::find()->asArray()->all(), 'id', 'code'),
+        //             'options' => ['placeholder' => 'Select '],
+        //             'pluginOptions' => [
+        //                 'allowClear' => true
+        //             ],
+        //         ])
+
+        //     ],
+        //     [
+        //         'label' => 'MFO/PAP Code Name',
+        //         'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.name'
+        //     ],
+        //     [
+        //         'label' => 'MFO/PAP Code id',
+        //         'attribute' => 'recordAllotmentEntries.recordAllotment.mfo_pap_code_id'
+        //     ],
+
+        //     [
+        //         'label' => 'Fund Source Code',
+        //         'attribute' => 'recordAllotmentEntries.recordAllotment.fundSource.name'
+        //     ],
+        //     [
+        //         'label' => 'Object Code',
+        //         'value' => function ($model) {
+        //             if ($model->process_ors_id != null) {
+        //                 return $model->raoudEntries->chartOfAccount->uacs;
+        //             } else {
+        //                 return $model->recordAllotmentEntries->chartOfAccount->uacs;
+        //             }
+        //         }
+        //     ],
+        //     [
+        //         'label' => 'General Ledger',
+        //         // 'attribute' => 'recordAllotmentEntries.chartOfAccount.general_ledger'
+        //         'value' => function ($model) {
+        //             if ($model->process_ors_id != null) {
+        //                 return $model->raoudEntries->chartOfAccount->general_ledger;
+        //             } else {
+        //                 return $model->recordAllotmentEntries->chartOfAccount->general_ledger;
+        //             }
+        //         }
+        //     ],
+        //     [
+        //         'label' => 'Amount',
+        //         'attribute' => 'recordAllotmentEntries.amount',
+        //         'format' => ['decimal', 2],
+        //         'hAlign' => 'right',
+        //         'vAlign' => 'middle',
+        //     ],
+
+        //     [
+        //         'label' => 'Balance',
+        //         'value' => function ($model) {
+        //             // $query = (new \yii\db\Query())
+        //             //     ->select([
+
+        //             //         'entry.obligation_total', 'record_allotment_entries.amount', 'entry.remain'
+        //             //     ])
+        //             //     ->from('raouds')
+        //             //     ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
+        //             //     ->join("LEFT JOIN", "(SELECT SUM(raouds.obligated_amount) as obligation_total,
+        //             //     raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain
+        //             //      From raouds,record_allotment_entries
+        //             //      WHERE 
+        //             //     raouds.record_allotment_entries_id = record_allotment_entries.id
+        //             //     AND raouds.process_ors_id IS NOT NULL
+        //             //     GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
+        //             //     ->where("raouds.id = :id", ['id' => $model->id])->one();
+        //             $query = Yii::$app->db->createCommand("SELECT SUM(raouds.obligated_amount) as obligated_amount,
+        //                 SUM(raouds.burs_amount) as burs_amount,
+        //                 raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain,
+        //                 record_allotment_entries.amount as record_allotment_amount
+        //                 From raouds,record_allotment_entries,raoud_entries
+        //                 WHERE raouds.record_allotment_entries_id = record_allotment_entries.id
+        //                 AND raouds.id = raoud_entries.raoud_id
+        //                 AND raouds.record_allotment_entries_id=$model->record_allotment_entries_id
+        //                 ")->queryOne();
+        //             $burs_ors_amount = $query['obligated_amount'] + $query['burs_amount'];
+        //             $remain = $query['record_allotment_amount'] - $burs_ors_amount;
+        //             return $remain;
+        //         },
+        //         'format' => ['decimal', 2],
+        //         'hAlign' => 'right',
+        //         'vAlign' => 'middle',
+
+        //     ],
+
+        //     [
+        //         'class' => '\kartik\grid\CheckboxColumn',
+        //         'checkboxOptions' => function ($model, $key, $index, $column) {
+        //             return ['value' => $model->id, 'onchange' => 'enableDisable(this)', 'style' => 'width:20px;', 'class' => 'checkbox'];
+        //         }
+        //     ],
+        //     [
+        //         'label' => 'Actions',
+        //         'format' => 'raw',
+
+        //         'value' => function ($model) {
+        //             return ' ' .  MaskMoney::widget([
+        //                 'name' => "amount[$model->id]",
+        //                 'disabled' => true,
+        //                 'id' => "amount_$model->id",
+        //                 'options' => [
+        //                     'class' => 'amounts',
+        //                 ],
+        //                 'pluginOptions' => [
+        //                     'prefix' => '₱ ',
+        //                     'allowNegative' => true
+        //                 ],
+        //             ]);
+        //         },
+        //         'contentOptions' => ['style' => 'width:200px; white-space: normal;'],
+        //     ]
+
+        // ];
+
+        ?>
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'filterModel' => $searchModel,
@@ -138,143 +325,7 @@ use kartik\select2\Select2;
             'export' => false,
             'pjax' => true,
 
-            'columns' => [
-
-                // 'id',
-                [
-                    'label' => 'ID',
-
-                    'attribute' => 'recordAllotmentEntries.id'
-
-                ],
-                [
-                    'label' => 'Serial Number',
-
-                    'attribute' => 'recordAllotmentEntries.recordAllotment.serial_number'
-
-                ],
-
-                [
-                    'label' => 'MFO/PAP Code',
-                    'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.code',
-                    'filter' => Select2::widget([
-                        'model' => $searchModel,
-                        'attribute' => 'is_parent',
-                        'data' =>  ArrayHelper::map(MfoPapCode::find()->asArray()->all(), 'id', 'code'),
-                        'options' => ['placeholder' => 'Select '],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ])
-
-                ],
-                [
-                    'label' => 'MFO/PAP Code Name',
-                    'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.name'
-                ],
-                [
-                    'label' => 'MFO/PAP Code id',
-                    'attribute' => 'recordAllotmentEntries.recordAllotment.mfo_pap_code_id'
-                ],
-
-                [
-                    'label' => 'Fund Source Code',
-                    'attribute' => 'recordAllotmentEntries.recordAllotment.fundSource.name'
-                ],
-                [
-                    'label' => 'Object Code',
-                    'value' => function ($model) {
-                        if ($model->process_ors_id != null) {
-                            return $model->raoudEntries->chartOfAccount->uacs;
-                        } else {
-                            return $model->recordAllotmentEntries->chartOfAccount->uacs;
-                        }
-                    }
-                ],
-                [
-                    'label' => 'General Ledger',
-                    // 'attribute' => 'recordAllotmentEntries.chartOfAccount.general_ledger'
-                    'value' => function ($model) {
-                        if ($model->process_ors_id != null) {
-                            return $model->raoudEntries->chartOfAccount->general_ledger;
-                        } else {
-                            return $model->recordAllotmentEntries->chartOfAccount->general_ledger;
-                        }
-                    }
-                ],
-                [
-                    'label' => 'Amount',
-                    'attribute' => 'recordAllotmentEntries.amount',
-                    'format' => ['decimal', 2],
-                    'hAlign' => 'right',
-                    'vAlign' => 'middle',
-                ],
-
-                [
-                    'label' => 'Balance',
-                    'value' => function ($model) {
-                        // $query = (new \yii\db\Query())
-                        //     ->select([
-
-                        //         'entry.obligation_total', 'record_allotment_entries.amount', 'entry.remain'
-                        //     ])
-                        //     ->from('raouds')
-                        //     ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
-                        //     ->join("LEFT JOIN", "(SELECT SUM(raouds.obligated_amount) as obligation_total,
-                        //     raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain
-                        //      From raouds,record_allotment_entries
-                        //      WHERE 
-                        //     raouds.record_allotment_entries_id = record_allotment_entries.id
-                        //     AND raouds.process_ors_id IS NOT NULL
-                        //     GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
-                        //     ->where("raouds.id = :id", ['id' => $model->id])->one();
-                        $query = Yii::$app->db->createCommand("SELECT SUM(raouds.obligated_amount) as obligated_amount,
-                            SUM(raouds.burs_amount) as burs_amount,
-                            raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain,
-                            record_allotment_entries.amount as record_allotment_amount
-                            From raouds,record_allotment_entries,raoud_entries
-                            WHERE raouds.record_allotment_entries_id = record_allotment_entries.id
-                            AND raouds.id = raoud_entries.raoud_id
-                            AND raouds.record_allotment_entries_id=$model->record_allotment_entries_id
-                            ")->queryOne();
-                        $burs_ors_amount = $query['obligated_amount'] + $query['burs_amount'];
-                        $remain = $query['record_allotment_amount'] - $burs_ors_amount;
-                        return $remain;
-                    },
-                    'format' => ['decimal', 2],
-                    'hAlign' => 'right',
-                    'vAlign' => 'middle',
-
-                ],
-
-                [
-                    'class' => '\kartik\grid\CheckboxColumn',
-                    'checkboxOptions' => function ($model, $key, $index, $column) {
-                        return ['value' => $model->id, 'onchange' => 'enableDisable(this)', 'style' => 'width:20px;', 'class' => 'checkbox'];
-                    }
-                ],
-                [
-                    'label' => 'Actions',
-                    'format' => 'raw',
-
-                    'value' => function ($model) {
-                        return ' ' .  MaskMoney::widget([
-                            'name' => "amount[$model->id]",
-                            'disabled' => true,
-                            'id' => "amount_$model->id",
-                            'options' => [
-                                'class' => 'amounts',
-                            ],
-                            'pluginOptions' => [
-                                'prefix' => '₱ ',
-                                'allowNegative' => true
-                            ],
-                        ]);
-                    },
-                    'contentOptions' => ['style' => 'width:200px; white-space: normal;'],
-                ]
-
-            ],
+            'columns' => $col,
         ]); ?>
         <button type="submit" class="btn btn-primary" name="submit" id='add' style="width: 100%;"> ADD</button>
     </form>
@@ -639,8 +690,8 @@ use kartik\select2\Select2;
         })
         $('#add_data').submit(function(e) {
 
-           console.log( $('#add_data').serialize()),
-            e.preventDefault();
+            console.log($('#add_data').serialize()),
+                e.preventDefault();
             $.ajax({
                 url: window.location.pathname + '?r=process-ors-entries/add-data',
                 method: "POST",

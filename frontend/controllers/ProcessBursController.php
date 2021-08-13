@@ -12,6 +12,7 @@ use app\models\ProcessOrs;
 use app\models\RaoudEntries;
 use app\models\Raouds;
 use app\models\Raouds2Search;
+use app\models\RecordAllotmentForOrsSearch;
 use ErrorException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -112,8 +113,8 @@ class ProcessBursController extends Controller
         //     return $this->redirect(['view', 'id' => $model->id]);
         // }
         // $book = Books::find()->where('books.name =:name', ['name' => "Fund 07"])->one();
-        $searchModel = new Raouds2Search();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'burs');
+        $searchModel = new RecordAllotmentForOrsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,'burs');
 
         return $this->render('create', [
             'searchModel' => $searchModel,

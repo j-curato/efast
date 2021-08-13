@@ -22,7 +22,7 @@ class RecordAllotmentForOrsSearch extends RecordAllotmentForOrs
             [['serial_number'], 'string', 'max' => 50],
             [['mfo_code', 'mfo_name', 'fund_source_name', 'general_ledger'], 'string', 'max' => 255],
             [['uacs'], 'string', 'max' => 30],
-            
+
             [['uacs', 'mfo_code', 'mfo_name', 'fund_source_name', 'general_ledger', 'particulars'], 'safe'],
         ];
     }
@@ -43,7 +43,7 @@ class RecordAllotmentForOrsSearch extends RecordAllotmentForOrs
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params, $type)
     {
         $query = RecordAllotmentForOrs::find();
 
@@ -60,6 +60,11 @@ class RecordAllotmentForOrsSearch extends RecordAllotmentForOrs
             // $query->where('0=1');
             return $dataProvider;
         }
+        if ($type === 'burs') {
+            $query->andFilterWhere(['like', 'book_name', 'Fund 07']);
+        } else if ($type === 'ors') {
+            $query->andFilterWhere(['!=', 'book_name', 'Fund 07']);
+        }
 
         $query->andFilterWhere([
             'id' => $this->id,
@@ -68,13 +73,12 @@ class RecordAllotmentForOrsSearch extends RecordAllotmentForOrs
         ]);
 
         $query
-        ->andFilterWhere(['like', 'mfo_code', $this->mfo_code])
-        ->andFilterWhere(['like', 'mfo_name', $this->mfo_name])
-        ->andFilterWhere(['like', 'fund_source_name', $this->fund_source_name])
-        ->andFilterWhere(['like', 'uacs', $this->uacs])
-        ->andFilterWhere(['like', 'general_ledger', $this->general_ledger])
-        ->andFilterWhere(['like', 'serial_number', $this->serial_number]);
-
- ;       return $dataProvider;
+            ->andFilterWhere(['like', 'mfo_code', $this->mfo_code])
+            ->andFilterWhere(['like', 'mfo_name', $this->mfo_name])
+            ->andFilterWhere(['like', 'fund_source_name', $this->fund_source_name])
+            ->andFilterWhere(['like', 'uacs', $this->uacs])
+            ->andFilterWhere(['like', 'general_ledger', $this->general_ledger])
+            ->andFilterWhere(['like', 'serial_number', $this->serial_number]);;
+        return $dataProvider;
     }
 }

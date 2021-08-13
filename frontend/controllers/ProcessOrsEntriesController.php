@@ -132,7 +132,7 @@ class ProcessOrsEntriesController extends Controller
         //     'model' => $model,
         // ]);
         $searchModel = new RecordAllotmentForOrsSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,'ors');
 
         return $this->render('create', [
             'searchModel' => $searchModel,
@@ -162,7 +162,7 @@ class ProcessOrsEntriesController extends Controller
         // ]);
         $raoud = Raouds::findOne($id);
         $searchModel = new RecordAllotmentForOrsSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,'ors');
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -175,7 +175,7 @@ class ProcessOrsEntriesController extends Controller
     {
         $raoud = Raouds::findOne($id);
         $searchModel = new RecordAllotmentForOrsSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,'ors');
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -188,7 +188,7 @@ class ProcessOrsEntriesController extends Controller
     public function actionReAlign($id)
     {
         $searchModel = new RecordAllotmentForOrsSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,'ors');
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,

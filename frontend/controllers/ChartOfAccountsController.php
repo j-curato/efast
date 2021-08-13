@@ -471,7 +471,7 @@ class ChartOfAccountsController extends Controller
             $query2->orWhere("$sql", $params);
         }
         // $res = Yii::$app->db->createCommand('SELECT object_code, account_title FROM accounting_codes 
-        
+
         // ')->queryAll();
         return json_encode($query2->all());
     }
@@ -487,14 +487,15 @@ class ChartOfAccountsController extends Controller
         }
 
         $query2 = (new \yii\db\Query())
-            ->select('*')
+            ->select("object_code ,
+             account_title")
             ->from('accounting_codes')
             ->where('is_active =1 AND coa_is_active = 1 AND sub_account_is_active = 1');
         if (!empty($query1)) {
             $query2->orWhere("$sql", $params);
         }
         // $res = Yii::$app->db->createCommand('SELECT object_code, account_title FROM accounting_codes 
-        
+
         // ')->queryAll();
 
         return json_encode($query2->all());

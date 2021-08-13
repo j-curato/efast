@@ -627,27 +627,27 @@ use kartik\select2\Select2;
 
         }
 
-        
-            $('#add_data').submit(function(e) {
+
+        $('#add_data').submit(function(e) {
 
 
-                e.preventDefault();
-                $.ajax({
-                    url: window.location.pathname + '?r=process-ors-entries/add-data',
-                    method: "POST",
-                    data: $('#add_data').serialize(),
-                    success: function(data) {
-                        var result = JSON.parse(data).results
-                        console.log(result)
-                        var object_code = ''
-                        var chart_id = ''
-                        addData(result, false)
-                    }
-                });
-                $('.checkbox').prop('checked', false); // Checks it
-                $('.amounts').prop('disabled', true);
-                $('.amounts').val(null);
-            })
+            e.preventDefault();
+            $.ajax({
+                url: window.location.pathname + '?r=process-ors-entries/add-data',
+                method: "POST",
+                data: $('#add_data').serialize(),
+                success: function(data) {
+                    var result = JSON.parse(data).results
+                    console.log(result)
+                    var object_code = ''
+                    var chart_id = ''
+                    addData(result, false)
+                }
+            });
+            $('.checkbox').prop('checked', false); // Checks it
+            $('.amounts').prop('disabled', true);
+            $('.amounts').val(null);
+        })
         $(document).ready(function() {
 
 
@@ -787,6 +787,27 @@ $script = <<< JS
             chart_of_accounts = data
 
         })
+        // getRoTransactions().then(function (data) {
+
+        //     var array = []
+        //     $.each(data, function (key, val) {
+        //         array.push({
+        //             id: val.id,
+        //             text: val.tracking_number
+        //         })
+        //     })
+        //     transaction = array
+        //     $('#transaction_id').select2({
+        //         data: transaction,
+        //         placeholder: "Select Transaction",
+
+        //     })
+
+        // });
+
+        
+
+
 
 
             // GET TRANSACTIONs

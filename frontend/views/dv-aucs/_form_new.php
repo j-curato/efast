@@ -772,21 +772,67 @@ use yii\helpers\Html;
         // $("#particular").prop({disabled:'readonly'});
         $("#bok").hide();
 
-        getChartOfAccountsDv($('#update_id').val()).then(function(data) {
+
+        getPayee().then(function(data) {
             var array = []
             $.each(data, function(key, val) {
                 array.push({
-                    id: val.object_code,
-                    text: val.object_code + ' ' + val.account_title
+                    id: val.id,
+                    text: val.account_name
                 })
-                accounts = array
-
-            })
-            $("#chart-0").select2({
-                data: accounts,
-                placeholder: 'Select Account'
+                payee = array
+                $('#payee').select2({
+                    data: payee,
+                    placeholder: 'Select Payee'
+                })
             })
         })
+        getNatureOfTransactions().then(function(data) {
+            var array = []
+            $.each(data, function(key, val) {
+                array.push({
+                    id: val.id,
+                    text: val.name
+                })
+            })
+            nature_of_transaction = array
+            $('#nature_of_transaction').select2({
+                data: nature_of_transaction,
+                placeholder: "Select Nature of Transaction"
+            })
+
+        })
+        getMrdClassification().then(function(data) {
+            var array = []
+            $.each(data, function(key, val) {
+                array.push({
+                    id: val.id,
+                    text: val.name
+                })
+            })
+            mrd_classification = array
+            $('#mrd_classification').select2({
+                data: mrd_classification,
+                placeholder: "Select MRD Classification"
+            })
+
+        })
+        getNetAssets().then(function(data) {
+            var array = []
+            $.each(data, function(key, val) {
+                array.push({
+                    id: val.id,
+                    text: val.specific_change
+                })
+            })
+            net_asset = array
+            $('#isEquity-0').select2({
+                data: net_asset,
+                placeholder: 'Select Net Asset'
+
+            }).next().hide();
+        })
+
 
         // MAG ADD OG DATA NA BUHATAN OG DV
 
@@ -806,7 +852,7 @@ use yii\helpers\Html;
             data: $('#add_data').serialize(),
             success: function(data) {
                 var res = JSON.parse(data)
-                console.log(res)
+                // console.log(res)
                 if (res.isSuccess) {
 
                     addDvToTable(res.results)
@@ -849,7 +895,6 @@ use yii\helpers\Html;
         getDebitCreditTotal()
 
     })
-    
 </script>
 
 
@@ -867,10 +912,9 @@ $script = <<< JS
         var mrd_classification=[];
         var books=[];
         var bbb=undefined;
-        var accounts = []
 
         $("#tracking_sheet").change(function()  {
-            console.log(sheet)
+            // console.log(sheet)
             var transaction_type ='';
             var payee = 0;
             var particular =''
@@ -960,7 +1004,7 @@ $script = <<< JS
     $("#transaction").change(function(){
 
         const date = new Date().toLocaleString( { timeZone: 'Asia/Manila' });
-            console.log(date);   
+            // console.log(date);   
         //    var transaction_id = $("#transaction_id").val()
         //     var date = new Date()
 
@@ -1011,10 +1055,21 @@ $script = <<< JS
 
     //     });
     // }
-    $.when(getChartOfAccounts() ).done(function(chart,c){
-        // $('#payee option:not(:selected)').attr('disabled',true).
-        // disable payee
-        // $("#payee option:not(:selected)").attr('disabled',true)    
+    $.when(getChartOfAccounts() ).done(function(chart){
+            var array = []
+            // console.log(chart)
+            $.each(chart, function(key, val) {
+                array.push({
+                    id: val.object_code,
+                    text: val.object_code + ' ' + val.account_title
+                })
+
+            })
+            accounts = array
+            $("#chart-0").select2({
+                data: accounts,
+                placeholder: 'Select Account'
+            })
         var update_id= $('#update_id').val()
         if (update_id>0){
             $.ajax({
@@ -1115,9 +1170,7 @@ $script = <<< JS
             placeholder: 'Select Tracking Sheet'
         })
         });
-        $('#payee_id').select2({
-        data: ''
-        })
+
 
         // CHART OF ACCOUNTS
 
