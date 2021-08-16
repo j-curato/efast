@@ -122,13 +122,13 @@ Modal::end();
                         $uacs = $val->chartOfAccount->uacs;
                         $general_ledger =  $val->chartOfAccount->general_ledger;
                     }
-                    if (Yii::$app->user->identity->province ==='ro_admin'){
-                        $uacs = Select2::widget([
-                            'data'=>ArrayHelper::map($charts,'id','account_title'),
-                            'name'=>'sample',
-                            'value'=>$val->chart_of_account_id
-                        ]);
-                    }
+                    // if (Yii::$app->user->identity->province ==='ro_admin'){
+                    //     $uacs = Select2::widget([
+                    //         'data'=>ArrayHelper::map($charts,'id','account_title'),
+                    //         'name'=>'sample',
+                    //         'value'=>$val->chart_of_account_id
+                    //     ]);
+                    // }
 
 
 
