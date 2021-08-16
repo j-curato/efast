@@ -273,22 +273,22 @@ $script = <<< JS
             success:function(data){
                 var res= JSON.parse(data)
                 console.log(res)
-                // if (res.isSuccess){
+                if (!res.isSuccess){
 
-                //     swal({
-                //         title: "Success",
-                //         // text: res.error,
-                //         type: "success",
-                //         timer: 3000,
-                //         button: false
-                //                 // confirmButtonText: "Yes, delete it!",
-                //     },
-                //     function(){
-                //         window.location.href  = window.location.pathname + "?r=transmittal/view&id="+res.id
-                //     }
+                    swal({
+                        title: "Error",
+                        text: res.error,
+                        type: "error",
+                        timer: 3000,
+                        button: false
+                                // confirmButtonText: "Yes, delete it!",
+                    },
+                    // function(){
+                    //     window.location.href  = window.location.pathname + "?r=transmittal/view&id="+res.id
+                    // }
                     
-                //     );
-                // }
+                    );
+                }
 
             }
         })

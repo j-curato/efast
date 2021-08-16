@@ -78,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 
-        <table class="">
+        <table class="table">
             <thead style="border-top: 1px solid black;border-bottom: 1px solid black;">
                 <th>No.</th>
                 <th>DV Number</th>
@@ -172,7 +172,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row" style="margin-top: 20px;">
 
             <div class="col-sm-3 as">
-                <label for="assignatory_1">Provincial Director qqq</label>
+                <label for="assignatory_1">Provincial Director </label>
                 <select name="" id="assignatory_1" class="asignatory" onchange="regionalDirector(this)" style="width: 100%;">
                     <option value=""></option>
                 </select>

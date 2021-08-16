@@ -136,7 +136,15 @@ class PoTransmittalController extends Controller
             $transaction = Yii::$app->db->beginTransaction();
 
             if (!empty($transmittal_update_id)) {
+
+
                 $po_transmittal = PoTransmittal::findOne($transmittal_update_id);
+                if ($po_transmittal->status === 'at_ro') {
+                    return json_encode([
+                        'isSuccess' => false,
+                        'error' => 'Cannot update transmittal is already at RO'
+                    ]);
+                }
                 foreach ($po_transmittal->poTransmittalEntries as $d) {
                     $update_liq = Liquidation::findOne($d->liquidation_id);
                     $update_liq->status = 'at_po';
@@ -292,14 +300,14 @@ class PoTransmittalController extends Controller
     public function actionReturn($id)
     {
         $model = PoTransmittalEntries::findOne($id);
-        $q  =  $model->status === 'returned'?'':'returned';
+        $q  =  $model->status === 'returned' ? '' : 'returned';
         $model->status = $q;
         $po_tr = PoTransmittal::findOne($model->po_transmittal_number);
         $po_tr->edited = true;
         $liquidation = Liquidation::findOne($model->liquidation->id);
         $status = $liquidation->status == 'pending_at_ro' ? 'at_po' : 'pending_at_ro';
         $liquidation->status = $status;
-       
+
         if ($liquidation->save(false)) {
             // return json_encode($liquidation->status);
 

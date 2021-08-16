@@ -247,9 +247,6 @@ class CdrController extends Controller
                     liquidation_entries.reporting_period,
                     chart_of_accounts.uacs as gl_object_code,
                     chart_of_accounts.general_ledger as gl_account_title
-                    
-                    
-                    
                     FROM liquidation_entries
                     LEFT JOIN chart_of_accounts ON liquidation_entries.chart_of_account_id= chart_of_accounts.id
                     LEFT JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id

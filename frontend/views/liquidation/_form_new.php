@@ -144,12 +144,12 @@ use yii\helpers\ArrayHelper;
 
                 <div class="col-sm-3">
 
-                    <label for="transaction">DV Number</label>
-                    <input type="text" name="dv_number" class="form-control">
+                    <label for="dv_number">DV Number</label>
+                    <input type="text" name="dv_number"  required class="form-control">
                 </div>
                 <div class="col-sm-3" style="height:60x">
                     <label for="transaction">Transactions</label>
-                    <select id="transaction" name="transaction" class="transaction select" style="width: 100%; margin-top:50px">
+                    <select id="transaction" required name="transaction" class="transaction select" style="width: 100%; margin-top:50px">
                         <option></option>
                     </select>
                 </div>

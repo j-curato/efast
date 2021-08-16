@@ -83,8 +83,30 @@ $this->params['breadcrumbs'][] = $this->title;
         'check_date',
         'check_number',
         'fund_source',
-        'particular',
-        'payee',
+        [
+            'label'=>'Particular',
+            'value'=>function($model){
+                if (!empty($model->particular)){
+                    $particular = $model->particular;
+                }
+                else{
+                    $particular = $model->transaction_particular;
+                }
+                return $particular ;
+            }
+        ],
+        [
+            'label'=>'Payee',
+            'value'=>function($model){
+                if (!empty($model->payee)){
+                    $payee = $model->payee;
+                }
+                else{
+                    $payee = $model->transaction_payee;
+                }
+                return $payee;
+            }
+        ],
         'object_code',
         'account_title',
         'withdrawals',

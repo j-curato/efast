@@ -986,10 +986,9 @@ class ReportController extends \yii\web\Controller
 
             $prev = implode('-', $x);
 
-            $query = Yii::$app->db->createCommand("CALL fur(:province,:reporting_period,:prev_r_period)")
+            $query = Yii::$app->db->createCommand("CALL q(:province,:reporting_period)")
                 ->bindValue(':province', $province)
                 ->bindValue(':reporting_period', $reporting_period)
-                ->bindValue(':prev_r_period', $prev)
                 ->queryAll();
             $dataProvider = $query;
             $conso_fur = YIi::$app->db->createCommand('CALL conso_fur(:province,:reporting_period,:prev_r_period)')
@@ -1017,11 +1016,10 @@ class ReportController extends \yii\web\Controller
 
             $prev = implode('-', $x);
 
-            $query = Yii::$app->db->createCommand("CALL fur(:province,:reporting_period,:prev_r_period)")
-                ->bindValue(':province', $province)
-                ->bindValue(':reporting_period', $reporting_period)
-                ->bindValue(':prev_r_period', $prev)
-                ->queryAll();
+            $query = Yii::$app->db->createCommand("CALL q(:province,:reporting_period)")
+            ->bindValue(':province', $province)
+            ->bindValue(':reporting_period', $reporting_period)
+            ->queryAll();
             $dataProvider = $query;
             $conso_fur = YIi::$app->db->createCommand('CALL conso_fur(:province,:reporting_period,:prev_r_period)')
                 ->bindValue(':province', $province)
