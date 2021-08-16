@@ -225,7 +225,7 @@ use yii\helpers\ArrayHelper;
      
             // $form_token =$session['form_token'];
             
-            echo "<input type='text' value='{$session->get('form_token')}' name='token' />"
+            echo "<input type='hidden' value='{$session->get('form_token')}' name='token' />"
             ?>
             <button class="btn btn-success" id='save' type="submit">Save</button>
         </form>
