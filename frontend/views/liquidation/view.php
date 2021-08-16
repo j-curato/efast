@@ -2,7 +2,9 @@
 
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
+use kartik\select2\Select2;
 use yii\bootstrap\Modal;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -97,7 +99,7 @@ Modal::end();
                 $total_vat_nonvat = 0;
                 $total_liquidation_damages = 0;
                 $total_ewt = 0;
-
+                $charts = Yii::$app->db->createCommand("SELECT id,CONCAT(uacs,'-',general_ledger) as account_title  FROM chart_of_accounts where is_active =1")->queryAll();
                 foreach ($model->liquidationEntries as $val) {
                     $nft_number = '';
                     $report_type = '';
@@ -120,6 +122,13 @@ Modal::end();
                         $uacs = $val->chartOfAccount->uacs;
                         $general_ledger =  $val->chartOfAccount->general_ledger;
                     }
+                    if (Yii::$app->user->identity->province ==='ro_admin'){
+                        $uacs = Select2::widget([
+                            'data'=>ArrayHelper::map($charts,'id','account_title'),
+                            'name'=>'sample',
+                            'value'=>$val->chart_of_account_id
+                        ]);
+                    }
 
 
 
@@ -141,10 +150,10 @@ Modal::end();
 
                 echo "<tr>
                 <td colspan='7' style='text-align:center;font-weight:bold;'>Total</td>
-                <td class='number' style='font-weight:bold'>" . number_format($total_liquidation_damages, 2) . "</td>
                 <td class='number' style='font-weight:bold'>" . number_format($total_withdrawal, 2) . "</td>
                 <td class='number' style='font-weight:bold'>" . number_format($total_vat_nonvat, 2) . "</td>
                 <td class='number' style='font-weight:bold'>" . number_format($total_ewt, 2) . "</td>
+                <td class='number' style='font-weight:bold'>" . number_format($total_liquidation_damages, 2) . "</td>
                 </tr>";
                 ?>
             </tbody>
