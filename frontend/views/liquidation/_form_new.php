@@ -43,6 +43,7 @@ use yii\helpers\ArrayHelper;
                 $check_range = $model->check_range_id;
                 $transaction_id = $model->po_transaction_id;
             }
+          
             ?>
             <div class="row ">
                 <div class="col-sm-3">
@@ -91,7 +92,7 @@ use yii\helpers\ArrayHelper;
                 <div class="col-sm-3">
                     <label for="check_range">Check Range</label>
                     <?php
-                    $province =strtolower( Yii::$app->user->identity->province);
+                    $province = strtolower(Yii::$app->user->identity->province);
                     $q = PoTransaction::find();
                     if (
                         $province === 'adn' ||
@@ -219,6 +220,13 @@ use yii\helpers\ArrayHelper;
 
                 </tfoot>
             </table>
+            <?php
+            $session= Yii::$app->session;
+     
+            // $form_token =$session['form_token'];
+            
+            echo "<input type='text' value='{$session->get('form_token')}' name='token' />"
+            ?>
             <button class="btn btn-success" id='save' type="submit">Save</button>
         </form>
 
@@ -226,7 +234,7 @@ use yii\helpers\ArrayHelper;
 
             <?php
             $searchModel = new AdvancesEntriesForLiquidationSearch();
-            if (\Yii::$app->user->identity->province!=='ro_admin') {
+            if (\Yii::$app->user->identity->province !== 'ro_admin') {
                 $searchModel->province = \Yii::$app->user->identity->province;
                 // echo \Yii::$app->user->identity->province;
             }
@@ -292,12 +300,15 @@ use yii\helpers\ArrayHelper;
 
 </div>
 <style>
-    table,tr{
+    table,
+    tr {
         max-width: 100%;
     }
-    td{
+
+    td {
         padding: 5px;
     }
+
     .total_row {
         text-align: center;
         font-weight: bold;
@@ -336,9 +347,10 @@ use yii\helpers\ArrayHelper;
 
         height: 34px;
     }
-    .amount{
+
+    .amount {
         margin-top: 15px;
-  
+
 
     }
 </style>

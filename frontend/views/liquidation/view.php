@@ -85,10 +85,10 @@ Modal::end();
                 <th>Fund Source</th>
                 <th>UACS Object Code</th>
                 <th>General Ledger</th>
-                <th class='number'>Liquidation Damages</th>
                 <th class='number'>Withdrawals</th>
                 <th class='number'>Vat/Non-Vat</th>
                 <th class='number'>Expanded Tax</th>
+                <th class='number'>Liquidation Damages</th>
             </thead>
             <tbody>
 
@@ -131,10 +131,10 @@ Modal::end();
                 <td>{$fund_source}</td>
                 <td>{$uacs}</td>
                 <td>{$general_ledger}</td>
-                <td class='number'>" . number_format($val->liquidation_damage, 2) . "</td>
                 <td class='number'>" . number_format($val->withdrawals, 2) . "</td>
                 <td class='number'>" . number_format($val->vat_nonvat, 2) . "</td>
                 <td class='number'>" . number_format($val->expanded_tax, 2) . "</td>
+                <td class='number'>" . number_format($val->liquidation_damage, 2) . "</td>
                 
                 </tr>";
                 }

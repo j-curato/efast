@@ -92,6 +92,7 @@ class LiquidationViewSearch extends LiquidationView
             'total_liquidation_damage' => $this->total_liquidation_damage,
             'total_vat' => $this->total_vat,
             'is_cancelled' => $this->is_cancelled,
+            'is_final'=>$this->is_final
         ]);
         $query
             ->andFilterWhere(['like', 'check_date', $this->check_date])

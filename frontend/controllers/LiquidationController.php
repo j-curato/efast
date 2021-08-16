@@ -79,10 +79,28 @@ class LiquidationController extends Controller
         ];
     }
 
+
     /**
      * Lists all Liquidation models.
      * @return mixed
      */
+
+    // public function beforeAction($action)
+    // {
+    //     $formTokenName = \Yii::$app->params['form_token_param'];
+
+    //     if ($formTokenValue = \Yii::$app->request->post($formTokenName)) {
+    //         $sessionTokenValue = \Yii::$app->session->get($formTokenName);
+
+    //         if ($formTokenValue != $sessionTokenValue) {
+    //             throw new \yii\web\HttpException(400, 'The form token could not be verified.');
+    //         }
+
+    //         \Yii::$app->session->remove($formTokenName);
+    //     }
+
+    //     return parent::beforeAction($action);
+    // }
     public function actionIndex()
     {
         $searchModel = new LiquidationEntriesViewSearch();
@@ -115,7 +133,8 @@ class LiquidationController extends Controller
     public function actionCreate()
     {
         $model = new Liquidation();
-
+        $session = Yii::$app->session;
+        $session->set('form_token', md5(uniqid()));
 
         return $this->render('create', [
             'model' => $model,
@@ -217,6 +236,14 @@ class LiquidationController extends Controller
     public function actionInsertLiquidation()
     {
         if ($_POST) {
+            $token = Yii::$app->session->get('form_token');
+            if ($token !== $_POST['token']) {
+                die();
+            }
+
+
+            $session = Yii::$app->session;
+            $session->open();
             $advances_id = !empty($_POST['advances_id']) ? $_POST['advances_id'] : '';
             // $payee_id = $_POST['payee'];
             $check_date = $_POST['check_date'];
@@ -234,7 +261,7 @@ class LiquidationController extends Controller
             $reporting_period = $_POST['reporting_period'];
             $check_range = $_POST['check_range'];
             $dv_number = $_POST['dv_number'];
-            $province =Yii::$app->user->identity->province;
+            $province = Yii::$app->user->identity->province;
 
             $check = (new \yii\db\Query())
                 ->select([
@@ -275,6 +302,12 @@ class LiquidationController extends Controller
                 ->where('province LIKE :province', ['province' => Yii::$app->user->identity->province])
                 ->all();
             $r = ArrayHelper::getColumn($liq_r_period, 'reporting_period');
+            $check_number_exist = Yii::$app->db->createCommand("
+            SELECT EXISTS(SELECT * FROM liquidation WHERE check_number = :check_number)
+            ")
+                ->bindValue(':check_number', $check_number)
+                ->queryScalar();
+
 
             // if (in_array('2021-04', $r)) {
             //     ob_clean();
@@ -303,6 +336,13 @@ class LiquidationController extends Controller
             } else {
                 $liquidation = new Liquidation();
                 // $liquidation->dv_number = $this->getDvNumber($reporting_period);
+
+
+
+                // if (intval($check_number_exist) === 1) {
+                //     return json_encode(['isSuccess' => false, 'error' =>  'Check Number Already Inserted']);
+                //     die();
+                // }
             }
             $liquidation->check_date = $check_date;
             // $liquidation->payee_id = $payee_id;
@@ -340,7 +380,7 @@ class LiquidationController extends Controller
                                     $r_period = date('Y-m', strtotime($new_reporting_period[$index]));
                                     $line = $index + 1;
                                     if (date('Y', strtotime($r_period)) < date('Y')) {
-                                        return json_encode(['isSuccess' => false, 'error' => "Invalid Reporting Period On Line $line"  ]);
+                                        return json_encode(['isSuccess' => false, 'error' => "Invalid Reporting Period On Line $line"]);
                                     } else {
                                         $qqq = (new \yii\db\Query())
                                             ->select('*')
@@ -349,7 +389,7 @@ class LiquidationController extends Controller
                                             ->andWhere('liquidation_reporting_period.province LIKE :province', ['province' => $province])
                                             ->one();
                                         if (!empty($qqq)) {
-                                            return json_encode(['isSuccess' => false, 'error' => " Reporting Period is Disabled in Line $line " ]);
+                                            return json_encode(['isSuccess' => false, 'error' => " Reporting Period is Disabled in Line $line "]);
                                         }
                                     }
                                 } else {
@@ -386,6 +426,12 @@ class LiquidationController extends Controller
                     if ($flag) {
 
                         $transaction->commit();
+
+                        $session->close();
+
+                        // destroys all data registered to a session.
+                        $session->destroy();
+                        $session->set('form_token', md5(uniqid()));
                         return json_encode(['isSuccess' => true, 'id' => $liquidation->id]);
                     }
                 } else {
@@ -674,5 +720,15 @@ class LiquidationController extends Controller
             echo "</pre>";
             return ob_get_clean();
         }
+    }
+
+    public function actionDrafts()
+    {
+        $searchModel = new LiquidationEntriesViewSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        return $this->render('liquidation_drafts', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 }

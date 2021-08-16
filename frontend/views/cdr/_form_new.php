@@ -48,13 +48,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     'data' => [
                         'adn' => 'ADN',
                         'ads' => 'ADS',
+                        'pdi' => 'PDI',
                         'sdn' => 'SDN',
                         'sds' => 'SDS',
-                        'pdi' => 'PDI',
                     ],
                     'pluginOptions' => [
                         'autoclose' => true,
                         'placeholder' => 'Select Province'
+                        
                     ]
                 ])
 

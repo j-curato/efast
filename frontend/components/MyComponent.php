@@ -8,6 +8,7 @@ use app\models\FundClusterCode;
 use app\models\SubAccounts1;
 use Yii;
 use yii\base\Component;
+use yii\helpers\Html;
 
 class MyComponent extends Component
 {
@@ -151,12 +152,20 @@ class MyComponent extends Component
         if ($model->validate()) {
             if ($model->save()) {
                 // CONCAT(chart_of_accounts.id,'-',chart_of_accounts.uacs,'-',1) as code,
-                return $model->id . '-'. $model->object_code.'-'. 1;
+                return $model->id . '-' . $model->object_code . '-' . 1;
             }
         } else {
             // validation failed: $errors is an array containing error messages
             $errors = $model->errors;
             return json_encode($errors);
         }
+    }
+    public function getHiddenFormTokenField()
+    {
+        $token = \Yii::$app->getSecurity()->generateRandomString();
+        $token = str_replace('+', '.', base64_encode($token));
+
+        // \Yii::$app->session->set(\Yii::$app->params['form_token_param'], $token);
+        return Html::input('text','token', $token);
     }
 }

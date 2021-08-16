@@ -52,10 +52,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     'id' => 'province',
                     'data' => [
                         'adn' => 'ADN',
-                        'sdn' => 'SDN',
                         'ads' => 'ADS',
-                        'sds' => 'SDS',
                         'pdi' => 'PDI',
+                        'sdn' => 'SDN',
+                        'sds' => 'SDS',
                     ],
                     'pluginOptions' => [
                         'autoclose' => true,
