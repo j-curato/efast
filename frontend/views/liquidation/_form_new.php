@@ -43,7 +43,7 @@ use yii\helpers\ArrayHelper;
                 $check_range = $model->check_range_id;
                 $transaction_id = $model->po_transaction_id;
             }
-          
+
             ?>
             <div class="row ">
                 <div class="col-sm-3">
@@ -221,10 +221,10 @@ use yii\helpers\ArrayHelper;
                 </tfoot>
             </table>
             <?php
-            $session= Yii::$app->session;
-     
+            $session = Yii::$app->session;
+
             // $form_token =$session['form_token'];
-            
+
             echo "<input type='hidden' value='{$session->get('form_token')}' name='token' />"
             ?>
             <button class="btn btn-success" id='save' type="submit">Save</button>
@@ -683,7 +683,7 @@ $script = <<<JS
     // SAVE DATA TO DATABASE
     $('#save_data').submit(function(e) {
         e.preventDefault();
-
+        // $('#save').attr('disabled',true)
         $.ajax({
             type: 'POST',
             url: window.location.pathname + '?r=liquidation/insert-liquidation',
