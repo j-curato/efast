@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Class m210711_092752_create_conso_dv_all_procedure
  */
-class m210711_092752_create_conso_dv_all_procedure extends Migration
+class m210816_004003_create_conso_dv_all_procedure extends Migration
 {
     /**
      * {@inheritdoc}
