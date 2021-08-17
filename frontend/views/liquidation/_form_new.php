@@ -128,7 +128,7 @@ use yii\helpers\ArrayHelper;
                             'placeholder' => 'Select Range'
                         ],
                         'options' => [
-                            'required' => true,
+                            // 'required' => true,
                         ]
                     ])
                     ?>
@@ -149,7 +149,7 @@ use yii\helpers\ArrayHelper;
                 </div>
                 <div class="col-sm-3" style="height:60x">
                     <label for="transaction">Transactions</label>
-                    <select id="transaction" required name="transaction" class="transaction select" style="width: 100%; margin-top:50px">
+                    <select id="transaction"  name="transaction" class="transaction select" style="width: 100%; margin-top:50px">
                         <option></option>
                     </select>
                 </div>

@@ -180,8 +180,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'id',
             // 'process_ors_id',
-            // 'raoud_id',
             'dv_number',
+            [
+                'label'=>'Payee',
+                'attribute'=>'payee_id',
+                'value'=>'payee.account_name'
+            ],
             'created_at',
             'transaction_begin_time',
             'return_timestamp',

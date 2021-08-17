@@ -48,8 +48,8 @@ echo DatePicker::widget([
     'pluginOptions' => [
         'format' => 'yyyy-M',
         'autoclose' => true,
-        'startView'=>'months',
-        'minViewMode'=>'months'
+        'startView' => 'months',
+        'minViewMode' => 'months'
     ]
 ]);
 echo "</div>";
@@ -75,64 +75,80 @@ Modal::end();
                     echo "<button class='btn btn-danger' id='cancel' style='margin:5px'>Cancel</button>";
                 }
                 echo "<input type='text' id='cancel_id' value='$model->id' style='display:none;'/>";
-                ?>
-            </p>
-        <?php } ?>
-        <table class="table table-striped">
-            <thead>
-                <th>Reporting Period</th>
-                <th>NFT Number</th>
-                <th>Report</th>
-                <th>Province</th>
-                <th>Fund Source</th>
-                <th>UACS Object Code</th>
-                <th>General Ledger</th>
-                <th class='number'>Withdrawals</th>
-                <th class='number'>Vat/Non-Vat</th>
-                <th class='number'>Expanded Tax</th>
-                <th class='number'>Liquidation Damages</th>
-            </thead>
-            <tbody>
 
-                <?php
+
                 $total_withdrawal = 0;
                 $total_vat_nonvat = 0;
                 $total_liquidation_damages = 0;
                 $total_ewt = 0;
+                $display = 'display:none';
+                $new_uacs = '';
+
                 $charts = Yii::$app->db->createCommand("SELECT id,CONCAT(uacs,'-',general_ledger) as account_title  FROM chart_of_accounts where is_active =1")->queryAll();
-                foreach ($model->liquidationEntries as $val) {
-                    $nft_number = '';
-                    $report_type = '';
-                    $province = '';
-                    $fund_source = '';
-                    $uacs = '';
-                    $general_ledger = '';
-                    $total_withdrawal += $val->withdrawals;
-                    $total_vat_nonvat += $val->vat_nonvat;
-                    $total_ewt += $val->expanded_tax;
-                    $total_liquidation_damages += $val->liquidation_damage;
-                    if (!empty($val->advances_entries_id)) {
-                        $nft_number =  $val->advancesEntries->advances->nft_number;
-                        $report_type = $val->advancesEntries->advances->report_type;
-                        $province = $val->advancesEntries->advances->province;
-                        $fund_source =  $val->advancesEntries->fund_source;
-                    }
-                    if (!empty($val->chart_of_account_id)) {
 
-                        $uacs = $val->chartOfAccount->uacs;
-                        $general_ledger =  $val->chartOfAccount->general_ledger;
-                    }
-                    // if (Yii::$app->user->identity->province ==='ro_admin'){
-                    //     $uacs = Select2::widget([
-                    //         'data'=>ArrayHelper::map($charts,'id','account_title'),
-                    //         'name'=>'sample',
-                    //         'value'=>$val->chart_of_account_id
-                    //     ]);
-                    // }
+                if (Yii::$app->user->can('update_liquidation_account') ) {
+                    $display = '';
+                    $new_uacs = Select2::widget([
+                        'data' => ArrayHelper::map($charts, 'id', 'account_title'),
+                        'name' => 'new_chart_of_account[]',
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Account'
+                        ]
+                    ]);
+                }
+                ?>
+            </p>
+        <?php } ?>
+        <form id='new_uacs'>
+
+            <table class="table table-striped">
+                <thead>
+
+                    <th>Reporting Period</th>
+                    <th>NFT Number</th>
+                    <th>Report</th>
+                    <th>Province</th>
+                    <th>Fund Source</th>
+                    <th>UACS Object Code</th>
+                    <th>General Ledger</th>
+                    <th class='number'>Withdrawals</th>
+                    <th class='number'>Vat/Non-Vat</th>
+                    <th class='number'>Expanded Tax</th>
+                    <th class='number'>Liquidation Damages</th>
+                </thead>
+                <tbody>
+
+                    <?php
+
+
+                    foreach ($model->liquidationEntries as $val) {
+                        $nft_number = '';
+                        $report_type = '';
+                        $province = '';
+                        $fund_source = '';
+                        $uacs = '';
+                        $general_ledger = '';
+                        $total_withdrawal += $val->withdrawals;
+                        $total_vat_nonvat += $val->vat_nonvat;
+                        $total_ewt += $val->expanded_tax;
+                        $total_liquidation_damages += $val->liquidation_damage;
+                        if (!empty($val->advances_entries_id)) {
+                            $nft_number =  $val->advancesEntries->advances->nft_number;
+                            $report_type = $val->advancesEntries->advances->report_type;
+                            $province = $val->advancesEntries->advances->province;
+                            $fund_source =  $val->advancesEntries->fund_source;
+                        }
+                        if (!empty($val->chart_of_account_id)) {
+
+                            $uacs = $val->chartOfAccount->uacs;
+                            $general_ledger =  $val->chartOfAccount->general_ledger;
+                        }
 
 
 
-                    echo "<tr></tr>
+                        echo "<tr>
+                
+                <td style='$display'></td>
                 <td>{$val->reporting_period}</td>
                 <td>{$nft_number}</td>
                 <td>{$report_type}</td>
@@ -146,18 +162,26 @@ Modal::end();
                 <td class='number'>" . number_format($val->liquidation_damage, 2) . "</td>
                 
                 </tr>";
-                }
+                    }
 
-                echo "<tr>
+                    echo "<tr>
                 <td colspan='7' style='text-align:center;font-weight:bold;'>Total</td>
                 <td class='number' style='font-weight:bold'>" . number_format($total_withdrawal, 2) . "</td>
                 <td class='number' style='font-weight:bold'>" . number_format($total_vat_nonvat, 2) . "</td>
                 <td class='number' style='font-weight:bold'>" . number_format($total_ewt, 2) . "</td>
                 <td class='number' style='font-weight:bold'>" . number_format($total_liquidation_damages, 2) . "</td>
                 </tr>";
-                ?>
-            </tbody>
-        </table>
+                    ?>
+                </tbody>
+            </table>
+
+            <?php
+            if (Yii::$app->user->can('update_liquidation_account')){
+                echo "<button type='submit' class='btn btn-success'>Save</button>";
+            }
+            ?>
+        </form>
+
     </div>
 
 </div>

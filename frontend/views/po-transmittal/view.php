@@ -78,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 
-        <table class="table">
+        <table class="data_table">
             <thead style="border-top: 1px solid black;border-bottom: 1px solid black;">
                 <th>No.</th>
                 <th>DV Number</th>
@@ -127,13 +127,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             $color = 'btn-success';
                         }
                         $qwe = Html::a($status, ['return', 'id' => $val->id], [
-                            'class' => "btn $color",
+                            'class' => "btn $color ",
                             'data' => [
                                 'confirm' => "Are you sure you want to  this item?",
                                 'method' => 'post',
                             ],
                         ]);
-                        echo "  <td>" .
+                        echo "  <td class='status'>" .
                             $qwe
                             . " </td>";
                     } else {
@@ -205,6 +205,10 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 <style>
+    .data_table{
+        width: 100%;
+        padding: 10px;
+    }
     .container {
         padding: 50px;
     }
@@ -409,17 +413,18 @@ $this->params['breadcrumbs'][] = $this->title;
     // })
 
     function oicRd(x) {
+        console.log('qwer')
         $("#oic").text(x.value)
     }
 
     function regionalDirector(x) {
-        $("#asig_1").text(x.value)
+        $("#asig_1").text(x.value.toUpperCase())
     }
 
     function sample(q) {
         console.log(q.value)
 
-        $("#ass").text(q.value)
+        $("#ass").text(q.value.toUpperCase())
         if (q.value == '') {
             $("#for_rd").text('')
         } else {
@@ -430,7 +435,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     }
     $(document).ready(function() {
-        var oic_rd = ['Officer-in-Charge', 'Regional Director']
+        var oic_rd = ['Officer-in-Charge', 'Provincial Director']
         $('#oic_rd').select2({
             data: oic_rd,
             placeholder: "Select OIC",
@@ -440,16 +445,21 @@ $this->params['breadcrumbs'][] = $this->title;
         $.getJSON('/afms/frontend/web/index.php?r=po-assignatory/get-all-assignatory')
 
             .then(function(data) {
-
+    
                 var array = []
+
                 $.each(data, function(key, val) {
                     array.push({
                         id: val.name,
                         text: val.name
                     })
                 })
+ 
                 assignatory = array
-                console.log(assignatory)
+                console.log(assignatory.filter(function(data){
+                    data.id.match(/^RICHELLE JOY P. MALAWI/)
+                    // /^501.*$/
+                }))
                 $('.asignatory').select2({
                     data: assignatory,
                     placeholder: "Select ",

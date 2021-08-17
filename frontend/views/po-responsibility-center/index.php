@@ -16,7 +16,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=po-responsibility-center/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+        <?php
+        if (Yii::$app->user->can('super-user')) {
+            echo Html::button('<i class="glyphicon glyphicon-plus"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=po-responsibility-center/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']);
+     
+     
+       }
+        ?>
     </p>
 
 
@@ -42,7 +48,14 @@ $this->params['breadcrumbs'][] = $this->title;
             'name',
             'description:ntext',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+
+                'class' => 'kartik\grid\ActionColumn',
+
+                'updateOptions' => ['style'=>'display:none'],
+                'deleteOptions' =>  ['style'=>'display:none'],
+                'headerOptions' => ['class' => 'kartik-sheet-style'],
+            ],
         ],
     ]); ?>
 

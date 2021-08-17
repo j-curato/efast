@@ -245,7 +245,7 @@ class LiquidationController extends Controller
 
             // destroys all data registered to a session.
             // $session->destroy();
-            $session->set('form_token', md5(uniqid()));
+
             // return json_encode(['isSuccess' => false, 'error' =>  $session->get('form_token')]);
 
 
@@ -268,20 +268,46 @@ class LiquidationController extends Controller
             $dv_number = $_POST['dv_number'];
             $province = Yii::$app->user->identity->province;
 
-            $check = (new \yii\db\Query())
-                ->select([
-                    'check_range.from',
-                    'check_range.to',
-                ])
-                ->from('check_range')
-                ->where("check_range.id = :id", ['id' => $check_range])
-                ->one();
-            if ($check_number >= $check['from'] && $check_number <= ['to']) {
-            } else {
-                return json_encode(['isSuccess' => false, 'error' => 'Check Number Not in Range']);
-                die();
+
+            // if (date('m', strtotime($check_date)) >= 7) {
+            //     // return json_encode(['isSuccess' => false, 'error' => 'Check Number Not in Range']);
+            //     // die();
+            //     if (empty($check_range)) {
+            //         return json_encode(['isSuccess' => false, 'error' => 'Check Number Is Required']);
+            //     }
+            //     $check = (new \yii\db\Query())
+            //         ->select([
+            //             'check_range.from',
+            //             'check_range.to',
+            //         ])
+            //         ->from('check_range')
+            //         ->where("check_range.id = :id", ['id' => $check_range])
+            //         ->one();
+            //     if ($check_number >= $check['from'] && $check_number <= ['to']) {
+            //     } else {
+            //         return json_encode(['isSuccess' => false, 'error' => 'Check Number Not in Range']);
+            //     }
+            // }
+            if (strtotime($check_date) > strtotime('2021-06-20')) {
+                if (empty($check_range)) {
+                    return json_encode(['isSuccess' => false, 'error' => 'Check Number Is Required']);
+                }
+                $check = (new \yii\db\Query())
+                    ->select([
+                        'check_range.from',
+                        'check_range.to',
+                    ])
+                    ->from('check_range')
+                    ->where("check_range.id = :id", ['id' => $check_range])
+                    ->one();
+                if ($check_number >= $check['from'] && $check_number <= ['to']) {
+                } else {
+                    return json_encode(['isSuccess' => false, 'error' => 'Check Number Not in Range']);
+                }
+                // return json_encode(['isSuccess' => false, 'error' => 'less']);
             }
 
+            // return json_encode(['isSuccess' => false, 'error' => 'qweqwr']);
             if (date('Y', strtotime($reporting_period)) < date('Y')) {
                 return json_encode(['isSuccess' => false, 'error' => "Invalid Reporting Period"]);
             } else {
@@ -425,12 +451,13 @@ class LiquidationController extends Controller
                                 }
                             }
                         }
-                        $transaction->commit();
-                        return json_encode(['isSuccess' => true, 'id' => $liquidation->id]);
+                        // $transaction->commit();
+                        // return json_encode(['isSuccess' => true, 'id' => $liquidation->id]);
                     }
                     if ($flag) {
 
                         $transaction->commit();
+                        $session->set('form_token', md5(uniqid()));
                         return json_encode(['isSuccess' => true, 'id' => $liquidation->id]);
                     }
                 } else {
