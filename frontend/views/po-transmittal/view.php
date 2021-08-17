@@ -168,6 +168,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <div class="row" style="margin-top: 2rem;">
             <div class="head" id='ass' style="font-weight: bold;"></div>
+            <div class="head" id='position'></div>
         </div>
         <div class="row" style="margin-top: 20px;">
 
@@ -205,10 +206,11 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 <style>
-    .data_table{
+    .data_table {
         width: 100%;
         padding: 10px;
     }
+
     .container {
         padding: 50px;
     }
@@ -422,18 +424,24 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 
     function sample(q) {
-        console.log(q.value)
+
+
 
         $("#ass").text(q.value.toUpperCase())
         if (q.value == '') {
             $("#for_rd").text('')
+            $("#position").text()
         } else {
+            var qwer = json_assignatory.filter(record => record.name === q.value)
 
+            console.log(qwer[0].position)
+            $("#position").text(qwer[0].position)
             $("#for_rd").text('For the Regional Director')
         }
 
 
     }
+    var json_assignatory = undefined
     $(document).ready(function() {
         var oic_rd = ['Officer-in-Charge', 'Provincial Director']
         $('#oic_rd').select2({
@@ -445,21 +453,18 @@ $this->params['breadcrumbs'][] = $this->title;
         $.getJSON('/afms/frontend/web/index.php?r=po-assignatory/get-all-assignatory')
 
             .then(function(data) {
-    
-                var array = []
 
+                var array = []
+                json_assignatory = data
                 $.each(data, function(key, val) {
                     array.push({
                         id: val.name,
                         text: val.name
                     })
                 })
- 
+
                 assignatory = array
-                console.log(assignatory.filter(function(data){
-                    data.id.match(/^RICHELLE JOY P. MALAWI/)
-                    // /^501.*$/
-                }))
+
                 $('.asignatory').select2({
                     data: assignatory,
                     placeholder: "Select ",

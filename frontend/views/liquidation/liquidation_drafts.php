@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     $province = \Yii::$app->user->identity->province;
     $viewSearchModel = new LiquidationViewSearch();
-    $viewSearchModel->is_final=0;
+    $viewSearchModel->is_final = 0;
     $viewDataProvider = $viewSearchModel->search(Yii::$app->request->queryParams);
     $viewDataProvider->pagination = ['pageSize' => 10];
     // echo \Yii::$app->user->identity->province;
@@ -43,7 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
         //     'attribute' => 'province',
         //     'value' => function ($model) {
 
-    
+
         //         return strtoupper($model->province);
         //     }
         // ],

@@ -103,7 +103,6 @@ Modal::end();
 
             <table class="table table-striped">
                 <thead>
-
                     <th>Reporting Period</th>
                     <th>NFT Number</th>
                     <th>Report</th>
