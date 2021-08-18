@@ -59,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         For
                     </td>
                     <td>
-                        <span>
+                        <span class="head bold">
 
                             GAY T. TIDALGO,CESO IV
                         </span> <br>
@@ -73,19 +73,21 @@ $this->params['breadcrumbs'][] = $this->title;
                         From
                     </td>
                     <td>
-                        <span>
+                        <span class="head bold" id='asig_1'>
 
-                            BRENDA B. CORVERA
+                            <!-- BRENDA B. CORVERA -->
+
                         </span> <br>
-                        <span>
-                            Position
+                        <span class="head" id='asig_1_position'>
+                            <!-- Position -->
                         </span>
+
                     </td>
                 </tr>
 
                 <tr>
                     <td>
-                        DATE
+                        Date
                     </td>
                     <td>
                         <span>
@@ -100,9 +102,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>
                         Subject
                     </td>
-                    <td>
+                    <td class="bold">
                         <span>DV Transmittal No. </span>
-                        <span>
+                        <span >
                             <?php
                             echo $model->transmittal_number;
                             ?>
@@ -196,12 +198,9 @@ $this->params['breadcrumbs'][] = $this->title;
             </tbody>
         </table>
         <div class="row head" style="margin-top:1rem;font-weight:bold">Thank you.</div>
-        <div class="row head" style="margin-top:4rem">Very truly yours,</div>
+        <!-- <div class="row head" style="margin-top:4rem">Very truly yours,</div> -->
         <div class="row head" style="margin-top:2rem">
-            <div class="head" style="font-weight:bold;right:10;" id="asig_1">
 
-            </div>
-            <div class="head" id="oic">Provincial Director</div>
         </div>
         <div class="row" style="margin-top:2rem">
             <div class="head" id="for_rd"></div>
@@ -236,12 +235,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 // ])
                 ?>
             </div>
-            <div class="col-sm-3 as">
+            <!-- <div class="col-sm-3 as">
                 <label for="oic">Provincial Director </label>
                 <select name="" id="oic_rd" onchange="oicRd(this)" style="width: 100%;">
                     <option value=""></option>
                 </select>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>
@@ -250,6 +249,9 @@ $this->params['breadcrumbs'][] = $this->title;
         width: 100%;
         padding: 10px;
     }
+    .bold{
+        font-weight: bold;
+    }
 
     #header {
         width: 100%;
@@ -257,7 +259,7 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 10px;
     }
 
-    #header>tr{
+    #header td {
         border: none
     }
 
@@ -472,12 +474,26 @@ $this->params['breadcrumbs'][] = $this->title;
     // })
 
     function oicRd(x) {
-        console.log('qwer')
         $("#oic").text(x.value)
     }
 
     function regionalDirector(x) {
         $("#asig_1").text(x.value.toUpperCase())
+        if (x.value == '') {
+            $("#for_rd").text('')
+            $("#asig_1_position").text('')
+        } else {
+            var qwer = json_assignatory.filter(record => record.name === x.value)
+
+            // console.log(toTitleCase(qwer[0].position))
+            $("#asig_1_position").text(qwer[0].position)
+        }
+    }
+
+    function toTitleCase(str) {
+        return str.replace(/\w\S*/g, function(txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
     }
 
     function sample(q) {
@@ -487,13 +503,13 @@ $this->params['breadcrumbs'][] = $this->title;
         $("#ass").text(q.value.toUpperCase())
         if (q.value == '') {
             $("#for_rd").text('')
-            $("#position").text()
+            $("#position").text('')
         } else {
             var qwer = json_assignatory.filter(record => record.name === q.value)
 
             console.log(qwer[0].position)
             $("#position").text(qwer[0].position)
-            $("#for_rd").text('For the Regional Director')
+            $("#for_rd").text('For the Provincial Director')
         }
 
 

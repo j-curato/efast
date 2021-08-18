@@ -45,7 +45,7 @@ class PoResponsibilityCenterSearch extends PoResponsibilityCenter
         $q = PoResponsibilityCenter::find();
         if (
             $province === 'adn' ||
-            $province === 'sdn' ||
+            $province === 'ads' ||
             $province === 'sds' ||
             $province === 'sdn' ||
             $province === 'pdi'
