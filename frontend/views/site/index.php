@@ -228,7 +228,7 @@ $this->title = 'Dashboard';
                                 <span>
                                     <?php
                                     $result = ArrayHelper::index($total_cash_disbursed, null, 'name');
-                                    echo number_format($result['Fund 01'][0]['total_disbursed'], 2);
+                                   
                                     // ob_clean();
                                     // echo "<pre>";
                                     // var_dump($result['Fund 01'][0]['total_disbursed']);
