@@ -46,8 +46,7 @@ class m210809_072129_create_updateTaxBalance_trigger_in_liquidation_entries exte
             liquidation_balances.total_expanded= q.total_expanded,
             liquidation_balances.total_liquidation_damage  = q.total_liquidation_damage
             WHERE liquidation_balances.reporting_period = NEW.reporting_period
-            AND liquidation_balances.province  = prov
-            AND liquidation.is_cancelled = 0;
+            AND liquidation_balances.province  = prov;
             END
 
         SQL;

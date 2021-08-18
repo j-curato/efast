@@ -1,7 +1,7 @@
-<!-- <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" /> -->
-<!-- <link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre.min.css">
-<link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre-exp.min.css">
-<link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre-icons.min.css"> -->
+<!-- <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" /> -->
+<!-- <link rel="stylesheet" href="/afms/frontend/web/spectre-0.5.9/dist/spectre.min.css">
+<link rel="stylesheet" href="/afms/frontend/web/spectre-0.5.9/dist/spectre-exp.min.css">
+<link rel="stylesheet" href="/afms/frontend/web/spectre-0.5.9/dist/spectre-icons.min.css"> -->
 
 <?php
 
@@ -235,12 +235,12 @@ use yii\helpers\ArrayHelper;
         }
     </style>
 
-    <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
-    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
+    <script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+    <link href="/afms/frontend/web/js/select2.min.js" />
+    <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
 
-    <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
+    <!-- <script src="/afms/frontend/web/js/select2.min.js"></script> -->
     <script>
         <?php SweetAlertAsset::register($this); ?>
         // global variable
@@ -341,7 +341,7 @@ use yii\helpers\ArrayHelper;
             });
 
             // GET ALL DOCUMENT RECIEVES
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=document-recieve/get-document-recieves')
+            $.getJSON('/afms/frontend/web/index.php?r=document-recieve/get-document-recieves')
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {
@@ -358,7 +358,7 @@ use yii\helpers\ArrayHelper;
                     })
                 })
             // GET RESPONSIBILITY CENTER
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=responsibility-center/get-responsibility-center')
+            $.getJSON('/afms/frontend/web/index.php?r=responsibility-center/get-responsibility-center')
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {
@@ -377,7 +377,7 @@ use yii\helpers\ArrayHelper;
 
 
             // GET ALL AUTHORIZATION CODES
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=authorization-code/get-authorization-codes')
+            $.getJSON('/afms/frontend/web/index.php?r=authorization-code/get-authorization-codes')
                 .then(function(data) {
 
                     var array = []
@@ -396,7 +396,7 @@ use yii\helpers\ArrayHelper;
 
                 })
             // GET ALL FUND SOURCE
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=fund-source/get-fund-sources')
+            $.getJSON('/afms/frontend/web/index.php?r=fund-source/get-fund-sources')
                 .then(function(data) {
 
                     var array = []
@@ -415,7 +415,7 @@ use yii\helpers\ArrayHelper;
 
                 })
             // GET ALL MFO/PAP CODES
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=mfo-pap-code/get-mfo-pap-codes')
+            $.getJSON('/afms/frontend/web/index.php?r=mfo-pap-code/get-mfo-pap-codes')
                 .then(function(data) {
 
                     var array = []
@@ -434,7 +434,7 @@ use yii\helpers\ArrayHelper;
 
                 })
             // GET ALL FUND CLUSTER CODES
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=fund-cluster-code/get-all-cluster')
+            $.getJSON('/afms/frontend/web/index.php?r=fund-cluster-code/get-all-cluster')
                 .then(function(data) {
 
                     var array = []
@@ -472,7 +472,7 @@ use yii\helpers\ArrayHelper;
                     })
                 });
             // GET FINANCING SOURCE CODES
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=financing-source-code/get-financing-source-codes')
+            $.getJSON('/afms/frontend/web/index.php?r=financing-source-code/get-financing-source-codes')
                 .then(function(data) {
 
                     var array = []
@@ -492,7 +492,7 @@ use yii\helpers\ArrayHelper;
                 });
             // GET BOOKS
             var books = [];
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=books/get-books')
+            $.getJSON('/afms/frontend/web/index.php?r=books/get-books')
                 .then(function(data) {
 
                     var array = []

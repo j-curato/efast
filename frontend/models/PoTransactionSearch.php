@@ -46,7 +46,7 @@ class PoTransactionSearch extends PoTransaction
         $q = PoTransaction::find();
         if (
             $province === 'adn' ||
-            $province === 'sdn' ||
+            $province === 'ads' ||
             $province === 'sds' ||
             $province === 'sdn' ||
             $province === 'pdi'

@@ -44,7 +44,7 @@ class CheckRangeSearch extends CheckRange
         $q = CheckRange::find();
         if (
             $province === 'adn' ||
-            $province === 'sdn' ||
+            $province === 'ads' ||
             $province === 'sds' ||
             $province === 'sdn' ||
             $province === 'pdi'

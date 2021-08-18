@@ -45,7 +45,7 @@ class PoAsignatorySearch extends PoAsignatory
         $q = PoAsignatory::find();
         if (
             $province === 'adn' ||
-            $province === 'sdn' ||
+            $province === 'ads' ||
             $province === 'sds' ||
             $province === 'sdn' ||
             $province === 'pdi'

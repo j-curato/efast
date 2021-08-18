@@ -45,7 +45,7 @@ class CibrSearch extends Cibr
         $q = Cibr::find();
         if (
             $province === 'adn' ||
-            $province === 'sdn' ||
+            $province === 'ads' ||
             $province === 'sds' ||
             $province === 'sdn' ||
             $province === 'pdi'

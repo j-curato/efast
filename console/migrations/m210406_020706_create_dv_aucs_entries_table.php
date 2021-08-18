@@ -19,7 +19,7 @@ class m210406_020706_create_dv_aucs_entries_table extends Migration
         $this->createTable('{{%dv_aucs_entries}}', [
             'id' => $this->primaryKey(),
             'dv_aucs_id' => $this->integer()->notNull(),
-            'raoud_id' => $this->integer()->notNull(),
+            'raoud_id' => $this->integer(),
              'amount_disbursed'=> $this->decimal(10,2),
              'vat_nonvat'=> $this->decimal(10,2),
              'ewt_goods_services'=> $this->decimal(10,2),

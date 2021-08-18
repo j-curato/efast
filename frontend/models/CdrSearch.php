@@ -45,7 +45,7 @@ class CdrSearch extends Cdr
         $q = Cdr::find();
         if (
             $province === 'adn' ||
-            $province === 'sdn' ||
+            $province === 'ads' ||
             $province === 'sds' ||
             $province === 'sdn' ||
             $province === 'pdi'

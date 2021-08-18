@@ -236,12 +236,13 @@ class LiquidationController extends Controller
     public function actionInsertLiquidation()
     {
         if ($_POST) {
-            $token = Yii::$app->session->get('form_token');
-            if ($token !== $_POST['token']) {
-
-                die();
-            }
             $session = Yii::$app->session;
+            $token = Yii::$app->session->get('form_token');
+            // if ($token !== $_POST['token']) {
+            //     return json_encode(['isSuccess' => false, 'error' => $token]);
+            //     die();
+            // }
+      
 
             // destroys all data registered to a session.
             // $session->destroy();
@@ -451,8 +452,9 @@ class LiquidationController extends Controller
                                 }
                             }
                         }
-                        // $transaction->commit();
-                        // return json_encode(['isSuccess' => true, 'id' => $liquidation->id]);
+                        $transaction->commit();
+                        $session->set('form_token', md5(uniqid()));
+                        return json_encode(['isSuccess' => true, 'id' => $liquidation->id]);
                     }
                     if ($flag) {
 

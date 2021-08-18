@@ -40,6 +40,24 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ]);
                 }
+                $province =strtolower( Yii::$app->user->identity->province);
+                $prov ='';
+                $provinces = [
+                    'adn'=>'Agusan Del Norte',
+                    'ads'=>'Agusan Del Sur',
+                    'sdn'=>'Surigao Del Norte',
+                    'sds'=>'Surigao Del Sur',
+                    'pdi'=>'Dinagat Islands',
+                ];
+                if (
+                    $province === 'adn' ||
+                    $province === 'ads' ||
+                    $province === 'sdn' ||
+                    $province === 'sds' ||
+                    $province === 'pdi'
+                ) {
+                    $prov = $provinces[$province];
+                }
                 ?>
             </p>
 
@@ -48,35 +66,77 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row" style="float:right">
             <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/dti3.png', ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width: 100px;height:100px;margin-left:auto']); ?>
         </div>
-        <div class="row" style="margin-top: 130px;">
-            <div class="row head" style=" margin-bottom:2rem"><?php echo date('F d, Y', strtotime($model->date)) ?></div>
-            <div class="row head" style="font-weight: bold;">GAY TIDALGO</div>
-            <div class="row head">State Auditor III</div>
-            <div class="row head">OIC - Audit Team Leader</div>
-            <div class="row head">COA - DTI Caraga</div>
-            <div class="row head" style="padding-top: 2rem;padding-bottom: 2rem;">Dear Ma’am Tidalgo:</div>
-            <p style="font-size: 12pt;">
 
-                We are hereby submitting the following DVs, with assigned Transmittal #
-                <?php echo $model->transmittal_number;
+        <table id="header" style="border:none">
 
-                $po = [
-                    'adn' => 'Agusan Del Norte',
-                    'ads' => 'Agusan Del Sur',
-                    'sdn' => 'Surigao Del Norte',
-                    'sds' => 'Surigao Del Sur',
-                    'pdi' => 'Province of Dinagat Island',
-                ];
-                $x = explode('-', $model->transmittal_number)[0];
+            <tbody style="border:none">
 
-                ?> of DTI
-                <?php
-                echo $po[strtolower($x)];
-                ?> Provincial Office:
-            </p>
-        </div>
+                <tr>
 
+                    <td style="width: 250px;">
+                        For
+                    </td>
+                    <td>
+                        <span class="head bold">
 
+                            GAY A. TIDALGO,CESO IV
+                        </span> <br>
+                        <span style="font-size:12px">
+                            OIC Regional Director, DTI-CARAGA
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        From
+                    </td>
+                    <td>
+                        <span class="head bold" id='asig_1'>
+
+                            <!-- BRENDA B. CORVERA -->
+
+                        </span> <br>
+                        <span class="head" id='asig_1_position' style="font-size:12px">
+                            <!-- Position -->
+                        </span>
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        Date
+                    </td>
+                    <td>
+                        <span>
+
+                            <?php
+                            echo date('F d, Y', strtotime($model->date));
+                            ?>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Subject
+                    </td>
+                    <td class="bold">
+                        <span>DV Transmittal No. </span>
+                        <span>
+                            <?php
+                            echo $model->transmittal_number;
+                            ?>
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr>
+
+        <span style="font-size: 15px;">
+            We are hereby submitting the following DV, with assigned Transmittal# <?php echo $model->transmittal_number ?> of DTI <?php echo $prov?>.
+        </span>
 
         <table class="data_table">
             <thead style="border-top: 1px solid black;border-bottom: 1px solid black;">
@@ -105,16 +165,16 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     $qwe = '';
                     $display = 'display:none;';
-
-
+                    $payee = !empty($val->liquidation->payee) ? $val->liquidation->payee : $val->liquidation->poTransaction->payee;
+                    $particular = !empty($val->liquidation->particular) ? $val->liquidation->particular : $val->liquidation->poTransaction->particular;
 
                     echo "<tr>
                         <td>$q</td>
                         <td>{$val->liquidation->dv_number}</td>
                         <td>{$val->liquidation->check_number}</td>
                         <td>{$val->liquidation->check_date}</td>
-                        <td>{$val->liquidation->payee}</td>
-                        <td>{$val->liquidation->particular}</td>
+                        <td>{$payee}</td>
+                        <td>{$particular}</td>
        
                         <td style='text-align:right'>" . number_format($query['total_disbursed'], 2) . "</td>
                     ";
@@ -155,20 +215,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
             </tbody>
         </table>
-        <div class="row head" style="margin-top:1rem">Thank you.</div>
-        <div class="row head" style="margin-top:4rem">Very truly yours,</div>
+        <div class="row head" style="margin-top:1rem;">Thank you.</div>
+        <!-- <div class="row head" style="margin-top:4rem">Very truly yours,</div> -->
         <div class="row head" style="margin-top:2rem">
-            <div class="head" style="font-weight:bold;right:10;" id="asig_1">
 
-            </div>
-            <div class="head" id="oic">Provincial Director</div>
         </div>
         <div class="row" style="margin-top:2rem">
             <div class="head" id="for_rd"></div>
         </div>
         <div class="row" style="margin-top: 2rem;">
             <div class="head" id='ass' style="font-weight: bold;"></div>
-            <div class="head" id='position'></div>
+            <div class="head" id='position' style="font-size:12px"></div>
         </div>
         <div class="row" style="margin-top: 20px;">
 
@@ -196,12 +253,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 // ])
                 ?>
             </div>
-            <div class="col-sm-3 as">
+            <!-- <div class="col-sm-3 as">
                 <label for="oic">Provincial Director </label>
                 <select name="" id="oic_rd" onchange="oicRd(this)" style="width: 100%;">
                     <option value=""></option>
                 </select>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>
@@ -209,6 +266,20 @@ $this->params['breadcrumbs'][] = $this->title;
     .data_table {
         width: 100%;
         padding: 10px;
+    }
+
+    .bold {
+        font-weight: bold;
+    }
+
+    #header {
+        width: 100%;
+        margin-bottom: 20px;
+        padding: 10px;
+    }
+
+    #header td {
+        border: none
     }
 
     .container {
@@ -219,7 +290,6 @@ $this->params['breadcrumbs'][] = $this->title;
     td,
     th {
         background-color: white;
-
         border: 1px solid black;
         padding: 8px;
         line-height: 1.42857143;
@@ -245,13 +315,25 @@ $this->params['breadcrumbs'][] = $this->title;
         font-size: 12pt;
     }
 
+    @page {
+        margin: 30px;
+    }
+
     @media print {
         td {
-            font-size: 10px;
+            font-size: 14px;
+        }
+
+        body {
+            margin: 25mm 25mm 25mm 25mm;
         }
 
         .container {
             padding: 0;
+        }
+
+        #header td {
+            font-size: 15px;
         }
 
         .status {
@@ -415,12 +497,26 @@ $this->params['breadcrumbs'][] = $this->title;
     // })
 
     function oicRd(x) {
-        console.log('qwer')
         $("#oic").text(x.value)
     }
 
     function regionalDirector(x) {
         $("#asig_1").text(x.value.toUpperCase())
+        if (x.value == '') {
+            $("#for_rd").text('')
+            $("#asig_1_position").text('')
+        } else {
+            var qwer = json_assignatory.filter(record => record.name === x.value)
+
+            // console.log(toTitleCase(qwer[0].position))
+            $("#asig_1_position").text(qwer[0].position)
+        }
+    }
+
+    function toTitleCase(str) {
+        return str.replace(/\w\S*/g, function(txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
     }
 
     function sample(q) {
@@ -430,13 +526,13 @@ $this->params['breadcrumbs'][] = $this->title;
         $("#ass").text(q.value.toUpperCase())
         if (q.value == '') {
             $("#for_rd").text('')
-            $("#position").text()
+            $("#position").text('')
         } else {
             var qwer = json_assignatory.filter(record => record.name === q.value)
 
             console.log(qwer[0].position)
             $("#position").text(qwer[0].position)
-            $("#for_rd").text('For the Regional Director')
+            $("#for_rd").text('For the Provincial Director')
         }
 
 

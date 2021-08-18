@@ -171,7 +171,7 @@ use yii\helpers\ArrayHelper;
                     <th>Payee</th>
                     <th>Particular</th>
                     <th>Responsibility Center</th>
-                    <th>Amount</th>
+                    <th>Gross Amount</th>
                 </thead>
                 <tbody>
                     <tr>
@@ -195,7 +195,7 @@ use yii\helpers\ArrayHelper;
                     <th>Fund Source</th>
                     <th>Chart of Account</th>
                     <th>Miscellaneous Income</th>
-                    <th style="padding-left:30px">Withdrawals</th>
+                    <th style="padding-left:30px">Withdrawals (Net Amount)</th>
                     <th>Sales Tax(Vat/Non-Vat)</th>
                     <th>Income Tax (Expanded Tax)</th>
                 </thead>
@@ -225,7 +225,7 @@ use yii\helpers\ArrayHelper;
 
             // $form_token =$session['form_token'];
 
-            echo "<input type='hidden' value='{$session->get('form_token')}' name='token' />"
+            echo "<input type='hidden' style='width:100%' value='{$session->get('form_token')}' name='token' />"
             ?>
             <button class="btn btn-success" id='save' type="submit">Save</button>
         </form>
@@ -262,7 +262,7 @@ use yii\helpers\ArrayHelper;
                 'province',
                 'fund_source',
                 [
-                    'label' => 'Amount',
+                    'label' => 'Gross Amount',
                     'attribute' => 'amount',
                     'format' => ['decimal', 2]
                 ],
