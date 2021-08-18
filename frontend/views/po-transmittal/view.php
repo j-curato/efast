@@ -63,7 +63,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                             GAY T. TIDALGO,CESO IV
                         </span> <br>
-                        <span>
+                        <span style="font-size:12px">
                             OIC Regional Director, DTI-CARAGA
                         </span>
                     </td>
@@ -78,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <!-- BRENDA B. CORVERA -->
 
                         </span> <br>
-                        <span class="head" id='asig_1_position'>
+                        <span class="head" id='asig_1_position' style="font-size:12px">
                             <!-- Position -->
                         </span>
 
@@ -104,7 +104,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                     <td class="bold">
                         <span>DV Transmittal No. </span>
-                        <span >
+                        <span>
                             <?php
                             echo $model->transmittal_number;
                             ?>
@@ -116,7 +116,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <hr>
 
-        <span>
+        <span style="font-size: 15px;">
             We are hereby submitting the following DV, with assigned Transmittal# <?php echo $model->transmittal_number ?> of DTI
         </span>
 
@@ -147,16 +147,16 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     $qwe = '';
                     $display = 'display:none;';
-
-
-
+                    $payee = !empty($val->liquidation->payee)?$val->liquidation->payee:$val->liquidation->poTransaction->payee;
+                    $particular = !empty($val->liquidation->particular)?$val->liquidation->particular:$val->liquidation->poTransaction->particular;
+        
                     echo "<tr>
                         <td>$q</td>
                         <td>{$val->liquidation->dv_number}</td>
                         <td>{$val->liquidation->check_number}</td>
                         <td>{$val->liquidation->check_date}</td>
-                        <td>{$val->liquidation->payee}</td>
-                        <td>{$val->liquidation->particular}</td>
+                        <td>{$payee}</td>
+                        <td>{$particular}</td>
        
                         <td style='text-align:right'>" . number_format($query['total_disbursed'], 2) . "</td>
                     ";
@@ -207,7 +207,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <div class="row" style="margin-top: 2rem;">
             <div class="head" id='ass' style="font-weight: bold;"></div>
-            <div class="head" id='position'></div>
+            <div class="head" id='position' style="font-size:12px"></div>
         </div>
         <div class="row" style="margin-top: 20px;">
 
@@ -249,7 +249,8 @@ $this->params['breadcrumbs'][] = $this->title;
         width: 100%;
         padding: 10px;
     }
-    .bold{
+
+    .bold {
         font-weight: bold;
     }
 
@@ -311,6 +312,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
         .container {
             padding: 0;
+        }
+
+        #header td {
+            font-size: 15px;
         }
 
         .status {
