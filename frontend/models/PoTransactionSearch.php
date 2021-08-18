@@ -45,7 +45,7 @@ class PoTransactionSearch extends PoTransaction
         $province = Yii::$app->user->identity->province;
         $q = PoTransaction::find();
         if (
-            $province !== 'adn' ||
+            $province === 'adn' ||
             $province === 'ads' ||
             $province === 'sds' ||
             $province === 'sdn' ||
