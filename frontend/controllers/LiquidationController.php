@@ -355,12 +355,22 @@ class LiquidationController extends Controller
             // die();
             $transaction = Yii::$app->db->beginTransaction();
             $id = '';
+            $is_realign = null;
             if (!empty($update_id)) {
                 $liquidation = Liquidation::findOne($update_id);
-
+                Yii::$app->db->createCommand(
+                    "UPDATE liquidation_entries SET reporting_period = :reporting_period WHERE
+                    liquidation_id = :liquidation_id
+                    AND is_realign = 0
+                    "
+                )
+                ->bindValue(':reporting_period',$reporting_period)
+                ->bindValue(':liquidation_id',$liquidation->id)
+                ->query();
                 if ($liquidation->is_locked === 1) {
                     return json_encode(['isSuccess' => false, 'error' => "Liquidation is Disabled"]);
                 }
+                $is_realign = true;
                 // $x = explode('-', $liquidation->dv_number);
                 // $x[1] = date('Y', strtotime($reporting_period));
                 // $x[2] = date('m', strtotime($reporting_period));
@@ -440,6 +450,7 @@ class LiquidationController extends Controller
                                 $liq_entries->expanded_tax = $e;
                                 $liq_entries->liquidation_damage = $liq;
                                 $liq_entries->reporting_period = $r_period;
+                                $liq_entries->is_realign = $is_realign;
 
                                 if ($liq_entries->validate()) {
                                     // if (!in_array($liq_entries->reporting_period, $r)) {
