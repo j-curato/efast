@@ -13,19 +13,28 @@ class m210709_082218_create_liquidation_view extends Migration
     public function safeUp()
     {
         Yii::$app->db->createCommand("CREATE VIEW liquidation_view as SELECT 
+      SELECT 
         liquidation.id,
         liquidation.check_date,
         liquidation.check_number,
         liquidation.dv_number,
         liquidation.reporting_period,
-        po_transaction.payee,
-        po_transaction.particular,
+				liquidation.`status`,
+        IFNULL(liquidation.payee,po_transaction.payee) as payee,
+        IFNULL(liquidation.particular,po_transaction.particular)as particular,
         total_liq.total_withdrawal,
         total_liq.total_expanded,
         total_liq.total_liquidation_damage,
         total_liq.total_vat,
-        po_transaction.amount as gross_payment,
-        prov.province
+                IFNULL(total_liq.total_withdrawal,0) + IFNULL(total_liq.total_expanded,0) + IFNULL(total_liq.total_liquidation_damage,0)
+        + IFNULL(total_liq.total_vat,0) as gross_payment,
+                liquidation.province,
+                        liquidation.is_cancelled,
+                        po_transaction.payee as tr_payee,
+        po_transaction.particular as tr_particular,
+        liquidation.is_final
+            
+
         
         FROM liquidation
         LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
@@ -49,7 +58,7 @@ class m210709_082218_create_liquidation_view extends Migration
         
         
         ORDER BY liquidation.id) as prov ON liquidation.id = prov.id
-        ORDER BY liquidation.check_date DESC
+        ORDER BY liquidation.check_date DESC 
         ")->query();
     }
 

@@ -51,7 +51,7 @@ class PoTransaction extends \yii\db\ActiveRecord
             'po_responsibility_center_id' => 'Responsibility Center ID',
             'payee' => 'Payee',
             'particular' => 'Particular',
-            'amount' => 'Amount',
+            'amount' => 'Gross Amount',
             'payroll_number' => 'Payroll Number',
             'tracking_number' => 'Tracking Number',
         ];

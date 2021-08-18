@@ -79,7 +79,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>
                         <span class="head bold">
 
-                            GAY T. TIDALGO,CESO IV
+                            GAY A. TIDALGO,CESO IV
                         </span> <br>
                         <span style="font-size:12px">
                             OIC Regional Director, DTI-CARAGA
@@ -215,7 +215,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
             </tbody>
         </table>
-        <div class="row head" style="margin-top:1rem;font-weight:bold">Thank you.</div>
+        <div class="row head" style="margin-top:1rem;">Thank you.</div>
         <!-- <div class="row head" style="margin-top:4rem">Very truly yours,</div> -->
         <div class="row head" style="margin-top:2rem">
 
