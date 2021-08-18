@@ -40,6 +40,24 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ]);
                 }
+                $province =strtolower( Yii::$app->user->identity->province);
+                $prov ='';
+                $provinces = [
+                    'adn'=>'Agusan Del Norte',
+                    'ads'=>'Agusan Del Sur',
+                    'sdn'=>'Surigao Del Norte',
+                    'sds'=>'Surigao Del Sur',
+                    'pdi'=>'Dinagat Islands',
+                ];
+                if (
+                    $province === 'adn' ||
+                    $province === 'ads' ||
+                    $province === 'sdn' ||
+                    $province === 'sds' ||
+                    $province === 'pdi'
+                ) {
+                    $prov = $provinces[$province];
+                }
                 ?>
             </p>
 
@@ -117,7 +135,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <hr>
 
         <span style="font-size: 15px;">
-            We are hereby submitting the following DV, with assigned Transmittal# <?php echo $model->transmittal_number ?> of DTI
+            We are hereby submitting the following DV, with assigned Transmittal# <?php echo $model->transmittal_number ?> of DTI <?php echo $prov?>.
         </span>
 
         <table class="data_table">
@@ -147,9 +165,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     $qwe = '';
                     $display = 'display:none;';
-                    $payee = !empty($val->liquidation->payee)?$val->liquidation->payee:$val->liquidation->poTransaction->payee;
-                    $particular = !empty($val->liquidation->particular)?$val->liquidation->particular:$val->liquidation->poTransaction->particular;
-        
+                    $payee = !empty($val->liquidation->payee) ? $val->liquidation->payee : $val->liquidation->poTransaction->payee;
+                    $particular = !empty($val->liquidation->particular) ? $val->liquidation->particular : $val->liquidation->poTransaction->particular;
+
                     echo "<tr>
                         <td>$q</td>
                         <td>{$val->liquidation->dv_number}</td>
