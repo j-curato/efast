@@ -47,16 +47,35 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-sm-3">
                 <label for="province">Province</label>
                 <?php
+                $prov = [
+                    'adn' => 'ADN',
+                    'ads' => 'ADS',
+                    'pdi' => 'PDI',
+                    'sdn' => 'SDN',
+                    'sds' => 'SDS',
+                ];
+                $q = Yii::$app->user->identity->province;
+                $val = '';
+                if (
+
+                    $q === 'adn' ||
+                    $q === 'ads' ||
+                    $q === 'sdn' ||
+                    $q === 'sds' ||
+                    $q === 'pdi'
+                ) {
+                    $val =   $q;
+                    $prov = [
+                        $q => strtoupper($q)
+                    ];
+                }
+
+
                 echo Select2::widget([
                     'name' => 'province',
                     'id' => 'province',
-                    'data' => [
-                        'adn' => 'ADN',
-                        'ads' => 'ADS',
-                        'pdi' => 'PDI',
-                        'sdn' => 'SDN',
-                        'sds' => 'SDS',
-                    ],
+                    'data' => $prov,
+                    'value' => $val,
                     'pluginOptions' => [
                         'autoclose' => true,
                         'placeholder' => 'Select Province'
@@ -82,7 +101,12 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-sm-3">
                 <button class="btn btn-success" style="margin-top: 23px;" id="generate">Generate</button>
-                <button class="btn btn-warning" style="margin-top: 23px;" id="save">Save</button>
+                
+                <?php
+                    if (Yii::$app->user->can('create_cibr')){
+                        echo " <button class='btn btn-warning' style='margin-top: 23px;' id='save'>Save</button>";
+                    }
+                ?>
             </div>
         </div>
     </form>
@@ -368,7 +392,8 @@ $this->params['breadcrumbs'][] = $this->title;
         .main-footer {
             display: none;
         }
-        .cibr_form{
+
+        .cibr_form {
             padding: 0;
         }
     }

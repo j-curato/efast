@@ -259,6 +259,6 @@ function getAllTransaction() {
     return $.getJSON(url + '?r=transaction/get-all-transaction')
 }
 
-function getAllGeneralLedger() {
-    return $.getJSON(url + '?r=chart-of-accounts/get-general-ledger')
+function getAllGeneralLedger(id) {
+    return $.getJSON(url + '?r=chart-of-accounts/get-general-ledger&id='+id)
 }

@@ -342,7 +342,7 @@ $script = <<< JS
       
             setTimeout(() => {
                 $("#con").show()
-            $("#dot5").hide()
+            $("#dots5").hide()
             }, 1000);
         })
 JS;

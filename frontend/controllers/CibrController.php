@@ -35,7 +35,7 @@ class CibrController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-                            'create',
+                        
                             'update',
                             'delete',
                             'insert-cibr',
@@ -48,6 +48,7 @@ class CibrController extends Controller
                         'actions' => [
                             'index',
                             'view',
+                            'create',
                         ],
                         'allow' => true,
                         'roles' => ['@']
