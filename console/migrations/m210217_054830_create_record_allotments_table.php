@@ -23,7 +23,7 @@ class m210217_054830_create_record_allotments_table extends Migration
     {
         $this->createTable('{{%record_allotments}}', [
             'id' => $this->primaryKey(),
-            'document_recieved_id' => $this->integer()->notNull(),
+            'document_recieve_id' => $this->integer()->notNull(),
             'fund_cluster_code_id' => $this->integer()->notNull(),
             'financing_source_code_id' => $this->integer()->notNull(),
             'fund_category_and_classification_code_id' => $this->integer()->notNull(),
@@ -31,8 +31,8 @@ class m210217_054830_create_record_allotments_table extends Migration
             'mfo_pap_code_id' => $this->integer()->notNull(),
             'fund_source_id' => $this->integer()->notNull(),
             'reporting_period' => $this->string(20),
-            'serial_number' => $this->string(255),
-            'allotment_number' => $this->string(255),
+            'serial_number' => $this->string(50),
+            'allotment_number' => $this->string(50),
             'date_issued' => $this->string(50),
             'valid_until' => $this->string(50),
             'particulars' => $this->text()

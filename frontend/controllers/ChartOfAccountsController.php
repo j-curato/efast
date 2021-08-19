@@ -430,7 +430,7 @@ class ChartOfAccountsController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
-    public function actionGetGeneralLedger()
+    public function actionGetGeneralLedger($id)
     {
         // 	Personnel Services, Maintenance and Other Operating Expenses ,Capital Outlays
         $res = Yii::$app->db->createCommand('SELECT 
@@ -441,7 +441,29 @@ class ChartOfAccountsController extends Controller
         AND major_accounts.name IN ("Personnel Services","Maintenance and Other Operating Expenses","Capital Outlays")
         AND chart_of_accounts.is_active = 1
         ')->queryAll();
-        return json_encode($res);
+
+        $params = [];
+        if (!empty($id)) {
+
+            $query1 = Yii::$app->db->createCommand("SELECT chart_of_account_id FROM record_allotment_entries WHERE record_allotment_id =:id")
+                ->bindValue(':id', $id)
+                ->queryAll();
+            $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'chart_of_accounts.id', $query1], $params);
+        }
+
+
+        $query2 = (new \yii\db\Query())
+            ->select('chart_of_accounts.id,
+            chart_of_accounts.uacs  object_code, 
+            chart_of_accounts.general_ledger  title ')
+            ->from('chart_of_accounts')
+            ->join('LEFT JOIN', 'major_accounts', 'chart_of_accounts.major_account_id = major_accounts.id')
+            ->where('major_accounts.name IN ("Personnel Services","Maintenance and Other Operating Expenses","Capital Outlays")')
+            ->andWhere('chart_of_accounts.is_active = 1');;
+        if (!empty($query1)) {
+            $query2->orWhere("$sql", $params);
+        }
+        return json_encode($query2->all());
     }
     public function actionChartOfAccounts()
     {

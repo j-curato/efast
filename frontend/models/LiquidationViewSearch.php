@@ -61,7 +61,7 @@ class LiquidationViewSearch extends LiquidationView
         $q = LiquidationView::find();
         if (
             $province === 'adn' ||
-            $province === 'sdn' ||
+            $province === 'ads' ||
             $province === 'sds' ||
             $province === 'sdn' ||
             $province === 'pdi'

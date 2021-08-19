@@ -1,7 +1,7 @@
-<link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
-<!-- <link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre.min.css">
-<link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre-exp.min.css">
-<link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre-icons.min.css"> -->
+<link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
+<!-- <link rel="stylesheet" href="/afms/frontend/web/spectre-0.5.9/dist/spectre.min.css">
+<link rel="stylesheet" href="/afms/frontend/web/spectre-0.5.9/dist/spectre-exp.min.css">
+<link rel="stylesheet" href="/afms/frontend/web/spectre-0.5.9/dist/spectre-icons.min.css"> -->
 
 <?php
 
@@ -624,7 +624,7 @@ use kartik\select2\Select2;
 
         $(document).ready(function() {
             // GET CHART OF ACCOUNTS
-            $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
+            $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/get-general-ledger&id='+$('#update_id').val())
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {
