@@ -774,7 +774,7 @@ $script = <<< JS
     })
     $(document).ready(function() {
         // GET CHART OF ACCOUNTS
-        getAllGeneralLedger().then(function(data) {
+        getAllGeneralLedger($('#update_id').val()).then(function(data) {
             var array = []
             $.each(data, function(key, val) {
             array.push({
@@ -831,7 +831,7 @@ $script = <<< JS
                 });
 
             // SAVE DATA TO DATABASE
-        $.when(getAllGeneralLedger(),getAllTransaction()).done(function(a,b){
+        $.when(getAllGeneralLedger($('#update_id').val()),getAllTransaction()).done(function(a,b){
             update_id = $('#update_id').val()
             console.log(update_id)
             //   update_id.change(function(){
