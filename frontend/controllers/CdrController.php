@@ -40,12 +40,8 @@ class CdrController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-
-                            'create',
-
                             'update',
                             'delete',
-
                             'cdr-final',
                             'insert-cdr'
                         ],
@@ -57,6 +53,7 @@ class CdrController extends Controller
                             'index',
                             'view',
                             'cdr',
+                            'create',
 
                         ],
                         'allow' => true,

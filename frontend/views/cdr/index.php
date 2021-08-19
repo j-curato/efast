@@ -19,9 +19,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?php
 
-        if (Yii::$app->user->can('create_cdr')) {
+        // if (Yii::$app->user->can('create_cdr')) {
             echo Html::a('Create Cdr', ['create'], ['class' => 'btn btn-success']);
-        }
+        // }
         ?>
     </p>
 

@@ -41,21 +41,36 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-sm-2">
                 <label for="province">Province</label>
                 <?php
+                $prov = [
+                    'adn' => 'ADN',
+                    'ads' => 'ADS',
+                    'pdi' => 'PDI',
+                    'sdn' => 'SDN',
+                    'sds' => 'SDS',
+                ];
+                $user = Yii::$app->user->identity->province;
+                $val = '';
+                if (
+                    $user === 'adn' ||
+                    $user === 'ads' ||
+                    $user === 'sdn' ||
+                    $user === 'sds' ||
+                    $user === 'pdi'
+                ) {
+                    $prov = [
+                        $user => strtoupper($user)
+                    ];
+                    $val = $user;
+                }
                 echo Select2::widget([
                     'name' => 'province',
                     'id' => 'province',
-                    'value' => !empty($model->province) ? $model->province : '',
-                    'data' => [
-                        'adn' => 'ADN',
-                        'ads' => 'ADS',
-                        'pdi' => 'PDI',
-                        'sdn' => 'SDN',
-                        'sds' => 'SDS',
-                    ],
+                    'value' => $val,
+                    'data' => $prov,
                     'pluginOptions' => [
                         'autoclose' => true,
                         'placeholder' => 'Select Province'
-                        
+
                     ]
                 ])
 
@@ -98,8 +113,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <?php
                 if (empty($model->id)) {
-                    echo "<button class='btn btn-success' id='save' style='margin-top:23px'>Save</button>";
-                    // echo "<input type='text' value='$model->is_final'>";
+
+                    if (Yii::$app->user->can('create_cdr')) {
+                        echo "<button class='btn btn-success' id='save' style='margin-top:23px'>Save</button>";
+                        // echo "<input type='text' value='$model->is_final'>";
+                    }
                 } else {
                     echo "  <input type='text' id='cdr_id' value='$model->id' style='display:none'>";
                     if ($model->is_final === 1) {
