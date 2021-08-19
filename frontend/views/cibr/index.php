@@ -16,10 +16,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?php
 
-        if (Yii::$app->user->can('create_cibr')) {
+        // if (Yii::$app->user->can('create_cibr')) {
 
             echo   Html::a('Create Cibr', ['create'], ['class' => 'btn btn-success']);
-        }
+        // }
 
         ?>
     </p>
