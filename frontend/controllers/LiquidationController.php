@@ -373,21 +373,35 @@ class LiquidationController extends Controller
             if (!empty($update_id)) {
                 $liquidation = Liquidation::findOne($update_id);
 
-                if (strtotime($liquidation->reporting_period) > strtotime('2021-06')) {
-                    Yii::$app->db->createCommand(
-                        "UPDATE liquidation_entries SET reporting_period = :reporting_period WHERE
-                        liquidation_id = :liquidation_id
-                        AND is_realign = 0
-                        "
-                    )
-                        ->bindValue(':reporting_period', $reporting_period)
-                        ->bindValue(':liquidation_id', $liquidation->id)
-                        ->query();
+
+                if ($liquidation->reporting_period !== $reporting_period) {
+
+                    $check_r_period = (new \yii\db\Query())
+                        ->select('*')
+                        ->from('liquidation_reporting_period')
+                        ->where('liquidation_reporting_period.reporting_period =:reporting_period', ['reporting_period' => $liquidation->reporting_period])
+                        ->andWhere('liquidation_reporting_period.province LIKE :province', ['province' => $province])
+                        ->one();
+                    if (empty($check_r_period)) {
+
+                        Yii::$app->db->createCommand(
+                            "UPDATE liquidation_entries SET reporting_period = :reporting_period WHERE
+                                liquidation_id = :liquidation_id
+                                AND is_realign = 0
+                                "
+                        )
+                            ->bindValue(':reporting_period', $reporting_period)
+                            ->bindValue(':liquidation_id', $liquidation->id)
+                            ->query();
+                    } else {
+                        return json_encode(['isSuccess' => false, 'error' => "Cannot Update "]);
+                    }
+
+                    if ($liquidation->is_locked === 1) {
+                        return json_encode(['isSuccess' => false, 'error' => "Liquidation is Disabled"]);
+                    }
                 }
 
-                if ($liquidation->is_locked === 1) {
-                    return json_encode(['isSuccess' => false, 'error' => "Liquidation is Disabled"]);
-                }
                 $is_realign = true;
                 // $x = explode('-', $liquidation->dv_number);
                 // $x[1] = date('Y', strtotime($reporting_period));
