@@ -130,8 +130,15 @@ Modal::end();
             //     'headerOptions' => ['class' => 'kartik-sheet-style'],
             //     'expandOneOnly' => true
             // ],
-
+            
             'id',
+            
+            [
+                'label'=>'Responsibility Center',
+                'attribute'=>'responsibility_center_id',
+                'value'=>'responsibilityCenter.name',
+
+            ],
             'tracking_number',
 
             // 'payee_id',
@@ -149,7 +156,6 @@ Modal::end();
                 'attribute' => 'gross_amount',
                 'format' => ['decimal', 2],
             ],
-            // 'responsibilityCenter.name',
             'earmark_no',
             'payroll_number',
             'transaction_date',

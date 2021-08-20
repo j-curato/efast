@@ -242,7 +242,7 @@ class LiquidationController extends Controller
             //     return json_encode(['isSuccess' => false, 'error' => $token]);
             //     die();
             // }
-      
+
 
             // destroys all data registered to a session.
             // $session->destroy();
@@ -312,15 +312,29 @@ class LiquidationController extends Controller
             if (date('Y', strtotime($reporting_period)) < date('Y')) {
                 return json_encode(['isSuccess' => false, 'error' => "Invalid Reporting Period"]);
             } else {
+
                 $xyz = (new \yii\db\Query())
                     ->select('*')
                     ->from('liquidation_reporting_period')
                     ->where('liquidation_reporting_period.reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
                     ->andWhere('liquidation_reporting_period.province LIKE :province', ['province' => $province])
                     ->one();
-                if (!empty($xyz)) {
-                    return json_encode(['isSuccess' => false, 'error' => " Reporting Period is Disabled"]);
+
+                if (!empty($update_id)) {
+                    $liq = Liquidation::findOne($update_id);
+
+                    if ($reporting_period !== $liq->reporting_period) {
+                        if (!empty($xyz)) {
+                            return json_encode(['isSuccess' => false, 'error' => " Reporting Period is Disabled"]);
+                        }
+                    }
+                } else {
+                    if (!empty($xyz)) {
+                        return json_encode(['isSuccess' => false, 'error' => " Reporting Period is Disabled"]);
+                    }
                 }
+
+
                 // else
                 // {
                 //     return json_encode(['isSuccess' => false, 'error' => ]);
@@ -358,15 +372,19 @@ class LiquidationController extends Controller
             $is_realign = null;
             if (!empty($update_id)) {
                 $liquidation = Liquidation::findOne($update_id);
-                Yii::$app->db->createCommand(
-                    "UPDATE liquidation_entries SET reporting_period = :reporting_period WHERE
-                    liquidation_id = :liquidation_id
-                    AND is_realign = 0
-                    "
-                )
-                ->bindValue(':reporting_period',$reporting_period)
-                ->bindValue(':liquidation_id',$liquidation->id)
-                ->query();
+
+                if (strtotime($liquidation->reporting_period) > strtotime('2021-06')) {
+                    Yii::$app->db->createCommand(
+                        "UPDATE liquidation_entries SET reporting_period = :reporting_period WHERE
+                        liquidation_id = :liquidation_id
+                        AND is_realign = 0
+                        "
+                    )
+                        ->bindValue(':reporting_period', $reporting_period)
+                        ->bindValue(':liquidation_id', $liquidation->id)
+                        ->query();
+                }
+
                 if ($liquidation->is_locked === 1) {
                     return json_encode(['isSuccess' => false, 'error' => "Liquidation is Disabled"]);
                 }
