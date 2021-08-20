@@ -305,7 +305,7 @@ class LiquidationController extends Controller
                     ->from('check_range')
                     ->where("check_range.id = :id", ['id' => $check_range])
                     ->one();
-                if ($check_number >= $check['from'] && $check_number <= ['to']) {
+                if ($check_number >= $check['from'] && $check_number <= $check['to']) {
                 } else {
                     return json_encode(['isSuccess' => false, 'error' => 'Check Number Not in Range']);
                 }
@@ -352,11 +352,6 @@ class LiquidationController extends Controller
                 ->where('province LIKE :province', ['province' => Yii::$app->user->identity->province])
                 ->all();
             $r = ArrayHelper::getColumn($liq_r_period, 'reporting_period');
-            $check_number_exist = Yii::$app->db->createCommand("
-            SELECT EXISTS(SELECT * FROM liquidation WHERE check_number = :check_number)
-            ")
-                ->bindValue(':check_number', $check_number)
-                ->queryScalar();
 
 
             // if (in_array('2021-04', $r)) {
@@ -421,6 +416,17 @@ class LiquidationController extends Controller
                 //     return json_encode(['isSuccess' => false, 'error' =>  'Check Number Already Inserted']);
                 //     die();
                 // }
+                $check_number_exist = Yii::$app->db->createCommand("
+                SELECT EXISTS(SELECT * FROM liquidation WHERE check_number = :check_number
+                AND province = :province
+                )
+                ")
+                    ->bindValue(':check_number', $check_number)
+                    ->bindValue(':province', $province)
+                    ->queryScalar();
+                if (intval($check_number_exist) === 1) {
+                    return json_encode(['isSuccess' => false, 'error' => 'Check Number Already Use']);
+                }
             }
             $liquidation->check_date = $check_date;
             // $liquidation->payee_id = $payee_id;
@@ -581,57 +587,57 @@ class LiquidationController extends Controller
         $string = substr(str_repeat(0, 4) . $num, -4);
         return strtoupper($province) . '-' . $reporting_period . '-' . $string;
     }
-    public function actionCancel()
-    {
-        if ($_POST) {
-            $id = $_POST['cancelId'];
-            $reporting_period = date('Y-m', strtotime($_POST['reporting_period']));
-            $transaction = Yii::$app->db->beginTransaction();
-            try {
-                $l = Liquidation::findOne($id);
-                // $l->is_cancelled = $l->is_cancelled === 0 ? 1 : 0;
+    // public function actionCancel()
+    // {
+    //     if ($_POST) {
+    //         $id = $_POST['cancelId'];
+    //         $reporting_period = date('Y-m', strtotime($_POST['reporting_period']));
+    //         $transaction = Yii::$app->db->beginTransaction();
+    //         try {
+    //             $l = Liquidation::findOne($id);
+    //             // $l->is_cancelled = $l->is_cancelled === 0 ? 1 : 0;
 
-                if ($flag = $l->save(false)) {
-                    if ($l->is_cancelled === 0) {
+    //             if ($flag = $l->save(false)) {
+    //                 if ($l->is_cancelled === 0) {
 
-                        $liquidation = new Liquidation();
-                        $liquidation->check_date = $l->check_date;
-                        $liquidation->check_number = $l->check_number;
-                        $liquidation->reporting_period = $reporting_period;
-                        $liquidation->po_transaction_id = $l->po_transaction_id;
-                        $liquidation->check_range_id = $l->check_range_id;
-                        $liquidation->dv_number = $l->dv_number;
-                        $liquidation->province = $l->province;
-                        // $liquidation->is_cancelled = 1;
-                        if ($liquidation->save(false)) {
-                            foreach ($l->liquidationEntries as $val) {
-                                $liq_entries = new LiquidationEntries();
-                                $liq_entries->liquidation_id = $liquidation->id;
-                                $liq_entries->chart_of_account_id = $val->chart_of_account_id;
-                                $liq_entries->advances_entries_id = $val->advances_entries_id;
-                                $liq_entries->withdrawals = 0 - $val->withdrawals;
-                                $liq_entries->vat_nonvat = 0 - $val->vat_nonvat;
-                                $liq_entries->expanded_tax = 0 - $val->expanded_tax;
-                                $liq_entries->liquidation_damage = 0 - $val->liquidation_damage;
-                                $liq_entries->reporting_period = $reporting_period;
-                                if ($liq_entries->save(false)) {
-                                }
-                            }
-                        }
-                    } else {
-                        $transaction->rollBack();
-                        return json_encode(['isSuccess' => false, 'error' => 'save error in liquidation entries']);
-                    }
-                }
-                if ($flag) {
-                    $transaction->commit();
-                    return json_encode(['isSuccess' => true, 'error' => 'none']);
-                }
-            } catch (ErrorException $e) {
-                return json_encode(['isSuccess' => false, 'error' => $e->getMessage()]);
-            }
-        }
-    }
+    //                     $liquidation = new Liquidation();
+    //                     $liquidation->check_date = $l->check_date;
+    //                     $liquidation->check_number = $l->check_number;
+    //                     $liquidation->reporting_period = $reporting_period;
+    //                     $liquidation->po_transaction_id = $l->po_transaction_id;
+    //                     $liquidation->check_range_id = $l->check_range_id;
+    //                     $liquidation->dv_number = $l->dv_number;
+    //                     $liquidation->province = $l->province;
+    //                     // $liquidation->is_cancelled = 1;
+    //                     if ($liquidation->save(false)) {
+    //                         foreach ($l->liquidationEntries as $val) {
+    //                             $liq_entries = new LiquidationEntries();
+    //                             $liq_entries->liquidation_id = $liquidation->id;
+    //                             $liq_entries->chart_of_account_id = $val->chart_of_account_id;
+    //                             $liq_entries->advances_entries_id = $val->advances_entries_id;
+    //                             $liq_entries->withdrawals = 0 - $val->withdrawals;
+    //                             $liq_entries->vat_nonvat = 0 - $val->vat_nonvat;
+    //                             $liq_entries->expanded_tax = 0 - $val->expanded_tax;
+    //                             $liq_entries->liquidation_damage = 0 - $val->liquidation_damage;
+    //                             $liq_entries->reporting_period = $reporting_period;
+    //                             if ($liq_entries->save(false)) {
+    //                             }
+    //                         }
+    //                     }
+    //                 } else {
+    //                     $transaction->rollBack();
+    //                     return json_encode(['isSuccess' => false, 'error' => 'save error in liquidation entries']);
+    //                 }
+    //             }
+    //             if ($flag) {
+    //                 $transaction->commit();
+    //                 return json_encode(['isSuccess' => true, 'error' => 'none']);
+    //             }
+    //         } catch (ErrorException $e) {
+    //             return json_encode(['isSuccess' => false, 'error' => $e->getMessage()]);
+    //         }
+    //     }
+    // }
 
     public function actionImport()
     {
@@ -805,5 +811,50 @@ class LiquidationController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+    public function actionCancelledCheck()
+    {
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $check_date = $_POST['check_date'];
+            $check_range = $_POST['check_range'];
+            $check_number = $_POST['check_number'];
+            $particular = 'CANCELLED';
+            $update_id = $_POST['update_id'];
+            $province = Yii::$app->user->identity->province;
+
+
+            $disabled_reporting_period = (new \yii\db\Query())
+                ->select('*')
+                ->from('liquidation_reporting_period')
+                ->where('liquidation_reporting_period.reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+                ->andWhere('liquidation_reporting_period.province LIKE :province', ['province' => $province])
+                ->one();
+            if (!empty($disabled_reporting_period)) {
+                return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
+            }
+            if (!empty($update_id)) {
+                $liquidation = Liquidation::findOne($update_id);
+            } else {
+                $liquidation = new Liquidation();
+            }
+            $liquidation->reporting_period = $reporting_period;
+            $liquidation->check_date = $check_date;
+            $liquidation->check_range_id  = $check_range;
+            $liquidation->particular = $particular;
+            $liquidation->check_number = $check_number;
+            $liquidation->province = $province;
+
+
+            if ($liquidation->validate()) {
+
+                if ($liquidation->save(false)) {
+                    return json_encode(['isSuccess' => true, 'id' => $liquidation->id]);
+                }
+            } else {
+                return json_encode(['isSuccess' => false, 'error' => $liquidation->errors]);
+            }
+        }
+        return $this->render('_form');
     }
 }
