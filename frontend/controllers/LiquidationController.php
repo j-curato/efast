@@ -289,7 +289,11 @@ class LiquidationController extends Controller
             //         return json_encode(['isSuccess' => false, 'error' => 'Check Number Not in Range']);
             //     }
             // }
+
             if (strtotime($check_date) > strtotime('2021-06-20')) {
+                if (empty($po_transaction_id)) {
+                    return json_encode(['isSuccess' => false, 'error' => 'Transaction is Required']);
+                }
                 if (empty($check_range)) {
                     return json_encode(['isSuccess' => false, 'error' => 'Check Number Is Required']);
                 }
