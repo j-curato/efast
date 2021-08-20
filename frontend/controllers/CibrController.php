@@ -9,6 +9,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 
 /**
  * CibrController implements the CRUD actions for Cibr model.
@@ -298,7 +299,7 @@ class CibrController extends Controller
                 ->queryScalar();
             $balance = $q1 - $q2;
 
-
+            ArrayHelper::multisort($dataProvider, ['check_number',], [SORT_ASC]);
 
             return $this->render('_form', [
                 'dataProvider' => $dataProvider,
