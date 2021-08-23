@@ -130,13 +130,13 @@ Modal::end();
             //     'headerOptions' => ['class' => 'kartik-sheet-style'],
             //     'expandOneOnly' => true
             // ],
-            
+
             'id',
-            
+
             [
-                'label'=>'Responsibility Center',
-                'attribute'=>'responsibility_center_id',
-                'value'=>'responsibilityCenter.name',
+                'label' => 'Responsibility Center',
+                'attribute' => 'responsibility_center_id',
+                'value' => 'responsibilityCenter.name',
 
             ],
             'tracking_number',
@@ -160,7 +160,7 @@ Modal::end();
             'payroll_number',
             'transaction_date',
             //'transaction_time',
-     
+
             [
                 'class' => '\kartik\grid\ActionColumn',
                 'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],

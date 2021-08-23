@@ -2,6 +2,8 @@
 
 namespace frontend\controllers;
 
+use app\models\CancelledChecksView;
+use app\models\CancelledChecksViewSearch;
 use Yii;
 use app\models\Liquidation;
 use app\models\LiquidataionSearch;
@@ -56,6 +58,9 @@ class LiquidationController extends Controller
                             'update-liquidation',
                             'cancel',
                             'import',
+                            'cancelled-check-index',
+                            'cancelled-Check-update',
+                            'cancelled-form'
                         ],
                         'allow' => true,
                         'roles' => ['super-user', 'create_liquidation']
@@ -63,10 +68,21 @@ class LiquidationController extends Controller
                     [
                         'actions' => [
                             'index',
-                            'view'
+                            'create',
+                            'update',
+                            'delete',
+                            're-align',
+                            'add-advances',
+                            'insert-liquidation',
+                            'update-liquidation',
+                            'cancel',
+                            'import',
+                            'cancelled-check-index',
+                            'cancelled-Check-update',
+                            'cancelled-form'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user', 'liquidation']
+                        'roles' => ['liquidation']
                     ],
                 ]
             ],
@@ -833,36 +849,96 @@ class LiquidationController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
-    public function actionCancelledCheck()
+
+
+    public function actionCancelledCheckIndex()
+    {
+        $searchModel = new CancelledChecksViewSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        return $this->render('cancelled_checks_index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+    public function actionCancelledCheckUpdate($id)
+    {
+
+
+        // $q  = Liquidation::findOne($id);
+        $model = $this->findModel($id);
+        return $this->renderAjax('_cancelled_form', [
+            'model' => $model,
+            'update_type' => 'update'
+        ]);
+    }
+    public function actionCancelledForm()
     {
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
             $check_date = $_POST['check_date'];
             $check_range = $_POST['check_range'];
             $check_number = $_POST['check_number'];
-            $particular = 'CANCELLED';
+            $payee = 'CANCELLED';
             $update_id = $_POST['update_id'];
             $province = Yii::$app->user->identity->province;
 
-
+            $year = date('Y');
+            $r_year = date('Y', strtotime($reporting_period));
+            if ( $r_year< $year) {
+                return json_encode(['isSuccess' => false, 'error' => "Please Insert Reporting Period in $year "]);
+            }
+            $check = (new \yii\db\Query())
+                ->select([
+                    'check_range.from',
+                    'check_range.to',
+                ])
+                ->from('check_range')
+                ->where("check_range.id = :id", ['id' => $check_range])
+                ->one();
             $disabled_reporting_period = (new \yii\db\Query())
                 ->select('*')
                 ->from('liquidation_reporting_period')
                 ->where('liquidation_reporting_period.reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
                 ->andWhere('liquidation_reporting_period.province LIKE :province', ['province' => $province])
                 ->one();
-            if (!empty($disabled_reporting_period)) {
-                return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
+            if ($check_number >= $check['from'] && $check_number <= $check['to']) {
+            } else {
+                return json_encode(['isSuccess' => false, 'error' => 'Check Number Not in Range']);
             }
             if (!empty($update_id)) {
                 $liquidation = Liquidation::findOne($update_id);
+                if ($liquidation->reporting_period !== $reporting_period) {
+
+                    if (!empty($disabled_reporting_period)) {
+                        return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
+                    }
+                }
             } else {
+                $check_number_exist = Yii::$app->db->createCommand("
+                SELECT EXISTS(SELECT * FROM liquidation WHERE check_number = :check_number
+                AND province = :province
+                AND reporting_period LIKE :year
+                AND payee LIKE 'cancelled%'
+                )
+                ")
+                    ->bindValue(':check_number', $check_number)
+                    ->bindValue(':province', $province)
+                    ->bindValue(':year', $year.'%')
+                    ->queryScalar();
+                if (intval($check_number_exist) === 1) {
+                    return json_encode(['isSuccess' => false, 'error' => 'Check Number Already Use']);
+                }
+
+
+                if (!empty($disabled_reporting_period)) {
+                    return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
+                }
                 $liquidation = new Liquidation();
             }
             $liquidation->reporting_period = $reporting_period;
             $liquidation->check_date = $check_date;
             $liquidation->check_range_id  = $check_range;
-            $liquidation->particular = $particular;
+            $liquidation->payee = $payee;
             $liquidation->check_number = $check_number;
             $liquidation->province = $province;
 
@@ -876,6 +952,33 @@ class LiquidationController extends Controller
                 return json_encode(['isSuccess' => false, 'error' => $liquidation->errors]);
             }
         }
-        return $this->render('_form');
+
+        return $this->renderAjax('_cancelled_form', []);
     }
+    // public function actionCreate()
+    // {
+    //     $model = new Liquidation();
+    //     $session = Yii::$app->session;
+    //     $session->set('form_token', md5(uniqid()));
+
+    //     return $this->render('create', [
+    //         'model' => $model,
+    //         'update_type' => 'create'
+    //     ]);
+    // }
+    // public function actionUpdate($id)
+    // {
+
+    //     $q  = LiquidationEntries::findOne($id);
+    //     $model = $this->findModel($id);
+
+    //     // if ($model->load(Yii::$app->request->post()) && $model->save()) {
+    //     //     return $this->redirect(['view', 'id' => $model->id]);
+    //     // }
+
+    //     return $this->render('update', [
+    //         'model' => $model,
+    //         'update_type' => 'update'
+    //     ]);
+    // }
 }
