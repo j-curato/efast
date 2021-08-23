@@ -266,7 +266,7 @@ class LiquidationController extends Controller
             $new_reporting_period = !empty($_POST['new_reporting_period']) ? $_POST['new_reporting_period'] : '';
             $reporting_period = $_POST['reporting_period'];
             $check_range = $_POST['check_range'];
-            $dv_number = $_POST['dv_number'];
+            $dv_number = !empty($_POST['dv_number']) ? $_POST['dv_number'] : '';
             $province = Yii::$app->user->identity->province;
 
 
@@ -368,7 +368,7 @@ class LiquidationController extends Controller
             // die();
             $transaction = Yii::$app->db->beginTransaction();
             $id = '';
-            $is_realign = null;
+            $is_realign = false;
             if (!empty($update_id)) {
                 $liquidation = Liquidation::findOne($update_id);
 
@@ -399,17 +399,24 @@ class LiquidationController extends Controller
                     if ($liquidation->is_locked === 1) {
                         return json_encode(['isSuccess' => false, 'error' => "Liquidation is Disabled"]);
                     }
+
+                    if (strtotime($reporting_period) > strtotime('2021-08')) {
+                        $x = explode('-', $liquidation->dv_number);
+                        $x[1] = date('Y', strtotime($reporting_period));
+                        $x[2] = date('m', strtotime($reporting_period));
+                        $liquidation->dv_number = implode('-', $x);
+                    }
                 }
 
                 $is_realign = true;
-                // $x = explode('-', $liquidation->dv_number);
-                // $x[1] = date('Y', strtotime($reporting_period));
-                // $x[2] = date('m', strtotime($reporting_period));
-                // $liquidation->dv_number = implode('-', $x);
             } else {
                 $liquidation = new Liquidation();
-                // $liquidation->dv_number = $this->getDvNumber($reporting_period);
 
+                if (strtotime($reporting_period) > strtotime('2021-08')) {
+                    $liquidation->dv_number = $this->getDvNumber($reporting_period);
+                } else {
+                    $liquidation->dv_number = $dv_number;
+                }
 
 
                 // if (intval($check_number_exist) === 1) {
@@ -437,7 +444,8 @@ class LiquidationController extends Controller
             $liquidation->check_range_id = $check_range;
 
             // TEMPORRARY RA NI SA AUG E CHANGE RA NI
-            $liquidation->dv_number = $dv_number;
+
+
 
 
             // list($withd) = sscanf(implode(explode(',', $withdrawal[0])), "%f");
@@ -567,12 +575,24 @@ class LiquidationController extends Controller
         //     ->orderBy("liquidation.id DESC")
         //     ->one();
         $province = Yii::$app->user->identity->province;
+        $arr = [
+            'adn' => 904,
+            'ads' => 694,
+            'sdn' => 695,
+            'sds' => 1334,
+            'pdi' => 026
+        ];
+
+        $province = Yii::$app->user->identity->province;
         $q = Yii::$app->db->createCommand("SELECT substring_index(substring(dv_number, instr(dv_number, '-')+1), '-', -1) as q 
         from liquidation
         WHERE liquidation.province = :province
+        AND liquidation.reporting_period >= '2021-09'
         ORDER BY q DESC  LIMIT 1")
             ->bindValue(':province', $province)
             ->queryScalar();
+
+
         // return $q;
         // die();
         $num = 0;
@@ -581,7 +601,8 @@ class LiquidationController extends Controller
             // $x = explode('-', $q['dv_number']);
             $num = $q + 1;
         } else {
-            $num = 1;
+            // $num = 1;
+            $num = $arr[$province];
         }
 
         $string = substr(str_repeat(0, 4) . $num, -4);

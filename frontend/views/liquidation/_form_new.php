@@ -145,11 +145,11 @@ use yii\helpers\ArrayHelper;
                 <div class="col-sm-3">
 
                     <label for="dv_number">DV Number</label>
-                    <input type="text" name="dv_number"  required class="form-control">
+                    <input type="text" name="dv_number" id='dv_number' required class="form-control">
                 </div>
                 <div class="col-sm-3" style="height:60x">
                     <label for="transaction">Transactions</label>
-                    <select id="transaction"  name="transaction" class="transaction select" style="width: 100%; margin-top:50px">
+                    <select id="transaction" name="transaction" class="transaction select" style="width: 100%; margin-top:50px">
                         <option></option>
                     </select>
                 </div>
@@ -716,6 +716,18 @@ $script = <<<JS
 
             }
         })
+    })
+    $('#reporting_period').change(function(){
+        var r_period =$('#reporting_period').val()
+        var d1 = new Date(r_period);
+        var d2 = new Date('2021-09');
+        var notSame = d1.getTime() >= d2.getTime();
+        console.log(notSame)
+
+
+
+        $('#dv_number').attr('disabled',notSame)
+
     })
     $(document).ready(function(){
         if ($("#update_id").val()>0){
