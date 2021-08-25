@@ -442,7 +442,7 @@ class LiquidationController extends Controller
                 //     die();
                 // }
                 if (intval($check_number) !== 0) {
-                    return json_encode(['isSuccess' => false, 'error' => $check_number]);
+                    // return json_encode(['isSuccess' => false, 'error' => $check_number]);
                     $check_number_exist = Yii::$app->db->createCommand("
                     SELECT EXISTS(SELECT * FROM liquidation WHERE check_number = :check_number
                     AND province = :province
