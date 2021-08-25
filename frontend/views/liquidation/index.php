@@ -23,7 +23,13 @@ $this->params['breadcrumbs'][] = $this->title;
         <p>
             <?= Html::a('Create Liquidation', ['create'], ['class' => 'btn btn-success']) ?>
             <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
-            <button class="btn btn-success" data-target="#updateUacsModal" data-toggle="modal">Update Uacs</button>
+
+            <?php
+            if (Yii::$app->user->can('super-user')){
+           
+                echo " <button class='btn btn-success' data-target='#updateUacsModal' data-toggle='modal'>Update Uacs</button>";
+            }
+            ?>
         </p>
 
         <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
