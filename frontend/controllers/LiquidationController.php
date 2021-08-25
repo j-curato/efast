@@ -60,7 +60,8 @@ class LiquidationController extends Controller
                             'import',
                             'cancelled-check-index',
                             'cancelled-Check-update',
-                            'cancelled-form'
+                            'cancelled-form',
+                            'view'
                         ],
                         'allow' => true,
                         'roles' => ['super-user', 'create_liquidation']
@@ -79,7 +80,8 @@ class LiquidationController extends Controller
                             'import',
                             'cancelled-check-index',
                             'cancelled-Check-update',
-                            'cancelled-form'
+                            'cancelled-form',
+                            'view'
                         ],
                         'allow' => true,
                         'roles' => ['liquidation']
@@ -439,16 +441,19 @@ class LiquidationController extends Controller
                 //     return json_encode(['isSuccess' => false, 'error' =>  'Check Number Already Inserted']);
                 //     die();
                 // }
-                $check_number_exist = Yii::$app->db->createCommand("
-                SELECT EXISTS(SELECT * FROM liquidation WHERE check_number = :check_number
-                AND province = :province
-                )
-                ")
-                    ->bindValue(':check_number', $check_number)
-                    ->bindValue(':province', $province)
-                    ->queryScalar();
-                if (intval($check_number_exist) === 1) {
-                    return json_encode(['isSuccess' => false, 'error' => 'Check Number Already Use']);
+                if (intval($check_number) !== 0) {
+                    return json_encode(['isSuccess' => false, 'error' => $check_number]);
+                    $check_number_exist = Yii::$app->db->createCommand("
+                    SELECT EXISTS(SELECT * FROM liquidation WHERE check_number = :check_number
+                    AND province = :province
+                    )
+                    ")
+                        ->bindValue(':check_number', $check_number)
+                        ->bindValue(':province', $province)
+                        ->queryScalar();
+                    if (intval($check_number_exist) === 1) {
+                        return json_encode(['isSuccess' => false, 'error' => 'Check Number Already Use']);
+                    }
                 }
             }
             $liquidation->check_date = $check_date;
@@ -884,7 +889,7 @@ class LiquidationController extends Controller
 
             $year = date('Y');
             $r_year = date('Y', strtotime($reporting_period));
-            if ( $r_year< $year) {
+            if ($r_year < $year) {
                 return json_encode(['isSuccess' => false, 'error' => "Please Insert Reporting Period in $year "]);
             }
             $check = (new \yii\db\Query())
@@ -923,7 +928,7 @@ class LiquidationController extends Controller
                 ")
                     ->bindValue(':check_number', $check_number)
                     ->bindValue(':province', $province)
-                    ->bindValue(':year', $year.'%')
+                    ->bindValue(':year', $year . '%')
                     ->queryScalar();
                 if (intval($check_number_exist) === 1) {
                     return json_encode(['isSuccess' => false, 'error' => 'Check Number Already Use']);
@@ -955,30 +960,89 @@ class LiquidationController extends Controller
 
         return $this->renderAjax('_cancelled_form', []);
     }
-    // public function actionCreate()
-    // {
-    //     $model = new Liquidation();
-    //     $session = Yii::$app->session;
-    //     $session->set('form_token', md5(uniqid()));
+    public function actionUpdateUacs()
+    {
 
-    //     return $this->render('create', [
-    //         'model' => $model,
-    //         'update_type' => 'create'
-    //     ]);
-    // }
-    // public function actionUpdate($id)
-    // {
+        if (!empty($_POST)) {
+            // $chart_id = $_POST['chart_id'];
+            $name = $_FILES["file"]["name"];
+            // var_dump($_FILES['file']);
+            // die();
+            $id = uniqid();
+            $file = "transaction/{$id}_{$name}";
+            if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
+            } else {
+                return "ERROR 2: MOVING FILES FAILED.";
+                die();
+            }
+            $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+            $excel = $reader->load($file);
+            $excel->setActiveSheetIndexByName('newLiquidation');
+            $worksheet = $excel->getActiveSheet();
+            // print_r($excel->getSheetNames());
 
-    //     $q  = LiquidationEntries::findOne($id);
-    //     $model = $this->findModel($id);
+            $data = [];
+            // $chart_uacs = ChartOfAccounts::find()->where("id = :id", ['id' => $chart_id])->one()->uacs;
 
-    //     // if ($model->load(Yii::$app->request->post()) && $model->save()) {
-    //     //     return $this->redirect(['view', 'id' => $model->id]);
-    //     // }
+            // 
 
-    //     return $this->render('update', [
-    //         'model' => $model,
-    //         'update_type' => 'update'
-    //     ]);
-    // }
+            $transaction = Yii::$app->db->beginTransaction();
+            foreach ($worksheet->getRowIterator(2) as $key => $row) {
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                $cells = [];
+                $y = 0;
+                foreach ($cellIterator as $x => $cell) {
+                    $q = '';
+                    // if ($y === 1) {
+                    //     $cells[] = $cell->getFormattedValue();
+                    // } else {
+                    $cells[] =   $cell->getValue();
+                    // }
+                    $y++;
+                }
+                if (!empty($cells)) {
+
+                    $id = $cells[0];
+                    $new_object_code = $cells[1];
+
+
+                    $chart_of_account_id = Yii::$app->db->createCommand("SELECT id FROM chart_of_accounts WHERE uacs = :uacs")
+                        ->bindValue(':uacs', $new_object_code)
+                        ->queryScalar();
+                    if (empty($chart_of_account_id)) {
+                        $new_object_code = $cells[1];
+                        return json_encode(['isSuccess' => false, 'error' => "Object Code Does not Exist in Line $key $new_object_code"]);
+                    }
+
+                    $entry = LiquidationEntries::findOne($id);
+                    $entry->new_chart_of_account_id = $chart_of_account_id;
+                    if ($entry->save(false)) {
+                    }
+                }
+            }
+            $transaction->commit();
+            return json_encode(['isSuccess' => true, 'error' => "Success"]);
+            // $column = [
+            //     'liquidation_id',
+            //     'chart_of_account_id',
+            //     'withdrawals',
+            //     'vat_nonvat',
+            //     'expanded_tax',
+            //     'reporting_period',
+            //     'advances_entries_id'
+            // ];
+            // $ja = Yii::$app->db->createCommand()->batchInsert('liquidation_entries', $column, $data)->execute();
+
+            // // return $this->redirect(['index']);
+            // // return json_encode(['isSuccess' => true]);
+            // $transaction->commit();
+            ob_clean();
+            echo "<pre>";
+            var_dump('success');
+            echo "</pre>";
+            return ob_get_clean();
+        }
+    }
 }

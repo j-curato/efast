@@ -58,7 +58,7 @@ Modal::end();
                     <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
                 </div>
                 <div class='modal-body'>
-                    <center><a href="import_formats/Transaction_Format.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                    <center><a href="/afms/frontend/web/import_formats/Transaction_Format.xlsx">Download Template Here to avoid error during Upload.</a></center>
                     <hr>
                     <label for="ledger"> SELECT GENERAL LEDGER</label>
                     <?php
