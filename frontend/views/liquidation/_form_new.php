@@ -686,7 +686,7 @@ $script = <<<JS
     // SAVE DATA TO DATABASE
     $('#save_data').submit(function(e) {
         e.preventDefault();
-        // $('#save').attr('disabled',true)
+        $('#save').attr('disabled',true)
         $.ajax({
             type: 'POST',
             url: window.location.pathname + '?r=liquidation/insert-liquidation',
@@ -715,6 +715,7 @@ $script = <<<JS
                         button:false,
 
                     })
+                    $('#save').attr('disabled',false)
                 }
 
             }
