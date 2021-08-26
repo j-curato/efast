@@ -13,8 +13,13 @@ use yii\helpers\ArrayHelper;
 /* @var $model app\models\Advances */
 /* @var $form yii\widgets\ActiveForm */
 ?>
-
-<div class="advances-form">
+<div id="dots5">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+</div>
+<div class="advances-form" style="display: none;">
 
 
 
@@ -384,6 +389,7 @@ use yii\helpers\ArrayHelper;
 
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
 
 ?>
 <?php
@@ -472,6 +478,12 @@ $script = <<<JS
                     })
 
                 }   
+                
+
+                setTimeout(() => {
+                   $('.advances-form').show()
+                   $("#dots5").hide()
+                }, 1000);
 
     })
     $(document).ready(function(){
