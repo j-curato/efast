@@ -1177,7 +1177,12 @@ class ReportController extends \yii\web\Controller
     }
     public function actionQqq()
     {
-        echo shell_exec('git pull git@github.com:kiotipot1/dti-afms-2.git');
-        die();
+
+        echo "<pre>";
+        var_dump(Yii::$app->cloud_db->createCommand("SELECT * FROM books")->queryAll());
+        echo "</pre>";
+        return ob_get_clean();
+        // echo shell_exec('git pull git@github.com:kiotipot1/dti-afms-2.git');
+        // die();
     }
 }
