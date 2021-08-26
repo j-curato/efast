@@ -19,8 +19,8 @@ class TransactionSearch extends Transaction
     public function rules()
     {
         return [
-            [['id', 'responsibility_center_id'], 'integer'],
-            [['particular', 'tracking_number', 'earmark_no', 'payroll_number', 'transaction_date', 'transaction_time', 'payee_id'], 'safe'],
+            [['id',], 'integer'],
+            [['responsibility_center_id','particular', 'tracking_number', 'earmark_no', 'payroll_number', 'transaction_date', 'transaction_time', 'payee_id'], 'safe'],
             [['gross_amount'], 'number'],
         ];
     }
@@ -79,10 +79,10 @@ class TransactionSearch extends Transaction
             return $dataProvider;
         }
         $query->joinWith('payee');
+        $query->joinWith('responsibilityCenter');
         // grid filtering conditions
         $query->andFilterWhere([
             'transaction.id' => $this->id,
-            'responsibility_center_id' => $this->responsibility_center_id,
             'gross_amount' => $this->gross_amount,
         ]);
 
@@ -93,6 +93,7 @@ class TransactionSearch extends Transaction
             ->andFilterWhere(['like', 'earmark_no', $this->earmark_no])
             ->andFilterWhere(['like', 'payroll_number', $this->payroll_number])
             ->andFilterWhere(['like', 'transaction_date', $this->transaction_date])
+            ->andFilterWhere(['like', 'responsibility_center.name', $this->responsibility_center_id])
             ->andFilterWhere(['like', 'transaction_time', $this->transaction_time]);
 
         return $dataProvider;

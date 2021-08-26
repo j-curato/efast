@@ -233,7 +233,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             Cashier
                         </span>
                         <br>
-                        <span class="note">(Date and Time for acknowledgin Reciept of DV's from Accounting)</span>
+                        <span class="note">(Date and Time for Acknowledging Reciept of Approved DV from RD)</span>
                     </td>
                     <td><?php
 

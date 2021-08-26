@@ -1,6 +1,7 @@
 <?php
 
 use app\models\LiquidationViewSearch;
+use aryelds\sweetalert\SweetAlertAsset;
 use kartik\export\ExportMenu;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
@@ -22,6 +23,13 @@ $this->params['breadcrumbs'][] = $this->title;
         <p>
             <?= Html::a('Create Liquidation', ['create'], ['class' => 'btn btn-success']) ?>
             <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
+
+            <?php
+            if (Yii::$app->user->can('super-user')){
+           
+                echo " <button class='btn btn-success' data-target='#updateUacsModal' data-toggle='modal'>Update Uacs</button>";
+            }
+            ?>
         </p>
 
         <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -68,6 +76,56 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
 
+        <div class="modal fade" id="updateUacsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
+                    </div>
+                    <div class='modal-body'>
+                        <center><a href="/afms/frontend/web/import_formats/Transaction_Format.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                        <hr>
+                        <label for="ledger"> SELECT GENERAL LEDGER</label>
+                        <?php
+                        $ledger = Yii::$app->db->createCommand("SELECT chart_of_accounts.id, CONCAT(chart_of_accounts.uacs,' - ',chart_of_accounts.general_ledger) as name FROM chart_of_accounts")->queryAll();
+                        ?>
+                        <?php
+
+                        $form = ActiveForm::begin([
+                            // 'action' => ['transaction/import-transaction'],
+                            // 'method' => 'POST',
+                            'id' => 'updateUacs',
+                            'options' => [
+                                'enctype' => 'multipart/form-data',
+                            ], // important
+                        ]);
+
+                        // echo '<input type="file">';
+                        echo "<br>";
+                        echo FileInput::widget([
+                            'name' => 'file',
+                            // 'options' => ['multiple' => true],
+                            'id' => 'updateUacsfile',
+                            'pluginOptions' => [
+                                'showPreview' => true,
+                                'showCaption' => true,
+                                'showRemove' => true,
+                                'showUpload' => true,
+                            ]
+                        ]);
+
+
+                        ActiveForm::end();
+
+                        ?>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     <?php }
     ?>
 
@@ -78,30 +136,29 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     $gridColumn = [
+        'id',
         'reporting_period',
         'dv_number',
         'check_date',
         'check_number',
         'fund_source',
         [
-            'label'=>'Particular',
-            'value'=>function($model){
-                if (!empty($model->particular)){
+            'label' => 'Particular',
+            'value' => function ($model) {
+                if (!empty($model->particular)) {
                     $particular = $model->particular;
-                }
-                else{
+                } else {
                     $particular = $model->transaction_particular;
                 }
-                return $particular ;
+                return $particular;
             }
         ],
         [
-            'label'=>'Payee',
-            'value'=>function($model){
-                if (!empty($model->payee)){
+            'label' => 'Payee',
+            'value' => function ($model) {
+                if (!empty($model->payee)) {
                     $payee = $model->payee;
-                }
-                else{
+                } else {
                     $payee = $model->transaction_payee;
                 }
                 return $payee;
@@ -141,7 +198,7 @@ $this->params['breadcrumbs'][] = $this->title;
         //     'attribute' => 'province',
         //     'value' => function ($model) {
 
-    
+
         //         return strtoupper($model->province);
         //     }
         // ],
@@ -259,3 +316,70 @@ $this->params['breadcrumbs'][] = $this->title;
         font-size: 12px;
     }
 </style>
+
+<?php
+SweetAlertAsset::register($this);
+$script = <<<JS
+
+        var i = false
+            $('#updateUacs').submit(function(e){
+                // $(this).unbind();
+                e.preventDefault();
+                    
+                //  $("#employee").on("pjax:success", function(data) {
+                    //   console.log(data)
+                    // });
+                    
+                    if (!i){
+                        i=true;
+                        $.ajax({
+                            url: window.location.pathname + '?r=liquidation/update-uacs',
+                            type:'POST',
+                            data:  new FormData(this),
+                            contentType: false,
+                            cache: false,
+                            processData:false,
+                            success:function(data){
+                                console.log(data)
+                                var res = JSON.parse(data)
+                        //         // break;
+                        //         // $('#uploadmodal').close()
+                        //         console.log(i)
+                                
+                        if (res.isSuccess){
+                            swal( {
+                                icon: 'success',
+                                title: "Successfuly Added",
+                                type: "success",
+                                timer:3000,
+                                closeOnConfirm: false,
+                                closeOnCancel: false
+                            },function(){
+                                window.location.href = window.location.pathname + "?r=transaction"
+                            })
+                        }
+                        else{
+                            swal( {
+                                icon: 'error',
+                                title: res.error,
+                                type: "error",
+                                timer:10000,
+                                closeOnConfirm: false,
+                                closeOnCancel: false
+                            })
+                            i=false;
+                        }
+                    },
+                    // data:$('#import').serialize()
+                })
+                
+                 return false; 
+                }
+                
+            })
+      
+             
+        
+JS;
+$this->registerJs($script);
+?>

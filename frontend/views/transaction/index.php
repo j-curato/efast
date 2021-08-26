@@ -58,7 +58,7 @@ Modal::end();
                     <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
                 </div>
                 <div class='modal-body'>
-                    <center><a href="import_formats/Transaction_Format.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                    <center><a href="/afms/frontend/web/import_formats/Transaction_Format.xlsx">Download Template Here to avoid error during Upload.</a></center>
                     <hr>
                     <label for="ledger"> SELECT GENERAL LEDGER</label>
                     <?php
@@ -132,6 +132,13 @@ Modal::end();
             // ],
 
             'id',
+
+            [
+                'label' => 'Responsibility Center',
+                'attribute' => 'responsibility_center_id',
+                'value' => 'responsibilityCenter.name',
+
+            ],
             'tracking_number',
 
             // 'payee_id',
@@ -149,12 +156,11 @@ Modal::end();
                 'attribute' => 'gross_amount',
                 'format' => ['decimal', 2],
             ],
-            // 'responsibilityCenter.name',
             'earmark_no',
             'payroll_number',
             'transaction_date',
             //'transaction_time',
-     
+
             [
                 'class' => '\kartik\grid\ActionColumn',
                 'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],

@@ -9,6 +9,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 
 /**
  * CibrController implements the CRUD actions for Cibr model.
@@ -35,7 +36,7 @@ class CibrController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-                        
+
                             'update',
                             'delete',
                             'insert-cibr',
@@ -95,28 +96,28 @@ class CibrController extends Controller
             ->queryAll();
 
         $q1 = Yii::$app->db->createCommand("SELECT 
-                SUM(advances_balances.balance) as advances_balances
-                from advances_balances
-                where reporting_period <:reporting_period 
-                AND province LIKE :province
-                
-                ")
+                SUM(total) as total
+             from cibr_advances_balances
+             where reporting_period <:reporting_period 
+             AND province LIKE :province
+            
+              ")
             ->bindValue(':reporting_period',   $model->reporting_period)
             ->bindValue(':province',   $model->province)
             ->queryScalar();
 
         $q2 = Yii::$app->db->createCommand("SELECT 
-            SUM(liquidation_balances.balance)  as liquidation_balances
-            from liquidation_balances
-            where reporting_period <:reporting_period 
-            AND province LIKE :province
-        
-            ")
+                    SUM(total_withdrawals) as total_withdrawal
+                from cibr_liquidation_balances
+                where reporting_period <:reporting_period 
+                AND province LIKE :province
+                 ")
             ->bindValue(':reporting_period',   $model->reporting_period)
             ->bindValue(':province',   $model->province)
             ->queryScalar();
         $balance = $q1 - $q2;
 
+        ArrayHelper::multisort($dataProvider, ['check_number',], [SORT_ASC]);
 
         return $this->render('view', [
             'dataProvider' => $dataProvider,
@@ -286,7 +287,7 @@ class CibrController extends Controller
                 ->bindValue(':reporting_period',   $reporting_period)
                 ->bindValue(':province',   $province)
                 ->queryScalar();
-   
+
             $q2 = Yii::$app->db->createCommand("SELECT 
                     SUM(total_withdrawals) as total_withdrawal
                 from cibr_liquidation_balances
@@ -298,7 +299,7 @@ class CibrController extends Controller
                 ->queryScalar();
             $balance = $q1 - $q2;
 
-
+            ArrayHelper::multisort($dataProvider, ['check_number',], [SORT_ASC]);
 
             return $this->render('_form', [
                 'dataProvider' => $dataProvider,
