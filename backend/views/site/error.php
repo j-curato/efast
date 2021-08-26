@@ -21,7 +21,7 @@ $this->title = $name;
         The above error occurred while the Web server was processing your request.
     </p>
     <p>
-      asdasdasdasd
+      qweqweqweqweqwe
     </p>
 
 </div>
