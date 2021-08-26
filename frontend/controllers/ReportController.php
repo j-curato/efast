@@ -733,7 +733,7 @@ class ReportController extends \yii\web\Controller
 
             $cdr  = Cdr::findOne($id);
 
-         
+
 
             $q = Yii::$app->db->createCommand("SELECT
             chart_of_accounts.uacs as gl_object_code,
@@ -1017,9 +1017,9 @@ class ReportController extends \yii\web\Controller
             $prev = implode('-', $x);
 
             $query = Yii::$app->db->createCommand("CALL q(:province,:reporting_period)")
-            ->bindValue(':province', $province)
-            ->bindValue(':reporting_period', $reporting_period)
-            ->queryAll();
+                ->bindValue(':province', $province)
+                ->bindValue(':reporting_period', $reporting_period)
+                ->queryAll();
             $dataProvider = $query;
             $conso_fur = YIi::$app->db->createCommand('CALL conso_fur(:province,:reporting_period,:prev_r_period)')
                 ->bindValue(':province', $province)
@@ -1174,5 +1174,10 @@ class ReportController extends \yii\web\Controller
         var_dump($query2);
         echo '<\pre>';
         return ob_get_clean();
+    }
+    public function actionQqq()
+    {
+        echo shell_exec('git pull git@github.com:kiotipot1/dti-afms-2.git');
+        die();
     }
 }
