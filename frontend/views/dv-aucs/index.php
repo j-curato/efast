@@ -225,10 +225,12 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'label' => "MRD Classification",
+                'attribute'=>'mrd_classification_id',
                 'value' => "mrdClassification.name"
             ],
             [
                 'label' => "Nature of Transaction",
+                'attribute'=>'nature_of_transaction_id',
                 'value' => "natureOfTransaction.name"
             ],
             [
