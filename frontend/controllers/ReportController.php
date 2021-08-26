@@ -1177,6 +1177,7 @@ class ReportController extends \yii\web\Controller
     }
     public function actionQqq()
     {
+        echo 'qwer';
         echo shell_exec('git pull git@github.com:kiotipot1/dti-afms-2.git');
         die();
     }
