@@ -293,7 +293,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 'content' =>
                 "<form id='export_filter'>" .
-                    "<span for='from_reporting_period'>From</span>" .
                     "<span >" .
                     DatePicker::widget([
                         'name' => 'from_reporting_period',
@@ -307,11 +306,10 @@ $this->params['breadcrumbs'][] = $this->title;
                             'autoclose' => true
                         ],
                         'options' => [
-                            'placeholder' => 'From',
+                            'placeholder' => 'to',
                             'readOnly' => true,
                             'style' => 'background-color:white;width:120px',
                             'class'=>'col-sm-3'
-
                         ],
                     ]) .
                     '</span>'
