@@ -1124,8 +1124,8 @@ class LiquidationController extends Controller
             foreach ($query  as  $val) {
 
                 $sheet->setCellValueByColumnAndRow(1, $row,  $val['id']);
-                $sheet->setCellValueByColumnAndRow(3, $row,  $val['reporting_period']);
-                $sheet->setCellValueByColumnAndRow(2, $row,  $val['dv_number']);
+                $sheet->setCellValueByColumnAndRow(2, $row,  $val['reporting_period']);
+                $sheet->setCellValueByColumnAndRow(3, $row,  $val['dv_number']);
                 $sheet->setCellValueByColumnAndRow(4, $row,  $val['check_date']);
                 $sheet->setCellValueByColumnAndRow(5, $row,  $val['check_number']);
                 $sheet->setCellValueByColumnAndRow(6, $row,  $val['fund_source']);

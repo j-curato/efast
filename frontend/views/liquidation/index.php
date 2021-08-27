@@ -293,6 +293,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 'content' =>
                 "<form id='export_filter'>" .
+                    "<span for='from_reporting_period'>From</span>" .
+                    "<span >" .
                     DatePicker::widget([
                         'name' => 'from_reporting_period',
                         'id' => 'from_reporting_period',
@@ -303,8 +305,17 @@ $this->params['breadcrumbs'][] = $this->title;
                             'format' => 'yyyy-mm',
                             'minViewMode' => 'months',
                             'autoclose' => true
-                        ]
+                        ],
+                        'options' => [
+                            'placeholder' => 'From',
+                            'readOnly' => true,
+                            'style' => 'background-color:white;width:120px',
+                            'class'=>'col-sm-3'
+
+                        ],
                     ]) .
+                    '</span>'
+                    .
                     DatePicker::widget([
                         'name' => 'to_reporting_period',
                         'id' => 'to_reporting_period',
@@ -315,7 +326,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             'format' => 'yyyy-mm',
                             'minViewMode' => 'months',
                             'autoclose' => true
-                        ]
+                        ],
+                        'options' => [
+                            'placeholder' => 'From',
+                            'readOnly' => true,
+                            'style' => 'background-color:white;width:120px'
+
+                        ],
                     ]) .
 
                     "<button class='btn btn-primary' type='submit'>Export</button>",
