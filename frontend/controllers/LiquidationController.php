@@ -1145,7 +1145,7 @@ class LiquidationController extends Controller
 
             date_default_timezone_set('Asia/Manila');
             // return date('l jS \of F Y h:i:s A');
-            $id = date('Y-m-d h_s A');
+            $id = uniqid().'_'.date('Y-m-d h A');
             $file_name = "liquidation_$id.xlsx";
             // header('Content-Type: application/vnd.ms-excel');
             // header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
@@ -1154,7 +1154,10 @@ class LiquidationController extends Controller
             // header('Pragma: public'); // HTTP/1.0
             // echo readfile($file);
             $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
-            $file = "transaction\liquidation_$id.xlsx";
+
+            $path = Yii::getAlias('@webroot') . '/transaction';
+
+            $file = $path . "/liquidation_$id.xlsx";
             $file2 = "transaction/liquidation_$id.xlsx";
             $writer->save($file);
             // return ob_get_clean();
