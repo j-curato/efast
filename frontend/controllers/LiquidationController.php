@@ -1051,24 +1051,39 @@ class LiquidationController extends Controller
         if ($_POST) {
             $from_reporting_period = $_POST['from_reporting_period'];
             $to_reporting_period = $_POST['to_reporting_period'];
-            // $query  = Yii::$app->db->createCommand("SELECT * FROM liquidation_entries_view
-            //             WHERE 
-            //             reporting_period BETWEEN :from_reporting_period AND :to_reporting_period
-            //             ORDER BY reporting_period
-            // ")
+            $q = "SELECT 
+            liquidation_entries.id,
+            liquidation.dv_number,
+            liquidation.reporting_period,
+            liquidation.check_date,
+            liquidation.check_number,
+            advances_entries.fund_source,
+            IFNULL(liquidation.particular,po_transaction.particular) as particular,
+            IFNULL(liquidation.payee , po_transaction.payee ) as payee,
+            chart_of_accounts.uacs as object_code,
+            chart_of_accounts.general_ledger as account_title,
+            liquidation_entries.withdrawals,
+            liquidation_entries.vat_nonvat,
+            liquidation_entries.expanded_tax,
+            liquidation_entries.liquidation_damage,
+            COALESCE(IFNULL(liquidation_entries.withdrawals,0))
+            + COALESCE(IFNULL(liquidation_entries.vat_nonvat,0))
+            +COALESCE(IFNULL(liquidation_entries.expanded_tax,0)) as gross_payment,
+            liquidation.province
+           FROM liquidation
+            LEFT JOIN liquidation_entries ON
+             liquidation.id=
+            liquidation_entries.liquidation_id
+            LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
+            LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id =advances_entries.id
+            LEFT JOIN advances ON advances_entries.advances_id=advances.id
+            LEFT JOIN chart_of_accounts ON liquidation_entries.chart_of_account_id = chart_of_accounts.id 
 
-            //     ->bindValue(':from_reporting_period',   $from_reporting_period)
-            //     ->bindValue(':to_reporting_period',   $to_reporting_period)
-            //     ->queryAll();
+            WHERE
+             liquidation_entries.reporting_period BETWEEN :from_reporting_period AND :to_reporting_period";
+
             $province = strtolower(Yii::$app->user->identity->province);
-            $q = (new \yii\db\Query())
-                ->select('*')
-                ->from('liquidation_entries_view')
-                ->where(
-                    'reporting_period BETWEEN :from_reporting_period AND :to_reporting_period',
 
-                    ['from_reporting_period' => $from_reporting_period, 'to_reporting_period' => $to_reporting_period]
-                );
 
             if (
                 $province === 'adn' ||
@@ -1077,15 +1092,25 @@ class LiquidationController extends Controller
                 $province === 'sds' ||
                 $province === 'pdi'
             ) {
-                $q->andWhere('province = :province', ['province' => $province]);
+                $q = $q . " AND liquidation.province = :province ";
+                // ob_clean();
+                // echo '<pre>';
+                // var_dump($q);
+                // echo '</pre>';
+                // return ob_get_clean();
+                $query  =   Yii::$app->db->createCommand($q)
+                    ->bindValue(':from_reporting_period',   $from_reporting_period)
+                    ->bindValue(':to_reporting_period',   $to_reporting_period)
+                    ->bindValue(':province',   $province)
+                    ->queryAll();
+            } else {
+
+                $query  = Yii::$app->db->createCommand($q)
+                    ->bindValue(':from_reporting_period',   $from_reporting_period)
+                    ->bindValue(':to_reporting_period',   $to_reporting_period)
+                    ->queryAll();
             }
 
-            $query = $q->all();
-            // ob_clean();
-            // echo "<pre>";
-            // var_dump($query);
-            // echo "</pre>";
-            // return ob_get_clean();
             $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
             // header
@@ -1145,7 +1170,7 @@ class LiquidationController extends Controller
 
             date_default_timezone_set('Asia/Manila');
             // return date('l jS \of F Y h:i:s A');
-            $id = uniqid().'_'.date('Y-m-d h A');
+            $id = uniqid() . '_' . date('Y-m-d h A');
             $file_name = "liquidation_$id.xlsx";
             // header('Content-Type: application/vnd.ms-excel');
             // header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
