@@ -2,11 +2,13 @@
 
 use app\models\LiquidationViewSearch;
 use aryelds\sweetalert\SweetAlertAsset;
+use kartik\date\DatePicker;
 use kartik\export\ExportMenu;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
 use kartik\grid\GridView;
 use yii\helpers\Html;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\LiquidataionSearch */
@@ -25,8 +27,8 @@ $this->params['breadcrumbs'][] = $this->title;
             <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
 
             <?php
-            if (Yii::$app->user->can('super-user')){
-           
+            if (Yii::$app->user->can('super-user')) {
+
                 echo " <button class='btn btn-success' data-target='#updateUacsModal' data-toggle='modal'>Update Uacs</button>";
             }
             ?>
@@ -288,25 +290,47 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'toolbar' => [
             [
-                'content' =>
-                ExportMenu::widget([
-                    'dataProvider' => $dataProvider,
-                    'columns'  => $gridColumn,
-                    'filename' => 'Liquidations',
-                    'exportConfig' => [
-                        ExportMenu::FORMAT_CSV => false,
-                        ExportMenu::FORMAT_TEXT => false,
-                        ExportMenu::FORMAT_HTML => false,
 
-                    ]
-                ]),
+                'content' =>
+                "<form id='export_filter'>" .
+                    DatePicker::widget([
+                        'name' => 'from_reporting_period',
+                        'id' => 'from_reporting_period',
+                        'options' => [
+                            'style' => 'width:100px'
+                        ],
+                        'pluginOptions' => [
+                            'format' => 'yyyy-mm',
+                            'minViewMode' => 'months',
+                            'autoclose' => true
+                        ]
+                    ]) .
+                    DatePicker::widget([
+                        'name' => 'to_reporting_period',
+                        'id' => 'to_reporting_period',
+                        'options' => [
+                            'style' => 'width:100px'
+                        ],
+                        'pluginOptions' => [
+                            'format' => 'yyyy-mm',
+                            'minViewMode' => 'months',
+                            'autoclose' => true
+                        ]
+                    ]) .
+
+                    "<button class='btn btn-primary' type='submit'>Export</button>",
+                '</form>',
                 'options' => [
                     'class' => 'btn-group mr-2', 'style' => 'margin-right:20px'
                 ]
             ]
         ]
-    ]); ?>
+    ]);
 
+
+    ?>
+    <?php Pjax::begin(['id' => 'employee', 'clientOptions' => ['method' => 'POST']]) ?>
+    <?php Pjax::end() ?>
 
 </div>
 
@@ -322,6 +346,21 @@ SweetAlertAsset::register($this);
 $script = <<<JS
 
         var i = false
+            $('#export_filter').submit(function(e){
+                e.preventDefault();
+                $.ajax({
+                    container: "#employee", 
+                    type:'POST',
+                    url: window.location.pathname + '?r=liquidation/export',
+                    data:$('#export_filter').serialize(),
+                    success:function(data){
+                        var res = JSON.parse(data)
+                        console.log(res)
+                        window.open(res)
+                    }
+                 
+                })
+            })
             $('#updateUacs').submit(function(e){
                 // $(this).unbind();
                 e.preventDefault();

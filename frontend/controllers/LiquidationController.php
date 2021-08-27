@@ -1045,4 +1045,138 @@ class LiquidationController extends Controller
             return ob_get_clean();
         }
     }
+    public function actionExport()
+    {
+
+        if ($_POST) {
+            $from_reporting_period = $_POST['from_reporting_period'];
+            $to_reporting_period = $_POST['to_reporting_period'];
+            // $query  = Yii::$app->db->createCommand("SELECT * FROM liquidation_entries_view
+            //             WHERE 
+            //             reporting_period BETWEEN :from_reporting_period AND :to_reporting_period
+            //             ORDER BY reporting_period
+            // ")
+
+            //     ->bindValue(':from_reporting_period',   $from_reporting_period)
+            //     ->bindValue(':to_reporting_period',   $to_reporting_period)
+            //     ->queryAll();
+            $province = strtolower(Yii::$app->user->identity->province);
+            $q = (new \yii\db\Query())
+                ->select('*')
+                ->from('liquidation_entries_view')
+                ->where(
+                    'reporting_period BETWEEN :from_reporting_period AND :to_reporting_period',
+
+                    ['from_reporting_period' => $from_reporting_period, 'to_reporting_period' => $to_reporting_period]
+                );
+
+            if (
+                $province === 'adn' ||
+                $province === 'ads' ||
+                $province === 'sdn' ||
+                $province === 'sds' ||
+                $province === 'pdi'
+            ) {
+                $q->andWhere('province = :province', ['province' => $province]);
+            }
+
+            $query = $q->all();
+            // ob_clean();
+            // echo "<pre>";
+            // var_dump($query);
+            // echo "</pre>";
+            // return ob_get_clean();
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            // header
+            $sheet->setAutoFilter('A1:P1');
+            $sheet->setCellValue('A1', "ID");
+            $sheet->setCellValue('B1', "Reporting Period");
+            $sheet->setCellValue('C1', "DV Number");
+            $sheet->setCellValue('D1', "Check Date");
+            $sheet->setCellValue('E1', "Check Number");
+            $sheet->setCellValue('F1', "Fund Source");
+            $sheet->setCellValue('G1', 'Particular');
+            $sheet->setCellValue('H1', 'Payee');
+            $sheet->setCellValue('I1', 'Object Code');
+            $sheet->setCellValue('J1', 'Account Title');
+            $sheet->setCellValue('K1', 'Withdrawals');
+            $sheet->setCellValue('L1', 'Vat-NonVat');
+            $sheet->setCellValue('M1', 'Expanded Tax');
+            $sheet->setCellValue('N1', 'Liquidation Damage');
+            $sheet->setCellValue('O1', 'Gross Payment');
+            $sheet->setCellValue('P1', 'Province');
+
+
+            $x = 7;
+            $styleArray = array(
+                'borders' => array(
+                    'allBorders' => array(
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                        'color' => array('argb' => 'FFFF0000'),
+                    ),
+                ),
+            );
+
+
+            $row = 2;
+
+            foreach ($query  as  $val) {
+
+                $sheet->setCellValueByColumnAndRow(1, $row,  $val['id']);
+                $sheet->setCellValueByColumnAndRow(3, $row,  $val['reporting_period']);
+                $sheet->setCellValueByColumnAndRow(2, $row,  $val['dv_number']);
+                $sheet->setCellValueByColumnAndRow(4, $row,  $val['check_date']);
+                $sheet->setCellValueByColumnAndRow(5, $row,  $val['check_number']);
+                $sheet->setCellValueByColumnAndRow(6, $row,  $val['fund_source']);
+                $sheet->setCellValueByColumnAndRow(7, $row,  $val['particular']);
+                $sheet->setCellValueByColumnAndRow(8, $row,  $val['payee']);
+                $sheet->setCellValueByColumnAndRow(9, $row,  $val['object_code']);
+                $sheet->setCellValueByColumnAndRow(10, $row,  $val['account_title']);
+                $sheet->setCellValueByColumnAndRow(11, $row,  $val['withdrawals']);
+                $sheet->setCellValueByColumnAndRow(12, $row,  $val['vat_nonvat']);
+                $sheet->setCellValueByColumnAndRow(13, $row,  $val['expanded_tax']);
+                $sheet->setCellValueByColumnAndRow(14, $row,  $val['liquidation_damage']);
+                $sheet->setCellValueByColumnAndRow(15, $row,  $val['gross_payment']);
+                $sheet->setCellValueByColumnAndRow(16, $row,  $val['province']);
+
+                $row++;
+            }
+
+            date_default_timezone_set('Asia/Manila');
+            // return date('l jS \of F Y h:i:s A');
+            $id = date('Y-m-d h A');
+            $file_name = "liquidation_$id.xlsx";
+            // header('Content-Type: application/vnd.ms-excel');
+            // header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
+            // header('Content-Transfer-Encoding: binary');
+            // header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+            // header('Pragma: public'); // HTTP/1.0
+            // echo readfile($file);
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+            $file = "transaction\liquidation_$id.xlsx";
+            $file2 = "transaction/liquidation_$id.xlsx";
+            $writer->save($file);
+            // return ob_get_clean();
+            header('Content-Type: application/octet-stream');
+            header("Content-Transfer-Encoding: Binary");
+            header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
+            // echo "<script>window.open('$file2','_self')</script>";
+
+            return json_encode($file2);
+            // }
+            // Yii::$app->response->xSendFile($path);
+
+            // echo "/afms/transaction/liquidation.xlsx";
+            // flush(); // Flush system output buffer
+
+            // echo "<script> window.location.href = '$file';</script>";
+            // echo "<script>window.open($file2)</script>";
+
+            exit();
+            // return json_encode(['res' => "transaction\ckdj_excel_$id.xlsx"]);
+            // return json_encode($file);
+            // exit;
+        }
+    }
 }

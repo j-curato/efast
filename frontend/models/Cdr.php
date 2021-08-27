@@ -53,4 +53,8 @@ class Cdr extends \yii\db\ActiveRecord
             'is_final' => 'Is Final',
         ];
     }
+    public function getBook()
+    {
+        return $this->hasOne(Books::class, ['id' => 'book_name']);
+    }
 }
