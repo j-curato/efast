@@ -169,6 +169,7 @@ Modal::end();
 
                         echo "<tr>
                 
+                <td>{$val->id}</td>
                 <td>{$val->reporting_period}</td>
                 <td>{$nft_number}</td>
                 <td>{$report_type}</td>

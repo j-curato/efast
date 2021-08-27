@@ -700,6 +700,7 @@ class LiquidationController extends Controller
             $excel = $reader->load($file);
             $excel->setActiveSheetIndexByName('Liquidation');
             $worksheet = $excel->getActiveSheet();
+
             // print_r($excel->getSheetNames());
 
             $data = [];
@@ -752,6 +753,10 @@ class LiquidationController extends Controller
                     $vat = trim($cells[13]);
                     $expanded = trim($cells[14]);
                     $advances_entries_id = null;
+
+
+                    // return json_encode($key);
+                    // return json_encode('qwer');
                     $chart_id = (new \yii\db\Query())
                         ->select("id")
                         ->from('chart_of_accounts')
@@ -978,7 +983,7 @@ class LiquidationController extends Controller
             $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
             $excel = $reader->load($file);
-            $excel->setActiveSheetIndexByName('newLiquidation');
+            $excel->setActiveSheetIndexByName('For Adjustment');
             $worksheet = $excel->getActiveSheet();
             // print_r($excel->getSheetNames());
 
@@ -988,7 +993,7 @@ class LiquidationController extends Controller
             // 
 
             $transaction = Yii::$app->db->beginTransaction();
-            foreach ($worksheet->getRowIterator(2) as $key => $row) {
+            foreach ($worksheet->getRowIterator(3) as $key => $row) {
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
                 $cells = [];
@@ -1051,36 +1056,36 @@ class LiquidationController extends Controller
         if ($_POST) {
             $from_reporting_period = $_POST['from_reporting_period'];
             $to_reporting_period = $_POST['to_reporting_period'];
-        //     $q = "SELECT 
-        //     liquidation_entries.id,
-        //     liquidation.dv_number,
-        //     liquidation.reporting_period,
-        //     liquidation.check_date,
-        //     liquidation.check_number,
-        //     advances_entries.fund_source,
-        //     IFNULL(liquidation.particular,po_transaction.particular) as particular,
-        //     IFNULL(liquidation.payee , po_transaction.payee ) as payee,
-        //     chart_of_accounts.uacs as object_code,
-        //     chart_of_accounts.general_ledger as account_title,
-        //     liquidation_entries.withdrawals,
-        //     liquidation_entries.vat_nonvat,
-        //     liquidation_entries.expanded_tax,
-        //     liquidation_entries.liquidation_damage,
-        //     COALESCE(IFNULL(liquidation_entries.withdrawals,0))
-        //     + COALESCE(IFNULL(liquidation_entries.vat_nonvat,0))
-        //     +COALESCE(IFNULL(liquidation_entries.expanded_tax,0)) as gross_payment,
-        //     liquidation.province
-        //    FROM liquidation
-        //     LEFT JOIN liquidation_entries ON
-        //      liquidation.id=
-        //     liquidation_entries.liquidation_id
-        //     LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
-        //     LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id =advances_entries.id
-        //     LEFT JOIN advances ON advances_entries.advances_id=advances.id
-        //     LEFT JOIN chart_of_accounts ON liquidation_entries.chart_of_account_id = chart_of_accounts.id 
+            //     $q = "SELECT 
+            //     liquidation_entries.id,
+            //     liquidation.dv_number,
+            //     liquidation.reporting_period,
+            //     liquidation.check_date,
+            //     liquidation.check_number,
+            //     advances_entries.fund_source,
+            //     IFNULL(liquidation.particular,po_transaction.particular) as particular,
+            //     IFNULL(liquidation.payee , po_transaction.payee ) as payee,
+            //     chart_of_accounts.uacs as object_code,
+            //     chart_of_accounts.general_ledger as account_title,
+            //     liquidation_entries.withdrawals,
+            //     liquidation_entries.vat_nonvat,
+            //     liquidation_entries.expanded_tax,
+            //     liquidation_entries.liquidation_damage,
+            //     COALESCE(IFNULL(liquidation_entries.withdrawals,0))
+            //     + COALESCE(IFNULL(liquidation_entries.vat_nonvat,0))
+            //     +COALESCE(IFNULL(liquidation_entries.expanded_tax,0)) as gross_payment,
+            //     liquidation.province
+            //    FROM liquidation
+            //     LEFT JOIN liquidation_entries ON
+            //      liquidation.id=
+            //     liquidation_entries.liquidation_id
+            //     LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
+            //     LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id =advances_entries.id
+            //     LEFT JOIN advances ON advances_entries.advances_id=advances.id
+            //     LEFT JOIN chart_of_accounts ON liquidation_entries.chart_of_account_id = chart_of_accounts.id 
 
-        //     WHERE
-        //      liquidation_entries.reporting_period BETWEEN :from_reporting_period AND :to_reporting_period";
+            //     WHERE
+            //      liquidation_entries.reporting_period BETWEEN :from_reporting_period AND :to_reporting_period";
 
             $province = strtolower(Yii::$app->user->identity->province);
 

@@ -1185,4 +1185,531 @@ class ReportController extends \yii\web\Controller
         // echo shell_exec('git pull git@github.com:kiotipot1/dti-afms-2.git');
         // die();
     }
+    public function actionImportQ()
+    {
+        if (!empty($_POST)) {
+            // $chart_id = $_POST['chart_id'];
+            $name = $_FILES["file"]["name"];
+            // var_dump($_FILES['file']);
+            // die();
+            $id = uniqid();
+            $file = "transaction/{$id}_{$name}";
+            if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
+            } else {
+                return "ERROR 2: MOVING FILES FAILED.";
+                die();
+            }
+            $arr = array(
+                2351379,
+                2351380,
+                2351381,
+                2351382,
+                2351383,
+                2351384,
+                2351385,
+                2351386,
+                2351387,
+                2351388,
+                2351389,
+                2351390,
+                2351391,
+                2351392,
+                2351393,
+                2351394,
+                2351395,
+                2351396,
+                2351397,
+                2351398,
+                2351399,
+                2351400,
+                2351401,
+                2351402,
+                2351403,
+                2351404,
+                2351405,
+                2351406,
+                2351407,
+                2351408,
+                2351409,
+                2351410,
+                2351411,
+                2351412,
+                2351413,
+                2351414,
+                2351415,
+                2351416,
+                2351417,
+                2351418,
+                2351419,
+                2351420,
+                2351421,
+                2351422,
+                2351423,
+                2351424,
+                2351425,
+                2351426,
+                2351427,
+                2351428,
+                2351429,
+                2351430,
+                2351431,
+                2351432,
+                2351433,
+                2351434,
+                2351435,
+                2351436,
+                2351437,
+                2351438,
+                2351439,
+                2351440,
+                2351441,
+                2351443,
+                2351444,
+                2351445,
+                2351446,
+                2351447,
+                2351448,
+                2351449,
+                2351450,
+                2351451,
+                2351452,
+                2351453,
+                2351454,
+                2351455,
+                2351456,
+                2351457,
+                2351458,
+                2351459,
+                2351460,
+                2351461,
+                2351462,
+                2351463,
+                2351464,
+                2351465,
+                2351466,
+                2351467,
+                2351468,
+                2351469,
+                2351470,
+                2351471,
+                2351472,
+                2351473,
+                2351474,
+                2351475,
+                2351476,
+                2351477,
+                2351478,
+                2351479,
+                2351480,
+                2351481,
+                2351482,
+                2351483,
+                2351484,
+                2351485,
+                2351486,
+                2351487,
+                2351488,
+                2351489,
+                2351490,
+                2351491,
+                2351492,
+                2351493,
+                2351494,
+                2351495,
+                2351496,
+                2351497,
+                2351498,
+                2351499,
+                2351500,
+                2408401,
+                2408402,
+                2408403,
+                2408404,
+                2408405,
+                2408406,
+                2408407,
+                2408408,
+                2408409,
+                2408410,
+                2408411,
+                2408412,
+                2408413,
+                2408414,
+                2408415,
+                2408416,
+                2408417,
+                2408418,
+                2408420,
+                2408421,
+                2408422,
+                2408423,
+                2408424,
+                2408425,
+                2408426,
+                2408427,
+                2408428,
+                2408429,
+                2408430,
+                2408431,
+                2408432,
+                2408433,
+                2408434,
+                2408435,
+                2408436,
+                2408437,
+                2408438,
+                2408439,
+                2408440,
+                2408441,
+                2408442,
+                2408443,
+                2408444,
+                2408445,
+                2408446,
+                2408447,
+                2408448,
+                2408449,
+                2408450,
+                2408451,
+                2408452,
+                2408453,
+                2408454,
+                2408455,
+                2408456,
+                2408457,
+                2408458,
+                2408459,
+                2408460,
+                2408461,
+                2408462,
+                2408463,
+                2408464,
+                2408465,
+                2408466,
+                2408467,
+                2408468,
+                2408469,
+                2408470,
+                2408471,
+                2408472,
+                2408473,
+                2408474,
+                2408475,
+                2408476,
+                2408477,
+                2408478,
+                2408479,
+                2408480,
+                2408481,
+                2408482,
+                2408483,
+                2408484,
+                2408485,
+                2408486,
+                2408487,
+                2408488,
+                2408489,
+                2408490,
+                2408491,
+                2408492,
+                2408493,
+                2408494,
+                2408495,
+                2408496,
+                2408497,
+                2351369,
+                2408498,
+                2408499,
+                2408500,
+                2408501,
+                2408502,
+                2408503,
+                2408504,
+                2408505,
+                2408506,
+                2408507,
+                2408508,
+                2408509,
+                2408510,
+                2408511,
+                2408512,
+                2408513,
+                2408514,
+                2408515,
+                2408516,
+                2408517,
+                2408518,
+                2408519,
+                2408520,
+                2408521,
+                2408522,
+                2408545,
+                2408547,
+                2408549,
+                2408550,
+                2408569,
+                2408572,
+                2408573,
+                2408574,
+                2408575,
+                2408576,
+                2408577,
+                2408578,
+                2408579,
+                2408580,
+                2408581,
+                2408582,
+                2408583,
+                2408584,
+                2408585,
+                2408586,
+                2408587,
+                2408588,
+                2408589,
+                2408590,
+                2408591,
+                2408592,
+                2408593,
+                2408594,
+                2408595,
+                2408596,
+                2408597,
+                2408598,
+                2408599,
+                2408616,
+                2408617,
+                2408627,
+                2408628,
+                2408629,
+                2408630,
+                2408631,
+                2408632,
+                2408633,
+                2408634,
+                2408641,
+                2408644,
+                2408645,
+                2408648,
+                2408665,
+                2408676,
+                2408677,
+                2408678,
+                2408693,
+                2408694,
+                2408695,
+                2408703,
+                2408724,
+                2408737,
+                2408738,
+                2408739,
+                2408746,
+                2408747,
+                2408751,
+                2408757,
+                2408766,
+                2408767,
+                2408771,
+                2408772,
+                2408780,
+                2408785,
+                2408804,
+                2408831,
+                2408833,
+                2408838,
+                2408840,
+                2408854,
+                2408864,
+                2408895,
+                2408897,
+                2408899,
+                2408905,
+                2408909,
+                2408931,
+                2408932,
+                2408947,
+                2408953,
+                2408955,
+                2408984,
+                2408989,
+                2408997,
+                2409008,
+                2409012,
+                2409013,
+                2409018,
+                2409019,
+                2409080,
+                2409081,
+                2409083,
+                2409084,
+                2409092,
+                2409096,
+                2409098,
+                2409100,
+                2409102,
+                2409127,
+                2409135,
+                2409167,
+                2409194,
+                2409196,
+                2409198,
+                2409214,
+                2409220,
+                2409222,
+                2409226,
+                2409227,
+                2409228,
+                2409238,
+                2409245,
+                2409254,
+            );
+            $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+            $excel = $reader->load($file);
+            $excel->setActiveSheetIndexByName('Liquidation');
+            $worksheet = $excel->getActiveSheet();
+            // print_r($excel->getSheetNames());
+
+            $data = [];
+            // $chart_uacs = ChartOfAccounts::find()->where("id = :id", ['id' => $chart_id])->one()->uacs;
+
+            $latest_tracking_no = (new \yii\db\Query())
+                ->select('tracking_number')
+                ->from('transaction')
+                ->orderBy('id DESC')->one();
+            if ($latest_tracking_no) {
+                $x = explode('-', $latest_tracking_no['tracking_number']);
+                $last_number = $x[2] + 1;
+            } else {
+                $last_number = 1;
+            }
+            // 
+            $qwe = 1;
+            $advances_id = [];
+
+            $transaction = Yii::$app->db->beginTransaction();
+            foreach ($worksheet->getRowIterator(2) as $key => $row) {
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                $cells = [];
+                $y = 0;
+                foreach ($cellIterator as $x => $cell) {
+                    $q = '';
+                    if ($y === 1) {
+                        $cells[] = $cell->getFormattedValue();
+                    } else {
+                        $cells[] =   $cell->getValue();
+                    }
+                    $y++;
+                }
+                if (!empty($cells)) {
+
+                    $province = $cells[0];
+                    $check_date = date("Y-m-d", strtotime($cells[1]));
+                    $check_number = trim($cells[2]);
+
+                    $is_cancel =  $cells[3];
+                    $dv_number = $cells[4];
+                    $reporting_period = date("Y-m", strtotime($cells[5]));
+                    $fund_source = trim($cells[6]);
+                    $payee = trim($cells[7]);
+                    $particular = trim($cells[8]);
+                    $object_code = trim($cells[9]);
+                    // $res_center = trim($cells[8]);
+                    $withdrawal = trim($cells[12]);
+                    $vat = trim($cells[13]);
+                    $expanded = trim($cells[14]);
+                    $advances_entries_id = null;
+                    $chart_id = (new \yii\db\Query())
+                        ->select("id")
+                        ->from('chart_of_accounts')
+                        ->where("chart_of_accounts.uacs =:uacs", ['uacs' => $object_code])
+                        ->one();
+                    $c_id = null;
+                    if (!empty($chart_id)) {
+                        $c_id = $chart_id['id'];
+                    }
+                    // $payee_id = (new \yii\db\Query())
+                    //     ->select('id')
+                    //     ->from('payee')
+                    //     ->where("payee.account_name LIKE :account_name", ['account_name' => $payee])
+                    //     ->one();
+                    if (strtolower($is_cancel) === 'good') {
+                        $advances_entries_id = (new \yii\db\Query())
+                            ->select("id")
+                            ->from("advances_entries")
+                            ->where("advances_entries.fund_source LIKE :fund_source", ['fund_source' => $fund_source])
+                            ->one();
+                        if (empty($advances_entries_id)) {
+                            ob_clean();
+                            echo "<pre>";
+                            var_dump($key . " yawa" . $fund_source);
+                            echo "</pre>";
+                            return ob_get_clean();
+                        }
+                    } else {
+                        $advances_entries_id['id'] = null;
+                    }
+                    
+
+                    $liq_id = (new \yii\db\Query())
+                        ->select('id')
+                        ->from('liquidation')
+                        ->where('liquidation.check_number =:check_number', ['check_number' => $check_number])
+                        ->one();
+
+
+                    $liquidation_id = null;
+                    if (empty($liq_id)) {
+                        $liquidation = new Liquidation();
+                        $liquidation->province = $province;
+                        $liquidation->check_date = $check_date;
+                        $liquidation->check_number = $check_number;
+                        $liquidation->particular = $particular;
+                        $liquidation->is_cancelled = strtolower($is_cancel) === 'good' ? 0 : 1;
+                        $liquidation->payee = $payee;
+                        $liquidation->dv_number = $dv_number;
+                        $liquidation->reporting_period = $reporting_period;
+                        // $liquidation->advances_entries_id = $advances_entries_id['id'];
+                        // $liquidation->chart_of_account_id = $advances_entries_id['id'];
+                        // $liquidation->responsibility_center_id = $res_center;
+                        if ($liquidation->save(false)) {
+                            $liquidation_id = $liquidation->id;
+                        }
+                    } else {
+                        $liquidation_id = $liq_id['id'];
+                    }
+                    $data[] = [
+                        'liquidation_id' => $liquidation_id,
+                        'chart_of_account_id' => $c_id,
+                        'withdrawals' => $withdrawal,
+                        'vat_nonvat' => $vat,
+                        'expanded_tax' => $expanded,
+                        'reporting_period' => $reporting_period,
+                        'advances_entries_id' => $advances_entries_id['id']
+
+                    ];
+                }
+            }
+
+            $column = [
+                'liquidation_id',
+                'chart_of_account_id',
+                'withdrawals',
+                'vat_nonvat',
+                'expanded_tax',
+                'reporting_period',
+                'advances_entries_id'
+            ];
+            $ja = Yii::$app->db->createCommand()->batchInsert('liquidation_entries', $column, $data)->execute();
+
+            // return $this->redirect(['index']);
+            // return json_encode(['isSuccess' => true]);
+            $transaction->commit();
+            ob_clean();
+            echo "<pre>";
+            var_dump('success');
+            echo "</pre>";
+            return ob_get_clean();
+        }
+    }
 }
