@@ -127,12 +127,11 @@ Modal::end();
                     } else {
                         $payee  =  $model->poTransaction->payee;
                     }
-                    
+
                     $particular = '';
-                    if (empty($model->po_transaction_id)){
+                    if (empty($model->po_transaction_id)) {
                         $particular  = !empty($model->particular) ? $model->particular : '';
-                    }
-                    else{
+                    } else {
                         $particular  =  $model->poTransaction->particular;
                     }
                     $responsibility_center = !empty($model->po_transaction_id) ? $model->poTransaction->poResponsibilityCenter->name : '';
@@ -159,8 +158,11 @@ Modal::end();
                             $province = $val->advancesEntries->advances->province;
                             $fund_source =  $val->advancesEntries->fund_source;
                         }
-                        if (!empty($val->chart_of_account_id)) {
+                        if (!empty($val->new_chart_of_account_id)) {
 
+                            $uacs = $val->newChartOfAccount->uacs;
+                            $general_ledger =  $val->newChartOfAccount->general_ledger;
+                        } else if (!empty($val->chart_of_account_id)) {
                             $uacs = $val->chartOfAccount->uacs;
                             $general_ledger =  $val->chartOfAccount->general_ledger;
                         }
@@ -169,7 +171,6 @@ Modal::end();
 
                         echo "<tr>
                 
-                <td>{$val->id}</td>
                 <td>{$val->reporting_period}</td>
                 <td>{$nft_number}</td>
                 <td>{$report_type}</td>

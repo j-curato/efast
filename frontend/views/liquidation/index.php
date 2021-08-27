@@ -409,7 +409,7 @@ $script = <<<JS
                                 closeOnConfirm: false,
                                 closeOnCancel: false
                             },function(){
-                                window.location.href = window.location.pathname + "?r=transaction"
+                                window.location.href = window.location.pathname + "?r=liquidation"
                             })
                         }
                         else{
