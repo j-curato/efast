@@ -420,9 +420,12 @@ class LiquidationController extends Controller
 
                     if (strtotime($reporting_period) > strtotime('2021-08')) {
                         $x = explode('-', $liquidation->dv_number);
+
                         $x[1] = date('Y', strtotime($reporting_period));
                         $x[2] = date('m', strtotime($reporting_period));
                         $liquidation->dv_number = implode('-', $x);
+                    } else {
+                        $liquidation->dv_number = $dv_number;
                     }
                 }
 
