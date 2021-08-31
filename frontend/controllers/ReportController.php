@@ -1177,9 +1177,15 @@ class ReportController extends \yii\web\Controller
     }
     public function actionQqq()
     {
+        $q1 = Yii::$app->cloud_db->createCommand("SELECT * FROM chart_of_accounts")->queryAll();
+        $q2 = Yii::$app->db->createCommand("SELECT * FROM chart_of_accounts")->queryAll();
 
+        $pageWithNoChildren = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $q2), array_map('serialize', $q1))
+        );
         echo "<pre>";
-        var_dump(Yii::$app->cloud_db->createCommand("SELECT * FROM books")->queryAll());
+        var_dump($pageWithNoChildren);
         echo "</pre>";
         return ob_get_clean();
         // echo shell_exec('git pull git@github.com:kiotipot1/dti-afms-2.git');
@@ -1649,7 +1655,7 @@ class ReportController extends \yii\web\Controller
                     } else {
                         $advances_entries_id['id'] = null;
                     }
-                    
+
 
                     $liq_id = (new \yii\db\Query())
                         ->select('id')

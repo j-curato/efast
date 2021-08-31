@@ -428,6 +428,9 @@ class LiquidationController extends Controller
 
                 $is_realign = true;
             } else {
+                if (empty($advances_id)) {
+                    return json_encode(['isSuccess' => false, 'error' => 'Please Insert Entries']);
+                }
                 $liquidation = new Liquidation();
 
                 if (strtotime($reporting_period) > strtotime('2021-08')) {
@@ -775,12 +778,12 @@ class LiquidationController extends Controller
                         $advances_entries_id = (new \yii\db\Query())
                             ->select("id")
                             ->from("advances_entries")
-                            ->where("advances_entries.fund_source LIKE :fund_source", ['fund_source' => $fund_source])
+                            ->where("advances_entries.fund_source LIKE :fund_source", ['fund_source' => "% $fund_source%"])
                             ->one();
                         if (empty($advances_entries_id)) {
                             ob_clean();
                             echo "<pre>";
-                            var_dump($key . " yawa" . $fund_source);
+                            var_dump($key . " WALA NA KITA" . $fund_source);
                             echo "</pre>";
                             return ob_get_clean();
                         }

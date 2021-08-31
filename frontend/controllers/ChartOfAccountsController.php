@@ -123,8 +123,12 @@ class ChartOfAccountsController extends Controller
     {
         $model = new ChartOfAccounts();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+
+            if ($model->save(false)) {
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->renderAjax('create', [
