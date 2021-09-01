@@ -1147,7 +1147,8 @@ class ReportController extends \yii\web\Controller
             // echo "<pre>";
             // var_dump($result);
             // echo "</pre>";
-            // return ob_get_clean();
+            // return ob_get_clean();.
+            
             return $this->render('rsmi', [
                 'dataProvider' => $result
             ]);
@@ -1189,7 +1190,7 @@ class ReportController extends \yii\web\Controller
         echo "</pre>";
         return ob_get_clean();
         // echo shell_exec('git pull git@github.com:kiotipot1/dti-afms-2.git');
-        // die();
+        // die
     }
     public function actionImportQ()
     {

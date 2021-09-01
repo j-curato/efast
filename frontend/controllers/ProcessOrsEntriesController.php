@@ -94,11 +94,15 @@ class ProcessOrsEntriesController extends Controller
     {
         $searchModel = new ProcessOrsViewSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $searchModel2 = new ProcessOrsRaoudsSearch();
+        $dataProvider2 = $searchModel2->search(Yii::$app->request->queryParams);
         // $dataProvider->sort = ['defaultOrder' => ['process_ors_id' => 'DESC']];
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'searchModel2' => $searchModel2,
+            'dataProvider2' => $dataProvider2,
         ]);
     }
 
