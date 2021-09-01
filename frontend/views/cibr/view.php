@@ -18,7 +18,13 @@ use yii\helpers\Html;
 $this->title = "CIBR";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="jev-preparation-index" style="background-color: white;">
+<div id="dots5">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+</div>
+<div class="cibr_view" style="background-color: white;display:none;">
 
     <?php
     $prov = [];
@@ -273,12 +279,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php Pjax::end() ?>
     </div>
 
-    <div id="dots5">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
+
 </div>
 <style>
     #con {
@@ -341,8 +342,10 @@ $script = <<< JS
         $(document).ready(function(){
       
             setTimeout(() => {
+
+                $(".cibr_view").show()
                 $("#con").show()
-            $("#dots5").hide()
+                $("#dots5").hide()
             }, 1000);
         })
 JS;

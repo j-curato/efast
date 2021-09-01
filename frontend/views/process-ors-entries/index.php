@@ -384,7 +384,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'toolbar' => [
             [
                 'content' => ExportMenu::widget([
-                    'dataProvider' => $dataProvider,
+                    'dataProvider' => $dataProvider2,
                     'columns' => $exportColumns,
                     'filename' => "ORS",
                     'exportConfig' => [

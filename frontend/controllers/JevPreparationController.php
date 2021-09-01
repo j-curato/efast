@@ -1278,7 +1278,6 @@ class JevPreparationController extends Controller
 
             $begin_balance = JevPreparation::find()
                 ->select('jev_preparation.reporting_period')
-                
                 ->orderBy('reporting_period ASC')->one()->reporting_period;
             $t_balance = (new \yii\db\Query())
                 ->select([

@@ -47,7 +47,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'serial_number',
             'reporting_period',
             'province',
-            'book_name',
+            [
+                'label'=>'Book Name',
+                'attribute'=>'book_name',
+                'value'=>'book.name'
+            ],
             //'report_type',
             //'is_final',
 

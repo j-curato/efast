@@ -420,14 +420,20 @@ class LiquidationController extends Controller
 
                     if (strtotime($reporting_period) > strtotime('2021-08')) {
                         $x = explode('-', $liquidation->dv_number);
+
                         $x[1] = date('Y', strtotime($reporting_period));
                         $x[2] = date('m', strtotime($reporting_period));
                         $liquidation->dv_number = implode('-', $x);
+                    } else {
+                        $liquidation->dv_number = $dv_number;
                     }
                 }
 
                 $is_realign = true;
             } else {
+                if (empty($advances_id)) {
+                    return json_encode(['isSuccess' => false, 'error' => 'Please Insert Entries']);
+                }
                 $liquidation = new Liquidation();
 
                 if (strtotime($reporting_period) > strtotime('2021-08')) {
@@ -700,6 +706,7 @@ class LiquidationController extends Controller
             $excel = $reader->load($file);
             $excel->setActiveSheetIndexByName('Liquidation');
             $worksheet = $excel->getActiveSheet();
+
             // print_r($excel->getSheetNames());
 
             $data = [];
@@ -752,6 +759,10 @@ class LiquidationController extends Controller
                     $vat = trim($cells[13]);
                     $expanded = trim($cells[14]);
                     $advances_entries_id = null;
+
+
+                    // return json_encode($key);
+                    // return json_encode('qwer');
                     $chart_id = (new \yii\db\Query())
                         ->select("id")
                         ->from('chart_of_accounts')
@@ -770,12 +781,12 @@ class LiquidationController extends Controller
                         $advances_entries_id = (new \yii\db\Query())
                             ->select("id")
                             ->from("advances_entries")
-                            ->where("advances_entries.fund_source LIKE :fund_source", ['fund_source' => $fund_source])
+                            ->where("advances_entries.fund_source LIKE :fund_source", ['fund_source' => "% $fund_source%"])
                             ->one();
                         if (empty($advances_entries_id)) {
                             ob_clean();
                             echo "<pre>";
-                            var_dump($key . " yawa" . $fund_source);
+                            var_dump($key . " WALA NA KITA" . $fund_source);
                             echo "</pre>";
                             return ob_get_clean();
                         }
@@ -978,7 +989,7 @@ class LiquidationController extends Controller
             $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
             $excel = $reader->load($file);
-            $excel->setActiveSheetIndexByName('newLiquidation');
+            $excel->setActiveSheetIndexByName('For Adjustment');
             $worksheet = $excel->getActiveSheet();
             // print_r($excel->getSheetNames());
 
@@ -988,7 +999,7 @@ class LiquidationController extends Controller
             // 
 
             $transaction = Yii::$app->db->beginTransaction();
-            foreach ($worksheet->getRowIterator(2) as $key => $row) {
+            foreach ($worksheet->getRowIterator(3) as $key => $row) {
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
                 $cells = [];
@@ -1043,6 +1054,189 @@ class LiquidationController extends Controller
             var_dump('success');
             echo "</pre>";
             return ob_get_clean();
+        }
+    }
+    public function actionExport()
+    {
+
+        if ($_POST) {
+            $from_reporting_period = $_POST['from_reporting_period'];
+            $to_reporting_period = $_POST['to_reporting_period'];
+            //     $q = "SELECT 
+            //     liquidation_entries.id,
+            //     liquidation.dv_number,
+            //     liquidation.reporting_period,
+            //     liquidation.check_date,
+            //     liquidation.check_number,
+            //     advances_entries.fund_source,
+            //     IFNULL(liquidation.particular,po_transaction.particular) as particular,
+            //     IFNULL(liquidation.payee , po_transaction.payee ) as payee,
+            //     chart_of_accounts.uacs as object_code,
+            //     chart_of_accounts.general_ledger as account_title,
+            //     liquidation_entries.withdrawals,
+            //     liquidation_entries.vat_nonvat,
+            //     liquidation_entries.expanded_tax,
+            //     liquidation_entries.liquidation_damage,
+            //     COALESCE(IFNULL(liquidation_entries.withdrawals,0))
+            //     + COALESCE(IFNULL(liquidation_entries.vat_nonvat,0))
+            //     +COALESCE(IFNULL(liquidation_entries.expanded_tax,0)) as gross_payment,
+            //     liquidation.province
+            //    FROM liquidation
+            //     LEFT JOIN liquidation_entries ON
+            //      liquidation.id=
+            //     liquidation_entries.liquidation_id
+            //     LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
+            //     LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id =advances_entries.id
+            //     LEFT JOIN advances ON advances_entries.advances_id=advances.id
+            //     LEFT JOIN chart_of_accounts ON liquidation_entries.chart_of_account_id = chart_of_accounts.id 
+
+            //     WHERE
+            //      liquidation_entries.reporting_period BETWEEN :from_reporting_period AND :to_reporting_period";
+
+            $province = strtolower(Yii::$app->user->identity->province);
+
+
+            // if (
+            //     $province === 'adn' ||
+            //     $province === 'ads' ||
+            //     $province === 'sdn' ||
+            //     $province === 'sds' ||
+            //     $province === 'pdi'
+            // ) {
+            //     $q = $q . " AND liquidation.province = :province ";
+            //     // ob_clean();
+            //     // echo '<pre>';
+            //     // var_dump($q);
+            //     // echo '</pre>';
+            //     // return ob_get_clean();
+            //     $query  =   Yii::$app->db->createCommand($q)
+            //         ->bindValue(':from_reporting_period',   $from_reporting_period)
+            //         ->bindValue(':to_reporting_period',   $to_reporting_period)
+            //         ->bindValue(':province',   $province)
+            //         ->queryAll();
+            // } else {
+
+            //     $query  = Yii::$app->db->createCommand($q)
+            //         ->bindValue(':from_reporting_period',   $from_reporting_period)
+            //         ->bindValue(':to_reporting_period',   $to_reporting_period)
+            //         ->queryAll();
+            // }
+            $province = strtolower(Yii::$app->user->identity->province);
+            $q = (new \yii\db\Query())
+                ->select('*')
+                ->from('liquidation_entries_view')
+                ->where(
+                    'reporting_period BETWEEN :from_reporting_period AND :to_reporting_period',
+
+                    ['from_reporting_period' => $from_reporting_period, 'to_reporting_period' => $to_reporting_period]
+                );
+
+            if (
+                $province === 'adn' ||
+                $province === 'ads' ||
+                $province === 'sdn' ||
+                $province === 'sds' ||
+                $province === 'pdi'
+            ) {
+                $q->andWhere('province = :province', ['province' => $province]);
+            }
+
+            $query = $q->all();
+
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            // header
+            $sheet->setAutoFilter('A1:P1');
+            $sheet->setCellValue('A1', "ID");
+            $sheet->setCellValue('B1', "Reporting Period");
+            $sheet->setCellValue('C1', "DV Number");
+            $sheet->setCellValue('D1', "Check Date");
+            $sheet->setCellValue('E1', "Check Number");
+            $sheet->setCellValue('F1', "Fund Source");
+            $sheet->setCellValue('G1', 'Particular');
+            $sheet->setCellValue('H1', 'Payee');
+            $sheet->setCellValue('I1', 'Object Code');
+            $sheet->setCellValue('J1', 'Account Title');
+            $sheet->setCellValue('K1', 'Withdrawals');
+            $sheet->setCellValue('L1', 'Vat-NonVat');
+            $sheet->setCellValue('M1', 'Expanded Tax');
+            $sheet->setCellValue('N1', 'Liquidation Damage');
+            $sheet->setCellValue('O1', 'Gross Payment');
+            $sheet->setCellValue('P1', 'Province');
+
+
+            $x = 7;
+            $styleArray = array(
+                'borders' => array(
+                    'allBorders' => array(
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                        'color' => array('argb' => 'FFFF0000'),
+                    ),
+                ),
+            );
+
+
+            $row = 2;
+
+            foreach ($query  as  $val) {
+
+                $sheet->setCellValueByColumnAndRow(1, $row,  $val['id']);
+                $sheet->setCellValueByColumnAndRow(2, $row,  $val['reporting_period']);
+                $sheet->setCellValueByColumnAndRow(3, $row,  $val['dv_number']);
+                $sheet->setCellValueByColumnAndRow(4, $row,  $val['check_date']);
+                $sheet->setCellValueByColumnAndRow(5, $row,  $val['check_number']);
+                $sheet->setCellValueByColumnAndRow(6, $row,  $val['fund_source']);
+                $sheet->setCellValueByColumnAndRow(7, $row,  $val['particular']);
+                $sheet->setCellValueByColumnAndRow(8, $row,  $val['payee']);
+                $sheet->setCellValueByColumnAndRow(9, $row,  $val['object_code']);
+                $sheet->setCellValueByColumnAndRow(10, $row,  $val['account_title']);
+                $sheet->setCellValueByColumnAndRow(11, $row,  $val['withdrawals']);
+                $sheet->setCellValueByColumnAndRow(12, $row,  $val['vat_nonvat']);
+                $sheet->setCellValueByColumnAndRow(13, $row,  $val['expanded_tax']);
+                $sheet->setCellValueByColumnAndRow(14, $row,  $val['liquidation_damage']);
+                $sheet->setCellValueByColumnAndRow(15, $row,  $val['gross_payment']);
+                $sheet->setCellValueByColumnAndRow(16, $row,  $val['province']);
+
+                $row++;
+            }
+
+            date_default_timezone_set('Asia/Manila');
+            // return date('l jS \of F Y h:i:s A');
+            $id = uniqid() . '_' . date('Y-m-d h A');
+            $file_name = "liquidation_$id.xlsx";
+            // header('Content-Type: application/vnd.ms-excel');
+            // header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
+            // header('Content-Transfer-Encoding: binary');
+            // header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+            // header('Pragma: public'); // HTTP/1.0
+            // echo readfile($file);
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+
+            $path = Yii::getAlias('@webroot') . '/transaction';
+
+            $file = $path . "/liquidation_$id.xlsx";
+            $file2 = "transaction/liquidation_$id.xlsx";
+            $writer->save($file);
+            // return ob_get_clean();
+            header('Content-Type: application/octet-stream');
+            header("Content-Transfer-Encoding: Binary");
+            header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
+            // echo "<script>window.open('$file2','_self')</script>";
+
+            return json_encode($file2);
+            // }
+            // Yii::$app->response->xSendFile($path);
+
+            // echo "/afms/transaction/liquidation.xlsx";
+            // flush(); // Flush system output buffer
+
+            // echo "<script> window.location.href = '$file';</script>";
+            // echo "<script>window.open($file2)</script>";
+
+            exit();
+            // return json_encode(['res' => "transaction\ckdj_excel_$id.xlsx"]);
+            // return json_encode($file);
+            // exit;
         }
     }
 }

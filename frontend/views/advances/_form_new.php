@@ -13,8 +13,13 @@ use yii\helpers\ArrayHelper;
 /* @var $model app\models\Advances */
 /* @var $form yii\widgets\ActiveForm */
 ?>
-
-<div class="advances-form">
+<div id="dots5">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+</div>
+<div class="advances-form" style="display: none;">
 
 
 
@@ -379,26 +384,12 @@ use yii\helpers\ArrayHelper;
 
 
     var fund_source_type = []
-    $(document).ready(function() {
-
-        $.getJSON('/afms/frontend/web/index.php?r=database-view/sub-accounts')
-            .then(function(data) {
-                var array = []
-                $.each(data, function(key, val) {
-                    array.push({
-                        id: val.object_code,
-                        text: val.object_code + ' ' + val.account_title
-                    })
-                })
-                accounts = array
-            })
-
-    })
 </script>
 <?php
 
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
 
 ?>
 <?php
@@ -451,6 +442,50 @@ $script = <<<JS
             }
         })
     })
+   function subAccounts(){
+        return $.getJSON('afms/frontend/web/index.php?r=database-view/sub-accounts')
+    }
+    $.when(subAccounts()).done(function(sub_accounts){
+                var array = []
+                $.each(sub_accounts, function(key, val) {
+                    array.push({
+                        id: val.object_code,
+                        text: val.object_code + ' ' + val.account_title
+                    })
+                })
+                accounts = array
+                if ($('#update_id').val()>0){
+
+                    $.ajax({
+                        type:'POST',
+                        url:window.location.pathname + "?r=advances/update-advances",
+                        data:{
+                            update_id:$('#update_id').val()
+                        },
+                        success:function(data){
+                            var res= JSON.parse(data)
+                            console.log(res)
+
+                            $('#report').val(res[0]['report_type']).trigger('change');
+                            $('#province').val(res[0]['province']).trigger('change');
+                            $('#particular').val(res[0]['particular']).trigger('change');
+                            $('#reporting_period').val(res[0]['reporting_period'])
+                            addToTransactionTable(res)
+
+                        }
+                        
+
+                    })
+
+                }   
+                
+
+                setTimeout(() => {
+                   $('.advances-form').show()
+                   $("#dots5").hide()
+                }, 1000);
+
+    })
     $(document).ready(function(){
         getFundSourceType().then((data) => {
             var array = []
@@ -473,30 +508,7 @@ $script = <<<JS
 
         // KUNG NAAY SULOD ANG UPDATE ID MAG POPULATE SA MGA DATA
 
-        if ($('#update_id').val()>0){
-
-            $.ajax({
-                type:'POST',
-                url:window.location.pathname + "?r=advances/update-advances",
-                data:{
-                    update_id:$('#update_id').val()
-                },
-                success:function(data){
-                    var res= JSON.parse(data)
-                    console.log(res)
-
-                    $('#report').val(res[0]['report_type']).trigger('change');
-                    $('#province').val(res[0]['province']).trigger('change');
-                    $('#particular').val(res[0]['particular']).trigger('change');
-                    $('#reporting_period').val(res[0]['reporting_period'])
-                    addToTransactionTable(res)
-
-                }
-                
-
-            })
-
-        }   
+   
     })
 
     

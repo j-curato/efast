@@ -518,7 +518,14 @@ SweetAlertAsset::register($this);
                 placeholder: "Select Chart of Account",
 
             });
-            console.log(type)
+            var x = result[i]['fund_source']
+            var y = x.split(' ').slice(0, 2).join(' ');
+            if (y.toLowerCase() == 'rapid lp') {
+                $(`#vat_nonvat-${transaction_table_count}`).prop('disabled', true)
+                $(`#ewt-${transaction_table_count}`).prop('disabled', true)
+                $(`#liq_damages-${transaction_table_count}`).prop('disabled', true)
+
+            }
 
             if ($('#update_id') != null) {
                 $(`#chart-${transaction_table_count}`).val(result[i]['chart_of_account_id']).trigger('change')
@@ -686,7 +693,7 @@ $script = <<<JS
     // SAVE DATA TO DATABASE
     $('#save_data').submit(function(e) {
         e.preventDefault();
-        // $('#save').attr('disabled',true)
+        $('#save').attr('disabled',true)
         $.ajax({
             type: 'POST',
             url: window.location.pathname + '?r=liquidation/insert-liquidation',
@@ -715,6 +722,7 @@ $script = <<<JS
                         button:false,
 
                     })
+                    $('#save').attr('disabled',false)
                 }
 
             }

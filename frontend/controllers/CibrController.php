@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\Cibr;
 use app\models\CibrSearch;
+use app\models\LiquidationReportingPeriod;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -235,9 +236,23 @@ class CibrController extends Controller
         $model->is_final = $x;
 
         if ($model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->is_final === 1) {
+                $r_periods = new LiquidationReportingPeriod();
+                $r_periods->reporting_period = $model->reporting_period;
+                $r_periods->province = $model->province;
+                if ($r_periods->save(false)) {
+
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
+            } else {
+                Yii::$app->db->createCommand("DELETE FROM  liquidation_reporting_period 
+                 WHERE reporting_period = :reporting_period AND province =:province")
+                    ->bindValue(':reporting_period', $model->reporting_period)
+                    ->bindValue(':province', $model->province)
+                    ->query();
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
-        return 'qwe';
     }
     public function actionGetCibr()
     {

@@ -79,6 +79,10 @@ class LiquidationEntries extends \yii\db\ActiveRecord
     {
         return $this->hasOne(ChartOfAccounts::class, ['id' => 'chart_of_account_id']);
     }
+    public function getNewChartOfAccount()
+    {
+        return $this->hasOne(ChartOfAccounts::class, ['id' => 'new_chart_of_account_id']);
+    }
 
     /**
      * Gets query for [[Liquidation]].

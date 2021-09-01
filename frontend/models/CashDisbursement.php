@@ -38,7 +38,7 @@ class CashDisbursement extends \yii\db\ActiveRecord
         return [
 
 
-            [['book_id', 'dv_aucs_id', 'reporting_period', 'mode_of_payment', 'issuance_date'], 'required'],
+            [['book_id', 'dv_aucs_id', 'reporting_period', 'mode_of_payment', 'issuance_date','check_or_ada_no'], 'required'],
             [['book_id', 'dv_aucs_id', 'is_cancelled'], 'integer'],
             [['reporting_period', 'mode_of_payment', 'issuance_date'], 'string', 'max' => 50],
             [['ada_number'], 'string', 'max' => 40],
@@ -58,7 +58,7 @@ class CashDisbursement extends \yii\db\ActiveRecord
             'dv_aucs_id' => 'Dv Aucs ID',
             'reporting_period' => 'Reporting Period',
             'mode_of_payment' => 'Mode Of Payment',
-            'check_or_ada_no' => 'Check Or Ada No',
+            'check_or_ada_no' => 'Check Number',
             'is_cancelled' => 'Is Cancelled',
             'issuance_date' => 'Issuance Date',
             'ada_number' => 'Ada Number',

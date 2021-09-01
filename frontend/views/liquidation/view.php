@@ -62,7 +62,7 @@ Modal::end();
 
 
 
-    <div class="container panel panel-default">
+    <div class="">
 
         <?php if (\Yii::$app->user->can('create_liquidation')) { ?>
             <p>
@@ -86,7 +86,7 @@ Modal::end();
 
                 $charts = Yii::$app->db->createCommand("SELECT id,CONCAT(uacs,'-',general_ledger) as account_title  FROM chart_of_accounts where is_active =1")->queryAll();
 
-                if (Yii::$app->user->can('update_liquidation_account') ) {
+                if (Yii::$app->user->can('update_liquidation_account')) {
                     $display = '';
                     $new_uacs = Select2::widget([
                         'data' => ArrayHelper::map($charts, 'id', 'account_title'),
@@ -105,22 +105,43 @@ Modal::end();
                 <thead>
                     <th>Reporting Period</th>
                     <th>NFT Number</th>
-                    <th>Report</th>
-                    <th>Province</th>
+                    <th>Report Type</th>
                     <th>Fund Source</th>
+                    <th>Payee</th>
+                    <th>Particulars</th>
+                    <th>Responsibility Center</th>
                     <th>UACS Object Code</th>
                     <th>General Ledger</th>
                     <th class='number'>Withdrawals</th>
                     <th class='number'>Vat/Non-Vat</th>
                     <th class='number'>Expanded Tax</th>
                     <th class='number'>Liquidation Damages</th>
+                    <th class='number'>Gross Amount</th>
                 </thead>
                 <tbody>
 
                     <?php
+                    $payee =  '';
+                    if (empty($model->po_transaction_id)) {
+                        $payee  = !empty($model->payee) ? $model->payee : '';
+                    } else {
+                        $payee  =  $model->poTransaction->payee;
+                    }
 
+                    $particular = '';
+                    if (empty($model->po_transaction_id)) {
+                        $particular  = !empty($model->particular) ? $model->particular : '';
+                    } else {
+                        $particular  =  $model->poTransaction->particular;
+                    }
+                    $responsibility_center = !empty($model->po_transaction_id) ? $model->poTransaction->poResponsibilityCenter->name : '';
+                    $total_gross = 0;
+                    $gross = 0;
 
                     foreach ($model->liquidationEntries as $val) {
+                        $gross = $val->withdrawals +   $val->vat_nonvat + $val->expanded_tax + $val->liquidation_damage;
+                        $total_gross += $gross;
+
                         $nft_number = '';
                         $report_type = '';
                         $province = '';
@@ -137,8 +158,11 @@ Modal::end();
                             $province = $val->advancesEntries->advances->province;
                             $fund_source =  $val->advancesEntries->fund_source;
                         }
-                        if (!empty($val->chart_of_account_id)) {
+                        if (!empty($val->new_chart_of_account_id)) {
 
+                            $uacs = $val->newChartOfAccount->uacs;
+                            $general_ledger =  $val->newChartOfAccount->general_ledger;
+                        } else if (!empty($val->chart_of_account_id)) {
                             $uacs = $val->chartOfAccount->uacs;
                             $general_ledger =  $val->chartOfAccount->general_ledger;
                         }
@@ -147,36 +171,39 @@ Modal::end();
 
                         echo "<tr>
                 
-                <td style='$display'></td>
                 <td>{$val->reporting_period}</td>
                 <td>{$nft_number}</td>
                 <td>{$report_type}</td>
-                <td>{$province}</td>
                 <td>{$fund_source}</td>
+                <td>{$payee}</td>
+                <td>{$particular}</td>
+                <td>{$responsibility_center}</td>
                 <td>{$uacs}</td>
                 <td>{$general_ledger}</td>
                 <td class='number'>" . number_format($val->withdrawals, 2) . "</td>
                 <td class='number'>" . number_format($val->vat_nonvat, 2) . "</td>
                 <td class='number'>" . number_format($val->expanded_tax, 2) . "</td>
                 <td class='number'>" . number_format($val->liquidation_damage, 2) . "</td>
+                <td class='number'>" . number_format($gross, 2) . "</td>
                 
                 </tr>";
                     }
 
                     echo "<tr>
-                <td colspan='7' style='text-align:center;font-weight:bold;'>Total</td>
+                <td colspan='9' style='text-align:center;font-weight:bold;'>Total</td>
                 <td class='number' style='font-weight:bold'>" . number_format($total_withdrawal, 2) . "</td>
                 <td class='number' style='font-weight:bold'>" . number_format($total_vat_nonvat, 2) . "</td>
                 <td class='number' style='font-weight:bold'>" . number_format($total_ewt, 2) . "</td>
                 <td class='number' style='font-weight:bold'>" . number_format($total_liquidation_damages, 2) . "</td>
+                <td class='number' style='font-weight:bold'>" . number_format($total_gross, 2) . "</td>
                 </tr>";
                     ?>
                 </tbody>
             </table>
 
             <?php
-            if (Yii::$app->user->can('update_liquidation_account')){
-                echo "<button type='submit' class='btn btn-success'>Save</button>";
+            if (Yii::$app->user->can('update_liquidation_account')) {
+                // echo "<button type='submit' class='btn btn-success'>Save</button>";
             }
             ?>
         </form>

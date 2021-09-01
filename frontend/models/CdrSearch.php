@@ -69,6 +69,7 @@ class CdrSearch extends Cdr
         }
 
         // grid filtering conditions
+        $query->joinWith('book');
         $query->andFilterWhere([
             'id' => $this->id,
             'is_final' => $this->is_final,
@@ -77,7 +78,7 @@ class CdrSearch extends Cdr
         $query->andFilterWhere(['like', 'serial_number', $this->serial_number])
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
             ->andFilterWhere(['like', 'province', $this->province])
-            ->andFilterWhere(['like', 'book_name', $this->book_name])
+            ->andFilterWhere(['like', 'books.name', $this->book_name])
             ->andFilterWhere(['like', 'report_type', $this->report_type]);
 
         return $dataProvider;
