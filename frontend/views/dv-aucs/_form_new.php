@@ -817,6 +817,21 @@ use yii\helpers\Html;
             })
 
         })
+        getBooks().then(function(data) {
+            var array = []
+            $.each(data, function(key, val) {
+                array.push({
+                    id: val.id,
+                    text: val.name
+                })
+            })
+            books = array
+            $('#book').select2({
+                data: books,
+                placeholder: "Select Book"
+            })
+
+        })
         getNetAssets().then(function(data) {
             var array = []
             $.each(data, function(key, val) {

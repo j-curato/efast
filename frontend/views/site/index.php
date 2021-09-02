@@ -7,7 +7,7 @@ use yii\helpers\ArrayHelper;
 $this->title = 'Dashboard';
 ?>
 <div class="site-index">
-
+    <button class="btn btn-success" id="update_cloud">Update the cloud</button>
     <?php
 
     $query = (new \yii\db\Query())
@@ -609,6 +609,22 @@ $script = <<<JS
             //   console.log( $(this).closest('.fc-day'))
               var url = window.location.pathname + '?r=event/create&date='+date
             $('#genericModal').modal('show').find('#modalContent').load(url);
+        })
+        $('#update_cloud').click(function(){
+            $.post(window.location.pathname +'?r=sync-database/ro-lan-to-cloud',   // url
+                    { myData: '' }, // data to be submit
+                    function(data ) {// success callback
+                        var d = JSON.parse(data)
+                        $.ajax({
+                            type:"post",
+                            url:window.location.pathname +'?r=sync-database/update-database',
+                            data: {json: JSON.stringify(data)},
+                            dataType: 'json',
+                            success:function(newdata){
+                                console.log(JSON.parse(newdata))
+                            }
+                        })
+                    })
         })
 JS;
 $this->registerJs($script);

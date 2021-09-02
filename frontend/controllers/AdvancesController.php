@@ -260,7 +260,7 @@ class AdvancesController extends Controller
                         $ad_entry->cash_disbursement_id = $cash_disbursement_id[$index];
                         $ad_entry->fund_source_type = $fund_source_type[$index];
                         $ad_entry->object_code = $sub_account1_id[$index];
-                        $ad_entry->fund_source = trim($fund_source[$index],' ');
+                        $ad_entry->fund_source = trim($fund_source[$index], ' ');
                         $ad_entry->reporting_period = $new_reporting_period[$index];
                         $ad_entry->amount = floatval(preg_replace('/[^\d.]/', '', $amount[$index]));
                         $ad_entry->book_id = $ad_entry->cashDisbursement->book->id;
@@ -324,9 +324,15 @@ class AdvancesController extends Controller
     public function getNftNumber()
     {
         // $q = Advances::find()->orderBy('id DESC')->one();
-        $q = Yii::$app->db->createCommand("SELECT substring_index(substring(nft_number, instr(nft_number, '-')+1), ' ', 1) as q 
-        from advances
-        ORDER BY q DESC LIMIT 1")->queryScalar();
+        $q = Yii::$app->db->createCommand("SELECT substring_index(nft_number, '-', -1) as q 
+        from advances 
+        WHERE 
+        nft_number NOT LIKE 'S%'
+        AND nft_number NOT LIKE 'a%'
+        AND nft_number NOT LIKE 'P%'
+        AND nft_number NOT LIKE 'R%'
+        ORDER BY q DESC
+        LIMIT 1")->queryScalar();
 
         $num = 0;
         if (!empty($q)) {
@@ -399,10 +405,10 @@ class AdvancesController extends Controller
                     if ($y === 7) {
                         $cells[] = $cell->getValue();
                     } else if (
-                      
-                        $y === 4||
+
+                        $y === 4 ||
                         $y === 13
-                    
+
                     ) {
                         $cells[] = $cell->getCalculatedValue();
                     } else {
@@ -445,13 +451,12 @@ class AdvancesController extends Controller
                         ->from('cash_disbursement')
                         ->where('cash_disbursement.check_or_ada_no =:check', ['check' => $check_number])
                         ->one();
-                
+
                     if (empty($sl_id)) {
                         return json_encode("sl not exist $sl_object_code  row $key");
                     }
                     if (!empty($cd)) {
                         $cd_id = $cd['id'];
-
                     }
                     if (empty($q)) {
                         $advances = new Advances();
@@ -474,9 +479,9 @@ class AdvancesController extends Controller
                         'object_code' => $sl_id['object_code'],
                         'fund_source' => $fund_source,
                         'reporting_period' => $reporting_period,
-                        'report_type'=>$report_type,
-                        'advances_type'=>$advance_type,
-                        'fund_source_type'=>$fund_source_type
+                        'report_type' => $report_type,
+                        'advances_type' => $advance_type,
+                        'fund_source_type' => $fund_source_type
 
                     ];
                 }
