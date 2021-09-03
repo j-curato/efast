@@ -124,7 +124,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th class="amount">Ending Balance</th>
                 <th>Particulars</th>
                 <th>Advance Type</th>
-                <th>SL Account Code</th>
+                <th>Book</th>
             </thead>
             <tbody>
 
@@ -328,7 +328,7 @@ $script = <<< JS
                         <td class='amount'> `+final_fur_ending_balance+`</td>
                         <td>`+fur[x]['particular']+`</td>
                         <td>`+fur[x]['advances_type']+`</td>
-                        <td></td>
+                        <td>`+fur[x]['book']+`</td>
                         </tr>`
 
                 $('#fur_table tbody').append(row)
