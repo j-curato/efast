@@ -316,13 +316,16 @@ $script = <<< JS
 
             }
             else{
-
+                var final_fur_b_balance = fur_b_balance !=0 ?thousands_separators(fur_b_balance):''
+                var final_fur_total_advances  = fur_total_advances !=0 ?thousands_separators(fur_total_advances):''
+                var final_fur_total_withdrawals = fur_total_withdrawals !=0 ?thousands_separators(fur_total_withdrawals):''
+                var final_fur_ending_balance = fur_ending_balance !=0 ?thousands_separators(fur_ending_balance):''
                 row =  `<tr>
                         <td>`+fur[x]['fund_source']+`</td>
-                        <td class='amount'>`+thousands_separators(fur_b_balance)+`</td>
-                        <td class='amount'>`+thousands_separators(fur_total_advances)+`</td>
-                        <td class='amount'>`+thousands_separators(fur_total_withdrawals)+`</td>
-                        <td class='amount'> `+thousands_separators(fur_ending_balance)+`</td>
+                        <td class='amount'>`+final_fur_b_balance+`</td>
+                        <td class='amount'>`+final_fur_total_advances+`</td>
+                        <td class='amount'>`+final_fur_total_withdrawals+`</td>
+                        <td class='amount'> `+final_fur_ending_balance+`</td>
                         <td>`+fur[x]['particular']+`</td>
                         <td>`+fur[x]['advances_type']+`</td>
                         <td></td>
