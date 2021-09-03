@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\Fur;
 use app\models\FurSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -21,6 +22,37 @@ class FurController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'update',
+                    'delete',
+                    'create',
+                    'generate-fur',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'update',
+                            'delete',
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_fur']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'generate-fur',
+                        ],
+                        'allow' => true,
+                        'roles' => ['province']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -67,8 +99,24 @@ class FurController extends Controller
     {
         $model = new Fur();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $province = $_POST['province'];
+
+            $check  = Yii::$app->db->createCommand("SELECT EXISTS(SELECT * FROM fur WHERE reporting_period = :reporting_period AND province = :province)")
+                ->bindValue(':reporting_period', $reporting_period)
+                ->bindValue(':province', $province)
+                ->queryScalar();
+            // return json_encode(['isSuccess' => false, 'error' => intval($check)]);
+            if (intval($check) === 1) {
+                return json_encode(['isSuccess' => false, 'error' => 'Saved na']);
+            } else {
+                $model->reporting_period = $reporting_period;
+                $model->province = $province;
+                if ($model->save()) {
+                    return json_encode(['isSuccess' => true, 'error' => 'Save na']);
+                }
+            }
         }
 
         return $this->render('create', [
@@ -146,22 +194,31 @@ class FurController extends Controller
             //     ->bindValue(':prev_r_period', $prev)
             //     ->queryAll();
             $conso_fur = [];
-            $result = ArrayHelper::index($query, null, 'advances_type');
+            // $result = ArrayHelper::index($query, null, 'advances_type');
+            $result = ArrayHelper::index($query, null, [function ($element) {
+                return $element['book'];
+            }, 'advances_type']);
+
+
             foreach ($result as $key => $data) {
 
-                $beginning_balance = floatval(array_sum(array_column($result[$key], 'begining_balance')));
-                $total_advances = floatval(array_sum(array_column($result[$key], 'total_advances')));
-                $total_withdrawals = floatval(array_sum(array_column($result[$key], 'total_withdrawals')));
-                $conso_fur[] = [
-                    'advances_type' => $key,
-                    'begining_balance' => $beginning_balance,
-                    'total_advances' => $total_advances,
-                    'total_withdrawals' => $total_withdrawals
-                ];
+
+                foreach ($data as $index => $val) {
+
+                    $beginning_balance = floatval(array_sum(array_column($result[$key][$index], 'begining_balance')));
+                    $total_advances = floatval(array_sum(array_column($result[$key][$index], 'total_advances')));
+                    $total_withdrawals = floatval(array_sum(array_column($result[$key][$index], 'total_withdrawals')));
+                    $conso_fur[] = [
+
+                        'book' => $key,
+                        'advances_type' => $index,
+                        'begining_balance' => $beginning_balance,
+                        'total_advances' => $total_advances,
+                        'total_withdrawals' => $total_withdrawals
+                    ];
+                }
             }
-            $sdo_beginning_balance = floatval(array_sum(array_column($result['Advances to Special Disbursing Officer'], 'begining_balance')));
-            $sdo_total_advances = floatval(array_sum(array_column($result['Advances to Special Disbursing Officer'], 'total_advances')));
-            $sdo_total_withdrawals = floatval(array_sum(array_column($result['Advances to Special Disbursing Officer'], 'total_withdrawals')));
+
             // $conso_fur[] = [
             //     'advances_type' => 'Advances for Operating Expenses',
             //     'begining_balance' => $opex_beginning_balance,
@@ -179,6 +236,7 @@ class FurController extends Controller
             // var_dump($conso_fur);
             // echo "</pre>";
             // return ob_get_clean();
+
             return json_encode([
                 'fur' => $dataProvider,
                 'conso_fur' =>  $conso_fur,

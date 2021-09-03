@@ -240,6 +240,7 @@ class AdvancesController extends Controller
 
             if (!empty($update_id)) {
                 $advances = Advances::findOne($update_id);
+                
                 // foreach ($advances->advancesEntries as $val) {
                 //     $val->delete();
                 // }

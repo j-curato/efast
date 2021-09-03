@@ -101,11 +101,11 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-sm-3">
                 <button class="btn btn-success" style="margin-top: 23px;" id="generate">Generate</button>
-                
+
                 <?php
-                    if (Yii::$app->user->can('create_cibr')){
-                        echo " <button class='btn btn-warning' style='margin-top: 23px;' id='save'>Save</button>";
-                    }
+                if (Yii::$app->user->can('create_cibr')) {
+                    echo " <button class='btn btn-warning' style='margin-top: 23px;' id='save'>Save</button>";
+                }
                 ?>
             </div>
         </div>

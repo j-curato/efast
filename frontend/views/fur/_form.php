@@ -24,14 +24,11 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index " style="background-color: white;padding:20px">
 
-
-
     <form id="filter">
         <div class="row">
             <div class="col-sm-3">
                 <label for="reporting_period">Reporting Peiod</label>
                 <?php
-
                 echo DatePicker::widget([
                     'name' => 'reporting_period',
                     'id' => 'reporting_period',
@@ -49,16 +46,28 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-sm-2">
                 <label for="province">Province</label>
                 <?php
-                echo Select2::widget([
-                    'name' => 'province',
-                    'id' => 'province',
-                    'data' => [
+                $province = [];
+                $user_province = Yii::$app->user->identity->province;
+                $val = '';
+                if (Yii::$app->user->can('create_fur')) {
+                    $province = [
                         'adn' => 'ADN',
                         'ads' => 'ADS',
                         'sdn' => 'SDN',
                         'sds' => 'SDS',
                         'pdi' => 'PDI',
-                    ],
+                    ];
+                } else {
+                    $val = $user_province;
+                    $province = [
+                        strtolower($user_province) => strtoupper($user_province)
+                    ];
+                }
+                echo Select2::widget([
+                    'name' => 'province',
+                    'id' => 'province',
+                    'data' => $province,
+                    'value' => $val,
                     'pluginOptions' => [
                         'autoclose' => true,
                         'placeholder' => 'Select Province'
@@ -68,7 +77,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
             </div>
             <div class="col-sm-3" style="margin-top: 2.5rem;">
-                <button class="btn btn-success" id="generate">Generate</button>
+                <button class="btn btn-primary" id="generate">Generate</button>
+
+                <?php
+                if (Yii::$app->user->can('create_fur')) {
+                    echo "
+                    <button class='btn btn-success' type='submit' id='save'>Save</button>
+                    ";
+                }
+                ?>
             </div>
 
         </div>
@@ -85,6 +102,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <table id="conso_fur_table" style="margin-top:20px;">
             <thead>
+                <th>Book</th>
                 <th>Report Type</th>
                 <th>Beginning Balance</th>
                 <th>Fund Recieved for the Month</th>
@@ -246,18 +264,26 @@ $script = <<< JS
             total_conso_fur_f_total_recieve += parseFloat(f_total_recieve,2)
             total_conso_fur_f_total_disbursements += parseFloat(f_total_disbursements,2)
             total_conso_fur_ending_balance += parseFloat(ending_balance,2)
-             row = `<tr>
-                    <td>`+advances_type+`</td>
-                    <td class='amount'>`+thousands_separators(b_balance)+`</td>
-                    <td class='amount'>`+thousands_separators(f_total_recieve)+`</td>
-                    <td class='amount'>`+thousands_separators(f_total_disbursements)+`</td>
-                    <td class='amount'>`+thousands_separators(ending_balance)+`</td>
-                    </tr>
-                    `
-            $('#conso_fur_table tbody').append(row)
+            if (b_balance ==0 && f_total_recieve==0 && f_total_disbursements==0){
+
+ 
+             }
+             else{
+                row = `<tr>
+                        <td>`+conso_fur[i]['book']+`</td>
+                        <td>`+advances_type+`</td>
+                        <td class='amount'>`+thousands_separators(b_balance)+`</td>
+                        <td class='amount'>`+thousands_separators(f_total_recieve)+`</td>
+                        <td class='amount'>`+thousands_separators(f_total_disbursements)+`</td>
+                        <td class='amount'>`+thousands_separators(ending_balance)+`</td>
+                        </tr>
+                        `
+                $('#conso_fur_table tbody').append(row)
+             }
+
         }
         row = `<tr>
-                    <td>Total</td>
+                    <td colspan='2'>Total</td>
                     <td class='amount'>`+thousands_separators(total_conso_fur_b_balance)+`</td>
                     <td class='amount'>`+thousands_separators(total_conso_fur_f_total_recieve)+`</td>
                     <td class='amount'>`+thousands_separators(total_conso_fur_f_total_disbursements)+`</td>
@@ -319,11 +345,38 @@ $script = <<< JS
 
             $('#fur_table tbody').append(row)
     }
+        $('#filter').submit(function(e){
+            e.preventDefault();
+            $.ajax({
+                            type:"POST",
+                            url:window.location.pathname + "?r=fur/create",
+                            data:$('#filter').serialize(),
+                            success:function(data){
+                                var res = JSON.parse(data)
+                                if(res.isSuccess){
+                                    swal({
+                                            title:'Success',
+                                            type:'success',
+                                            button:false,
+                                            timer:3000,
+                                        },function(){
+                                            location.reload(true)
+                                        })
+                                }
+                                else{
+                                    swal({
+                                            title:"Error ",
+                                            text:res.error,
+                                            type:'error',
+                                            button:false,
+                                            timer:3000,
+                                        })
+                                }
 
+                            }
+                        })
 
-
-
-
+        })
 
 JS;
 $this->registerJs($script);
