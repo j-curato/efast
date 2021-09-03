@@ -1,7 +1,7 @@
 <?php
 
+use kartik\grid\GridView;
 use yii\helpers\Html;
-use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\FurSearch */
@@ -18,11 +18,17 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Create Fur', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel' => [
+            'type' => GridView::TYPE_PRIMARY,
+            // 'heading' => 'List of Areas',
+        ],
+        'export' => false,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
@@ -31,7 +37,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'province',
             'created_at',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => '\kartik\grid\ActionColumn',
+                'deleteOptions' => ['style' => 'display:none'],
+                'updateOptions' => ['style' => 'display:none']
+            ]
         ],
     ]); ?>
 

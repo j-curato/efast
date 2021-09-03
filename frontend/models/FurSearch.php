@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Fur;
+use Yii;
 
 /**
  * FurSearch represents the model behind the search form of `app\models\Fur`.
@@ -40,7 +41,19 @@ class FurSearch extends Fur
      */
     public function search($params)
     {
-        $query = Fur::find();
+
+        $province = Yii::$app->user->identity->province;
+        $q = Fur::find();
+        if (
+            $province === 'adn' ||
+            $province === 'ads' ||
+            $province === 'pdi' ||
+            $province === 'sdn' ||
+            $province === 'sds'
+        ) {
+            $q->where('province = :province', ['province' => $province]);
+        }
+        $query = $q;
 
         // add conditions that should always apply here
 
