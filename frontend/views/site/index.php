@@ -7,9 +7,11 @@ use yii\helpers\ArrayHelper;
 $this->title = 'Dashboard';
 ?>
 <div class="site-index">
-    <button class="btn btn-success" id="update_cloud">Update the cloud</button>
-    <?php
 
+    <?php
+    if (Yii::$app->user->can('super-user')) {
+        echo " <button class='btn btn-success' id='update_cloud'>Update the cloud</button>";
+    }
     $query = (new \yii\db\Query())
         ->select([
             'SUM(raoud_entries.amount) as total_obligated',

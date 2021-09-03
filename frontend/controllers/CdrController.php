@@ -291,17 +291,19 @@ class CdrController extends Controller
 
             $advances_balance = 0;
             $liquidation_balance = 0;
+
             $advances_balance = Yii::$app->db->createCommand("SELECT ROUND(SUM(balance),2)as balance
                     FROM cdr_advances_balance
                     WHERE reporting_period <:reporting_period
-                    AND book_id =:book
+                    AND book_id =:book 
                     AND province LIKE :province
                     AND advances_type LIKE :advances_type")
                 ->bindValue(':reporting_period',  $reporting_period)
                 ->bindValue(':book', $book)
                 ->bindValue(':province', $province)
                 ->bindValue(':advances_type', $advance_type)
-                ->queryScalar();
+                ->queryScalar()
+                ;
             $liquidation_balance = Yii::$app->db->createCommand("SELECT ROUND(SUM(total_withdrawals),2)as balance
                     FROM cdr_liquidation_balance
                     WHERE reporting_period <:reporting_period
@@ -313,6 +315,8 @@ class CdrController extends Controller
                 ->bindValue(':province', $province)
                 ->bindValue(':advances_type', $advance_type)
                 ->queryScalar();
+            $advances_balance_con = !empty($advances_balance)?$advances_balance:0;
+            $liquidation_balance_con = !empty($liquidation_balance)?$liquidation_balance:0;
             $balance  = $advances_balance - $liquidation_balance;
 
 
@@ -363,7 +367,10 @@ class CdrController extends Controller
             // return (['res' => $q]);
             // ob_clean();
             // echo "<pre>";
-            // var_dump($query);
+            // var_dump(
+            //     $balance
+             
+            // );
             // echo "</pre>";
             // return ob_get_clean();
             $book_name = Yii::$app->db->createCommand('SELECT books.name FROM books where books.id =:id')
@@ -376,7 +383,7 @@ class CdrController extends Controller
                 'municipality' => $municipality,
                 'officer' => $officer,
                 'location' => $location,
-                'balance' => $balance,
+                'balance' => floatval($balance),
                 'advance_type' => $advance_type
 
             ]);

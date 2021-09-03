@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\models\Payee;
 use Yii;
 
 class SyncDatabaseController extends \yii\web\Controller
@@ -14,7 +15,7 @@ class SyncDatabaseController extends \yii\web\Controller
     {
         if ($_POST) {
 
-            $db = Yii::$app->db;
+            $db = Yii::$app->ryn_db;
             $payee = $db->createCommand('SELECT * FROM payee')->queryAll();
             $chart_of_accounts = $db->createCommand('SELECT * FROM chart_of_accounts')->queryAll();
             $major_accounts = $db->createCommand('SELECT * FROM major_accounts')->queryAll();
@@ -33,6 +34,10 @@ class SyncDatabaseController extends \yii\web\Controller
             $document_recieve = $db->createCommand('SELECT * FROM document_recieve')->queryAll();
             $fund_cluster_code = $db->createCommand('SELECT * FROM fund_cluster_code')->queryAll();
             $financing_source_code = $db->createCommand('SELECT * FROM financing_source_code')->queryAll();
+            $authorization_code = $db->createCommand('SELECT * FROM authorization_code')->queryAll();
+            $fund_category_and_classification_code = $db->createCommand('SELECT * FROM fund_category_and_classification_code')->queryAll();
+            $mfo_pap_code = $db->createCommand('SELECT * FROM mfo_pap_code')->queryAll();
+            $fund_source = $db->createCommand('SELECT * FROM fund_source')->queryAll();
 
             return json_encode([
                 'payee' => $payee,
@@ -49,6 +54,14 @@ class SyncDatabaseController extends \yii\web\Controller
                 'ors_reporting_period' => $ors_reporting_period,
                 'jev_reporting_period' => $jev_reporting_period,
                 'fund_source_type' => $fund_source_type,
+                'responsibility_center' => $responsibility_center,
+                'document_recieve' => $document_recieve,
+                'fund_cluster_code' => $fund_cluster_code,
+                'financing_source_code' => $financing_source_code,
+                'authorization_code' => $authorization_code,
+                'fund_category_and_classification_code' => $fund_category_and_classification_code,
+                'mfo_pap_code' => $mfo_pap_code,
+                'fund_source' => $fund_source
             ]);
         }
     }
@@ -56,7 +69,7 @@ class SyncDatabaseController extends \yii\web\Controller
     public function actionUpdateDatabase()
     {
         if ($_POST) {
-            $db = Yii::$app->cloud_db;
+            $db = Yii::$app->db;
             $data = json_decode(json_decode($_POST['json']), true);
             $source_payee = $data['payee'];
             $source_chart_of_accounts = $data['chart_of_accounts'];
@@ -91,7 +104,26 @@ class SyncDatabaseController extends \yii\web\Controller
             $payee_difference = array_map(
                 'unserialize',
                 array_diff(array_map('serialize', $source_payee), array_map('serialize', $target_payee))
+
             );
+            if (!empty($payee_difference)) {
+
+                foreach ($payee_difference as $val) {
+                    $query = $db->createCommand("SELECT EXISTS (SELECT * FROM payee WHERE payee.id = :id)")
+                        ->bindValue(':id', $val['id'])
+                        ->queryScalar();
+                    if (intval($query) === 1) {
+                    } else {
+
+                        $db->createCommand("INSERT INTO payee (id,account_name,)")->query();
+                        ob_clean();
+                        echo "<pre>";
+                        var_dump($val);
+                        echo "</pre>";
+                        return ob_get_clean();
+                    }
+                }
+            }
             $chart_of_accounts_difference = array_map(
                 'unserialize',
                 array_diff(array_map('serialize', $source_chart_of_accounts), array_map('serialize', $target_chart_of_accounts))
@@ -148,7 +180,7 @@ class SyncDatabaseController extends \yii\web\Controller
 
             ob_clean();
             echo "<pre>";
-            var_dump($fund_source_type_difference);
+            var_dump($payee_difference);
             echo "</pre>";
             return ob_get_clean();
         }

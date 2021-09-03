@@ -194,9 +194,9 @@ class CashDisbursementController extends Controller
             $mode_of_payment = $_POST["mode_of_payment"];
             $ada_number = $_POST["ada_number"];
             $selected_items = !empty($_POST['selection']) ? $_POST['selection'] : '';
-            $out_time =date('H:i:s',strtotime($_POST['out_time']));
-            $begin_time =date('H:i:s',strtotime($_POST['begin_time']));
-            
+            $out_time = date('H:i:s', strtotime($_POST['out_time']));
+            $begin_time = date('H:i:s', strtotime($_POST['begin_time']));
+
             // return json_encode(["isSuccess" => false,'error'=>$begin_time]);
             // if (!empty(count($_POST['selection'])) > 1) {
             //     return json_encode(["error" => "Selected Dv is More Than 1"]);

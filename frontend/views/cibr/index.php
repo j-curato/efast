@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         // if (Yii::$app->user->can('create_cibr')) {
 
-            echo   Html::a('Create Cibr', ['create'], ['class' => 'btn btn-success']);
+        echo   Html::a('Create Cibr', ['create'], ['class' => 'btn btn-success']);
         // }
 
         ?>
@@ -38,14 +38,21 @@ $this->params['breadcrumbs'][] = $this->title;
             'top' => 50,
             'position' => 'absolute',
         ],
-        'export'=>false,
+        'export' => false,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
             'reporting_period',
             'province',
-            'book_name',
+            [
+                'label' => 'Draft/Final',
+                'attribute' => 'is_final',
+                'value' => function ($model) {
+                    $final = $model->is_final === 1 ? $final = 'Final' : 'Draft';
+                    return $final;
+                }
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

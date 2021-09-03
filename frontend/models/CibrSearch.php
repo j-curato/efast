@@ -19,7 +19,7 @@ class CibrSearch extends Cibr
     {
         return [
             [['id'], 'integer'],
-            [['reporting_period', 'province', 'book_name'], 'safe'],
+            [['reporting_period', 'province', 'book_name','is_final'], 'safe'],
         ];
     }
 
@@ -76,6 +76,7 @@ class CibrSearch extends Cibr
 
         $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
             ->andFilterWhere(['like', 'province', $this->province])
+            ->andFilterWhere(['like', 'is_final', $this->is_final])
             ->andFilterWhere(['like', 'book_name', $this->book_name]);
 
         return $dataProvider;

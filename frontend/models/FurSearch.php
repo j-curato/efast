@@ -4,12 +4,13 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\TrackingSheet;
+use app\models\Fur;
+use Yii;
 
 /**
- * TrackingSheetSearch represents the model behind the search form of `app\models\TrackingSheet`.
+ * FurSearch represents the model behind the search form of `app\models\Fur`.
  */
-class TrackingSheetSearch extends TrackingSheet
+class FurSearch extends Fur
 {
     /**
      * {@inheritdoc}
@@ -18,7 +19,7 @@ class TrackingSheetSearch extends TrackingSheet
     {
         return [
             [['id'], 'integer'],
-            [['tracking_number', 'particular', 'created_at', 'process_ors_id', 'payee_id'], 'safe'],
+            [['reporting_period', 'province', 'created_at'], 'safe'],
         ];
     }
 
@@ -40,15 +41,24 @@ class TrackingSheetSearch extends TrackingSheet
      */
     public function search($params)
     {
-        $query = TrackingSheet::find();
 
+        $province = Yii::$app->user->identity->province;
+        $q = Fur::find();
+        if (
+            $province === 'adn' ||
+            $province === 'ads' ||
+            $province === 'pdi' ||
+            $province === 'sdn' ||
+            $province === 'sds'
+        ) {
+            $q->where('province = :province', ['province' => $province]);
+        }
+        $query = $q;
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => ['defaultOrder' => ['id' => SORT_DESC]],
-
         ]);
 
         $this->load($params);
@@ -58,18 +68,15 @@ class TrackingSheetSearch extends TrackingSheet
             // $query->where('0=1');
             return $dataProvider;
         }
-        $query->joinWith('payee');
-        $query->joinWith('processOrs');
+
         // grid filtering conditions
         $query->andFilterWhere([
-            'tracking_sheet.id' => $this->id,
+            'id' => $this->id,
             'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['like', 'tracking_number', $this->tracking_number])
-            ->andFilterWhere(['like', 'particular', $this->particular])
-            ->andFilterWhere(['like', 'process_ors.serial_number', $this->process_ors_id])
-            ->andFilterWhere(['like', 'payee.account_name', $this->payee_id]);
+        $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
+            ->andFilterWhere(['like', 'province', $this->province]);
 
         return $dataProvider;
     }

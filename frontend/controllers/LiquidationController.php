@@ -781,7 +781,7 @@ class LiquidationController extends Controller
                         $advances_entries_id = (new \yii\db\Query())
                             ->select("id")
                             ->from("advances_entries")
-                            ->where("advances_entries.fund_source LIKE :fund_source", ['fund_source' => "% $fund_source%"])
+                            ->where("advances_entries.fund_source LIKE :fund_source", ['fund_source' => "%$fund_source%"])
                             ->one();
                         if (empty($advances_entries_id)) {
                             ob_clean();
