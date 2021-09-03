@@ -531,7 +531,23 @@ $this->params['breadcrumbs'][] = $this->title;
 
         var total_deposits = 0;
         var total_withdrawals = 0;
+        var total_balance = 0;
         $("#data_table > tbody").html("");
+
+        if (x != 1) {
+            var d = []
+            total_deposits += balance
+            d['reporting_period'] = '';
+            d['check_number'] = '';
+            d['particular'] = 'Beginning Balance';
+            d['amount'] = balance;
+            d['withdrawals'] = 0;
+            d['gl_account_title'] = '';
+            d['gl_object_code'] = '';
+            addToDataTable(d, balance)
+            x++
+
+        }
         for (var i = 0; i < data.length; i++) {
 
 
@@ -549,27 +565,12 @@ $this->params['breadcrumbs'][] = $this->title;
             // if (data[i]['reporting_period'] == $("#reporting_period").val()) {
 
 
-            if (x != 1) {
-                var am = data[i]['amount']
-                var wth = data[i]['withdrawals']
-                var beginning_balance = parseFloat(balance, 2) - parseFloat(data[i]['amount'], 2) + parseFloat(data[i]['withdrawals'], 2)
-                var d = []
-                total_deposits += balance
-                d['reporting_period'] = '';
-                d['check_number'] = '';
-                d['particular'] = 'Beginning Balance';
-                d['amount'] = balance;
-                d['withdrawals'] = 0;
-                d['gl_account_title'] = '';
-                d['gl_object_code'] = '';
-                addToDataTable(d, balance)
-                x++
 
-            }
             balance = parseFloat(balance) + parseFloat(data[i]['amount'], 2) - parseFloat(data[i]['withdrawals'], 2)
             var bal = parseFloat(balance).toFixed(2);
             addToDataTable(data[i], bal)
 
+            total_balance = parseFloat(balance, 2)
             total_deposits = parseFloat(total_deposits, 2) + parseFloat(data[i]['amount'], 2)
             total_withdrawals = parseFloat(total_withdrawals, 2) + parseFloat(data[i]['withdrawals'], 2)
 
@@ -585,7 +586,7 @@ $this->params['breadcrumbs'][] = $this->title;
         q['withdrawals'] = parseFloat(total_withdrawals, 2).toFixed(2);
         q['gl_account_title'] = '';
         q['gl_object_code'] = '';
-        addToDataTable(q, bal)
+        addToDataTable(q, balance)
 
     }
 

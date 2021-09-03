@@ -15,6 +15,13 @@ return [
             'password' => 'fuckthis.l.',
             'charset' => 'utf8',
         ],
+        'ryn_db' => [
+            'class' => 'yii\db\Connection',
+            'dsn' => 'mysql:host=10.20.17.26;dbname=afms',
+            'username' => 'user1',
+            'password' => 'password',
+            'charset' => 'utf8',
+        ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
             'viewPath' => '@common/mail',

@@ -4,13 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Cibr;
-use Yii;
+use app\models\Fur;
 
 /**
- * CibrSearch represents the model behind the search form of `app\models\Cibr`.
+ * FurSearch represents the model behind the search form of `app\models\Fur`.
  */
-class CibrSearch extends Cibr
+class FurSearch extends Fur
 {
     /**
      * {@inheritdoc}
@@ -19,7 +18,7 @@ class CibrSearch extends Cibr
     {
         return [
             [['id'], 'integer'],
-            [['reporting_period', 'province', 'book_name','is_final'], 'safe'],
+            [['reporting_period', 'province', 'created_at'], 'safe'],
         ];
     }
 
@@ -41,19 +40,7 @@ class CibrSearch extends Cibr
      */
     public function search($params)
     {
-        $province = Yii::$app->user->identity->province;
-        $q = Cibr::find();
-        if (
-            $province === 'adn' ||
-            $province === 'ads' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
-            $q->where('province LIKE :province', ['province' => $province]);
-        }
-        $query = $q;
-
+        $query = Fur::find();
 
         // add conditions that should always apply here
 
@@ -72,12 +59,11 @@ class CibrSearch extends Cibr
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'created_at' => $this->created_at,
         ]);
 
         $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
-            ->andFilterWhere(['like', 'province', $this->province])
-            ->andFilterWhere(['like', 'is_final', $this->is_final])
-            ->andFilterWhere(['like', 'book_name', $this->book_name]);
+            ->andFilterWhere(['like', 'province', $this->province]);
 
         return $dataProvider;
     }

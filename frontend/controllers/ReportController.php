@@ -1148,7 +1148,7 @@ class ReportController extends \yii\web\Controller
             // var_dump($result);
             // echo "</pre>";
             // return ob_get_clean();.
-
+            
             return $this->render('rsmi', [
                 'dataProvider' => $result
             ]);

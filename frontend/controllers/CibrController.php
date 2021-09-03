@@ -297,7 +297,6 @@ class CibrController extends Controller
              from cibr_advances_balances
              where reporting_period <:reporting_period 
              AND province LIKE :province
-            
               ")
                 ->bindValue(':reporting_period',   $reporting_period)
                 ->bindValue(':province',   $province)
