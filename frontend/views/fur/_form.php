@@ -349,7 +349,7 @@ $script = <<< JS
             e.preventDefault();
             $.ajax({
                             type:"POST",
-                            url:window.location.pathname + "?r=fur/create",
+                            url:window.location.pathname + "?r=fur/insert-fur",
                             data:$('#filter').serialize(),
                             success:function(data){
                                 var res = JSON.parse(data)

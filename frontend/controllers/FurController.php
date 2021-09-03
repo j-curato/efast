@@ -31,13 +31,15 @@ class FurController extends Controller
                     'delete',
                     'create',
                     'generate-fur',
+                    'insert-fur',
                 ],
                 'rules' => [
                     [
                         'actions' => [
                             'update',
                             'delete',
-                            'create',
+                            'insert-fur',
+
                         ],
                         'allow' => true,
                         'roles' => ['create_fur']
@@ -47,6 +49,7 @@ class FurController extends Controller
                             'index',
                             'view',
                             'generate-fur',
+                            'create',
                         ],
                         'allow' => true,
                         'roles' => ['province']
@@ -95,13 +98,13 @@ class FurController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionInsertFur()
     {
-        $model = new Fur();
 
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
             $province = $_POST['province'];
+            $model = new Fur();
 
             $check  = Yii::$app->db->createCommand("SELECT EXISTS(SELECT * FROM fur WHERE reporting_period = :reporting_period AND province = :province)")
                 ->bindValue(':reporting_period', $reporting_period)
@@ -118,6 +121,11 @@ class FurController extends Controller
                 }
             }
         }
+    }
+    public function actionCreate()
+    {
+        $model = new Fur();
+
 
         return $this->render('create', [
             'model' => $model,
