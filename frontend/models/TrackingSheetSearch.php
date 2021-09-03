@@ -47,6 +47,7 @@ class TrackingSheetSearch extends TrackingSheet
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['id' => SORT_DESC]],
 
         ]);
 
