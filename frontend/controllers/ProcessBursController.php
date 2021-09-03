@@ -79,7 +79,7 @@ class ProcessBursController extends Controller
     {
         $searchModel = new ProcessBursRaoudsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->sort = ['defaultOrder' => ['process_burs_id' => 'DESC']];
+        $dataProvider->sort = ['defaultOrder' => ['process_ors_id' => 'DESC']];
 
         return $this->render('index', [
             'searchModel' => $searchModel,
