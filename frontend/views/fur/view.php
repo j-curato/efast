@@ -22,13 +22,10 @@ use yii\helpers\ArrayHelper;
 $this->title = "FUR";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="jev-preparation-index " style="background-color: white;padding:20px">
-
-
-
- <?php
- 
- ?>
+<div class="fur-view " style="background-color: white;padding:20px ;display:none">
+    <?php
+    echo "<input type='hidden' id='model_id' value='$model->id'/>"
+    ?>
 
     <!-- <div id="con"> -->
 
@@ -69,12 +66,13 @@ $this->params['breadcrumbs'][] = $this->title;
         </table>
     </div>
     <!-- </div> -->
-    <div id="dots5" style="display: none;">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
+
+</div>
+<div id="dots5">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
 </div>
 <style>
     table,
@@ -85,9 +83,6 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 12px;
     }
 
-    #con {
-        display: none;
-    }
 
     .amount {
         text-align: right;
@@ -151,33 +146,41 @@ $script = <<< JS
         var seconds = (endDate.getTime() - startDate.getTime())
         var diff =seconds/ 60;
         console.log(seconds)
-    })
-    $('#generate').click((e)=>{
-        e.preventDefault();
-        var reporting_period = new Date($('#reporting_period').val())
-        month = reporting_period.toLocaleString('default',{month:'long'})
-        year = reporting_period.getFullYear()
-        console.log(province['adn'])
-        $('#con').hide()
-        $('#dots5').show()
+        
         $.ajax({
             type:'POST',
-            url:window.location.pathname +'?r=fur/generate-fur',
-            data:$("#filter").serialize(),
+            url:window.location.pathname +'?r=fur/find-fur',
+            data:{id:$('#model_id').val()},
             success:function(data){
                 var res = JSON.parse(data)
-                var conso_fur = res.conso_fur
-                var fur = res.fur
-                console.log(res)
+                var reporting_period = new Date(res.reporting_period)
+                month = reporting_period.toLocaleString('default',{month:'long'})
+                year = reporting_period.getFullYear()
                 $("#period").text('For the Period of '+ month+','+year)
-                $('#prov').text('Province of '+province[$('#province').val()])
-                addData(fur,conso_fur)
-                $('#dots5').hide()
-                $('#con').show()
-            }
+                        $('#prov').text('Province of '+province[res.province])
+                $.ajax({
+                    type:'POST',
+                    url:window.location.pathname +'?r=fur/generate-fur',
+                    data:{
+                        reporting_period:res.reporting_period,
+                        province:res.province
+                    },
+                    success:function(data){
+                        var res = JSON.parse(data)
+                        var conso_fur = res.conso_fur
+                        var fur = res.fur
+                        console.log(res)
+       
+                        addData(fur,conso_fur)
+                        $('#dots5').hide()
+                        $('.fur-view').show()
+                    }
       
+                })
+            }
         })
     })
+
     function addData(fur, conso_fur) {
         $("#conso_fur_table > tbody").html("");
         $("#fur_table > tbody").html("");
@@ -201,7 +204,12 @@ $script = <<< JS
             total_conso_fur_f_total_recieve += parseFloat(f_total_recieve,2)
             total_conso_fur_f_total_disbursements += parseFloat(f_total_disbursements,2)
             total_conso_fur_ending_balance += parseFloat(ending_balance,2)
-             row = `<tr>
+            if (b_balance ==0 && f_total_recieve==0 && f_total_disbursements==0){
+ 
+            }
+            else{
+            row = `<tr>
+                    <td>`+conso_fur[i]['book']+`</td>
                     <td>`+advances_type+`</td>
                     <td class='amount'>`+thousands_separators(b_balance)+`</td>
                     <td class='amount'>`+thousands_separators(f_total_recieve)+`</td>
@@ -210,9 +218,10 @@ $script = <<< JS
                     </tr>
                     `
             $('#conso_fur_table tbody').append(row)
+            }
         }
         row = `<tr>
-                    <td>Total</td>
+                    <td colspan='2'>Total</td>
                     <td class='amount'>`+thousands_separators(total_conso_fur_b_balance)+`</td>
                     <td class='amount'>`+thousands_separators(total_conso_fur_f_total_recieve)+`</td>
                     <td class='amount'>`+thousands_separators(total_conso_fur_f_total_disbursements)+`</td>

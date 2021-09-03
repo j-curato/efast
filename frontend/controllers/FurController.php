@@ -181,6 +181,14 @@ class FurController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+    public function actionFindFur()
+    {
+        if ($_POST) {
+
+
+            return json_encode($this->findModel($_POST['id'])->toArray());
+        }
+    }
     public function actionGenerateFur()
     {
         if ($_POST) {
