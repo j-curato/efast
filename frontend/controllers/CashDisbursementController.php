@@ -240,8 +240,10 @@ class CashDisbursementController extends Controller
                     return json_encode(['isSuccess' => 'exist', 'id' => $query['id']]);
                 }
             }
-
-
+            
+            if (empty($good_cancelled)) {
+                $good_cancelled = 0;
+            }
 
             $cd->book_id = $book_id;
             $cd->reporting_period = $reporting_period;
