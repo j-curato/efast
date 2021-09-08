@@ -93,7 +93,7 @@ class MyComponent extends Component
             ],
 
             'ads' => [
-                'province' => 'Agusan Del SUr',
+                'province' => 'Agusan Del Sur',
                 'officer' => 'Maria Prescylin C. Lademora',
                 'location' => 'San Francisco, ADS'
             ],
