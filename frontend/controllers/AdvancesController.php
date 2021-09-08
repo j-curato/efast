@@ -299,7 +299,7 @@ class AdvancesController extends Controller
                         }
                         $ad_entry->fund_source_type = $fund_source_type[$index];
                         $ad_entry->object_code = $sub_account1_id[$index];
-                        $ad_entry->fund_source = trim($fund_source[$index], ' ');
+                        $ad_entry->fund_source = trim($fund_source[$index], " \r\n\t");
                         $ad_entry->reporting_period = $new_reporting_period[$index];
                         $ad_entry->amount = floatval(preg_replace('/[^\d.]/', '', $amount[$index]));
                         $ad_entry->book_id = $ad_entry->cashDisbursement->book->id;
