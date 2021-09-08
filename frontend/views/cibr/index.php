@@ -15,9 +15,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?php
-
-        // if (Yii::$app->user->can('create_cibr')) {
-
+        $action_display = 'display:none';
+        if (Yii::$app->user->can('create_cibr')) {
+            $action_display = '';
+        }
         echo   Html::a('Create Cibr', ['create'], ['class' => 'btn btn-success']);
         // }
 
@@ -54,7 +55,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => '\kartik\grid\ActionColumn',
+                'deleteOptions' => ['style' => $action_display],
+                'updateOptions' => ['style' => $action_display]
+            ],
         ],
     ]); ?>
 

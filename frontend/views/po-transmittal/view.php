@@ -73,7 +73,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <tr>
 
-                    <td style="width: 250px;">
+                    <td style="width: 110px;">
                         For
                     </td>
                     <td>
@@ -86,11 +86,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         </span>
                     </td>
                 </tr>
-                <tr>
-                    <td>
+                <tr >
+                    <td style="padding-top:40px;padding-bottom:20px;">
                         From
                     </td>
-                    <td>
+                    <td >
                         <span class="head bold" id='asig_1'>
 
                             <!-- BRENDA B. CORVERA -->
