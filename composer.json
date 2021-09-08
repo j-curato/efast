@@ -40,7 +40,8 @@
         "edofre/yii2-fullcalendar": "V1.0.11",
         "kartik-v/yii2-export": "@dev",
         "2amigos/qrcode-library": "^2.0",
-        "yii2tech/https": "*"
+        "yii2tech/https": "*",
+        "yii2tech/ar-softdelete": "*"
 
 
     },

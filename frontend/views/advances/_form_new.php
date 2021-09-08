@@ -228,10 +228,10 @@ use yii\helpers\ArrayHelper;
     </style>
 </div>
 
-<script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+<!-- <script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
 <link href="/afms/frontend/web/js/select2.min.js" />
 <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
-<link href="/afms/frontend/web/js/maskMoney.js" />
+<link href="/afms/frontend/web/js/maskMoney.js" /> -->
 
 <script>
     var vacant = 0;
@@ -312,11 +312,20 @@ use yii\helpers\ArrayHelper;
 
 
         for (var i = 0; i < result.length; i++) {
+            var entry_id = ''
+                if (result[i]['entry_id']!=null){
+                    entry_id = result[i]['entry_id']
+                }
             var row = `<tr>
                     <td style='display:none' >
-                     <input value='${result[i]['cash_disbursement_id']}'
-                      type='text' name='cash_disbursement_id[]' class='cash_disbursement_id'/></td>
-                      <td > <input  type='month' id='date_${i}' name='new_reporting_period[]' required value='${result[i]['entry_reporting_period']}' /></td>
+                        <input value='${result[i]['cash_disbursement_id']}' 
+                        type='text' name='cash_disbursement_id[]' class='cash_disbursement_id'/>
+                    </td>
+                    <td style='display:none' >
+                        <input value='${entry_id}' 
+                        type='text' name='entry_id[]' class='entry_id'/>
+                    </td>
+                    <td > <input  type='month' id='date_${i}' name='new_reporting_period[]' required value='${result[i]['entry_reporting_period']}' /></td>
                     <td class='dv_number'> ${result[i]['dv_number']}</td>
                     <td class='check_number'> ${result[i]['check_or_ada_no']}</td>
                     <td class='issuance_date'> ${result[i]['issuance_date']}</td>

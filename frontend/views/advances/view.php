@@ -40,41 +40,45 @@ $this->params['breadcrumbs'][] = $this->title;
                 $total = 0;
                 foreach ($model->advancesEntries as $i => $val) {
                     $payee = !empty($val->cashDisbursement->dvAucs->payee_id) ? $val->cashDisbursement->dvAucs->payee->account_name : '';
-                    echo "
-                <tr>
+                    if ($val->is_deleted === 0) {
 
-                <td>
-                {$val->id}
-                {$val->fund_source}
-                </td>
-                <td>
-                {$val->cashDisbursement->dvAucs->dv_number}
-                </td>
-                <td>
-                {$val->cashDisbursement->check_or_ada_no}
-                </td>
-                <td>
-                {$val->cashDisbursement->ada_number}
-                </td>
-                <td>
-                {$val->cashDisbursement->issuance_date}
-                </td>
-                <td>
-                {$payee}
-                </td>
-                <td>
-                {$val->accountingCode->object_code}
-                </td>
-                <td>
-                {$val->accountingCode->account_title}
-                </td>
-                <td style='text-align:right'>
-              
-                " . number_format($val->amount, 2) . "
-                </td>
+                        echo "
+                        <tr>
 
-                </tr>
-                ";
+                        <td>
+                        {$val->id}
+                        {$val->fund_source}
+                        </td>
+                        <td>
+                        {$val->cashDisbursement->dvAucs->dv_number}
+                        </td>
+                        <td>
+                        {$val->cashDisbursement->check_or_ada_no}
+                        </td>
+                        <td>
+                        {$val->cashDisbursement->ada_number}
+                        </td>
+                        <td>
+                        {$val->cashDisbursement->issuance_date}
+                        </td>
+                        <td>
+                        {$payee}
+                        </td>
+                        <td>
+                        {$val->accountingCode->object_code}
+                        </td>
+                        <td>
+                        {$val->accountingCode->account_title}
+                        </td>
+                        <td style='text-align:right'>
+                    
+                        " . number_format($val->amount, 2) . "
+                        </td>
+
+                        </tr>
+                    ";
+                    }
+
                     $total += $val->amount;
                 }
 

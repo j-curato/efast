@@ -221,6 +221,7 @@ class AdvancesController extends Controller
     {
         if ($_POST) {
             $update_id = !empty($_POST['update_id']) ? $_POST['update_id'] : '';
+            $entry_id = !empty($_POST['entry_id']) ? $_POST['entry_id'] : '';
 
             $cash_disbursement_id = $_POST['cash_disbursement_id'];
             $advances_type = $_POST['report'];
@@ -233,17 +234,48 @@ class AdvancesController extends Controller
             $new_reporting_period = $_POST['new_reporting_period'];
             $fund_source_type = $_POST['fund_source_type'];
 
-
             $transaction = Yii::$app->db->beginTransaction();
             // return json_encode(['isSuccess' => false, 'error' => $fund_source_type]);
 
 
             if (!empty($update_id)) {
                 $advances = Advances::findOne($update_id);
-                
+
                 // foreach ($advances->advancesEntries as $val) {
                 //     $val->delete();
                 // }
+                // $target = Yii::$app->db->createCommand('SELECT * FROM advances_entries WHERE advances_id = :id')
+                //     ->bindValue(':id', $update_id)
+                //     ->queryAll();
+                // // $SourceToTarget = array_map(
+                // //     'unserialize',
+                // //     array_diff(array_map('serialize', $q2), array_map('serialize', $q1))
+                // // );
+                $advances_entries_id = Yii::$app->db->createCommand('SELECT id FROM advances_entries WHERE advances_id = :id AND is_deleted = false')
+                    ->bindValue(':id', $update_id)
+                    ->queryAll();
+
+                $compare = array_map(
+                    'unserialize',
+                    array_diff(
+                        array_map('serialize', array_column($advances_entries_id, 'id')),
+                        array_map('serialize', $entry_id)
+                    )
+                );
+                if (!empty($compare)) {
+                    foreach ($compare as $val) {
+
+                        // Yii::$app->db->createCommand('DELETE FROM advances_entries where id= :id')
+                        //     ->bindValue(':id', $val)
+                        //     ->query();
+                        $model = AdvancesEntries::findOne($val);
+                        $model->is_deleted = true;
+                        if ($model->save(false)) {
+                        }
+                    }
+                }
+
+                // return json_encode(['isSuccess' => false, 'error' => $compare]);
             } else {
                 $advances = new Advances();
                 $advances->nft_number = $this->getNftNumber();
@@ -252,13 +284,19 @@ class AdvancesController extends Controller
             $advances->report_type = $advances_type;
             $advances->province = $province;
             $advances->reporting_period = $reporting_period;
+            $sourceArray = [];
             if ($advances->validate()) {
                 if ($flag = $advances->save(false)) {
 
                     foreach ($cash_disbursement_id as $index => $val) {
-                        $ad_entry = new AdvancesEntries();
-                        $ad_entry->advances_id = $advances->id;
-                        $ad_entry->cash_disbursement_id = $cash_disbursement_id[$index];
+                        if (!empty($entry_id[$index])) {
+                            $ad_entry =  AdvancesEntries::findOne($entry_id[$index]);
+                        } else {
+
+                            $ad_entry = new AdvancesEntries();
+                            $ad_entry->advances_id = $advances->id;
+                            $ad_entry->cash_disbursement_id = $cash_disbursement_id[$index];
+                        }
                         $ad_entry->fund_source_type = $fund_source_type[$index];
                         $ad_entry->object_code = $sub_account1_id[$index];
                         $ad_entry->fund_source = trim($fund_source[$index], ' ');
@@ -267,7 +305,10 @@ class AdvancesController extends Controller
                         $ad_entry->book_id = $ad_entry->cashDisbursement->book->id;
                         $ad_entry->advances_type = $advances_type;
                         $ad_entry->report_type = $report_type[$index];
+
+
                         if ($ad_entry->validate()) {
+
                             if ($ad_entry->save(false)) {
                             }
                         } else {
@@ -293,6 +334,7 @@ class AdvancesController extends Controller
 
             $query = (new \yii\db\Query())
                 ->select([
+                    'advances_entries.id as entry_id',
                     'dv_aucs.dv_number',
                     'cash_disbursement.id as cash_disbursement_id',
                     'cash_disbursement.mode_of_payment',
@@ -317,6 +359,7 @@ class AdvancesController extends Controller
                 ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id = dv_aucs.id')
                 ->join('LEFT JOIN', 'payee', 'dv_aucs.payee_id = payee.id')
                 ->where('advances_entries.advances_id =:advances_id', ['advances_id' => $update_id])
+                ->andWhere('advances_entries.is_deleted = 0' )
                 ->all();
 
             return json_encode($query);
