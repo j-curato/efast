@@ -33,7 +33,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout', 'signup', 'index', 'q'],
+                'only' => ['logout', 'signup', 'index', 'q', 'update-system'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -45,11 +45,11 @@ class SiteController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                     ],
-                    // [
-                    //     'actions' => [],
-                    //     'allow' => true,
-                    //     'roles' => ['@'],
-                    // ],
+                    [
+                        'actions' => ['update-system'],
+                        'allow' => true,
+                        'roles' => ['super-user'],
+                    ],
                 ],
             ],
             'verbs' => [
@@ -306,7 +306,7 @@ class SiteController extends Controller
         $ev = Event::find()->all();
         $events = [];
         foreach ($ev as $e) {
-            $day = date('d',strtotime($e->end_date))+1;
+            $day = date('d', strtotime($e->end_date)) + 1;
             $event = [
                 'id' => $e->id,
                 'title' => $e->title,
@@ -420,5 +420,10 @@ class SiteController extends Controller
             }
         }
         return json_encode($arr);
+    }
+    public function actionUpdateSystem()
+    {
+        shell_exec('git pull git@github.com:kiotipot1/dti-afms-2.git');
+        echo   shell_exec('yii migrate');
     }
 }
