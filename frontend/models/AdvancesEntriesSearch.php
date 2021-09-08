@@ -42,7 +42,7 @@ class AdvancesEntriesSearch extends AdvancesEntries
 
     public function search($params)
     {
-        $query = AdvancesEntries::find();
+        $query = AdvancesEntries::find()->where('is_deleted = 0');
 
         // add conditions that should always apply here
 

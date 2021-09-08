@@ -1728,303 +1728,303 @@ class ReportController extends \yii\web\Controller
         }
         return $this->render('rod');
     }
-    public function actionR()
-    {
-        $arr = [];
+    // public function actionR()
+    // {
+    //     $arr = [];
 
-        $arr[] = [
-            1299,
-            3312,
-            219751.96,
-            '1990103000_00633_00482',
-            'RAPID GOP (DV# 2021-08-1314) - Goods (ICT Equipment)',
-            8,
-            '2021-09',
-            'RAPID LP',
-            'Advances to Special Disbursing Officer',
-            'RAPID LP SDO CDR'
-        ];
-        $arr[] = [
-            1299,
-            3312,
-            44000,
-            '1990103000_00633_00482',
-            'RAPID GOP (DV# 2021-08-1314) - Recurrent Costs (Other MOOE)',
-            8,
-            '2021-09',
-            'RAPID LP',
-            'Advances to Special Disbursing Officer',
-            'RAPID LP SDO CDR'
-        ];
-        $arr[] = [
-            1299,
-            3312,
-            167200,
-            '1990103000_00633_00482',
-            'RAPID GOP (DV# 2021-08-1314) - Recurrent Costs (Representation expenses)',
-            8,
-            '2021-09',
-            'RAPID LP',
-            'Advances to Special Disbursing Officer',
-            'RAPID LP SDO CDR'
-        ];
-        $arr[] = [
-            1299,
-            3312,
-            15339.4,
-            '1990103000_00633_00482',
-            'RAPID GOP (DV# 2021-08-1314) - Goods (Printing and publication expenses)',
-            8,
-            '2021-09',
-            'RAPID LP',
-            'Advances to Special Disbursing Officer',
-            'RAPID LP SDO CDR'
-        ];
-        $arr[] = [
-            1299,
-            3312,
-            34945.21,
-            '1990103000_00633_00482',
-            'RAPID GOP (DV# 2021-08-1314) - Consultancy (Consultancy services)',
-            8,
-            '2021-09',
-            'RAPID LP',
-            'Advances to Special Disbursing Officer',
-            'RAPID LP SDO CDR'
-        ];
-        $arr[] = [
-            1299,
-            3312,
-            7980.93,
-            '1990103000_00633_00482',
-            'RAPID GOP (DV# 2021-08-1314) - Recurrent Costs (Postage Courier Services)',
-            8,
-            '2021-09',
-            'RAPID LP',
-            'Advances to Special Disbursing Officer',
-            'RAPID LP SDO CDR'
-        ];
-        $arr[] = [
-            1299,
-            3312,
-            52800,
-            '1990103000_00633_00482',
-            'RAPID GOP (DV# 2021-08-1314) - Recurrent Costs (Fuel oil and lubricants expenses)',
-            8,
-            '2021-09',
-            'RAPID LP',
-            'Advances to Special Disbursing Officer',
-            'RAPID LP SDO CDR'
-        ];
-        $arr[] = [
-            1299,
-            3312,
-            108802.29,
-            '1990103000_00633_00482',
-            'RAPID GOP (DV# 2021-08-1314) - Goods (Office Supplies Expense)',
-            8,
-            '2021-09',
-            'RAPID LP',
-            'Advances to Special Disbursing Officer',
-            'RAPID LP SDO CDR'
-        ];
-        $arr[] = [
-            1299,
-            3312,
-            133139.23,
-            '1990103000_00633_00482',
-            'RAPID GOP (DV# 2021-08-1314) - Recurrent Costs (Training Expense)',
-            8,
-            '2021-09',
-            'RAPID LP',
-            'Advances to Special Disbursing Officer',
-            'RAPID LP SDO CDR'
-        ];
-        $arr[] = [
-            1299,
-            3312,
-            69187.36,
-            '1990103000_00632_00479',
-            'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Insurance Expenses)',
-            5,
-            '2021-09',
-            'RAPID GOP',
-            'Advances to Special Disbursing Officer',
-            '101 SDO CDR'
-        ];
-        $arr[] = [
-            1298,
-            3305,
-            30480,
-            '1990103000_00632_00479',
-            'RAPID GOP (DV#2021-08-1317) - Goods (ICT Equipment)',
-            5,
-            '2021-09',
-            'RAPID GOP',
-            'Advances to Special Disbursing Officer',
-            '101 SDO CDR'
-        ];
-        $arr[] = [
-            1298,
-            3305,
-            24000,
-            '1990103000_00632_00479',
-            'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Electricity Expense)',
-            5,
-            '2021-09',
-            'RAPID GOP',
-            'Advances to Special Disbursing Officer',
-            '101 SDO CDR'
-        ];
-        $arr[] = [
-            1298,
-            3305,
-            6000,
-            '1990103000_00632_00479',
-            'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Other MOOE)',
-            5,
-            '2021-09',
-            'RAPID GOP',
-            'Advances to Special Disbursing Officer',
-            '101 SDO CDR'
-        ];
-        $arr[] = [
-            1298,
-            3305,
-            12799.22,
-            '1990103000_00632_00479',
-            'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Representation expenses)',
-            5,
-            '2021-09',
-            'RAPID GOP',
-            'Advances to Special Disbursing Officer',
-            '101 SDO CDR'
-        ];
-        $arr[] = [
-            1298,
-            3305,
-            2160,
-            '1990103000_00632_00479',
-            'RAPID GOP (DV#2021-08-1317) - Goods (Printing and publication expenses)',
-            5,
-            '2021-09',
-            'RAPID GOP',
-            'Advances to Special Disbursing Officer',
-            '101 SDO CDR'
-        ];
-        $arr[] = [
-            1298,
-            3305,
-            204800,
-            '1990103000_00632_00479',
-            'RAPID GOP (DV#2021-08-1317) - Consultancy (Consultancy services)',
-            5,
-            '2021-09',
-            'RAPID GOP',
-            'Advances to Special Disbursing Officer',
-            '101 SDO CDR'
-        ];
-        $arr[] = [
-            1298,
-            3305,
-            120000,
-            '1990103000_00632_00479',
-            'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Telephone Mobile)',
-            5,
-            '2021-09',
-            'RAPID GOP',
-            'Advances to Special Disbursing Officer',
-            '101 SDO CDR'
-        ];
-        $arr[] = [
-            1298,
-            3305,
-            1448.31,
-            '1990103000_00632_00479',
-            'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Postage Courier Services)',
-            5,
-            '2021-09',
-            'RAPID GOP',
-            'Advances to Special Disbursing Officer',
-            '101 SDO CDR'
-        ];
-        $arr[] = [
-            1298,
-            3305,
-            200,
-            '1990103000_00632_00479',
-            'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Fuel, oil and lubricants expenses)',
-            5,
-            '2021-09',
-            'RAPID GOP',
-            'Advances to Special Disbursing Officer',
-            '101 SDO CDR'
-        ];
-        $arr[] = [
-            1298,
-            3305,
-            51072.3,
-            '1990103000_00632_00479',
-            'RAPID GOP (DV#2021-08-1317) - Goods (Office Supplies Expense)',
-            5,
-            '2021-09',
-            'RAPID GOP',
-            'Advances to Special Disbursing Officer',
-            '101 SDO CDR'
-        ];
-        $arr[] = [
-            1298,
-            3305,
-            36000,
-            '1990103000_00632_00479',
-            'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Training Expense)',
-            5,
-            '2021-09',
-            'RAPID GOP',
-            'Advances to Special Disbursing Officer',
-            '101 SDO CDR'
-        ];
-        $arr[] = [
-            1297,
-            3311,
-            223520,
-            '1990103000_00632_00480',
-            'RAPID LP (DV# 2021-08-1316) - Goods (ICT Equipment)',
-            8,
-            '2021-09',
-            'RAPID LP',
-            'Advances to Special Disbursing Officer',
-            'RAPID LP SDO CDR'
-        ];
-        $arr[] = [
-            1297,
-            3311,
-            44000,
-            '1990103000_00632_00480',
-            'RAPID LP (DV# 2021-08-1316) - Recurrent Costs (Other MOOE)',
-            8,
-            '2021-09',
-            'RAPID LP',
-            'Advances to Special Disbursing Officer',
-            'RAPID LP SDO CDR'
-        ];
-        $column = [
-            'advances_id',
-            'cash_disbursement_id',
-            'amount',
-            'object_code',
-            'fund_source',
-            'book_id',
-            'reporting_period',
-            'fund_source_type',
-            'advances_type',
-            'report_type'
-        ];
-        $ja = Yii::$app->db->createCommand()->batchInsert('advances_entries', $column, $arr)->execute();
-        ob_clean();
-        echo "<pre>";
-        var_dump('success');
-        echo "</pre>";
-        return ob_get_clean();
-    }
+    //     $arr[] = [
+    //         1299,
+    //         3312,
+    //         219751.96,
+    //         '1990103000_00633_00482',
+    //         'RAPID GOP (DV# 2021-08-1314) - Goods (ICT Equipment)',
+    //         8,
+    //         '2021-09',
+    //         'RAPID LP',
+    //         'Advances to Special Disbursing Officer',
+    //         'RAPID LP SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1299,
+    //         3312,
+    //         44000,
+    //         '1990103000_00633_00482',
+    //         'RAPID GOP (DV# 2021-08-1314) - Recurrent Costs (Other MOOE)',
+    //         8,
+    //         '2021-09',
+    //         'RAPID LP',
+    //         'Advances to Special Disbursing Officer',
+    //         'RAPID LP SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1299,
+    //         3312,
+    //         167200,
+    //         '1990103000_00633_00482',
+    //         'RAPID GOP (DV# 2021-08-1314) - Recurrent Costs (Representation expenses)',
+    //         8,
+    //         '2021-09',
+    //         'RAPID LP',
+    //         'Advances to Special Disbursing Officer',
+    //         'RAPID LP SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1299,
+    //         3312,
+    //         15339.4,
+    //         '1990103000_00633_00482',
+    //         'RAPID GOP (DV# 2021-08-1314) - Goods (Printing and publication expenses)',
+    //         8,
+    //         '2021-09',
+    //         'RAPID LP',
+    //         'Advances to Special Disbursing Officer',
+    //         'RAPID LP SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1299,
+    //         3312,
+    //         34945.21,
+    //         '1990103000_00633_00482',
+    //         'RAPID GOP (DV# 2021-08-1314) - Consultancy (Consultancy services)',
+    //         8,
+    //         '2021-09',
+    //         'RAPID LP',
+    //         'Advances to Special Disbursing Officer',
+    //         'RAPID LP SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1299,
+    //         3312,
+    //         7980.93,
+    //         '1990103000_00633_00482',
+    //         'RAPID GOP (DV# 2021-08-1314) - Recurrent Costs (Postage Courier Services)',
+    //         8,
+    //         '2021-09',
+    //         'RAPID LP',
+    //         'Advances to Special Disbursing Officer',
+    //         'RAPID LP SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1299,
+    //         3312,
+    //         52800,
+    //         '1990103000_00633_00482',
+    //         'RAPID GOP (DV# 2021-08-1314) - Recurrent Costs (Fuel oil and lubricants expenses)',
+    //         8,
+    //         '2021-09',
+    //         'RAPID LP',
+    //         'Advances to Special Disbursing Officer',
+    //         'RAPID LP SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1299,
+    //         3312,
+    //         108802.29,
+    //         '1990103000_00633_00482',
+    //         'RAPID GOP (DV# 2021-08-1314) - Goods (Office Supplies Expense)',
+    //         8,
+    //         '2021-09',
+    //         'RAPID LP',
+    //         'Advances to Special Disbursing Officer',
+    //         'RAPID LP SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1299,
+    //         3312,
+    //         133139.23,
+    //         '1990103000_00633_00482',
+    //         'RAPID GOP (DV# 2021-08-1314) - Recurrent Costs (Training Expense)',
+    //         8,
+    //         '2021-09',
+    //         'RAPID LP',
+    //         'Advances to Special Disbursing Officer',
+    //         'RAPID LP SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1299,
+    //         3312,
+    //         69187.36,
+    //         '1990103000_00632_00479',
+    //         'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Insurance Expenses)',
+    //         5,
+    //         '2021-09',
+    //         'RAPID GOP',
+    //         'Advances to Special Disbursing Officer',
+    //         '101 SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1298,
+    //         3305,
+    //         30480,
+    //         '1990103000_00632_00479',
+    //         'RAPID GOP (DV#2021-08-1317) - Goods (ICT Equipment)',
+    //         5,
+    //         '2021-09',
+    //         'RAPID GOP',
+    //         'Advances to Special Disbursing Officer',
+    //         '101 SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1298,
+    //         3305,
+    //         24000,
+    //         '1990103000_00632_00479',
+    //         'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Electricity Expense)',
+    //         5,
+    //         '2021-09',
+    //         'RAPID GOP',
+    //         'Advances to Special Disbursing Officer',
+    //         '101 SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1298,
+    //         3305,
+    //         6000,
+    //         '1990103000_00632_00479',
+    //         'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Other MOOE)',
+    //         5,
+    //         '2021-09',
+    //         'RAPID GOP',
+    //         'Advances to Special Disbursing Officer',
+    //         '101 SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1298,
+    //         3305,
+    //         12799.22,
+    //         '1990103000_00632_00479',
+    //         'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Representation expenses)',
+    //         5,
+    //         '2021-09',
+    //         'RAPID GOP',
+    //         'Advances to Special Disbursing Officer',
+    //         '101 SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1298,
+    //         3305,
+    //         2160,
+    //         '1990103000_00632_00479',
+    //         'RAPID GOP (DV#2021-08-1317) - Goods (Printing and publication expenses)',
+    //         5,
+    //         '2021-09',
+    //         'RAPID GOP',
+    //         'Advances to Special Disbursing Officer',
+    //         '101 SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1298,
+    //         3305,
+    //         204800,
+    //         '1990103000_00632_00479',
+    //         'RAPID GOP (DV#2021-08-1317) - Consultancy (Consultancy services)',
+    //         5,
+    //         '2021-09',
+    //         'RAPID GOP',
+    //         'Advances to Special Disbursing Officer',
+    //         '101 SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1298,
+    //         3305,
+    //         120000,
+    //         '1990103000_00632_00479',
+    //         'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Telephone Mobile)',
+    //         5,
+    //         '2021-09',
+    //         'RAPID GOP',
+    //         'Advances to Special Disbursing Officer',
+    //         '101 SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1298,
+    //         3305,
+    //         1448.31,
+    //         '1990103000_00632_00479',
+    //         'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Postage Courier Services)',
+    //         5,
+    //         '2021-09',
+    //         'RAPID GOP',
+    //         'Advances to Special Disbursing Officer',
+    //         '101 SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1298,
+    //         3305,
+    //         200,
+    //         '1990103000_00632_00479',
+    //         'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Fuel, oil and lubricants expenses)',
+    //         5,
+    //         '2021-09',
+    //         'RAPID GOP',
+    //         'Advances to Special Disbursing Officer',
+    //         '101 SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1298,
+    //         3305,
+    //         51072.3,
+    //         '1990103000_00632_00479',
+    //         'RAPID GOP (DV#2021-08-1317) - Goods (Office Supplies Expense)',
+    //         5,
+    //         '2021-09',
+    //         'RAPID GOP',
+    //         'Advances to Special Disbursing Officer',
+    //         '101 SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1298,
+    //         3305,
+    //         36000,
+    //         '1990103000_00632_00479',
+    //         'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Training Expense)',
+    //         5,
+    //         '2021-09',
+    //         'RAPID GOP',
+    //         'Advances to Special Disbursing Officer',
+    //         '101 SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1297,
+    //         3311,
+    //         223520,
+    //         '1990103000_00632_00480',
+    //         'RAPID LP (DV# 2021-08-1316) - Goods (ICT Equipment)',
+    //         8,
+    //         '2021-09',
+    //         'RAPID LP',
+    //         'Advances to Special Disbursing Officer',
+    //         'RAPID LP SDO CDR'
+    //     ];
+    //     $arr[] = [
+    //         1297,
+    //         3311,
+    //         44000,
+    //         '1990103000_00632_00480',
+    //         'RAPID LP (DV# 2021-08-1316) - Recurrent Costs (Other MOOE)',
+    //         8,
+    //         '2021-09',
+    //         'RAPID LP',
+    //         'Advances to Special Disbursing Officer',
+    //         'RAPID LP SDO CDR'
+    //     ];
+    //     $column = [
+    //         'advances_id',
+    //         'cash_disbursement_id',
+    //         'amount',
+    //         'object_code',
+    //         'fund_source',
+    //         'book_id',
+    //         'reporting_period',
+    //         'fund_source_type',
+    //         'advances_type',
+    //         'report_type'
+    //     ];
+    //     $ja = Yii::$app->db->createCommand()->batchInsert('advances_entries', $column, $arr)->execute();
+    //     ob_clean();
+    //     echo "<pre>";
+    //     var_dump('success');
+    //     echo "</pre>";
+    //     return ob_get_clean();
+    // }
 }
