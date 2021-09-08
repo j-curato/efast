@@ -423,6 +423,7 @@ class SiteController extends Controller
     }
     public function actionUpdateSystem()
     {
+        echo 'qwerqw';
         echo  shell_exec('git pull git@github.com:kiotipot1/dti-afms-2.git');
         echo   shell_exec('yii migrate --interactive=0');
     }
