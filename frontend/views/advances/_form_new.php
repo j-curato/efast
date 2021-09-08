@@ -343,9 +343,7 @@ use yii\helpers\ArrayHelper;
                             </select>
                     </td>
                     <td> 
-                         <textarea type='text' id='fund_source-${transaction_table_count}' class='fund_source' name='fund_source[]'>
-                         ${result[i]['fund_source']}
-                         </textarea>
+                         <textarea type='text' id='fund_source-${transaction_table_count}' class='fund_source' name='fund_source[]'>${result[i]['fund_source'].trim()}</textarea>
                     </td>
 
                     <td> 

@@ -174,8 +174,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                                             ?></span>
                     </th>
                     <th colspan="3" class="header">
-                        <span>
-                            Station: Surigao del Norte
+                        <span>Station: 
+                            <?php
+
+                            if (!empty($province)) {
+                                // echo $prov[$province]['province'];
+                                // echo Yii::$app->memem->cibrCdrHeader($province)['province'];
+                                echo $prov['province'];
+                            }
+                            ?>
                         </span>
                     </th>
                 </tr>

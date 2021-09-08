@@ -40,14 +40,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ]);
                 }
-                $province =strtolower( Yii::$app->user->identity->province);
-                $prov ='';
+                $province = strtolower(Yii::$app->user->identity->province);
+                $prov = '';
                 $provinces = [
-                    'adn'=>'Agusan Del Norte',
-                    'ads'=>'Agusan Del Sur',
-                    'sdn'=>'Surigao Del Norte',
-                    'sds'=>'Surigao Del Sur',
-                    'pdi'=>'Dinagat Islands',
+                    'adn' => 'Agusan Del Norte',
+                    'ads' => 'Agusan Del Sur',
+                    'sdn' => 'Surigao Del Norte',
+                    'sds' => 'Surigao Del Sur',
+                    'pdi' => 'Dinagat Islands',
                 ];
                 if (
                     $province === 'adn' ||
@@ -71,9 +71,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <tbody style="border:none">
 
-                <tr>
+                <tr style="height:110px;">
 
-                    <td style="width: 250px;">
+                    <td style="width: 110px;">
                         For
                     </td>
                     <td>
@@ -86,7 +86,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </span>
                     </td>
                 </tr>
-                <tr>
+                <tr style="height:70px;">
                     <td>
                         From
                     </td>
@@ -135,7 +135,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <hr>
 
         <span style="font-size: 15px;">
-            We are hereby submitting the following DV, with assigned Transmittal# <?php echo $model->transmittal_number ?> of DTI <?php echo $prov?>.
+            We are hereby submitting the following DV, with assigned Transmittal# <?php echo $model->transmittal_number ?> of DTI <?php echo $prov ?>.
         </span>
 
         <table class="data_table">

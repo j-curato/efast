@@ -114,10 +114,56 @@ $this->params['breadcrumbs'][] = $this->title;
             </thead>
             <tbody>
 
+
+                <tr>
+                    <td colspan="6">
+                        CERTIFICATION
+                    </td>
+
+                </tr>
+                <tr>
+                    <?php
+                    for ($i = 0; $i < 90; $i++) {
+                        echo "<tr>
+                        <td>qwe</td>
+                        </tr>";
+                    }
+                    ?>
+
+                    <td colspan="6">
+                        <h1 id="pageCounter">
+                        </h1>
+                        <span>
+                            I herby certify that this Report of Disbursemets in _ sheet is a full, true and correct statement of the disbursements made by
+                            me and that this is in liquidation of the following cash advances granted to the Provincial Office, to with:
+                        </span>
+                        <table>
+
+                            <thead>
+                                <th>q</th>
+                                <th>q</th>
+                                <th>q</th>
+                            </thead>
+                        </table>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="footer">
+                        Total Pages:
+                        <span class="total"></span>
+                    </td>
+                </tr>
             </tbody>
+            <tfoot>
+
+            </tfoot>
+
         </table>
     </div>
     <!-- </div> -->
+
+
 
 </div>
 <div id="dots5" style="display: none;">
@@ -127,6 +173,36 @@ $this->params['breadcrumbs'][] = $this->title;
     <span></span>
 </div>
 <style>
+    footer {
+        /* Place the footer at the bottom of each page */
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        /* Any other appropriate styling */
+        color: #4f82d6;
+        font-weight: bold;
+    }
+
+    /* Show current page number via CSS counter feature */
+    .page-number:before {
+        content: counter(page);
+    }
+
+    #rod_table {
+        display: table;
+    }
+
+    #pageFooter {
+        display: table-footer-group;
+    }
+
+    #pageFooter:after {
+        counter-increment: page;
+        content: counter(page);
+    }
+
     table,
     th,
     td {
@@ -140,6 +216,8 @@ $this->params['breadcrumbs'][] = $this->title;
     .amount {
         text-align: right;
     }
+
+
 
     @media print {
 
@@ -169,7 +247,39 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 <script>
+    const size = 3508 ; // roughly A4
 
+    $(document).ready(function() {
+        var _docHeight = (document.height !== undefined) ? document.height : document.body.offsetHeight;
+        var table = document.getElementById("rod_table");
+        // alert(table.offsetHeight);
+        console.log(table.clientHeight / size)
+        $('.total').text(Math.ceil(table.clientHeight / size))
+    })
+
+    function pageNum(top) {
+        return Math.round((top + window.pageYOffset - document.body.clientTop) / size) + 1;
+    }
+
+    function pageCount() {
+        return Math.round(document.body.clientHeight / size);
+    }
+
+    // document.addEventListener("DOMContentLoaded", () => {
+    //     // Won't help us, because we can't position this properly when we have
+    //     // flow content and don't have the luxury of div's representing exact
+    //     // pages
+    //     const els = Array.prototype.slice.call(document.querySelectorAll(".counter"));
+    //     els.map(e => {
+    //         const box = e.getBoundingClientRect();
+    //         e.textContent = pageNum(box.top);
+    //     });
+
+    //     // But we can still get the total page count though!
+    //     const footer = document.querySelector(".total");
+    //     console.log("top", document.body.clientHeight);
+    //     footer.textContent = pageCount();
+    // });
 </script>
 <?php
 SweetAlertAsset::register($this);
@@ -215,7 +325,7 @@ $script = <<< JS
             data:$("#filter").serialize(),
             success:function(data){
                 var res = JSON.parse(data)
-                console.log(res)
+                // console.log(res)
                 // var conso_fur = res.conso_fur
                 // var fur = res.fur
                 // $("#period").text('For the Period of '+ month+','+year)

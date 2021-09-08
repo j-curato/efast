@@ -18,9 +18,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
         <?php
-
-        // if (Yii::$app->user->can('create_cdr')) {
-            echo Html::a('Create Cdr', ['create'], ['class' => 'btn btn-success']);
+        $action_display = 'display:none';
+        if (Yii::$app->user->can('create_cdr')) {
+            $action_display = '';
+        }
+        echo Html::a('Create Cdr', ['create'], ['class' => 'btn btn-success']);
         // }
         ?>
     </p>
@@ -48,14 +50,18 @@ $this->params['breadcrumbs'][] = $this->title;
             'reporting_period',
             'province',
             [
-                'label'=>'Book Name',
-                'attribute'=>'book_name',
-                'value'=>'book.name'
+                'label' => 'Book Name',
+                'attribute' => 'book_name',
+                'value' => 'book.name'
             ],
             //'report_type',
             //'is_final',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => '\kartik\grid\ActionColumn',
+                'deleteOptions' => ['style' => $action_display],
+                'updateOptions' => ['style' => $action_display]
+            ],
         ],
     ]); ?>
 
