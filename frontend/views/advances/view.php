@@ -77,9 +77,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         </tr>
                     ";
+                        $total += $val->amount;
                     }
-
-                    $total += $val->amount;
                 }
 
                 ?>
