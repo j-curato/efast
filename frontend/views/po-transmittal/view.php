@@ -155,6 +155,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
                 $total = 0;
                 $q = 1;
+                
                 foreach ($model->poTransmittalEntries as $i => $val) {
                     $query = (new \yii\db\Query())
                         ->select(["SUM(liquidation_entries.withdrawals) as total_disbursed"])
@@ -162,12 +163,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         ->join("LEFT JOIN", "liquidation_entries", "liquidation.id = liquidation_entries.liquidation_id")
                         ->where("liquidation.id =:id", ['id' => $val->liquidation_id])
                         ->one();
-
                     $qwe = '';
                     $display = 'display:none;';
                     $payee = !empty($val->liquidation->payee) ? $val->liquidation->payee : $val->liquidation->poTransaction->payee;
                     $particular = !empty($val->liquidation->particular) ? $val->liquidation->particular : $val->liquidation->poTransaction->particular;
-
                     echo "<tr>
                         <td>$q</td>
                         <td>{$val->liquidation->dv_number}</td>
