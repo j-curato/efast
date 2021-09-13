@@ -309,12 +309,12 @@ class RodController extends Controller
             $i = 0;
             $x = 0;
             foreach ($query1 as $index => $val) {
-                // if ($i == 18) {
+                if ($i == 18) {
 
-                //     // $x++;
-                //     $i = 0;
-                // }
-                $group_liquidation[$x][$index] = [
+                    // $x++;
+                    $i = 0;
+                }
+                $group_liquidation[$x][$i] = [
                     'check_date' => $val['check_date'],
                     'dv_number' => $val['dv_number'],
                     'reponsibility_center_name' => $val['reponsibility_center_name'],
