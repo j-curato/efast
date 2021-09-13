@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- <div id="con"> -->
 
     <div id='con'>
-        <button id="print">print</button>
+        <button id="print" type='button' class='btn btn-succes  fa fa-print'></button>
         <table class="" id="rod_table" style="margin-top: 30px;">
 
             <thead>
@@ -283,18 +283,12 @@ $script = <<< JS
     $('#print').click(function(){
 
         var total = 0
+        var css_url = window.location.pathname + '/frontend/web/css/rod_print.css' 
         var mywindow = window.open('?r=jev-preparation/ledger', 'new div', 'height=700,width=1300');
             mywindow.document.write('<html><head><title></title>');
             mywindow.document.write('<link rel="stylesheet" href="/afms/frontend/web/css/rod_print.css" type="text/css" media="all" />');
 
-            // mywindow.document.write('<style>');
-            // mywindow.document.write('.style1 {font-size:11px; font-weight:bold; color:red; border:1px solid black}');
-            // mywindow.document.write('@media print{ .table{page-break-after:auto;} @page{margin:0.3cm;} td{padding:4px;font-size:12px}th{padding:1;font-size:12px}} ');
-            // mywindow.document.write('th,td {border: 1px solid black;padding: 10px;background-color: white;margin:0;gap:0;}');
-            // mywindow.document.write('table {border-spacing:0;border-collapse: collapse;}');
-            // mywindow.document.write('.document_header1 >th {border:0;}');
-            // mywindow.document.write('h4 {padding:0;margin:0;}');
-            // mywindow.document.write('</style>');
+
             mywindow.document.write('</head><body >');
             // mywindow.document.write('<img src="../web/dti.jpg" style="width:100px;height:100px;">');
 
@@ -302,7 +296,7 @@ $script = <<< JS
             var sheet_number = 0
             for (var x=0;x<liquidation_data.length;x++){
                 sheet_number++
-                mywindow.document.write("<table class='rod_table' cellspacing='0' style='width:100%;margin-top:20px'>  ");
+                mywindow.document.write("<table class='table' cellspacing='0' >");
                 mywindow.document.write("<thead>");
                     mywindow.document.write("<tr> ");
                         mywindow.document.write("  <th colspan='6'>")

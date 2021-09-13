@@ -309,7 +309,7 @@ class RodController extends Controller
             $i = 0;
             $x = 0;
             foreach ($query1 as $index => $val) {
-                if ($i == 12) {
+                if ($i == 18) {
 
                     $x++;
                     $i = 0;
