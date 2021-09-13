@@ -306,9 +306,16 @@ $this->params['breadcrumbs'][] = $this->title;
                             </h6>
                         </div>
                         <div style="text-align: center;">
+                            <div style="width: 70px;height:50px;margin-left:auto;margin-right:auto">
+                                <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/charles_sign.png', [
+                                    'alt' => 'some', 'class' => 'pull-left img-responsive',
+                                    'style' => 'width: 80px;height:50px;margin-left:auto'
+                                ]); ?>
+                            </div>
                             <h5>
                                 CHARLIE C. DECHOS, CPA
                             </h5>
+
                             <h6>
                                 Accountant II
                             </h6>

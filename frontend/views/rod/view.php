@@ -15,9 +15,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="rod-view" style="background-color: white;padding:20px;display:none">
 
-
-
-
     <?php
     $provinces  = [
         'adn' => 'Agusan Del Norte',
@@ -34,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- <div id="con"> -->
 
     <div id='con'>
-
+        <button id="print">print</button>
         <table class="" id="rod_table" style="margin-top: 30px;">
 
             <thead>
@@ -85,11 +82,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </tr>
                 <tr>
-
-
                     <td colspan="6">
-                        <h1 id="pageCounter">
-                        </h1>
                         <span>
                             I herby certify that this Report of Disbursemets in <span class="total"></span> sheet is a full, true and correct statement of the disbursements made by
                             me and that this is in liquidation of the following cash advances granted to the Provincial Office, to with:
@@ -126,7 +119,6 @@ $this->params['breadcrumbs'][] = $this->title;
             </tbody>
 
 
-
         </table>
 
 
@@ -161,6 +153,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     @media print {
+
+        @page {
+            size: A4;
+        }
+
         #filter {
             display: none;
         }
@@ -173,7 +170,7 @@ $this->params['breadcrumbs'][] = $this->title;
             padding: 0;
         }
 
- 
+
 
 
     }
@@ -214,7 +211,8 @@ $script = <<< JS
         var diff =seconds/ 60;
         // console.log(seconds)
     })
-
+    var liquidation_data = []
+    var print_conso_fund_source = []
     if ($('#rod_number').val() !=''){ 
         // $('#con').hide()
         $('#dots5').show()
@@ -228,22 +226,12 @@ $script = <<< JS
             success:function(data){
                 var res = JSON.parse(data)
                 var liquidation = res.liquidations
+                liquidation_data = res.group_liquidation
                 var conso_fund_source = res.conso_fund_source
+                 print_conso_fund_source = res.conso_fund_source
                 addData(liquidation)
                 fundSource(conso_fund_source)
-                var _docHeight = (document.height !== undefined) ? document.height : document.body.offsetHeight;
-                var table = $("#rod_table");
-                // alert(table.offsetHeight);
-                var thead = $('#rod_table thead')
-                var qwe = 0;
-                var pages = Math.ceil(table.innerHeight() / size)
-                var table_size = parseFloat(table.innerHeight(), 2)
-                var thead_size = parseFloat(thead.innerHeight(), 2)
-                if (pages > 1) {
-                    qwe = table_size + (thead_size * pages);
-                }
-                console.log(table.innerHeight())
-                $('.total').text(Math.ceil(parseFloat(table_size, 2) / size))
+                console.log(liquidation_data)
                 setTimeout(() => {
                     $('#dots5').hide()
                     $('.rod-view').show()
@@ -281,14 +269,135 @@ $script = <<< JS
                         <td></td>
                         <td class='amount'>`+thousands_separators(parseFloat(rod[x]['withdrawals']))+`</td>
                         </tr>`
+              
                 $('#rod_table').find('#start').after(row)
+ 
             total +=parseFloat(rod[x]['withdrawals'])
+
         }
       
         $('#total_amount').text(  thousands_separators(total))
 
 
     }
+    $('#print').click(function(){
+
+        var total = 0
+        var mywindow = window.open('?r=jev-preparation/ledger', 'new div', 'height=700,width=1300');
+            mywindow.document.write('<html><head><title></title>');
+            mywindow.document.write('<link rel="stylesheet" href="/afms/frontend/web/css/rod_print.css" type="text/css" media="all" />');
+
+            // mywindow.document.write('<style>');
+            // mywindow.document.write('.style1 {font-size:11px; font-weight:bold; color:red; border:1px solid black}');
+            // mywindow.document.write('@media print{ .table{page-break-after:auto;} @page{margin:0.3cm;} td{padding:4px;font-size:12px}th{padding:1;font-size:12px}} ');
+            // mywindow.document.write('th,td {border: 1px solid black;padding: 10px;background-color: white;margin:0;gap:0;}');
+            // mywindow.document.write('table {border-spacing:0;border-collapse: collapse;}');
+            // mywindow.document.write('.document_header1 >th {border:0;}');
+            // mywindow.document.write('h4 {padding:0;margin:0;}');
+            // mywindow.document.write('</style>');
+            mywindow.document.write('</head><body >');
+            // mywindow.document.write('<img src="../web/dti.jpg" style="width:100px;height:100px;">');
+
+            var i = 0
+            var sheet_number = 0
+            for (var x=0;x<liquidation_data.length;x++){
+                sheet_number++
+                mywindow.document.write("<table class='rod_table' cellspacing='0' style='width:100%;margin-top:20px'>  ");
+                mywindow.document.write("<thead>");
+                    mywindow.document.write("<tr> ");
+                        mywindow.document.write("  <th colspan='6'>")
+                            mywindow.document.write("<div class='head' style='margin-left: auto;margin-right:auto;text-align:center;'>")
+                            mywindow.document.write("<h5 style='font-weight: bold;'>REPORT OF DISBURSEMENTS</h5>")
+                            mywindow.document.write("<h6> Department of Trade and Industry</h6>")
+                            mywindow.document.write("<h6 id='prov'> Provincial Office of  </h6>")
+                            mywindow.document.write("</div>")
+                        mywindow.document.write(" </th>")
+                    mywindow.document.write("</tr>");
+
+                    mywindow.document.write("<tr>")
+                        mywindow.document.write(" <th colspan='4'>Period Covered:</th>")
+                        mywindow.document.write("<th colspan='2'>Report No.:</th>")
+                    mywindow.document.write("</tr>")
+
+                    mywindow.document.write("<tr>")
+                        mywindow.document.write("<th colspan='4'></th>")
+                        mywindow.document.write("<th colspan='2'>Sheet No.:"+sheet_number+"</th>")
+                    mywindow.document.write(" </tr>")
+
+                    mywindow.document.write(" <th>Date</th>")
+                    mywindow.document.write("<th>DV/Payroll No.</th>")
+                    mywindow.document.write("<th>Responsibility Center Code</th>")
+                    mywindow.document.write("<th>Payee</th>")
+                    mywindow.document.write("<th>Nature of Payment</th>")
+                    mywindow.document.write("<th class='amount'>Amount</th>")
+                mywindow.document.write("</thead>");
+  
+              
+                mywindow.document.write("<tbody>");
+                    for(var y= 0 ;y<liquidation_data[x].length;y++){
+
+                        mywindow.document.write("<tr class='data_row'>")
+                            mywindow.document.write("<td>"+liquidation_data[x][y]['check_date']+"</td>")
+                            mywindow.document.write("<td >"+liquidation_data[x][y]['dv_number']+"</td>")
+                            mywindow.document.write("<td >"+liquidation_data[x][y]['reponsibility_center_name']+"</td>")
+                            mywindow.document.write("<td >"+liquidation_data[x][y]['payee']+"</td>")
+                            mywindow.document.write("<td></td>")
+                            mywindow.document.write("<td class='amount'>"+thousands_separators(parseFloat(liquidation_data[x][y]['withdrawals']))+"</td>")
+                        mywindow.document.write("</tr>");
+                        total +=parseFloat(liquidation_data[x][y]['withdrawals'],2)
+                    }
+              
+                    if (x+1 ==liquidation_data.length){
+                                 mywindow.document.write("<tr>")
+                                    mywindow.document.write("<td colspan='5'>Total</td>")
+                                    mywindow.document.write("<td class='amount' >"+thousands_separators(total.toFixed(2))+"</td>")
+                                 mywindow.document.write("</tr>")
+                        mywindow.document.write("<tr>")
+                             mywindow.document.write("<td colspan='6'>")
+                                 mywindow.document.write("<span>")
+                                mywindow.document.write("I herby certify that this Report of Disbursemets in <span class='total'></span> sheet is a full, true and correct statement of the disbursements made by")
+                                 mywindow.document.write("me and that this is in liquidation of the following cash advances granted to the Provincial Office, to with:")
+                                 mywindow.document.write("</span>")
+                                 mywindow.document.write("<table  cellspacing='0'  style='margin-left:auto;margin-right:auto;margin-top :2rem'>")
+                                   mywindow.document.write("  <thead>")
+                                       mywindow.document.write("  <th>Fund Source</th>")
+                                       mywindow.document.write("  <th>Check Number</th>")
+                                        mywindow.document.write(" <th>Check Date</th>")
+                                        mywindow.document.write(" <th>Fund Source Amount</th>")
+                                        mywindow.document.write(" <th>Total Disbursed</th>")
+                                        mywindow.document.write(" <th>Balance</th>")
+                                    mywindow.document.write(" </thead>")
+                                    mywindow.document.write(" <tbody>")
+                                    for (var i = 0; i<print_conso_fund_source.length;i++){
+                               
+                                        mywindow.document.write("<tr>")
+                                            mywindow.document.write("<td>"+print_conso_fund_source[i]['fund_source']+"</td>")
+                                            mywindow.document.write("<td>"+print_conso_fund_source[i]['check_or_ada_no']+"</td>")
+                                            mywindow.document.write("<td>"+print_conso_fund_source[i]['issuance_date']+"</td>")
+                                            mywindow.document.write("<td class='amount'>"+thousands_separators(parseFloat(print_conso_fund_source[i]['amount']))+"</td>")
+                                            mywindow.document.write("<td class='amount'>"+thousands_separators(parseFloat(print_conso_fund_source[i]['total_withdrawals']))+"</td>")
+                                            mywindow.document.write("<td class='amount'>"+thousands_separators(parseFloat(print_conso_fund_source[i]['balance']))+"</td>")
+                                          mywindow.document.write("</tr>")
+                                    }  
+                                    mywindow.document.write(" </tbody>")
+                                 mywindow.document.write("</table>")
+                             mywindow.document.write("</td>")
+                            mywindow.document.write(" </tr>")
+                    }
+                    mywindow.document.write("</tbody></table>");
+                    mywindow.document.write("<p style='page-break-after:always;'></p>");
+
+           
+            }
+            mywindow.document.write('</body></html>');
+            mywindow.document.close();
+            mywindow.focus();
+            setTimeout(function(){ mywindow.print(); mywindow.close(); },1000);
+            // mywindow.print()
+            print=0
+    })
+
+    
 
 
 

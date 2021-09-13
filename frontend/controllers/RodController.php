@@ -257,9 +257,9 @@ class RodController extends Controller
                     ->bindValue(':rod_number', $rod_number)
                     ->queryAll();
                 $prov = $db->createCommand('SELECT province FROM rod WHERE rod_number = :rod_number')
-                ->bindValue(':rod_number',$rod_number)
-                ->queryOne();
-                $province=$prov['province'];
+                    ->bindValue(':rod_number', $rod_number)
+                    ->queryOne();
+                $province = $prov['province'];
                 $fund_source = array_column($q, 'advances_entries_id');
             }
             $params = [];
@@ -305,10 +305,32 @@ class RodController extends Controller
                 ->all();
 
 
+            $group_liquidation = [];
+            $i = 0;
+            $x = 0;
+            foreach ($query1 as $index => $val) {
+                if ($i == 12) {
 
+                    $x++;
+                    $i = 0;
+                }
+                $group_liquidation[$x][$i] = [
+                    'check_date' => $val['check_date'],
+                    'dv_number' => $val['dv_number'],
+                    'reponsibility_center_name' => $val['reponsibility_center_name'],
+                    'payee' => $val['payee'],
+                    'withdrawals' => $val['withdrawals'],
+                    'fund_source' => $val['fund_source']
+                ];
+
+
+
+                $i++;
+            }
             return json_encode([
                 'liquidations' => $query1,
-                'conso_fund_source' => $fund_source_query
+                'conso_fund_source' => $fund_source_query,
+                'group_liquidation' => $group_liquidation
             ]);
         }
         return $this->render('_form');
