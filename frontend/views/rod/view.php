@@ -333,7 +333,7 @@ $script = <<< JS
                 mywindow.document.write("<tbody>");
                     for(var y= 0 ;y<liquidation_data[x].length;y++){
 
-                        mywindow.document.write("<tr class='data_row'>")
+                        mywindow.document.write("<tr >")
                             mywindow.document.write("<td>"+liquidation_data[x][y]['check_date']+"</td>")
                             mywindow.document.write("<td >"+liquidation_data[x][y]['dv_number']+"</td>")
                             mywindow.document.write("<td >"+liquidation_data[x][y]['reponsibility_center_name']+"</td>")
