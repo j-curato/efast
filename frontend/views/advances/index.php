@@ -121,7 +121,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     . Html::button('', [
                         'class' => 'btn-xs fa fa-ban disable_button ' . $color,
                         'type' => 'button',
-                        'data-val' => $model->entry_id
+                        'data-val' => $model->entry_id,
+                        'data-disable'=>$model->is_deleted
                     ]);
             }
         ],
@@ -175,8 +176,13 @@ $script = <<<JS
         $('.disable_button').click(function(){
       
             var id =$(this).attr('data-val')
+            var disable_text = 'Disable'
+            if ($(this).attr('data-disable') == 10){
+                disable_text='Activate'
+            }
+         
             swal({
-            title: "Are you sure you want to delete this item?",
+            title: "Are you sure you want to "+disable_text+" this item?",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: '#DD6B55',

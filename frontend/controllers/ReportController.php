@@ -4,8 +4,10 @@ namespace frontend\controllers;
 
 use app\models\AdvancesLiquidation;
 use app\models\AdvancesLiquidationSearch;
+use app\models\AdvancesViewSearch;
 use app\models\Books;
 use app\models\Cdr;
+use app\models\ChartOfAccounts;
 use app\models\ConsoDetailedDv;
 use app\models\ConsoDetailedDvSearch;
 use app\models\DetailedDvAucs;
@@ -22,6 +24,7 @@ use kartik\grid\GridView;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\Expression;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -1722,11 +1725,123 @@ class ReportController extends \yii\web\Controller
     public function actionRod()
     {
         if ($_POST) {
-            $province = $_POST['province'];
+
+            $province = !empty($_POST['province']) ? $_POST['province'] : '';
+
             $fund_source = $_POST['fund_source'];
-            return json_encode($fund_source);
+            $params = [];
+            $user_province = strtolower(Yii::$app->user->identity->province);
+            if (
+                $user_province === 'adn' ||
+                $user_province === 'ads' ||
+                $user_province === 'sdn' ||
+                $user_province === 'sds' ||
+                $user_province === 'pdi'
+            ) {
+                $province = $user_province;
+            }
+            $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'liquidation_entries.advances_entries_id', $fund_source], $params);
+            $query1 = (new \yii\db\Query())
+                ->select(["
+                        liquidation.check_date,
+                        liquidation.dv_number,
+                        IFNULL(po_responsibility_center.`name`,'') reponsibility_center_name,
+                        IFNULL(po_transaction.payee,liquidation.payee) as payee,
+                        liquidation_entries.withdrawals,
+                        advances_entries.fund_source
+            "])
+                ->from('liquidation_entries')
+                ->join('LEFT JOIN', 'liquidation', 'liquidation_entries.liquidation_id = liquidation.id')
+                ->join('LEFT JOIN', 'advances_entries', 'liquidation_entries.advances_entries_id = advances_entries.id')
+                ->join('LEFT JOIN', 'po_transaction', 'liquidation.po_transaction_id = po_transaction.id')
+                ->join('LEFT JOIN', 'po_responsibility_center', 'po_transaction.po_responsibility_center_id = po_responsibility_center.id')
+                ->where('liquidation.province = :province', ['province' => $province])
+                ->andWhere("$sql", $params)
+                ->orderBy('liquidation.check_number DESC')
+                ->all();
+            //                 SELECT 
+            // advances_entries.fund_source,
+            // cash_disbursement.check_or_ada_no,
+            // cash_disbursement.issuance_date,
+            // advances_entries.amount,
+            // liquidation_total.total_withdrawals,
+            // advances_entries.amount - IFNULL(liquidation_total.total_withdrawals,0) as balance
+
+
+            // FROM advances_entries
+            // LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
+            // LEFT JOIN (SELECT SUM(liquidation_entries.withdrawals) as total_withdrawals,
+            // liquidation_entries.advances_entries_id
+            // FROM liquidation_entries
+            // GROUP BY liquidation_entries.advances_entries_id
+            // ) as liquidation_total ON advances_entries.id = liquidation_total.advances_entries_id
+            $params2 = [];
+            $fund_source_sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'advances_entries.id', $fund_source], $params2);
+            $fund_source_query = (new \yii\db\Query())
+                ->select(["
+                 advances_entries.fund_source,
+                cash_disbursement.check_or_ada_no,
+                cash_disbursement.issuance_date,
+                advances_entries.amount,
+                liquidation_total.total_withdrawals,
+                advances_entries.amount - IFNULL(liquidation_total.total_withdrawals,0) as balance
+            "])
+                ->from('advances_entries')
+                ->join('LEFT JOIN', 'cash_disbursement', 'advances_entries.cash_disbursement_id = cash_disbursement.id')
+                ->join('LEFT JOIN', ' (SELECT SUM(liquidation_entries.withdrawals) as total_withdrawals,
+            liquidation_entries.advances_entries_id
+            FROM liquidation_entries
+            GROUP BY liquidation_entries.advances_entries_id
+            ) as liquidation_total', 'advances_entries.id = liquidation_total.advances_entries_id')
+                ->where("$fund_source_sql", $params)
+                ->all();
+
+
+            // $result = ArrayHelper::index($query1, null, 'fund_source');
+            // $fund_source_data = [];
+            // foreach ($result as $index => $val) {
+
+            //     $fund_source_data[] = [
+            //         'fund_source' => $index,
+            //         'total' => round(array_sum(array_column($result[$index], 'withdrawals')), 2)
+            //     ];
+            // }
+            return json_encode([
+                'liquidations' => $query1,
+                'conso_fund_source' => $fund_source_query
+            ]);
         }
         return $this->render('rod');
+    }
+    public function actionFund($q = null, $id = null, $province = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $user_province = strtolower(Yii::$app->user->identity->province);
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+            $query->select('advances_entries.id, advances_entries.fund_source AS text')
+                ->from('advances_entries')
+                ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
+                ->where(['like', 'advances_entries.fund_source', $q]);
+            if (
+                $user_province === 'adn' ||
+                $user_province === 'ads' ||
+                $user_province === 'sdn' ||
+                $user_province === 'sds' ||
+                $user_province === 'pdi'
+            ) {
+                $query->andWhere('advances.province = :province', ['province' => $user_province]);
+            }
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        } elseif ($id > 0) {
+            $out['results'] = ['id' => $id, 'text' => ChartOfAccounts::find($id)->uacs];
+        }
+        return $out;
     }
     // public function actionR()
     // {
