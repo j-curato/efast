@@ -288,7 +288,10 @@ $script = <<< JS
             mywindow.document.write('<html><head><title></title>');
             mywindow.document.write('<link rel="stylesheet" href="/afms/frontend/web/css/rod_print.css" type="text/css" media="all" />');
 
-
+            mywindow.document.write('<style>');
+            mywindow.document.write('@media print {@page{size:A4;margin-top;20px}}');
+            mywindow.document.write('th,td {border: 1px solid black;padding: 10px;background-color: white;margin-top:30px;gap:0;}');
+            mywindow.document.write('</style>');
             mywindow.document.write('</head><body >');
             // mywindow.document.write('<img src="../web/dti.jpg" style="width:100px;height:100px;">');
 
@@ -296,7 +299,7 @@ $script = <<< JS
             var sheet_number = 0
             for (var x=0;x<liquidation_data.length;x++){
                 sheet_number++
-                mywindow.document.write("<table class='table' cellspacing='0' >");
+                mywindow.document.write("<table cellspacing='0' >");
                 mywindow.document.write("<thead>");
                     mywindow.document.write("<tr> ");
                         mywindow.document.write("  <th colspan='6'>")
