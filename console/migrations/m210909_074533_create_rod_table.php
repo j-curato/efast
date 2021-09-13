@@ -17,7 +17,7 @@ class m210909_074533_create_rod_table extends Migration
             'province'=>$this->string()
         ]);
         $this->addPrimaryKey('primary-key','rod','rod_number');
-    }rod
+    }
 
     /**
      * {@inheritdoc}
