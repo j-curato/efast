@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- <div id="con"> -->
 
     <div id='con'>
-        <!-- <button id="print" type='button' class='btn btn-succes  fa fa-print' ></button> -->
+        <button id="print" type='button' class='btn btn-succes  fa fa-print' ></button>
         <table class="" id="rod_table" style="margin-top: 30px;">
 
             <thead>
@@ -156,11 +156,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
         @page {
             size: A4;
+            margin-left:0;
+            margin-top:0;
+            margin-bottom:0;
+            margin-top:20px;
         }
 
-        #filter {
-            display: none;
-        }
 
         .main-footer {
             display: none;
