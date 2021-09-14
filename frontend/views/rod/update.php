@@ -19,3 +19,11 @@ $this->params['breadcrumbs'][] = 'Update';
     ]) ?>
 
 </div>
+<style>
+
+    @media print{
+        h1{
+            display: none;
+        }
+    }
+</style>

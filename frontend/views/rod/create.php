@@ -18,3 +18,10 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 
 </div>
+<style>
+    @media print{
+        h1{
+            display: none;
+        }
+    }
+</style>

@@ -250,6 +250,9 @@ $this->params['breadcrumbs'][] = $this->title;
         .main-footer {
             display: none;
         }
+        @page{
+            margin: 10mm;
+        }
     }
 </style>
 
@@ -397,8 +400,8 @@ $script = <<< JS
                         <td>`+conso_fund_source[i]['fund_source']+`</td>
                         <td>`+conso_fund_source[i]['check_or_ada_no']+`</td>
                         <td>`+conso_fund_source[i]['issuance_date']+`</td>
-                        <td>`+conso_fund_source[i]['amount']+`</td>
-                        <td>`+conso_fund_source[i]['total_withdrawals']+`</td>
+                        <td class='amount'>`+thousands_separators(parseFloat(conso_fund_source[i]['amount']))+`</td>
+                        <td class='amount'>`+thousands_separators(parseFloat(conso_fund_source[i]['total_withdrawals']))+`</td>
                         <td class='amount'>`+thousands_separators(parseFloat(conso_fund_source[i]['balance']))+`</td>
                         </tr>`
                 $('#fund_source_table').append(row)

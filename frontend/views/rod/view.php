@@ -156,10 +156,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         @page {
             size: A4;
-            margin-left: 0;
-            margin-top: 0;
-            margin-bottom: 0;
-            margin-top: 20px;
+            margin: 10mm;
         }
 
 
