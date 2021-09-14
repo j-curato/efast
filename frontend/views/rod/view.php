@@ -150,6 +150,9 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 
 
+    .print_btn {
+            display: none;
+        }
 
 
     @media print {
@@ -168,9 +171,6 @@ $this->params['breadcrumbs'][] = $this->title;
             padding: 0;
         }
 
-        .print_btn {
-            display: none;
-        }
 
 
     }
