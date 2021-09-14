@@ -395,6 +395,9 @@ $script = <<< JS
     function fundSource(conso_fund_source){
         console.log(conso_fund_source)
         $("fund_source_table tbody").html('');
+        var total_amount = 0
+        var g_total_withdrawals = 0
+        var g_total_balance = 0
         for (var i = 0; i<conso_fund_source.length;i++){
             row =  `<tr class='data_row'>
                         <td>`+conso_fund_source[i]['fund_source']+`</td>
@@ -405,9 +408,9 @@ $script = <<< JS
                         <td class='amount'>`+thousands_separators(parseFloat(conso_fund_source[i]['balance']))+`</td>
                         </tr>`
                 $('#fund_source_table').append(row)
-                total_amount=parseFloat(conso_fund_source[i]['amount'])
-                g_total_withdrawals=parseFloat(conso_fund_source[i]['total_withdrawals'])
-                g_total_balance=parseFloat(conso_fund_source[i]['balance'])
+                total_amount+=parseFloat(conso_fund_source[i]['amount'])
+                g_total_withdrawals+=parseFloat(conso_fund_source[i]['total_withdrawals'])
+                g_total_balance+=parseFloat(conso_fund_source[i]['balance'])
         }     
         row =  `<tr class='data_row'>
                         <td colspan='3'>Total</td>
@@ -427,7 +430,7 @@ $script = <<< JS
                         <td >`+rod[x]['dv_number']+`</td>
                         <td >`+rod[x]['reponsibility_center_name']+`</td>
                         <td >`+rod[x]['payee']+`</td>
-                        <td></td>
+                        <td >`+rod[x]['particular']+`</td>
                         <td class='amount'>`+thousands_separators(parseFloat(rod[x]['withdrawals']))+`</td>
                         </tr>`
                 $('#rod_table').find('#start').after(row)
