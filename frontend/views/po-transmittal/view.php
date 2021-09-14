@@ -155,38 +155,68 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
                 $total = 0;
                 $q = 1;
-                foreach ($model->poTransmittalEntries as $i => $val) {
-                    $query = (new \yii\db\Query())
-                        ->select(["SUM(liquidation_entries.withdrawals) as total_disbursed"])
-                        ->from('liquidation')
-                        ->join("LEFT JOIN", "liquidation_entries", "liquidation.id = liquidation_entries.liquidation_id")
-                        ->where("liquidation.id =:id", ['id' => $val->liquidation_id])
-                        ->one();
+                $query  = Yii::$app->db->createCommand("SELECT 
+                liquidation.dv_number,
+                liquidation.check_number,
+                liquidation.check_date,
+                IFNULL(po_transaction.payee,liquidation.payee) as payee,
+                IFNULL(po_transaction.particular,liquidation.particular) as particular,
+                liquidation_total.total_withdrawals,
+                liquidation.status as liquidation_status,
+                liquidation.id as liquidation_id,
+                po_transmittal_entries.id,
+                po_transmittal_entries.status
 
+                
+                FROM 
+                po_transmittal_entries
+                LEFT JOIN liquidation ON po_transmittal_entries.liquidation_id = liquidation.id
+                LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
+                LEFT JOIN (SELECT SUM(liquidation_entries.withdrawals) as total_withdrawals,
+                liquidation_entries.liquidation_id
+                FROM liquidation_entries 
+                GROUP BY liquidation_entries.liquidation_id 
+                )as liquidation_total ON liquidation.id  = liquidation_total.liquidation_id
+                WHERE
+                po_transmittal_entries.po_transmittal_number  = :id
+                ORDER BY liquidation.check_number
+                ")
+                    ->bindValue(':id', $model->transmittal_number)
+                    ->queryAll();
+                // // ob_clean();
+                // // echo "<pre>";
+                // var_dump($query);
+                // echo "</pre>";
+                // return ob_get_clean();
+                foreach ($query as $i => $val) {
+                    // $query = (new \yii\db\Query())
+                    //     ->select(["SUM(liquidation_entries.withdrawals) as total_disbursed"])
+                    //     ->from('liquidation')
+                    //     ->join("LEFT JOIN", "liquidation_entries", "liquidation.id = liquidation_entries.liquidation_id")
+                    //     ->where("liquidation.id =:id", ['id' => $val->liquidation_id])
+                    //     ->one();
                     $qwe = '';
                     $display = 'display:none;';
-                    $payee = !empty($val->liquidation->payee) ? $val->liquidation->payee : $val->liquidation->poTransaction->payee;
-                    $particular = !empty($val->liquidation->particular) ? $val->liquidation->particular : $val->liquidation->poTransaction->particular;
-
+                    // $payee = !empty($val->liquidation->payee) ? $val->liquidation->payee : $val->liquidation->poTransaction->payee;
+                    // $particular = !empty($val->liquidation->particular) ? $val->liquidation->particular : $val->liquidation->poTransaction->particular;
                     echo "<tr>
                         <td>$q</td>
-                        <td>{$val->liquidation->dv_number}</td>
-                        <td>{$val->liquidation->check_number}</td>
-                        <td>{$val->liquidation->check_date}</td>
-                        <td>{$payee}</td>
-                        <td>{$particular}</td>
-       
-                        <td style='text-align:right'>" . number_format($query['total_disbursed'], 2) . "</td>
+                        <td>{$val['dv_number']}</td>
+                        <td>{$val['check_number']}</td>
+                        <td>{$val['check_date']}</td>
+                        <td>{$val['payee']}</td>
+                        <td>{$val['particular']}</td>
+                        <td style='text-align:right'>" . number_format($val['total_withdrawals'], 2) . "</td>
                     ";
                     if (Yii::$app->user->identity->province === 'ro_admin') {
 
                         $status = 'Remove';
                         $color = 'btn-danger';
-                        if ($val->liquidation->status === 'at_po') {
+                        if ($val['liquidation_status'] === 'at_po') {
                             $status = 'ibalik';
                             $color = 'btn-success';
                         }
-                        $qwe = Html::a($status, ['return', 'id' => $val->id], [
+                        $qwe = Html::a($status, ['return', 'id' => $val['id']], [
                             'class' => "btn $color ",
                             'data' => [
                                 'confirm' => "Are you sure you want to  this item?",
@@ -197,13 +227,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             $qwe
                             . " </td>";
                     } else {
-                        if ($val->status === 'returned') {
-
+                        if ($val['status'] === 'returned') {
                             echo "<td class='status'> Returned</td>";
                         }
                     }
                     echo " </tr>";
-                    $total += $query['total_disbursed'];
+                    $total += $val['total_withdrawals'];
                     $q++;
                 }
                 // }

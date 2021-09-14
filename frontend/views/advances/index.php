@@ -1,5 +1,6 @@
 <?php
 
+use aryelds\sweetalert\SweetAlertAsset;
 use kartik\export\ExportMenu;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
@@ -114,8 +115,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 $t = yii::$app->request->baseUrl . "/index.php?r=advances/update&id=$model->advances_id";
                 $r = yii::$app->request->baseUrl . "/index.php?r=advances/view&id=$model->advances_id";
+                $color = $model->is_deleted === 0 ? 'btn-danger' : 'btn-success';
                 return ' ' . Html::a('', $r, ['class' => 'btn-xs fa fa-eye']) . ' '
-                    . Html::a('', $t, ['class' => 'btn-xs fa fa-pencil']);
+                    . Html::a('', $t, ['class' => 'btn-xs fa fa-pencil'])
+                    . Html::button('', [
+                        'class' => 'btn-xs fa fa-ban disable_button ' . $color,
+                        'type' => 'button',
+                        'data-val' => $model->entry_id,
+                        'data-disable'=>$model->is_deleted
+                    ]);
             }
         ],
 
@@ -161,5 +169,67 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     </style> -->
 
+<?php
+SweetAlertAsset::register($this);
+$script = <<<JS
 
-</div>
+        $('.disable_button').click(function(){
+      
+            var id =$(this).attr('data-val')
+            var disable_text = 'Disable'
+            if ($(this).attr('data-disable') == 10){
+                disable_text='Activate'
+            }
+         
+            swal({
+            title: "Are you sure you want to "+disable_text+" this item?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: '#DD6B55',
+            confirmButtonText: 'Confirm',
+            cancelButtonText: "Cancel",
+            closeOnConfirm: false,
+            closeOnCancel: true
+             },  function(isConfirm){
+                      if (isConfirm){
+                    $.ajax({
+                        type:"POST",
+                        url:window.location.pathname + "?r=advances/disable",
+                        data:{
+                            id:id
+                        },
+                        success:function(data){
+                            var res = JSON.parse(data)
+                          
+                            if(res.isSuccess){
+                                swal({
+                                        title:'Success',
+                                        type:'success',
+                                        button:false,
+                                        timer:3000,
+                                    },function(){
+                                        location.reload(true)
+                                    })
+                            }
+                            // else{
+                            //     swal({
+                            //             title:"Error Cannot Cancel",
+                            //             text:res.cancelled,
+                            //             type:'error',
+                            //             button:false,
+                            //             timer:3000,
+                            //         })
+                            // }
+
+                        }
+                    })
+
+
+                 } 
+             })
+        })
+    
+JS;
+$this->registerJs($script);
+
+?>

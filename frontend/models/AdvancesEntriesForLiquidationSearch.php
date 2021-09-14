@@ -51,6 +51,7 @@ class AdvancesEntriesForLiquidationSearch extends AdvancesEntriesForLiquidation
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort'=> ['defaultOrder' => ['balance' => SORT_DESC]],
         ]);
 
         $this->load($params);

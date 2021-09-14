@@ -1,15 +1,17 @@
 <!-- <link href="/frontend/web/css/site.css" rel="stylesheet" /> -->
 <?php
 
-
+use app\models\AdvancesEntries;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\select2\Select2;
+use yii\db\Query;
+use yii\helpers\ArrayHelper;
 use yii\web\JsExpression;
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = "FUR";
+$this->title = "ROD";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index " style="background-color: white;padding:20px">
@@ -19,6 +21,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <form id="filter">
         <div class="row">
             <?php
+            if (!empty($model)) {
+                echo "<input type='hidden' value='$model->rod_number' name = 'rod_number' id = 'rod_number'> ";
+                echo "<input type='hidden' value='update' name = 'action_type'>";
+            }
             if (Yii::$app->user->can('super-user')) {
 
             ?>
@@ -48,11 +54,31 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-sm-7">
                 <label for="fund_source">Fund Source</label>
                 <?php
+                $data = '';
+                if (!empty($model)) {
+                    $dataList = Yii::$app->db->createCommand("SELECT advances_entries.id,advances_entries.fund_source FROM rod_entries 
+                    LEFT JOIN advances_entries ON rod_entries.advances_entries_id = advances_entries.id
+                    WHERE 
+
+                    rod_number = :rod_number")
+                        ->bindValue('rod_number', $model->rod_number)
+                        ->queryAll();
+                    // $dataList = AdvancesEntries::find()->andWhere(['id' => 4719])->all();
+                    // $data = ArrayHelper::map($dataList, 'id', 'name');
+                    $data = ArrayHelper::map($dataList, 'id', 'fund_source');
+                    // ob_clean();
+                    // echo "<pre>";
+                    // echo "</pre>";
+                    // return ob_get_clean();
+
+                }
+
                 echo Select2::widget([
                     'name' => 'fund_source',
-                    'id' => 'fund_source',
-                    'initValueText' => 1001,
-                    'options' => ['multiple' => true, 'placeholder' => 'Search for a Fund Source ...'],
+                    'value' => array_column($dataList, 'id'), // value to initialize
+                    'data' => $data,
+
+                    'options' => ['multiple' => true, 'placeholder' => 'Search for a fund source ...'],
                     'pluginOptions' => [
                         'allowClear' => true,
                         'minimumInputLength' => 1,
@@ -60,15 +86,14 @@ $this->params['breadcrumbs'][] = $this->title;
                             'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
                         ],
                         'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=report/fund',
-                            'dataType' => 'json',
+                            'url' => Yii::$app->request->baseUrl . '?r=rod/search-fund-source',
                             'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                            'cache' => true
+                            'dataType' => 'json',
+                            'data' => new JsExpression('function(params) { return {q:params.term}; }')
                         ],
                         'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        // 'templateResult' => new JsExpression('function(city) { return city.text; }'),
+                        // 'templateSelection' => new JsExpression('function (city) { return city.text; }'),
                     ],
                 ]);
 
@@ -148,7 +173,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             I herby certify that this Report of Disbursemets in <span class="total"></span> sheet is a full, true and correct statement of the disbursements made by
                             me and that this is in liquidation of the following cash advances granted to the Provincial Office, to with:
                         </span>
-                        <table id="fund_source_table">
+                        <table id="fund_source_table" style="margin-left:auto;margin-right:auto;margin-top :2rem">
 
                             <thead>
                                 <th>Fund Source</th>
@@ -166,14 +191,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <td colspan="3" style="border-right:none">
-                        <span>______________</span>
+                        <span>_________________________</span>
                         <br>
                         <span>Disbursing Officer</span>
                     </td>
-                    <td colspan="3" style="text-align: left; border-left:none">
-                        <span>______________</span>
+                    <td colspan="3" style="text-align: center; border-left:none">
+                        <span>_______________</span>
                         <br>
-                        <span style="margin-left: 30px;">date</span>
+                        <span >Date</span>
                     </td>
                 </tr>
 
@@ -225,6 +250,9 @@ $this->params['breadcrumbs'][] = $this->title;
         .main-footer {
             display: none;
         }
+        @page{
+            margin: 10mm;
+        }
     }
 </style>
 
@@ -261,20 +289,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
         }
     });
     $(document).ready(function() {
-        var _docHeight = (document.height !== undefined) ? document.height : document.body.offsetHeight;
-        var table = $("#rod_table");
-        // alert(table.offsetHeight);
-        var thead = $('#rod_table thead')
-        var qwe = 0;
-        var pages = Math.ceil(table.innerHeight() / size)
-        var table_size = parseFloat(table.innerHeight(), 2)
-        var thead_size = parseFloat(thead.innerHeight(), 2)
-        if (pages > 1) {
-            qwe = table_size + (thead_size * pages);
-        }
 
-        console.log(qwe)
-        $('.total').text(Math.ceil(parseFloat(table_size, 2) / size))
     })
 </script>
 <?php
@@ -305,23 +320,49 @@ $script = <<< JS
         var seconds = (endDate.getTime() - startDate.getTime())
         var diff =seconds/ 60;
         // console.log(seconds)
-    })
-    $('#filter').submit(function(){
+        if ($('#rod_number').val()!=''){
+            $('#generate').trigger('click');
+        }
 
+    })
+    // SAVE TO DATABASE
+    $('#filter').submit(function(e){
+        e.preventDefault();
+        
         $.ajax({
             type:'POST',
-            ''
+            url:window.location.pathname +'?r=rod/insert-rod',
+            data:$('#filter').serialize(),
+            success:function(data){
+                var res = JSON.parse(data)
+               
+                if (res.isSuccess){
+                    console.log(res)
+                    swal({
+                        type:'success',
+                        button:false,
+                        title:'Success',
+                        timer:2000,
+                    })
+                }
+                else{
+                    swal({
+                        type:'error',
+                        button:false,
+                        title:'Error',
+                        timer:2000,
+                    })
+                }
+            }
         })
     })
     $('#generate').click((e)=>{
         e.preventDefault();
-
-
         $('#con').hide()
         $('#dots5').show()
         $.ajax({
             type:'POST',
-            url:window.location.pathname +'?r=report/rod',
+            url:window.location.pathname +'?r=rod/get-rod',
             data:$("#filter").serialize(),
             success:function(data){
                 var res = JSON.parse(data)
@@ -329,6 +370,19 @@ $script = <<< JS
                 var conso_fund_source = res.conso_fund_source
                 addData(liquidation)
                 fundSource(conso_fund_source)
+                var _docHeight = (document.height !== undefined) ? document.height : document.body.offsetHeight;
+                var table = $("#rod_table");
+                // alert(table.offsetHeight);
+                var thead = $('#rod_table thead')
+                var qwe = 0;
+                var pages = Math.ceil(table.innerHeight() / size)
+                var table_size = parseFloat(table.innerHeight(), 2)
+                var thead_size = parseFloat(thead.innerHeight(), 2)
+                if (pages > 1) {
+                    qwe = table_size + (thead_size * pages);
+                }
+                console.log(table.innerHeight())
+                $('.total').text(Math.ceil(parseFloat(table_size, 2) / size))
                 setTimeout(() => {
                     $('#dots5').hide()
                     $('#con').show()
@@ -341,17 +395,31 @@ $script = <<< JS
     function fundSource(conso_fund_source){
         console.log(conso_fund_source)
         $("fund_source_table tbody").html('');
+        var total_amount = 0
+        var g_total_withdrawals = 0
+        var g_total_balance = 0
         for (var i = 0; i<conso_fund_source.length;i++){
             row =  `<tr class='data_row'>
                         <td>`+conso_fund_source[i]['fund_source']+`</td>
                         <td>`+conso_fund_source[i]['check_or_ada_no']+`</td>
                         <td>`+conso_fund_source[i]['issuance_date']+`</td>
-                        <td>`+conso_fund_source[i]['amount']+`</td>
-                        <td>`+conso_fund_source[i]['total_withdrawals']+`</td>
+                        <td class='amount'>`+thousands_separators(parseFloat(conso_fund_source[i]['amount']))+`</td>
+                        <td class='amount'>`+thousands_separators(parseFloat(conso_fund_source[i]['total_withdrawals']))+`</td>
                         <td class='amount'>`+thousands_separators(parseFloat(conso_fund_source[i]['balance']))+`</td>
                         </tr>`
                 $('#fund_source_table').append(row)
-        }        
+                total_amount+=parseFloat(conso_fund_source[i]['amount'])
+                g_total_withdrawals+=parseFloat(conso_fund_source[i]['total_withdrawals'])
+                g_total_balance+=parseFloat(conso_fund_source[i]['balance'])
+        }     
+        row =  `<tr class='data_row'>
+                        <td colspan='3'>Total</td>
+          
+                        <td class='amount'>`+thousands_separators(parseFloat(total_amount))+`</td>
+                        <td class='amount'>`+thousands_separators(parseFloat(g_total_withdrawals))+`</td>
+                        <td class='amount'>`+thousands_separators(parseFloat(g_total_balance))+`</td>
+                        </tr>`
+                $('#fund_source_table').append(row)    
     }
     function addData(rod) {
         $(".data_row").remove();
@@ -362,7 +430,7 @@ $script = <<< JS
                         <td >`+rod[x]['dv_number']+`</td>
                         <td >`+rod[x]['reponsibility_center_name']+`</td>
                         <td >`+rod[x]['payee']+`</td>
-                        <td></td>
+                        <td >`+rod[x]['particular']+`</td>
                         <td class='amount'>`+thousands_separators(parseFloat(rod[x]['withdrawals']))+`</td>
                         </tr>`
                 $('#rod_table').find('#start').after(row)

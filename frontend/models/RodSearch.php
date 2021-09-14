@@ -4,13 +4,13 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\PoResponsibilityCenter;
+use app\models\Rod;
 use Yii;
 
 /**
- * PoResponsibilityCenterSearch represents the model behind the search form of `app\models\PoResponsibilityCenter`.
+ * RodSearch represents the model behind the search form of `app\models\Rod`.
  */
-class PoResponsibilityCenterSearch extends PoResponsibilityCenter
+class RodSearch extends Rod
 {
     /**
      * {@inheritdoc}
@@ -18,8 +18,7 @@ class PoResponsibilityCenterSearch extends PoResponsibilityCenter
     public function rules()
     {
         return [
-            [['id'], 'integer'],
-            [['name', 'description','province'], 'safe'],
+            [['rod_number', 'province'], 'safe'],
         ];
     }
 
@@ -42,7 +41,7 @@ class PoResponsibilityCenterSearch extends PoResponsibilityCenter
     public function search($params)
     {
         $province = Yii::$app->user->identity->province;
-        $q = PoResponsibilityCenter::find();
+        $q = Rod::find();
         if (
             $province === 'adn' ||
             $province === 'ads' ||
@@ -50,7 +49,7 @@ class PoResponsibilityCenterSearch extends PoResponsibilityCenter
             $province === 'sdn' ||
             $province === 'pdi'
         ) {
-            $q->where('province LIKE :province', ['province' => $province]);
+            $q->where('province = :province', ['province' => $province]);
         }
         $query = $q;
 
@@ -69,14 +68,8 @@ class PoResponsibilityCenterSearch extends PoResponsibilityCenter
         }
 
         // grid filtering conditions
-        $query->andFilterWhere([
-            'id' => $this->id,
-        ]);
-
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'description', $this->description])
-            ->andFilterWhere(['like', 'province', $this->province])
-            ;
+        $query->andFilterWhere(['like', 'rod_number', $this->rod_number])
+            ->andFilterWhere(['like', 'province', $this->province]);
 
         return $dataProvider;
     }

@@ -269,7 +269,7 @@ class AdvancesController extends Controller
                         //     ->bindValue(':id', $val)
                         //     ->query();
                         $model = AdvancesEntries::findOne($val);
-                        $model->is_deleted = true;
+                        $model->is_deleted = 1;
                         if ($model->save(false)) {
                         }
                     }
@@ -359,7 +359,7 @@ class AdvancesController extends Controller
                 ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id = dv_aucs.id')
                 ->join('LEFT JOIN', 'payee', 'dv_aucs.payee_id = payee.id')
                 ->where('advances_entries.advances_id =:advances_id', ['advances_id' => $update_id])
-                ->andWhere('advances_entries.is_deleted = 0' )
+                ->andWhere('advances_entries.is_deleted = 0')
                 ->all();
 
             return json_encode($query);
@@ -553,6 +553,17 @@ class AdvancesController extends Controller
             var_dump($data);
             echo "</pre>";
             return ob_get_clean();
+        }
+    }
+    public function actionDisable()
+    {
+        if ($_POST) {
+            $id = $_POST['id'];
+            $model = AdvancesEntries::findOne($id);
+            $model->is_deleted = $model->is_deleted === 0 ? 10 : 0;
+            if ($model->save(false)) {
+              return json_encode(['isSuccess'=>true]);
+            }
         }
     }
 }
