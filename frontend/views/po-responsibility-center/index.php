@@ -17,9 +17,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?php
+        $display = 'display:none';
         if (Yii::$app->user->can('super-user')) {
             echo Html::button('<i class="glyphicon glyphicon-plus"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=po-responsibility-center/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']);
-     
+            $display = '';
      
        }
         ?>
@@ -52,7 +53,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 'class' => 'kartik\grid\ActionColumn',
 
-                'updateOptions' => ['style'=>'display:none'],
+                'updateOptions' => ['style'=>$display],
                 'deleteOptions' =>  ['style'=>'display:none'],
                 'headerOptions' => ['class' => 'kartik-sheet-style'],
             ],
