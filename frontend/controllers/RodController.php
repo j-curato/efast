@@ -291,8 +291,8 @@ class RodController extends Controller
                  advances_entries.fund_source,
                 cash_disbursement.check_or_ada_no,
                 cash_disbursement.issuance_date,
-                advances_entries.amount,
-                liquidation_total.total_withdrawals,
+                IFNULL(advances_entries.amount,0) as amount,
+                IFNULL(liquidation_total.total_withdrawals,0) as total_withdrawals,
                 advances_entries.amount - IFNULL(liquidation_total.total_withdrawals,0) as balance
             "])
                 ->from('advances_entries')

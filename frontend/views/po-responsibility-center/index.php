@@ -50,9 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'description:ntext',
 
             [
-
                 'class' => 'kartik\grid\ActionColumn',
-
                 'updateOptions' => ['style'=>$display],
                 'deleteOptions' =>  ['style'=>'display:none'],
                 'headerOptions' => ['class' => 'kartik-sheet-style'],
