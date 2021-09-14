@@ -161,7 +161,9 @@ $this->params['breadcrumbs'][] = $this->title;
             margin-bottom:0;
             margin-top:20px;
         }
-
+        #print{
+            display: none;
+        }
 
         .main-footer {
             display: none;
