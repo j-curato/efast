@@ -309,9 +309,9 @@ class RodController extends Controller
             $i = 0;
             $x = 0;
             foreach ($query1 as $index => $val) {
-                if ($i == 18) {
+                if ($i == 12) {
 
-                    // $x++;
+                    $x++;
                     $i = 0;
                 }
                 $group_liquidation[$x][$i] = [
