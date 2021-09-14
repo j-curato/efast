@@ -173,7 +173,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             I herby certify that this Report of Disbursemets in <span class="total"></span> sheet is a full, true and correct statement of the disbursements made by
                             me and that this is in liquidation of the following cash advances granted to the Provincial Office, to with:
                         </span>
-                        <table id="fund_source_table">
+                        <table id="fund_source_table" style="margin-left:auto;margin-right:auto;margin-top :2rem">
 
                             <thead>
                                 <th>Fund Source</th>
@@ -191,14 +191,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <td colspan="3" style="border-right:none">
-                        <span>______________</span>
+                        <span>_________________________</span>
                         <br>
                         <span>Disbursing Officer</span>
                     </td>
-                    <td colspan="3" style="text-align: left; border-left:none">
-                        <span>______________</span>
+                    <td colspan="3" style="text-align: center; border-left:none">
+                        <span>_______________</span>
                         <br>
-                        <span style="margin-left: 30px;">Date</span>
+                        <span >Date</span>
                     </td>
                 </tr>
 
@@ -405,7 +405,18 @@ $script = <<< JS
                         <td class='amount'>`+thousands_separators(parseFloat(conso_fund_source[i]['balance']))+`</td>
                         </tr>`
                 $('#fund_source_table').append(row)
-        }        
+                total_amount=parseFloat(conso_fund_source[i]['amount'])
+                g_total_withdrawals=parseFloat(conso_fund_source[i]['total_withdrawals'])
+                g_total_balance=parseFloat(conso_fund_source[i]['balance'])
+        }     
+        row =  `<tr class='data_row'>
+                        <td colspan='3'>Total</td>
+          
+                        <td class='amount'>`+thousands_separators(parseFloat(total_amount))+`</td>
+                        <td class='amount'>`+thousands_separators(parseFloat(g_total_withdrawals))+`</td>
+                        <td class='amount'>`+thousands_separators(parseFloat(g_total_balance))+`</td>
+                        </tr>`
+                $('#fund_source_table').append(row)    
     }
     function addData(rod) {
         $(".data_row").remove();
