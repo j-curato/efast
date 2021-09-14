@@ -13,7 +13,7 @@ use yii\web\JsExpression;
 $this->title = "ROD";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="rod-view" style="background-color: white;padding:20px;display:none">
+<div class="rod-view" style="background-color: white;padding:10px;display:none">
 
     <?php
     $provinces  = [
@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- <div id="con"> -->
 
     <div id='con'>
-        <button id="print" type='button' class='btn btn-succes  fa fa-print' ></button>
+        <button id="print_btn" type='button' class='btn btn-succes  fa fa-print print_btn'></button>
         <table class="" id="rod_table" style="margin-top: 30px;">
 
             <thead>
@@ -84,8 +84,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <td colspan="6">
                         <span>
-                            I herby certify that this Report of Disbursemets in <span class="total"></span> sheet is a full, true and correct statement of the disbursements made by
-                            me and that this is in liquidation of the following cash advances granted to the Provincial Office, to with:
+                            I hereby certify that this Report of Disbursemets in ___ sheet is a full, true and correct statement of the disbursements made by
+                            me and that this is in liquidation of the following cash advances granted to the Provincial Office, to wit:
                         </span>
                         <table id="fund_source_table" style="margin-left:auto;margin-right:auto;margin-top :2rem">
 
@@ -156,14 +156,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
         @page {
             size: A4;
-            margin-left:0;
-            margin-top:0;
-            margin-bottom:0;
-            margin-top:20px;
+            margin-left: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+            margin-top: 20px;
         }
-        #print{
-            display: none;
-        }
+
 
         .main-footer {
             display: none;
@@ -173,7 +171,9 @@ $this->params['breadcrumbs'][] = $this->title;
             padding: 0;
         }
 
-
+        .print_btn {
+            display: none;
+        }
 
 
     }
