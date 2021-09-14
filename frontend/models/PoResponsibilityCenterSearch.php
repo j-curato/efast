@@ -19,7 +19,7 @@ class PoResponsibilityCenterSearch extends PoResponsibilityCenter
     {
         return [
             [['id'], 'integer'],
-            [['name', 'description'], 'safe'],
+            [['name', 'description','province'], 'safe'],
         ];
     }
 
@@ -74,7 +74,9 @@ class PoResponsibilityCenterSearch extends PoResponsibilityCenter
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'description', $this->description]);
+            ->andFilterWhere(['like', 'description', $this->description])
+            ->andFilterWhere(['like', 'province', $this->province])
+            ;
 
         return $dataProvider;
     }
