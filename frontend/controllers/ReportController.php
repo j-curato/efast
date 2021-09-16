@@ -1913,10 +1913,14 @@ class ReportController extends \yii\web\Controller
                     ]
                     )
                 ->where('advances_entries.fund_source_type=:fund_source_type', ['fund_source_type' => $fund_source_type])
-                ->andWhere('advances_entries.reporting_period <= :to_reporting_period', ['to_reporting_period' => $to_reporting_period])
-                ->andWhere('advances.province = :province', ['province' => $province])
+                ->andWhere('advances_entries.reporting_period <= :to_reporting_period', ['to_reporting_period' => $to_reporting_period]);
+                if (strtolower($province) !=='all'){
+                    $query->andWhere('advances.province = :province', ['province' => $province]);
+
+                }
+              $final_query = $query->orderBy('advances_entries.reporting_period')
                 ->all();
-            $result = ArrayHelper::index($query, null, [function ($element) {
+            $result = ArrayHelper::index($final_query, null, [function ($element) {
                 return $element['budget_year'];
             }, 'reporting_period']);
 

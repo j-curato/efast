@@ -42,6 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'name' => 'province',
                         'id' => 'province',
                         'data' => [
+                            'all' => 'All',
                             'adn' => 'ADN',
                             'ads' => 'ADS',
                             'sdn' => 'SDN',
