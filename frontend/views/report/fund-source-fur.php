@@ -4,6 +4,7 @@
 use app\models\AdvancesEntries;
 use app\models\Books;
 use app\models\DvAucs;
+use app\models\FundSourceType;
 use app\models\MajorAccounts;
 use kartik\grid\GridView;
 use yii\widgets\Pjax;
@@ -100,25 +101,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 echo Select2::widget([
                     'name' => 'fund_source_type',
                     'id' => 'fund_source_type',
-                    'initValueText' => 1001,
+                    'data'=>ArrayHelper::map(FundSourceType::find()->asArray()->all(),'name','name'),
                     'options' => ['placeholder' => 'Search for a Fund Source ...'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=fund-source-type/search',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    ],
+           
                 ]);
                 ?>
             </div>
