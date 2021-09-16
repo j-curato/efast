@@ -89,6 +89,7 @@
                             'label' => 'Query',
                             'url' => '#',
                             'items' => [
+                                Yii::$app->user->can('province') ?     ['label' => 'Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/fund-source-fur'],] : [],
 
                             ],
                         ],

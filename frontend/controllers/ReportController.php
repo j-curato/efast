@@ -1854,7 +1854,7 @@ class ReportController extends \yii\web\Controller
             $from_reporting_period = $_POST['from_reporting_period'];
             $to_reporting_period = $_POST['to_reporting_period'];
             $fund_source_type = $_POST['fund_source_type'];
-            $province = $_POST['province'];
+            $province = !empty($_POST['province'])?$_POST['province']:'';
             $user_province = strtolower(Yii::$app->user->identity->province);
             if (
                 $user_province === 'adn' ||
