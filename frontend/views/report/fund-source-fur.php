@@ -238,6 +238,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             var total_witdrawal = 0
             var total_amount = 0
             var total_balance = 0
+            var total_begin_balance = 0
             for (var x = 0; x < reporting_period_keys.length; x++) {
 
                 // console.log(res[object[i]][year[x]])
@@ -259,10 +260,12 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                     total_witdrawal += parseFloat(res[year][reporting_period][y]['total_withdrawals'])
                     total_amount += parseFloat(res[year][reporting_period][y]['amount'])
                     total_balance += parseFloat(res[year][reporting_period][y]['balance'])
+                    total_begin_balance += parseFloat(res[year][reporting_period][y]['begin_balance'])
                 }
             }
             row = `<tr class='data_row'>
                         <td colspan='4'>Total</td>
+                        <td class='amount'>` +thousands_separators(parseFloat(total_begin_balance.toFixed(2)))  + `</td>
                         <td class='amount'>` +thousands_separators(parseFloat(total_amount.toFixed(2)))  + `</td>
                         <td class='amount'>` +thousands_separators(parseFloat(total_witdrawal.toFixed(2)))  + `</td>
                         <td class='amount'>` +thousands_separators(parseFloat(total_balance.toFixed(2)))  + `</td>
