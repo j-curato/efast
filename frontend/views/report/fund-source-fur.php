@@ -101,9 +101,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 echo Select2::widget([
                     'name' => 'fund_source_type',
                     'id' => 'fund_source_type',
-                    'data'=>ArrayHelper::map(FundSourceType::find()->asArray()->all(),'name','name'),
+                    'data' => ArrayHelper::map(FundSourceType::find()->asArray()->all(), 'name', 'name'),
                     'options' => ['placeholder' => 'Search for a Fund Source ...'],
-           
+
                 ]);
                 ?>
             </div>
@@ -165,6 +165,10 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 12px;
     }
 
+    #summary_table {
+        margin-top: 30px;
+    }
+
     /* #con {
         display: none;
     } */
@@ -174,6 +178,9 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 
     @media print {
+        #summary_table {
+            margin-top: 0;
+        }
 
         table,
         th,
@@ -231,12 +238,12 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         for (var i = 0; i < year_object.length; i++) {
             var year = year_object[i]
             row = `<tr class='data_row'>
-                        <td colspan='8' style='text-align:left'>` + 'Budget Year ' + year + `</td>
+                        <td colspan='8' style='text-align:left;font-weight:bold'>` + 'Budget Year ' + year + `</td>
                         </tr>`
             $('#fur_table tbody').append(row)
             var reporting_period_keys = Object.keys(res[year])
             var total_witdrawal = 0
-            var total_amount = 0
+            var total_cash_advances_for_the_period = 0
             var total_balance = 0
             var total_begin_balance = 0
             for (var x = 0; x < reporting_period_keys.length; x++) {
@@ -251,22 +258,22 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         <td>` + res[year][reporting_period][y]['province'] + `</td>
                         <td>` + res[year][reporting_period][y]['fund_source'] + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(res[year][reporting_period][y]['begin_balance'])) + `</td>
-                        <td class='amount'>` + thousands_separators(parseFloat(res[year][reporting_period][y]['amount'])) + `</td>
+                        <td class='amount'>` + thousands_separators(parseFloat(res[year][reporting_period][y]['cash_advances_for_the_period'])) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(res[year][reporting_period][y]['total_withdrawals'])) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(res[year][reporting_period][y]['balance'])) + `</td>
                         <td>` + res[year][reporting_period][y]['particular'] + `</td>
                     </tr>`
                     $('#fur_table tbody').append(row)
                     total_witdrawal += parseFloat(res[year][reporting_period][y]['total_withdrawals'])
-                    total_amount += parseFloat(res[year][reporting_period][y]['amount'])
+                    total_cash_advances_for_the_period += parseFloat(res[year][reporting_period][y]['cash_advances_for_the_period'])
                     total_balance += parseFloat(res[year][reporting_period][y]['balance'])
                     total_begin_balance += parseFloat(res[year][reporting_period][y]['begin_balance'])
                 }
             }
             row = `<tr class='data_row'>
-                        <td colspan='3'>Total</td>
+                        <td colspan='3' style='font-weight:bold'>Total</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_begin_balance.toFixed(2))) + `</td>
-                        <td class='amount'>` + thousands_separators(parseFloat(total_amount.toFixed(2))) + `</td>
+                        <td class='amount'>` + thousands_separators(parseFloat(total_cash_advances_for_the_period.toFixed(2))) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_witdrawal.toFixed(2))) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_balance.toFixed(2))) + `</td>
                         <td ></td>
@@ -286,21 +293,21 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         var total_balance = 0
         for (var i = 0; i < conso_object.length; i++) {
             var province = conso_object[i]
-           var  row = `<tr>
+            var row = `<tr>
                 <td>` + province + `</td>
                 <td class='amount'>` + thousands_separators(conso[province]['grand_total_begin_balance']) + `</td>
-                <td class='amount'>` + thousands_separators(conso[province]['grand_total_amount']) + `</td>
+                <td class='amount'>` + thousands_separators(conso[province]['grand_total_cash_advances_for_the_period']) + `</td>
                 <td class='amount'>` + thousands_separators(conso[province]['grand_total_withdrawals']) + `</td>
                 <td class='amount'>` + thousands_separators(conso[province]['grand_total_balance']) + `</td>
             </tr>`
             $('#summary_table tbody').append(row)
             total_begin_balance += parseFloat(conso[province]['grand_total_begin_balance'])
-            total_amount += parseFloat(conso[province]['grand_total_amount'])
+            total_amount += parseFloat(conso[province]['grand_total_cash_advances_for_the_period'])
             total_withdrawals += parseFloat(conso[province]['grand_total_withdrawals'])
             total_balance += parseFloat(conso[province]['grand_total_balance'])
         }
         row = `<tr>
-                <td>Total</td>
+                <td style='font-weight:bold'>Total</td>
                 <td class='amount'>` + thousands_separators(total_begin_balance.toFixed(2)) + `</td>
                 <td class='amount'>` + thousands_separators(total_amount.toFixed(2)) + `</td>
                 <td class='amount'>` + thousands_separators(total_withdrawals.toFixed(2)) + `</td>

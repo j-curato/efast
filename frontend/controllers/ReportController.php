@@ -1851,10 +1851,10 @@ class ReportController extends \yii\web\Controller
     {
         if ($_POST) {
 
-            $from_reporting_period =$_POST['from_reporting_period']; 
-            $to_reporting_period =$_POST['to_reporting_period']; 
-            $fund_source_type =$_POST['fund_source_type']; 
-            $province =$_POST['province']; 
+            $from_reporting_period = $_POST['from_reporting_period'];
+            $to_reporting_period = $_POST['to_reporting_period'];
+            $fund_source_type = $_POST['fund_source_type'];
+            $province = $_POST['province'];
             $user_province = strtolower(Yii::$app->user->identity->province);
             if (
                 $user_province === 'adn' ||
@@ -1871,11 +1871,11 @@ class ReportController extends \yii\web\Controller
                 advances.province,
                 advances_entries.reporting_period,
                 advances_entries.fund_source,
-                IFNULL(advances_entries.amount,0) - IFNULL(beginning_balance.prev_withdrawals,0)  as amount,
+                IFNULL(beginning_advances.amount,0)   as begin_balance,
                 IFNULL(liquidation_total.total_withdrawals,0) as total_withdrawals,
-                (  IFNULL(beginning_balance.prev_withdrawals,0) +(  IFNULL(advances_entries.amount,0) -  IFNULL(beginning_balance.prev_withdrawals,0)) )-  IFNULL(liquidation_total.total_withdrawals,0) as balance,
+                (  IFNULL(beginning_advances.amount,0) + IFNULL(current_advances.amount,0) )-  IFNULL(liquidation_total.total_withdrawals,0) as balance,
                 dv_aucs.particular,
-                IFNULL(beginning_balance.prev_withdrawals,0) as begin_balance
+                IFNULL(current_advances.amount,0)   as cash_advances_for_the_period
                 "])
                 ->from('advances_entries')
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
@@ -1898,7 +1898,9 @@ class ReportController extends \yii\web\Controller
                         'to_reporting_period' => $to_reporting_period,
                     ]
                 )
-                ->join('LEFT JOIN', "(
+                ->join(
+                    'LEFT JOIN',
+                    "(
                         SELECT 
                         liquidation_balance_per_advances.advances_entries_id,
                         SUM(liquidation_balance_per_advances.total_withdrawals) as prev_withdrawals
@@ -1906,18 +1908,49 @@ class ReportController extends \yii\web\Controller
                         WHERE 
                         liquidation_balance_per_advances.reporting_period < :from_reporting_period
                         GROUP BY liquidation_balance_per_advances.advances_entries_id
-                    ) as beginning_balance", 'advances_entries.id = beginning_balance.advances_entries_id', 
+                    ) as beginning_balance",
+                    'advances_entries.id = beginning_balance.advances_entries_id',
                     [
                         'from_reporting_period' => $from_reporting_period,
                     ]
-                    )
+                )
+                ->join(
+                    "LEFT JOIN",
+                    "(SELECT advances_entries.id,advances_entries.amount
+                FROM advances_entries
+                WHERE
+                advances_entries.reporting_period < :from_reporting_period
+                ) as beginning_advances",
+                    "
+                advances_entries.id = beginning_advances.id
+                ",
+                    [
+                        'from_reporting_period' => $from_reporting_period
+                    ]
+                )
+                ->join(
+                    "LEFT JOIN",
+                    "(SELECT advances_entries.id,advances_entries.amount
+                        FROM advances_entries
+                        WHERE
+                        advances_entries.reporting_period >= :from_reporting_period
+                        AND
+                        advances_entries.reporting_period <= :to_reporting_period
+                        ) as current_advances",
+                            "
+                        advances_entries.id = current_advances.id
+                ",
+                    [
+                        'from_reporting_period' => $from_reporting_period,
+                        'to_reporting_period' => $to_reporting_period
+                    ]
+                )
                 ->where('advances_entries.fund_source_type=:fund_source_type', ['fund_source_type' => $fund_source_type])
                 ->andWhere('advances_entries.reporting_period <= :to_reporting_period', ['to_reporting_period' => $to_reporting_period]);
-                if (strtolower($province) !=='all'){
-                    $query->andWhere('advances.province = :province', ['province' => $province]);
-
-                }
-              $final_query = $query->orderBy('advances_entries.reporting_period')
+            if (strtolower($province) !== 'all') {
+                $query->andWhere('advances.province = :province', ['province' => $province]);
+            }
+            $final_query = $query->orderBy('advances_entries.reporting_period')
                 ->all();
             $result = ArrayHelper::index($final_query, null, [function ($element) {
                 return $element['budget_year'];
@@ -1925,20 +1958,20 @@ class ReportController extends \yii\web\Controller
             $index_per_province = ArrayHelper::index($final_query, null, 'province');
             // unset($result['2020']['2020-12']);
             $conso = array();
-            foreach(array_unique(array_column($final_query, 'province')) as $val){
+            foreach (array_unique(array_column($final_query, 'province')) as $val) {
 
                 $conso[$val] = [
-                    'grand_total_withdrawals'=>round(array_sum(array_column($index_per_province[$val],'total_withdrawals')),2),
-                    'grand_total_begin_balance'=>round(array_sum(array_column($index_per_province[$val],'begin_balance')),2),
-                    'grand_total_amount'=>round(array_sum(array_column($index_per_province[$val],'amount')),2),
-                    'grand_total_balance'=>round(array_sum(array_column($index_per_province[$val],'balance')),2)
+                    'grand_total_withdrawals' => round(array_sum(array_column($index_per_province[$val], 'total_withdrawals')), 2),
+                    'grand_total_begin_balance' => round(array_sum(array_column($index_per_province[$val], 'begin_balance')), 2),
+                    'grand_total_cash_advances_for_the_period' => round(array_sum(array_column($index_per_province[$val], 'cash_advances_for_the_period')), 2),
+                    'grand_total_balance' => round(array_sum(array_column($index_per_province[$val], 'balance')), 2)
                 ];
             }
             // echo "<pre>";
             // var_dump($conso);
             // echo "</pre>";
 
-            return json_encode(['detailed'=>$result,'conso'=>$conso]);
+            return json_encode(['detailed' => $result, 'conso' => $conso]);
         }
 
 
