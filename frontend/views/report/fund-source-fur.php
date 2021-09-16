@@ -122,7 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]);
                 ?>
             </div>
-            <div class="col-sm-3" style="margin-top: 2.5rem;">
+            <div class="col-sm-2" style="margin-top: 2.5rem;">
                 <button class="btn btn-success" id="generate">Generate</button>
             </div>
 
@@ -133,6 +133,19 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- <div id="con"> -->
 
     <div id='con'>
+        <table id="summary_table">
+            <thead>
+                <th>Province</th>
+                <th>Beginning Balance</th>
+                <th>Cash Advance for the period</th>
+                <th>Total Liquidation For the Month</th>
+                <th>Ending Balance</th>
+            </thead>
+            <tbody>
+
+            </tbody>
+
+        </table>
 
         <table class="" id="fur_table" style="margin-top: 30px;">
             <thead>
@@ -212,10 +225,13 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             type: 'POST',
             url: window.location.pathname + '?r=report/fund-source-fur',
             data: $("#filter").serialize(),
-
             success: function(data) {
                 var res = JSON.parse(data)
-                addData(res)
+                var detailed = res.detailed
+                var conso = res.conso
+                console.log(conso)
+                addData(detailed)
+                addToSummaryTable(conso)
                 $('#con').show()
                 $('#dots5').hide()
             }
@@ -224,7 +240,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
     })
 
     function addData(res) {
-        console.log(res)
         $("#fur_table tbody").html('');
         var year_object = Object.keys(res)
         // console.log(res[2021]['2021-03'].length)
@@ -275,6 +290,38 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
 
         }
 
+    }
+
+    function addToSummaryTable(conso) {
+        $('#summary_table tbody').html('')
+        var conso_object = Object.keys(conso)
+        var total_begin_balance = 0
+        var total_amount = 0
+        var total_withdrawals = 0
+        var total_balance = 0
+        for (var i = 0; i < conso_object.length; i++) {
+            var province = conso_object[i]
+           var  row = `<tr>
+                <td>` + province + `</td>
+                <td class='amount'>` + thousands_separators(conso[province]['grand_total_begin_balance']) + `</td>
+                <td class='amount'>` + thousands_separators(conso[province]['grand_total_amount']) + `</td>
+                <td class='amount'>` + thousands_separators(conso[province]['grand_total_withdrawals']) + `</td>
+                <td class='amount'>` + thousands_separators(conso[province]['grand_total_balance']) + `</td>
+            </tr>`
+            $('#summary_table tbody').append(row)
+            total_begin_balance += parseFloat(conso[province]['grand_total_begin_balance'])
+            total_amount += parseFloat(conso[province]['grand_total_amount'])
+            total_withdrawals += parseFloat(conso[province]['grand_total_withdrawals'])
+            total_balance += parseFloat(conso[province]['grand_total_balance'])
+        }
+        row = `<tr>
+                <td>Total</td>
+                <td class='amount'>` + thousands_separators(total_begin_balance.toFixed(2)) + `</td>
+                <td class='amount'>` + thousands_separators(total_amount.toFixed(2)) + `</td>
+                <td class='amount'>` + thousands_separators(total_withdrawals.toFixed(2)) + `</td>
+                <td class='amount'>` + thousands_separators(total_balance.toFixed(2)) + `</td>
+            </tr>`
+        $('#summary_table tbody').append(row)
     }
 </script>
 <?php

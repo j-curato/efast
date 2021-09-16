@@ -1871,11 +1871,11 @@ class ReportController extends \yii\web\Controller
                 advances.province,
                 advances_entries.reporting_period,
                 advances_entries.fund_source,
-                IFNULL(advances_entries.amount,0) -  IFNULL(beginning_balance.begin_balance,0) as amount,
+                IFNULL(advances_entries.amount,0) - IFNULL(beginning_balance.prev_withdrawals,0)  as amount,
                 IFNULL(liquidation_total.total_withdrawals,0) as total_withdrawals,
-                (  IFNULL(beginning_balance.begin_balance,0) +(  IFNULL(advances_entries.amount,0) -  IFNULL(beginning_balance.begin_balance,0)) )-  IFNULL(liquidation_total.total_withdrawals,0) as balance,
+                (  IFNULL(beginning_balance.prev_withdrawals,0) +(  IFNULL(advances_entries.amount,0) -  IFNULL(beginning_balance.prev_withdrawals,0)) )-  IFNULL(liquidation_total.total_withdrawals,0) as balance,
                 dv_aucs.particular,
-                IFNULL(beginning_balance.begin_balance,0) as begin_balance
+                IFNULL(beginning_balance.prev_withdrawals,0) as begin_balance
                 "])
                 ->from('advances_entries')
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
@@ -1888,9 +1888,8 @@ class ReportController extends \yii\web\Controller
                         liquidation_balance_per_advances.advances_entries_id,
                         SUM(liquidation_balance_per_advances.total_withdrawals) as total_withdrawals
                         FROM liquidation_balance_per_advances
-                        WHERE 
-                        liquidation_balance_per_advances.reporting_period >= :from_reporting_period
-                        AND liquidation_balance_per_advances.reporting_period <= :to_reporting_period
+                        WHERE  
+                     liquidation_balance_per_advances.reporting_period <= :to_reporting_period
                         GROUP BY liquidation_balance_per_advances.advances_entries_id
                     ) as liquidation_total",
                     'advances_entries.id = liquidation_total.advances_entries_id',
@@ -1902,10 +1901,10 @@ class ReportController extends \yii\web\Controller
                 ->join('LEFT JOIN', "(
                         SELECT 
                         liquidation_balance_per_advances.advances_entries_id,
-                        SUM(liquidation_balance_per_advances.total_withdrawals) as begin_balance
+                        SUM(liquidation_balance_per_advances.total_withdrawals) as prev_withdrawals
                         FROM liquidation_balance_per_advances
                         WHERE 
-                        liquidation_balance_per_advances.reporting_period <= :from_reporting_period
+                        liquidation_balance_per_advances.reporting_period < :from_reporting_period
                         GROUP BY liquidation_balance_per_advances.advances_entries_id
                     ) as beginning_balance", 'advances_entries.id = beginning_balance.advances_entries_id', 
                     [
@@ -1923,12 +1922,23 @@ class ReportController extends \yii\web\Controller
             $result = ArrayHelper::index($final_query, null, [function ($element) {
                 return $element['budget_year'];
             }, 'reporting_period']);
-
+            $index_per_province = ArrayHelper::index($final_query, null, 'province');
             // unset($result['2020']['2020-12']);
+            $conso = array();
+            foreach(array_unique(array_column($final_query, 'province')) as $val){
+
+                $conso[$val] = [
+                    'grand_total_withdrawals'=>round(array_sum(array_column($index_per_province[$val],'total_withdrawals')),2),
+                    'grand_total_begin_balance'=>round(array_sum(array_column($index_per_province[$val],'begin_balance')),2),
+                    'grand_total_amount'=>round(array_sum(array_column($index_per_province[$val],'amount')),2),
+                    'grand_total_balance'=>round(array_sum(array_column($index_per_province[$val],'balance')),2)
+                ];
+            }
             // echo "<pre>";
-            // var_dump($result);
+            // var_dump($conso);
             // echo "</pre>";
-            return json_encode($result);
+
+            return json_encode(['detailed'=>$result,'conso'=>$conso]);
         }
 
 
