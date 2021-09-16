@@ -181,8 +181,8 @@ class ProcessBursController extends Controller
     }
     public function actionReAlign($id)
     {
-        $searchModel = new Raouds2Search();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'burs');
+        $searchModel = new RecordAllotmentForOrsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,'burs');
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
