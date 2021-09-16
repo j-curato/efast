@@ -57,8 +57,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
 
                 <th>Date</th>
-                <th>DV/Payroll No.</th>
-                <th>Responsibility Center Code</th>
+                <th>DV / Payroll No.</th>
+                <th>Responsibility Center</th>
                 <th>Payee</th>
                 <th>Nature of Payment</th>
                 <th class="amount">Amount</th>
@@ -143,16 +143,14 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 12px;
     }
 
-
-
     .amount {
         text-align: right;
     }
 
 
     .print_btn {
-            display: none;
-        }
+        display: none;
+    }
 
 
     @media print {
@@ -169,6 +167,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
         .rod-view {
             padding: 0;
+        }
+
+        table,
+        th,
+        td {
+            padding: 3px;
         }
 
 
@@ -276,6 +280,12 @@ $script = <<< JS
         $(".data_row").remove();
         var total = 0
         for (var x = 0;x<rod.length;x++){
+            if (rod[x]['particular']==null){
+                rod[x]['particular']=''
+            }
+            if (rod[x]['dv_number']==null){
+                rod[x]['dv_number']=''
+            }
                 row =  `<tr class='data_row'>
                         <td>`+rod[x]['check_date']+`</td>
                         <td >`+rod[x]['dv_number']+`</td>

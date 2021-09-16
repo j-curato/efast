@@ -170,7 +170,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <h1 id="pageCounter">
                         </h1>
                         <span>
-                            I herby certify that this Report of Disbursemets in <span class="total"></span> sheet is a full, true and correct statement of the disbursements made by
+                            I herby certify that this Report of Disbursemets in ____ sheet is a full, true and correct statement of the disbursements made by
                             me and that this is in liquidation of the following cash advances granted to the Provincial Office, to with:
                         </span>
                         <table id="fund_source_table" style="margin-left:auto;margin-right:auto;margin-top :2rem">
@@ -198,7 +198,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan="3" style="text-align: center; border-left:none">
                         <span>_______________</span>
                         <br>
-                        <span >Date</span>
+                        <span>Date</span>
                     </td>
                 </tr>
 
@@ -250,9 +250,17 @@ $this->params['breadcrumbs'][] = $this->title;
         .main-footer {
             display: none;
         }
-        @page{
+
+        @page {
             margin: 10mm;
         }
+
+        table,
+        th,
+        td {
+            padding: 3px;
+        }
+
     }
 </style>
 
@@ -424,7 +432,16 @@ $script = <<< JS
     function addData(rod) {
         $(".data_row").remove();
         var total = 0
+        var particular =''
         for (var x = 0;x<rod.length;x++){
+            
+
+            if (rod[x]['particular']==null){
+                rod[x]['particular']=''
+            }
+            if (rod[x]['dv_number']==null){
+                rod[x]['dv_number']=''
+            }
                 row =  `<tr class='data_row'>
                         <td>`+rod[x]['check_date']+`</td>
                         <td >`+rod[x]['dv_number']+`</td>
