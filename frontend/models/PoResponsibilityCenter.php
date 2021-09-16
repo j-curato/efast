@@ -28,8 +28,9 @@ class PoResponsibilityCenter extends \yii\db\ActiveRecord
     {
         return [
             [['description'], 'string'],
-            [['description','name'], 'required'],
+            [['description','name','province'], 'required'],
             [['name'], 'string', 'max' => 255],
+            [['province'], 'string', 'max' => 20],
         ];
     }
 
@@ -42,6 +43,7 @@ class PoResponsibilityCenter extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Name',
             'description' => 'Description',
+            'province' => 'Province',
         ];
     }
 }

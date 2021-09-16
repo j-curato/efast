@@ -2,9 +2,11 @@
 
 namespace frontend\controllers;
 
+use app\models\ChartOfAccounts;
 use Yii;
 use app\models\FundSourceType;
 use app\models\FundSourceTypeSearch;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -154,5 +156,26 @@ class FundSourceTypeController extends Controller
     {
         $na = (new \yii\db\Query())->select('*')->from('fund_source_type')->all();
         return json_encode($na);
+    }
+    public function actionSearch($q = null, $id = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $user_province = strtolower(Yii::$app->user->identity->province);
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+            $query->select('fund_source_type.id, fund_source_type.name AS text')
+                ->from('fund_source_type')
+                ->where(['like', 'fund_source_type.name', $q]);
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        } elseif ($id > 0) {
+            $out['results'] = ['id' => $id, 'text' => ChartOfAccounts::find($id)->uacs];
+        }
+        return $out;
     }
 }

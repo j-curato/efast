@@ -740,7 +740,10 @@ class ReportController extends \yii\web\Controller
 
             $q = Yii::$app->db->createCommand("SELECT
             chart_of_accounts.uacs as gl_object_code,
-            ROUND(SUM(withdrawals),2)+ROUND(SUM(vat_nonvat),2)+ROUND(SUM(expanded_tax),2) as debit
+            ROUND(SUM(withdrawals),2)+ROUND(SUM(vat_nonvat),2)+ROUND(SUM(expanded_tax),2) as debit,
+            ROUND(SUM(withdrawals),2) as total_withdrawals,
+            ROUND(SUM(vat_nonvat),2) as total_vat_nonvat,
+            ROUND(SUM(expanded_tax),2) as total_expanded_tax
             FROM liquidation_entries
             LEFT JOIN chart_of_accounts ON liquidation_entries.chart_of_account_id= chart_of_accounts.id
             LEFT JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
@@ -789,22 +792,22 @@ class ReportController extends \yii\web\Controller
                 ->where("uacs =:uacs", ['uacs' => 2020101000])
                 ->one();
 
-            // if (empty($account)) {
+            if (empty($account)) {
 
-            //     $account = Yii::$app->memem->createSubAccount1($acc, $c_id['id']);
-            // }
+                $account = Yii::$app->memem->createSubAccount1($acc, $c_id['id']);
+            }
 
-            // if (empty($vat)) {
+            if (empty($vat)) {
 
-            //     $vat = Yii::$app->memem->createSubAccount1($v, $c_id['id']);
-            // }
-            // if (empty($expanded)) {
+                $vat = Yii::$app->memem->createSubAccount1($v, $c_id['id']);
+            }
+            if (empty($expanded)) {
 
-            //     $expanded = Yii::$app->memem->createSubAccount1($e, $c_id['id']);
-            // }
+                $expanded = Yii::$app->memem->createSubAccount1($e, $c_id['id']);
+            }
             // ob_clean();
             // echo "<pre>";
-            // var_dump($advances);
+            // var_dump($account);
             // echo "</pre>";
             // return ob_get_clean();
             if (!empty($cdr)) {
@@ -1808,7 +1811,8 @@ class ReportController extends \yii\web\Controller
             // }
             return json_encode([
                 'liquidations' => $query1,
-                'conso_fund_source' => $fund_source_query
+                'conso_fund_source' => $fund_source_query,
+                'fund_sources' => $fund_source
             ]);
         }
         return $this->render('rod');
@@ -1842,6 +1846,89 @@ class ReportController extends \yii\web\Controller
             $out['results'] = ['id' => $id, 'text' => ChartOfAccounts::find($id)->uacs];
         }
         return $out;
+    }
+    public function actionFundSourceFur()
+    {
+        if ($_POST) {
+
+            $from_reporting_period = '2021-02';
+            $to_reporting_period = '2021-05';
+            $fund_source_type = 'CARP';
+            $province = 'adn';
+            $user_province = strtolower(Yii::$app->user->identity->province);
+            if (
+                $user_province === 'adn' ||
+                $user_province === 'ads' ||
+                $user_province === 'sdn' ||
+                $user_province === 'sds' ||
+                $user_province === 'pdi'
+
+            ) {
+                $province = $user_province;
+            }
+            $query  = (new \yii\db\Query())->select(["
+                SUBSTRING_INDEX(advances_entries.reporting_period,'-',1) as budget_year,
+                advances.province,
+                advances_entries.reporting_period,
+                advances_entries.fund_source,
+                IFNULL(advances_entries.amount,0) as amount,
+                IFNULL(liquidation_total.total_withdrawals,0) as total_withdrawals,
+                IFNULL(advances_entries.amount,0) -  IFNULL(liquidation_total.total_withdrawals,0) as balance,
+                dv_aucs.particular,
+                IFNULL(beginning_balance.begin_balance,0) as begin_balance
+                "])
+                ->from('advances_entries')
+                ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
+                ->join('LEFT JOIN', 'cash_disbursement', 'advances_entries.cash_disbursement_id = cash_disbursement.id')
+                ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id = dv_aucs.id')
+                ->join(
+                    'LEFT JOIN',
+                    "(
+                        SELECT 
+                        liquidation_balance_per_advances.advances_entries_id,
+                        SUM(liquidation_balance_per_advances.total_withdrawals) as total_withdrawals
+                        FROM liquidation_balance_per_advances
+                        WHERE 
+                        liquidation_balance_per_advances.reporting_period >= :from_reporting_period
+                        AND liquidation_balance_per_advances.reporting_period <= :to_reporting_period
+                        GROUP BY liquidation_balance_per_advances.advances_entries_id
+                    ) as liquidation_total",
+                    'advances_entries.id = liquidation_total.advances_entries_id',
+                    [
+                        'from_reporting_period' => $from_reporting_period,
+                        'to_reporting_period' => $to_reporting_period,
+                    ]
+                )
+                ->join('LEFT JOIN', "(
+                        SELECT 
+                        liquidation_balance_per_advances.advances_entries_id,
+                        SUM(liquidation_balance_per_advances.total_withdrawals) as begin_balance
+                        FROM liquidation_balance_per_advances
+                        WHERE 
+                        liquidation_balance_per_advances.reporting_period <= :from_reporting_period
+                        GROUP BY liquidation_balance_per_advances.advances_entries_id
+                    ) as beginning_balance", 'advances_entries.id = beginning_balance.advances_entries_id', 
+                    [
+                        'from_reporting_period' => $from_reporting_period,
+                    ]
+                    )
+                ->where('advances_entries.fund_source_type=:fund_source_type', ['fund_source_type' => $fund_source_type])
+                ->andWhere('advances_entries.reporting_period <= :from_reporting_period', ['from_reporting_period' => $from_reporting_period])
+                ->andWhere('advances.province = :province', ['province' => $province])
+                ->all();
+            $result = ArrayHelper::index($query, null, [function ($element) {
+                return $element['budget_year'];
+            }, 'reporting_period']);
+
+            // unset($result['2020']['2020-12']);
+            // echo "<pre>";
+            // var_dump($result);
+            // echo "</pre>";
+            return json_encode($result);
+        }
+
+
+        return $this->render('fund-source-fur');
     }
     // public function actionR()
     // {

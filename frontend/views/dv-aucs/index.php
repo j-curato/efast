@@ -72,6 +72,26 @@ $this->params['breadcrumbs'][] = $this->title;
     $exportSearchModel = new DvAucsEntriesSearch();
     $exportDataProvider = $exportSearchModel->search(Yii::$app->request->queryParams);
     $exportColumns = [
+
+        [
+            'label' => "Check Number",
+            'value' => "dvAucs.cashDisbursement.check_or_ada_no"
+        ],
+        [
+            'label' => "ADA Number",
+            'value' => "dvAucs.cashDisbursement.ada_number"
+        ],
+        [
+            'label' => "Cash Disbursed",
+            'value' => function ($model) {
+                $query  = Yii::$app->db->createCommand("SELECT SUM(dv_aucs_entries.amount_disbursed) as total_disbursed 
+                FROM dv_aucs_entries WHERE dv_aucs_id = :dv_id")
+                    ->bindValue(':dv_id', $model->dvAucs->id)
+                    ->queryScalar();
+                return $query;
+            }
+        ],
+
         [
             'label' => "DV Number",
             'value' => "dvAucs.dv_number"
@@ -106,6 +126,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 return $obligate;
             }
         ],
+
         [
             'label' => "Payee",
             'value' => "dvAucs.payee.account_name"
@@ -225,12 +246,12 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'label' => "MRD Classification",
-                'attribute'=>'mrd_classification_id',
+                'attribute' => 'mrd_classification_id',
                 'value' => "mrdClassification.name"
             ],
             [
                 'label' => "Nature of Transaction",
-                'attribute'=>'nature_of_transaction_id',
+                'attribute' => 'nature_of_transaction_id',
                 'value' => "natureOfTransaction.name"
             ],
             [

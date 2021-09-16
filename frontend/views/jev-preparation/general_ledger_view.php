@@ -558,7 +558,7 @@ $script = <<< JS
             data = JSON.parse(result).results
             fund_cluster_code = JSON.parse(result).fund_cluster_code
             var object= Object.keys(data)
-            // console.log(data)
+            console.log(object)
             var mywindow = window.open('?r=jev-preparation/ledger', 'new div', 'height=700,width=1300');
             mywindow.document.write('<html><head><title></title>');
             mywindow.document.write('<link rel="stylesheet" href="/afms/frontend/web/print.css" type="text/css" media="all" />');

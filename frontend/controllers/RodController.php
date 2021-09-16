@@ -348,7 +348,9 @@ class RodController extends Controller
             $query->select('advances_entries.id, advances_entries.fund_source AS text')
                 ->from('advances_entries')
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
-                ->where(['like', 'advances_entries.fund_source', $q]);
+                ->where(['like', 'advances_entries.fund_source', $q])
+                ->andWhere('advances_entries.is_deleted !=1')
+                ;
             if (
                 $user_province === 'adn' ||
                 $user_province === 'ads' ||
