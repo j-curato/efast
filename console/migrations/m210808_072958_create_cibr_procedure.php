@@ -66,6 +66,7 @@ class m210808_072958_create_cibr_procedure extends Migration
 
             advances.province = province
             AND advances_entries.reporting_period = r_period
+            AND advances_entries.is_deleted !=1
 
             UNION ALL 
 
