@@ -1851,10 +1851,10 @@ class ReportController extends \yii\web\Controller
     {
         if ($_POST) {
 
-            $from_reporting_period = '2021-02';
-            $to_reporting_period = '2021-05';
-            $fund_source_type = 'CARP';
-            $province = 'adn';
+            $from_reporting_period =$_POST['from_reporting_period']; 
+            $to_reporting_period =$_POST['to_reporting_period']; 
+            $fund_source_type =$_POST['fund_source_type']; 
+            $province =$_POST['province']; 
             $user_province = strtolower(Yii::$app->user->identity->province);
             if (
                 $user_province === 'adn' ||
@@ -1871,7 +1871,7 @@ class ReportController extends \yii\web\Controller
                 advances.province,
                 advances_entries.reporting_period,
                 advances_entries.fund_source,
-                IFNULL(advances_entries.amount,0) as amount,
+                IFNULL(advances_entries.amount,0) -  IFNULL(beginning_balance.begin_balance,0) as amount,
                 IFNULL(liquidation_total.total_withdrawals,0) as total_withdrawals,
                 IFNULL(advances_entries.amount,0) -  IFNULL(liquidation_total.total_withdrawals,0) as balance,
                 dv_aucs.particular,
@@ -1913,7 +1913,7 @@ class ReportController extends \yii\web\Controller
                     ]
                     )
                 ->where('advances_entries.fund_source_type=:fund_source_type', ['fund_source_type' => $fund_source_type])
-                ->andWhere('advances_entries.reporting_period <= :from_reporting_period', ['from_reporting_period' => $from_reporting_period])
+                ->andWhere('advances_entries.reporting_period <= :to_reporting_period', ['to_reporting_period' => $to_reporting_period])
                 ->andWhere('advances.province = :province', ['province' => $province])
                 ->all();
             $result = ArrayHelper::index($query, null, [function ($element) {

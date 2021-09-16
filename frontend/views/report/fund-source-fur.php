@@ -29,6 +29,34 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <form id="filter">
         <div class="row">
+
+            <?php
+            if (Yii::$app->user->can('super-user')) {
+
+            ?>
+                <div class="col-sm-2">
+                    <label for="province">Province</label>
+                    <?php
+
+                    echo Select2::widget([
+                        'name' => 'province',
+                        'id' => 'province',
+                        'data' => [
+                            'adn' => 'ADN',
+                            'ads' => 'ADS',
+                            'sdn' => 'SDN',
+                            'sds' => 'SDS',
+                            'pdi' => 'PDI',
+                        ],
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'placeholder' => 'Select Province'
+                        ]
+                    ]);
+
+                    ?>
+                </div>
+            <?php } ?>
             <div class="col-sm-3">
                 <label for="from_reporting_period"> From Reporting Peiod</label>
                 <?php
@@ -66,13 +94,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
             </div>
             <div class="col-sm-2">
-                <label for="province">Fund Source Type</label>
+                <label for="fund_source_type">Fund Source Type</label>
                 <?php
                 echo Select2::widget([
-                    'name' => 'fund_source',
-                    'id' => 'fund_source',
+                    'name' => 'fund_source_type',
+                    'id' => 'fund_source_type',
                     'initValueText' => 1001,
-                    'options' => ['multiple' => true, 'placeholder' => 'Search for a Fund Source ...'],
+                    'options' => [ 'placeholder' => 'Search for a Fund Source ...'],
                     'pluginOptions' => [
                         'allowClear' => true,
                         'minimumInputLength' => 1,
@@ -172,6 +200,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php
 $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 <script>
     $('#generate').click((e) => {
@@ -219,10 +248,10 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
                         <td>` + res[year][reporting_period][y]['reporting_period'] + `</td>
                         <td>` + res[year][reporting_period][y]['province'] + `</td>
                         <td>` + res[year][reporting_period][y]['fund_source'] + `</td>
-                        <td class='amount'>` + res[year][reporting_period][y]['begin_balance'] + `</td>
-                        <td class='amount'>` + res[year][reporting_period][y]['amount'] + `</td>
-                        <td class='amount'>` + res[year][reporting_period][y]['total_withdrawals'] + `</td>
-                        <td class='amount'>` + res[year][reporting_period][y]['balance'] + `</td>
+                        <td class='amount'>` +thousands_separators(parseFloat(res[year][reporting_period][y]['begin_balance']))  + `</td>
+                        <td class='amount'>` +thousands_separators(parseFloat(res[year][reporting_period][y]['amount']))  + `</td>
+                        <td class='amount'>` +thousands_separators(parseFloat(res[year][reporting_period][y]['total_withdrawals']))  + `</td>
+                        <td class='amount'>` +thousands_separators(parseFloat(res[year][reporting_period][y]['balance']))  + `</td>
                         <td>` + res[year][reporting_period][y]['particular'] + `</td>
                     </tr>`
                     $('#fur_table tbody').append(row)
@@ -233,9 +262,9 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
             }
             row = `<tr class='data_row'>
                         <td colspan='4'>Total</td>
-                        <td class='amount'>` + total_amount.toFixed(2) + `</td>
-                        <td class='amount'>` + total_witdrawal.toFixed(2) + `</td>
-                        <td class='amount'>` + total_balance.toFixed(2) + `</td>
+                        <td class='amount'>` +thousands_separators(parseFloat(total_amount.toFixed(2)))  + `</td>
+                        <td class='amount'>` +thousands_separators(parseFloat(total_witdrawal.toFixed(2)))  + `</td>
+                        <td class='amount'>` +thousands_separators(parseFloat(total_balance.toFixed(2)))  + `</td>
                         <td ></td>
                         </tr>`
             $('#fur_table tbody').append(row)

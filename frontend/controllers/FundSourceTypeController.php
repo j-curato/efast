@@ -166,7 +166,7 @@ class FundSourceTypeController extends Controller
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
             $query = new Query();
-            $query->select('fund_source_type.id, fund_source_type.name AS text')
+            $query->select('fund_source_type.name as id, fund_source_type.name AS text')
                 ->from('fund_source_type')
                 ->where(['like', 'fund_source_type.name', $q]);
 
