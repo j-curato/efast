@@ -1873,7 +1873,7 @@ class ReportController extends \yii\web\Controller
                 advances_entries.fund_source,
                 IFNULL(advances_entries.amount,0) -  IFNULL(beginning_balance.begin_balance,0) as amount,
                 IFNULL(liquidation_total.total_withdrawals,0) as total_withdrawals,
-                IFNULL(advances_entries.amount,0) -  IFNULL(liquidation_total.total_withdrawals,0) as balance,
+                (  IFNULL(beginning_balance.begin_balance,0) +(  IFNULL(advances_entries.amount,0) -  IFNULL(beginning_balance.begin_balance,0)) )-  IFNULL(liquidation_total.total_withdrawals,0) as balance,
                 dv_aucs.particular,
                 IFNULL(beginning_balance.begin_balance,0) as begin_balance
                 "])
