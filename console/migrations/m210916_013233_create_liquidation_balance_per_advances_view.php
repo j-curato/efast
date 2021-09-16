@@ -24,7 +24,7 @@ class m210916_013233_create_liquidation_balance_per_advances_view extends Migrat
             liquidation_entries.reporting_period
 
         SQL;
-        $this->trigger($query);
+        $this->execute($query);
     }
 
     /**
