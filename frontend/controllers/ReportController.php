@@ -792,26 +792,26 @@ class ReportController extends \yii\web\Controller
                 ->where("uacs =:uacs", ['uacs' => 2020101000])
                 ->one();
 
-            if (empty($account)) {
+            // if (empty($account)) {
 
-                $account = Yii::$app->memem->createSubAccount1($acc, $c_id['id']);
-            }
+            //     $account = Yii::$app->memem->createSubAccount1($acc, $c_id['id']);
+            // }
 
-            if (empty($vat)) {
+            // if (empty($vat)) {
 
-                $vat = Yii::$app->memem->createSubAccount1($v, $c_id['id']);
-            }
-            if (empty($expanded)) {
+            //     $vat = Yii::$app->memem->createSubAccount1($v, $c_id['id']);
+            // }
+            // if (empty($expanded)) {
 
-                $expanded = Yii::$app->memem->createSubAccount1($e, $c_id['id']);
-            }
+            //     $expanded = Yii::$app->memem->createSubAccount1($e, $c_id['id']);
+            // }
             // ob_clean();
             // echo "<pre>";
             // var_dump($account);
             // echo "</pre>";
             // return ob_get_clean();
             if (!empty($cdr)) {
-                return json_encode(['result' => $q, 'vat' => $vat, 'expanded' => $expanded]);
+                return json_encode(['result' => $q, 'vat' => $vat, 'expanded' => $expanded,'account'=>$account]);
             }
         }
     }

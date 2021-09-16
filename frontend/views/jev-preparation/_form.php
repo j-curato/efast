@@ -878,20 +878,23 @@ $script = <<< JS
                                 add()
                             }
                             total_gross+=parseFloat(res[x]['total_withdrawals'])
-                            total_vat+=parseFloat(res[x]['total_vat'])
-                            total_expanded+=parseFloat(res[x]['total_expanded'])
+                            total_vat+=parseFloat(res[x]['total_vat_nonvat'])
+                            total_expanded+=parseFloat(res[x]['total_expanded_tax'])
+                            // console.log(res[x]['total_vat_nonvat'])
                         }
+
                         add()
                         $("#credit-"+x).val(parseFloat(total_gross).toFixed(2))
-                        // $("#chart-"+x).val(d.vat['id'] + '-'+d.vat['object_code']+'-'+2).trigger('change');
+                        $("#chart-"+x).val(d.account['object_code']).trigger('change');
                         x++
                         add()
                         $("#credit-"+x).val(parseFloat(total_vat).toFixed(2))
-                        $("#chart-"+x).val(d.expanded['id'] + '-'+d.expanded['object_code']+'-'+2).trigger('change');
+                        $("#chart-"+x).val(d.vat['object_code']).trigger('change');
                         x++
                         add()
                         $("#credit-"+x).val(parseFloat(total_expanded).toFixed(2))
-                        $("#chart-"+x).val(d.vat['id'] + '-'+d.vat['object_code']+'-'+2).trigger('change');
+                        $("#chart-"+x).val(d.expanded['object_code']).trigger('change');
+
                         x++
                         getTotal()
                    }
