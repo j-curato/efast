@@ -101,7 +101,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'name' => 'fund_source_type',
                     'id' => 'fund_source_type',
                     'initValueText' => 1001,
-                    'options' => [ 'placeholder' => 'Search for a Fund Source ...'],
+                    'options' => ['placeholder' => 'Search for a Fund Source ...'],
                     'pluginOptions' => [
                         'allowClear' => true,
                         'minimumInputLength' => 1,
@@ -250,10 +250,10 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         <td>` + res[year][reporting_period][y]['reporting_period'] + `</td>
                         <td>` + res[year][reporting_period][y]['province'] + `</td>
                         <td>` + res[year][reporting_period][y]['fund_source'] + `</td>
-                        <td class='amount'>` +thousands_separators(parseFloat(res[year][reporting_period][y]['begin_balance']))  + `</td>
-                        <td class='amount'>` +thousands_separators(parseFloat(res[year][reporting_period][y]['amount']))  + `</td>
-                        <td class='amount'>` +thousands_separators(parseFloat(res[year][reporting_period][y]['total_withdrawals']))  + `</td>
-                        <td class='amount'>` +thousands_separators(parseFloat(res[year][reporting_period][y]['balance']))  + `</td>
+                        <td class='amount'>` + thousands_separators(parseFloat(res[year][reporting_period][y]['begin_balance'])) + `</td>
+                        <td class='amount'>` + thousands_separators(parseFloat(res[year][reporting_period][y]['amount'])) + `</td>
+                        <td class='amount'>` + thousands_separators(parseFloat(res[year][reporting_period][y]['total_withdrawals'])) + `</td>
+                        <td class='amount'>` + thousands_separators(parseFloat(res[year][reporting_period][y]['balance'])) + `</td>
                         <td>` + res[year][reporting_period][y]['particular'] + `</td>
                     </tr>`
                     $('#fur_table tbody').append(row)
@@ -264,11 +264,11 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 }
             }
             row = `<tr class='data_row'>
-                        <td colspan='4'>Total</td>
-                        <td class='amount'>` +thousands_separators(parseFloat(total_begin_balance.toFixed(2)))  + `</td>
-                        <td class='amount'>` +thousands_separators(parseFloat(total_amount.toFixed(2)))  + `</td>
-                        <td class='amount'>` +thousands_separators(parseFloat(total_witdrawal.toFixed(2)))  + `</td>
-                        <td class='amount'>` +thousands_separators(parseFloat(total_balance.toFixed(2)))  + `</td>
+                        <td colspan='3'>Total</td>
+                        <td class='amount'>` + thousands_separators(parseFloat(total_begin_balance.toFixed(2))) + `</td>
+                        <td class='amount'>` + thousands_separators(parseFloat(total_amount.toFixed(2))) + `</td>
+                        <td class='amount'>` + thousands_separators(parseFloat(total_witdrawal.toFixed(2))) + `</td>
+                        <td class='amount'>` + thousands_separators(parseFloat(total_balance.toFixed(2))) + `</td>
                         <td ></td>
                         </tr>`
             $('#fur_table tbody').append(row)
