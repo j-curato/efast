@@ -2051,7 +2051,7 @@ class ReportController extends \yii\web\Controller
                     FROM liquidation_entries
                     GROUP BY liquidation_entries.advances_entries_id
                     ) as liq_total",
-                    ' advances_entries.id = liq_total.advances_entries_id',
+                    ' advances_entries.id = liq_total.advances_entries_id'
 
                 )
 
