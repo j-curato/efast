@@ -53,6 +53,8 @@ class ReportController extends \yii\web\Controller
                     'temp-import',
                     'detailed-dv-aucs',
                     'conso-detailed-dv',
+                    'fund-source-fur',
+                    'summary-fund-source-fur'
 
                 ],
                 'rules' => [
@@ -70,6 +72,7 @@ class ReportController extends \yii\web\Controller
                             'temp-import',
                             'detailed-dv-aucs',
                             'conso-detailed-dv',
+
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
@@ -83,7 +86,10 @@ class ReportController extends \yii\web\Controller
                             'unpaid-obligation',
                             'conso-detailed-dv',
                             'get-cash',
-                            'tax-remittance'
+                            'tax-remittance',
+                            'fund-source-fur',
+                            'summary-fund-source-fur'
+
 
                         ],
                         'allow' => true,
@@ -811,7 +817,7 @@ class ReportController extends \yii\web\Controller
             // echo "</pre>";
             // return ob_get_clean();
             if (!empty($cdr)) {
-                return json_encode(['result' => $q, 'vat' => $vat, 'expanded' => $expanded,'account'=>$account]);
+                return json_encode(['result' => $q, 'vat' => $vat, 'expanded' => $expanded, 'account' => $account]);
             }
         }
     }
@@ -1854,7 +1860,7 @@ class ReportController extends \yii\web\Controller
             $from_reporting_period = $_POST['from_reporting_period'];
             $to_reporting_period = $_POST['to_reporting_period'];
             $fund_source_type = $_POST['fund_source_type'];
-            $province = !empty($_POST['province'])?$_POST['province']:'';
+            $province = !empty($_POST['province']) ? $_POST['province'] : '';
             $user_province = strtolower(Yii::$app->user->identity->province);
             if (
                 $user_province === 'adn' ||
@@ -1917,13 +1923,13 @@ class ReportController extends \yii\web\Controller
                 ->join(
                     "LEFT JOIN",
                     "(SELECT advances_entries.id,advances_entries.amount
-                FROM advances_entries
-                WHERE
-                advances_entries.reporting_period < :from_reporting_period
-                ) as beginning_advances",
+                    FROM advances_entries
+                    WHERE
+                    advances_entries.reporting_period < :from_reporting_period
+                    ) as beginning_advances",
                     "
-                advances_entries.id = beginning_advances.id
-                ",
+                    advances_entries.id = beginning_advances.id
+                    ",
                     [
                         'from_reporting_period' => $from_reporting_period
                     ]
@@ -1937,7 +1943,7 @@ class ReportController extends \yii\web\Controller
                         AND
                         advances_entries.reporting_period <= :to_reporting_period
                         ) as current_advances",
-                            "
+                    "
                         advances_entries.id = current_advances.id
                 ",
                     [
@@ -1977,303 +1983,143 @@ class ReportController extends \yii\web\Controller
 
         return $this->render('fund-source-fur');
     }
-    // public function actionR()
-    // {
-    //     $arr = [];
+    public function actionSummaryFundSourceFur()
+    {
 
-    //     $arr[] = [
-    //         1299,
-    //         3312,
-    //         219751.96,
-    //         '1990103000_00633_00482',
-    //         'RAPID GOP (DV# 2021-08-1314) - Goods (ICT Equipment)',
-    //         8,
-    //         '2021-09',
-    //         'RAPID LP',
-    //         'Advances to Special Disbursing Officer',
-    //         'RAPID LP SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1299,
-    //         3312,
-    //         44000,
-    //         '1990103000_00633_00482',
-    //         'RAPID GOP (DV# 2021-08-1314) - Recurrent Costs (Other MOOE)',
-    //         8,
-    //         '2021-09',
-    //         'RAPID LP',
-    //         'Advances to Special Disbursing Officer',
-    //         'RAPID LP SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1299,
-    //         3312,
-    //         167200,
-    //         '1990103000_00633_00482',
-    //         'RAPID GOP (DV# 2021-08-1314) - Recurrent Costs (Representation expenses)',
-    //         8,
-    //         '2021-09',
-    //         'RAPID LP',
-    //         'Advances to Special Disbursing Officer',
-    //         'RAPID LP SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1299,
-    //         3312,
-    //         15339.4,
-    //         '1990103000_00633_00482',
-    //         'RAPID GOP (DV# 2021-08-1314) - Goods (Printing and publication expenses)',
-    //         8,
-    //         '2021-09',
-    //         'RAPID LP',
-    //         'Advances to Special Disbursing Officer',
-    //         'RAPID LP SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1299,
-    //         3312,
-    //         34945.21,
-    //         '1990103000_00633_00482',
-    //         'RAPID GOP (DV# 2021-08-1314) - Consultancy (Consultancy services)',
-    //         8,
-    //         '2021-09',
-    //         'RAPID LP',
-    //         'Advances to Special Disbursing Officer',
-    //         'RAPID LP SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1299,
-    //         3312,
-    //         7980.93,
-    //         '1990103000_00633_00482',
-    //         'RAPID GOP (DV# 2021-08-1314) - Recurrent Costs (Postage Courier Services)',
-    //         8,
-    //         '2021-09',
-    //         'RAPID LP',
-    //         'Advances to Special Disbursing Officer',
-    //         'RAPID LP SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1299,
-    //         3312,
-    //         52800,
-    //         '1990103000_00633_00482',
-    //         'RAPID GOP (DV# 2021-08-1314) - Recurrent Costs (Fuel oil and lubricants expenses)',
-    //         8,
-    //         '2021-09',
-    //         'RAPID LP',
-    //         'Advances to Special Disbursing Officer',
-    //         'RAPID LP SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1299,
-    //         3312,
-    //         108802.29,
-    //         '1990103000_00633_00482',
-    //         'RAPID GOP (DV# 2021-08-1314) - Goods (Office Supplies Expense)',
-    //         8,
-    //         '2021-09',
-    //         'RAPID LP',
-    //         'Advances to Special Disbursing Officer',
-    //         'RAPID LP SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1299,
-    //         3312,
-    //         133139.23,
-    //         '1990103000_00633_00482',
-    //         'RAPID GOP (DV# 2021-08-1314) - Recurrent Costs (Training Expense)',
-    //         8,
-    //         '2021-09',
-    //         'RAPID LP',
-    //         'Advances to Special Disbursing Officer',
-    //         'RAPID LP SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1299,
-    //         3312,
-    //         69187.36,
-    //         '1990103000_00632_00479',
-    //         'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Insurance Expenses)',
-    //         5,
-    //         '2021-09',
-    //         'RAPID GOP',
-    //         'Advances to Special Disbursing Officer',
-    //         '101 SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1298,
-    //         3305,
-    //         30480,
-    //         '1990103000_00632_00479',
-    //         'RAPID GOP (DV#2021-08-1317) - Goods (ICT Equipment)',
-    //         5,
-    //         '2021-09',
-    //         'RAPID GOP',
-    //         'Advances to Special Disbursing Officer',
-    //         '101 SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1298,
-    //         3305,
-    //         24000,
-    //         '1990103000_00632_00479',
-    //         'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Electricity Expense)',
-    //         5,
-    //         '2021-09',
-    //         'RAPID GOP',
-    //         'Advances to Special Disbursing Officer',
-    //         '101 SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1298,
-    //         3305,
-    //         6000,
-    //         '1990103000_00632_00479',
-    //         'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Other MOOE)',
-    //         5,
-    //         '2021-09',
-    //         'RAPID GOP',
-    //         'Advances to Special Disbursing Officer',
-    //         '101 SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1298,
-    //         3305,
-    //         12799.22,
-    //         '1990103000_00632_00479',
-    //         'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Representation expenses)',
-    //         5,
-    //         '2021-09',
-    //         'RAPID GOP',
-    //         'Advances to Special Disbursing Officer',
-    //         '101 SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1298,
-    //         3305,
-    //         2160,
-    //         '1990103000_00632_00479',
-    //         'RAPID GOP (DV#2021-08-1317) - Goods (Printing and publication expenses)',
-    //         5,
-    //         '2021-09',
-    //         'RAPID GOP',
-    //         'Advances to Special Disbursing Officer',
-    //         '101 SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1298,
-    //         3305,
-    //         204800,
-    //         '1990103000_00632_00479',
-    //         'RAPID GOP (DV#2021-08-1317) - Consultancy (Consultancy services)',
-    //         5,
-    //         '2021-09',
-    //         'RAPID GOP',
-    //         'Advances to Special Disbursing Officer',
-    //         '101 SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1298,
-    //         3305,
-    //         120000,
-    //         '1990103000_00632_00479',
-    //         'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Telephone Mobile)',
-    //         5,
-    //         '2021-09',
-    //         'RAPID GOP',
-    //         'Advances to Special Disbursing Officer',
-    //         '101 SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1298,
-    //         3305,
-    //         1448.31,
-    //         '1990103000_00632_00479',
-    //         'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Postage Courier Services)',
-    //         5,
-    //         '2021-09',
-    //         'RAPID GOP',
-    //         'Advances to Special Disbursing Officer',
-    //         '101 SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1298,
-    //         3305,
-    //         200,
-    //         '1990103000_00632_00479',
-    //         'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Fuel, oil and lubricants expenses)',
-    //         5,
-    //         '2021-09',
-    //         'RAPID GOP',
-    //         'Advances to Special Disbursing Officer',
-    //         '101 SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1298,
-    //         3305,
-    //         51072.3,
-    //         '1990103000_00632_00479',
-    //         'RAPID GOP (DV#2021-08-1317) - Goods (Office Supplies Expense)',
-    //         5,
-    //         '2021-09',
-    //         'RAPID GOP',
-    //         'Advances to Special Disbursing Officer',
-    //         '101 SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1298,
-    //         3305,
-    //         36000,
-    //         '1990103000_00632_00479',
-    //         'RAPID GOP (DV#2021-08-1317) - Recurrent Costs (Training Expense)',
-    //         5,
-    //         '2021-09',
-    //         'RAPID GOP',
-    //         'Advances to Special Disbursing Officer',
-    //         '101 SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1297,
-    //         3311,
-    //         223520,
-    //         '1990103000_00632_00480',
-    //         'RAPID LP (DV# 2021-08-1316) - Goods (ICT Equipment)',
-    //         8,
-    //         '2021-09',
-    //         'RAPID LP',
-    //         'Advances to Special Disbursing Officer',
-    //         'RAPID LP SDO CDR'
-    //     ];
-    //     $arr[] = [
-    //         1297,
-    //         3311,
-    //         44000,
-    //         '1990103000_00632_00480',
-    //         'RAPID LP (DV# 2021-08-1316) - Recurrent Costs (Other MOOE)',
-    //         8,
-    //         '2021-09',
-    //         'RAPID LP',
-    //         'Advances to Special Disbursing Officer',
-    //         'RAPID LP SDO CDR'
-    //     ];
-    //     $column = [
-    //         'advances_id',
-    //         'cash_disbursement_id',
-    //         'amount',
-    //         'object_code',
-    //         'fund_source',
-    //         'book_id',
-    //         'reporting_period',
-    //         'fund_source_type',
-    //         'advances_type',
-    //         'report_type'
-    //     ];
-    //     $ja = Yii::$app->db->createCommand()->batchInsert('advances_entries', $column, $arr)->execute();
-    //     ob_clean();
-    //     echo "<pre>";
-    //     var_dump('success');
-    //     echo "</pre>";
-    //     return ob_get_clean();
-    // }
+        if ($_POST) {
+            $from_reporting_period = $_POST['from_reporting_period'];
+            $to_reporting_period = $_POST['to_reporting_period'];
+            $province = !empty($_POST['province']) ? $_POST['province'] : '';
+            $division = !empty($_POST['division']) ? $_POST['division'] : '';
+            // $from_reporting_period = '2021-02';
+            // $to_reporting_period = '2021-06';
+            // $province = 'all';
+            // $division =  'all';
+            $user_province = strtolower(Yii::$app->user->identity->province);
+            if (
+                $user_province === 'adn' ||
+                $user_province === 'ads' ||
+                $user_province === 'pdi' ||
+                $user_province === 'sdn' ||
+                $user_province === 'sds'
+            ) {
+                $province = $user_province;
+            }
+            if (
+                $user_province === 'idd' ||
+                $user_province === 'sdd' ||
+                $user_province === 'cpd' ||
+                $user_province === 'fad' ||
+                $user_province === 'ord'
+            ) {
+                $division = $user_province;
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+            $query = new Query();
+            $query->select([
+                "
+                advances.province,
+                IFNULL(fund_source_type.division,'') as division,
+                IFNULL(fund_source_type.`name`,' ') as fund_source_type,
+               0  as beginning_balance,
+                SUM(advances_entries.amount)  as current_advances_amount,
+                SUM(liq_total.total_withdrawals) as total_withdrawals,
+               0  as ending_balance
+
+                "
+            ])
+                ->from('advances_entries')
+                ->join('LEFT JOIN', "advances", 'advances_entries.advances_id=  advances.id')
+                ->join('LEFT JOIN', "fund_source_type", 'advances_entries.fund_source_type = fund_source_type.`name`')
+                ->join(
+                    'LEFT JOIN',
+                    "(SELECT
+                    liquidation_entries.advances_entries_id,
+                    SUM(liquidation_entries.withdrawals) as total_withdrawals
+                    FROM liquidation_entries
+                    GROUP BY liquidation_entries.advances_entries_id
+                    ) as liq_total",
+                    ' advances_entries.id = liq_total.advances_entries_id',
+
+                )
+
+                ->where("advances_entries.reporting_period >= :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
+                ->andwhere("advances_entries.reporting_period <= :to_reporting_period", ['to_reporting_period' => $to_reporting_period]);
+            if ($province !== 'all') {
+
+                $query->andWhere("advances.province =:province", ['province' => $province]);
+            }
+            if ($division !== 'all') {
+
+                $query->andWhere("fund_source_type.division =:division", ['division' => $division]);
+            }
+            $query->groupBy("advances.province,
+            fund_source_type.division,
+            fund_source_type.`name`");
+            $final_query1 = $query->all();
+
+            $query2  = new Query();
+            $query2->select([
+                "
+                advances.province,
+                fund_source_type.division,
+                fund_source_type.`name` as fund_source_type,
+                SUM(advances_entries.amount) as prev_amount
+                "
+            ])
+                ->from('advances_entries')
+                ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
+                ->join('LEFT JOIN', 'fund_source_type', 'advances_entries.fund_source_type =  fund_source_type.`name`')
+                ->where(
+                    "advances_entries.reporting_period < :from_reporting_period",
+                    ['from_reporting_period' => $from_reporting_period]
+                )
+                ->groupBy("advances.province,
+                        fund_source_type.division,
+                        fund_source_type.`name`")
+                ->all();
+
+            $q1 = $query->createCommand()->getRawSql();
+            $q2 = $query2->createCommand()->getRawSql();
+            $final_query  = Yii::$app->db->createCommand(
+                "SELECT r1.*,r2.prev_amount
+                
+            FROM ($q1) as r1
+            LEFT JOIN ($q2) as r2
+            ON (r1.province = r2.province AND r1.division = r2.division AND r1.`fund_source_type` = r2.`fund_source_type`)
+            "
+            )
+                ->queryAll();
+
+            // echo "<pre>";
+            // var_dump($final_query);
+            // echo "</pre>";
+
+
+
+
+
+
+            $result = ArrayHelper::index($final_query, null, [function ($element) {
+                return $element['province'];
+            }, 'division']);
+
+
+
+            return json_encode($result);
+        }
+        return $this->render('fund-source-type-fur');
+    }
 }
