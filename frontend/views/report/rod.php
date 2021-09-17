@@ -48,32 +48,32 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-sm-7">
                 <label for="fund_source">Fund Source</label>
                 <?php
-                echo Select2::widget([
-                    'name' => 'fund_source',
-                    'id' => 'fund_source',
-                    'initValueText' => 1001,
-                    'options' => ['multiple' => true, 'placeholder' => 'Search for a Fund Source ...'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=report/fund',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    ],
-                ]);
+                // echo Select2::widget([
+                //     'name' => 'fund_source',
+                //     'id' => 'fund_source',
+                //     'initValueText' => 1001,
+                //     'options' => ['multiple' => true, 'placeholder' => 'Search for a Fund Source ...'],
+                //     'pluginOptions' => [
+                //         'allowClear' => true,
+                //         'minimumInputLength' => 1,
+                //         'language' => [
+                //             'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                //         ],
+                //         'ajax' => [
+                //             'url' => Yii::$app->request->baseUrl . '?r=report/fund',
+                //             'dataType' => 'json',
+                //             'delay' => 250,
+                //             'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                //             'cache' => true
+                //         ],
+                //         'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                //         'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                //         'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                //     ],
+                // ]);
 
                 ?>
-
+                <select class="js-data-example-ajax" style="width: 100%;" name="fund_source[]"></select>
             </div>
 
             <div class="col-sm-2" style="margin-top: 2.5rem;">
@@ -234,30 +234,24 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
 ?>
 <script>
     const size = 1122; // roughly A4
-    $('#province').change(function() {
-
-    })
 
 
     $('.js-data-example-ajax').select2({
         ajax: {
             url: window.location.pathname + '?r=report/fund',
             dataType: 'json',
-            delay: 300,
             data: function(params) {
                 return {
-                    q: params.term, // search term
-                    province: $('#province').val()
+                    q: params.term,
+                    province: params.province
                 };
             },
-            processResults: function(data, params) {
-                params.page = params.page || 1;
-                console.log(data)
+            processResults: function(data) {
+                // Transforms the top-level key of the response object from 'items' to 'results'
                 return {
                     results: data.results
                 };
-            },
-            cache: true
+            }
         }
     });
     $(document).ready(function() {
@@ -306,13 +300,7 @@ $script = <<< JS
         var diff =seconds/ 60;
         // console.log(seconds)
     })
-    $('#filter').submit(function(){
 
-        $.ajax({
-            type:'POST',
-            ''
-        })
-    })
     $('#generate').click((e)=>{
         e.preventDefault();
 

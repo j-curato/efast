@@ -27,6 +27,8 @@ class FundSourceType extends \yii\db\ActiveRecord
     {
         return [
             [['name'], 'string', 'max' => 255],
+            [['division'], 'string', 'max' => 50],
+            [['division','name'], 'required', ],
         ];
     }
 
@@ -38,6 +40,11 @@ class FundSourceType extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Name',
+            'division' => 'Division',
         ];
+    }
+    public function getAdvancesEntries()
+    {
+        return $this->hasMany(AdvancesEntries::class, ['fund_source_type' => 'name']);
     }
 }

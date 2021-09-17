@@ -242,10 +242,6 @@ use yii\helpers\ArrayHelper;
 
             $dataProvider->pagination = ['pageSize' => 10];
             $gridColumn = [
-
-
-
-
                 [
                     'hAlign' => 'center',
                     'class' => '\kartik\grid\CheckboxColumn',

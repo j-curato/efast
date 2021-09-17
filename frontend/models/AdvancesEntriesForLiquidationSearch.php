@@ -45,7 +45,7 @@ class AdvancesEntriesForLiquidationSearch extends AdvancesEntriesForLiquidation
      */
     public function search($params)
     {
-        $query = AdvancesEntriesForLiquidation::find();
+        $query = AdvancesEntriesForLiquidation::find()->where('balance > 0 ');
 
         // add conditions that should always apply here
 

@@ -100,7 +100,7 @@ class CdrController extends Controller
         // }
         $query = (new \yii\db\Query())
             ->select(
-                'check_date,
+            'check_date,
             check_number,
             particular,
             amount,
@@ -211,28 +211,6 @@ class CdrController extends Controller
             $province = $_POST['province'];
             $advance_type = $_POST['report_type'];
 
-            // $cdr = Yii::$app->memem->cdrFilterQuery($reporting_period, $book, $province, $advance_type);
-            // $query = (new \yii\db\Query())
-            //     ->select(
-            //         'check_date,
-            //         check_number,
-            //         particular,
-            //         amount,
-            //         withdrawals,
-            //         gl_object_code,
-            //         gl_account_title,
-            //         reporting_period,
-            //         vat_nonvat,
-            //         expanded_tax
-            //     '
-            //     )
-            //     ->from('advances_liquidation')
-            //     ->where('reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
-            //     ->orWhere('book =:book', ['book' => $book])
-            //     ->andWhere('province LIKE :province', ['province' => $province])
-            //     ->andWhere('report_type LIKE :report_type', ['report_type' => $advance_type])
-            //     ->orderBy('reporting_period,check_date,check_number')
-            //     ->all();
             $query = Yii::$app->db->createCommand("SELECT
                     liquidation.check_date,
                     liquidation.check_number,
@@ -255,8 +233,6 @@ class CdrController extends Controller
                     AND cash_disbursement.book_id = :book
                     AND liquidation.province = :province
                     AND advances_entries.advances_type =:advances_type
-                    
-                    
                     UNION ALL
                     
                     SELECT 
@@ -279,6 +255,7 @@ class CdrController extends Controller
                     AND cash_disbursement.book_id = :book
                     AND advances.province = :province
                     AND advances_entries.advances_type =:advances_type 
+                    AND advances_entries.is_deleted !=1 
             
             
             

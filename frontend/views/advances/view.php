@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 $total = 0;
                 foreach ($model->advancesEntries as $i => $val) {
                     $payee = !empty($val->cashDisbursement->dvAucs->payee_id) ? $val->cashDisbursement->dvAucs->payee->account_name : '';
-                    if ($val->is_deleted === 0) {
+                    if ($val->is_deleted !== 1) {
 
                         echo "
                         <tr>
