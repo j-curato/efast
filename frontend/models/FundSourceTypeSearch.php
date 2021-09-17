@@ -18,7 +18,7 @@ class FundSourceTypeSearch extends FundSourceType
     {
         return [
             [['id'], 'integer'],
-            [['name'], 'safe'],
+            [['name','division'], 'safe'],
         ];
     }
 
@@ -61,7 +61,9 @@ class FundSourceTypeSearch extends FundSourceType
             'id' => $this->id,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name]);
+        $query->andFilterWhere(['like', 'name', $this->name])
+        ->andFilterWhere(['like', 'division', $this->division])
+        ;
 
         return $dataProvider;
     }
