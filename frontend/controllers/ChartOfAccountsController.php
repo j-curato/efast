@@ -10,6 +10,7 @@ use app\models\SubAccounts1;
 use app\models\SubMajorAccounts;
 use app\models\SubMajorAccounts2;
 use Exception;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -525,5 +526,32 @@ class ChartOfAccountsController extends Controller
         // ')->queryAll();
 
         return json_encode($query2->all());
+    }
+    public function actionSearchAccountingCode($q = null, $id = null, $province = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+            // $query->select('advances_entries.id, advances_entries.fund_source AS text')
+            //     ->from('advances_entries')
+            //     ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
+            //     ->where(['like', 'advances_entries.fund_source', $q])
+            //     ->andWhere('advances_entries.is_deleted !=1');
+            $query->select(["object_code as id, CONCAT (object_code ,'-',account_title) as text"])
+                ->from('accounting_codes')
+                ->where(['like', 'account_title', $q])
+                ->andWhere('is_active =1 AND coa_is_active = 1 AND sub_account_is_active = 1');
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        //  elseif ($id > 0) {
+        //     $out['results'] = ['id' => $id, 'text' => AdvancesEntries::find($id)->fund_source];
+        // }
+        return $out;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\models\AdvancesEntries;
 use app\models\ChartOfAccounts;
 use Yii;
 use app\models\FundSourceType;
@@ -95,6 +96,9 @@ class FundSourceTypeController extends Controller
         $model = new FundSourceType();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -113,14 +117,19 @@ class FundSourceTypeController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $modelOldName = $model->name;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+            AdvancesEntries::updateAll(['fund_source_type' => $model->name], "`fund_source_type` = '$modelOldName'");
+            // return json_encode($model->advancesEntries->);
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
+
         return $this->render('update', [
             'model' => $model,
-        ]);
+        ]); 
     }
 
     /**

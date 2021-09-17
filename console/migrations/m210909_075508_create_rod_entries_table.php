@@ -22,21 +22,21 @@ class m210909_075508_create_rod_entries_table extends Migration
         ]);
 
         // creates index for column `rod_number`
-        $this->createIndex(
-            '{{%idx-rod_entries-rod_number}}',
-            '{{%rod_entries}}',
-            'rod_number'
-        );
+    $this->createIndex(
+        '{{%idx-rod_entries-rod_number}}',
+        '{{%rod_entries}}',
+        'rod_number'
+    );
 
-        // add foreign key for table `{{%rod}}`
-        $this->addForeignKey(
-            '{{%fk-rod_entries-rod_number}}',
-            '{{%rod_entries}}',
-            'rod_number',
-            '{{%rod}}',
-            'rod_number',
-            'CASCADE'
-        );
+    // add foreign key for table `{{%rod}}`
+    $this->addForeignKey(
+        '{{%fk-rod_entries-rod_number}}',
+        '{{%rod_entries}}',
+        'rod_number',
+        '{{%rod}}',
+        'rod_number',
+        'CASCADE'
+    );
     }
 
     /**
