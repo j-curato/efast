@@ -1894,7 +1894,9 @@ class ReportController extends \yii\web\Controller
                         liquidation_balance_per_advances.advances_entries_id,
                         SUM(liquidation_balance_per_advances.total_withdrawals) as total_withdrawals
                         FROM liquidation_balance_per_advances
-                        WHERE  
+                        WHERE
+                        liquidation_balance_per_advances.reporting_period >= :from_reporting_period  
+                        AND
                      liquidation_balance_per_advances.reporting_period <= :to_reporting_period
                         GROUP BY liquidation_balance_per_advances.advances_entries_id
                     ) as liquidation_total",
@@ -1903,6 +1905,7 @@ class ReportController extends \yii\web\Controller
                         'from_reporting_period' => $from_reporting_period,
                         'to_reporting_period' => $to_reporting_period,
                     ]
+
                 )
                 ->join(
                     'LEFT JOIN',
