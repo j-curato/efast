@@ -1455,10 +1455,10 @@ class ReportController extends \yii\web\Controller
             ) {
                 $division = $user_division;
             }
-            $query   = new Query();
+            $q   = new Query();
 
 
-            $query->select([
+            $q->select([
                 "advances.`province`,
                 fund_source_type.`division`,
                 fund_source_type.`name` as fund_source_type
@@ -1466,10 +1466,18 @@ class ReportController extends \yii\web\Controller
             "
             ])
                 ->join('LEFT JOIN', "advances", 'advances_entries.advances_id = advances.id')
-                ->join('LEFT JOIN', "fund_source_type", 'advances_entries.fund_source_type = fund_source_type.`name`')
-                ->groupBy("advances.province,
+                ->join('LEFT JOIN', "fund_source_type", 'advances_entries.fund_source_type = fund_source_type.`name`');
+                if ($province !== 'all') {
+
+                    $q->andWhere("advances.province =:province", ['province' => $province]);
+                }
+                if ($division !== 'all') {
+    
+                    $q->andWhere("fund_source_type.division =:division", ['division' => $division]);
+                }
+                $query = $q->groupBy("advances.province,
             fund_source_type.division,
-            fund_source_type.`name` ")->all();
+            fund_source_type.`name` ");
 
 
             $current_advances = new Query();
