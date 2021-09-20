@@ -2007,7 +2007,7 @@ class ReportController extends \yii\web\Controller
                 $province = $user_province;
             }
             if (
-                $user_division !== null
+                !empty($user_division) 
 
             ) {
                 $division = $user_division;
