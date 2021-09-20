@@ -43,7 +43,7 @@ class TransactionSearch extends Transaction
      */
     public function search($params)
     {
-        $province = Yii::$app->user->identity->province;
+        $province = Yii::$app->user->identity->division;
         $q = Yii::$app->db->createCommand("SELECT tracking_number 
         FROM transaction_totals 
         WHERE 
@@ -55,14 +55,14 @@ class TransactionSearch extends Transaction
         // ->where("$sql",$qwe)
 
         if (
-            strtolower($province) === 'ro_idd' ||
-            strtolower($province) === 'ro_cpd' ||
-            strtolower($province) === 'ro_sdd' ||
-            strtolower($province) === 'ro_ord'
+            strtolower($province) === 'idd' ||
+            strtolower($province) === 'cpd' ||
+            strtolower($province) === 'sdd' ||
+            strtolower($province) === 'ord'
 
         ) {
             $q->joinWith('responsibilityCenter')
-                ->where('responsibility_center.name LIKE :province', ['province' => explode('_', $province)[1]]);
+                ->where('responsibility_center.name LIKE :province', ['province' => $province]);
         }
         $query = $q->orderBy("id DESC");;
         // add conditions that should always apply here
