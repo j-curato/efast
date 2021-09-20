@@ -125,23 +125,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- <div id="con"> -->
 
     <div id='con'>
-        <table id="summary_table">
-            <thead>
-                <th>Province</th>
-                <th>Beginning Balance</th>
-                <th>Cash Advance for the period</th>
-                <th>Total Liquidation For the Month</th>
-                <th>Ending Balance</th>
-            </thead>
-            <tbody>
 
-            </tbody>
-
-        </table>
 
         <table class="" id="fur_table" style="margin-top: 30px;">
             <thead>
-                <th>Province</th>
                 <th>Division</th>
                 <th>Fund Source Type</th>
                 <th>Beginning Balance</th>
@@ -215,6 +202,14 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 <script>
+    var province_full = {
+        'adn': 'Agusan Del Norte',
+        'ads': 'Agusan Del Sur',
+        'sdn': 'Surigao Del Norte',
+        'sds': 'Surigao Del Sur',
+        'pdi': 'Province of Dinagat Islands',
+    }
+
     $('#generate').click((e) => {
         e.preventDefault();
         $('#con').hide()
@@ -243,8 +238,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         for (var i = 0; i < province_keys.length; i++) {
             var province = province_keys[i]
             row = `<tr class='data_row'>
-                        <td colspan='1' style='text-align:left;font-weight:bold'>` + province + `</td>
-                        <td></td>
+                        <td colspan='1' style='text-align:left;font-weight:bold'>` + province_full[province.toLowerCase()] + `</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -259,8 +253,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 // console.log(res[object[i]][year[x]])
                 var division = division_keys[x]
                 row = `<tr class='data_row'>
-                        <td></td>
-                        <td  style='text-align:left;font-wieght:bold'>` + division + `</td>
+                        <td  style='text-align:left;font-weight:bold'>` + division.toUpperCase() + `</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -277,9 +270,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
 
                     row = `<tr class='data_row'>
                         <td></td>
-                        <td></td>
                         <td>` + res[province][division][y]['fund_source_type'] + `</td>
-                        <td class='amount'>` + thousands_separators(parseFloat(res[province][division][y]['beginning_balance'])) + `</td>
+                        <td class='amount'>` + thousands_separators(parseFloat(res[province][division][y]['prev_amount'])) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(res[province][division][y]['current_advances_amount'])) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(res[province][division][y]['total_withdrawals'])) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(res[province][division][y]['ending_balance'])) + `</td>
@@ -289,10 +281,10 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                     total_witdrawal += parseFloat(res[province][division][y]['total_withdrawals'])
                     total_cash_advances_for_the_period += parseFloat(res[province][division][y]['current_advances_amount'])
                     total_balance += parseFloat(res[province][division][y]['ending_balance'])
-                    total_begin_balance += parseFloat(res[province][division][y]['beginning_balance'])
+                    total_begin_balance += parseFloat(res[province][division][y]['prev_amount'])
                 }
                 row = `<tr class='data_row'>
-                        <td colspan='3'>Total</td>
+                        <td colspan='2'>Total</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_begin_balance).toFixed(2)) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_cash_advances_for_the_period).toFixed(2)) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_witdrawal).toFixed(2)) + `</td>
@@ -344,13 +336,6 @@ SweetAlertAsset::register($this);
 $script = <<< JS
     var month= ''
     var year=''
-    var province={
-        'adn' : 'Agusan Del Norte',
-        'ads' : 'Agusan Del Sur',
-        'sdn' : 'Surigao Del Norte',
-        'sds' : 'Surigao Del Sur',
-        'pdi' : 'Province of Dinagat Islands',
-    }
 
 
 

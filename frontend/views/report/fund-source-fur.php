@@ -32,13 +32,12 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row">
 
             <?php
-            if (Yii::$app->user->can('super-user')) {
+            if (Yii::$app->user->can('super-user') || Yii::$app->user->can('department-offices')) {
 
             ?>
                 <div class="col-sm-2">
                     <label for="province">Province</label>
                     <?php
-
                     echo Select2::widget([
                         'name' => 'province',
                         'id' => 'province',
@@ -55,7 +54,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             'placeholder' => 'Select Province'
                         ]
                     ]);
-
                     ?>
                 </div>
             <?php } ?>

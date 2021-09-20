@@ -246,7 +246,7 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/report/saob'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Detailed Dv', 'icon' => 'circle-o', 'url' => ['/report/detailed-dv-aucs'],] : [],
                                 Yii::$app->user->can('conso_dv') ?    ['label' => 'Conso Dv', 'icon' => 'circle-o', 'url' => ['/report/conso-detailed-dv'],] : [],
-
+                                Yii::$app->user->can('fund_source_fur') ?     ['label' => 'Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/fund-source-fur'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Tax Remittance', 'icon' => 'circle-o', 'url' => ['/report/tax-remittance'],] : [],
                             ],
                         ] : [],
@@ -266,7 +266,7 @@
                                 Yii::$app->user->can('po_cdr') ?     ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/cdr'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'FUR', 'icon' => 'circle-o', 'url' => ['/fur'],] : [],
                                 Yii::$app->user->can('province') ?     ['label' => 'ROD', 'icon' => 'circle-o', 'url' => ['/rod'],] : [],
-                                Yii::$app->user->can('province') ?     ['label' => 'Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/fund-source-fur'],] : [],
+                                Yii::$app->user->can('fund_source_fur') ?     ['label' => 'Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/fund-source-fur'],] : [],
                                 Yii::$app->user->can('province') ?     ['label' => 'Summary Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/summary-fund-source-fur'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Pending Transmittal', 'icon' => 'circle-o', 'url' => ['/po-transmittal/pending-at-ro'],] : [],
                                 Yii::$app->user->can('po_transmittal') ? ['label' => 'Transmittal', 'icon' => 'circle-o', 'url' => ['/po-transmittal'],] : [],

@@ -2033,11 +2033,8 @@ class ReportController extends \yii\web\Controller
                 advances.province,
                 IFNULL(fund_source_type.division,'') as division,
                 IFNULL(fund_source_type.`name`,' ') as fund_source_type,
-               0  as beginning_balance,
                 SUM(advances_entries.amount)  as current_advances_amount,
-                SUM(liq_total.total_withdrawals) as total_withdrawals,
-               0  as ending_balance
-
+                IFNULL(SUM(liq_total.total_withdrawals),0) as total_withdrawals
                 "
             ])
                 ->from('advances_entries')
@@ -2052,7 +2049,6 @@ class ReportController extends \yii\web\Controller
                     GROUP BY liquidation_entries.advances_entries_id
                     ) as liq_total",
                     ' advances_entries.id = liq_total.advances_entries_id'
-
                 )
 
                 ->where("advances_entries.reporting_period >= :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
@@ -2076,7 +2072,7 @@ class ReportController extends \yii\web\Controller
                 advances.province,
                 fund_source_type.division,
                 fund_source_type.`name` as fund_source_type,
-                SUM(advances_entries.amount) as prev_amount
+                IFNULL(SUM(advances_entries.amount),0) as prev_amount
                 "
             ])
                 ->from('advances_entries')
@@ -2094,7 +2090,11 @@ class ReportController extends \yii\web\Controller
             $q1 = $query->createCommand()->getRawSql();
             $q2 = $query2->createCommand()->getRawSql();
             $final_query  = Yii::$app->db->createCommand(
-                "SELECT r1.*,r2.prev_amount
+                "SELECT r1.*,IFNULL(r2.prev_amount,0) as prev_amount,
+                (IFNULL(r2.prev_amount,0) + r1.current_advances_amount)-r1.total_withdrawals as ending_balance
+
+                
+
                 
             FROM ($q1) as r1
             LEFT JOIN ($q2) as r2
