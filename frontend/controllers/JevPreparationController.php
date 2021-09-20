@@ -2734,4 +2734,10 @@ class JevPreparationController extends Controller
 
         ]);
     }
+    // (new \yii\db\Query())
+    //                     ->select(['cash_disbursement.id as cash_id', 'dv_aucs.dv_number'])
+    //                     ->from('cash_disbursement')
+    //                     ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id  = dv_aucs.id')
+    //                     ->where('cash_disbursement.is_cancelled = :is_cancelled', ['is_cancelled' => false])
+    //                     ->all()
 }

@@ -30,6 +30,7 @@ class m210709_082219_create_advances_view extends Migration
             advances.province,
             advances.reporting_period,
             advances_entries.fund_source,
+            advances_entries.fund_source_type,
             advances.report_type,
             sub_accounts_view.object_code,
             sub_accounts_view.account_title,

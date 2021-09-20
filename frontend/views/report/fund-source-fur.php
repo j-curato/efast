@@ -32,13 +32,12 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row">
 
             <?php
-            if (Yii::$app->user->can('super-user')) {
+            if (Yii::$app->user->can('super-user') || Yii::$app->user->can('department-offices')) {
 
             ?>
                 <div class="col-sm-2">
                     <label for="province">Province</label>
                     <?php
-
                     echo Select2::widget([
                         'name' => 'province',
                         'id' => 'province',
@@ -55,7 +54,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             'placeholder' => 'Select Province'
                         ]
                     ]);
-
                     ?>
                 </div>
             <?php } ?>
@@ -98,10 +96,20 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-sm-2">
                 <label for="fund_source_type">Fund Source Type</label>
                 <?php
+                $data = [];
+                if (
+                    Yii::$app->user->can('super-user')
+                    || Yii::$app->user->can('province')
+                ) {
+                    $data = FundSourceType::find()->all();
+                } else if (Yii::$app->user->can('department-offices')) {
+                    $data = FundSourceType::find()->where("division = :division", 
+                    ['division' => Yii::$app->user->identity->division])->all();
+                }
                 echo Select2::widget([
                     'name' => 'fund_source_type',
                     'id' => 'fund_source_type',
-                    'data' => ArrayHelper::map(FundSourceType::find()->asArray()->all(), 'name', 'name'),
+                    'data' => ArrayHelper::map($data, 'name', 'name'),
                     'options' => ['placeholder' => 'Search for a Fund Source ...'],
 
                 ]);
