@@ -2007,52 +2007,40 @@ class ReportController extends \yii\web\Controller
                 $province = $user_province;
             }
             if (
-                !empty($user_division) 
+                !empty($user_division)
 
             ) {
                 $division = $user_division;
             }
-            $query = new Query();
-            $query->select([
+            $current_advances = new Query();
+            $current_advances->select([
                 "
                 advances.province,
                 IFNULL(fund_source_type.division,'') as division,
                 IFNULL(fund_source_type.`name`,' ') as fund_source_type,
-                SUM(advances_entries.amount)  as current_advances_amount,
-                IFNULL(SUM(liq_total.total_withdrawals),0) as total_withdrawals
+                SUM(advances_entries.amount)  as current_advances_amount
                 "
             ])
                 ->from('advances_entries')
                 ->join('LEFT JOIN', "advances", 'advances_entries.advances_id=  advances.id')
                 ->join('LEFT JOIN', "fund_source_type", 'advances_entries.fund_source_type = fund_source_type.`name`')
-                ->join(
-                    'LEFT JOIN',
-                    "(SELECT
-                    liquidation_entries.advances_entries_id,
-                    SUM(liquidation_entries.withdrawals) as total_withdrawals
-                    FROM liquidation_entries
-                    GROUP BY liquidation_entries.advances_entries_id
-                    ) as liq_total",
-                    ' advances_entries.id = liq_total.advances_entries_id'
-                )
-
                 ->where("advances_entries.reporting_period >= :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
                 ->andwhere("advances_entries.reporting_period <= :to_reporting_period", ['to_reporting_period' => $to_reporting_period]);
             if ($province !== 'all') {
 
-                $query->andWhere("advances.province =:province", ['province' => $province]);
+                $current_advances->andWhere("advances.province =:province", ['province' => $province]);
             }
             if ($division !== 'all') {
 
-                $query->andWhere("fund_source_type.division =:division", ['division' => $division]);
+                $current_advances->andWhere("fund_source_type.division =:division", ['division' => $division]);
             }
-            $query->groupBy("advances.province,
+            $current_advances->groupBy("advances.province,
             fund_source_type.division,
             fund_source_type.`name`");
-            $final_query1 = $query->all();
+            $final_query1 = $current_advances->all();
 
-            $query2  = new Query();
-            $query2->select([
+            $prev_advances  = new Query();
+            $prev_advances->select([
                 "
                 advances.province,
                 fund_source_type.division,
@@ -2072,21 +2060,43 @@ class ReportController extends \yii\web\Controller
                         fund_source_type.`name`")
                 ->all();
 
-            $q1 = $query->createCommand()->getRawSql();
-            $q2 = $query2->createCommand()->getRawSql();
+            $current_liquidation = new Query();
+            $current_liquidation->select([" 
+                           advances.province,
+            fund_source_type.division,
+            advances_entries.fund_source_type,
+            SUM(liquidation_entries.withdrawals) as total_withdrawals"])
+                ->from('liquidation_entries')
+                ->join('LEFT JOIN', 'advances_entries', 'liquidation_entries.advances_entries_id = advances_entries.id')
+                ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
+                ->join('LEFT JOIN', 'fund_source_type', 'advances_entries.fund_source_type = fund_source_type.`name`')
+                ->where("liquidation_entries.reporting_period >= :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
+                ->andWhere("liquidation_entries.reporting_period <= :to_reporting_period", ['to_reporting_period' => $to_reporting_period])
+                ->groupBy("
+            advances.province,
+            fund_source_type.division,
+            advances_entries.fund_source_type
+            ")
+                ->all();
+            $q1 = $current_advances->createCommand()->getRawSql();
+            $q2 = $prev_advances->createCommand()->getRawSql();
+            $q3 = $current_liquidation->createCommand()->getRawSql();
             $final_query  = Yii::$app->db->createCommand(
-                "SELECT r1.*,IFNULL(r2.prev_amount,0) as prev_amount,
-                (IFNULL(r2.prev_amount,0) + r1.current_advances_amount)-r1.total_withdrawals as ending_balance
-
-                
-
+                "SELECT w.*,IFNULL(e.total_withdrawals,0) as total_withdrawals,
+                (IFNULL(w.current_advances_amount,0) + IFNULL(w.prev_amount,0)) - IFNULL(e.total_withdrawals,0) as ending_balance
+                FROM (
+                SELECT r1.*,IFNULL(r2.prev_amount,0) as prev_amount
                 
             FROM ($q1) as r1
             LEFT JOIN ($q2) as r2
             ON (r1.province = r2.province AND r1.division = r2.division AND r1.`fund_source_type` = r2.`fund_source_type`)
+            ) as w
+            LEFT JOIN ($q3) as e
+            ON (w.province = e.province AND w.division = e.division AND w.`fund_source_type` = e.`fund_source_type`)
             "
             )
-                ->queryAll();
+                ->query();
+
 
             // echo "<pre>";
             // var_dump($final_query);
