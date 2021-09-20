@@ -91,6 +91,7 @@
                             'url' => '#',
                             'items' => [
                                 Yii::$app->user->can('province') ?     ['label' => 'Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/fund-source-fur'],] : [],
+                                Yii::$app->user->can('summary_fund_source_fur') ?     ['label' => 'Summary Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/summary-fund-source-fur'],] : [],
 
                             ],
                         ],
