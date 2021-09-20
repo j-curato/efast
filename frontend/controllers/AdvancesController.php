@@ -359,7 +359,7 @@ class AdvancesController extends Controller
                 ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id = dv_aucs.id')
                 ->join('LEFT JOIN', 'payee', 'dv_aucs.payee_id = payee.id')
                 ->where('advances_entries.advances_id =:advances_id', ['advances_id' => $update_id])
-                ->andWhere('advances_entries.is_deleted = 0')
+                ->andWhere('advances_entries.is_deleted != 1')
                 ->all();
 
             return json_encode($query);
