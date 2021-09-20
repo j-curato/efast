@@ -35,6 +35,7 @@
         ?>
         <?php
         $province = strtolower(Yii::$app->user->identity->province);
+        $division =  strtolower(Yii::$app->user->identity->division);
         if (
             $province === 'adn' ||
             $province === 'ads' ||
@@ -49,7 +50,7 @@
                     'items' => [
 
 
-                        
+
                         [
                             'label' => 'Master Records',
                             'url' => '#',
@@ -93,6 +94,48 @@
 
                             ],
                         ],
+
+
+                    ],
+
+
+
+                ]
+            );
+        } else if (
+            $province === 'ro' &&
+            $division === 'idd' ||
+            $division === 'sdd' ||
+            $division === 'ord' ||
+            $division === 'cpd'
+        ) {
+
+            echo dmstr\widgets\Menu::widget(
+                [
+                    'options' => ['class' => 'sidebar-menu tree text-truncate', 'data-widget' => 'tree', 'style' => 'width: inherit'],
+
+                    'items' => [
+
+
+
+
+                        [
+                            'label' => 'Transaction',
+                            'url' => '#',
+                            'items' => [
+                                Yii::$app->user->can('regional_transaction') ? ['label' => 'Transactions', 'icon' => 'circle-o', 'url' => ['/transaction'],] : [],
+                            ],
+                        ],
+                        [
+                            'label' => 'Reports',
+                            'url' => '#',
+                            'items' => [
+                                Yii::$app->user->can('conso_dv') ?    ['label' => 'Conso Dv', 'icon' => 'circle-o', 'url' => ['/report/conso-detailed-dv'],] : [],
+                                Yii::$app->user->can('fund_source_fur') ?     ['label' => 'Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/fund-source-fur'],] : [],
+
+                            ],
+                        ],
+
 
 
                     ],
@@ -246,7 +289,6 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/report/saob'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Detailed Dv', 'icon' => 'circle-o', 'url' => ['/report/detailed-dv-aucs'],] : [],
                                 Yii::$app->user->can('conso_dv') ?    ['label' => 'Conso Dv', 'icon' => 'circle-o', 'url' => ['/report/conso-detailed-dv'],] : [],
-                                Yii::$app->user->can('fund_source_fur') ?     ['label' => 'Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/fund-source-fur'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Tax Remittance', 'icon' => 'circle-o', 'url' => ['/report/tax-remittance'],] : [],
                             ],
                         ] : [],

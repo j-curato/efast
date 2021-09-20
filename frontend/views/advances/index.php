@@ -78,6 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'r_center_name',
         'province',
         'fund_source',
+        'fund_source_type',
         [
             'label' => 'Amount',
             'attribute' => 'amount',

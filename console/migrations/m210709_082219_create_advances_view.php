@@ -30,14 +30,12 @@ class m210709_082219_create_advances_view extends Migration
             advances.province,
             advances.reporting_period,
             advances_entries.fund_source,
+            advances_entries.fund_source_type,
             advances.report_type,
             sub_accounts_view.object_code,
             sub_accounts_view.account_title,
             cash_disbursement.book_id,
             advances_entries.is_deleted
-
-
-
             FROM `advances_entries`
             LEFT JOIN(SELECT SUM(liquidation_entries.withdrawals)as total_liquidation,
             liquidation_entries.advances_entries_id

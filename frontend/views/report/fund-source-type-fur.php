@@ -284,7 +284,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                     total_begin_balance += parseFloat(res[province][division][y]['prev_amount'])
                 }
                 row = `<tr class='data_row'>
-                        <td colspan='2'>Total</td>
+                        <td colspan='2' style ='font-weight:bold'>Total</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_begin_balance).toFixed(2)) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_cash_advances_for_the_period).toFixed(2)) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_witdrawal).toFixed(2)) + `</td>
