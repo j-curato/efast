@@ -1996,6 +1996,7 @@ class ReportController extends \yii\web\Controller
             // $province = 'all';
             // $division =  'all';
             $user_province = strtolower(Yii::$app->user->identity->province);
+            $user_division = strtolower(Yii::$app->user->identity->division);
             if (
                 $user_province === 'adn' ||
                 $user_province === 'ads' ||
@@ -2006,13 +2007,10 @@ class ReportController extends \yii\web\Controller
                 $province = $user_province;
             }
             if (
-                $user_province === 'idd' ||
-                $user_province === 'sdd' ||
-                $user_province === 'cpd' ||
-                $user_province === 'fad' ||
-                $user_province === 'ord'
+                $user_division !== null
+
             ) {
-                $division = $user_province;
+                $division = $user_division;
             }
             $query = new Query();
             $query->select([

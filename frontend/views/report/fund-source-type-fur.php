@@ -32,7 +32,11 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row">
 
             <?php
-            if (Yii::$app->user->can('super-user')) {
+            $user_province =  strtolower(Yii::$app->user->identity->province);
+            if (
+                Yii::$app->user->can('super-user') ||
+                $user_province === 'ro'
+            ) {
 
             ?>
                 <div class="col-sm-2">
@@ -96,22 +100,34 @@ $this->params['breadcrumbs'][] = $this->title;
 
             </div>
             <div class="col-sm-2">
-                <label for="division">Division</label>
                 <?php
-                echo Select2::widget([
-                    'name' => 'division',
-                    'id' => 'division',
-                    'data' => [
-                        'all' => 'All',
-                        'idd' => 'IDD',
-                        'sdd' => 'SDD',
-                        'cpd' => 'CPD',
-                        'fad' => 'FAD',
-                        'ord' => 'ORD',
-                    ],
-                    'options' => ['placeholder' => 'Select a Division'],
 
-                ]);
+                if (
+                    Yii::$app->user->can('super-user') ||
+                    $user_province === 'adn' ||
+                    $user_province === 'ads' ||
+                    $user_province === 'pdi' ||
+                    $user_province === 'sdn' ||
+                    $user_province === 'sds'
+                ) {
+               
+                echo " <label for='division'>Division</label>";
+                    echo Select2::widget([
+                        'name' => 'division',
+                        'id' => 'division',
+                        'data' => [
+                            'all' => 'All',
+                            'idd' => 'IDD',
+                            'sdd' => 'SDD',
+                            'cpd' => 'CPD',
+                            'fad' => 'FAD',
+                            'ord' => 'ORD',
+                        ],
+                        'options' => ['placeholder' => 'Select a Division'],
+
+                    ]);
+                }
+
                 ?>
             </div>
             <div class="col-sm-2" style="margin-top: 2.5rem;">
