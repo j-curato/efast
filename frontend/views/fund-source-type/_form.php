@@ -18,11 +18,11 @@ use yii\widgets\ActiveForm;
         Select2::class,
         [
             'data' => [
-                'ADN' => 'ADN',
-                'ADS' => 'ADS',
-                'PDI' => 'PDI',
-                'SDN' => 'SDN',
-                'SDS' => 'SDS'
+                'CPD' => 'CPD',
+                'FAD' => 'FAD',
+                'IDD' => 'IDD',
+                'ORD' => 'ORD',
+                'SDD' => 'SDD' 
             ],
             'pluginOptions' => [
                 'placeholder' => 'Select Division'
