@@ -99,8 +99,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     $user_province === 'sdn' ||
                     $user_province === 'sds'
                 ) {
-               
-                echo " <label for='division'>Division</label>";
+
+                    echo " <label for='division'>Division</label>";
                     echo Select2::widget([
                         'name' => 'division',
                         'id' => 'division',
@@ -134,6 +134,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <table class="" id="fur_table" style="margin-top: 30px;">
             <thead>
+                <th>Province</th>
                 <th>Division</th>
                 <th>Beginning Balance</th>
                 <th>Cash Advance for the Period</th>
@@ -225,7 +226,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             success: function(data) {
                 var res = JSON.parse(data)
                 // var conso = res.conso
-                console.log(res)
+                // console.log(res)
                 addData(res)
                 // addToSummaryTable(conso)
                 $('#con').show()
@@ -238,9 +239,12 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
     function addData(res) {
         $("#fur_table tbody").html('');
         var province_keys = Object.keys(res)
-        // console.log(res[2021]['2021-03'].length)
         for (var i = 0; i < province_keys.length; i++) {
             var province = province_keys[i]
+            var total_witdrawal = 0
+            var total_cash_advances_for_the_period = 0
+            var total_balance = 0
+            var total_begin_balance = 0
             row = `<tr class='data_row'>
                         <td colspan='1' style='text-align:left;font-weight:bold'>` + province_full[province.toLowerCase()] + `</td>
                         <td></td>
@@ -250,14 +254,14 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         <td></td>
                         </tr>`
             $('#fur_table tbody').append(row)
-            var division_keys = Object.keys(res[province])
+            var year_keys = Object.keys(res[province])
 
-            for (var x = 0; x < division_keys.length; x++) {
+            for (var x = 0; x < year_keys.length; x++) {
 
                 // console.log(res[object[i]][year[x]])
-                var division = division_keys[x]
+                var year = year_keys[x]
                 row = `<tr class='data_row'>
-                        <td  style='text-align:left;font-weight:bold'>` + division.toUpperCase() + `</td>
+                        <td  style='text-align:center;font-weight:bold'>` + year.toUpperCase() + `</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -265,38 +269,42 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         <td></td>
                         </tr>`
                 $('#fur_table tbody').append(row)
-                var total_witdrawal = 0
-                var total_cash_advances_for_the_period = 0
-                var total_balance = 0
-                var total_begin_balance = 0
+                var division_keys = Object.keys(res[province][year])
 
-                for (var y = 0; y < res[province][division].length; y++) {
-
+                for (var y = 0; y < division_keys.length; y++) {
+                    var division = division_keys[y]
+                    var begining_balance = parseFloat(res[province][year][division]['beginning_balance'])
+                    var current_advances = parseFloat(res[province][year][division]['current_advances_amount'])
+                    var withdrawals = parseFloat(res[province][year][division]['total_withdrawals'])
+                    var ending_balance = parseFloat(res[province][year][division]['ending_balance'])
                     row = `<tr class='data_row'>
                         <td></td>
-                        <td>` + res[province][division][y]['fund_source_type'] + `</td>
-                        <td class='amount'>` + thousands_separators(parseFloat(res[province][division][y]['prev_amount'])) + `</td>
-                        <td class='amount'>` + thousands_separators(parseFloat(res[province][division][y]['current_advances_amount'])) + `</td>
-                        <td class='amount'>` + thousands_separators(parseFloat(res[province][division][y]['total_withdrawals'])) + `</td>
-                        <td class='amount'>` + thousands_separators(parseFloat(res[province][division][y]['ending_balance'])) + `</td>
- 
-                    </tr>`
+                        <td  style='text-align:left;font-weight:bold'>` + division.toUpperCase() + `</td>
+                        <td class='amount'>` + thousands_separators(begining_balance)+ `</td>
+                        <td class='amount'>` + thousands_separators(current_advances) + `</td>
+                        <td class='amount'>` + thousands_separators(withdrawals) + `</td>
+                        <td class='amount'>` + thousands_separators(ending_balance) + `</td>
+                       
+                        </tr>`
                     $('#fur_table tbody').append(row)
-                    total_witdrawal += parseFloat(res[province][division][y]['total_withdrawals'])
-                    total_cash_advances_for_the_period += parseFloat(res[province][division][y]['current_advances_amount'])
-                    total_balance += parseFloat(res[province][division][y]['ending_balance'])
-                    total_begin_balance += parseFloat(res[province][division][y]['prev_amount'])
+
+                    total_witdrawal += withdrawals
+                    total_cash_advances_for_the_period += parseFloat(res[province][year][division]['current_advances_amount'])
+                    total_balance += parseFloat(res[province][year][division]['ending_balance'])
+                    total_begin_balance += parseFloat(res[province][year][division]['beginning_balance'])
+
                 }
-                row = `<tr class='data_row'>
+
+            }
+            row = `<tr class='data_row'>
                         <td colspan='2' style ='font-weight:bold'>Total</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_begin_balance).toFixed(2)) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_cash_advances_for_the_period).toFixed(2)) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_witdrawal).toFixed(2)) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_balance).toFixed(2)) + `</td>
-                 
+
                         </tr>`
-                $('#fur_table tbody').append(row)
-            }
+            $('#fur_table tbody').append(row)
 
 
         }

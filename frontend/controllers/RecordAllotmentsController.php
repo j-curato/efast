@@ -12,6 +12,7 @@ use app\models\RecordAllotmentEntries;
 use Yii;
 use app\models\RecordAllotments;
 use app\models\RecordAllotmentsSearch;
+use app\models\RecordAllotmentsViewSearch;
 use app\models\SubAccounts2;
 use app\models\Transaction;
 use Codeception\Lib\Di;
@@ -78,7 +79,7 @@ class RecordAllotmentsController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new RecordAllotmentsSearch();
+        $searchModel = new RecordAllotmentsViewSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [

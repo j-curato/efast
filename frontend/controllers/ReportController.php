@@ -54,7 +54,8 @@ class ReportController extends \yii\web\Controller
                     'detailed-dv-aucs',
                     'conso-detailed-dv',
                     'fund-source-fur',
-                    'summary-fund-source-fur'
+                    'summary-fund-source-fur',
+                    'budget-year-fur'
 
                 ],
                 'rules' => [
@@ -88,8 +89,8 @@ class ReportController extends \yii\web\Controller
                             'get-cash',
                             'tax-remittance',
                             'fund-source-fur',
-                            'summary-fund-source-fur'
-
+                            'summary-fund-source-fur',
+                            'budget-year-fur'
 
 
                         ],
@@ -271,282 +272,7 @@ class ReportController extends \yii\web\Controller
 
     }
 
-    // public function actionExportJev()
-    // {
-
-    //     // if ($_POST) {
-    //     //     $reporting_period = date('Y',strtotime($_POST['reporting_period']));
-    //     $query = JevAccountingEntries::find()
-    //         ->joinWith('jevPreparation')
-    //         ->where('jev_preparation.reporting_period >=:reporting_period', ['reporting_period' => '2021'])
-    //         ->all();
-    //     $q1 = (new \yii\db\Query())
-    //         ->select([
-    //             'SUM(jev_accounting_entries.debit) as total_debit',
-    //             'SUM(jev_accounting_entries.credit) as total_credit',
-    //             'jev_accounting_entries.object_code',
-    //             'jev_accounting_entries.lvl',
-    //         ])
-    //         ->from('jev_accounting_entries')
-    //         ->join('LEFT JOIN', 'jev_preparation', 'jev_accounting_entries.jev_preparation_id = jev_preparation.id')
-    //         ->where("jev_preparation.reporting_period <:reporting_period", ['reporting_period' => '2021'])
-    //         ->groupBy("jev_accounting_entries.object_code")
-    //         ->all();
-
-    //     $sub1 = (new \yii\db\Query())
-    //         ->select('*')
-    //         ->from('sub_accounts1')
-    //         ->all();
-
-    //     $sub2 = (new \yii\db\Query())
-    //         ->select('*')
-    //         ->from('sub_accounts2')
-    //         ->all();
-    //     $chart = (new \yii\db\Query())
-    //         ->select('*')
-    //         ->from('chart_of_accounts')
-    //         ->all();
-
-    //     // $rrr = array_search("1030501000_00052", array_column($sub1, 'object_code'));
-    //     // ob_clean();
-    //     // echo "<pre>";
-    //     // var_dump($q1);
-    //     // echo "</pre>";
-    //     // return ob_get_clean();
-
-
-
-
-
-
-
-    //     $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-    //     $sheet = $spreadsheet->getActiveSheet();
-    //     // header
-    //     $sheet->setAutoFilter('A1:N1');
-    //     $sheet->setCellValue('A1', "JEV Number");
-    //     $sheet->setCellValue('B1', "DV Number");
-    //     $sheet->setCellValue('C1', "Check/ADA Number");
-    //     $sheet->setCellValue('D1', "Payee");
-    //     $sheet->setCellValue('E1', "UACS");
-    //     $sheet->setCellValue('F1', "General Ledger");
-    //     $sheet->setCellValue('G1', 'Entry Object Code');
-    //     $sheet->setCellValue('H1', 'Entry Account Title');
-    //     $sheet->setCellValue('I1', 'Reporting Period');
-    //     $sheet->setCellValue('J1', 'Date');
-    //     $sheet->setCellValue('K1', 'Particular');
-    //     $sheet->setCellValue('L1', 'Debit');
-    //     $sheet->setCellValue('M1', 'Credit');
-    //     $sheet->setCellValue('N1', 'Reference');
-
-    //     // BEGINNING BALANCE
-    //     $sheet->setCellValue('K2', 'Beginning Balance');
-    //     // $sheet->setCellValue('L2', $q1['total_debit']);
-    //     // $sheet->setCellValue('M2', $q1['total_credit']);
-    //     $x = 7;
-    //     $styleArray = array(
-    //         'borders' => array(
-    //             'allBorders' => array(
-    //                 'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
-    //                 'color' => array('argb' => 'FFFF0000'),
-    //             ),
-    //         ),
-    //     );
-
-
-    //     $row = 2;
-    //     foreach ($q1 as $x) {
-    //         $general_ledger = '';
-    //         $object_code = '';
-    //         if (intval($x['lvl']) === 1) {
-    //             $index = array_search($x['object_code'], array_column($chart, 'uacs'));
-    //             // $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $x['object_code']])->one();
-    //             $general_ledger = $chart[$index]['general_ledger'];
-    //             $object_code =  $chart[$index]['uacs'];
-    //         } else if (intval($x['lvl']) === 2) {
-    //             $index = array_search($x['object_code'], array_column($sub1, 'object_code'));
-    //             // $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $x['object_code']])->one();
-    //             $general_ledger = $sub1[$index]['name'];
-    //             $object_code =  $sub1[$index]['object_code'];
-    //         } else if (intval($x['lvl']) === 3) {
-    //             $index = array_search($x['object_code'], array_column($sub2, 'object_code'));
-    //             // $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $x['object_code']])->one();
-    //             $general_ledger =  $sub2[$index]['name'];
-    //             $object_code =  $sub2[$index]['object_code'];
-    //         }
-    //         $sheet->setCellValueByColumnAndRow(
-    //             7,
-    //             $row,
-    //             $object_code
-    //         );
-    //         //ENTRY ACCOUNT TITLE
-    //         $sheet->setCellValueByColumnAndRow(
-    //             8,
-    //             $row,
-    //             $general_ledger
-    //         );
-    //         $sheet->setCellValueByColumnAndRow(
-    //             11,
-    //             $row,
-    //             'Beginning Balance'
-    //         );
-    //         //DEBIT
-    //         $sheet->setCellValueByColumnAndRow(
-    //             12,
-    //             $row,
-    //             !empty($x['total_debit']) ? $x['total_debit'] : ''
-    //         );
-    //         //CREDIT
-    //         $sheet->setCellValueByColumnAndRow(
-    //             13,
-    //             $row,
-    //             !empty($x['total_credit']) ? $x['total_credit'] : ''
-    //         );
-    //         $row++;
-    //     }
-    //     foreach ($query  as  $val) {
-
-    //         // jev_number
-    //         $sheet->setCellValueByColumnAndRow(1, $row,  !empty($val->jevPreparation->jev_number) ? $val->jevPreparation->jev_number : '');
-    //         // dv number
-    //         $sheet->setCellValueByColumnAndRow(2, $row,  !empty($val->jevPreparation->dv_number) ? $val->jevPreparation->dv_number : '');
-    //         // check ada number
-    //         $sheet->setCellValueByColumnAndRow(3, $row,  !empty($val->jevPreparation->check_ada_number) ? $val->jevPreparation->check_ada_number : '');
-    //         //payee
-    //         $sheet->setCellValueByColumnAndRow(
-    //             4,
-    //             $row,
-    //             !empty($val->jevPreparation->payee_id) ? $val->jevPreparation->payee->account_name : ''
-    //         );
-    //         //UACS
-    //         $sheet->setCellValueByColumnAndRow(
-    //             5,
-    //             $row,
-    //             !empty($val->chart_of_account_id) ? $val->chartOfAccount->uacs : ''
-    //         );
-    //         //GENERAL LEDGER
-    //         $sheet->setCellValueByColumnAndRow(
-    //             6,
-    //             $row,
-    //             !empty($val->chart_of_account_id) ? $val->chartOfAccount->general_ledger : ''
-    //         );
-    //         $general_ledger = '';
-    //         $object_code = '';
-    //         if ($val->lvl === 1) {
-    //             $general_ledger = $val->chartOfAccount->general_ledger;
-    //             $object_code = $val->chartOfAccount->uacs;
-    //         } else if ($val->lvl === 2) {
-    //             // $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $val->object_code])->one();
-    //             // $general_ledger = $q->name;
-    //             // $object_code = $q->object_code;
-
-    //             $eee = array_search($val->object_code, array_column($sub1, 'object_code'));
-    //             $general_ledger = $sub1[$eee]['name'];
-    //             $object_code = $sub1[$eee]['object_code'];
-    //             // ob_clean();
-    //             // echo "<pre>";
-    //             // var_dump($sub1[$eee]['object_code']);
-    //             // echo "</pre>";
-    //             // return ob_get_clean();
-    //         } else if ($val->lvl === 3) {
-    //             // $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $val->object_code])->one();
-    //             // $general_ledger = $q->name;
-    //             // $object_code = $q->object_code;
-    //             $y = array_search($val->object_code, array_column($sub2, 'object_code'));
-    //             $general_ledger = $sub2[$y]['name'];
-    //             $object_code = $sub2[$y]['object_code'];
-    //         }
-    //         //ENTRY OBJECT CODE
-
-    //         $sheet->setCellValueByColumnAndRow(
-    //             7,
-    //             $row,
-    //             $object_code
-    //         );
-    //         //ENTRY ACCOUNT TITLE
-    //         $sheet->setCellValueByColumnAndRow(
-    //             8,
-    //             $row,
-    //             $general_ledger
-    //         );
-    //         //REPORTING PERIOD
-    //         $sheet->setCellValueByColumnAndRow(
-    //             9,
-    //             $row,
-    //             !empty($val->jevPreparation->reporting_period) ? $val->jevPreparation->reporting_period : ''
-    //         );
-    //         //DATE
-    //         $sheet->setCellValueByColumnAndRow(
-    //             10,
-    //             $row,
-    //             !empty($val->jevPreparation->date) ? $val->jevPreparation->date : ''
-    //         );
-    //         //PARTICULAR
-    //         $sheet->setCellValueByColumnAndRow(
-    //             11,
-    //             $row,
-    //             !empty($val->jevPreparation->explaination) ? $val->jevPreparation->explaination : ''
-    //         );
-    //         //DEBIT
-    //         $sheet->setCellValueByColumnAndRow(
-    //             12,
-    //             $row,
-    //             !empty($val->debit) ? $val->debit : ''
-    //         );
-    //         //CREDIT
-    //         $sheet->setCellValueByColumnAndRow(
-    //             13,
-    //             $row,
-    //             !empty($val->credit) ? $val->credit : ''
-    //         );
-    //         //REFERENCE
-    //         $sheet->setCellValueByColumnAndRow(
-    //             14,
-    //             $row,
-    //             !empty($val->jevPreparation->ref_number) ? $val->jevPreparation->ref_number : ''
-    //         );
-
-    //         $row++;
-    //     }
-
-    //     $id = uniqid();
-    //     $file_name = "ckdj_excel_$id.xlsx";
-    //     // header('Content-Type: application/vnd.ms-excel');
-    //     // header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
-    //     // header('Content-Transfer-Encoding: binary');
-    //     // header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-    //     // header('Pragma: public'); // HTTP/1.0
-    //     // echo readfile($file);
-    //     $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
-    //     $file = "transaction\ckdj_excel_$id.xlsx";
-    //     $file2 = "transaction/ckdj_excel_$id.xlsx";
-
-    //     $writer->save($file);
-    //     // return ob_get_clean();
-    //     header('Content-Description: File Transfer');
-    //     header('Content-Type: application/octet-stream');
-    //     header('Content-Disposition: attachment; filename="' . basename($file2) . '"');
-    //     header('Expires: 0');
-    //     header('Cache-Control: must-revalidate');
-    //     header('Pragma: public');
-    //     header('Content-Length: ' . filesize($file2));
-    //     flush(); // Flush system output buffer
-    //     readfile($file2);
-    //     // flush();
-    //     // ob_clean();
-    //     // flush();
-
-    //     // // echo "<script> window.location.href = '$file';</script>";
-    //     // echo "<script>window.open('$file2','_self')</script>";
-
-    //     //    echo readfile("../../frontend/web/transaction/" . $file_name);
-    //     exit();
-    //     // return json_encode(['res' => "transaction\ckdj_excel_$id.xlsx"]);
-    //     // return json_encode($file);
-    //     // exit;
-    //     // }
-    // }
-
+   
     public function actionCibr()
     {
         if ($_POST) {
@@ -1467,17 +1193,17 @@ class ReportController extends \yii\web\Controller
             ])
                 ->join('LEFT JOIN', "advances", 'advances_entries.advances_id = advances.id')
                 ->join('LEFT JOIN', "fund_source_type", 'advances_entries.fund_source_type = fund_source_type.`name`');
-                if ($province !== 'all') {
+            if ($province !== 'all') {
 
-                    $q->andWhere("advances.province =:province", ['province' => $province]);
-                }
-                if ($division !== 'all') {
-    
-                    $q->andWhere("fund_source_type.division =:division", ['division' => $division]);
-                }
-                $q->andWhere("fund_source_type.division !=''");
-                $q->andWhere("fund_source_type.`name` !=''");
-                $query = $q->groupBy("advances.province,
+                $q->andWhere("advances.province =:province", ['province' => $province]);
+            }
+            if ($division !== 'all') {
+
+                $q->andWhere("fund_source_type.division =:division", ['division' => $division]);
+            }
+            $q->andWhere("fund_source_type.division !=''");
+            $q->andWhere("fund_source_type.`name` !=''");
+            $query = $q->groupBy("advances.province,
             fund_source_type.division,
             fund_source_type.`name` ");
 
@@ -1591,15 +1317,15 @@ class ReportController extends \yii\web\Controller
     }
     public function actionBudgetYearFur()
     {
-        // if ($_POST) {
-        // $from_reporting_period = $_POST['from_reporting_period'];
-        // $to_reporting_period = $_POST['to_reporting_period'];
-        // $province = !empty($_POST['province']) ? $_POST['province'] : '';
-        // $division = !empty($_POST['division']) ? $_POST['division'] : '';
-        $from_reporting_period = '2021-01';
-        $to_reporting_period = '2021-06';
-        $province = 'all';
-        $division =  'all';
+        if ($_POST) {
+        $from_reporting_period = $_POST['from_reporting_period'];
+        $to_reporting_period = $_POST['to_reporting_period'];
+        $province = !empty($_POST['province']) ? $_POST['province'] : '';
+        $division = !empty($_POST['division']) ? $_POST['division'] : '';
+        // $from_reporting_period = ";SELECT * FROM users";
+        // $to_reporting_period = ";SELECT * FROM users";
+        // $province = 'all';
+        // $division =  'all';
         $user_province = strtolower(Yii::$app->user->identity->province);
         $user_division = strtolower(Yii::$app->user->identity->division);
         if (
@@ -1617,107 +1343,136 @@ class ReportController extends \yii\web\Controller
         ) {
             $division = $user_division;
         }
-        $current_advances = new Query();
 
 
 
-        $current_advances->select([
-            "
-                SUBSTRING_INDEX(advances_entries.reporting_period,'-',1) as `year`,
-                advances.province,
-                SUM(advances_entries.amount) as total_amount
-                "
+        $budget_fur = new Query();
+        $budget_fur->select([
+            "SUBSTRING_INDEX(advances_entries.reporting_period,'-',1) as `year`,advances.province,fund_source_type.`division`"
         ])
             ->from('advances_entries')
-            ->join('LEFT JOIN', "advances", 'advances_entries.advances_id=  advances.id')
-            ->join('LEFT JOIN', "fund_source_type", 'advances_entries.fund_source_type = fund_source_type.`name`')
-            ->where("advances_entries.reporting_period >= :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
-            ->andwhere("advances_entries.reporting_period <= :to_reporting_period", ['to_reporting_period' => $to_reporting_period]);
+            ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id=  advances.id')
+            ->join('LEFT JOIN', 'fund_source_type', 'advances_entries.fund_source_type=  fund_source_type.`name`');
         if ($province !== 'all') {
+            $budget_fur->andWhere("advances.province =:province", ['province' => $province]);
+        }
+        if ($division !== 'all') {
+            $budget_fur->andWhere("fund_source_type.division =:division", ['division' => $division]);
+        }
+        $budget_fur->groupBy("`year`,advances.province, fund_source_type.division ");
 
+        
+        
+        $current_advances = new Query();
+        $current_advances->select([
+            "SUBSTRING_INDEX(advances_entries.reporting_period,'-',1) as `year`,
+            advances.province,
+            fund_source_type.`division`,
+            SUM(advances_entries.amount) as total_amount"
+        ])
+            ->from("advances_entries")
+            ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id=  advances.id')
+            ->join('LEFT JOIN', 'fund_source_type', 'advances_entries.fund_source_type = fund_source_type.`name`')
+            ->where("advances_entries.reporting_period >=:from_reporting_period", ['from_reporting_period' => $from_reporting_period])
+            ->andWhere("advances_entries.reporting_period <=:to_reporting_period", ['to_reporting_period' => $to_reporting_period]);
+        if ($province !== 'all') {
             $current_advances->andWhere("advances.province =:province", ['province' => $province]);
         }
         if ($division !== 'all') {
-
             $current_advances->andWhere("fund_source_type.division =:division", ['division' => $division]);
         }
-        $current_advances->groupBy(" `year`,advances.province");
+        $current_advances->groupBy("`year`,advances.province, fund_source_type.division");
 
-        $prev_advances  = new Query();
+        $prev_advances = new Query();
         $prev_advances->select([
-            "
-                SUBSTRING_INDEX(advances_entries.reporting_period,'-',1) as  year,
-                advances.province,
-                SUM(advances_entries.amount) as total_amount
-                "
+            "SUBSTRING_INDEX(advances_entries.reporting_period,'-',1) as `year`",
+            "advances.province",
+            "fund_source_type.`division`",
+            "SUM(advances_entries.amount) as total_amount"
         ])
             ->from('advances_entries')
-            ->join('LEFT JOIN', "advances", 'advances_entries.advances_id=  advances.id')
-            ->join('LEFT JOIN', "fund_source_type", 'advances_entries.fund_source_type = fund_source_type.`name`')
-            ->where(
-                "advances_entries.reporting_period < :from_reporting_period",
-                ['from_reporting_period' => $from_reporting_period]
-            );
+            ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id=  advances.id')
+            ->join('LEFT JOIN', 'fund_source_type', 'advances_entries.fund_source_type = fund_source_type.`name`')
+            ->where(' advances_entries.reporting_period < :from_reporting_period ', ['from_reporting_period' => $from_reporting_period]);
         if ($province !== 'all') {
-
             $prev_advances->andWhere("advances.province =:province", ['province' => $province]);
         }
         if ($division !== 'all') {
-
             $prev_advances->andWhere("fund_source_type.division =:division", ['division' => $division]);
         }
-        $prev_advances->groupBy(" year,advances.province");
+        $prev_advances->groupBy("`year`,advances.province, fund_source_type.division");
 
-        $current_liquidation = new Query();
-        $current_liquidation->select([" 
-                           advances.province,
-            fund_source_type.division,
-            advances_entries.fund_source_type,
-            SUM(liquidation_entries.withdrawals) as total_withdrawals"])
+        $current_liquidation  = new Query();
+        $current_liquidation->select([
+            "substring_index(liquidation_entries.reporting_period,'-',1) as `year`",
+            "liquidation.province",
+            "fund_source_type.division",
+            "SUM(liquidation_entries.withdrawals) as total_withdrawals"
+
+        ])
             ->from('liquidation_entries')
+            ->join('LEFT JOIN', 'liquidation', 'liquidation_entries.liquidation_id  = liquidation.id')
             ->join('LEFT JOIN', 'advances_entries', 'liquidation_entries.advances_entries_id = advances_entries.id')
-            ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
             ->join('LEFT JOIN', 'fund_source_type', 'advances_entries.fund_source_type = fund_source_type.`name`')
             ->where("liquidation_entries.reporting_period >= :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
-            ->andWhere("liquidation_entries.reporting_period <= :to_reporting_period", ['to_reporting_period' => $to_reporting_period])
-            ->groupBy("
-            advances.province,
-            fund_source_type.division,
-            advances_entries.fund_source_type
-            ")
-            ->all();
-        $q1 = $current_advances->createCommand()->getRawSql();
-        $q2 = $prev_advances->createCommand()->getRawSql();
-        $q3 = $current_liquidation->createCommand()->getRawSql();
+            ->andWhere("liquidation_entries.reporting_period <= :to_reporting_period", ['to_reporting_period' => $to_reporting_period]);
+        if ($province !== 'all') {
+            $current_liquidation->andWhere("liquidation.province =:province", ['province' => $province]);
+        }
+        if ($division !== 'all') {
+            $current_liquidation->andWhere("fund_source_type.division =:division", ['division' => $division]);
+        }
+        $current_liquidation->groupBy("`year`,
+        liquidation.province,
+        fund_source_type.division");
+
+
+
+
+
+
+
+        $budget_fur_query = $budget_fur->createCommand()->getRawSql();
+        $current_advances_query = $current_advances->createCommand()->getRawSql();
+        $prev_advances_query = $prev_advances->createCommand()->getRawSql();
+        $current_liquidation_query = $current_liquidation->createCommand()->getRawSql();
+
+
+
+
         $final_query  = Yii::$app->db->createCommand(
-            "SELECT *
-                
-            FROM ($q2) as r1
-            LEFT JOIN ($q1) as r2
-            ON ( r1.year = r2.year AND r1.province = r2.province  )
-            
+            "SELECT 
+              budget_year.*,
+              IFNULL(prev_advances.total_amount,0) as beginning_balance,
+              IFNULL(current_advances.total_amount,0) as current_advances_amount,
+              IFNULL(current_liquidation.total_withdrawals,0) as total_withdrawals,
+            ( IFNULL(prev_advances.total_amount,0) +IFNULL(current_advances.total_amount,0)) -  IFNULL(current_liquidation.total_withdrawals,0) as ending_balance
+
+            FROM($budget_fur_query) as budget_year
+            LEFT JOIN ($current_advances_query) as current_advances 
+             ON (budget_year.`year` = current_advances.`year` AND budget_year.province = current_advances.province  AND budget_year.division = current_advances.division)
+            LEFT JOIN ($prev_advances_query) as prev_advances 
+             ON (budget_year.`year` = prev_advances.`year` AND budget_year.province = prev_advances.province  AND budget_year.division = prev_advances.division)
+            LEFT JOIN ($current_liquidation_query) as current_liquidation 
+             ON (budget_year.`year` = current_liquidation.`year` AND budget_year.province = current_liquidation.province  AND budget_year.division = current_liquidation.division)
             "
         )
             ->queryAll();
+        // return json_encode($final_query);
 
+
+
+        $result = ArrayHelper::index($final_query, 'division', [function ($element) {
+            return $element['province'];
+        }, 'year']);
 
         // echo "<pre>";
-        // var_dump($final_query);
+        // var_dump($result);
         // echo "</pre>";
 
 
-
-
-
-
-        // $result = ArrayHelper::index($final_query, null, [function ($element) {
-        //     return $element['province'];
-        // }, 'division']);
-
-
-
-        return json_encode($final_query);
-        // }
+        return json_encode($result);
+        }
         return $this->render('budget-year-fur');
     }
 }
