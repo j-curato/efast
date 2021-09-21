@@ -49,6 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'dvAucs.particular',
             'check_or_ada_no',
             'ada_number',
+         
             [
                 'label' => 'Cancelled',
                 'value' => function ($model) {
@@ -60,6 +61,19 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             'issuance_date',
+            [
+                'attribute'=>'begin_time',
+                'value'=>function($model){
+                    return date('h:i A',strtotime($model->begin_time));
+                }
+            ],
+            [
+                'attribute'=>'out_time',
+                'value'=>function($model){
+                    return date('h:i A',strtotime($model->out_time));
+                }
+            ],
+            
         ],
     ]) ?>
 

@@ -152,10 +152,16 @@
                      <label for="begin_time">Begin Time</label>
                      <?php
                         date_default_timezone_set('Asia/Manila');
-                        $time = date('h:i A');
+                        $begin_time = date('h:i A');
+                        $end_time = date('h:i A');
+
+                        if (!empty($model)) {
+                            $begin_time = date('h:i A', strtotime($model->begin_time));
+                            $end_time = date('h:i A', strtotime($model->out_time));
+                        }
                         echo TimePicker::widget([
                             'name' => 'begin_time',
-                            'value' => $time
+                            'value' => $begin_time
                         ]);
 
                         ?>
@@ -165,7 +171,7 @@
                      <?php
                         echo TimePicker::widget([
                             'name' => 'out_time',
-                            'value' => $time
+                            'value' => $end_time
                         ]);
 
                         ?>

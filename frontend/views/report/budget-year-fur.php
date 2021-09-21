@@ -220,7 +220,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         $('#dots5').show()
         $.ajax({
             type: 'POST',
-            url: window.location.pathname + '?r=report/summary-fund-source-fur',
+            url: window.location.pathname + '?r=report/budget-year-fur',
             data: $("#filter").serialize(),
             success: function(data) {
                 var res = JSON.parse(data)
