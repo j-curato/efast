@@ -35,13 +35,16 @@ use yii\helpers\ArrayHelper;
             $check_range = '';
             $transaction_id = '';
             if (!empty($model)) {
-                $particular = $model->particular;
-                $payee = $model->payee_id;
+
                 $check_date = $model->check_date;
                 $check_number = $model->check_number;
                 $reporting_period = $model->reporting_period;
                 $check_range = $model->check_range_id;
                 $transaction_id = $model->po_transaction_id;
+                if (empty($model->po_transaction_id)) {
+                    $particular = $model->particular;
+                    $payee = $model->payee;
+                }
             }
 
             ?>
@@ -175,11 +178,10 @@ use yii\helpers\ArrayHelper;
                 </thead>
                 <tbody>
                     <tr>
-                        <td id="transaction_payee"></td>
-                        <td id="transaction_particular"></td>
-                        <td id="transaction_r_center"></td>
-                        <td id="transaction_amount"></td>
-
+                        <td id="transaction_payee"><?php echo $payee ?></td>
+                        <td id="transaction_particular"><?php echo $particular ?></td>
+                        <td id="transaction_r_center"><?php ?></td>
+                        <td id="transaction_amount"><?php ?></td>
 
                     </tr>
                 </tbody>
