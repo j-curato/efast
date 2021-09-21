@@ -1475,6 +1475,8 @@ class ReportController extends \yii\web\Controller
     
                     $q->andWhere("fund_source_type.division =:division", ['division' => $division]);
                 }
+                $q->andWhere("fund_source_type.division !=''");
+                $q->andWhere("fund_source_type.`name` !=''");
                 $query = $q->groupBy("advances.province,
             fund_source_type.division,
             fund_source_type.`name` ");
