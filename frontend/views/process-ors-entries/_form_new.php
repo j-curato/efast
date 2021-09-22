@@ -124,9 +124,7 @@ use kartik\select2\Select2;
         <!-- RAOUDS ANG MODEL ANI -->
         <!-- NAA SA CREATE CONTROLLER NAKO GE CHANGE -->
         <?php
-        $mfo = MfoPapCode::find()->asArray()->all();
         $dataProvider->pagination = ['pageSize' => 10];
-
         $col = [
 
             'serial_number',
@@ -551,8 +549,10 @@ use kartik\select2\Select2;
                     return {
                         results: data.results
                     };
-                }
-            }
+                },
+                cache: true
+            },
+            placeholder: 'Search for Transaction',
         });
         $("#transaction_id").change(function() {
             var transaction_id = $("#transaction_id").val()
@@ -698,15 +698,15 @@ $script = <<< JS
                                 text: res.result[0]['tracking_number']
                             }
                         ];
-                    var option = new Option(res.result[0]['tracking_number'],res.result[0]['transaction_id'], true, true);
-                    transactionSelect.append(option).trigger('change');
-                    // manually trigger the `select2:select` event
-                    transactionSelect.trigger({
-                        type: 'select2:select',
-                        params: {
-                            data: transactionData
-                        }
-                    });
+                        var option = new Option(res.result[0]['tracking_number'],res.result[0]['transaction_id'], true, true);
+                        transactionSelect.append(option).trigger('change');
+                        // manually trigger the `select2:select` event
+                        transactionSelect.trigger({
+                            type: 'select2:select',
+                            params: {
+                                data: transactionData
+                            }
+                        });
                     transactionOnChange(res.result[0]['transaction_id'])
                         addData(res.result,true)
                     }

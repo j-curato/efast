@@ -122,8 +122,8 @@ $this->params['breadcrumbs'][] = $this->title;
                            {$val->ors_account_title}
                         </td>
                       
-                        <td class='amount'>
-                           {$val->amount}
+                        <td class='amount'>".number_format($val->amount,2)."
+                           
                         </td>
                       
          
