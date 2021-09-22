@@ -55,19 +55,20 @@ class m210921_063150_create_record_allotment_view extends Migration
                 LEFT JOIN authorization_code ON record_allotments.authorization_code_id = authorization_code.id
                 LEFT JOIN chart_of_accounts ON record_allotment_entries.chart_of_account_id = chart_of_accounts.id
                 LEFT JOIN major_accounts ON chart_of_accounts.major_account_id = major_accounts.id 
-                LEFT JOIN (
-                        SELECT 
-                            process_ors_entries.record_allotment_entries_id,
-                            SUM(process_ors_entries.amount) as total_ors
-                            FROM process_ors
-                            LEFT JOIN process_ors_entries ON  process_ors.id =process_ors_entries.process_ors_id 
-                            WHERE 
-                            process_ors.is_cancelled = 0
-                            GROUP BY process_ors_entries.record_allotment_entries_id
-                            
-                ) as total_ors ON record_allotment_entries.id = total_ors.record_allotment_entries_id
+               
         SQL;
         $this->execute($sql);
+    //     LEFT JOIN (
+    //         SELECT 
+    //             process_ors_entries.record_allotment_entries_id,
+    //             SUM(process_ors_entries.amount) as total_ors
+    //             FROM process_ors
+    //             LEFT JOIN process_ors_entries ON  process_ors.id =process_ors_entries.process_ors_id 
+    //             WHERE 
+    //             process_ors.is_cancelled = 0
+    //             GROUP BY process_ors_entries.record_allotment_entries_id
+                
+    // ) as total_ors ON record_allotment_entries.id = total_ors.record_allotment_entries_id
     }
 
     /**
