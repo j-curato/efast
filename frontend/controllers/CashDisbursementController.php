@@ -38,12 +38,7 @@ class CashDisbursementController extends Controller
                     'get-all-dv',
                     'get-cash-disbursement',
                     'cancel',
-                    // actionInsertCashDisbursement
-                    //                     actionImport
-                    // actionGetAllDv
-                    // actionGetDv
-                    // actionGetCashDisbursement
-                    // actionCancel
+              
                 ],
 
                 'rules' => [

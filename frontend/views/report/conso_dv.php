@@ -1,18 +1,10 @@
 <!-- <link href="/frontend/web/css/site.css" rel="stylesheet" /> -->
 <?php
 
-use app\models\AdvancesEntries;
 use app\models\Books;
-use app\models\DvAucs;
-use app\models\MajorAccounts;
-use kartik\grid\GridView;
-use yii\widgets\Pjax;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
-use kartik\export\ExportMenu;
 use kartik\select2\Select2;
-use Mpdf\Tag\Select;
-use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
@@ -92,9 +84,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
 
         </div>
-        <div class="col-sm-3">
-
-        </div>
+  
     </form>
 
     <div id="con">
@@ -122,6 +112,9 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 <style>
+    #con{
+        margin-top: 20px;
+    }
     .grid-view td {
         white-space: normal;
         width: 5rem;
@@ -143,7 +136,9 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 
     @media print {
-
+        #con{
+        margin-top: 0;
+    }
         table,
         th,
         td {

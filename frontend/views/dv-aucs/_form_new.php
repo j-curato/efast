@@ -280,13 +280,13 @@ use yii\helpers\Html;
                     [
                         'label' => 'Total Obligated',
                         'value' => function ($model) {
-                            $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount)as total,
-                            process_ors.id as ors_id
-                            FROM process_ors,raouds,raoud_entries
-                            where process_ors.id = raouds.process_ors_id
-                            AND raouds.id=raoud_entries.raoud_id
-                            AND process_ors.id= :ors_id
-                            GROUP BY process_ors.id")
+                            $query = Yii::$app->db->createCommand("SELECT SUM(process_ors_entries.amount)as total
+                      
+                            FROM process_ors_entries
+                            where process_ors_entries.process_ors_id = :ors_id
+                           
+                         
+                          ")
                                 ->bindValue(":ors_id", $model->id)
                                 ->queryOne();
                             return $query['total'];

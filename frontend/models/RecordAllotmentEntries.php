@@ -60,4 +60,8 @@ class RecordAllotmentEntries extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Raouds::class, ['record_allotment_entries_id' => 'id']);
     }
+    public function getProcessOrsEntries()
+    {
+        return $this->hasMany(ProcessOrsEntries::class, ['record_allotment_entries_id' => 'id']);
+    }
 }

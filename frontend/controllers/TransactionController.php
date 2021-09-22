@@ -8,6 +8,7 @@ use app\models\SubAccounts1;
 use Yii;
 use app\models\Transaction;
 use app\models\TransactionSearch;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -136,7 +137,7 @@ class TransactionController extends Controller
             ) {
                 $model->created_at = date('Y-m-d H:i:s', strtotime($date . ' + 1 days'));
             }
- 
+
             if ($model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
             }
@@ -444,5 +445,26 @@ class TransactionController extends Controller
             // return ob_get_clean();
         }
         // return json_encode("qqq");
+    }
+    public function actionSearchTransaction($q = null, $id = null, $province = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+
+            $query->select(["id", "tracking_number as text"])
+                ->from('transaction')
+                ->where(['like', 'tracking_number', $q]);
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        //  elseif ($id > 0) {
+        //     $out['results'] = ['id' => $id, 'text' => AdvancesEntries::find($id)->fund_source];
+        // }
+        return $out;
     }
 }

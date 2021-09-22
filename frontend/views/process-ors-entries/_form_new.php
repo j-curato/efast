@@ -30,8 +30,8 @@ use kartik\select2\Select2;
         }
 
 
-        echo " <input type='text' id='update' name='update' value='$update' style='display:none' >";
-        echo " <input type='text' id='update_id' name='update_id' value='$q' style='display:none' >";
+        echo " <input type='hidden' id='update' name='update' value='$update'  >";
+        echo " <input type='hidden' id='update_id' name='update_id' value='$q'  >";
 
         ?>
         <input type="text" name="transaction_timestamp" id="transaction_timestamp" style="display: none;">
@@ -126,12 +126,13 @@ use kartik\select2\Select2;
         <?php
         $mfo = MfoPapCode::find()->asArray()->all();
         $dataProvider->pagination = ['pageSize' => 10];
+
         $col = [
-            'id',
+
             'serial_number',
             'mfo_code',
             'mfo_name',
-            'fund_source_name',
+            'fund_source',
             'uacs',
             'general_ledger',
             [
@@ -148,7 +149,7 @@ use kartik\select2\Select2;
             [
                 'class' => '\kartik\grid\CheckboxColumn',
                 'checkboxOptions' => function ($model, $key, $index, $column) {
-                    return ['value' => $model->id, 'onchange' => 'enableDisable(this)', 'style' => 'width:20px;', 'class' => 'checkbox'];
+                    return ['value' => $model->entry_id, 'onchange' => 'enableDisable(this)', 'style' => 'width:20px;', 'class' => 'checkbox'];
                 }
             ],
             [
@@ -157,9 +158,9 @@ use kartik\select2\Select2;
 
                 'value' => function ($model) {
                     return ' ' .  MaskMoney::widget([
-                        'name' => "amount[$model->id]",
+                        'name' => "amount[$model->entry_id]",
                         'disabled' => true,
-                        'id' => "amount_$model->id",
+                        'id' => "amount_$model->entry_id",
                         'options' => [
                             'class' => 'amounts',
                         ],
@@ -172,145 +173,7 @@ use kartik\select2\Select2;
                 'contentOptions' => ['style' => 'width:200px; white-space: normal;'],
             ]
         ];
-        // $columns=
-        // [
 
-        //     // 'id',
-        //     [
-        //         'label' => 'ID',
-
-        //         'attribute' => 'recordAllotmentEntries.id'
-
-        //     ],
-        //     [
-        //         'label' => 'Serial Number',
-
-        //         'attribute' => 'recordAllotmentEntries.recordAllotment.serial_number'
-
-        //     ],
-
-        //     [
-        //         'label' => 'MFO/PAP Code',
-        //         'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.code',
-        //         'filter' => Select2::widget([
-        //             'model' => $searchModel,
-        //             'attribute' => 'is_parent',
-        //             'name' => 'mfo',
-        //             'data' =>  ArrayHelper::map($mfo, 'id', 'code'),
-        //             'options' => ['placeholder' => 'Select '],
-        //             'pluginOptions' => [
-        //                 'allowClear' => true
-        //             ],
-        //         ])
-
-        //     ],
-        //     [
-        //         'label' => 'MFO/PAP Code Name',
-        //         'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.name'
-        //     ],
-        //     [
-        //         'label' => 'MFO/PAP Code id',
-        //         'attribute' => 'recordAllotmentEntries.recordAllotment.mfo_pap_code_id'
-        //     ],
-
-        //     [
-        //         'label' => 'Fund Source Code',
-        //         'attribute' => 'recordAllotmentEntries.recordAllotment.fundSource.name'
-        //     ],
-        //     [
-        //         'label' => 'Object Code',
-        //         'value' => function ($model) {
-        //             if ($model->process_ors_id != null) {
-        //                 return $model->raoudEntries->chartOfAccount->uacs;
-        //             } else {
-        //                 return $model->recordAllotmentEntries->chartOfAccount->uacs;
-        //             }
-        //         }
-        //     ],
-        //     [
-        //         'label' => 'General Ledger',
-        //         // 'attribute' => 'recordAllotmentEntries.chartOfAccount.general_ledger'
-        //         'value' => function ($model) {
-        //             if ($model->process_ors_id != null) {
-        //                 return $model->raoudEntries->chartOfAccount->general_ledger;
-        //             } else {
-        //                 return $model->recordAllotmentEntries->chartOfAccount->general_ledger;
-        //             }
-        //         }
-        //     ],
-        //     [
-        //         'label' => 'Amount',
-        //         'attribute' => 'recordAllotmentEntries.amount',
-        //         'format' => ['decimal', 2],
-        //         'hAlign' => 'right',
-        //         'vAlign' => 'middle',
-        //     ],
-
-        //     [
-        //         'label' => 'Balance',
-        //         'value' => function ($model) {
-        //             // $query = (new \yii\db\Query())
-        //             //     ->select([
-
-        //             //         'entry.obligation_total', 'record_allotment_entries.amount', 'entry.remain'
-        //             //     ])
-        //             //     ->from('raouds')
-        //             //     ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
-        //             //     ->join("LEFT JOIN", "(SELECT SUM(raouds.obligated_amount) as obligation_total,
-        //             //     raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain
-        //             //      From raouds,record_allotment_entries
-        //             //      WHERE 
-        //             //     raouds.record_allotment_entries_id = record_allotment_entries.id
-        //             //     AND raouds.process_ors_id IS NOT NULL
-        //             //     GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
-        //             //     ->where("raouds.id = :id", ['id' => $model->id])->one();
-        //             $query = Yii::$app->db->createCommand("SELECT SUM(raouds.obligated_amount) as obligated_amount,
-        //                 SUM(raouds.burs_amount) as burs_amount,
-        //                 raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain,
-        //                 record_allotment_entries.amount as record_allotment_amount
-        //                 From raouds,record_allotment_entries,raoud_entries
-        //                 WHERE raouds.record_allotment_entries_id = record_allotment_entries.id
-        //                 AND raouds.id = raoud_entries.raoud_id
-        //                 AND raouds.record_allotment_entries_id=$model->record_allotment_entries_id
-        //                 ")->queryOne();
-        //             $burs_ors_amount = $query['obligated_amount'] + $query['burs_amount'];
-        //             $remain = $query['record_allotment_amount'] - $burs_ors_amount;
-        //             return $remain;
-        //         },
-        //         'format' => ['decimal', 2],
-        //         'hAlign' => 'right',
-        //         'vAlign' => 'middle',
-
-        //     ],
-
-        //     [
-        //         'class' => '\kartik\grid\CheckboxColumn',
-        //         'checkboxOptions' => function ($model, $key, $index, $column) {
-        //             return ['value' => $model->id, 'onchange' => 'enableDisable(this)', 'style' => 'width:20px;', 'class' => 'checkbox'];
-        //         }
-        //     ],
-        //     [
-        //         'label' => 'Actions',
-        //         'format' => 'raw',
-
-        //         'value' => function ($model) {
-        //             return ' ' .  MaskMoney::widget([
-        //                 'name' => "amount[$model->id]",
-        //                 'disabled' => true,
-        //                 'id' => "amount_$model->id",
-        //                 'options' => [
-        //                     'class' => 'amounts',
-        //                 ],
-        //                 'pluginOptions' => [
-        //                     'prefix' => '₱ ',
-        //                     'allowNegative' => true
-        //                 ],
-        //             ]);
-        //         },
-        //         'contentOptions' => ['style' => 'width:200px; white-space: normal;'],
-        //     ]
-
-        //     ];
         ?>
 
         <?= GridView::widget([
@@ -430,7 +293,7 @@ use kartik\select2\Select2;
 
         function copy(q) {
             var qwer = $(q).closest('tr')
-            console.log(qwer)
+            // console.log(qwer)
             var raoud_id = qwer.find('.raoud_id').val();
             var mfo_pap_code = qwer.find('.mfo_pap_code').text();
             var mfo_pap_name = qwer.find('.mfo_pap_name').text();
@@ -462,7 +325,7 @@ use kartik\select2\Select2;
                 "obligation_amount":0
         }`);
 
-            console.log([obj])
+            // console.log([obj])
             var qwe = '';
             if ($('#update').val() != 'create') {
                 qwe = 'copy';
@@ -513,7 +376,7 @@ use kartik\select2\Select2;
                 }
                 var row = `<tr>
                             <td style="display:none"> <input value='${result[i]['raoud_id']}' type='text' name='raoud_id[]' id='raoud_${select_id}' class='raoud_id' /></td>
-                            <td > <input  type='month' id='date_${select_id}' name='new_reporting_period[]' required /></td>
+                            <td > <input  type='month' id='date_${select_id}' name='new_reporting_period[]'  id="new_reporting_period-${select_id}" required /></td>
                             <td> <div class='mfo_pap_code'>${result[i]['mfo_pap_code_code']}</div></td>
                             <td><div class='mfo_pap_name'> ${result[i]['mfo_pap_name']}</div></td>
                             <td><div class='fund_source_name'> ${result[i]['fund_source_name']}</div></td>
@@ -604,7 +467,7 @@ use kartik\select2\Select2;
                     $(`#remove_${select_id}`).prop('disabled', true);
                     // $(`#date_${select_id}`).val('12/12/2021');
                     var dateControl = document.querySelector(`#date_${select_id}`);
-                    dateControl.value = result[i]['reporting_period'];
+                    dateControl.value = result[i]['entry_reporting_period'];
                     $(`#date_${select_id}`).prop('disabled', true);
                     $(`#raoud_${select_id}`).prop('disabled', true);
 
@@ -638,7 +501,7 @@ use kartik\select2\Select2;
                 data: $('#add_data').serialize(),
                 success: function(data) {
                     var result = JSON.parse(data).results
-                    console.log(result)
+                    // console.log(result)
                     var object_code = ''
                     var chart_id = ''
                     addData(result, false)
@@ -674,6 +537,62 @@ use kartik\select2\Select2;
 
 
         })
+        $('#transaction_id').select2({
+            ajax: {
+                url: window.location.pathname + '?r=transaction/search-transaction',
+                dataType: 'json',
+                data: function(params) {
+
+                    return {
+                        q: params.term,
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data.results
+                    };
+                }
+            }
+        });
+        $("#transaction_id").change(function() {
+            var transaction_id = $("#transaction_id").val()
+            var date = new Date()
+
+            var x = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+            // console.log(thousands_separators(1111))
+            $('#transaction_timestamp').val(x)
+            transactionOnChange(transaction_id)
+
+        })
+
+        function transactionOnChange(transaction_id) {
+            $.ajax({
+                url: window.location.pathname + "?r=transaction/get-transaction",
+                type: "POST",
+                data: {
+                    transaction_id: transaction_id
+                },
+                success: function(data) {
+                    var res = JSON.parse(data)
+                    account_name = res.result['account_name']
+                    var particular = res.result['particular']
+                    var amount = res.result['gross_amount']
+                    // var x = document.getElementById("transaction_detail");
+                    //  x.deleteRow(0);
+                    $("#payee_name").text(res.result['account_name'])
+                    $("#transaction_particular").text(res.result['particular'])
+                    $("#transaction_amount").text(thousands_separators(parseFloat(res.result['gross_amount'])))
+
+
+                    var row = "<tr><td>" + account_name + "</td></tr>"
+                    // $('#transaction_detail').tbody(row);
+                    // var x = document.getElementById("transaction_detail").getElementsByTagName("tbody")[0]row;
+
+
+                }
+
+            })
+        }
     </script>
 </div>
 
@@ -682,50 +601,15 @@ use kartik\select2\Select2;
 <?php SweetAlertAsset::register($this); ?>
 <?php
 
+
 $script = <<< JS
         var reporting_period = '';
         var transactions=[];
         var book=[];
-       
-    $("#transaction_id").change(function(){
-            var transaction_id = $("#transaction_id").val()
-            var date = new Date()
-
-            var x = date.getFullYear()+'-'+date.getMonth() + '-'+ date.getDate() + ' ' + date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()
-            console.log(date.getFullYear())
-            $('#transaction_timestamp').val(x)
-        $.ajax({
-            url:window.location.pathname + "?r=transaction/get-transaction",
-            type:"POST",
-            data:{transaction_id:transaction_id},
-            success:function(data){
-                var res = JSON.parse(data)
-                account_name = res.result['account_name']
-                var particular = res.result['particular']
-                var amount = res.result['gross_amount']
-                // var x = document.getElementById("transaction_detail");
-                //  x.deleteRow(0);
-                $("#payee_name").text(res.result['account_name'])
-                $("#transaction_particular").text(res.result['particular'])
-                $("#transaction_amount").text(res.result['gross_amount'])
-                
-                console.log(account_name)
  
-                var row = "<tr><td>"+account_name+"</td></tr>"
-                // $('#transaction_detail').tbody(row);
-                // var x = document.getElementById("transaction_detail").getElementsByTagName("tbody")[0]row;
 
-
-            }
-
-        })
-    })
     $('#save_data').submit(function(e) {
-  
-
         e.preventDefault();
-
-    
         $.ajax({
             url: window.location.pathname + '?r=process-ors-entries/insert-process-ors',
             method: "POST",
@@ -733,8 +617,6 @@ $script = <<< JS
             success: function(data) {
                 // console.log(data)
                 var res=JSON.parse(data)
-
-
                 if (res.isSuccess) {
                     swal({
                         title: "Success",
@@ -752,12 +634,12 @@ $script = <<< JS
                     var length = Object.keys(res.error).length
                     var keys = Object.keys(res.error)
                     var text=''
-                    console.log(keys[0])
+                    // console.log(keys[0])
                     for(var i = 0;i<length;i++){
                         var x=keys[i]
                         text += res.error[x] 
                     }
-                    console.log(text)
+                    // console.log(text)
                     swal({
                         title: "Error",
                         text: text,
@@ -770,7 +652,6 @@ $script = <<< JS
                 }
             }
         });
-
     })
     $(document).ready(function() {
         // GET CHART OF ACCOUNTS
@@ -787,53 +668,13 @@ $script = <<< JS
             chart_of_accounts = data
 
         })
-        // getRoTransactions().then(function (data) {
-
-        //     var array = []
-        //     $.each(data, function (key, val) {
-        //         array.push({
-        //             id: val.id,
-        //             text: val.tracking_number
-        //         })
-        //     })
-        //     transaction = array
-        //     $('#transaction_id').select2({
-        //         data: transaction,
-        //         placeholder: "Select Transaction",
-
-        //     })
-
-        // });
-
-        
-
-
-
-
-            // GET TRANSACTIONs
-            getAllTransaction()
-                .then(function(data) {
-
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.tracking_number
-                        })
-                    })
-                    transaction = array
-                    $('#transaction_id').select2({
-                        data: transaction,
-                        placeholder: "Select Transaction",
-
-                    })
-
-                });
+ 
+       
 
             // SAVE DATA TO DATABASE
         $.when(getAllGeneralLedger($('#update_id').val()),getAllTransaction()).done(function(a,b){
             update_id = $('#update_id').val()
-            console.log(update_id)
+            // console.log(update_id)
             //   update_id.change(function(){
             //       console.log(update_id.val())
             //   })
@@ -846,11 +687,27 @@ $script = <<< JS
                     success:function(data){
                         var res = JSON.parse(data)
                         // console.log(res)
-                        console.log(res.result)
+                        // console.log(res.result)
                         $("#reporting_period").val(res.result[0]['reporting_period']).trigger('change')
                         $("#date").val(res.result[0]['date']).trigger('change')
                         $("#book_id").val(res.result[0]['book_id']).trigger('change')
                         $("#transaction_id").val(res.result[0]['transaction_id']).trigger('change')
+                        var transactionSelect = $('#transaction_id');
+                        var transactionData = [{
+                                id: res.result[0]['transaction_id'],
+                                text: res.result[0]['tracking_number']
+                            }
+                        ];
+                    var option = new Option(res.result[0]['tracking_number'],res.result[0]['transaction_id'], true, true);
+                    transactionSelect.append(option).trigger('change');
+                    // manually trigger the `select2:select` event
+                    transactionSelect.trigger({
+                        type: 'select2:select',
+                        params: {
+                            data: transactionData
+                        }
+                    });
+                    transactionOnChange(res.result[0]['transaction_id'])
                         addData(res.result,true)
                     }
                 })

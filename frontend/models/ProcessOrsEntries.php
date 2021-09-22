@@ -71,4 +71,8 @@ class ProcessOrsEntries extends \yii\db\ActiveRecord
     {
         return $this->hasOne(ProcessOrs::class, ['id' => 'process_ors_id']);
     }
+    public function getRecordAllotmentEntries()
+    {
+        return $this->hasOne(RecordAllotmentEntries::class, ['id' => 'record_allotment_entries_id']);
+    }
 }

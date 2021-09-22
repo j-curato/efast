@@ -1,6 +1,8 @@
 <?php
 
 use app\models\ProcessOrs;
+use app\models\ProcessOrsEntries;
+use app\models\ProcessOrsNewView;
 use app\models\Raouds;
 use aryelds\sweetalert\SweetAlert;
 use aryelds\sweetalert\SweetAlertAsset;
@@ -10,14 +12,15 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\ProcessOrsEntries */
 
-$this->title = $model->processOrs->serial_number;
+$this->title = $model->serial_number;
 $this->params['breadcrumbs'][] = ['label' => 'Process Ors Entries', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="process-ors-entries-view">
     <?php
-    $ors  = ProcessOrs::findOne($model->process_ors_id);
+    $ors  = $model;
+    $entries = ProcessOrsNewView::find()->where('id = :id',['id'=>$model->id])->all();
     ?>
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -84,45 +87,50 @@ $this->params['breadcrumbs'][] = $this->title;
             <tbody>
                 <?php
                 $total = 0;
-                foreach ($ors->raouds as $key => $val) {
-
+                foreach ($entries as $key => $val) {
+                    $count = $key+1;
                     echo "
                     <tr>
                         <td>
-                           {$key}
+                           {$count}
                         </td>
                         <td>
                            {$val->reporting_period}
                         </td>
                         <td>
-                           {$val->recordAllotmentEntries->recordAllotment->serial_number}
+                           {$val->reporting_period}
                         </td>
                         <td>
-                           {$val->processOrs->transaction->payee->account_name}
+                           {$val->payee}
                         </td>
                         <td>
-                           {$val->processOrs->transaction->particular}
+                           {$val->particular}
                         </td>
                         <td>
-                           {$val->recordAllotmentEntries->chartOfAccount->uacs}
+                           {$val->allotment_uacs}
                         </td>
+                      
                         <td>
-                           {$val->recordAllotmentEntries->chartOfAccount->general_ledger}
+                           {$val->allotment_account_title}
                         </td>
+                      
                         <td>
-                           {$val->raoudEntries->chartOfAccount->uacs}
+                           {$val->ors_uacs}
                         </td>
+                      
                         <td>
-                           {$val->raoudEntries->chartOfAccount->general_ledger}
+                           {$val->ors_account_title}
                         </td>
-                        <td style='text-align:right'>" .
-                        number_format($val->raoudEntries->amount, 2)
-                        . "</td>
+                      
+                        <td class='amount'>
+                           {$val->amount}
+                        </td>
+                      
          
                     </tr>
                     
                     ";
-                    $total += $val->raoudEntries->amount;
+                    $total += $val->amount;
                 }
 
                 ?>
@@ -176,6 +184,9 @@ $this->params['breadcrumbs'][] = $this->title;
     .container {
         background-color: white;
         padding: 12px;
+    }
+    .amount {
+        text-align: right;
     }
 </style>
 <?php

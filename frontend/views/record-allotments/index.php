@@ -81,186 +81,236 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
     <?php
-    $x = new recordAllotmentEntriesSearch();
-    $y = $x->search(Yii::$app->request->queryParams);
-    $gridColumns = [
-        'id',
-        [
-            'label' => "Reporting Period",
+    // $x = new recordAllotmentEntriesSearch();
+    // $y = $x->search(Yii::$app->request->queryParams);
+    // $gridColumns = [
+    //     'id',
+    //     [
+    //         'label' => "Reporting Period",
 
-            'value' => "recordAllotment.reporting_period"
-        ],
-        [
-            'label' => "Serial Number",
-            'attribute' => "record_allotment_id",
+    //         'value' => "recordAllotment.reporting_period"
+    //     ],
+    //     [
+    //         'label' => "Serial Number",
+    //         'attribute' => "record_allotment_id",
 
-            'value' => "recordAllotment.serial_number"
-        ],
-        [
-            'label' => "Particular",
-            'attribute' => 'recordAllotment.particulars'
+    //         'value' => "recordAllotment.serial_number"
+    //     ],
+    //     [
+    //         'label' => "Particular",
+    //         'attribute' => 'recordAllotment.particulars'
 
-        ],
-        [
-            'label' => 'Document Recieve',
-            'attribute' => 'recordAllotment.documentRecieve.name'
-        ],
-        [
-            'label' => 'Fund CLuster Code',
-            'attribute' => 'recordAllotment.fundClusterCode.name',
-            'filter' => Html::activeDropDownList(
-                $searchModel,
-                'fund_cluster_code_id',
-                ArrayHelper::map(FundClusterCode::find()->asArray()->all(), 'id', 'name'),
-                ['class' => 'form-control', 'prompt' => 'Fund Cluster Codes']
-            )
-        ],
+    //     ],
+    //     [
+    //         'label' => 'Document Recieve',
+    //         'attribute' => 'recordAllotment.documentRecieve.name'
+    //     ],
+    //     [
+    //         'label' => 'Fund CLuster Code',
+    //         'attribute' => 'recordAllotment.fundClusterCode.name',
+    //         'filter' => Html::activeDropDownList(
+    //             $searchModel,
+    //             'fund_cluster_code_id',
+    //             ArrayHelper::map(FundClusterCode::find()->asArray()->all(), 'id', 'name'),
+    //             ['class' => 'form-control', 'prompt' => 'Fund Cluster Codes']
+    //         )
+    //     ],
+
+    //     [
+    //         'label' => 'Financing Source Code',
+    //         'attribute' => 'recordAllotment.financingSourceCode.name',
+    //     ],
+    //     [
+    //         'label' => 'Fund Category and Classification Code',
+    //         'attribute' => 'recordAllotment.fundCategoryAndClassificationCode.name'
+    //     ], [
+    //         'label' => 'Authorization Code',
+    //         'attribute' => 'recordAllotment.authorizationCode.name'
+    //     ],
+    //     [
+    //         'label' => 'MFO/PAP Code',
+    //         'attribute' => 'recordAllotment.mfoPapCode.code'
+    //     ],
+    //     [
+    //         'label' => 'MFO/PAP Name',
+    //         'attribute' => 'recordAllotment.mfoPapCode.name'
+    //     ],
+    //     [
+    //         'label' => 'MFO/PAP Name',
+    //         'attribute' => 'recordAllotment.mfoPapCode.name'
+    //     ],
+    //     [
+    //         'label' => 'Fund Source',
+    //         'attribute' => 'recordAllotment.fundSource.description'
+    //     ],
+    //     [
+    //         "label" => "UACS",
+    //         'attribute' => 'chartOfAccount.uacs'
+    //     ],
+    //     [
+    //         "label" => "General Ledger",
+    //         'attribute' => 'chartOfAccount.general_ledger',
+    //     ],
+    //     [
+    //         "label" => "Allotment Class",
+    //         'attribute' => 'chartOfAccount.majorAccount.name',
+    //     ],
+
+    //     [
+
+    //         'label' => "Amount",
+    //         'attribute' => "amount",
+    //         'format' => ['decimal', 2],
+    //         'hAlign' => 'right'
+
+    //     ],
+
+    //     [
+
+    //         'label' => "NCA/NTA",
+    //         'value' => function ($model) {
+    //             $x = '';
+    //             if ($model->recordAllotment->documentRecieve->name === 'GARO') {
+    //                 $x = 'NCA';
+    //             } else {
+    //                 $x = 'NTA';
+    //             }
+    //             return $x;
+    //         }
+
+    //     ],
+    //     [
+
+    //         'label' => "CARP/101",
+    //         'value' => function ($model) {
+    //             $x = '';
+    //             if ($model->recordAllotment->mfoPapCode->name === 'CARP') {
+    //                 $x = 'CARP';
+    //             } else {
+    //                 $x = '101';
+    //             }
+    //             return $x;
+    //         }
+
+    //     ],
+    //     [
+    //         'label' => 'Total ORS',
+    //         'value' => function ($model) {
+    //             $query = Yii::$app->db->createCommand("SELECT 
+    //             SUM(raoud_entries.amount) as total_dv
+    //             FROM raouds
+    //             LEFT JOIN raoud_entries ON raouds.id = raoud_entries.raoud_id
+    //             LEFT JOIN process_ors ON raouds.process_ors_id = process_ors.id
+    //             WHERE 
+    //             raouds.process_ors_id IS NOT NULL
+    //             AND process_ors.is_cancelled = 0
+    //             AND raouds.record_allotment_entries_id = :allotment_id
+
+    //             ")->bindValue(':allotment_id', $model->id)
+    //                 ->queryScalar();
+    //             return $query;
+    //         },
+    //         'format' => ['decimal', 2]
+    //     ],
+    //     [
+    //         'label' => 'Total DV',
+    //         'value' => function ($model) {
+    //             $query = Yii::$app->db->createCommand("SELECT 
+
+    //             SUM(raoud_entries.amount) as dv
+    //             FROM raouds
+    //             LEFT JOIN raoud_entries ON raouds.id = raoud_entries.raoud_id
+    //             RIGHT  JOIN(
+    //             SELECT 
+    //             process_ors.id
+    //             FROM process_ors
+    //             LEFT JOIN dv_aucs_entries ON process_ors.id = dv_aucs_entries.process_ors_id
+    //             LEFT JOIN dv_aucs ON dv_aucs_entries.dv_aucs_id = dv_aucs.id
+    //             WHERE process_ors.is_cancelled = 0 
+    //             AND dv_aucs.is_cancelled = 0
+    //             GROUP BY process_ors.id
+    //             ) as dv ON raouds.process_ors_id = dv.id
+    //             WHERE raouds.record_allotment_entries_id= :allotment_id
+    //             GROUP BY raouds.record_allotment_entries_id
+    //             ORDER BY raouds.record_allotment_entries_id
+
+    //             ")->bindValue(':allotment_id', $model->id)
+    //                 ->queryScalar();
+    //             return $query;
+    //         },
+    //         'format' => ['decimal', 2],
+    //         'hAlign' => 'right'
+    //     ],
+    //     [
+    //         'label' => 'Update',
+    //         'format' => 'raw',
+    //         'value' => function ($model) {
+
+    //             $t = yii::$app->request->baseUrl . "/index.php?r=record-allotments/update&id=$model->record_allotment_id";
+    //             return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-primary fa fa-pencil-square-o']);
+    //         },
+    //         'hiddenFromExport' => true,
+    //     ],
+    //     [
+    //         'class' => '\kartik\grid\ActionColumn',
+    //         'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
+    //         'updateOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
+    //     ]
+    // ];
+    $col = [
+        'entry_id',
+        'reporting_period',
+        'serial_number',
+        'date_issued',
+        'valid_until',
+        'particulars',
+        'document_recieve',
+        'fund_cluster_code',
+        'financing_source_code',
+        'fund_classification',
+        'authorization_code',
+        'mfo_code',
+        'mfo_name',
+        'responsibility_center',
+        'fund_source',
+        'uacs',
+        'general_ledger',
+        'allotment_class',
 
         [
-            'label' => 'Financing Source Code',
-            'attribute' => 'recordAllotment.financingSourceCode.name',
-        ],
-        [
-            'label' => 'Fund Category and Classification Code',
-            'attribute' => 'recordAllotment.fundCategoryAndClassificationCode.name'
-        ], [
-            'label' => 'Authorization Code',
-            'attribute' => 'recordAllotment.authorizationCode.name'
-        ],
-        [
-            'label' => 'MFO/PAP Code',
-            'attribute' => 'recordAllotment.mfoPapCode.code'
-        ],
-        [
-            'label' => 'MFO/PAP Name',
-            'attribute' => 'recordAllotment.mfoPapCode.name'
-        ],
-        [
-            'label' => 'MFO/PAP Name',
-            'attribute' => 'recordAllotment.mfoPapCode.name'
-        ],
-        [
-            'label' => 'Fund Source',
-            'attribute' => 'recordAllotment.fundSource.description'
-        ],
-        [
-            "label" => "UACS",
-            'attribute' => 'chartOfAccount.uacs'
-        ],
-        [
-            "label" => "General Ledger",
-            'attribute' => 'chartOfAccount.general_ledger',
-        ],
-        [
-            "label" => "Allotment Class",
-            'attribute' => 'chartOfAccount.majorAccount.name',
-        ],
-
-        [
-
-            'label' => "Amount",
-            'attribute' => "amount",
+            'attribute' =>  'amount',
             'format' => ['decimal', 2],
             'hAlign' => 'right'
-
         ],
 
         [
-
-            'label' => "NCA/NTA",
-            'value' => function ($model) {
-                $x = '';
-                if ($model->recordAllotment->documentRecieve->name === 'GARO') {
-                    $x = 'NCA';
-                } else {
-                    $x = 'NTA';
-                }
-                return $x;
-            }
-
+            'attribute' => 'total_ors',
+            'format' => ['decimal', 2],
+            'hAlign' => 'right'
         ],
-        [
 
-            'label' => "CARP/101",
-            'value' => function ($model) {
-                $x = '';
-                if ($model->recordAllotment->mfoPapCode->name === 'CARP') {
-                    $x = 'CARP';
-                } else {
-                    $x = '101';
-                }
-                return $x;
-            }
-
-        ],
-        [
-            'label'=>'Total ORS',
-            'value'=>function($model){
-                $query = Yii::$app->db->createCommand("SELECT 
-                SUM(raoud_entries.amount) as total_dv
-                FROM raouds
-                LEFT JOIN raoud_entries ON raouds.id = raoud_entries.raoud_id
-                LEFT JOIN process_ors ON raouds.process_ors_id = process_ors.id
-                WHERE 
-                raouds.process_ors_id IS NOT NULL
-                AND process_ors.is_cancelled = 0
-                AND raouds.record_allotment_entries_id = :allotment_id
-                
-                ")->bindValue(':allotment_id',$model->id)
-                ->queryScalar();
-                return $query;
-            },
-            'format'=>['decimal',2]
-        ],
-        [
-            'label'=>'Total DV',
-            'value'=>function($model){
-                $query = Yii::$app->db->createCommand("SELECT 
-               
-                SUM(raoud_entries.amount) as dv
-                FROM raouds
-                LEFT JOIN raoud_entries ON raouds.id = raoud_entries.raoud_id
-                RIGHT  JOIN(
-                SELECT 
-                process_ors.id
-                FROM process_ors
-                LEFT JOIN dv_aucs_entries ON process_ors.id = dv_aucs_entries.process_ors_id
-                LEFT JOIN dv_aucs ON dv_aucs_entries.dv_aucs_id = dv_aucs.id
-                WHERE process_ors.is_cancelled = 0 
-                AND dv_aucs.is_cancelled = 0
-                GROUP BY process_ors.id
-                ) as dv ON raouds.process_ors_id = dv.id
-                WHERE raouds.record_allotment_entries_id= :allotment_id
-                GROUP BY raouds.record_allotment_entries_id
-                ORDER BY raouds.record_allotment_entries_id
-                
-                ")->bindValue(':allotment_id',$model->id)
-                ->queryScalar();
-                return $query;
-            },
-            'format'=>['decimal',2],
-            'hAlign'=>'right'
-        ],
+        'nca_nta',
+        'carp_101',
         [
             'label' => 'Update',
             'format' => 'raw',
             'value' => function ($model) {
 
-                $t = yii::$app->request->baseUrl . "/index.php?r=record-allotments/update&id=$model->record_allotment_id";
-                return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-primary fa fa-pencil-square-o']);
+                $t = yii::$app->request->baseUrl . "/index.php?r=record-allotments/update&id=$model->id";
+                $view = yii::$app->request->baseUrl . "/index.php?r=record-allotments/view&id=$model->entry_id";
+                return   ' ' . Html::a('', $view, ['class' => 'btn-xs btn-primary fa fa-eye'])
+                    . ' ' . Html::a('', $t, ['class' => 'btn-xs btn-primary fa fa-pencil-square-o']);
             },
             'hiddenFromExport' => true,
         ],
-        [
-            'class' => '\kartik\grid\ActionColumn',
-            'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
-            'updateOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
-        ]
+
     ];
+
+
     ?>
     <?= GridView::widget([
-        'dataProvider' => $y,
-        'filterModel' => $x,
+        'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
         'floatHeaderOptions' => [
             'top' => 50,
             'position' => 'absolute',
@@ -273,8 +323,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'toolbar' => [
             [
                 'content' => ExportMenu::widget([
-                    'dataProvider' => $y,
-                    'columns' => $gridColumns,
+                    'dataProvider' => $dataProvider,
+                    'columns' => $col,
                     'filename' => 'RecordAllotments',
                     'exportConfig' => [
                         ExportMenu::FORMAT_TEXT => false,
@@ -288,7 +338,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]
             ]
         ],
-        'columns' => $gridColumns,
+        'columns' => $col,
     ]); ?>
 
 
