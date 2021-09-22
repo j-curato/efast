@@ -74,6 +74,31 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- NAA SA PROCESS ORS ENTRIES CONTROLLER SA INDEX NAKO GE CHANGE -->
 
     <?php
+    $gridColumns3 = [
+        'id',
+        'serial_number',
+        'tracking_number',
+        'payee',
+        'particular',
+        'allotment_uacs',
+        'allotment_account_title',
+        'ors_uacs',
+        'ors_account_title',
+        'amount',
+        'is_cancelled',
+        [
+            'label' => 'Actions',
+            'format' => 'raw',
+            'value' => function ($model) {
+                $adjust = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/re-align&id=$model->id";
+                $view = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$model->id";
+                return ' ' . Html::a('', $adjust, ['class' => 'btn-xs btn-success fa fa-pencil-square-o'])
+                    . ' ' . Html::a('', $view, ['class' => 'btn-xs btn-primary fa fa-eye']);
+            },
+            'hiddenFromExport' => true
+        ],
+
+    ];
     $exportColumns = [
         'id',
         'reporting_period',
@@ -187,11 +212,11 @@ $this->params['breadcrumbs'][] = $this->title;
         'allotment_general_ledger',
         'ors_uacs',
         'ors_general_ledger',
-      
+
         [
-            'attribute'=>  'amount',
-            'hAlign'=>'right',
-            'format'=>['decimal',2]
+            'attribute' =>  'amount',
+            'hAlign' => 'right',
+            'format' => ['decimal', 2]
         ],
         [
             'label' => 'Adjust',
@@ -228,151 +253,12 @@ $this->params['breadcrumbs'][] = $this->title;
             'hiddenFromExport' => true,
         ],
     ];
-    // $gridColumns = [
 
-    //     [
-    //         'label' => 'id',
-    //         'attribute' => 'process_ors_id',
-    //         'value' => 'processOrs.id',
-    //         // 'value' => 'processOrs.reporting_period'
-    //     ],
-
-
-    //     [
-    //         'label' => 'Obligation Number',
-    //         'attribute' => 'process_ors_id',
-    //         'value' => 'processOrs.serial_number',
-    //         // 'value' => 'processOrs.reporting_period'
-    //     ],
-    //     'reporting_period',
-    //     [
-    //         'label' => "Transaction",
-    //         'attribute' => "processOrs.transaction.tracking_number"
-    //     ],
-
-    //     [
-    //         'label' => 'Allotment Number',
-    //         'attribute' => 'recordAllotmentEntries.recordAllotment.serial_number',
-    //     ],
-    //     [
-    //         'label' => 'Allotment UACS Code',
-    //         'attribute' => 'recordAllotmentEntries.chartOfAccount.uacs',
-    //     ],
-    //     [
-    //         'label' => 'Allotment General Ledger',
-    //         'attribute' => 'recordAllotmentEntries.chartOfAccount.general_ledger',
-    //     ],
-
-    //     [
-    //         'label' => 'ORS UACS Object Code',
-    //         'value' => 'raoudEntries.chartOfAccount.uacs',
-    //     ],
-    //     [
-    //         'label' => 'General Ledger',
-    //         'value' => 'raoudEntries.chartOfAccount.general_ledger',
-    //     ],
-    //     [
-    //         'label' => 'Payee',
-    //         'value' => 'processOrs.transaction.payee.account_name',
-    //     ],
-
-    //     [
-    //         'label' => 'Amount',
-    //         'attribute' => 'raoudEntries.amount',
-    //         'format' => ['decimal', 2],
-    //         'pageSummary' => true,
-    //     ],
-    //     [
-    //         'label' => 'Adjust Amount',
-    //         'value' => function ($model) {
-    //             $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total
-    //                 FROM `raouds`,raoud_entries
-    //                 WHERE raouds.id=raoud_entries.raoud_id
-    //                 AND raoud_entries.amount >0
-    //                 AND raoud_entries.parent_id_from_raoud = $model->id
-    //                  ")->queryOne();
-    //             if (!empty($query['total'])) {
-    //                 return $query['total'];
-    //             } else {
-    //                 return '';
-    //             }
-    //         },
-    //         'format' => ['decimal', 2]
-    //     ],
-
-
-    //     // [
-    //     //     'label' => 'Adjust',
-    //     //     'format' => 'raw',
-    //     //     'value' => function ($model) {
-
-    //     //         $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total
-    //     //             FROM `raouds`,raoud_entries
-    //     //             WHERE raouds.id=raoud_entries.raoud_id
-    //     //             AND raoud_entries.amount >0
-    //     //             AND raoud_entries.parent_id_from_raoud = $model->id
-    //     //              ")->queryOne();
-    //     //         $amount = $model->raoudEntries->amount;
-    //     //         if ($query['total'] < $amount  && $amount > 0) {
-
-    //     //             $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/adjust&id=$model->id";
-    //     //             return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-primary fa fa-pencil-square-o']);
-    //     //         } else {
-    //     //             return "";
-    //     //         }
-    //     //         // return $query['total'];
-    //     //     },
-    //     //     'hiddenFromExport' => true,
-    //     // ],
-    //     [
-    //         'label' => 'Adjust',
-    //         'format' => 'raw',
-    //         'value' => function ($model) {
-
-    //             $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total
-    //                 FROM `raouds`,raoud_entries
-    //                 WHERE raouds.id=raoud_entries.raoud_id
-    //                 AND raoud_entries.amount >0
-    //                 AND raoud_entries.parent_id_from_raoud = $model->id
-    //                  ")->queryOne();
-    //             $amount = $model->raoudEntries->amount;
-    //             if ($query['total'] < $amount  && $amount > 0) {
-
-    //                 $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/re-align&id=$model->id";
-    //                 return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-success fa fa-pencil-square-o']);
-    //             } else {
-    //                 return "";
-    //             }
-    //             // return $query['total'];
-    //         },
-    //         'hiddenFromExport' => true
-    //     ],
-    //     [
-    //         'label' => 'View',
-    //         'format' => 'raw',
-    //         'value' => function ($model) {
-    //             $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$model->id";
-    //             return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-primary fa fa-eye']);
-
-    //             // return $query['total'];
-    //         },
-    //         'hiddenFromExport' => true,
-    //     ],
-
-
-    //     // ['class' => 'yii\grid\ActionColumn'],
-    //     // [
-    //     //     'class' => '\kartik\grid\ActionColumn',
-    //     //     // 'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
-    //     //     // 'delete' => false
-
-    //     // ]
-    // ];
 
     ?>
     <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
+        'dataProvider' => $dataProvider3,
+        'filterModel' => $searchModel3,
         'panel' => [
             'heading' => '<h3 class="panel-title"> Process Ors</h3>',
             'type' => 'primary',
@@ -384,8 +270,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'toolbar' => [
             [
                 'content' => ExportMenu::widget([
-                    'dataProvider' => $dataProvider2,
-                    'columns' => $exportColumns,
+                    'dataProvider' => $dataProvider3,
+                    'columns' => $gridColumns3,
                     'filename' => "ORS",
                     'exportConfig' => [
                         ExportMenu::FORMAT_CSV => false,
@@ -404,8 +290,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'export' => false,
 
 
-        'columns' => $gridColumns
+        'columns' => $gridColumns3
     ]); ?>
+
 
     <style>
         .grid-view td {

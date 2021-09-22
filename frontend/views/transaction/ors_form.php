@@ -649,12 +649,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     foreach ($model->processOrs as $val) {
                         if (!empty($val->id)) {
 
-                            $q = Raouds::find()
-                                ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' => $val->id])
-                                ->one();
+                            // $q = Raouds::find()
+                            //     ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' => $val->id])
+                            //     ->one();
 
 
-                            $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$q->id";
+                            $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$val->id";
                             // echo  Html::a('ORS Link', $t, ['class' => 'btn btn-success ']);
 
                         }
