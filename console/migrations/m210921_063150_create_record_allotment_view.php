@@ -36,9 +36,8 @@ class m210921_063150_create_record_allotment_view extends Migration
                 major_accounts.`name` as allotment_class,
                 record_allotment_entries.amount,
                 IF(document_recieve.`name`='GARO','NCA','NTA') as nca_nta,
-                IF(mfo_pap_code.`name`='CARP','CARP','101') as carp_101,
-                        IFNULL(total_ors.total_ors,0) as total_ors,
-                        record_allotment_entries.amount -  IFNULL(total_ors.total_ors,0) as balance
+                IF(mfo_pap_code.`name`='CARP','CARP','101') as carp_101
+                     
 
 
 
@@ -58,6 +57,8 @@ class m210921_063150_create_record_allotment_view extends Migration
                
         SQL;
         $this->execute($sql);
+        // IFNULL(total_ors.total_ors,0) as total_ors,
+        // record_allotment_entries.amount -  IFNULL(total_ors.total_ors,0) as balance
     //     LEFT JOIN (
     //         SELECT 
     //             process_ors_entries.record_allotment_entries_id,
