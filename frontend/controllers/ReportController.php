@@ -1366,9 +1366,10 @@ class ReportController extends \yii\web\Controller
             $current_advances = new Query();
             $current_advances->select([
                 "SUBSTRING_INDEX(advances_entries.reporting_period,'-',1) as `year`,
-            advances.province,
-            fund_source_type.`division`,
-            SUM(advances_entries.amount) as total_amount"
+                advances.province,
+                fund_source_type.`division`,
+                fund_source_type.`name` as fund_type,
+                SUM(advances_entries.amount) as total_amount"
             ])
                 ->from("advances_entries")
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id=  advances.id')
@@ -1381,13 +1382,14 @@ class ReportController extends \yii\web\Controller
             if ($division !== 'all') {
                 $current_advances->andWhere("fund_source_type.division =:division", ['division' => $division]);
             }
-            $current_advances->groupBy("`year`,advances.province, fund_source_type.division");
+            $current_advances->groupBy("`year`,advances.province, fund_source_type.division,fund_source_type.`name` ");
 
             $prev_advances = new Query();
             $prev_advances->select([
                 "SUBSTRING_INDEX(advances_entries.reporting_period,'-',1) as `year`",
                 "advances.province",
                 "fund_source_type.`division`",
+                "fund_source_type.`name` as fund_type",
                 "SUM(advances_entries.amount) as total_amount"
             ])
                 ->from('advances_entries')
@@ -1400,13 +1402,14 @@ class ReportController extends \yii\web\Controller
             if ($division !== 'all') {
                 $prev_advances->andWhere("fund_source_type.division =:division", ['division' => $division]);
             }
-            $prev_advances->groupBy("`year`,advances.province, fund_source_type.division");
+            $prev_advances->groupBy("`year`,advances.province, fund_source_type.division,fund_source_type.`name` ");
 
             $current_liquidation  = new Query();
             $current_liquidation->select([
                 "substring_index(liquidation_entries.reporting_period,'-',1) as `year`",
                 "liquidation.province",
                 "fund_source_type.division",
+                "fund_source_type.`name` as fund_type",
                 "SUM(liquidation_entries.withdrawals) as total_withdrawals"
 
             ])
@@ -1422,15 +1425,7 @@ class ReportController extends \yii\web\Controller
             if ($division !== 'all') {
                 $current_liquidation->andWhere("fund_source_type.division =:division", ['division' => $division]);
             }
-            $current_liquidation->groupBy("`year`,
-        liquidation.province,
-        fund_source_type.division");
-
-
-
-
-
-
+            $current_liquidation->groupBy("`year`,liquidation.province,fund_source_type.division,fund_source_type.`name`");
 
             $budget_fur_query = $budget_fur->createCommand()->getRawSql();
             $current_advances_query = $current_advances->createCommand()->getRawSql();
@@ -1448,13 +1443,36 @@ class ReportController extends \yii\web\Controller
               IFNULL(current_liquidation.total_withdrawals,0) as total_withdrawals,
             ( IFNULL(prev_advances.total_amount,0) +IFNULL(current_advances.total_amount,0)) -  IFNULL(current_liquidation.total_withdrawals,0) as ending_balance
 
-            FROM($budget_fur_query) as budget_year
+            FROM(
+                SELECT
+                q1.*,fund_source_type.name as fund_type
+                FROM ($budget_fur_query) as q1
+                LEFT JOIN fund_source_type ON q1.division = fund_source_type.division
+            ) as budget_year
             LEFT JOIN ($current_advances_query) as current_advances 
-             ON (budget_year.`year` = current_advances.`year` AND budget_year.province = current_advances.province  AND budget_year.division = current_advances.division)
+             ON (budget_year.`year` = current_advances.`year`
+              AND budget_year.province = current_advances.province  
+              AND budget_year.division = current_advances.division
+              AND budget_year.fund_type = current_advances.fund_type
+              )
             LEFT JOIN ($prev_advances_query) as prev_advances 
-             ON (budget_year.`year` = prev_advances.`year` AND budget_year.province = prev_advances.province  AND budget_year.division = prev_advances.division)
+             ON (budget_year.`year` = prev_advances.`year` 
+             AND budget_year.province = prev_advances.province  
+             AND budget_year.division = prev_advances.division
+             AND budget_year.fund_type = prev_advances.fund_type
+             )
             LEFT JOIN ($current_liquidation_query) as current_liquidation 
-             ON (budget_year.`year` = current_liquidation.`year` AND budget_year.province = current_liquidation.province  AND budget_year.division = current_liquidation.division)
+             ON (budget_year.`year` = current_liquidation.`year` 
+             AND budget_year.province = current_liquidation.province 
+              AND budget_year.division = current_liquidation.division
+              AND budget_year.fund_type = current_liquidation.fund_type
+              )
+              WHERE 
+            IFNULL(prev_advances.total_amount,0) >0
+            OR
+            IFNULL(current_advances.total_amount,0) > 0
+            OR
+            IFNULL(current_liquidation.total_withdrawals,0)>0
             "
             )
                 ->queryAll();
@@ -1462,16 +1480,36 @@ class ReportController extends \yii\web\Controller
 
 
 
-            $result = ArrayHelper::index($final_query, 'division', [function ($element) {
+            $result = ArrayHelper::index($final_query, 'fund_type', [function ($element) {
+                return $element['province'];
+            }, 'year', 'division']);
+            $conso = array();
+
+            foreach ($result as $province => $val1) {
+                foreach ($val1  as $year  => $val2) {
+                    foreach ($val2 as $division => $val3) {
+                        $conso[] = [
+                            'province' => $province,
+                            'year' => $year,
+                            'division' => $division,
+                            'beginning_balance' => array_sum(array_column($result[$province][$year][$division], 'beginning_balance')),
+                            'current_advances_amount' => array_sum(array_column($result[$province][$year][$division], 'current_advances_amount')),
+                            'total_withdrawals' => array_sum(array_column($result[$province][$year][$division], 'total_withdrawals')),
+                            'ending_balance' => array_sum(array_column($result[$province][$year][$division], 'ending_balance')),
+                        ];
+                    }
+                }
+            }
+
+            $conso_result = ArrayHelper::index($conso, 'division', [function ($element) {
                 return $element['province'];
             }, 'year']);
-
             // echo "<pre>";
             // var_dump($result);
             // echo "</pre>";
 
 
-            return json_encode($result);
+            return json_encode(['detailed' => $result, 'conso' => $conso_result]);
         }
         return $this->render('budget-year-fur');
     }
@@ -1498,20 +1536,8 @@ class ReportController extends \yii\web\Controller
             // print_r($excel->getSheetNames());
 
             $data = [];
-            // $chart_uacs = ChartOfAccounts::find()->where("id = :id", ['id' => $chart_id])->one()->uacs;
 
-            $latest_tracking_no = (new \yii\db\Query())
-                ->select('tracking_number')
-                ->from('transaction')
-                ->orderBy('id DESC')->one();
-            if ($latest_tracking_no) {
-                $x = explode('-', $latest_tracking_no['tracking_number']);
-                $last_number = $x[2] + 1;
-            } else {
-                $last_number = 1;
-            }
-            // 
-            $qwe = 1;
+   
             foreach ($worksheet->getRowIterator(2) as $key => $row) {
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,

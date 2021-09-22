@@ -14,7 +14,7 @@ class m210921_095131_create_process_ors_view_new extends Migration
     {
         $sql = <<<SQL
             CREATE VIEW process_ors_new_view as 
-                SELECT
+            SELECT
                 process_ors.id,
                 process_ors.serial_number,
                 `transaction`.tracking_number,
@@ -40,7 +40,7 @@ class m210921_095131_create_process_ors_view_new extends Migration
 
                 WHERE
                 process_ors.type = 'ors'
-                ORDER BY process_ors.created_at DESC
+                ORDER BY process_ors.created_at DESC 
         SQL;
         $this->execute($sql);
     }

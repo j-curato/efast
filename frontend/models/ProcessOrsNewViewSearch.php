@@ -79,7 +79,7 @@ class ProcessOrsNewViewSearch extends ProcessOrsNewView
             ->andFilterWhere(['like', 'allotment_uacs', $this->allotment_uacs])
             ->andFilterWhere(['like', 'allotment_account_title', $this->allotment_account_title])
             ->andFilterWhere(['like', 'ors_uacs', $this->ors_uacs])
-            ->andFilterWhere(['like', 'ors_account_tiitle', $this->ors_account_tiitle])
+            ->andFilterWhere(['like', 'ors_account_title', $this->ors_account_title])
             ->andFilterWhere(['like', 'is_cancelled', $this->is_cancelled])
             ->andFilterWhere(['like', 'amount', $this->amount]);
 

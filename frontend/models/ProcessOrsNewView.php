@@ -37,7 +37,7 @@ class ProcessOrsNewView extends \yii\db\ActiveRecord
         return [
             [['id', 'is_cancelled'], 'integer'],
             [['amount'], 'number'],
-            [['serial_number', 'tracking_number', 'payee', 'particular', 'allotment_account_title', 'ors_account_tiitle'], 'string', 'max' => 255],
+            [['serial_number', 'tracking_number', 'payee', 'particular', 'allotment_account_title', 'ors_account_title'], 'string', 'max' => 255],
             [['allotment_uacs', 'ors_uacs'], 'string', 'max' => 30],
         ];
     }
@@ -56,7 +56,7 @@ class ProcessOrsNewView extends \yii\db\ActiveRecord
             'allotment_uacs' => 'Allotment Uacs',
             'allotment_account_title' => 'Allotment Account Title',
             'ors_uacs' => 'Ors Uacs',
-            'ors_account_tiitle' => 'Ors Account Tiitle',
+            'ors_account_title' => 'Ors Account Tiitle',
             'amount' => 'Amount',
             'is_cancelled' => 'Is Cancelled',
         ];

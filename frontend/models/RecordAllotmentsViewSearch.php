@@ -23,7 +23,9 @@ class RecordAllotmentsViewSearch extends RecordAllotmentsView
                 'entry_id'
             ], 'integer'],
             [[
-                'amount'
+                'amount',
+                'total_ors',
+                
             ], 'number'],
 
 
@@ -111,6 +113,7 @@ class RecordAllotmentsViewSearch extends RecordAllotmentsView
             ->andFilterWhere(['like', 'general_ledger', $this->general_ledger])
             ->andFilterWhere(['like', 'allotment_class', $this->allotment_class])
             ->andFilterWhere(['like', 'nca_nta', $this->nca_nta])
+            ->andFilterWhere(['like', 'total_ors', $this->total_ors])
             ->andFilterWhere(['like', 'carp_101', $this->carp_101]);
 
         return $dataProvider;
