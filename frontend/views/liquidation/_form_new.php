@@ -424,7 +424,7 @@ SweetAlertAsset::register($this);
         var nft_number = qwer.find('.nft_number').text();
         var report_type = qwer.find('.report_type').text();
         var province = qwer.find('.province').text();
-        var fund_source = qwer.find('.fund_source').text();
+        var fund_source = qwer.find('.fund_source').text().trim();
         var chart_of_account_id = qwer.find('.chart_of_account').val() != null ? qwer.find('.chart_of_account').val() : 0;
         var withdrawal = qwer.find('.withdrawal').val();
         var vat_nonvat = qwer.find('.vat_nonvat').val();
