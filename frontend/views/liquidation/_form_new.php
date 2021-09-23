@@ -537,19 +537,19 @@ SweetAlertAsset::register($this);
                 $(`#ewt-${transaction_table_count}`).val(result[i]['expanded_tax'])
                 $(`#date_${transaction_table_count}`).val(result[i]['reporting_period'])
             }
-            // if (type == 're-align') {
-            //     $(`#chart-${transaction_table_count}`).prop('disabled', true)
-            //     $(`#withdrawal-${transaction_table_count}`).prop('disabled', true)
-            //     $(`#vat_nonvat-${transaction_table_count}`).prop('disabled', true)
-            //     $(`#liq_damages-${transaction_table_count}`).prop('disabled', true)
-            //     $(`#ewt-${transaction_table_count}`).prop('disabled', true)
-            //     $(`#advances_${transaction_table_count}`).prop('disabled', true)
-            //     $(`#date_${transaction_table_count}`).prop('disabled', true)
-            //     $(`#remove_${transaction_table_count}`).hide()
+            if (type == 're-align') {
+                $(`#chart-${transaction_table_count}`).prop('disabled', true)
+                $(`#withdrawal-${transaction_table_count}`).prop('disabled', true)
+                $(`#vat_nonvat-${transaction_table_count}`).prop('disabled', true)
+                $(`#liq_damages-${transaction_table_count}`).prop('disabled', true)
+                $(`#ewt-${transaction_table_count}`).prop('disabled', true)
+                $(`#advances_${transaction_table_count}`).prop('disabled', true)
+                $(`#date_${transaction_table_count}`).prop('disabled', true)
+                $(`#remove_${transaction_table_count}`).hide()
 
-            //     // console.log("re-align")
+                // console.log("re-align")
 
-            // }
+            }
             if ($('#update_type').val() === 'create') {
                 $(`#date_${transaction_table_count}`).val('')
 
