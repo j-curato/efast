@@ -29,6 +29,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 use yii\helpers\VarDumper;
 use yii\web\ForbiddenHttpException;
 use yii\web\UploadedFile;
@@ -255,7 +256,7 @@ class JevPreparationController extends Controller
                 //  'SUM(jev_accounting_entries.debit) as debit',
                 // 'chart_of_accounts.normal_balance',
                 //  'jev_preparation.date'
-                
+
                 "IFNULL(NULL,'$prev_end_month') as reporting_period",
                 "IFNULL(NULL,'Beginning Balance') as explaination",
                 "accounting_codes.coa_object_code as uacs",
@@ -292,22 +293,20 @@ class JevPreparationController extends Controller
                 // ->orderBy('jev_accounting_entries.chart_of_account_id')
             ;
             $q = (new \yii\db\Query())
-            ->select([
-                "q.reporting_period",
-                "q.explaination",
-                "q.uacs",
-                "q.general_ledger",
-                "q.ref_number",
-                "q.jev_number",
-                'q.credit',
-                'q.debit',
-                "chart_of_accounts.normal_balance",
-                "q.date",
-            ])
-            ->from ('chart_of_accounts')
-            
-            ;
-            $qwe = $q->join('INNER JOIN',"({$query1->createCommand()->getRawSql()}) as q",'chart_of_accounts.uacs = q.uacs');
+                ->select([
+                    "q.reporting_period",
+                    "q.explaination",
+                    "q.uacs",
+                    "q.general_ledger",
+                    "q.ref_number",
+                    "q.jev_number",
+                    'q.credit',
+                    'q.debit',
+                    "chart_of_accounts.normal_balance",
+                    "q.date",
+                ])
+                ->from('chart_of_accounts');
+            $qwe = $q->join('INNER JOIN', "({$query1->createCommand()->getRawSql()}) as q", 'chart_of_accounts.uacs = q.uacs');
             // return json_encode($qwe->all());
             // E UNION AND DUHA KA RESULT SA QUERY SA  
             $chart = $qwe->union($general_ledger, true)->all();
@@ -1484,7 +1483,7 @@ class JevPreparationController extends Controller
                 $jev_preparation = new JevPreparation();
                 // kung update and transaction
                 if ($_POST['update_id'] > 0) {
-                    
+
                     $jv = JevPreparation::findOne($_POST['update_id']);
                     if (!empty($jv->jevAccountingEntries)) {
                         foreach ($jv->jevAccountingEntries as $val) {
@@ -2607,32 +2606,6 @@ class JevPreparationController extends Controller
                     $coa_account_title
                 );
 
-                // if ($val->lvl === 1) {
-                //     $general_ledger = $val->chartOfAccount->general_ledger;
-                //     $object_code = $val->chartOfAccount->uacs;
-                // } else if ($val->lvl === 2) {
-                //     // $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $val->object_code])->one();
-                //     // $general_ledger = $q->name;
-                //     // $object_code = $q->object_code;
-
-                //     $eee = array_search($val->object_code, array_column($sub1, 'object_code'));
-                //     $general_ledger = $sub1[$eee]['name'];
-                //     $object_code = $sub1[$eee]['object_code'];
-                //     // ob_clean();
-                //     // echo "<pre>";
-                //     // var_dump($sub1[$eee]['object_code']);
-                //     // echo "</pre>";
-                //     // return ob_get_clean();
-                // } else if ($val->lvl === 3) {
-                //     // $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $val->object_code])->one();
-                //     // $general_ledger = $q->name;
-                //     // $object_code = $q->object_code;
-                //     $y = array_search($val->object_code, array_column($sub2, 'object_code'));
-                //     $general_ledger = $sub2[$y]['name'];
-                //     $object_code = $sub2[$y]['object_code'];
-                // }
-
-                //ENTRY OBJECT CODE
 
                 $sheet->setCellValueByColumnAndRow(
                     7,
@@ -2696,8 +2669,8 @@ class JevPreparationController extends Controller
             // header('Pragma: public'); // HTTP/1.0
             // echo readfile($file);
             $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
-            $file = "transaction\jev_$id.xlsx";
-            $file2 = "transaction/jev_$id.xlsx";
+            $file =  "transaction\jev_$id.xlsx";
+            $file2 = Url::base() . '/' . "transaction/jev_$id.xlsx";
 
             $writer->save($file);
             // return ob_get_clean();

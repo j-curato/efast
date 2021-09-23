@@ -73,7 +73,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 // ]);
 
                 ?>
-                <select class="js-data-example-ajax" style="width: 100%;" name="fund_source[]"></select>
+                <select class="js-data-example-ajax" style="width: 100%;" name="fund_source[]" multiple='multiple'></select>
+                <select class="chart-of-accounts" style="width: 100%;" name="chart-of-account[]" multiple='multiple'></select>
             </div>
 
             <div class="col-sm-2" style="margin-top: 2.5rem;">
@@ -236,25 +237,83 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
     const size = 1122; // roughly A4
 
 
-    $('.js-data-example-ajax').select2({
-        ajax: {
-            url: window.location.pathname + '?r=report/fund',
-            dataType: 'json',
-            data: function(params) {
-                return {
-                    q: params.term,
-                    province: params.province
-                };
-            },
-            processResults: function(data) {
-                // Transforms the top-level key of the response object from 'items' to 'results'
-                return {
-                    results: data.results
-                };
-            }
-        }
-    });
+
     $(document).ready(function() {
+
+        $('.js-data-example-ajax').select2({
+            ajax: {
+                url: window.location.pathname + '?r=report/fund',
+                dataType: 'json',
+                data: function(params) {
+
+                    return {
+                        q: params.term,
+                    };
+                },
+                processResults: function(data) {
+                    // Transforms the top-level key of the response object from 'items' to 'results'
+                    return {
+                        results: data.results
+                    };
+                }
+            }
+        });
+        // SERVER SIDE SEARCH
+        $('.chart-of-accounts').select2({
+            ajax: {
+                url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code',
+                dataType: 'json',
+                data: function(params) {
+
+                    return {
+                        q: params.term,
+                    };
+                },
+                processResults: function(data) {
+                    // Transforms the top-level key of the response object from 'items' to 'results'
+                    return {
+                        results: data.results
+                    };
+                }
+            }
+        });
+        var studentSelect = $('.js-data-example-ajax');
+        var data = [{
+                id: 0,
+                text: 'enhancement'
+            },
+            {
+                id: 1,
+                text: 'bug'
+            },
+            {
+                id: 2,
+                text: 'duplicate'
+            },
+            {
+                id: 3,
+                text: 'invalid'
+            },
+            {
+                id: 4,
+                text: 'wontfix'
+            }
+        ];
+
+        var option = new Option(['duplicate'], [2], true, true);
+        studentSelect.append(option).trigger('change');
+        var option = new Option(['bug'], [1], true, true);
+        studentSelect.append(option).trigger('change');
+
+        // manually trigger the `select2:select` event
+        studentSelect.trigger({
+            type: 'select2:select',
+            params: {
+                data: data
+            }
+        });
+
+
         var _docHeight = (document.height !== undefined) ? document.height : document.body.offsetHeight;
         var table = $("#rod_table");
         // alert(table.offsetHeight);
