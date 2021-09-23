@@ -519,15 +519,15 @@ SweetAlertAsset::register($this);
             var x = result[i]['fund_source']
             var y = x.split(' ').slice(0, 2).join(' ');
             console.log(x.split(' ').slice(0, 2))
-            if (y.toLowerCase() == 'rapid lp') {
-                $(`#vat_nonvat-${transaction_table_count}`).maskMoney('destroy')
-                $(`#ewt-${transaction_table_count}`).maskMoney('destroy')
-                $(`#liq_damages-${transaction_table_count}`).maskMoney('destroy')
-                $(`#vat_nonvat-${transaction_table_count}`).prop('readonly', true)
-                $(`#ewt-${transaction_table_count}`).prop('readonly', true)
-                $(`#liq_damages-${transaction_table_count}`).prop('readonly', true)
+            // if (y.toLowerCase() == 'rapid lp') {
+            //     $(`#vat_nonvat-${transaction_table_count}`).maskMoney('destroy')
+            //     $(`#ewt-${transaction_table_count}`).maskMoney('destroy')
+            //     $(`#liq_damages-${transaction_table_count}`).maskMoney('destroy')
+            //     $(`#vat_nonvat-${transaction_table_count}`).prop('readonly', true)
+            //     $(`#ewt-${transaction_table_count}`).prop('readonly', true)
+            //     $(`#liq_damages-${transaction_table_count}`).prop('readonly', true)
 
-            }
+            // }
 
             if ($('#update_id') != null) {
                 $(`#chart-${transaction_table_count}`).val(result[i]['chart_of_account_id']).trigger('change')
@@ -537,19 +537,19 @@ SweetAlertAsset::register($this);
                 $(`#ewt-${transaction_table_count}`).val(result[i]['expanded_tax'])
                 $(`#date_${transaction_table_count}`).val(result[i]['reporting_period'])
             }
-            if (type == 're-align') {
-                $(`#chart-${transaction_table_count}`).prop('disabled', true)
-                $(`#withdrawal-${transaction_table_count}`).prop('disabled', true)
-                $(`#vat_nonvat-${transaction_table_count}`).prop('disabled', true)
-                $(`#liq_damages-${transaction_table_count}`).prop('disabled', true)
-                $(`#ewt-${transaction_table_count}`).prop('disabled', true)
-                $(`#advances_${transaction_table_count}`).prop('disabled', true)
-                $(`#date_${transaction_table_count}`).prop('disabled', true)
-                $(`#remove_${transaction_table_count}`).hide()
+            // if (type == 're-align') {
+            //     $(`#chart-${transaction_table_count}`).prop('disabled', true)
+            //     $(`#withdrawal-${transaction_table_count}`).prop('disabled', true)
+            //     $(`#vat_nonvat-${transaction_table_count}`).prop('disabled', true)
+            //     $(`#liq_damages-${transaction_table_count}`).prop('disabled', true)
+            //     $(`#ewt-${transaction_table_count}`).prop('disabled', true)
+            //     $(`#advances_${transaction_table_count}`).prop('disabled', true)
+            //     $(`#date_${transaction_table_count}`).prop('disabled', true)
+            //     $(`#remove_${transaction_table_count}`).hide()
 
-                // console.log("re-align")
+            //     // console.log("re-align")
 
-            }
+            // }
             if ($('#update_type').val() === 'create') {
                 $(`#date_${transaction_table_count}`).val('')
 
