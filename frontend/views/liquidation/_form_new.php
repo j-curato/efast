@@ -519,15 +519,15 @@ SweetAlertAsset::register($this);
             var x = result[i]['fund_source']
             var y = x.split(' ').slice(0, 2).join(' ');
             console.log(x.split(' ').slice(0, 2))
-            // if (y.toLowerCase() == 'rapid lp') {
-            //     $(`#vat_nonvat-${transaction_table_count}`).maskMoney('destroy')
-            //     $(`#ewt-${transaction_table_count}`).maskMoney('destroy')
-            //     $(`#liq_damages-${transaction_table_count}`).maskMoney('destroy')
-            //     $(`#vat_nonvat-${transaction_table_count}`).prop('readonly', true)
-            //     $(`#ewt-${transaction_table_count}`).prop('readonly', true)
-            //     $(`#liq_damages-${transaction_table_count}`).prop('readonly', true)
+            if (y.toLowerCase() == 'rapid lp') {
+                $(`#vat_nonvat-${transaction_table_count}`).maskMoney('destroy')
+                $(`#ewt-${transaction_table_count}`).maskMoney('destroy')
+                $(`#liq_damages-${transaction_table_count}`).maskMoney('destroy')
+                $(`#vat_nonvat-${transaction_table_count}`).prop('readonly', true)
+                $(`#ewt-${transaction_table_count}`).prop('readonly', true)
+                $(`#liq_damages-${transaction_table_count}`).prop('readonly', true)
 
-            // }
+            }
 
             if ($('#update_id') != null) {
                 $(`#chart-${transaction_table_count}`).val(result[i]['chart_of_account_id']).trigger('change')
