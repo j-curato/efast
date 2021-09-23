@@ -132,141 +132,29 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ];
     $gridColumns = [
-
         'id',
-        // [
-        //     'label' => 'ID',
-        //     'value' => "processOrs.id"
-        // ],
-
+        'serial_number',
+        'tracking_number',
+        'payee',
+        'particular',
+        'allotment_uacs',
+        'allotment_account_title',
+        'ors_uacs',
+        'ors_account_title',
+        'amount',
+        'is_cancelled',
         [
-            'label' => 'BURS Number',
-            'attribute' => 'id',
-            'value' => 'processOrs.serial_number',
-            // 'value' => 'processOrs.reporting_period'
-        ],
-        'reporting_period',
-        [
-            'label' => "Transaction",
-            'attribute' => "processOrs.transaction.tracking_number"
-        ],
-
-        [
-            'label' => 'Allotment Number',
-            'attribute' => 'recordAllotmentEntries.recordAllotment.serial_number',
-        ],
-        [
-            'label' => 'Allotment UACS Code',
-            'attribute' => 'recordAllotmentEntries.chartOfAccount.uacs',
-        ],
-        [
-            'label' => 'Allotment General Ledger',
-            'attribute' => 'recordAllotmentEntries.chartOfAccount.general_ledger',
-        ],
-
-        [
-            'label' => 'ORS UACS Object Code',
-            'value' => 'raoudEntries.chartOfAccount.uacs',
-        ],
-        [
-            'label' => 'General Ledger',
-            'value' => 'raoudEntries.chartOfAccount.general_ledger',
-        ],
-        [
-            'label' => 'Payee',
-            'value' => 'processOrs.transaction.payee.account_name',
-        ],
-
-        [
-            'label' => 'Amount',
-            'attribute' => 'raoudEntries.amount',
-            'format' => ['decimal', 2],
-            'pageSummary' => true,
-        ],
-        [
-            'label' => 'Adjust Amount',
-            'value' => function ($model) {
-                $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total
-                    FROM `raouds`,raoud_entries
-                    WHERE raouds.id=raoud_entries.raoud_id
-                    AND raoud_entries.amount >0
-                    AND raoud_entries.parent_id_from_raoud = $model->id
-                     ")->queryOne();
-                if (!empty($query['total'])) {
-                    return $query['total'];
-                } else {
-                    return '';
-                }
-            },
-            'format' => ['decimal', 2]
-        ],
-
-        // [
-        //     'label' => 'Adjust',
-        //     'format' => 'raw',
-        //     'value' => function ($model) {
-
-        //         $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total
-        //             FROM `raouds`,raoud_entries
-        //             WHERE raouds.id=raoud_entries.raoud_id
-        //             AND raoud_entries.amount >0
-        //             AND raoud_entries.parent_id_from_raoud = $model->id
-        //              ")->queryOne();
-        //         $amount = $model->raoudEntries->amount;
-        //         if ($query['total'] < $amount  && $amount > 0) {
-
-        //             $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/adjust&id=$model->id";
-        //             return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-primary fa fa-pencil-square-o']);
-        //         } else {
-        //             return "";
-        //         }
-        //         // return $query['total'];
-        //     },
-        //     'hiddenFromExport' => true,
-        // ],
-        [
-            'label' => 'Adjust',
+            'label' => 'Actions',
             'format' => 'raw',
             'value' => function ($model) {
-
-                $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total
-                    FROM `raouds`,raoud_entries
-                    WHERE raouds.id=raoud_entries.raoud_id
-                    AND raoud_entries.amount >0
-                    AND raoud_entries.parent_id_from_raoud = $model->id
-                     ")->queryOne();
-                $amount = $model->raoudEntries->amount;
-                if ($query['total'] < $amount  && $amount > 0) {
-
-                    $t = yii::$app->request->baseUrl . "/index.php?r=process-burs/re-align&id=$model->id";
-                    return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-success fa fa-pencil-square-o']);
-                } else {
-                    return "";
-                }
-                // return $query['total'];
+                $adjust = yii::$app->request->baseUrl . "/index.php?r=process-burs/re-align&id=$model->id";
+                $view = yii::$app->request->baseUrl . "/index.php?r=process-burs/view&id=$model->id";
+                return ' ' . Html::a('', $adjust, ['class' => 'btn-xs btn-success fa fa-pencil-square-o'])
+                    . ' ' . Html::a('', $view, ['class' => 'btn-xs btn-primary fa fa-eye']);
             },
             'hiddenFromExport' => true
         ],
-        [
-            'label' => 'View',
-            'format' => 'raw',
-            'value' => function ($model) {
-                $t = yii::$app->request->baseUrl . "/index.php?r=process-burs/view&id=$model->id";
-                return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-info fa fa-eye']);
 
-                // return $query['total'];
-            },
-            'hiddenFromExport' => true,
-        ],
-
-
-        // ['class' => 'yii\grid\ActionColumn'],
-        // [
-        //     'class' => '\kartik\grid\ActionColumn',
-        //     // 'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
-        //     // 'delete' => false
-
-        // ]
     ];
 
     ?>
@@ -274,7 +162,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'panel' => [
-            'heading' => '<h3 class="panel-title"> Process Ors</h3>',
+            'heading' => '<h3 class="panel-title"> Process BURS</h3>',
             'type' => 'primary',
             // 'before' => Html::a('<i class="glyphicon glyphicon-plus"></i>Create Process Ors', ['create'], ['class' => 'btn btn-success']),
 
@@ -285,8 +173,8 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'content' => ExportMenu::widget([
                     'dataProvider' => $dataProvider,
-                    'columns' => $exportColumns,
-                    'filename' => "ORS",
+                    'columns' => $gridColumns,
+                    'filename' => "BURS",
                     'exportConfig' => [
                         ExportMenu::FORMAT_CSV => false,
                         ExportMenu::FORMAT_TEXT => false,

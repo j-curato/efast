@@ -25,7 +25,7 @@ class RecordAllotmentsViewSearch extends RecordAllotmentsView
             [[
                 'amount',
                 'total_ors',
-                
+
             ], 'number'],
 
 
@@ -70,7 +70,7 @@ class RecordAllotmentsViewSearch extends RecordAllotmentsView
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params, $type)
     {
         $query = RecordAllotmentsView::find();
 
@@ -86,6 +86,11 @@ class RecordAllotmentsViewSearch extends RecordAllotmentsView
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
             return $dataProvider;
+        }
+        if ($type === 'burs') {
+            $query->andFilterWhere(['like', 'book', 'Fund 07']);
+        } else if ($type === 'ors') {
+            $query->andFilterWhere(['!=', 'book', 'Fund 07']);
         }
 
         // grid filtering conditions

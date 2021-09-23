@@ -17,8 +17,8 @@ class ChartOfAccountsSearch extends ChartOfAccounts
     public function rules()
     {
         return [
-            [['id','major_account_id', 'sub_major_account' ], 'integer'],
-            [['uacs', 'general_ledger', 'account_group', 'current_noncurrent', 'enable_disable'], 'safe'],
+            [['id','major_account_id', ], 'integer'],
+            [['uacs', 'general_ledger', 'account_group', 'current_noncurrent', 'enable_disable','sub_major_account'], 'safe'],
         ];
     }
 
@@ -55,12 +55,11 @@ class ChartOfAccountsSearch extends ChartOfAccounts
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->joinWith('subMajorAccount');
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
             'major_account_id' => $this->major_account_id,
-            'sub_major_account' => $this->sub_major_account,
         ]);
 
 
@@ -71,8 +70,8 @@ class ChartOfAccountsSearch extends ChartOfAccounts
             ->andFilterWhere(['like', 'general_ledger', $this->general_ledger])
             ->andFilterWhere(['like', 'account_group', $this->account_group])
             ->andFilterWhere(['like', 'current_noncurrent', $this->current_noncurrent])
-            ->andFilterWhere(['like', 'enable_disable', $this->enable_disable]);
-            // ->andFilterWhere(['like', 'sub_major_account.name', $this->sub_major_account])
+            ->andFilterWhere(['like', 'enable_disable', $this->enable_disable])
+            ->andFilterWhere(['like', 'sub_major_accounts.name', $this->sub_major_account]);
             // ->andFilterWhere(['like', 'major_accounts.name', $this->major_account_id]);
 
         return $dataProvider;

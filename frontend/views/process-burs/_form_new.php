@@ -92,7 +92,7 @@ use kartik\select2\Select2;
                 </thead>
                 <tr>
                     <td>
-                        <div id="payee"></div>
+                        <div id="payee_name"></div>
                     </td>
                     <td>
                         <div id="transaction_particular"></div>
@@ -127,11 +127,11 @@ use kartik\select2\Select2;
 
         <?php
         $col = [
-            'id',
+
             'serial_number',
             'mfo_code',
             'mfo_name',
-            'fund_source_name',
+            'fund_source',
             'uacs',
             'general_ledger',
             [
@@ -148,7 +148,7 @@ use kartik\select2\Select2;
             [
                 'class' => '\kartik\grid\CheckboxColumn',
                 'checkboxOptions' => function ($model, $key, $index, $column) {
-                    return ['value' => $model->id, 'onchange' => 'enableDisable(this)', 'style' => 'width:20px;', 'class' => 'checkbox'];
+                    return ['value' => $model->entry_id, 'onchange' => 'enableDisable(this)', 'style' => 'width:20px;', 'class' => 'checkbox'];
                 }
             ],
             [
@@ -157,9 +157,9 @@ use kartik\select2\Select2;
 
                 'value' => function ($model) {
                     return ' ' .  MaskMoney::widget([
-                        'name' => "amount[$model->id]",
+                        'name' => "amount[$model->entry_id]",
                         'disabled' => true,
-                        'id' => "amount_$model->id",
+                        'id' => "amount_$model->entry_id",
                         'options' => [
                             'class' => 'amounts',
                         ],
@@ -172,143 +172,7 @@ use kartik\select2\Select2;
                 'contentOptions' => ['style' => 'width:200px; white-space: normal;'],
             ]
         ];
-        // $columns = [
 
-        //     // 'id',
-        //     [
-        //         'label' => 'ID',
-
-        //         'attribute' => 'recordAllotmentEntries.id'
-
-        //     ],
-        //     [
-        //         'label' => 'Serial Number',
-
-        //         'attribute' => 'recordAllotmentEntries.recordAllotment.serial_number'
-
-        //     ],
-
-        //     [
-        //         'label' => 'MFO/PAP Code',
-        //         'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.code',
-        //         'filter' => Select2::widget([
-        //             'model' => $searchModel,
-        //             'attribute' => 'is_parent',
-        //             'data' =>  ArrayHelper::map(MfoPapCode::find()->asArray()->all(), 'id', 'code'),
-        //             'options' => ['placeholder' => 'Select '],
-        //             'pluginOptions' => [
-        //                 'allowClear' => true
-        //             ],
-        //         ])
-
-        //     ],
-        //     [
-        //         'label' => 'MFO/PAP Code Name',
-        //         'attribute' => 'recordAllotmentEntries.recordAllotment.mfoPapCode.name'
-        //     ],
-        //     [
-        //         'label' => 'MFO/PAP Code id',
-        //         'attribute' => 'recordAllotmentEntries.recordAllotment.mfo_pap_code_id'
-        //     ],
-
-        //     [
-        //         'label' => 'Fund Source Code',
-        //         'attribute' => 'recordAllotmentEntries.recordAllotment.fundSource.name'
-        //     ],
-        //     [
-        //         'label' => 'Object Code',
-        //         'value' => function ($model) {
-        //             if ($model->process_ors_id != null) {
-        //                 return $model->raoudEntries->chartOfAccount->uacs;
-        //             } else {
-        //                 return $model->recordAllotmentEntries->chartOfAccount->uacs;
-        //             }
-        //         }
-        //     ],
-        //     [
-        //         'label' => 'General Ledger',
-        //         // 'attribute' => 'recordAllotmentEntries.chartOfAccount.general_ledger'
-        //         'value' => function ($model) {
-        //             if ($model->process_ors_id != null) {
-        //                 return $model->raoudEntries->chartOfAccount->general_ledger;
-        //             } else {
-        //                 return $model->recordAllotmentEntries->chartOfAccount->general_ledger;
-        //             }
-        //         }
-        //     ],
-        //     [
-        //         'label' => 'Amount',
-        //         'attribute' => 'recordAllotmentEntries.amount',
-        //         'format' => ['decimal', 2],
-        //         'hAlign' => 'right',
-        //         'vAlign' => 'middle',
-        //     ],
-
-        //     [
-        //         'label' => 'Balance',
-        //         'value' => function ($model) {
-        //             // $query = (new \yii\db\Query())
-        //             //     ->select([
-
-        //             //         'entry.obligation_total', 'record_allotment_entries.amount', 'entry.remain'
-        //             //     ])
-        //             //     ->from('raouds')
-        //             //     ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
-        //             //     ->join("LEFT JOIN", "(SELECT SUM(raouds.obligated_amount) as obligation_total,
-        //             //     raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain
-        //             //      From raouds,record_allotment_entries
-        //             //      WHERE 
-        //             //     raouds.record_allotment_entries_id = record_allotment_entries.id
-        //             //     AND raouds.process_ors_id IS NOT NULL
-        //             //     GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
-        //             //     ->where("raouds.id = :id", ['id' => $model->id])->one();
-        //             $query = Yii::$app->db->createCommand("SELECT SUM(raouds.obligated_amount) as obligated_amount,
-        //                 SUM(raouds.burs_amount) as burs_amount,
-        //                 raouds.record_allotment_entries_id,record_allotment_entries.amount -SUM(raouds.obligated_amount) as remain,
-        //                 record_allotment_entries.amount as record_allotment_amount
-        //                 From raouds,record_allotment_entries,raoud_entries
-        //                 WHERE raouds.record_allotment_entries_id = record_allotment_entries.id
-        //                 AND raouds.id = raoud_entries.raoud_id
-        //                 AND raouds.record_allotment_entries_id=$model->record_allotment_entries_id
-        //                 ")->queryOne();
-        //             $burs_ors_amount = $query['obligated_amount'] + $query['burs_amount'];
-        //             $remain = $query['record_allotment_amount'] - $burs_ors_amount;
-        //             return $remain;
-        //         },
-        //         'format' => ['decimal', 2],
-        //         'hAlign' => 'right',
-        //         'vAlign' => 'middle',
-
-        //     ],
-
-        //     [
-        //         'class' => '\kartik\grid\CheckboxColumn',
-        //         'checkboxOptions' => function ($model, $key, $index, $column) {
-        //             return ['value' => $model->id, 'onchange' => 'enableDisable(this)', 'style' => 'width:20px;', 'class' => 'checkbox'];
-        //         }
-        //     ],
-        //     [
-        //         'label' => 'Actions',
-        //         'format' => 'raw',
-
-        //         'value' => function ($model) {
-        //             return ' ' .  MaskMoney::widget([
-        //                 'name' => "amount[$model->id]",
-        //                 'disabled' => true,
-        //                 'id' => "amount_$model->id",
-        //                 'options' => [
-        //                     'class' => 'amounts',
-        //                 ],
-        //                 'pluginOptions' => [
-        //                     'prefix' => '₱ ',
-        //                     'allowNegative' => true
-        //                 ],
-        //             ]);
-        //         },
-        //         'contentOptions' => ['style' => 'width:200px; white-space: normal;'],
-        //     ]
-
-        // ];
 
         ?>
         <?= GridView::widget([
@@ -389,10 +253,13 @@ use kartik\select2\Select2;
         }
     </style>
 
-    <script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <link href="/afms/frontend/web/js/select2.min.js" />
-    <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
-    <link href="/afms/frontend/web/js/maskMoney.js" />
+
+<?php
+$this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+
+?>
     <script>
         var update_id = null;
         var account_name = undefined;
@@ -465,36 +332,7 @@ use kartik\select2\Select2;
 
             addData([obj], qwe)
 
-            // var r = $(q).closest('tr').clone().find("input").each(function() {
-            //     $(this).attr({
-            //         'id': function(_, id) {
-            //             return id + select_id
-            //         },
-            //         'name': function(_, name) {
-            //             return name
-            //         },
-            //         'value': '',
-            //         'disabled': function(_, id) {
-            //             return false
-            //         },
-            //     });
-            // }).end().appendTo("#transaction_table");
-            // r.closest('tr').find("button").each(function() {
-            //     $(this).attr({
-            //         'id': function(_, id) {
-            //             return id + select_id
-            //         },
-            //         'name': function(_, name) {
-            //             return name
-            //         },
-            //         'value': '',
-            //         'disabled': function(_, id) {
-            //             return false
-            //         },
-            //     });
-            // }).end()
 
-            // select_id++;
         }
 
         function addData(result, isUpdate) {
@@ -599,7 +437,7 @@ use kartik\select2\Select2;
                     $(`#remove_${select_id}`).prop('disabled', true);
                     // $(`#date_${select_id}`).val('12/12/2021');
                     var dateControl = document.querySelector(`#date_${select_id}`);
-                    dateControl.value = result[i]['reporting_period'];
+                    dateControl.value = result[i]['entry_reporting_period'];
                     $(`#date_${select_id}`).prop('disabled', true);
                     $(`#raoud_${select_id}`).prop('disabled', true);
 
@@ -624,7 +462,7 @@ use kartik\select2\Select2;
 
         $(document).ready(function() {
             // GET CHART OF ACCOUNTS
-            $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/get-general-ledger&id='+$('#update_id').val())
+            $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/get-general-ledger&id=' + $('#update_id').val())
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {
@@ -638,26 +476,6 @@ use kartik\select2\Select2;
                     chart_of_accounts = data
 
                 })
-            // GET TRANSACTIONs
-
-            $.getJSON('/afms/frontend/web/index.php?r=transaction/get-all-transaction')
-                .then(function(data) {
-
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.tracking_number
-                        })
-                    })
-                    transaction = array
-                    $('#transaction_id').select2({
-                        data: transaction,
-                        placeholder: "Select Transaction",
-
-                    })
-
-                });
 
 
 
@@ -683,11 +501,26 @@ use kartik\select2\Select2;
 
                 });
 
-
-
-
-
         })
+        $('#transaction_id').select2({
+            ajax: {
+                url: window.location.pathname + '?r=transaction/search-transaction',
+                dataType: 'json',
+                data: function(params) {
+
+                    return {
+                        q: params.term,
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data.results
+                    };
+                },
+                cache: true
+            },
+            placeholder: 'Search for Transaction',
+        });
         $('#add_data').submit(function(e) {
 
             console.log($('#add_data').serialize()),
@@ -708,16 +541,49 @@ use kartik\select2\Select2;
             $('.amounts').prop('disabled', true);
             $('.amounts').val(null);
         })
+        $("#transaction_id").change(function() {
+            var transaction_id = $("#transaction_id").val()
+            var date = new Date()
+
+            var x = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+            // console.log(thousands_separators(1111))
+            $('#transaction_timestamp').val(x)
+            transactionOnChange(transaction_id)
+
+        })
+
+        function transactionOnChange(transaction_id) {
+            $.ajax({
+                url: window.location.pathname + "?r=transaction/get-transaction",
+                type: "POST",
+                data: {
+                    transaction_id: transaction_id
+                },
+                success: function(data) {
+                    var res = JSON.parse(data)
+                    account_name = res.result['account_name']
+                    var particular = res.result['particular']
+                    var amount = res.result['gross_amount']
+                    // var x = document.getElementById("transaction_detail");
+                    //  x.deleteRow(0);
+                    $("#payee_name").text(res.result['account_name'])
+                    $("#transaction_particular").text(res.result['particular'])
+                    $("#transaction_amount").text(thousands_separators(parseFloat(res.result['gross_amount'])))
+
+
+                    var row = "<tr><td>" + account_name + "</td></tr>"
+                    // $('#transaction_detail').tbody(row);
+                    // var x = document.getElementById("transaction_detail").getElementsByTagName("tbody")[0]row;
+
+
+                }
+
+            })
+        }
     </script>
 </div>
 
 
-<?php
-$this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-$this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-// $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-
-?>
 <?php SweetAlertAsset::register($this); ?>
 <?php
 
@@ -726,36 +592,7 @@ $script = <<< JS
         var transactions=[];
         var book=[];
        
-    $("#transaction_id").change(function(){
-        // console.log($("#transaction_id").val())
-        var transaction_id = $("#transaction_id").val()
-        
-        $.ajax({
-            url:window.location.pathname + "?r=transaction/get-transaction",
-            type:"POST",
-            data:{transaction_id:transaction_id},
-            success:function(data){
-                var res = JSON.parse(data)
-                account_name = res.result['account_name']
-                var particular = res.result['particular']
-                var amount = res.result['gross_amount']
-                // var x = document.getElementById("transaction_detail");
-                //  x.deleteRow(0);
-                $("#payee").text(res.result['account_name'])
-                $("#transaction_particular").text(res.result['particular'])
-                $("#transaction_amount").text(res.result['gross_amount'])
-                
-                console.log(account_name)
- 
-                var row = "<tr><td>"+account_name+"</td></tr>"
-                // $('#transaction_detail').tbody(row);
-                // var x = document.getElementById("transaction_detail").getElementsByTagName("tbody")[0]row;
 
-
-            }
-
-        })
-    })
     $(document).ready(function() {
         console.log("qwerty".substring(0,3))
        
@@ -831,7 +668,22 @@ $script = <<< JS
                     $("#reporting_period").val(res.result[0]['reporting_period']).trigger('change')
                     $("#date").val(res.result[0]['date']).trigger('change')
                     $("#book").val(res.result[0]['book_id']).trigger('change')
-                    $("#transaction_id").val(res.result[0]['transaction_id']).trigger('change')
+                    var transactionSelect = $('#transaction_id');
+                        var transactionData = [{
+                                id: res.result[0]['transaction_id'],
+                                text: res.result[0]['tracking_number']
+                            }
+                        ];
+                        var option = new Option(res.result[0]['tracking_number'],res.result[0]['transaction_id'], true, true);
+                        transactionSelect.append(option).trigger('change');
+                        // manually trigger the `select2:select` event
+                        transactionSelect.trigger({
+                            type: 'select2:select',
+                            params: {
+                                data: transactionData
+                            }
+                        });
+                    transactionOnChange(res.result[0]['transaction_id'])
                     addData(res.result,true)
                 }
             })
