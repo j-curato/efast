@@ -71,7 +71,7 @@ class RecordAllotmentsController extends Controller
     public function actionIndex()
     {
         $searchModel = new RecordAllotmentsViewSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,'all');
 
         return $this->render('index', [
             'searchModel' => $searchModel,
