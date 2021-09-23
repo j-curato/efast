@@ -516,7 +516,7 @@ SweetAlertAsset::register($this);
                 placeholder: "Select Chart of Account",
 
             });
-            var x = result[i]['fund_source'].trim()
+            var x = result[i]['fund_source']
             var y = x.split(' ').slice(0, 2).join(' ');
             console.log(x.split(' ').slice(0, 2))
             if (y.toLowerCase() == 'rapid lp') {
