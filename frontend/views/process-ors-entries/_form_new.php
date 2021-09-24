@@ -126,10 +126,10 @@ use kartik\select2\Select2;
         <?php
         $dataProvider->pagination = ['pageSize' => 10];
         $col = [
-
+'entry_id',
             'serial_number',
             'mfo_code',
-            'mfo_name',
+            'mfo_name',                 
             'fund_source',
             'uacs',
             'general_ledger',
