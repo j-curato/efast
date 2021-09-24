@@ -89,8 +89,8 @@ class m210923_081526_create_saob_procedure extends Migration
                         SUM(record_allotments_view.amount) as total_allotment
                         FROM record_allotments_view
                         WHERE
-                        record_allotments_view.mfo_code = mfo_code
-                        AND record_allotments_view.document_recieve = document
+                        -- record_allotments_view.mfo_code = mfo_code
+                        -- AND record_allotments_view.document_recieve = document
                         
                         GROUP BY record_allotments_view.uacs
                 ) as allotment
