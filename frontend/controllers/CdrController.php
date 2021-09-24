@@ -210,29 +210,66 @@ class CdrController extends Controller
             $book  = $_POST['book'];
             $province = $_POST['province'];
             $advance_type = $_POST['report_type'];
+            // OLD liquidation query
+            // SELECT
+            //         liquidation.check_date,
+            //         liquidation.check_number,
+            //         IFNULL(liquidation.particular,po_transaction.particular) as particular,
+            //          0 as amount,
+            //         IFNULL(liquidation_entries.withdrawals,0) as withdrawals,
+            //         IFNULL(liquidation_entries.vat_nonvat,0)as vat_nonvat,
+            //         IFNULL(liquidation_entries.expanded_tax,0)as expanded_tax,
+            //         IFNULL(liquidation_entries.reporting_period,0)as reporting_period,
+            //         IFNULL(q.uacs,chart_of_accounts.uacs) as gl_object_code,
+            //         IFNULL(q.general_ledger,chart_of_accounts.general_ledger )as gl_account_title
+            //         FROM liquidation_entries
+            //         LEFT JOIN chart_of_accounts ON liquidation_entries.chart_of_account_id= chart_of_accounts.id
+            //         LEFT JOIN chart_of_accounts as q  ON liquidation_entries.new_chart_of_account_id= q.id
+            //         LEFT JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
+            //         LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id  = advances_entries.id
+            //         LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id =  cash_disbursement.id
+            //         LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
+            //         WHERE liquidation_entries.reporting_period = :reporting_period
+            //         AND cash_disbursement.book_id = :book
+            //         AND liquidation.province = :province
+            //         AND advances_entries.advances_type =:advances_type
 
-            $query = Yii::$app->db->createCommand("SELECT
-                    liquidation.check_date,
-                    liquidation.check_number,
-                    IFNULL(liquidation.particular,po_transaction.particular) as particular,
-                     0 as amount,
-                    IFNULL(liquidation_entries.withdrawals,0) as withdrawals,
-                    IFNULL(liquidation_entries.vat_nonvat,0)as vat_nonvat,
-                    IFNULL(liquidation_entries.expanded_tax,0)as expanded_tax,
-                    IFNULL(liquidation_entries.reporting_period,0)as reporting_period,
-                    IFNULL(q.uacs,chart_of_accounts.uacs) as gl_object_code,
-                    IFNULL(q.general_ledger,chart_of_accounts.general_ledger )as gl_account_title
-                    FROM liquidation_entries
-                    LEFT JOIN chart_of_accounts ON liquidation_entries.chart_of_account_id= chart_of_accounts.id
-                    LEFT JOIN chart_of_accounts as q  ON liquidation_entries.new_chart_of_account_id= q.id
-                    LEFT JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
-                    LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id  = advances_entries.id
-                    LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id =  cash_disbursement.id
-                    LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
-                    WHERE liquidation_entries.reporting_period = :reporting_period
-                    AND cash_disbursement.book_id = :book
-                    AND liquidation.province = :province
-                    AND advances_entries.advances_type =:advances_type
+            $query = Yii::$app->db->createCommand("SELECT 
+                        liquidation.check_date,
+                        liquidation.check_number,
+                        IFNULL(liquidation.particular,po_transaction.particular) as particular,
+                        0 as amount,
+                        IFNULL(liq.withdrawals,0) as withdrawals,
+                        IFNULL(liq.vat_nonvat,0)as vat_nonvat,
+                        IFNULL(liq.expanded_tax,0)as expanded_tax,
+                        '' as reporting_period,
+                        chart_of_accounts.uacs as gl_object_code,
+                        chart_of_accounts.general_ledger as gl_account_title
+                        FROM (	
+                            SELECT
+                            liquidation.id,
+                            IFNULL(SUM(liquidation_entries.withdrawals),0) as withdrawals,
+                            IFNULL(SUM(liquidation_entries.vat_nonvat),0)as vat_nonvat,
+                            IFNULL(SUM(liquidation_entries.expanded_tax),0)as expanded_tax,
+                            IFNULL(q.uacs,chart_of_accounts.uacs) as gl_object_code
+                            FROM liquidation_entries
+                            LEFT JOIN chart_of_accounts ON liquidation_entries.chart_of_account_id= chart_of_accounts.id
+                            LEFT JOIN chart_of_accounts as q  ON liquidation_entries.new_chart_of_account_id= q.id
+                            LEFT JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
+                            LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id  = advances_entries.id
+                            LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id =  cash_disbursement.id
+                            LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
+                            WHERE liquidation_entries.reporting_period = :reporting_period
+                            AND cash_disbursement.book_id = :book
+                            AND liquidation.province = :province
+                            AND advances_entries.advances_type = :advances_type
+                            GROUP BY
+                            liquidation.id,
+                            IFNULL(q.uacs,chart_of_accounts.uacs)
+                        ) as liq
+                        LEFT JOIN liquidation ON liq.id = liquidation.id
+                        LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
+                        LEFT JOIN chart_of_accounts ON liq.gl_object_code = chart_of_accounts.uacs
                     UNION ALL
                     
                     SELECT 

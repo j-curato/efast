@@ -213,9 +213,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     //     $account_title = $val->chartOfAccount->general_ledger;
                     // }
 
-                    $account_title = Yii::$app->db->createCommand("SELECT account_title FROM accounting_codes where object_code =:object_code")
+                    $account_title = Yii::$app->db->createCommand("SELECT account_title FROM accounting_codes
+                     where object_code =:object_code")
                         ->bindValue(':object_code', $val->object_code)
                         ->queryOne();
+                    
                     // ob_clean();
                     // echo "<pre>";
                     // var_dump($val->object_code);

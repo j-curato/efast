@@ -1537,7 +1537,7 @@ class ReportController extends \yii\web\Controller
 
             $data = [];
 
-   
+            $transaction = \Yii::$app->ryn_db->beginTransaction();
             foreach ($worksheet->getRowIterator(2) as $key => $row) {
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
@@ -1552,6 +1552,19 @@ class ReportController extends \yii\web\Controller
                     $allotment_id =  $cells[1];
                     $chart_id = $cells[2];
                     $amount = $cells[3];
+                    $reporting_period = $cells[4];
+                    $query = Yii::$app->ryn_db->createCommand("  INSERT INTO `process_ors_entries` 
+                    (`process_ors_id`,`record_allotment_entries_id`,`chart_of_account_id`,`amount`,`reporting_period`) 
+                    VALUES (:process_ors_id,:record_allotment_entries_id,:chart_of_account_id,:amount,:reporting_period)
+                    ")
+                        ->bindValue(':process_ors_id', $ors_id)
+                        ->bindValue(':record_allotment_entries_id', $allotment_id)
+                        ->bindValue(':chart_of_account_id', $chart_id)
+                        ->bindValue(':amount', $amount)
+                        ->bindValue(':reporting_period', $reporting_period)
+
+                        ->query();
+
 
                     $data[] = [
 
@@ -1559,6 +1572,7 @@ class ReportController extends \yii\web\Controller
                         'process_ors_id' => $ors_id,
                         'amount' => $amount,
                         'record_allotment_entries_id' => $allotment_id,
+                        'reporting_period' => $reporting_period,
                     ];
                 }
             }
@@ -1568,9 +1582,11 @@ class ReportController extends \yii\web\Controller
                 'process_ors_id',
                 'amount',
                 'record_allotment_entries_id',
+                'reporting_period',
 
             ];
-            $ja = Yii::$app->db->createCommand()->batchInsert('process_ors_entries', $column, $data)->execute();
+            // $transaction->commit();
+            // $ja = Yii::$app->db->createCommand()->batchInsert('process_ors_entries', $column, $data)->execute();
 
             // return $this->redirect(['index']);
             // return json_encode(['isSuccess' => true]);
@@ -1581,5 +1597,84 @@ class ReportController extends \yii\web\Controller
             return ob_get_clean();
         }
         return $this->render('import_ors');
+    }
+    public function actionSaobs()
+    {
+        if ($_POST) {
+
+            $from_reporting_period = $_POST['from_reporting_period'];
+            $to_reporting_period = $_POST['to_reporting_period'];
+            $mfo_code = $_POST['mfo_code'];
+            $document_recieve = $_POST['document_recieve'];
+            $query = Yii::$app->ryn_db->createCommand("CALL saob(:from_reporting_period,:to_reporting_period,:document_recieve,:mfo_code)")
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->bindValue(':to_reporting_period', $to_reporting_period)
+                ->bindValue(':document_recieve', $document_recieve)
+                ->bindValue(':mfo_code', $mfo_code)
+                ->queryAll();
+            $result = ArrayHelper::index($query, 'uacs', [function ($element) {
+                return $element['major_name'];
+            }, 'sub_major_name']);
+            $res = ArrayHelper::index($query, null, 'uacs');
+            $majors = [
+                5010000000,
+                5020000000,
+                5060000000
+            ];
+            $major_allotments = array();
+            foreach ($majors as $val) {
+
+                if (array_key_exists($val, $res)) {
+                    $major_allotments[$val] = $res[$val][0]['total_allotment'];
+                }
+            }
+
+
+
+            return json_encode(['result' => $result, 'major_allotments' => $major_allotments]);
+            // $charts = new Query();
+            // $charts->select(["major_accounts.object_code as major_object_code,
+            // major_accounts.`name` as major_name,
+            // sub_major_accounts.object_code as sub_major_object_code,
+            // sub_major_accounts.`name` as sub_major_name,
+            // chart_of_accounts.uacs,
+            // chart_of_accounts.general_ledger"])
+            //     ->from('chart_of_accounts')
+            //     ->join('LEFT JOIN', 'major_accounts', 'chart_of_accounts.major_account_id = major_accounts.id')
+            //     ->join('LEFT JOIN', 'sub_major_accounts', 'chart_of_accounts.sub_major_account = sub_major_accounts.id')
+            //     ->where("major_accounts.object_code IN (5010000000,5020000000,5060000000)");
+
+            // // GROUP BY 
+            // // major_accounts.object_code,
+            // // sub_major_accounts.object_code,
+            // // chart_of_accounts.uacs
+            // $prev_ors = new Query();
+            // $prev_ors->select(["chart_of_accounts.uacs,
+            //          SUM(process_ors_entries.amount) as prev_total"])
+            //     ->from('process_ors_entries')
+            //     ->join('LEFT JOIN', 'chart_of_accounts', 'process_ors_entries.chart_of_account_id  = chart_of_accounts.id')
+            //     ->join('LEFT JOIN', 'major_accounts', 'chart_of_accounts.major_account_id = major_accounts.id')
+            //     ->join('LEFT JOIN', 'record_allotments_view', 'process_ors_entries.record_allotment_entries_id = record_allotments_view.entry_id')
+            //     ->where("process_ors_entries.reporting_period < :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
+
+            //     ->andWhere(" major_accounts.object_code IN (5020000000,5060000000,5010000000)")
+            //     ->andWhere("record_allotments_view.mfo_code = :mfo_code", ['mfo_code' => $mfo_code])
+            //     ->andWhere("record_allotments_view.document_recieve = :document_recieve", ['document_recieve' => $document_recieve])
+            //     ->groupBy("chart_of_accounts.uacs");
+            // $current_ors = new Query();
+            // $current_ors->select(["chart_of_accounts.uacs,
+            //          SUM(process_ors_entries.amount) as prev_total"])
+            //     ->from('process_ors_entries')
+            //     ->join('LEFT JOIN', 'chart_of_accounts', 'process_ors_entries.chart_of_account_id  = chart_of_accounts.id')
+            //     ->join('LEFT JOIN', 'major_accounts', 'chart_of_accounts.major_account_id = major_accounts.id')
+            //     ->join('LEFT JOIN', 'record_allotments_view', 'process_ors_entries.record_allotment_entries_id = record_allotments_view.entry_id')
+            //     ->where("process_ors_entries.reporting_period >= :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
+            //     ->andWhere("process_ors_entries.reporting_period <= :to_reporting_period", ['to_reporting_period' => $to_reporting_period])
+            //     ->andWhere(" major_accounts.object_code IN (5020000000,5060000000,5010000000)")
+            //     ->andWhere("record_allotments_view.mfo_code = :mfo_code", ['mfo_code' => $mfo_code])
+            //     ->andWhere("record_allotments_view.document_recieve = :document_recieve", ['document_recieve' => $document_recieve])
+            //     ->groupBy("chart_of_accounts.uacs");
+        }
+        return $this->render('saobs');
     }
 }
