@@ -122,11 +122,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     $t = '';
                     if (!empty($val->process_ors_id)) {
 
-                        $q = Raouds::find()
-                            ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' =>  $val->process_ors_id])
-                            ->one();
+                        // $q = Raouds::find()
+                        //     ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' =>  $val->process_ors_id])
+                        //     ->one();
                         // $q = !empty($val->process_ors_id) ? $val->process_ors_id : '';
-                        $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$q->id";
+                        $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$val->process_ors_id";
                     }
 
                     echo "
