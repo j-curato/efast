@@ -527,7 +527,7 @@ SweetAlertAsset::register($this);
                 $(`#ewt-${transaction_table_count}`).prop('readonly', true)
                 $(`#liq_damages-${transaction_table_count}`).prop('readonly', true)
 
-            }
+            } 
 
             if ($('#update_id') != null) {
                 $(`#chart-${transaction_table_count}`).val(result[i]['chart_of_account_id']).trigger('change')

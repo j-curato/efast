@@ -66,6 +66,7 @@ class LiquidationController extends Controller
                         'allow' => true,
                         'roles' => ['super-user', 'create_liquidation']
                     ],
+                    
                     [
                         'actions' => [
                             'index',
@@ -1062,71 +1063,17 @@ class LiquidationController extends Controller
         if ($_POST) {
             $from_reporting_period = $_POST['from_reporting_period'];
             $to_reporting_period = $_POST['to_reporting_period'];
-            //     $q = "SELECT 
-            //     liquidation_entries.id,
-            //     liquidation.dv_number,
-            //     liquidation.reporting_period,
-            //     liquidation.check_date,
-            //     liquidation.check_number,
-            //     advances_entries.fund_source,
-            //     IFNULL(liquidation.particular,po_transaction.particular) as particular,
-            //     IFNULL(liquidation.payee , po_transaction.payee ) as payee,
-            //     chart_of_accounts.uacs as object_code,
-            //     chart_of_accounts.general_ledger as account_title,
-            //     liquidation_entries.withdrawals,
-            //     liquidation_entries.vat_nonvat,
-            //     liquidation_entries.expanded_tax,
-            //     liquidation_entries.liquidation_damage,
-            //     COALESCE(IFNULL(liquidation_entries.withdrawals,0))
-            //     + COALESCE(IFNULL(liquidation_entries.vat_nonvat,0))
-            //     +COALESCE(IFNULL(liquidation_entries.expanded_tax,0)) as gross_payment,
-            //     liquidation.province
-            //    FROM liquidation
-            //     LEFT JOIN liquidation_entries ON
-            //      liquidation.id=
-            //     liquidation_entries.liquidation_id
-            //     LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
-            //     LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id =advances_entries.id
-            //     LEFT JOIN advances ON advances_entries.advances_id=advances.id
-            //     LEFT JOIN chart_of_accounts ON liquidation_entries.chart_of_account_id = chart_of_accounts.id 
-
-            //     WHERE
-            //      liquidation_entries.reporting_period BETWEEN :from_reporting_period AND :to_reporting_period";
+          
 
             $province = strtolower(Yii::$app->user->identity->province);
 
-
-            // if (
-            //     $province === 'adn' ||
-            //     $province === 'ads' ||
-            //     $province === 'sdn' ||
-            //     $province === 'sds' ||
-            //     $province === 'pdi'
-            // ) {
-            //     $q = $q . " AND liquidation.province = :province ";
-            //     // ob_clean();
-            //     // echo '<pre>';
-            //     // var_dump($q);
-            //     // echo '</pre>';
-            //     // return ob_get_clean();
-            //     $query  =   Yii::$app->db->createCommand($q)
-            //         ->bindValue(':from_reporting_period',   $from_reporting_period)
-            //         ->bindValue(':to_reporting_period',   $to_reporting_period)
-            //         ->bindValue(':province',   $province)
-            //         ->queryAll();
-            // } else {
-
-            //     $query  = Yii::$app->db->createCommand($q)
-            //         ->bindValue(':from_reporting_period',   $from_reporting_period)
-            //         ->bindValue(':to_reporting_period',   $to_reporting_period)
-            //         ->queryAll();
-            // }
-            $province = strtolower(Yii::$app->user->identity->province);
+           
+            // $province = strtolower(Yii::$app->user->identity->province);
             $q = (new \yii\db\Query())
-                ->select('*')
+                ->select(["*",])
                 ->from('liquidation_entries_view')
                 ->where(
-                    'reporting_period BETWEEN :from_reporting_period AND :to_reporting_period',
+                    'liquidation_entries_view.reporting_period BETWEEN :from_reporting_period AND :to_reporting_period',
 
                     ['from_reporting_period' => $from_reporting_period, 'to_reporting_period' => $to_reporting_period]
                 );
@@ -1163,6 +1110,7 @@ class LiquidationController extends Controller
             $sheet->setCellValue('N1', 'Liquidation Damage');
             $sheet->setCellValue('O1', 'Gross Payment');
             $sheet->setCellValue('P1', 'Province');
+            $sheet->setCellValue('Q1', 'Original Reporting Period');
 
 
             $x = 7;
@@ -1196,6 +1144,7 @@ class LiquidationController extends Controller
                 $sheet->setCellValueByColumnAndRow(14, $row,  $val['liquidation_damage']);
                 $sheet->setCellValueByColumnAndRow(15, $row,  $val['gross_payment']);
                 $sheet->setCellValueByColumnAndRow(16, $row,  $val['province']);
+                $sheet->setCellValueByColumnAndRow(17, $row,  $val['orig_reporting_period']);
 
                 $row++;
             }

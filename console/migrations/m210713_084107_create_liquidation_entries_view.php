@@ -13,10 +13,11 @@ class m210713_084107_create_liquidation_entries_view extends Migration
     public function safeUp()
     {
         Yii::$app->db->createCommand("CREATE VIEW  liquidation_entries_view as
-       SELECT 
+      SELECT 
 				liquidation_entries.id,
+				liquidation.reporting_period as orig_reporting_period,
         liquidation.dv_number,
-				liquidation.reporting_period,
+				liquidation_entries.reporting_period,
         liquidation.check_date,
         liquidation.check_number,
         advances_entries.fund_source,
@@ -34,13 +35,13 @@ class m210713_084107_create_liquidation_entries_view extends Migration
         +COALESCE(IFNULL(liquidation_entries.expanded_tax,0)) as gross_payment,
         liquidation.province
         
-        
-        FROM liquidation
-        LEFT JOIN liquidation_entries ON liquidation.id =liquidation_entries.liquidation_id
-        LEFT JOIN advances_entries on liquidation_entries.advances_entries_id = advances_entries.id
-        LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
-        LEFT JOIN chart_of_accounts ON liquidation_entries.chart_of_account_id =chart_of_accounts.id
-        LEFT JOIN advances ON advances_entries.advances_id = advances.id 
+       FROM liquidation
+        LEFT JOIN liquidation_entries ON
+         liquidation.id= liquidation_entries.liquidation_id
+LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
+        LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id =advances_entries.id
+        LEFT JOIN advances ON advances_entries.advances_id=advances.id
+        LEFT JOIN chart_of_accounts ON liquidation_entries.chart_of_account_id = chart_of_accounts.id 
         
         
         ")->query();

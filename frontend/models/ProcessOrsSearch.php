@@ -49,10 +49,9 @@ class ProcessOrsSearch extends ProcessOrs
         // $tableA->union($tableB);
         // $query = ProcessOrs::find()->select('*')->from(['random_name' => $tableA]);
         // add conditions that should always apply here
-        $query->join('LEFT JOIN', '(SELECT raouds.process_ors_id,SUM(raoud_entries.amount) as total_obligate
-        from raouds,raoud_entries
-        where raouds.id =raoud_entries.raoud_id
-        GROUP BY raouds.process_ors_id
+        $query->join('LEFT JOIN', '(SELECT process_ors_entries.process_ors_id,SUM(process_ors_entries.amount) as total_obligate
+        from process_ors_entries
+        GROUP BY process_ors_entries.process_ors_id
         )as q', 'q.process_ors_id = process_ors.id');
         // $query->join('LEFT JOIN', '(SELECT dv_aucs_entries.process_ors_id,
         // SUM(dv_aucs_entries.amount_disbursed) as total_disbursed,
