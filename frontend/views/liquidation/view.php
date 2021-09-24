@@ -103,6 +103,7 @@ Modal::end();
 
             <table class="table table-striped">
                 <thead>
+                    <th>ID</th>
                     <th>Reporting Period</th>
                     <th>NFT Number</th>
                     <th>Report Type</th>
@@ -171,6 +172,7 @@ Modal::end();
 
                         echo "<tr>
                 
+                <td>{$val->id}</td>
                 <td>{$val->reporting_period}</td>
                 <td>{$nft_number}</td>
                 <td>{$report_type}</td>
