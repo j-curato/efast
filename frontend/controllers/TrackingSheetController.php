@@ -182,12 +182,11 @@ class TrackingSheetController extends Controller
             total.total_ors
             FROM process_ors
             LEFT JOIN `transaction` ON process_ors.transaction_id = `transaction`.id
-            LEFT JOIN (SELECT SUM(raoud_entries.amount) as total_ors,
+            LEFT JOIN (SELECT SUM(process_ors_entries.amount) as total_ors,
             process_ors.id 
             FROM process_ors
-                                LEFT JOIN raouds ON process_ors.id = raouds.process_ors_id
-                                LEFT JOIN raoud_entries ON raouds.id = raoud_entries.raoud_id
-                                WHERE process_ors.id =:id
+            LEFT JOIN process_ors_entries ON process_ors.id = process_ors_entries.process_ors_id
+            WHERE process_ors.id =:id
             ) as total ON process_ors.id= total.id
             WHERE process_ors.id = :id
             ")

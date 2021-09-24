@@ -303,6 +303,7 @@ class RodController extends Controller
             GROUP BY liquidation_entries.advances_entries_id
             ) as liquidation_total', 'advances_entries.id = liquidation_total.advances_entries_id')
                 ->where("$fund_source_sql", $params)
+                ->orderBy("cash_disbursement.issuance_date")
                 ->all();
 
 
@@ -349,8 +350,7 @@ class RodController extends Controller
                 ->from('advances_entries')
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
                 ->where(['like', 'advances_entries.fund_source', $q])
-                ->andWhere('advances_entries.is_deleted !=1')
-                ;
+                ->andWhere('advances_entries.is_deleted !=1');
             if (
                 $user_province === 'adn' ||
                 $user_province === 'ads' ||

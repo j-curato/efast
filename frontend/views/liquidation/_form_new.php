@@ -424,7 +424,7 @@ SweetAlertAsset::register($this);
         var nft_number = qwer.find('.nft_number').text();
         var report_type = qwer.find('.report_type').text();
         var province = qwer.find('.province').text();
-        var fund_source = qwer.find('.fund_source').text();
+        var fund_source = qwer.find('.fund_source').text().trim();
         var chart_of_account_id = qwer.find('.chart_of_account').val() != null ? qwer.find('.chart_of_account').val() : 0;
         var withdrawal = qwer.find('.withdrawal').val();
         var vat_nonvat = qwer.find('.vat_nonvat').val();
@@ -518,10 +518,14 @@ SweetAlertAsset::register($this);
             });
             var x = result[i]['fund_source']
             var y = x.split(' ').slice(0, 2).join(' ');
+            console.log(x.split(' ').slice(0, 2))
             if (y.toLowerCase() == 'rapid lp') {
-                $(`#vat_nonvat-${transaction_table_count}`).prop('disabled', true)
-                $(`#ewt-${transaction_table_count}`).prop('disabled', true)
-                $(`#liq_damages-${transaction_table_count}`).prop('disabled', true)
+                $(`#vat_nonvat-${transaction_table_count}`).maskMoney('destroy')
+                $(`#ewt-${transaction_table_count}`).maskMoney('destroy')
+                $(`#liq_damages-${transaction_table_count}`).maskMoney('destroy')
+                $(`#vat_nonvat-${transaction_table_count}`).prop('readonly', true)
+                $(`#ewt-${transaction_table_count}`).prop('readonly', true)
+                $(`#liq_damages-${transaction_table_count}`).prop('readonly', true)
 
             }
 
