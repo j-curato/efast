@@ -38,7 +38,7 @@ class m210921_095132_create_record_allotment_view extends Migration
                 record_allotment_entries.amount,
                 IF(document_recieve.`name`='GARO','NCA','NTA') as nca_nta,
                 IF(mfo_pap_code.`name`='CARP','CARP','101') as carp_101,
-               IFNULL(total_ors.total_ors,0) as total_ors,
+            IFNULL(total_ors.total_ors,0) as total_ors,
                 record_allotment_entries.amount -  IFNULL(total_ors.total_ors,0) as balance,
                 books.name as book
 
@@ -64,8 +64,7 @@ class m210921_095132_create_record_allotment_view extends Migration
                     WHERE 
                     process_ors.is_cancelled = 0
                     GROUP BY process_ors_entries.record_allotment_entries_id
-                ) as total_ors ON record_allotment_entries.id = total_ors.record_allotment_entries_id
-    
+                ) as total_ors ON record_allotment_entries.id = total_ors.record_allotment_entries_id 
                
         SQL;
         $this->execute($sql);
