@@ -1608,7 +1608,7 @@ class ReportController extends \yii\web\Controller
             $to_reporting_period = $_POST['to_reporting_period'];
             $mfo_code = $_POST['mfo_code'];
             $document_recieve = $_POST['document_recieve'];
-            $query = Yii::$app->ryn_db->createCommand("CALL saob(:from_reporting_period,:to_reporting_period,:document_recieve,:mfo_code)")
+            $query = Yii::$app->db->createCommand("CALL saob(:from_reporting_period,:to_reporting_period,:document_recieve,:mfo_code)")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->bindValue(':document_recieve', $document_recieve)
