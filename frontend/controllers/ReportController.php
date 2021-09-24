@@ -55,7 +55,8 @@ class ReportController extends \yii\web\Controller
                     'conso-detailed-dv',
                     'fund-source-fur',
                     'summary-fund-source-fur',
-                    'budget-year-fur'
+                    'budget-year-fur',
+                    'saobs'
 
                 ],
                 'rules' => [
@@ -73,6 +74,7 @@ class ReportController extends \yii\web\Controller
                             'temp-import',
                             'detailed-dv-aucs',
                             'conso-detailed-dv',
+                            'saobs'
 
                         ],
                         'allow' => true,

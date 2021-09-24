@@ -288,7 +288,7 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => "Pending DV's", 'icon' => 'circle-o', 'url' => ['/report/pending-dv'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'UnObligated Transaction', 'icon' => 'circle-o', 'url' => ['/report/unobligated-transaction'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'UnPaid Obligation', 'icon' => 'circle-o', 'url' => ['/report/unpaid-obligation'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/report/saob'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/report/saobs'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Detailed Dv', 'icon' => 'circle-o', 'url' => ['/report/detailed-dv-aucs'],] : [],
                                 Yii::$app->user->can('conso_dv') ?    ['label' => 'Conso Dv', 'icon' => 'circle-o', 'url' => ['/report/conso-detailed-dv'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Tax Remittance', 'icon' => 'circle-o', 'url' => ['/report/tax-remittance'],] : [],
