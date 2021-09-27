@@ -211,28 +211,23 @@ class FurController extends Controller
             //     ->queryAll();
             $conso_fur = [];
             // $result = ArrayHelper::index($query, null, 'advances_type');
-            $result = ArrayHelper::index($query, null, [function ($element) {
-                return $element['book'];
-            }, 'advances_type']);
+            $result = ArrayHelper::index($query, null, 'report_type');
 
 
-            foreach ($result as $key => $data) {
 
 
-                foreach ($data as $index => $val) {
+            foreach ($result as $index => $val) {
 
-                    $beginning_balance = floatval(array_sum(array_column($result[$key][$index], 'begining_balance')));
-                    $total_advances = floatval(array_sum(array_column($result[$key][$index], 'total_advances')));
-                    $total_withdrawals = floatval(array_sum(array_column($result[$key][$index], 'total_withdrawals')));
-                    $conso_fur[] = [
+                $beginning_balance = floatval(array_sum(array_column($result[$index], 'begining_balance')));
+                $total_advances = floatval(array_sum(array_column($result[$index], 'total_advances')));
+                $total_withdrawals = floatval(array_sum(array_column($result[$index], 'total_withdrawals')));
+                $conso_fur[] = [
 
-                        'book' => $key,
-                        'advances_type' => $index,
-                        'begining_balance' => $beginning_balance,
-                        'total_advances' => $total_advances,
-                        'total_withdrawals' => $total_withdrawals
-                    ];
-                }
+                    'report_type' => $index,
+                    'begining_balance' => $beginning_balance,
+                    'total_advances' => $total_advances,
+                    'total_withdrawals' => $total_withdrawals
+                ];
             }
 
             // $conso_fur[] = [

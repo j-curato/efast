@@ -18,7 +18,7 @@ class m210811_054841_create_cdr_liquidation_balance_view extends Migration
         advances.province,
         liquidation_entries.reporting_period,
         cash_disbursement.book_id,
-        advances_entries.advances_type,
+        advances_entries.report_type,
         SUM(liquidation_entries.withdrawals) as total_withdrawals,
         SUM(liquidation_entries.vat_nonvat) as total_vat,
         SUM(liquidation_entries.expanded_tax) as total_expanded,
@@ -31,8 +31,8 @@ class m210811_054841_create_cdr_liquidation_balance_view extends Migration
         GROUP BY 
         advances.province,
         liquidation_entries.reporting_period,
-        advances_entries.advances_type,
-        cash_disbursement.book_id
+        advances_entries.report_type 
+
 
 
 

@@ -100,7 +100,7 @@ class CdrController extends Controller
         // }
         $query = (new \yii\db\Query())
             ->select(
-            'check_date,
+                'check_date,
             check_number,
             particular,
             amount,
@@ -207,9 +207,9 @@ class CdrController extends Controller
     {
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
-            $book  = $_POST['book'];
+            // $book  = $_POST['book'];
             $province = $_POST['province'];
-            $advance_type = $_POST['report_type'];
+            $report_type = $_POST['report_type'];
             // OLD liquidation query
             // SELECT
             //         liquidation.check_date,
@@ -260,9 +260,8 @@ class CdrController extends Controller
                             LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id =  cash_disbursement.id
                             LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
                             WHERE liquidation_entries.reporting_period = :reporting_period
-                            AND cash_disbursement.book_id = :book
                             AND liquidation.province = :province
-                            AND advances_entries.advances_type = :advances_type
+                            AND advances_entries.report_type = :report_type
                             GROUP BY
                             liquidation.id,
                             IFNULL(q.uacs,chart_of_accounts.uacs)
@@ -271,7 +270,6 @@ class CdrController extends Controller
                         LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
                         LEFT JOIN chart_of_accounts ON liq.gl_object_code = chart_of_accounts.uacs
                     UNION ALL
-                    
                     SELECT 
                     cash_disbursement.issuance_date as check_date,
                     cash_disbursement.check_or_ada_no as check_number,
@@ -289,18 +287,14 @@ class CdrController extends Controller
                     LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
                     LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
                     WHERE advances_entries.reporting_period = :reporting_period
-                    AND cash_disbursement.book_id = :book
                     AND advances.province = :province
-                    AND advances_entries.advances_type =:advances_type 
+                    AND advances_entries.report_type =:report_type 
                     AND advances_entries.is_deleted !=1 
-            
-            
             
  
             ")->bindValue(':reporting_period',  $reporting_period)
-                ->bindValue(':book', $book)
                 ->bindValue(':province', $province)
-                ->bindValue(':advances_type', $advance_type)
+                ->bindValue(':report_type', $report_type)
                 ->queryAll();
 
             $advances_balance = 0;
@@ -309,28 +303,23 @@ class CdrController extends Controller
             $advances_balance = Yii::$app->db->createCommand("SELECT ROUND(SUM(balance),2)as balance
                     FROM cdr_advances_balance
                     WHERE reporting_period <:reporting_period
-                    AND book_id =:book 
                     AND province LIKE :province
-                    AND advances_type LIKE :advances_type")
+                    AND report_type LIKE :report_type")
                 ->bindValue(':reporting_period',  $reporting_period)
-                ->bindValue(':book', $book)
                 ->bindValue(':province', $province)
-                ->bindValue(':advances_type', $advance_type)
-                ->queryScalar()
-                ;
+                ->bindValue(':report_type', $report_type)
+                ->queryScalar();
             $liquidation_balance = Yii::$app->db->createCommand("SELECT ROUND(SUM(total_withdrawals),2)as balance
                     FROM cdr_liquidation_balance
                     WHERE reporting_period <:reporting_period
-                    AND book_id =:book
                     AND province LIKE :province
-                    AND advances_type LIKE :advances_type")
+                    AND report_type LIKE :report_type")
                 ->bindValue(':reporting_period',  $reporting_period)
-                ->bindValue(':book', $book)
                 ->bindValue(':province', $province)
-                ->bindValue(':advances_type', $advance_type)
+                ->bindValue(':report_type', $report_type)
                 ->queryScalar();
-            $advances_balance_con = !empty($advances_balance)?$advances_balance:0;
-            $liquidation_balance_con = !empty($liquidation_balance)?$liquidation_balance:0;
+            $advances_balance_con = !empty($advances_balance) ? $advances_balance : 0;
+            $liquidation_balance_con = !empty($liquidation_balance) ? $liquidation_balance : 0;
             $balance  = $advances_balance - $liquidation_balance;
 
 
@@ -383,22 +372,23 @@ class CdrController extends Controller
             // echo "<pre>";
             // var_dump(
             //     $balance
-             
+
             // );
             // echo "</pre>";
             // return ob_get_clean();
-            $book_name = Yii::$app->db->createCommand('SELECT books.name FROM books where books.id =:id')
-                ->bindValue(':id', $book)->queryOne();
+            // $book_name = Yii::$app->db->createCommand('SELECT books.name FROM books where books.id =:id')
+            //     ->bindValue(':id', $book)->queryOne();
+            $book_name = '';
             return json_encode([
                 'cdr' => $query,
                 'consolidate' => $consolidated,
-                'book' => $book_name['name'],
+                'book' => $book_name,
                 'reporting_period' => date('F, Y', strtotime($reporting_period)),
                 'municipality' => $municipality,
                 'officer' => $officer,
                 'location' => $location,
                 'balance' => floatval($balance),
-                'advance_type' => $advance_type
+                'advance_type' => $report_type
 
             ]);
 
@@ -425,7 +415,7 @@ class CdrController extends Controller
             try {
                 $cdr = Cdr::findOne($id);
                 $cdr->is_final = $cdr->is_final === 0 ? true : false;
-                $cdr->serial_number = $this->getSerialNumber($cdr->reporting_period, $cdr->report_type, $cdr->book_name, $cdr->province);
+                $cdr->serial_number = $this->getSerialNumber($cdr->reporting_period, $cdr->report_type,  $cdr->province);
                 if ($cdr->save(false)) {
                     $r = Yii::$app->db->createCommand('SELECT reporting_period FROM liquidation_reporting_period 
                     WHERE reporting_period = :reporting_period ')
@@ -453,14 +443,14 @@ class CdrController extends Controller
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
             $province = $_POST['province'];
-            $book_name = $_POST['book'];
+            // $book_name = $_POST['book'];
             $report_type = $_POST['report_type'];
             $query = (new \yii\db\Query())
                 ->select('id')
                 ->from('cdr')
                 ->where('reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
                 ->andWhere('province LIKE :province', ['province' => $province])
-                ->andWhere('book_name LIKE :book_name', ['book_name' => $book_name])
+                // ->andWhere('book_name LIKE :book_name', ['book_name' => $book_name])
                 ->andWhere('report_type LIKE :report_type', ['report_type' => $report_type])
                 ->one();
             if (!empty($query)) {
@@ -469,7 +459,7 @@ class CdrController extends Controller
             $cdr = new Cdr();
             $cdr->reporting_period = $reporting_period;
             $cdr->province = $province;
-            $cdr->book_name = $book_name;
+            // $cdr->book_name = $book_name;
             $cdr->report_type = $report_type;
 
             if ($cdr->validate()) {
@@ -481,22 +471,22 @@ class CdrController extends Controller
             }
         }
     }
-    public function getSerialNumber($reporting_period, $report_type, $book_id, $province)
+    public function getSerialNumber($reporting_period, $report_type, $province)
     {
         // $report_type = 'Advances for Operating Expenses';
         // $province = 'ADN';
         // $reporting_period = '2021-02';
-        $book_name = Yii::$app->db->createCommand('SELECT books.name FROM books where id =:id')
-            ->bindValue(':id', $book_id)
-            ->queryOne();
+        // $book_name = Yii::$app->db->createCommand('SELECT books.name FROM books where id =:id')
+        //     ->bindValue(':id', $book_id)
+        //     ->queryOne();
         $serial_number = 'CDR ';
-        if ($report_type === 'Advances for Operating Expenses') {
-            $type = 'OPEX';
-        } else if ($report_type === 'Advances to Special Disbursing Officer') {
-            $type = 'SDO';
-        }
+        // if ($report_type === 'Advances for Operating Expenses') {
+        //     $type = 'OPEX';
+        // } else if ($report_type === 'Advances to Special Disbursing Officer') {
+        //     $type = 'SDO';
+        // }
 
-        $serial_number .= $book_name['name'] . '-' . $type . '-' . strtoupper($province) . '-' . $reporting_period;
+        $serial_number = $report_type . '-' . strtoupper($province) . '-' . $reporting_period;
 
         return $serial_number;
     }

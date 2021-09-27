@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\ReportType;
 use app\models\ReportTypeSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -43,7 +44,7 @@ class ReportTypeController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['@']
                     ],
 
 

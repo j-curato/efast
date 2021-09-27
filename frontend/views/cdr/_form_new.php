@@ -76,7 +76,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 ?>
             </div>
-            <div class="col-sm-2">
+            <!-- <div class="col-sm-2">
                 <label for="book">Book</label>
                 <?php
                 echo Select2::widget([
@@ -89,16 +89,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]
                 ])
                 ?>
-            </div>
+            </div> -->
             <div class="col-sm-3">
                 <label for="report_type">Advance Type</label>
                 <?php
-
+                    $report_type  = Yii::$app->db->createCommand("SELECT `name`as id,`name` FROM report_type ")->queryAll();
                 echo Select2::widget([
-                    'data' => [
-                        'Advances for Operating Expenses' => 'OPEX',
-                        'Advances to Special Disbursing Officer' => 'SDO'
-                    ],
+                    'data' =>ArrayHelper::map($report_type,'id','name'),
                     'value' => !empty($model->report_type) ? $model->report_type : '',
                     'name' => 'report_type',
                     'id' => 'report_type',
