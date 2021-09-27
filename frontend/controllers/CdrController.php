@@ -242,7 +242,7 @@ class CdrController extends Controller
                         IFNULL(liq.withdrawals,0) as withdrawals,
                         IFNULL(liq.vat_nonvat,0)as vat_nonvat,
                         IFNULL(liq.expanded_tax,0)as expanded_tax,
-                        '' as reporting_period,
+                        liq.reporting_period,
                         chart_of_accounts.uacs as gl_object_code,
                         chart_of_accounts.general_ledger as gl_account_title
                         FROM (	
@@ -251,6 +251,7 @@ class CdrController extends Controller
                             IFNULL(SUM(liquidation_entries.withdrawals),0) as withdrawals,
                             IFNULL(SUM(liquidation_entries.vat_nonvat),0)as vat_nonvat,
                             IFNULL(SUM(liquidation_entries.expanded_tax),0)as expanded_tax,
+                            liquidation_entries.reporting_period,
                             IFNULL(q.uacs,chart_of_accounts.uacs) as gl_object_code
                             FROM liquidation_entries
                             LEFT JOIN chart_of_accounts ON liquidation_entries.chart_of_account_id= chart_of_accounts.id
@@ -263,6 +264,7 @@ class CdrController extends Controller
                             AND liquidation.province = :province
                             AND advances_entries.report_type = :report_type
                             GROUP BY
+                            liquidation_entries.reporting_period,
                             liquidation.id,
                             IFNULL(q.uacs,chart_of_accounts.uacs)
                         ) as liq
@@ -328,7 +330,7 @@ class CdrController extends Controller
             }, 'gl_object_code']);
             // ob_clean();
             // echo "<pre>";
-            // var_dump($liquidation_balance);
+            // var_dump($result);
             // echo "</pre>";
 
             // return ob_get_clean();

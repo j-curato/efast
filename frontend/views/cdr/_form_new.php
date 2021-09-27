@@ -657,7 +657,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 var municipality = res.municipality
                 var officer = res.officer
                 balance = res.balance
-                // console.log(res)
+                console.log(conso)
                 $('.book').text(book)
                 $('.reporting_period').append(reporting_period)
                 $('.location').append(location)
