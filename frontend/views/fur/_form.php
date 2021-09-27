@@ -102,7 +102,6 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <table id="conso_fur_table" style="margin-top:20px;">
             <thead>
-                <th>Book</th>
                 <th>Report Type</th>
                 <th>Beginning Balance</th>
                 <th>Fund Recieved for the Month</th>
@@ -123,8 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th class="amount">Total Liquidation For the Month</th>
                 <th class="amount">Ending Balance</th>
                 <th>Particulars</th>
-                <th>Advance Type</th>
-                <th>Book</th>
+                <th>Report Type</th>
             </thead>
             <tbody>
 
@@ -255,7 +253,7 @@ $script = <<< JS
         var total_conso_fur_f_total_disbursements=0
         var total_conso_fur_ending_balance=0
         for (var i = 0; i < conso_fur.length; i++) {
-            advances_type = conso_fur[i]['advances_type']
+            advances_type = conso_fur[i]['report_type']
             b_balance = conso_fur[i]['begining_balance']!=null?conso_fur[i]['begining_balance']:0
             f_total_recieve = conso_fur[i]['total_advances']
             f_total_disbursements = conso_fur[i]['total_withdrawals']
@@ -270,7 +268,6 @@ $script = <<< JS
              }
              else{
                 row = `<tr>
-                        <td>`+conso_fur[i]['book']+`</td>
                         <td>`+advances_type+`</td>
                         <td class='amount'>`+thousands_separators(b_balance)+`</td>
                         <td class='amount'>`+thousands_separators(f_total_recieve)+`</td>
@@ -283,7 +280,7 @@ $script = <<< JS
 
         }
         row = `<tr>
-                    <td colspan='2'>Total</td>
+                    <td colspan=''>Total</td>
                     <td class='amount'>`+thousands_separators(total_conso_fur_b_balance)+`</td>
                     <td class='amount'>`+thousands_separators(total_conso_fur_f_total_recieve)+`</td>
                     <td class='amount'>`+thousands_separators(total_conso_fur_f_total_disbursements)+`</td>
@@ -327,8 +324,7 @@ $script = <<< JS
                         <td class='amount'>`+final_fur_total_withdrawals+`</td>
                         <td class='amount'> `+final_fur_ending_balance+`</td>
                         <td>`+fur[x]['particular']+`</td>
-                        <td>`+fur[x]['advances_type']+`</td>
-                        <td>`+fur[x]['book']+`</td>
+                        <td>`+fur[x]['report_type']+`</td>
                         </tr>`
 
                 $('#fur_table tbody').append(row)
@@ -341,7 +337,6 @@ $script = <<< JS
                     <td class='amount'>`+thousands_separators(total_fur_total_advances)+`</td>
                     <td class='amount'>`+thousands_separators(total_fur_total_withdrawals)+`</td>
                     <td class='amount'> `+thousands_separators(total_fur_ending_balance)+`</td>
-                    <td></td>
                     <td></td>
                     <td></td>
                 </tr>`
