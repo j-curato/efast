@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>Report Type</th>
                 <th>Beginning Balance</th>
                 <th>Fund Recieved for the Month</th>
-                <th>TOtal Disbursement for the Month</th>
+                <th>Total Disbursement for the Month</th>
                 <th>Ending Balance</th>
             </thead>
             <tbody>
