@@ -79,7 +79,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'province',
         'fund_source',
         'fund_source_type',
-        'report_type',
         [
             'label' => 'Amount',
             'attribute' => 'amount',
@@ -107,6 +106,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'mode_of_payment',
         'check_number',
         'check_date',
+        'advances_type',
         'report_type',
         'object_code',
 
