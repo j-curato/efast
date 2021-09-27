@@ -17,7 +17,6 @@ class m210811_054106_create_cdr_advances_balance_view extends Migration
             advances.province,
             advances_entries.reporting_period,
             advances_entries.report_type,
-            cash_disbursement.book_id,
             SUM(advances_entries.amount) as balance
 
 

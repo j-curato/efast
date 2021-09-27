@@ -220,12 +220,11 @@ $script = <<< JS
             }
         }
         row = `<tr>
-                    <td colspan='2'>Total</td>
+                    <td colspan=''>Total</td>
                     <td class='amount'>`+thousands_separators(total_conso_fur_b_balance)+`</td>
                     <td class='amount'>`+thousands_separators(total_conso_fur_f_total_recieve)+`</td>
                     <td class='amount'>`+thousands_separators(total_conso_fur_f_total_disbursements)+`</td>
                     <td class='amount'>`+thousands_separators(total_conso_fur_ending_balance)+`</td>
-                    </tr>
                     `
         $('#conso_fur_table tbody').append(row)
 
