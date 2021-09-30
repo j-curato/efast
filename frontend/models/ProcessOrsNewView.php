@@ -59,6 +59,10 @@ class ProcessOrsNewView extends \yii\db\ActiveRecord
             'ors_account_title' => 'Ors Account Tiitle',
             'amount' => 'Amount',
             'is_cancelled' => 'Is Cancelled',
+            'ors_book' => ' ORS Book',
+            'allotment_book' => 'Allotment Book',
+            'mfo_name' => 'MFO/PAP Name',
+            'document_name' => 'Document Recieve',
         ];
     }
 }

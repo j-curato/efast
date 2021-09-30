@@ -102,7 +102,24 @@ $this->params['breadcrumbs'][] = $this->title;
                     'name' => 'document_recieve',
                     'id' => 'document_recieve',
                     'data' => ArrayHelper::map($data, 'name', 'name'),
-                    'options' => ['placeholder' => 'Search for a Fund Source ...'],
+                    'options' => ['placeholder' => 'Select Document'],
+
+                ]);
+                ?>
+            </div>
+            <div class="col-sm-2">
+                <label for="book_id">Books</label>
+                <?php
+
+                $data = Yii::$app->db->createCommand("SELECT id,`name`FROM books 
+                ")->queryAll();
+                // ->where('code IN (100000100001000,)')
+                // var_dump($data);
+                echo Select2::widget([
+                    'name' => 'book_id',
+                    'id' => 'book_id',
+                    'data' => ArrayHelper::map($data, 'id', 'name'),
+                    'options' => ['placeholder' => 'Select Book'],
 
                 ]);
                 ?>
@@ -285,6 +302,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             var total_current = 0
             var total_to_date = 0
             var total_balance = 0
+            var total_utilization = 0
 
             for (var x = 0; x < sub_major_keys.length; x++) {
 
@@ -343,7 +361,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         <td class='amount'>` + thousands_separators(current) + `</td>
                         <td class='amount'>` + thousands_separators(to_date) + `</td>
                         <td class='amount'>` + thousands_separators(balance) + `</td>
-                        <td>` + thousands_separators(utilization) + `</td>
+                        <td class='amount'>` + thousands_separators(utilization) + `</td>
                         <td style ='text-align:right'>` + mfo_name + `</td>
                         <td style ='text-align:right'>` + document + `</td>
                     
@@ -363,7 +381,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                     total_current += current
                     total_to_date += to_date
                     total_balance += balance
-
+                    total_utilization+=utilization
                 }
             }
             row = `<tr class='data_row'>
@@ -373,7 +391,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         <td class='amount'>` + thousands_separators(parseFloat(total_current.toFixed(2))) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_to_date.toFixed(2))) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_balance.toFixed(2))) + `</td>
-                        <td ></td>
+                        <td class='amount'>` + thousands_separators(parseFloat(total_utilization.toFixed(2))) + `</td>
                         <td ></td>
                         <td ></td>
                         </tr>`

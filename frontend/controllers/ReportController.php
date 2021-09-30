@@ -1592,6 +1592,7 @@ class ReportController extends \yii\web\Controller
             $to_reporting_period = $_POST['to_reporting_period'];
             $mfo_code = $_POST['mfo_code'];
             $document_recieve = $_POST['document_recieve'];
+            $book_id = $_POST['book_id'];
 
             $current_ors = new Query();
             $current_ors->select([
@@ -1604,8 +1605,10 @@ class ReportController extends \yii\web\Controller
                 ->join('LEFT JOIN', 'chart_of_accounts', 'process_ors_entries.chart_of_account_id = chart_of_accounts.id')
                 ->join('LEFT JOIN', 'major_accounts', 'chart_of_accounts.major_account_id = major_accounts.id')
                 ->join('LEFT JOIN', 'record_allotments_view', 'process_ors_entries.record_allotment_entries_id = record_allotments_view.entry_id')
+                ->join('LEFT JOIN', 'process_ors', 'process_ors_entries.process_ors_id = process_ors.id')
                 ->where(" process_ors_entries.reporting_period >= :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
-                ->andWhere("process_ors_entries.reporting_period <= :to_reporting_period", ['to_reporting_period' => $to_reporting_period]);
+                ->andWhere("process_ors_entries.reporting_period <= :to_reporting_period", ['to_reporting_period' => $to_reporting_period])
+                ->andWhere("process_ors.book_id = :book_id", ['book_id' => $book_id]);
             if (strtolower($mfo_code) !== 'all') {
 
                 $current_ors->andWhere("record_allotments_view.mfo_code = :mfo_code", ['mfo_code' => $mfo_code]);
@@ -1628,7 +1631,10 @@ class ReportController extends \yii\web\Controller
                 ->join('LEFT JOIN', 'chart_of_accounts', 'process_ors_entries.chart_of_account_id = chart_of_accounts.id')
                 ->join('LEFT JOIN', 'major_accounts', 'chart_of_accounts.major_account_id = major_accounts.id')
                 ->join('LEFT JOIN', 'record_allotments_view', 'process_ors_entries.record_allotment_entries_id = record_allotments_view.entry_id')
-                ->where(" process_ors_entries.reporting_period < :from_reporting_period", ['from_reporting_period' => $from_reporting_period]);
+                ->join('LEFT JOIN', 'process_ors', 'process_ors_entries.process_ors_id = process_ors.id')
+                ->where(" process_ors_entries.reporting_period < :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
+                ->andWhere("process_ors.book_id = :book_id", ['book_id' => $book_id]);
+
             if (strtolower($mfo_code) !== 'all') {
 
                 $prev_ors->andWhere("record_allotments_view.mfo_code = :mfo_code", ['mfo_code' => $mfo_code]);
@@ -1650,10 +1656,13 @@ class ReportController extends \yii\web\Controller
                 ->join('LEFT JOIN', 'record_allotments', 'record_allotment_entries.record_allotment_id = record_allotments.id')
                 ->join('LEFT JOIN', 'document_recieve', 'record_allotments.document_recieve_id = document_recieve.id')
                 ->join('LEFT JOIN', 'mfo_pap_code', 'record_allotments.mfo_pap_code_id = mfo_pap_code.id')
-                ->join('LEFT JOIN', 'chart_of_accounts', 'record_allotment_entries.chart_of_account_id = chart_of_accounts.id');
+                ->join('LEFT JOIN', 'chart_of_accounts', 'record_allotment_entries.chart_of_account_id = chart_of_accounts.id')
+                ->where("record_allotments.book_id = :book_id", ['book_id' => $book_id]);
+
+
             if (strtolower($mfo_code) !== 'all') {
 
-                $allotment->where("mfo_pap_code.`code` = :mfo_code", ['mfo_code' => $mfo_code]);
+                $allotment->andWhere("mfo_pap_code.`code` = :mfo_code", ['mfo_code' => $mfo_code]);
             }
             if (strtolower($document_recieve) !== 'all') {
 
@@ -1744,10 +1753,14 @@ class ReportController extends \yii\web\Controller
             LEFT JOIN chart_of_accounts  as allotment_chart ON  current_prev.uacs = allotment_chart.uacs
             LEFT JOIN major_accounts ON chart_of_accounts.major_account_id = major_accounts.id
             LEFT JOIN sub_major_accounts ON chart_of_accounts.sub_major_account = sub_major_accounts.id
-        
    
             ")->queryAll();
 
+            // $uacs_sort = ArrayHelper::index($query, null, 'ors_object_code');
+            //  echo "<pre>";
+            //     var_dump($query);
+            //     echo "</pre>";
+            //     die();
 
             // IFNULL(allotment_per_ors_uacs.total_allotment,0) as allotment_per_uacs
             // LEFT JOIN ($sql_allotment) as allotment_per_ors_uacs
@@ -1781,14 +1794,14 @@ class ReportController extends \yii\web\Controller
                 'code'
             );
 
+
+
             $allotment_total = array();
             foreach ($result as $mfo => $val1) {
                 foreach ($val1 as $document => $val2) {
                     foreach ($val2 as $uacs => $val3) {
                         $allot = floatval($result[$mfo][$document][$uacs]['total_allotment']);
                         $allotment_total[$mfo][$document][$uacs] = $allot;
-
-
 
                         if (empty($uacs_sort[$mfo][$document][$uacs])) {
 
@@ -1829,11 +1842,13 @@ class ReportController extends \yii\web\Controller
                     }
                 }
             }
-            // $uacs_in_query = in_array($uacs, array_column($query, 'ors_object_code'));
             // echo "<pre>";
-            // var_dump( ) ;
+            // // var_dump(array_key_exists(5010403001,$allotment_total[100000100001000]['GARO']));
+            // var_dump($allotment_total);
+
             // echo "</pre>";
             // die();
+            // $uacs_in_query = in_array($uacs, array_column($query, 'ors_object_code'));
 
             $arr = $allotment_total;
             foreach ($query as $index => $val) {
@@ -1841,25 +1856,23 @@ class ReportController extends \yii\web\Controller
                 $document_recieve = $val['document_recieve_name'];
                 $ors_object_code = $val['ors_object_code'];
                 $allotment_uacs =  $val['uacs'];
-                $exist = array_key_exists($ors_object_code, $allotment_total[$mfo][$document_recieve]);
-                $query[$index]['mfo_name'] = $mfo_sort[$mfo][0]['name'];
-                if ($exist) {
+                $exist = array_key_exists($allotment_uacs, $allotment_total[$mfo][$document_recieve]);
 
+                $query[$index]['mfo_name'] = $mfo_sort[$mfo][0]['name'];
+                if ($allotment_uacs === $ors_object_code) {
                     $begin_balance = $allotment_total[$mfo][$document_recieve][$ors_object_code];
                     $query[$index]['beginning_balance'] = $begin_balance;
                     $balance  = $begin_balance - $val['ors_to_date'];
                     $query[$index]['balance'] = $balance;
-                    if ($query[$index]['ors_object_code'] === 5020000000) {
-                    }
                 } else {
                     $query[$index]['beginning_balance'] = 0;
-                    $bal  = $arr[$mfo][$document_recieve][$allotment_uacs] - $val['ors_to_date'];
+                    $bal  = $allotment_total[$mfo][$document_recieve][$allotment_uacs] - $val['ors_to_date'];
                     $query[$index]['balance'] = $bal;
                     // $arr[$mfo][$document_recieve][$allotment_uacs] = $bal;
                 }
             }
 
-
+            // die();
 
 
             $result2 = ArrayHelper::index($query, null, [function ($element) {
@@ -1901,7 +1914,7 @@ class ReportController extends \yii\web\Controller
         echo "<pre>";
         echo  shell_exec("git pull https://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@github.com/kiotipot1/dti-afms-2.git");
         echo "</pre>";
-        
+
         echo "<pre>";
         echo  shell_exec("yii migrate --interactive=0");
         echo "</pre>";

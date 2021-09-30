@@ -28,6 +28,7 @@ class ProcessOrsNewViewSearch extends ProcessOrsNewView
                 'ors_uacs',
                 'ors_account_tiitle',
                 'is_cancelled',
+                'reporting_period',
 
             ], 'safe'],
             [['amount'], 'number'],
@@ -81,6 +82,7 @@ class ProcessOrsNewViewSearch extends ProcessOrsNewView
             ->andFilterWhere(['like', 'ors_uacs', $this->ors_uacs])
             ->andFilterWhere(['like', 'ors_account_title', $this->ors_account_title])
             ->andFilterWhere(['like', 'is_cancelled', $this->is_cancelled])
+            ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
             ->andFilterWhere(['like', 'amount', $this->amount]);
 
         return $dataProvider;
