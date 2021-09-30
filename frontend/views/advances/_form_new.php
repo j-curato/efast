@@ -34,7 +34,7 @@ use yii\helpers\ArrayHelper;
 
         ?>
         <div class="row">
-            <div class="col-sm-3">
+            <!-- <div class="col-sm-3">
                 <label for="report"> Report Type</label>
                 <?php
 
@@ -54,7 +54,7 @@ use yii\helpers\ArrayHelper;
                     'options' => []
                 ])
                 ?>
-            </div>
+            </div> -->
             <div class="col-sm-3">
                 <label for="report"> Province</label>
 
@@ -237,30 +237,25 @@ use yii\helpers\ArrayHelper;
     var vacant = 0;
     var i = 1;
     var x = [0];
+    0
     var update_id = undefined;
     var cashflow = [];
     var accounts = [];
     var transaction_table_count = 0;
-    var report_types = [{
-            'id': '101 SDO CDR',
-            'text': '101 SDO CDR'
-        },
-        {
-
-            'id': '101 OPEX CDR',
-            'text': '101 OPEX CDR',
-        },
-        {
-
-            'id': 'RAPID LP SDO CDR',
-            'text': 'RAPID LP SDO CDR',
-        },
-        {
-
-            'id': 'Fund 07 SDO CDR',
-            'text': 'Fund 07 SDO CDR',
-        }
-    ]
+    var report_types = []
+    $(document).ready(function() {
+        $.getJSON(url + '?r=report-type/get-report-type')
+            .then(function(data) {
+                var array = []
+                $.each(data, function(key, val) {
+                    array.push({
+                        id: val.id,
+                        text: val.name
+                    })
+                })
+                report_types = array
+            })
+    })
 
     function thousands_separators(num) {
 
@@ -313,9 +308,9 @@ use yii\helpers\ArrayHelper;
 
         for (var i = 0; i < result.length; i++) {
             var entry_id = ''
-                if (result[i]['entry_id']!=null){
-                    entry_id = result[i]['entry_id']
-                }
+            if (result[i]['entry_id'] != null) {
+                entry_id = result[i]['entry_id']
+            }
             var row = `<tr>
                     <td style='display:none' >
                         <input value='${result[i]['cash_disbursement_id']}' 

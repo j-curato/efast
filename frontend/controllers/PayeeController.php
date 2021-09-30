@@ -7,6 +7,7 @@ use app\models\Payee;
 use app\models\PayeeSearch;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use yii\db\conditions\LikeCondition;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -241,5 +242,27 @@ class PayeeController extends Controller
     {
         $p = Yii::$app->db->createCommand("SELECT * FROM payee WHERE isEnable=1")->queryAll();
         return json_encode($p);
+    }
+    public function actionSearchPayee($q = null, $id = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $user_province = strtolower(Yii::$app->user->identity->province);
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if ($id > 0) {
+            $out['results'] = ['id' => $id, 'text' => Payee::findOne($id)->account_name];
+        }
+       else if (!is_null($q)) {
+            $query = new Query();
+            $query->select('payee.id, payee.account_name AS text')
+                ->from('payee')
+                ->where(['like', 'payee.account_name', $q]);
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        } 
+        return $out;
     }
 }

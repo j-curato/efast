@@ -106,6 +106,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'mode_of_payment',
         'check_number',
         'check_date',
+        'advances_type',
         'report_type',
         'object_code',
 

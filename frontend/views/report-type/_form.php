@@ -1,5 +1,6 @@
 <?php
 
+use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -10,9 +11,27 @@ use yii\widgets\ActiveForm;
 
 <div class="report-type-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php
+       $report = [
+        'Advances for Operating Expenses' => 'Advances for Operating Expenses',
+        'Advances to Special Disbursing Officer' => 'Advances to Special Disbursing Officer',
+
+    ];
+    $form = ActiveForm::begin(); 
+    
+    ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'advance_type')->widget(Select2::class,
+    [
+        'data' => $report,
+        'name' => 'report',
+        'id' => 'report',
+        'pluginOptions' => [
+            'placeholder' => 'Select Report'
+        ],
+        'options' => []
+    ]) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

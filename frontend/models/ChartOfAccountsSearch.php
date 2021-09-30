@@ -58,7 +58,7 @@ class ChartOfAccountsSearch extends ChartOfAccounts
         $query->joinWith('subMajorAccount');
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
+            'chart_of_accounts.id' => $this->id,
             'major_account_id' => $this->major_account_id,
         ]);
 

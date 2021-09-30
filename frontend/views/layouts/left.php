@@ -175,6 +175,7 @@
                                         ['label' => 'Ors Reporting Period', 'icon' => 'circle-o', 'url' => ['/ors-reporting-period'],],
                                         ['label' => 'Jev Reporting Period', 'icon' => 'circle-o', 'url' => ['/jev-reporting-period'],],
                                         ['label' => 'Fund Source Type', 'icon' => 'circle-o', 'url' => ['/fund-source-type'],],
+                                        ['label' => 'Report Type', 'icon' => 'circle-o', 'url' => ['/report-type'],],
 
 
                                     ],

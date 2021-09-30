@@ -23,7 +23,7 @@ use yii\web\JsExpression;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = "FUR";
+$this->title = "SAOB";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index " style="background-color: white;padding:20px">
@@ -73,9 +73,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 <label for="mfo_code">MFO/PAP Code</label>
                 <?php
 
-                $data = Yii::$app->db->createCommand("SELECT code,CONCAT(code,'-',`name`) as new_text FROM mfo_pap_code ")->queryAll();
+                $data = Yii::$app->db->createCommand("SELECT 'all' as code, 'ALL' as `new_text`
+                UNION
+                SELECT code,CONCAT(code,'-',`name`) as new_text FROM mfo_pap_code
+                 ")->queryAll();
                 // ->where('code IN (100000100001000,)')
-                // var_dump($data);
+
                 echo Select2::widget([
                     'name' => 'mfo_code',
                     'id' => 'mfo_code',
@@ -89,7 +92,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 <label for="document_recieve">Document Recive</label>
                 <?php
 
-                $data = Yii::$app->db->createCommand("SELECT id,`name`FROM document_recieve ")->queryAll();
+                $data = Yii::$app->db->createCommand("SELECT 'all' as code, 'ALL' as `name`
+                UNION
+                SELECT id,`name`FROM document_recieve 
+                ")->queryAll();
                 // ->where('code IN (100000100001000,)')
                 // var_dump($data);
                 echo Select2::widget([
@@ -114,11 +120,25 @@ $this->params['breadcrumbs'][] = $this->title;
     <div id='con'>
         <table id="summary_table">
             <thead>
-                <th>Province</th>
-                <th>Beginning Balance</th>
-                <th>Cash Advance for the period</th>
-                <th>Total Liquidation For the Month</th>
-                <th>Ending Balance</th>
+                <tr>
+
+                    <th rowspan="2"> MFO/PAP </th>
+                    <th rowspan="2"> Document Recieve</th>
+                    <th rowspan="2">Allotment</th>
+                    <th colspan="3">Obligation</th>
+                    <th rowspan="2">BALANCES</th>
+                    <th rowspan="2"> UTILIZATION</th>
+
+                </tr>
+                <tr>
+                    <th>Last Month</th>
+                    <th>This Month</th>
+                    <th>To Date</th>
+                </tr>
+
+
+
+
             </thead>
             <tbody>
 
@@ -135,6 +155,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th colspan="3">Obligation</th>
                     <th rowspan="2">BALANCES</th>
                     <th rowspan="2"> UTILIZATION</th>
+                    <th rowspan="2"> MFO/PAP </th>
+                    <th rowspan="2"> Document Recieve</th>
                 </tr>
                 <tr>
                     <th>Last Month</th>
@@ -224,10 +246,11 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 var res = JSON.parse(data)
                 // var detailed = res.detailed
                 // var conso = res.conso
-                console.log(res.major_allotments)
-                // console.log(res.result)
+                var object_key = Object.keys(data)
+                console.log(res)
                 addData(res.result, res.major_allotments)
-                // addToSummaryTable(conso)
+                addToSummaryTable(res.conso_saob)
+
                 $('#con').show()
                 $('#dots5').hide()
             }
@@ -237,12 +260,17 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
 
     function addData(res, major) {
         $("#fur_table tbody").html('');
+        // console.log(major)
+        // console.log(res['Personnel Services']['Mid-Year Bonus']['5010216000'][0][])
         var major_keys = Object.keys(res)
         var major_allotments = []
         for (var i = 0; i < major_keys.length; i++) {
             var major_name = major_keys[i]
-            row = `<tr class='data_row'>
+            var str = major_name.toLowerCase().replace(/\s/g, '-');
+            row = `<tr class='data_row' id ='${str}'>
                         <td colspan='' style='text-align:left;font-weight:bold'>` + major_name + `</td>
+                        <td ></td>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -261,51 +289,81 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             for (var x = 0; x < sub_major_keys.length; x++) {
 
                 var sub_major_name = sub_major_keys[x]
+
                 row = `<tr class='data_row'>
                         <td colspan='' style='text-align:center;font-weight:bold'>` + sub_major_name + `</td>
+                        <td ></td>
+                        <td></td>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
                         </tr>`
-                $('#fur_table tbody').append(row)
+                if (sub_major_name == major_name
+                ) {
+                    // $(`#${str}`).after(row)
+                } else {
+
+                    $('#fur_table tbody').append(row)
+                }
                 var uacs_keys = Object.keys(res[major_name][sub_major_name])
                 for (var y = 0; y < uacs_keys.length; y++) {
                     var uacs = uacs_keys[y]
+                    // var ors_object_codes_keys = Object.keys(res[major_name][sub_major_name][uacs])
+                    // for (var w = 0; w < ors_object_codes_keys.length; w++) {
+                    // var ors_object_code = ors_object_codes_keys[w];
+                    var allotment = parseFloat(res[major_name][sub_major_name][y]['beginning_balance'])
+                    var prev = parseFloat(res[major_name][sub_major_name][y]['prev_total'])
+                    var current = parseFloat(res[major_name][sub_major_name][y]['current_total'])
+                    var to_date = parseFloat(res[major_name][sub_major_name][y]['ors_to_date'])
+                    var balance = parseFloat(res[major_name][sub_major_name][y]['balance'])
+                    var uacs = res[major_name][sub_major_name][y]['ors_object_code']
+                    var mfo = res[major_name][sub_major_name][y]['mfo_code']
+                    var document = res[major_name][sub_major_name][y]['document_recieve_name']
+                    var allotment_uacs = res[major_name][sub_major_name][y]['uacs']
+                    var mfo_name = res[major_name][sub_major_name][y]['mfo_name']
+                    var utilization = 0
+                    if (
+                        allotment == 0
 
-                    var allotment = parseFloat(res[major_name][sub_major_name][uacs]['total_allotment'])
-                    var prev = parseFloat(res[major_name][sub_major_name][uacs]['prev_total'])
-                    var current = parseFloat(res[major_name][sub_major_name][uacs]['current_total'])
-                    var to_date = parseFloat(res[major_name][sub_major_name][uacs]['ors_to_date'])
-                    var balance = 0
-                    if (allotment == 0) {
-                        console.log()
-                        var major_amount = major[res[major_name][sub_major_name][uacs]['major_object_code']]
-                        balance = major_amount - to_date
-                        major[res[major_name][sub_major_name][uacs]['major_object_code']] = balance
-                    } else if (uacs == 5010000000 || uacs == 5020000000 || uacs == 5060000000) {
-                        balance = 0
-                    } else {
-
-                        balance = allotment - to_date
+                    ) {
+                        var allotment_begin_balance = parseFloat(major[mfo][document][allotment_uacs])
+                        balance = allotment_begin_balance - to_date
+                        major[mfo][document][allotment_uacs] = balance
+                        utilization = to_date / allotment_begin_balance
                     }
+
+                    // console.log(res[major_name][sub_major_name][y]['ors_object_code'])
                     row = `<tr class='data_row'>
-                        <td style ='text-align:right'>` + uacs + ' ' + res[major_name][sub_major_name][uacs]['general_ledger'] + `</td>
+                        <td style ='text-align:right'>` + res[major_name][sub_major_name][y]['account_title'] + `</td>
                         <td class='amount'>` + thousands_separators(allotment) + `</td>
                         <td class='amount'>` + thousands_separators(prev) + `</td>
                         <td class='amount'>` + thousands_separators(current) + `</td>
                         <td class='amount'>` + thousands_separators(to_date) + `</td>
                         <td class='amount'>` + thousands_separators(balance) + `</td>
-                        <td></td>
+                        <td>` + thousands_separators(utilization) + `</td>
+                        <td style ='text-align:right'>` + mfo_name + `</td>
+                        <td style ='text-align:right'>` + document + `</td>
+                    
                     </tr>`
-                    $('#fur_table tbody').append(row)
-                   
-                    total_allotment +=allotment
-                    total_prev +=prev
-                    total_current +=current
-                    total_to_date +=to_date
-                    total_balance +=balance
+                    if (uacs == 5010000000 ||
+                        uacs == 5020000000 ||
+                        uacs == 5060000000
+                    ) {
+                        $(`#${str}`).after(row)
+                    } else {
+
+                        $('#fur_table tbody').append(row)
+                    }
+
+                    total_allotment += allotment
+                    total_prev += prev
+                    total_current += current
+                    total_to_date += to_date
+                    total_balance += balance
+
                 }
             }
             row = `<tr class='data_row'>
@@ -315,6 +373,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         <td class='amount'>` + thousands_separators(parseFloat(total_current.toFixed(2))) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_to_date.toFixed(2))) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_balance.toFixed(2))) + `</td>
+                        <td ></td>
+                        <td ></td>
                         <td ></td>
                         </tr>`
             $('#fur_table tbody').append(row)
@@ -326,32 +386,45 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
 
     function addToSummaryTable(conso) {
         $('#summary_table tbody').html('')
-        var conso_object = Object.keys(conso)
-        var total_begin_balance = 0
-        var total_amount = 0
-        var total_withdrawals = 0
+        var total_beginning_balance = 0
+        var total_prev = 0
+        var total_current = 0
+        var total_to_date = 0
+        var total_utilization = 0
         var total_balance = 0
-        for (var i = 0; i < conso_object.length; i++) {
-            var province = conso_object[i]
+        for (var i = 0; i < conso.length; i++) {
+            var beginning_balance = parseFloat(conso[i]['beginning_balance'])
+            var prev = parseFloat(conso[i]['prev'])
+            var current = parseFloat(conso[i]['current'])
+            var to_date = parseFloat(conso[i]['to_date'])
+            var utilization = to_date / beginning_balance
+            var balance = beginning_balance - to_date
             var row = `<tr>
-                <td>` + province + `</td>
-                <td class='amount'>` + thousands_separators(conso[province]['grand_total_begin_balance']) + `</td>
-                <td class='amount'>` + thousands_separators(conso[province]['grand_total_cash_advances_for_the_period']) + `</td>
-                <td class='amount'>` + thousands_separators(conso[province]['grand_total_withdrawals']) + `</td>
-                <td class='amount'>` + thousands_separators(conso[province]['grand_total_balance']) + `</td>
+                <td>` + conso[i]['mfo_name'] + `</td>
+                <td>` + conso[i]['document'] + `</td>
+                <td class='amount'>` + thousands_separators(beginning_balance) + `</td>
+                <td class='amount'>` + thousands_separators(prev) + `</td>
+                <td class='amount'>` + thousands_separators(current) + `</td>
+                <td class='amount'>` + thousands_separators(to_date) + `</td>
+                <td class='amount'>` + thousands_separators(balance) + `</td>
+                <td class='amount'>` + thousands_separators(utilization) + `</td>
             </tr>`
             $('#summary_table tbody').append(row)
-            total_begin_balance += parseFloat(conso[province]['grand_total_begin_balance'])
-            total_amount += parseFloat(conso[province]['grand_total_cash_advances_for_the_period'])
-            total_withdrawals += parseFloat(conso[province]['grand_total_withdrawals'])
-            total_balance += parseFloat(conso[province]['grand_total_balance'])
+            total_beginning_balance += beginning_balance
+            total_prev += prev
+            total_current += current
+            total_to_date += to_date
+            total_utilization += utilization
+            total_balance += balance
         }
         row = `<tr>
-                <td style='font-weight:bold'>Total</td>
-                <td class='amount'>` + thousands_separators(total_begin_balance.toFixed(2)) + `</td>
-                <td class='amount'>` + thousands_separators(total_amount.toFixed(2)) + `</td>
-                <td class='amount'>` + thousands_separators(total_withdrawals.toFixed(2)) + `</td>
+                <td style='font-weight:bold' colspan='2'>Total</td>
+                <td class='amount'>` + thousands_separators(total_beginning_balance.toFixed(2)) + `</td>
+                <td class='amount'>` + thousands_separators(total_prev.toFixed(2)) + `</td>
+                <td class='amount'>` + thousands_separators(total_current.toFixed(2)) + `</td>
+                <td class='amount'>` + thousands_separators(total_to_date.toFixed(2)) + `</td>
                 <td class='amount'>` + thousands_separators(total_balance.toFixed(2)) + `</td>
+                <td class='amount'>` + thousands_separators(total_utilization.toFixed(2)) + `</td>
             </tr>`
         $('#summary_table tbody').append(row)
     }

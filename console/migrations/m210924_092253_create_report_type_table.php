@@ -14,7 +14,8 @@ class m210924_092253_create_report_type_table extends Migration
     {
         $this->createTable('{{%report_type}}', [
             'id' => $this->primaryKey(),
-            'name'=>$this->string()
+            'name'=>$this->string(),
+            
         ]);
     }
 

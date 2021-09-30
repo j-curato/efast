@@ -2090,20 +2090,33 @@ class JevPreparationController extends Controller
     public function getJevNumber($book_id, $reporting_period, $reference, $i)
     {
         // $reporting_period = "2021-12";
-        $q = date("Y", strtotime($reporting_period));
-        $query = JevPreparation::find()
-            ->where("reporting_period LIKE :reporting_period", [
-                'reporting_period' => "$q%"
-            ])
-            ->andWhere("book_id = :book_id", [
-                'book_id' => $book_id
-            ])
-            ->andWhere("ref_number = :ref_number", [
-                'ref_number' => $reference
-            ])
-            ->orderBy([
-                'id' => SORT_DESC
-            ])->one();
+        $q = date("Y%", strtotime($reporting_period));
+        $query = Yii::$app->db->createCommand("SELECT SUBSTRING_INDEX(jev_number,'-',-1) as q
+        from jev_preparation
+
+        WHERE reporting_period LIKE :r_year
+        AND book_id = :book_id
+        AND ref_number = :ref_number
+        ORDER BY q DESC LIMIT 1")
+            ->bindValue(':ref_number', $reference)
+            ->bindValue(':book_id', $book_id)
+            ->bindValue(':r_year', $q)
+            ->queryScalar();
+
+
+        // $query = JevPreparation::find()
+        // ->where("reporting_period LIKE :reporting_period", [
+        //     'reporting_period' => "$q%"
+        // ])
+        // ->andWhere("book_id = :book_id", [
+        //     'book_id' => $book_id
+        // ])
+        // ->andWhere("ref_number = :ref_number", [
+        //     'ref_number' => $reference
+        // ])
+        // ->orderBy([
+        //     'id' => SORT_DESC
+        // ])->one();
         $ff = Books::find()
             ->where("id = :id", [
                 'id' => $book_id
@@ -2114,7 +2127,7 @@ class JevPreparationController extends Controller
             // echo "</pre>";
             // $x=1;
             // echo "<br> $i";
-            $x = explode('-', $query->jev_number)[4] + $i;
+            $x = $query + $i;
         } else {
             $x = $i;
         }
@@ -2131,7 +2144,8 @@ class JevPreparationController extends Controller
 
         // VarDumper::dump($year);
         $ff .= '-' . $year;
-
+        // var_dump($ff);
+        // die();
         return $ff;
         // ob_start();
         // echo "<pre>";

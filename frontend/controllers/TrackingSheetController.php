@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\TrackingSheet;
 use app\models\TrackingSheetSearch;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -261,5 +262,27 @@ class TrackingSheetController extends Controller
                 ->queryOne();
             return json_encode($query);
         }
+    }
+
+    public function actionSearchTrackingSheet($q = null, $id = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $user_province = strtolower(Yii::$app->user->identity->province);
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if ($id > 0) {
+            $out['results'] = ['id' => $id, 'text' => TrackingSheet::findOne($id)->tracking_number];
+        } else if (!is_null($q)) {
+            $query = new Query();
+            $query->select('tracking_sheet.id, tracking_sheet.tracking_number AS text')
+                ->from('tracking_sheet')
+                ->where(['like', 'tracking_sheet.tracking_number', $q]);
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        return $out;
     }
 }
