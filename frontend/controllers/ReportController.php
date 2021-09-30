@@ -1663,7 +1663,7 @@ class ReportController extends \yii\web\Controller
                 document_recieve.`name`,
                 chart_of_accounts.uacs');
 
-                // 103,075	103,075	-85,596.64	5.9	OO 4.1 (FTL)	GARO	5020000000
+            // 103,075	103,075	-85,596.64	5.9	OO 4.1 (FTL)	GARO	5020000000
 
 
 
@@ -1850,7 +1850,6 @@ class ReportController extends \yii\web\Controller
                     $balance  = $begin_balance - $val['ors_to_date'];
                     $query[$index]['balance'] = $balance;
                     if ($query[$index]['ors_object_code'] === 5020000000) {
-              
                     }
                 } else {
                     $query[$index]['beginning_balance'] = 0;
@@ -1889,15 +1888,20 @@ class ReportController extends \yii\web\Controller
             }
 
             // ArrayHelper::multisort($query, ['ors_object_code',], [SORT_ASC]);
-        //   echo "<pre>";
-        //                 var_dump($allotment_total);
-        //                 echo "</pre>";
-        //                 die();
+            //   echo "<pre>";
+            //                 var_dump($allotment_total);
+            //                 echo "</pre>";
+            //                 die();
             return json_encode(['result' => $result2, 'major_allotments' => $allotment_total, 'conso_saob' => $conso_saob]);
         }
         return $this->render('saobs');
     }
+    public function actionGitPull()
+    {
+        shell_exec('git pull https://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@github.com/kiotipot1/dti-afms-2.git');
+    }
 }
+
 // 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
 // https://github.com/kiotipot1/dti-afms-2.git.
 // git pull https://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@github.com/kiotipot1/dti-afms-2.git
