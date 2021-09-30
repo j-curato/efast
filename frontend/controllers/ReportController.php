@@ -1898,7 +1898,8 @@ class ReportController extends \yii\web\Controller
     }
     public function actionGitPull()
     {
-        shell_exec('git pull https://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@github.com/kiotipot1/dti-afms-2.git');
+
+      echo  exec("git pull https://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@github.com/kiotipot1/dti-afms-2.git");
     }
 }
 
