@@ -224,7 +224,7 @@ class AdvancesController extends Controller
             $entry_id = !empty($_POST['entry_id']) ? $_POST['entry_id'] : '';
 
             $cash_disbursement_id = $_POST['cash_disbursement_id'];
-            $advances_type = $_POST['report'];
+            $advances_type = '';
             $report_type = $_POST['report_type'];
             $province = $_POST['province'];
             $reporting_period = $_POST['reporting_period'];

@@ -52,7 +52,7 @@ class ReportTypeController extends Controller
                 ]
             ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -154,5 +154,11 @@ class ReportTypeController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    public function actionGetReportType()
+    {
+        
+        $query =Yii::$app->db->createCommand("SELECT report_type.name as id,report_type.name FROM report_type ")->queryAll();
+        return json_encode($query);
     }
 }

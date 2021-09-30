@@ -32,9 +32,9 @@ class Advances extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['province', 'report_type','reporting_period'], 'string', 'max' => 50],
+            [['province', 'report_type', 'reporting_period'], 'string', 'max' => 50],
             [['particular'], 'string', 'max' => 500],
-            [['report_type','province','reporting_period'], 'required'],
+            [['province', 'reporting_period'], 'required'],
         ];
     }
 
@@ -56,8 +56,4 @@ class Advances extends \yii\db\ActiveRecord
     {
         return $this->hasMany(AdvancesEntries::class, ['advances_id' => 'id']);
     }
-
-
-
-
 }
