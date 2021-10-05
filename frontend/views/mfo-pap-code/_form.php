@@ -1,5 +1,6 @@
 <?php
 
+use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -17,6 +18,20 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'division')->widget(Select2::class, [
+        'data' =>    [
+            'cpd' => 'CPD',
+            'fad' => 'FAD',
+            'idd' => 'IDD',
+            'ord' => 'ORD',
+            'sdd' => 'SDD'
+        ],
+        'name' => 'division',
+        'pluginOptions' => [
+            'placeholder' => 'Select Division'
+        ]
+
+    ]) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

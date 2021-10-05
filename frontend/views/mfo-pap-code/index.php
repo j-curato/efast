@@ -1,7 +1,7 @@
 <?php
 
+use kartik\grid\GridView;
 use yii\helpers\Html;
-use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\MfoPapCodeSearch */
@@ -30,8 +30,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'code',
             'name',
             'description',
-
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => '\kartik\grid\ActionColumn',
+                'deleteOptions' => ['style' => 'display:none']
+            ],
         ],
     ]); ?>
 

@@ -1107,7 +1107,9 @@ class ReportController extends \yii\web\Controller
                     ]
                 )
                 ->where('advances_entries.fund_source_type=:fund_source_type', ['fund_source_type' => $fund_source_type])
-                ->andWhere('advances_entries.reporting_period <= :to_reporting_period', ['to_reporting_period' => $to_reporting_period]);
+                ->andWhere('advances_entries.reporting_period <= :to_reporting_period', ['to_reporting_period' => $to_reporting_period])
+                ->andWhere('advances_entries.is_deleted !=1 ')
+                ;
             if (strtolower($province) !== 'all') {
                 $query->andWhere('advances.province = :province', ['province' => $province]);
             }
@@ -1596,171 +1598,103 @@ class ReportController extends \yii\web\Controller
 
             $current_ors = new Query();
             $current_ors->select([
-                "process_ors_entries.record_allotment_entries_id",
-                "chart_of_accounts.uacs",
-                "SUM(process_ors_entries.amount) as total_current_ors"
 
+                "saob_rao.mfo_pap_code_id",
+                "saob_rao.document_recieve_id",
+                "saob_rao.book_id",
+                "saob_rao.chart_of_account_id",
+                "SUM(saob_rao.allotment_amount) as total_allotment",
+                "SUM(saob_rao.ors_amount) as total_ors"
             ])
-                ->from('process_ors_entries')
-                ->join('LEFT JOIN', 'chart_of_accounts', 'process_ors_entries.chart_of_account_id = chart_of_accounts.id')
-                ->join('LEFT JOIN', 'major_accounts', 'chart_of_accounts.major_account_id = major_accounts.id')
-                ->join('LEFT JOIN', 'record_allotments_view', 'process_ors_entries.record_allotment_entries_id = record_allotments_view.entry_id')
-                ->join('LEFT JOIN', 'process_ors', 'process_ors_entries.process_ors_id = process_ors.id')
-                ->where(" process_ors_entries.reporting_period >= :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
-                ->andWhere("process_ors_entries.reporting_period <= :to_reporting_period", ['to_reporting_period' => $to_reporting_period])
-                ->andWhere("process_ors.book_id = :book_id", ['book_id' => $book_id]);
+                ->from('saob_rao')
+
+                ->where(" saob_rao.reporting_period >= :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
+                ->andWhere("saob_rao.reporting_period <= :to_reporting_period", ['to_reporting_period' => $to_reporting_period])
+                ->andWhere("saob_rao.book_id = :book_id", ['book_id' => $book_id]);
             if (strtolower($mfo_code) !== 'all') {
 
-                $current_ors->andWhere("record_allotments_view.mfo_code = :mfo_code", ['mfo_code' => $mfo_code]);
+                $current_ors->andWhere("saob_rao.mfo_pap_code_id = :mfo_code", ['mfo_code' => $mfo_code]);
             }
             if (strtolower($document_recieve) !== 'all') {
 
-                $current_ors->andWhere("record_allotments_view.document_recieve = :document", ['document' => $document_recieve]);
+                $current_ors->andWhere("saob_rao.document_recieve_id = :document", ['document' => $document_recieve]);
             }
-            $current_ors->groupBy("process_ors_entries.record_allotment_entries_id,
-            chart_of_accounts.uacs");
+            $current_ors->groupBy(
+                "saob_rao.mfo_pap_code_id,
+                saob_rao.document_recieve_id,
+                saob_rao.book_id,
+                saob_rao.chart_of_account_id"
+            );
+
 
             $prev_ors = new Query();
             $prev_ors->select([
-                "process_ors_entries.record_allotment_entries_id",
-                "chart_of_accounts.uacs",
-                "SUM(process_ors_entries.amount) as total_prev_ors"
 
+                "saob_rao.mfo_pap_code_id",
+                "saob_rao.document_recieve_id",
+                "saob_rao.book_id",
+                "saob_rao.chart_of_account_id",
+                "SUM(saob_rao.allotment_amount) as total_allotment",
+                "SUM(saob_rao.ors_amount) as total_ors"
             ])
-                ->from('process_ors_entries')
-                ->join('LEFT JOIN', 'chart_of_accounts', 'process_ors_entries.chart_of_account_id = chart_of_accounts.id')
-                ->join('LEFT JOIN', 'major_accounts', 'chart_of_accounts.major_account_id = major_accounts.id')
-                ->join('LEFT JOIN', 'record_allotments_view', 'process_ors_entries.record_allotment_entries_id = record_allotments_view.entry_id')
-                ->join('LEFT JOIN', 'process_ors', 'process_ors_entries.process_ors_id = process_ors.id')
-                ->where(" process_ors_entries.reporting_period < :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
-                ->andWhere("process_ors.book_id = :book_id", ['book_id' => $book_id]);
+                ->from('saob_rao')
 
+                ->where(" saob_rao.reporting_period < :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
+                ->andWhere("saob_rao.book_id = :book_id", ['book_id' => $book_id]);
             if (strtolower($mfo_code) !== 'all') {
 
-                $prev_ors->andWhere("record_allotments_view.mfo_code = :mfo_code", ['mfo_code' => $mfo_code]);
+                $prev_ors->andWhere("saob_rao.mfo_pap_code_id = :mfo_code", ['mfo_code' => $mfo_code]);
             }
             if (strtolower($document_recieve) !== 'all') {
 
-                $prev_ors->andWhere("record_allotments_view.document_recieve = :document", ['document' => $document_recieve]);
+                $prev_ors->andWhere("saob_rao.document_recieve_id = :document", ['document' => $document_recieve]);
             }
-            $prev_ors->groupBy("process_ors_entries.record_allotment_entries_id,
-            chart_of_accounts.uacs");
-            $allotment = new Query();
-            $allotment->select([
-                "mfo_pap_code.`code` as mfo_code",
-                "document_recieve.`name` as document_recieve_name",
-                "chart_of_accounts.uacs",
-                "SUM(record_allotment_entries.amount) as total_allotment"
-            ])
-                ->from("record_allotment_entries")
-                ->join('LEFT JOIN', 'record_allotments', 'record_allotment_entries.record_allotment_id = record_allotments.id')
-                ->join('LEFT JOIN', 'document_recieve', 'record_allotments.document_recieve_id = document_recieve.id')
-                ->join('LEFT JOIN', 'mfo_pap_code', 'record_allotments.mfo_pap_code_id = mfo_pap_code.id')
-                ->join('LEFT JOIN', 'chart_of_accounts', 'record_allotment_entries.chart_of_account_id = chart_of_accounts.id')
-                ->where("record_allotments.book_id = :book_id", ['book_id' => $book_id]);
+            $prev_ors->groupBy(
+                "saob_rao.mfo_pap_code_id,
+                saob_rao.document_recieve_id,
+                saob_rao.book_id,
+                saob_rao.chart_of_account_id"
+            );
 
 
-            if (strtolower($mfo_code) !== 'all') {
-
-                $allotment->andWhere("mfo_pap_code.`code` = :mfo_code", ['mfo_code' => $mfo_code]);
-            }
-            if (strtolower($document_recieve) !== 'all') {
-
-                $allotment->andWhere("document_recieve.name = :document", ['document' => $document_recieve]);
-            }
-            $allotment->groupBy('mfo_pap_code.`code`,
-                document_recieve.`name`,
-                chart_of_accounts.uacs');
-
-            // 103,075	103,075	-85,596.64	5.9	OO 4.1 (FTL)	GARO	5020000000
 
 
 
             $sql_current_ors = $current_ors->createCommand()->getRawSql();
             $sql_prev_ors = $prev_ors->createCommand()->getRawSql();
-            $sql_allotment = $allotment->createCommand()->getRawSql();
             $query = Yii::$app->db->createCommand("SELECT
-
-            current_prev.mfo_code,
-            current_prev.document_recieve_name,
-            current_prev.uacs,
-            allotment_chart.general_ledger as allotment_account_title,
-            major_accounts.object_code as major_object_code,
+            mfo_pap_code.`name` as mfo_name,
+            document_recieve.`name` as document_name,
             major_accounts.`name` as major_name,
-            sub_major_accounts.object_code as sub_major_object_code,
+            major_accounts.`object_code` as major_object_code,
+            
             sub_major_accounts.`name` as sub_major_name,
-            chart_of_accounts.uacs as ors_object_code,
+            chart_of_accounts.uacs,
             chart_of_accounts.general_ledger,
-            CONCAT(chart_of_accounts.uacs,'-',chart_of_accounts.general_ledger) as account_title,
-            IFNULL(current_prev.total_ors,0) as current_total,
-            IFNULL(current_prev.total_prev_ors,0) as prev_total,
-            IFNULL(current_prev.total_ors,0)+
-            IFNULL(current_prev.total_prev_ors,0) as ors_to_date,
-            allotment.total_allotment
-            FROM (
-            SELECT 
-
-            mfo_pap_code.`code` as mfo_code,
-            document_recieve.`name` as document_recieve_name ,
-            chart_of_accounts.uacs,
-            ors.uacs as ors_object_code,
-            
-            SUM(ors.total_current_ors) as total_ors,
-            SUM(ors.total_prev_ors) as total_prev_ors
-            
-            FROM record_allotment_entries
-            LEFT JOIN record_allotments ON record_allotment_entries.record_allotment_id = record_allotments.id
-            LEFT JOIN mfo_pap_code ON record_allotments.mfo_pap_code_id = mfo_pap_code.id
-            LEFT JOIN document_recieve ON record_allotments.document_recieve_id = document_recieve.id
-            LEFT JOIN chart_of_accounts ON record_allotment_entries.chart_of_account_id = chart_of_accounts.id
-            LEFT JOIN (
-            SELECT
-                current_ors.record_allotment_entries_id,
-                current_ors.uacs,
-                current_ors.total_current_ors,
-                prev_ors.total_prev_ors 
-             FROM 
-            ($sql_current_ors) as current_ors  
-            LEFT JOIN ($sql_prev_ors) as prev_ors   
-            ON (current_ors.record_allotment_entries_id = prev_ors.record_allotment_entries_id AND current_ors.uacs = prev_ors.uacs)
-            UNION ALL 
-            SELECT
-                prev_ors.record_allotment_entries_id,
-                prev_ors.uacs,
-                current_ors.total_current_ors,
-                prev_ors.total_prev_ors 
-             FROM 
-            ($sql_current_ors) as current_ors  
-            RIGHT JOIN ($sql_prev_ors) as prev_ors   
-            ON (current_ors.record_allotment_entries_id = prev_ors.record_allotment_entries_id AND current_ors.uacs = prev_ors.uacs)
-            WHERE IFNULL(current_ors.total_current_ors,0) <=0 
-            ) as ors
-            ON record_allotment_entries.id = ors.record_allotment_entries_id
-            GROUP BY
-            mfo_pap_code.`code`,
-            document_recieve.`name` ,
-            chart_of_accounts.uacs,
-            ors.uacs
-            ) as current_prev
-            RIGHT  JOIN ($sql_allotment) as allotment
-            ON (
-                 current_prev.mfo_code = allotment.mfo_code
-            AND  current_prev.document_recieve_name =allotment.document_recieve_name 
-            AND  current_prev.uacs =allotment.uacs
-            )
-     
-            LEFT JOIN chart_of_accounts ON IFNULL(current_prev.ors_object_code,current_prev.uacs) = chart_of_accounts.uacs
-            LEFT JOIN chart_of_accounts  as allotment_chart ON  current_prev.uacs = allotment_chart.uacs
+            IFNULL(current.total_allotment,0) + IFNULL(prev.total_allotment,0) as allotment,
+            IFNULL(prev.total_ors ,0)as prev_total_ors,
+            IFNULL(current.total_ors,0) as current_total_ors,
+            IFNULL(prev.total_ors ,0) + 
+            IFNULL(current.total_ors,0) as ors_to_date
+            FROM ($sql_current_ors) as current
+            LEFT JOIN  ($sql_prev_ors) as prev ON (current.mfo_pap_code_id = prev.mfo_pap_code_id 
+            AND current.document_recieve_id = prev.document_recieve_id
+            AND current.book_id = prev.book_id
+            AND current.chart_of_account_id = prev.chart_of_account_id)
+            LEFT JOIN chart_of_accounts ON current.chart_of_account_id  = chart_of_accounts.id
             LEFT JOIN major_accounts ON chart_of_accounts.major_account_id = major_accounts.id
             LEFT JOIN sub_major_accounts ON chart_of_accounts.sub_major_account = sub_major_accounts.id
+            LEFT JOIN mfo_pap_code ON current.mfo_pap_code_id = mfo_pap_code.id
+            LEFT JOIN document_recieve ON current.document_recieve_id = document_recieve.id
+            LEFT JOIN books ON current.book_id  = books.id
    
             ")->queryAll();
 
-            // $uacs_sort = ArrayHelper::index($query, null, 'ors_object_code');
-            //  echo "<pre>";
-            //     var_dump($query);
-            //     echo "</pre>";
-            //     die();
+
+
+
+
+
 
             // IFNULL(allotment_per_ors_uacs.total_allotment,0) as allotment_per_uacs
             // LEFT JOIN ($sql_allotment) as allotment_per_ors_uacs
@@ -1779,20 +1713,20 @@ class ReportController extends \yii\web\Controller
             //     ->queryAll();
 
             $result = ArrayHelper::index($query, 'uacs', [function ($element) {
-                return $element['mfo_code'];
-            }, 'document_recieve_name']);
+                return $element['mfo_name'];
+            }, 'document_name']);
 
-            $uacs_sort = ArrayHelper::index($query, 'ors_object_code', [function ($element) {
-                return $element['mfo_code'];
-            }, 'document_recieve_name']);
+            // $uacs_sort = ArrayHelper::index($query, 'ors_object_code', [function ($element) {
+            //     return $element['mfo_code'];
+            // }, 'document_recieve_name']);
 
 
-            $mfo = Yii::$app->db->createCommand("SELECT code,`name` FROM mfo_pap_code")->queryAll();
-            $mfo_sort = ArrayHelper::index(
-                $mfo,
-                null,
-                'code'
-            );
+            // $mfo = Yii::$app->db->createCommand("SELECT code,`name` FROM mfo_pap_code")->queryAll();
+            // $mfo_sort = ArrayHelper::index(
+            //     $mfo,
+            //     null,
+            //     'code'
+            // );
 
 
 
@@ -1800,80 +1734,25 @@ class ReportController extends \yii\web\Controller
             foreach ($result as $mfo => $val1) {
                 foreach ($val1 as $document => $val2) {
                     foreach ($val2 as $uacs => $val3) {
-                        $allot = floatval($result[$mfo][$document][$uacs]['total_allotment']);
-                        $allotment_total[$mfo][$document][$uacs] = $allot;
+                        $allot = floatval($result[$mfo][$document][$uacs]['allotment']);
+                        if ($allot != 0) {
 
-                        if (empty($uacs_sort[$mfo][$document][$uacs])) {
-
-                            $chart_majors = Yii::$app->db->createCommand("SELECT 
-                            major_accounts.object_code as major_object_code,
-                            major_accounts.`name` as major_name,
-                            sub_major_accounts.object_code as sub_major_object_code,
-                            sub_major_accounts.`name` as sub_major_name
-                            FROM chart_of_accounts
-                            INNER  JOIN major_accounts ON chart_of_accounts.major_account_id = major_accounts.id
-                            INNER JOIN sub_major_accounts ON chart_of_accounts.sub_major_account=  sub_major_accounts.id
-                            WHERE
-                            chart_of_accounts.uacs = :uacs ")
-                                ->bindValue('uacs', $uacs)
-                                ->queryOne();
-                            // var_dump($mfo_sort[$mfo][0]['name']);
-                            // die();
-                            $arr =  [
-                                'mfo_code' => $mfo,
-
-                                'document_recieve_name' => $document,
-                                'uacs' => $uacs,
-                                'allotment_account_title' => $result[$mfo][$document][$uacs]['allotment_account_title'],
-                                'major_object_code' => $chart_majors['major_object_code'],
-                                'major_name' => $chart_majors['major_name'],
-                                'sub_major_object_code' => $chart_majors['sub_major_object_code'],
-                                'sub_major_name' => $chart_majors['sub_major_name'],
-                                'ors_object_code' => $uacs,
-                                'general_ledger' => $result[$mfo][$document][$uacs]['allotment_account_title'],
-                                'account_title' => $uacs . '-' . $result[$mfo][$document][$uacs]['allotment_account_title'],
-                                'current_total' => 0,
-                                'prev_total' => 0,
-                                'ors_to_date' => 0,
-                                'total_allotment' => $result[$mfo][$document][$uacs]['total_allotment']
-                            ];
-                            array_push($query, $arr);
+                            $allotment_total[$mfo][$document][$uacs] = $allot;
                         }
                     }
                 }
             }
-            // echo "<pre>";
-            // // var_dump(array_key_exists(5010403001,$allotment_total[100000100001000]['GARO']));
-            // var_dump($allotment_total);
 
-            // echo "</pre>";
-            // die();
-            // $uacs_in_query = in_array($uacs, array_column($query, 'ors_object_code'));
+            // foreach ($query as $val) {
 
-            $arr = $allotment_total;
-            foreach ($query as $index => $val) {
-                $mfo = $val['mfo_code'];
-                $document_recieve = $val['document_recieve_name'];
-                $ors_object_code = $val['ors_object_code'];
-                $allotment_uacs =  $val['uacs'];
-                $exist = array_key_exists($allotment_uacs, $allotment_total[$mfo][$document_recieve]);
 
-                $query[$index]['mfo_name'] = $mfo_sort[$mfo][0]['name'];
-                if ($allotment_uacs === $ors_object_code) {
-                    $begin_balance = $allotment_total[$mfo][$document_recieve][$ors_object_code];
-                    $query[$index]['beginning_balance'] = $begin_balance;
-                    $balance  = $begin_balance - $val['ors_to_date'];
-                    $query[$index]['balance'] = $balance;
-                } else {
-                    $query[$index]['beginning_balance'] = 0;
-                    $bal  = $allotment_total[$mfo][$document_recieve][$allotment_uacs] - $val['ors_to_date'];
-                    $query[$index]['balance'] = $bal;
-                    // $arr[$mfo][$document_recieve][$allotment_uacs] = $bal;
-                }
-            }
 
-            // die();
-
+            //     if (!empty($allotment_total[$val['mfo_name']][$val['document_name']][$val['uacs']])) {
+            //         $val['balance'] = $allotment_total[ $val['mfo_name']][ $val['document_name']][ $val['uacs']] - $val['ors_to_date'];
+            //     } else {
+            //         $val['balance'] = $allotment_total[ $val['mfo_name']][ $val['document_name']][ $val['major_object_code']] - $val['ors_to_date'];
+            //     }
+            // }
 
             $result2 = ArrayHelper::index($query, null, [function ($element) {
                 return $element['major_name'];
@@ -1881,37 +1760,41 @@ class ReportController extends \yii\web\Controller
             $conso_saob = array();
             $sort_by_mfo_document = ArrayHelper::index($query, null, [function ($element) {
                 return $element['mfo_name'];
-            }, 'document_recieve_name']);
+            }, 'document_name']);
+
+            // echo "<pre>";
+            // var_dump(array_column($sort_by_mfo_document['GAS']['GARO'], 'prev_total_ors'));
+            // echo "</pre>";
+            // die();
             foreach ($sort_by_mfo_document as $mfo => $mfo_val) {
                 foreach ($mfo_val as $document => $document_val) {
                     $to_date = round(array_sum(array_column($document_val, 'ors_to_date')), 2);
-                    if ($to_date > 0) {
 
-                        $conso_saob[] =
-                            [
-                                'mfo_name' => $mfo,
-                                'document' => $document,
-                                'beginning_balance' => round(array_sum(array_column($document_val, 'beginning_balance')), 2),
-                                'prev' => round(array_sum(array_column($document_val, 'prev_total')), 2),
-                                'current' => round(array_sum(array_column($document_val, 'current_total')), 2),
-                                'to_date' => round(array_sum(array_column($document_val, 'ors_to_date')), 2),
-                            ];
-                    }
+
+
+
+
+
+                    $conso_saob[] =
+                        [
+                            'mfo_name' => $mfo,
+                            'document' => $document,
+                            'beginning_balance' => round(array_sum(array_column($sort_by_mfo_document[$mfo][$document], 'allotment')), 2),
+                            'prev' => round(array_sum(array_column($sort_by_mfo_document[$mfo][$document], 'prev_total_ors')), 2),
+                            'current' => round(array_sum(array_column($document_val, 'current_total_ors')), 2),
+                            'to_date' => round(array_sum(array_column($document_val, 'ors_to_date')), 2),
+                        ];
                 }
             }
 
-            // ArrayHelper::multisort($query, ['ors_object_code',], [SORT_ASC]);
-            //   echo "<pre>";
-            //                 var_dump($allotment_total);
-            //                 echo "</pre>";
-            //                 die();
-            return json_encode(['result' => $result2, 'major_allotments' => $allotment_total, 'conso_saob' => $conso_saob]);
+
+            return json_encode(['result' => $result2, 'allotments' => $allotment_total, 'conso_saob' => $conso_saob]);
         }
         return $this->render('saobs');
     }
     public function actionGitPull()
     {
-        
+
         echo "<pre>";
         echo  shell_exec("git fetch origin ");
         echo "</pre>";
@@ -1922,6 +1805,120 @@ class ReportController extends \yii\web\Controller
         echo "<pre>";
         echo  shell_exec("yii migrate --interactive=0");
         echo "</pre>";
+        echo "<pre>";
+        echo  "qweqweq";
+        echo "</pre>";
+    }
+    public function actionDivisionFur()
+    {
+        if ($_POST) {
+            $from_reporting_period = $_POST['from_reporting_period'];
+            $to_reporting_period = $_POST['to_reporting_period'];
+            $division = $_POST['division'];
+            $document_recieve = $_POST['document_recieve'];
+            $current_ors = new Query();
+            $current_ors->select([
+
+                "saob_rao.division",
+                "saob_rao.mfo_pap_code_id",
+                "saob_rao.document_recieve_id",
+                "saob_rao.chart_of_account_id",
+                "SUM(saob_rao.allotment_amount) as total_allotment",
+                "SUM(saob_rao.ors_amount) as total_ors"
+            ])
+                ->from('saob_rao')
+
+                ->where(" saob_rao.reporting_period >= :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
+                ->andWhere("saob_rao.reporting_period <= :to_reporting_period", ['to_reporting_period' => $to_reporting_period]);
+            if (strtolower($division) !== 'all') {
+
+                $current_ors->andWhere("saob_rao.division = :division", ['division' => $division]);
+            }
+            if (strtolower($document_recieve) !== 'all') {
+
+                $current_ors->andWhere("saob_rao.document_recieve_id = :document", ['document' => $document_recieve]);
+            }
+            $current_ors->groupBy(
+                "saob_rao.division,
+                saob_rao.mfo_pap_code_id,
+                saob_rao.document_recieve_id,
+                saob_rao.chart_of_account_id"
+            );
+
+
+            $prev_ors = new Query();
+            $prev_ors->select([
+                "saob_rao.division",
+                "saob_rao.mfo_pap_code_id",
+                "saob_rao.document_recieve_id",
+                "saob_rao.chart_of_account_id",
+                "SUM(saob_rao.allotment_amount) as total_allotment",
+                "SUM(saob_rao.ors_amount) as total_ors"
+            ])
+                ->from('saob_rao')
+
+                ->where(" saob_rao.reporting_period < :from_reporting_period", ['from_reporting_period' => $from_reporting_period]);
+            if (strtolower($division) !== 'all') {
+
+                $prev_ors->andWhere("saob_rao.division = :division", ['division' => $division]);
+            }
+            if (strtolower($document_recieve) !== 'all') {
+
+                $prev_ors->andWhere("saob_rao.document_recieve_id = :document", ['document' => $document_recieve]);
+            }
+            $prev_ors->groupBy(
+                "saob_rao.division,
+                saob_rao.mfo_pap_code_id,
+                saob_rao.document_recieve_id,
+                saob_rao.chart_of_account_id"
+            );
+
+
+
+
+
+            $sql_current_ors = $current_ors->createCommand()->getRawSql();
+            $sql_prev_ors = $prev_ors->createCommand()->getRawSql();
+            $query = Yii::$app->db->createCommand("SELECT
+            current.division,
+
+            mfo_pap_code.`code` as mfo_code,
+            mfo_pap_code.`name` as mfo_name,
+            mfo_pap_code.`description` as mfo_description,
+            document_recieve.`name` as document_name,
+            major_accounts.`name` as major_name,
+            major_accounts.`object_code` as major_object_code,
+            
+            sub_major_accounts.`name` as sub_major_name,
+            chart_of_accounts.uacs,
+            chart_of_accounts.general_ledger,
+            IFNULL(current.total_allotment,0) + IFNULL(prev.total_allotment,0) as allotment,
+            IFNULL(prev.total_ors ,0)-IFNULL(prev.total_ors ,0)as prev_total_ors,
+            IFNULL(current.total_ors,0) as current_total_ors,
+            IFNULL(prev.total_ors ,0) + 
+            IFNULL(current.total_ors,0) as ors_to_date
+            FROM ($sql_current_ors) as current
+            LEFT JOIN  ($sql_prev_ors) as prev ON (current.mfo_pap_code_id = prev.mfo_pap_code_id 
+            AND current.document_recieve_id = prev.document_recieve_id
+            AND current.chart_of_account_id = prev.chart_of_account_id)
+            LEFT JOIN chart_of_accounts ON current.chart_of_account_id  = chart_of_accounts.id
+            LEFT JOIN major_accounts ON chart_of_accounts.major_account_id = major_accounts.id
+            LEFT JOIN sub_major_accounts ON chart_of_accounts.sub_major_account = sub_major_accounts.id
+            LEFT JOIN mfo_pap_code ON current.mfo_pap_code_id = mfo_pap_code.id
+            LEFT JOIN document_recieve ON current.document_recieve_id = document_recieve.id
+   
+            ")->queryAll();
+
+            $result2 = ArrayHelper::index($query, null, [function ($element) {
+                return $element['division'];
+            }, 'mfo_name','major_name','sub_major_name',]);
+            // echo "<pre>";
+            // var_dump($result2);
+            // echo "</pre>";
+            // die();
+            return json_encode(['result'=>$result2]);
+        }
+        return $this->render('division_fur');
     }
 }
 

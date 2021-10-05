@@ -28,8 +28,8 @@ class MfoPapCode extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['code', 'name', 'description'], 'required'],
-            [['code', 'name', 'description'], 'string', 'max' => 255],
+            [['code', 'name', 'description','division'], 'required'],
+            [['code', 'name', 'description','division'], 'string', 'max' => 255],
         ];
     }
 
@@ -43,6 +43,7 @@ class MfoPapCode extends \yii\db\ActiveRecord
             'code' => 'Code',
             'name' => 'Name',
             'description' => 'Description',
+            'division' => 'Division',
         ];
     }
 }
