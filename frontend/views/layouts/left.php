@@ -263,6 +263,7 @@
                                     'url' => '#',
                                     'items' => [
                                         Yii::$app->user->can('super-user') ?     ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/report/saobs'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'FUR', 'icon' => 'circle-o', 'url' => ['/report/division-fur'],] : [],
 
 
                                     ],

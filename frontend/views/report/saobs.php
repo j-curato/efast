@@ -362,7 +362,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         <td class='amount'>` + thousands_separators(current) + `</td>
                         <td class='amount'>` + thousands_separators(to_date) + `</td>
                         <td class='amount'>` + thousands_separators(balance) + `</td>
-                        <td class='amount'>` + thousands_separators(utilization) + `</td>
+                        <td class='amount'>` + '%'+thousands_separators(utilization) + `</td>
                         <td style ='text-align:right'>` + mfo_name + `</td>
                         <td style ='text-align:right'>` + document + `</td>
                     

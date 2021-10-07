@@ -1108,8 +1108,7 @@ class ReportController extends \yii\web\Controller
                 )
                 ->where('advances_entries.fund_source_type=:fund_source_type', ['fund_source_type' => $fund_source_type])
                 ->andWhere('advances_entries.reporting_period <= :to_reporting_period', ['to_reporting_period' => $to_reporting_period])
-                ->andWhere('advances_entries.is_deleted !=1 ')
-                ;
+                ->andWhere('advances_entries.is_deleted !=1 ');
             if (strtolower($province) !== 'all') {
                 $query->andWhere('advances.province = :province', ['province' => $province]);
             }
@@ -1716,19 +1715,6 @@ class ReportController extends \yii\web\Controller
                 return $element['mfo_name'];
             }, 'document_name']);
 
-            // $uacs_sort = ArrayHelper::index($query, 'ors_object_code', [function ($element) {
-            //     return $element['mfo_code'];
-            // }, 'document_recieve_name']);
-
-
-            // $mfo = Yii::$app->db->createCommand("SELECT code,`name` FROM mfo_pap_code")->queryAll();
-            // $mfo_sort = ArrayHelper::index(
-            //     $mfo,
-            //     null,
-            //     'code'
-            // );
-
-
 
             $allotment_total = array();
             foreach ($result as $mfo => $val1) {
@@ -1893,7 +1879,7 @@ class ReportController extends \yii\web\Controller
             chart_of_accounts.uacs,
             chart_of_accounts.general_ledger,
             IFNULL(current.total_allotment,0) + IFNULL(prev.total_allotment,0) as allotment,
-            IFNULL(prev.total_ors ,0)-IFNULL(prev.total_ors ,0)as prev_total_ors,
+          IFNULL(prev.total_ors ,0)as prev_total_ors,
             IFNULL(current.total_ors,0) as current_total_ors,
             IFNULL(prev.total_ors ,0) + 
             IFNULL(current.total_ors,0) as ors_to_date
@@ -1906,17 +1892,61 @@ class ReportController extends \yii\web\Controller
             LEFT JOIN sub_major_accounts ON chart_of_accounts.sub_major_account = sub_major_accounts.id
             LEFT JOIN mfo_pap_code ON current.mfo_pap_code_id = mfo_pap_code.id
             LEFT JOIN document_recieve ON current.document_recieve_id = document_recieve.id
+            UNION 
+            SELECT
+            prev.division,
+            mfo_pap_code.`code` as mfo_code,
+            mfo_pap_code.`name` as mfo_name,
+            mfo_pap_code.`description` as mfo_description,
+            document_recieve.`name` as document_name,
+            major_accounts.`name` as major_name,
+            major_accounts.`object_code` as major_object_code,
+            sub_major_accounts.`name` as sub_major_name,
+            chart_of_accounts.uacs,
+            chart_of_accounts.general_ledger,
+            IFNULL(current.total_allotment,0) + IFNULL(prev.total_allotment,0) as allotment,
+            IFNULL(prev.total_ors ,0)as prev_total_ors,
+            IFNULL(current.total_ors,0) as current_total_ors,
+            IFNULL(prev.total_ors ,0) + 
+            IFNULL(current.total_ors,0) as ors_to_date
+            FROM ($sql_current_ors) as current
+            RIGHT JOIN  ($sql_prev_ors) as prev ON (current.mfo_pap_code_id = prev.mfo_pap_code_id 
+            AND current.document_recieve_id = prev.document_recieve_id
+            AND current.chart_of_account_id = prev.chart_of_account_id)
+            LEFT JOIN chart_of_accounts ON prev.chart_of_account_id  = chart_of_accounts.id
+            LEFT JOIN major_accounts ON chart_of_accounts.major_account_id = major_accounts.id
+            LEFT JOIN sub_major_accounts ON chart_of_accounts.sub_major_account = sub_major_accounts.id
+            LEFT JOIN mfo_pap_code ON prev.mfo_pap_code_id = mfo_pap_code.id
+            LEFT JOIN document_recieve ON prev.document_recieve_id = document_recieve.id
    
             ")->queryAll();
+            $result = ArrayHelper::index($query, 'uacs', [function ($element) {
+                return $element['mfo_name'];
+            }, 'document_name']);
 
-            $result2 = ArrayHelper::index($query, null, [function ($element) {
-                return $element['division'];
-            }, 'mfo_name','major_name','sub_major_name',]);
             // echo "<pre>";
-            // var_dump($result2);
+            // var_dump($result);
             // echo "</pre>";
             // die();
-            return json_encode(['result'=>$result2]);
+            $allotment_total = array();
+            foreach ($result as $mfo => $val1) {
+                foreach ($val1 as $document => $val2) {
+                    foreach ($val2 as $uacs => $val3) {
+                        $allot = floatval($result[$mfo][$document][$uacs]['allotment']);
+                        if ($allot != 0) {
+
+                            $allotment_total[$mfo][$document][$uacs] = $allot;
+                        }
+                    }
+                }
+            }
+            $mfo = Yii::$app->db->createCommand("SELECT * FROM mfo_pap_code")->queryAll();
+            $mfo_final = ArrayHelper::index($mfo, null, 'name');
+            $result2 = ArrayHelper::index($query, null, [function ($element) {
+                return $element['division'];
+            }, 'mfo_name', 'major_name', 'sub_major_name',]);
+
+            return json_encode(['result' => $result2, 'allotments' => $allotment_total, 'mfo_pap' => $mfo_final]);
         }
         return $this->render('division_fur');
     }

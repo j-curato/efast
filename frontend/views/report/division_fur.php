@@ -234,6 +234,8 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 <script>
+    var mfo = []
+    var allotment_balances = []
     $('#generate').click((e) => {
         e.preventDefault();
         $('#con').hide()
@@ -246,6 +248,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 var res = JSON.parse(data)
                 // var detailed = res.detailed
                 // var conso = res.conso
+                mfo = res.mfo_pap
+                allotment_balances = res.allotments
+                console.log(mfo)
                 addData(res.result)
                 // addToSummaryTable(res.conso_saob)
 
@@ -268,26 +273,24 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 var mfo_name = mfo_keys[mfo_loop];
                 row = `<tr class='data_row'>
                 <td colspan='' style='font-weight:bold;background-color:#cccccc' class='major-header'>` + division_name.toUpperCase() + `</td>
-                      <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
+                      <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'>` + mfo[mfo_name][0]['code'] + `</td>
                     <td colspan='' style='text-align:left;font-weight:bold;background-color:#cccccc' class='major-header'>` + mfo_name + `</td>
                         <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
                         <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
                         <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
                         <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
                         <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
-                        <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
-                        <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
+                        <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'>` + mfo[mfo_name][0]['description'] + `</td>
                         </tr>`
                 $('#fur_table tbody').append(row)
                 var major_keys = Object.keys(res[division_name][mfo_name])
-                console.log(major_keys)
                 for (var major_loop = 0; major_loop < major_keys.length; major_loop++) {
                     var major_name = major_keys[major_loop];
-                    console.log(major_name)
-                    row = `<tr class='data_row'>
+                    var str = major_name.toLowerCase().replace(/\s/g, '-');
+                    row = `<tr class='data_row' id='${str}'>
                     <td ></td>
                     <td ></td>
-                    <td colspan='' >` + major_name + `</td>
+                    <td colspan='' style='text-align:left;font-weight:bold;background-color:#cccccc'>` + major_name + `</td>
                     <td ></td>
                         <td ></td>
                         <td ></td>
@@ -302,7 +305,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         row = `<tr class='data_row'>
                         <td ></td>
                         <td ></td>
-                        <td colspan='' >` + sub_major_name + `</td>
+                        <td colspan=''  >` + sub_major_name + `</td>
                         <td ></td>
                         <td ></td>
                         <td ></td>
@@ -318,23 +321,57 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         }
 
                         var items = res[division_name][mfo_name][major_name][sub_major_name]
+
                         for (var items_loop = 0; items_loop < items.length; items_loop++) {
                             var uacs = res[division_name][mfo_name][major_name][sub_major_name][items_loop]['uacs']
                             var general_ledger = res[division_name][mfo_name][major_name][sub_major_name][items_loop]['general_ledger']
-                            var ors_to_date = res[division_name][mfo_name][major_name][sub_major_name][items_loop]['ors_to_date']
+                            var ors_to_date = parseFloat(res[division_name][mfo_name][major_name][sub_major_name][items_loop]['ors_to_date'])
                             var allotment = res[division_name][mfo_name][major_name][sub_major_name][items_loop]['allotment']
+                            var document_name = res[division_name][mfo_name][major_name][sub_major_name][items_loop]['document_name']
+                            var prev_total_ors = parseFloat(res[division_name][mfo_name][major_name][sub_major_name][items_loop]['prev_total_ors'])
+                            var major_object_code = res[division_name][mfo_name][major_name][sub_major_name][items_loop]
+                                ['major_object_code']
+                            var balance = 0;
+                            var begin_balance = 0
+                            var utilization = 0
+                            if (
+                                allotment == 0
+
+                            ) {
+                                console.log(mfo_name, document_name, major_object_code)
+                                var allotment_begin_balance = parseFloat(allotment_balances[mfo_name][document_name][major_object_code])
+
+                                begin_balance = allotment_begin_balance - prev_total_ors
+                                balance = begin_balance - parseFloat(ors_to_date)
+                                allotment_balances[mfo_name][document_name][major_object_code] = balance
+                                utilization = ors_to_date / allotment_begin_balance
+
+                            } else {
+                                begin_balance = allotment - prev_total_ors
+                                balance = begin_balance - ors_to_date
+                            }
+                            utilization  = (ors_to_date + prev_total_ors)/balance
                             row = `<tr class='data_row'>
                             <td ></td>
                             <td ></td>
                             <td colspan='' >` + uacs + '-' + general_ledger + `</td>
-                            <td ></td>
-                            <td >` + allotment + `</td>
-                            <td >` + ors_to_date + `</td>
-                            <td ></td>
-                            <td ></td>
+                            <td >` + thousands_separators(prev_total_ors.toFixed(2)) + `</td>
+                            <td class='amount'>` + thousands_separators(allotment) + `</td>
+                            <td class='amount'>` + thousands_separators(ors_to_date) + `</td>
+                            <td class='amount'>` + thousands_separators(balance.toFixed(2)) + `</td>
+                            <td class='amount'>` + '%'+thousands_separators(utilization.toFixed(2)) + `</td>
                             <td ></td>
                         </tr>`
-                            $('#fur_table tbody').append(row)
+                            if (uacs == 5010000000 ||
+                                uacs == 5020000000 ||
+                                uacs == 5060000000
+                            ) {
+                                $(`#${str}`).after(row)
+                            } else {
+
+                                $('#fur_table tbody').append(row)
+                            }
+                            // $('#fur_table tbody').append(row)
 
 
                         }
