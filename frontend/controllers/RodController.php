@@ -271,7 +271,7 @@ class RodController extends Controller
                         IFNULL(po_responsibility_center.`name`,'') reponsibility_center_name,
                         IFNULL(po_transaction.payee,liquidation.payee) as payee,
                         IFNULL(po_transaction.particular,liquidation.particular) as particular,
-                        liquidation_entries.withdrawals,
+                        IFNULL(liquidation_entries.withdrawals,0),
                         advances_entries.fund_source
             "])
                 ->from('liquidation_entries')

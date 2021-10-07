@@ -123,33 +123,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- <div id="con"> -->
 
     <div id='con'>
-        <table id="summary_table">
-            <thead>
-                <tr>
-
-                    <th rowspan="2"> MFO/PAP </th>
-                    <th rowspan="2"> Document Recieve</th>
-                    <th rowspan="2">Allotment</th>
-                    <th colspan="3">Obligation</th>
-                    <th rowspan="2">BALANCES</th>
-                    <th rowspan="2"> UTILIZATION</th>
-
-                </tr>
-                <tr>
-                    <th>Last Month</th>
-                    <th>This Month</th>
-                    <th>To Date</th>
-                </tr>
-
-
-
-
-            </thead>
-            <tbody>
-
-            </tbody>
-
-        </table>
 
         <table class="" id="fur_table" style="margin-top: 30px;">
             <thead>
@@ -163,7 +136,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th>Obligation Incured</th>
                     <th> Balance</th>
                     <th> FUR%</th>
-                    <th> MFO/PAP </th>
                 </tr>
 
 
@@ -271,113 +243,102 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             var mfo_keys = Object.keys(res[division_name])
             for (var mfo_loop = 0; mfo_loop < mfo_keys.length; mfo_loop++) {
                 var mfo_name = mfo_keys[mfo_loop];
-                row = `<tr class='data_row'>
+                var total_allotment = 0
+                var total_ors = 0
+                var total_begin_balance = 0
+                var total_to_date = 0
+                var qqq = 1
+
+                var str = mfo_name.toLowerCase().replace(/\(.*?\)/g, "-");
+                str = mfo_loop + '_' + str.replace(/[\. ,:-]+/g, "-")
+                row = `<tr class='data_row'  id='${str}'>
                 <td colspan='' style='font-weight:bold;background-color:#cccccc' class='major-header'>` + division_name.toUpperCase() + `</td>
-                      <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'>` + mfo[mfo_name][0]['code'] + `</td>
+                      <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc' >` + mfo[mfo_name][0]['code'] + `</td>
                     <td colspan='' style='text-align:left;font-weight:bold;background-color:#cccccc' class='major-header'>` + mfo_name + `</td>
                         <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
                         <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
                         <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
                         <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
                         <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
-                        <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'>` + mfo[mfo_name][0]['description'] + `</td>
                         </tr>`
+
                 $('#fur_table tbody').append(row)
-                var major_keys = Object.keys(res[division_name][mfo_name])
-                for (var major_loop = 0; major_loop < major_keys.length; major_loop++) {
-                    var major_name = major_keys[major_loop];
-                    var str = major_name.toLowerCase().replace(/\s/g, '-');
-                    row = `<tr class='data_row' id='${str}'>
+                var document_keys = Object.keys(res[division_name][mfo_name])
+                for (var document_loop = 0; document_loop < document_keys.length; document_loop++) {
+                    var document_name = document_keys[document_loop];
+
+                    row = `<tr class='data_row' >
+                    <td colspan='' style='text-align:left;font-weight:bold;background-color:#cccccc'>` + document_name + `</td>
                     <td ></td>
-                    <td ></td>
-                    <td colspan='' style='text-align:left;font-weight:bold;background-color:#cccccc'>` + major_name + `</td>
-                    <td ></td>
-                        <td ></td>
                         <td ></td>
                         <td ></td>
                         <td ></td>
                         <td ></td>
                         </tr>`
                     $('#fur_table tbody').append(row)
-                    var sub_major_keys = Object.keys(res[division_name][mfo_name][major_name])
-                    for (var sub_major_loop = 0; sub_major_loop < sub_major_keys.length; sub_major_loop++) {
-                        var sub_major_name = sub_major_keys[sub_major_loop];
+                    var major = res[division_name][mfo_name][document_name]
+                    for (var major_loop = 0; major_loop < major.length; major_loop++) {
+                        var major_name = res[division_name][mfo_name][document_name][major_loop]['major_name'];
+                        var allotment = res[division_name][mfo_name][document_name][major_loop]['allotment'];
+                        var current_total_ors = res[division_name][mfo_name][document_name][major_loop]['current_total_ors'];
+                        var prev_total_ors = res[division_name][mfo_name][document_name][major_loop]['prev_total_ors'];
+                        var balance = res[division_name][mfo_name][document_name][major_loop]['balance'];
+                        var begin_balance = res[division_name][mfo_name][document_name][major_loop]['begin_balance'];
+                        var ors_to_date = res[division_name][mfo_name][document_name][major_loop]['ors_to_date'];
+                        var utilization = res[division_name][mfo_name][document_name][major_loop]['utilization'];
+                        // var utilization = ors_to_date / allotment
+                        if (utilization == null) {
+                            utilization = 0
+                        }
+
+                        console.log(utilization)
                         row = `<tr class='data_row'>
-                        <td ></td>
-                        <td ></td>
-                        <td colspan=''  >` + sub_major_name + `</td>
-                        <td ></td>
-                        <td ></td>
-                        <td ></td>
-                        <td ></td>
-                        <td ></td>
-                        <td ></td>
+                      
+                        <td colspan=''  >` + major_name + `</td>
+                        <td class='amount'>` + thousands_separators(begin_balance) + `</td>
+                        <td class='amount'>` + thousands_separators(allotment) + `</td>
+                        <td class='amount'>` + thousands_separators(current_total_ors) + `</td>
+                        <td class='amount'>` + thousands_separators(balance) + `</td>
+                        <td class='amount'>` + '%' + thousands_separators(utilization) + `</td>
                         </tr>`
-                        if (sub_major_name == major_name) {
-                            // $(`#${str}`).after(row)
-                        } else {
 
-                            $('#fur_table tbody').append(row)
-                        }
+                        $('#fur_table tbody').append(row)
+                        total_allotment += parseFloat(allotment)
+                        total_ors += parseFloat(current_total_ors)
+                        total_begin_balance += parseFloat(begin_balance)
+                        total_to_date += parseFloat(ors_to_date)
+                        qqq++
 
-                        var items = res[division_name][mfo_name][major_name][sub_major_name]
-
-                        for (var items_loop = 0; items_loop < items.length; items_loop++) {
-                            var uacs = res[division_name][mfo_name][major_name][sub_major_name][items_loop]['uacs']
-                            var general_ledger = res[division_name][mfo_name][major_name][sub_major_name][items_loop]['general_ledger']
-                            var ors_to_date = parseFloat(res[division_name][mfo_name][major_name][sub_major_name][items_loop]['ors_to_date'])
-                            var allotment = res[division_name][mfo_name][major_name][sub_major_name][items_loop]['allotment']
-                            var document_name = res[division_name][mfo_name][major_name][sub_major_name][items_loop]['document_name']
-                            var prev_total_ors = parseFloat(res[division_name][mfo_name][major_name][sub_major_name][items_loop]['prev_total_ors'])
-                            var major_object_code = res[division_name][mfo_name][major_name][sub_major_name][items_loop]
-                                ['major_object_code']
-                            var balance = 0;
-                            var begin_balance = 0
-                            var utilization = 0
-                            if (
-                                allotment == 0
-
-                            ) {
-                                console.log(mfo_name, document_name, major_object_code)
-                                var allotment_begin_balance = parseFloat(allotment_balances[mfo_name][document_name][major_object_code])
-
-                                begin_balance = allotment_begin_balance - prev_total_ors
-                                balance = begin_balance - parseFloat(ors_to_date)
-                                allotment_balances[mfo_name][document_name][major_object_code] = balance
-                                utilization = ors_to_date / allotment_begin_balance
-
-                            } else {
-                                begin_balance = allotment - prev_total_ors
-                                balance = begin_balance - ors_to_date
-                            }
-                            utilization  = (ors_to_date + prev_total_ors)/balance
-                            row = `<tr class='data_row'>
-                            <td ></td>
-                            <td ></td>
-                            <td colspan='' >` + uacs + '-' + general_ledger + `</td>
-                            <td >` + thousands_separators(prev_total_ors.toFixed(2)) + `</td>
-                            <td class='amount'>` + thousands_separators(allotment) + `</td>
-                            <td class='amount'>` + thousands_separators(ors_to_date) + `</td>
-                            <td class='amount'>` + thousands_separators(balance.toFixed(2)) + `</td>
-                            <td class='amount'>` + '%'+thousands_separators(utilization.toFixed(2)) + `</td>
-                            <td ></td>
-                        </tr>`
-                            if (uacs == 5010000000 ||
-                                uacs == 5020000000 ||
-                                uacs == 5060000000
-                            ) {
-                                $(`#${str}`).after(row)
-                            } else {
-
-                                $('#fur_table tbody').append(row)
-                            }
-                            // $('#fur_table tbody').append(row)
-
-
-                        }
                     }
+                    qqq++
+                    var mfo_description = `<td rowspan='${major.length}'></td>`
+
+
+
 
                 }
+                row = `<tr class='data_row'>
+                        <td rowspan='${qqq}'></td>
+                        <td rowspan='${qqq}' style='padding:5px'>` + mfo[mfo_name][0]['description'] + `</td>
+             
+                        </tr>`
+
+                $(`#${str}`).after(row)
+                console.log(total_to_date, total_allotment)
+                var ut = parseFloat(total_to_date) / parseFloat(total_allotment)
+                console.log(ut)
+                row = `<tr class='data_row'>
+                        <td ></td>
+                        <td ></td>
+                        <td style='font-weight:bold'>Total</td>
+                        <td >` + '' + `</td>
+                        <td class='amount'>` + thousands_separators(total_allotment) + `</td>
+                        <td class='amount'>` + thousands_separators(total_ors) + `</td>
+                        <td class='amount'>` + thousands_separators(total_allotment - total_ors) + `</td>
+                        <td class='amount'>` + '%' + thousands_separators(ut) + `</td>
+                        </tr>`
+
+                $('#fur_table tbody').append(row)
             }
 
         }

@@ -1033,9 +1033,11 @@ class ReportController extends \yii\web\Controller
                 advances.province,
                 advances_entries.reporting_period,
                 advances_entries.fund_source,
-                IFNULL(beginning_advances.amount,0)   as begin_balance,
+                IFNULL(beginning_advances.amount,0) - IFNULL(beginning_balance.prev_withdrawals,0)  as begin_balance,
                 IFNULL(liquidation_total.total_withdrawals,0) as total_withdrawals,
-                (  IFNULL(beginning_advances.amount,0) + IFNULL(current_advances.amount,0) )-  IFNULL(liquidation_total.total_withdrawals,0) as balance,
+                (  IFNULL(beginning_advances.amount,0) +
+                IFNULL(current_advances.amount,0) )- 
+                 IFNULL(liquidation_total.total_withdrawals,0) as balance,
                 dv_aucs.particular,
                 IFNULL(current_advances.amount,0)   as cash_advances_for_the_period
                 "])
@@ -1846,7 +1848,7 @@ class ReportController extends \yii\web\Controller
                 "saob_rao.division",
                 "saob_rao.mfo_pap_code_id",
                 "saob_rao.document_recieve_id",
-                "saob_rao.chart_of_account_id",
+                "saob_rao.major_id",
                 "SUM(saob_rao.allotment_amount) as total_allotment",
                 "SUM(saob_rao.ors_amount) as total_ors"
             ])
@@ -1866,7 +1868,7 @@ class ReportController extends \yii\web\Controller
                 "saob_rao.division,
                 saob_rao.mfo_pap_code_id,
                 saob_rao.document_recieve_id,
-                saob_rao.chart_of_account_id"
+                saob_rao.major_id"
             );
 
 
@@ -1875,12 +1877,11 @@ class ReportController extends \yii\web\Controller
                 "saob_rao.division",
                 "saob_rao.mfo_pap_code_id",
                 "saob_rao.document_recieve_id",
-                "saob_rao.chart_of_account_id",
+                "saob_rao.major_id",
                 "SUM(saob_rao.allotment_amount) as total_allotment",
                 "SUM(saob_rao.ors_amount) as total_ors"
             ])
                 ->from('saob_rao')
-
                 ->where(" saob_rao.reporting_period < :from_reporting_period", ['from_reporting_period' => $from_reporting_period]);
             if (strtolower($division) !== 'all') {
 
@@ -1894,7 +1895,7 @@ class ReportController extends \yii\web\Controller
                 "saob_rao.division,
                 saob_rao.mfo_pap_code_id,
                 saob_rao.document_recieve_id,
-                saob_rao.chart_of_account_id"
+                saob_rao.major_id"
             );
 
 
@@ -1905,67 +1906,55 @@ class ReportController extends \yii\web\Controller
             $sql_prev_ors = $prev_ors->createCommand()->getRawSql();
             $query = Yii::$app->db->createCommand("SELECT
             current.division,
-
             mfo_pap_code.`code` as mfo_code,
             mfo_pap_code.`name` as mfo_name,
             mfo_pap_code.`description` as mfo_description,
             document_recieve.`name` as document_name,
             major_accounts.`name` as major_name,
             major_accounts.`object_code` as major_object_code,
-            
-            sub_major_accounts.`name` as sub_major_name,
-            chart_of_accounts.uacs,
-            chart_of_accounts.general_ledger,
+    
             IFNULL(current.total_allotment,0) + IFNULL(prev.total_allotment,0) as allotment,
-          IFNULL(prev.total_ors ,0)as prev_total_ors,
+              IFNULL(prev.total_ors ,0)as prev_total_ors,
             IFNULL(current.total_ors,0) as current_total_ors,
             IFNULL(prev.total_ors ,0) + 
-            IFNULL(current.total_ors,0) as ors_to_date
+            IFNULL(current.total_ors,0) as ors_to_date,
+           ( IFNULL(current.total_allotment,0) + IFNULL(prev.total_allotment,0) )-
+           ( IFNULL(prev.total_ors ,0) + 
+            IFNULL(current.total_ors,0)) as balance,
+           ( IFNULL(current.total_allotment,0) + IFNULL(prev.total_allotment,0) )-
+            IFNULL(prev.total_ors ,0) 
+             as begin_balance,
+           (  IFNULL(prev.total_ors ,0) + IFNULL(current.total_ors,0))
+                /
+            ( IFNULL(current.total_allotment,0) + IFNULL(prev.total_allotment,0) ) as utilization
             FROM ($sql_current_ors) as current
             LEFT JOIN  ($sql_prev_ors) as prev ON (current.mfo_pap_code_id = prev.mfo_pap_code_id 
             AND current.document_recieve_id = prev.document_recieve_id
-            AND current.chart_of_account_id = prev.chart_of_account_id)
-            LEFT JOIN chart_of_accounts ON current.chart_of_account_id  = chart_of_accounts.id
-            LEFT JOIN major_accounts ON chart_of_accounts.major_account_id = major_accounts.id
-            LEFT JOIN sub_major_accounts ON chart_of_accounts.sub_major_account = sub_major_accounts.id
+            AND current.major_id = prev.major_id)
+     
+            LEFT JOIN major_accounts ON current. major_id = major_accounts.id
             LEFT JOIN mfo_pap_code ON current.mfo_pap_code_id = mfo_pap_code.id
             LEFT JOIN document_recieve ON current.document_recieve_id = document_recieve.id
-            UNION 
-            SELECT
-            prev.division,
-            mfo_pap_code.`code` as mfo_code,
-            mfo_pap_code.`name` as mfo_name,
-            mfo_pap_code.`description` as mfo_description,
-            document_recieve.`name` as document_name,
-            major_accounts.`name` as major_name,
-            major_accounts.`object_code` as major_object_code,
-            sub_major_accounts.`name` as sub_major_name,
-            chart_of_accounts.uacs,
-            chart_of_accounts.general_ledger,
-            IFNULL(current.total_allotment,0) + IFNULL(prev.total_allotment,0) as allotment,
-            IFNULL(prev.total_ors ,0)as prev_total_ors,
-            IFNULL(current.total_ors,0) as current_total_ors,
+            WHERE
+
             IFNULL(prev.total_ors ,0) + 
-            IFNULL(current.total_ors,0) as ors_to_date
-            FROM ($sql_current_ors) as current
-            RIGHT JOIN  ($sql_prev_ors) as prev ON (current.mfo_pap_code_id = prev.mfo_pap_code_id 
-            AND current.document_recieve_id = prev.document_recieve_id
-            AND current.chart_of_account_id = prev.chart_of_account_id)
-            LEFT JOIN chart_of_accounts ON prev.chart_of_account_id  = chart_of_accounts.id
-            LEFT JOIN major_accounts ON chart_of_accounts.major_account_id = major_accounts.id
-            LEFT JOIN sub_major_accounts ON chart_of_accounts.sub_major_account = sub_major_accounts.id
-            LEFT JOIN mfo_pap_code ON prev.mfo_pap_code_id = mfo_pap_code.id
-            LEFT JOIN document_recieve ON prev.document_recieve_id = document_recieve.id
+            IFNULL(current.total_ors,0) >0
+            OR 
+            IFNULL(current.total_allotment,0) + IFNULL(prev.total_allotment,0) >0
    
             ")->queryAll();
-            $result = ArrayHelper::index($query, 'uacs', [function ($element) {
-                return $element['mfo_name'];
-            }, 'document_name']);
 
-            // echo "<pre>";
-            // var_dump($result);
-            // echo "</pre>";
-            // die();
+            $result = ArrayHelper::index($query, null, [function ($element) {
+                return $element['division'];
+            }, 'mfo_name', 'document_name']);
+            $mfo = Yii::$app->db->createCommand("SELECT * FROM mfo_pap_code")->queryAll();
+            $mfo_final = ArrayHelper::index($mfo, null, 'name');
+            return json_encode(['result' => $result, 'mfo_pap' => $mfo_final]);
+            echo "<pre>";
+            var_dump($result);
+            echo "</pre>";
+            die();
+
             $allotment_total = array();
             foreach ($result as $mfo => $val1) {
                 foreach ($val1 as $document => $val2) {
@@ -1995,28 +1984,26 @@ class ReportController extends \yii\web\Controller
             $to_reporting_period = $_POST['to_reporting_period'];
             $book = $_POST['book'];
 
-            $query = new Query();
-            $query->select("*")
-                ->from('cadadr')
-                ->where('cadadr.reporting_period >= :from_reporting_period', ['from_reporting_period' => $from_reporting_period])
-                ->andWhere('cadadr.reporting_period <= :to_reporting_period', ['to_reporting_period' => $to_reporting_period])
-                ->andWhere('cadadr.book_name = :book', ['book' => $book])
-                ->all();
-            $query2 = Yii::$app->db->createCommand("SELECT * FROM cadadr
+
+            $query = Yii::$app->db->createCommand("SELECT * FROM cadadr
             WHERE 
             reporting_period >= :from_reporting_period
             AND reporting_period <= :to_reporting_period
             AND book_name = :book
+            ORDER BY issuance_date
             ")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->bindValue(':book', $book)
                 ->queryAll();
-
-            echo "<pre>";
-            var_dump($query2);
-            echo "</pre>";
-            die();
+            // $result2 = ArrayHelper::index($query, null, [function ($element) {
+            //     return $element['division'];
+            // }, 'mfo_name', 'major_name', 'sub_major_name',]);
+            // echo "<pre>";
+            // var_dump($query);
+            // echo "</pre>";
+            // die();
+            return json_encode(['results'=>$query]);
         }
         return $this->render('cadadr');
     }

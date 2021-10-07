@@ -96,10 +96,8 @@ class CashRecievedController extends Controller
             if ($document->name === 'NCA - Notice of Cash Allocation') {
             } else if ($document->name === 'NTA - Notice of Transfer Allocation') {
                 $model->nta_no = $model->nca_no;
-                $model->nca_no = 0;
             } else if ($document->name === 'NFT - Notice of Fund Transfer') {
                 $model->nft_no = $model->nca_no;
-                $model->nca_no = 0;
             }
             if ($model->save(false)) {
             }
@@ -123,6 +121,25 @@ class CashRecievedController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+            if ($model->load(Yii::$app->request->post())) {
+                $document = DocumentRecieve::findOne($model->document_recieved_id);
+                if ($document->name === 'NCA - Notice of Cash Allocation') {
+                    $model->nft_no = null;
+                    $model->nta_no = null;
+                } else if ($document->name === 'NTA - Notice of Transfer Allocation') {
+                    $model->nta_no = $model->nca_no;
+                    $model->nca_no = null;
+                    $model->nft_no = null;
+                } else if ($document->name === 'NFT - Notice of Fund Transfer') {
+                    $model->nft_no = $model->nca_no;
+                    $model->nca_no = null;
+                    $model->nta_no = null;
+                }
+                if ($model->save(false)) {
+                }
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         }
 

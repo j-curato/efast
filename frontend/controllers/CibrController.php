@@ -178,8 +178,16 @@ class CibrController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
 
+        $model = $this->findModel($id);
+        Yii::$app->db->createCommand("DELETE FROM liquidation_reporting_period WHERE reporting_period =:reporting_period
+        AND province =:province
+        ")
+            ->bindValue(':reporting_period', $model->reporting_period)
+            ->bindValue(':province', $model->province)
+            ->query();
+
+        $model->delete();
         return $this->redirect(['index']);
     }
 

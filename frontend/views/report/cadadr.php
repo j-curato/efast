@@ -73,9 +73,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 echo Select2::widget([
                     'name' => 'book',
                     'id' => 'book',
-                    'data'=>ArrayHelper::map(Books::find()->asArray()->all(),'name','name'),
+                    'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'name', 'name'),
                     'pluginOptions' => [
-                        'placeholder'=>'Select Book'
+                        'placeholder' => 'Select Book'
                     ]
                 ])
                 ?>
@@ -93,7 +93,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- <div id="con"> -->
 
     <div id='con'>
-        <table id="summary_table">
+        <table id="cadadr">
             <thead>
 
                 <tr>
@@ -152,7 +152,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th>ADA Issued</th>
                     <th>NCA/BANK Balance</th>
                 </tr>
-           
+
 
 
             </thead>
@@ -184,7 +184,8 @@ $this->params['breadcrumbs'][] = $this->title;
     #summary_table {
         margin-top: 30px;
     }
-    .head{
+
+    .head {
         border: none;
         padding: 3px;
     }
@@ -245,8 +246,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 // var conso = res.conso
                 // mfo = res.mfo_pap
                 // allotment_balances = res.allotments
-                // console.log(mfo)
-                // addData(res.result)
+                console.log(res.results)
+                displayData(res.results)
                 // addToSummaryTable(res.conso_saob)
 
                 $('#con').show()
@@ -256,126 +257,53 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         })
     })
 
-    function addData(res) {
-        $("#fur_table tbody").html('');
+    function displayData(res) {
+        $("#cadadr tbody").html('');
+        var arr = []
 
-        var division_keys = Object.keys(res)
-        for (var i = 0; i < division_keys.length; i++) {
-            var division_name = division_keys[i]
-
-            var mfo_keys = Object.keys(res[division_name])
-            for (var mfo_loop = 0; mfo_loop < mfo_keys.length; mfo_loop++) {
-                var mfo_name = mfo_keys[mfo_loop];
-                row = `<tr class='data_row'>
-                <td colspan='' style='font-weight:bold;background-color:#cccccc' class='major-header'>` + division_name.toUpperCase() + `</td>
-                      <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'>` + mfo[mfo_name][0]['code'] + `</td>
-                    <td colspan='' style='text-align:left;font-weight:bold;background-color:#cccccc' class='major-header'>` + mfo_name + `</td>
-                        <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
-                        <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
-                        <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
-                        <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
-                        <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
-                        <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'>` + mfo[mfo_name][0]['description'] + `</td>
-                        </tr>`
-                $('#fur_table tbody').append(row)
-                var major_keys = Object.keys(res[division_name][mfo_name])
-                for (var major_loop = 0; major_loop < major_keys.length; major_loop++) {
-                    var major_name = major_keys[major_loop];
-                    var str = major_name.toLowerCase().replace(/\s/g, '-');
-                    row = `<tr class='data_row' id='${str}'>
-                    <td ></td>
-                    <td ></td>
-                    <td colspan='' style='text-align:left;font-weight:bold;background-color:#cccccc'>` + major_name + `</td>
-                    <td ></td>
-                        <td ></td>
-                        <td ></td>
-                        <td ></td>
-                        <td ></td>
-                        <td ></td>
-                        </tr>`
-                    $('#fur_table tbody').append(row)
-                    var sub_major_keys = Object.keys(res[division_name][mfo_name][major_name])
-                    for (var sub_major_loop = 0; sub_major_loop < sub_major_keys.length; sub_major_loop++) {
-                        var sub_major_name = sub_major_keys[sub_major_loop];
-                        row = `<tr class='data_row'>
-                        <td ></td>
-                        <td ></td>
-                        <td colspan=''  >` + sub_major_name + `</td>
-                        <td ></td>
-                        <td ></td>
-                        <td ></td>
-                        <td ></td>
-                        <td ></td>
-                        <td ></td>
-                        </tr>`
-                        if (sub_major_name == major_name) {
-                            // $(`#${str}`).after(row)
-                        } else {
-
-                            $('#fur_table tbody').append(row)
-                        }
-
-                        var items = res[division_name][mfo_name][major_name][sub_major_name]
-
-                        for (var items_loop = 0; items_loop < items.length; items_loop++) {
-                            var uacs = res[division_name][mfo_name][major_name][sub_major_name][items_loop]['uacs']
-                            var general_ledger = res[division_name][mfo_name][major_name][sub_major_name][items_loop]['general_ledger']
-                            var ors_to_date = parseFloat(res[division_name][mfo_name][major_name][sub_major_name][items_loop]['ors_to_date'])
-                            var allotment = res[division_name][mfo_name][major_name][sub_major_name][items_loop]['allotment']
-                            var document_name = res[division_name][mfo_name][major_name][sub_major_name][items_loop]['document_name']
-                            var prev_total_ors = parseFloat(res[division_name][mfo_name][major_name][sub_major_name][items_loop]['prev_total_ors'])
-                            var major_object_code = res[division_name][mfo_name][major_name][sub_major_name][items_loop]
-                                ['major_object_code']
-                            var balance = 0;
-                            var begin_balance = 0
-                            var utilization = 0
-                            if (
-                                allotment == 0
-
-                            ) {
-                                console.log(mfo_name, document_name, major_object_code)
-                                var allotment_begin_balance = parseFloat(allotment_balances[mfo_name][document_name][major_object_code])
-
-                                begin_balance = allotment_begin_balance - prev_total_ors
-                                balance = begin_balance - parseFloat(ors_to_date)
-                                allotment_balances[mfo_name][document_name][major_object_code] = balance
-                                utilization = ors_to_date / allotment_begin_balance
-
-                            } else {
-                                begin_balance = allotment - prev_total_ors
-                                balance = begin_balance - ors_to_date
-                            }
-                            utilization = (ors_to_date + prev_total_ors) / balance
-                            row = `<tr class='data_row'>
-                            <td ></td>
-                            <td ></td>
-                            <td colspan='' >` + uacs + '-' + general_ledger + `</td>
-                            <td >` + thousands_separators(prev_total_ors.toFixed(2)) + `</td>
-                            <td class='amount'>` + thousands_separators(allotment) + `</td>
-                            <td class='amount'>` + thousands_separators(ors_to_date) + `</td>
-                            <td class='amount'>` + thousands_separators(balance.toFixed(2)) + `</td>
-                            <td class='amount'>` + '%' + thousands_separators(utilization.toFixed(2)) + `</td>
-                            <td ></td>
-                        </tr>`
-                            if (uacs == 5010000000 ||
-                                uacs == 5020000000 ||
-                                uacs == 5060000000
-                            ) {
-                                $(`#${str}`).after(row)
-                            } else {
-
-                                $('#fur_table tbody').append(row)
-                            }
-                            // $('#fur_table tbody').append(row)
-
-
-                        }
-                    }
-
-                }
+        for (var i = 0; i < res.length; i++) {
+            var data = res[i]
+            var dv_number = data['dv_number']
+            var dv_date = data['dv_date']
+            var payee = data['account_name']
+            var ada_issued = data['ada_issued']
+            var ada_number = data['ada_number']
+            var book_name = data['book_name']
+            var check_issued = data['check_issued']
+            var check_or_ada_no = data['check_or_ada_no']
+            var issuance_date = data['issuance_date']
+            var particular = data['particular']
+            var reporting_period = data['reporting_period']
+            if (jQuery.inArray(dv_number, arr) == -1) {
+                arr.push(dv_number)
+            } else {
+                dv_number = ''
+                dv_date=''
+                check_or_ada_no=''
+                ada_number=''
+                particular=''
             }
+            // console.log(jQuery.inArray(dv_number, arr))
+            row = `<tr class='data_row'>
+                <td colspan='' >` + dv_number + `</td>
+                <td colspan='' >` + dv_date + `</td>
+                <td colspan='' >` + check_or_ada_no + `</td>
+                <td colspan='' >` + ada_number + `</td>
+                <td colspan='' >` + issuance_date + `</td>
+                <td></td>
+                <td colspan='' >` + payee + `</td>
+                <td></td>
+                <td colspan='' >` + particular + `</td>
+                <td></td>
+                <td colspan='' >` + check_issued + `</td>
+                <td colspan='' >` + ada_issued + `</td>
+                <td></td>
+                  
+                        </tr>`
+            $('#cadadr tbody').append(row)
 
         }
+        console.log(arr)
 
 
     }

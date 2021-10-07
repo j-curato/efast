@@ -17,7 +17,25 @@ use yii\widgets\ActiveForm;
 
 <div class="cash-recieved-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(); 
+    $val='';
+    if (!empty($model)){
+
+      $type=  strtolower(trim(explode('-', $model->documentRecieved->name)[0]));
+
+      if ($type === 'nca'){
+        $val = $model->nca_no;
+      }
+      else if ($type === 'nta'){
+        $val = $model->nta_no;
+      }
+      else if ($type === 'nft'){
+        $val = $model->nft_no;
+      }
+     
+
+    }
+    ?>
     <div class="row">
         <div class="col-sm-6">
             <?= $form->field($model, 'date')->widget(DatePicker::class, [
@@ -67,7 +85,7 @@ use yii\widgets\ActiveForm;
         ]
     ]) ?>
 
-    <?= $form->field($model, 'nca_no')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'nca_no')->textInput(['maxlength' => true,'value'=>$val]) ?>
     <!-- <?= $form->field($model, 'account_number')->textInput(['maxlength' => true]) ?> -->
 
     <!-- <?= $form->field($model, 'nta_no')->textInput(['maxlength' => true]) ?>

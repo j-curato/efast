@@ -30,6 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'code',
             'name',
             'description',
+            'division',
             [
                 'class' => '\kartik\grid\ActionColumn',
                 'deleteOptions' => ['style' => 'display:none']
