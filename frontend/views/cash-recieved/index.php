@@ -52,7 +52,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'nft_no',
             'purpose',
             // 'mfo_pap_code_id',
-            'amount',
             [
                 'label'=>'Amount',
                 'attribute'=>'amount',

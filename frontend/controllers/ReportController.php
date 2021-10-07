@@ -45,7 +45,9 @@ class ReportController extends \yii\web\Controller
                     'fund-source-fur',
                     'summary-fund-source-fur',
                     'budget-year-fur',
-                    'saobs'
+                    'saobs',
+                    'division-fur',
+                    'git-pull'
 
                 ],
                 'rules' => [
@@ -81,7 +83,9 @@ class ReportController extends \yii\web\Controller
                             'tax-remittance',
                             'fund-source-fur',
                             'summary-fund-source-fur',
-                            'budget-year-fur'
+                            'budget-year-fur',
+                            'division-fur',
+                            'git-pull'
 
 
                         ],
@@ -1686,7 +1690,41 @@ class ReportController extends \yii\web\Controller
             LEFT JOIN mfo_pap_code ON current.mfo_pap_code_id = mfo_pap_code.id
             LEFT JOIN document_recieve ON current.document_recieve_id = document_recieve.id
             LEFT JOIN books ON current.book_id  = books.id
-   
+            WHERE
+            IFNULL(current.total_allotment,0) + IFNULL(prev.total_allotment,0) >0 OR 
+            IFNULL(prev.total_ors ,0) + 
+            IFNULL(current.total_ors,0) >0
+            UNION
+            SELECT
+            mfo_pap_code.`name` as mfo_name,
+            document_recieve.`name` as document_name,
+            major_accounts.`name` as major_name,
+            major_accounts.`object_code` as major_object_code,
+            
+            sub_major_accounts.`name` as sub_major_name,
+            chart_of_accounts.uacs,
+            chart_of_accounts.general_ledger,
+            IFNULL(current.total_allotment,0) + IFNULL(prev.total_allotment,0) as allotment,
+            IFNULL(prev.total_ors ,0)as prev_total_ors,
+            IFNULL(current.total_ors,0) as current_total_ors,
+            IFNULL(prev.total_ors ,0) + 
+            IFNULL(current.total_ors,0) as ors_to_date
+            FROM ($sql_current_ors) as current
+            RIGHT JOIN  ($sql_prev_ors) as prev ON (current.mfo_pap_code_id = prev.mfo_pap_code_id 
+            AND current.document_recieve_id = prev.document_recieve_id
+            AND current.book_id = prev.book_id
+            AND current.chart_of_account_id = prev.chart_of_account_id)
+            LEFT JOIN chart_of_accounts ON prev.chart_of_account_id  = chart_of_accounts.id
+            LEFT JOIN major_accounts ON chart_of_accounts.major_account_id = major_accounts.id
+            LEFT JOIN sub_major_accounts ON chart_of_accounts.sub_major_account = sub_major_accounts.id
+            LEFT JOIN mfo_pap_code ON prev.mfo_pap_code_id = mfo_pap_code.id
+            LEFT JOIN document_recieve ON prev.document_recieve_id = document_recieve.id
+            LEFT JOIN books ON prev.book_id  = books.id
+            WHERE
+            IFNULL(current.total_allotment,0) + IFNULL(prev.total_allotment,0) >0 OR 
+            IFNULL(prev.total_ors ,0) + 
+            IFNULL(current.total_ors,0) >0
+            
             ")->queryAll();
 
 
@@ -1949,6 +1987,38 @@ class ReportController extends \yii\web\Controller
             return json_encode(['result' => $result2, 'allotments' => $allotment_total, 'mfo_pap' => $mfo_final]);
         }
         return $this->render('division_fur');
+    }
+    public function actionCadadr()
+    {
+        if ($_POST) {
+            $from_reporting_period = $_POST['from_reporting_period'];
+            $to_reporting_period = $_POST['to_reporting_period'];
+            $book = $_POST['book'];
+
+            $query = new Query();
+            $query->select("*")
+                ->from('cadadr')
+                ->where('cadadr.reporting_period >= :from_reporting_period', ['from_reporting_period' => $from_reporting_period])
+                ->andWhere('cadadr.reporting_period <= :to_reporting_period', ['to_reporting_period' => $to_reporting_period])
+                ->andWhere('cadadr.book_name = :book', ['book' => $book])
+                ->all();
+            $query2 = Yii::$app->db->createCommand("SELECT * FROM cadadr
+            WHERE 
+            reporting_period >= :from_reporting_period
+            AND reporting_period <= :to_reporting_period
+            AND book_name = :book
+            ")
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->bindValue(':to_reporting_period', $to_reporting_period)
+                ->bindValue(':book', $book)
+                ->queryAll();
+
+            echo "<pre>";
+            var_dump($query2);
+            echo "</pre>";
+            die();
+        }
+        return $this->render('cadadr');
     }
 }
 

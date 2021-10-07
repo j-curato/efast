@@ -333,7 +333,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                     var current = parseFloat(res[major_name][sub_major_name][y]['current_total_ors'])
                     var to_date = parseFloat(res[major_name][sub_major_name][y]['ors_to_date'])
                     var balance = parseFloat(res[major_name][sub_major_name][y]['balance'])
-                    var uacs = res[major_name][sub_major_name][y]['ors_object_code']
+                    var uacs = res[major_name][sub_major_name][y]['uacs']
                     // var mfo = res[major_name][sub_major_name][y]['mfo_code']
                     var document = res[major_name][sub_major_name][y]['document_name']
                     var allotment_uacs = res[major_name][sub_major_name][y]['major_object_code']
@@ -354,50 +354,66 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                     }
 
 
-                    // console.log(res[major_name][sub_major_name][y]['ors_object_code'])
-                    row = `<tr class='data_row'>
-                        <td style ='text-align:center'>` + res[major_name][sub_major_name][y]['general_ledger'] + `</td>
+
+                    if (allotment != 0 || to_date != 0) {
+
+                        // console.log(res[major_name][sub_major_name][y]['ors_object_code'])
+                        row = `<tr class='data_row'>
+                        <td style ='text-align:center'>` + res[major_name][sub_major_name][y]['uacs'] + '-' + res[major_name][sub_major_name][y]['general_ledger'] + `</td>
                         <td class='amount'>` + thousands_separators(allotment) + `</td>
                         <td class='amount'>` + thousands_separators(prev) + `</td>
                         <td class='amount'>` + thousands_separators(current) + `</td>
                         <td class='amount'>` + thousands_separators(to_date) + `</td>
                         <td class='amount'>` + thousands_separators(balance) + `</td>
-                        <td class='amount'>` + '%'+thousands_separators(utilization) + `</td>
+                        <td class='amount'>` + '%' + thousands_separators(utilization) + `</td>
                         <td style ='text-align:right'>` + mfo_name + `</td>
                         <td style ='text-align:right'>` + document + `</td>
                     
                     </tr>`
-                    if (uacs == 5010000000 ||
-                        uacs == 5020000000 ||
-                        uacs == 5060000000
-                    ) {
-                        $(`#${str}`).after(row)
-                    } else {
+                        if (uacs == 5010000000 ||
+                            uacs == 5020000000 ||
+                            uacs == 5060000000
+                        ) {
+                            $(`#${str}`).after(row)
+                        } else {
 
-                        $('#fur_table tbody').append(row)
+                            $('#fur_table tbody').append(row)
+                        }
+
+                        total_allotment += allotment
+                        total_prev += prev
+                        total_current += current
+                        total_to_date += to_date
+                        total_balance += balance
                     }
 
-                    total_allotment += allotment
-                    total_prev += prev
-                    total_current += current
-                    total_to_date += to_date
-                    total_balance += balance
+
 
                 }
             }
-            total_utilization = total_to_date / total_allotment
-            row = `<tr class='data_row'>
+            total_utilization = parseFloat(total_to_date.toFixed(2)) / parseFloat(total_allotment.toFixed(2))
+            total_utilization = parseFloat(total_utilization.toFixed(2))
+
+            var bal = total_allotment - total_to_date
+            if (
+                total_allotment != 0 ||
+                total_to_date != 0
+            ) {
+
+                row = `<tr class='data_row'>
                         <td colspan='' style='font-weight:bold'>Total</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_allotment.toFixed(2))) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_prev.toFixed(2))) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_current.toFixed(2))) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_to_date.toFixed(2))) + `</td>
-                        <td class='amount'>` + '' + `</td>
-                        <td class='amount'>` + thousands_separators(parseFloat(total_utilization.toFixed(2))) + `</td>
+                        <td class='amount'>` + thousands_separators(parseFloat(bal.toFixed(2))) + `</td>
+                        <td class='amount'>` + '%' + thousands_separators(total_utilization) + `</td>
                         <td ></td>
                         <td ></td>
                         </tr>`
-            $('#fur_table tbody').append(row)
+                $('#fur_table tbody').append(row)
+            }
+
 
         }
 

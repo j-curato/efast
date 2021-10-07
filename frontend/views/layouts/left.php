@@ -290,6 +290,14 @@
 
                                     ],
                                 ],
+                                [
+                                    'label' => 'Reports',
+                                    'icon' => 'circle-o',
+                                    'url' => '#',
+                                    'items' => [
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'CADADR', 'icon' => 'circle-o', 'url' => ['/report/cadadr'],] : [],
+                                    ],
+                                ],
                             ],
                         ] : ['label' => ''],
                         Yii::$app->user->can('report') ?    [
