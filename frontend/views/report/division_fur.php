@@ -69,6 +69,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
 
             </div>
+            <?php $user = Yii::$app->user->can('super-user'); if($user){?>
             <div class="col-sm-2">
                 <label for="division">Division</label>
                 <?php
@@ -92,6 +93,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]);
                 ?>
             </div>
+            <?php };?>
             <div class="col-sm-2">
                 <label for="document_recieve">Document Recive</label>
                 <?php

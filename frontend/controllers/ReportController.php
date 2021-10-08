@@ -84,7 +84,7 @@ class ReportController extends \yii\web\Controller
                             'fund-source-fur',
                             'summary-fund-source-fur',
                             'budget-year-fur',
-                            'division-fur',
+                            
                             'git-pull'
 
 
@@ -92,6 +92,15 @@ class ReportController extends \yii\web\Controller
                         'allow' => true,
                         'roles' => ['@']
                     ],
+                    [
+                        'actions' => [
+                            'division-fur',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['department-offices','super-user']
+                    ],
+
                     [
                         'actions' => [
                             'cibr',
@@ -1840,8 +1849,12 @@ class ReportController extends \yii\web\Controller
         if ($_POST) {
             $from_reporting_period = $_POST['from_reporting_period'];
             $to_reporting_period = $_POST['to_reporting_period'];
-            $division = $_POST['division'];
+            $division = !empty($_POST['division']) ? $_POST['division'] : '';
             $document_recieve = $_POST['document_recieve'];
+
+            if (Yii::$app->user->can('department-offices')){
+                $division= Yii::$app->user->identity->division; 
+            }
             $current_ors = new Query();
             $current_ors->select([
 
@@ -2003,7 +2016,7 @@ class ReportController extends \yii\web\Controller
             // var_dump($query);
             // echo "</pre>";
             // die();
-            return json_encode(['results'=>$query]);
+            return json_encode(['results' => $query]);
         }
         return $this->render('cadadr');
     }

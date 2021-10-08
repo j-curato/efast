@@ -250,8 +250,11 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 displayData(res.results)
                 // addToSummaryTable(res.conso_saob)
 
-                $('#con').show()
-                $('#dots5').hide()
+                setTimeout(() => {
+                    $('#con').show()
+                    $('#dots5').hide()
+                }, 3000);
+
             }
 
         })
@@ -260,29 +263,31 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
     function displayData(res) {
         $("#cadadr tbody").html('');
         var arr = []
-
+        var balance = 0
         for (var i = 0; i < res.length; i++) {
             var data = res[i]
             var dv_number = data['dv_number']
             var dv_date = data['dv_date']
             var payee = data['account_name']
-            var ada_issued = data['ada_issued']
+            var ada_issued = parseFloat(data['ada_issued'])
             var ada_number = data['ada_number']
             var book_name = data['book_name']
-            var check_issued = data['check_issued']
+            var check_issued = parseFloat(data['check_issued'])
             var check_or_ada_no = data['check_or_ada_no']
             var issuance_date = data['issuance_date']
             var particular = data['particular']
             var reporting_period = data['reporting_period']
-            if (jQuery.inArray(dv_number, arr) == -1) {
-                arr.push(dv_number)
-            } else {
-                dv_number = ''
-                dv_date=''
-                check_or_ada_no=''
-                ada_number=''
-                particular=''
-            }
+            var nca_recieve = parseFloat(data['nca_recieve'])
+            balance += nca_recieve - (ada_issued + check_issued)
+            // if (jQuery.inArray(dv_number, arr) == -1) {
+            //     arr.push(dv_number)
+            // } else {
+            //     dv_number = ''
+            //     dv_date = ''
+            //     check_or_ada_no = ''
+            //     ada_number = ''
+            //     particular = ''
+            // }
             // console.log(jQuery.inArray(dv_number, arr))
             row = `<tr class='data_row'>
                 <td colspan='' >` + dv_number + `</td>
@@ -294,64 +299,18 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 <td colspan='' >` + payee + `</td>
                 <td></td>
                 <td colspan='' >` + particular + `</td>
-                <td></td>
-                <td colspan='' >` + check_issued + `</td>
-                <td colspan='' >` + ada_issued + `</td>
-                <td></td>
+                <td  class='amount'>` + thousands_separators(nca_recieve) + `</td>
+                <td  class='amount'>` + thousands_separators(check_issued) + `</td>
+                <td  class='amount'>` + thousands_separators(ada_issued) + `</td>
+                <td class='amount' >` + thousands_separators(balance.toFixed(2)) + `</td>
                   
-                        </tr>`
+                </tr>`
             $('#cadadr tbody').append(row)
 
         }
         console.log(arr)
 
 
-    }
-
-    function addToSummaryTable(conso) {
-        $('#summary_table tbody').html('')
-        var total_beginning_balance = 0
-        var total_prev = 0
-        var total_current = 0
-        var total_to_date = 0
-        var total_utilization = 0
-        var total_balance = 0
-        for (var i = 0; i < conso.length; i++) {
-            var beginning_balance = parseFloat(conso[i]['beginning_balance'])
-            var prev = parseFloat(conso[i]['prev'])
-            var current = parseFloat(conso[i]['current'])
-            var to_date = parseFloat(conso[i]['to_date'])
-            var utilization = to_date / beginning_balance
-            var balance = beginning_balance - to_date
-            var row = `<tr>
-                <td>` + conso[i]['mfo_name'] + `</td>
-                <td>` + conso[i]['document'] + `</td>
-                <td class='amount'>` + thousands_separators(beginning_balance) + `</td>
-                <td class='amount'>` + thousands_separators(prev) + `</td>
-                <td class='amount'>` + thousands_separators(current) + `</td>
-                <td class='amount'>` + thousands_separators(to_date) + `</td>
-                <td class='amount'>` + thousands_separators(balance) + `</td>
-                <td class='amount'>` + thousands_separators(utilization) + `</td>
-            </tr>`
-            $('#summary_table tbody').append(row)
-            total_beginning_balance += beginning_balance
-            total_prev += prev
-            total_current += current
-            total_to_date += to_date
-
-            total_balance += balance
-        }
-        total_utilization = total_to_date / total_beginning_balance
-        row = `<tr>
-                <td style='font-weight:bold' colspan='2'>Total</td>
-                <td class='amount'>` + thousands_separators(total_beginning_balance.toFixed(2)) + `</td>
-                <td class='amount'>` + thousands_separators(total_prev.toFixed(2)) + `</td>
-                <td class='amount'>` + thousands_separators(total_current.toFixed(2)) + `</td>
-                <td class='amount'>` + thousands_separators(total_to_date.toFixed(2)) + `</td>
-                <td class='amount'>` + thousands_separators(total_balance.toFixed(2)) + `</td>
-                <td class='amount'>` + thousands_separators(total_utilization.toFixed(2)) + `</td>
-            </tr>`
-        $('#summary_table tbody').append(row)
     }
 </script>
 <?php
