@@ -137,6 +137,7 @@
                                 Yii::$app->user->can('rod') ?     ['label' => 'ROD', 'icon' => 'circle-o', 'url' => ['/rod'],] : [],
                                 Yii::$app->user->can('summary_fund_source_fur') ?     ['label' => 'Summary Budget Year FUR', 'icon' => 'circle-o', 'url' => ['/report/budget-year-fur'],] : [],
                                 Yii::$app->user->can('department-offices') ?     ['label' => 'FUR', 'icon' => 'circle-o', 'url' => ['/report/division-fur'],] : [],
+                                Yii::$app->user->can('department-offices') ?     ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/report/saobs'],] : [],
                             ],
                         ],
 
@@ -288,6 +289,7 @@
                                     'items' => [
                                         ['label' => 'Cash Disbursement', 'icon' => 'circle-o', 'url' => ['/cash-disbursement'],],
                                         ['label' => 'Cash Recieved', 'icon' => 'circle-o', 'url' => ['/cash-recieved'],],
+                                        ['label' => 'Adjustment', 'icon' => 'circle-o', 'url' => ['/cash-adjustment'],],
 
                                     ],
                                 ],

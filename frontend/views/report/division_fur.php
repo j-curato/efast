@@ -69,31 +69,32 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
 
             </div>
-            <?php $user = Yii::$app->user->can('super-user'); if($user){?>
-            <div class="col-sm-2">
-                <label for="division">Division</label>
-                <?php
+            <?php $user = Yii::$app->user->can('super-user');
+            if ($user) { ?>
+                <div class="col-sm-2">
+                    <label for="division">Division</label>
+                    <?php
 
-                $data = [
-                    'all' => 'All',
-                    'cpd' => 'CPD',
-                    'fad' => 'FAD',
-                    'idd' => 'IDD',
-                    'ord' => 'ORD',
-                    'sdd' => 'SDD'
-                ];
-                // ->where('code IN (100000100001000,)')
+                    $data = [
+                        'all' => 'All',
+                        'cpd' => 'CPD',
+                        'fad' => 'FAD',
+                        'idd' => 'IDD',
+                        'ord' => 'ORD',
+                        'sdd' => 'SDD'
+                    ];
+                    // ->where('code IN (100000100001000,)')
 
-                echo Select2::widget([
-                    'name' => 'division',
-                    'id' => 'division',
-                    'data' => $data,
-                    'options' => ['placeholder' => 'Select Division'],
+                    echo Select2::widget([
+                        'name' => 'division',
+                        'id' => 'division',
+                        'data' => $data,
+                        'options' => ['placeholder' => 'Select Division'],
 
-                ]);
-                ?>
-            </div>
-            <?php };?>
+                    ]);
+                    ?>
+                </div>
+            <?php }; ?>
             <div class="col-sm-2">
                 <label for="document_recieve">Document Recive</label>
                 <?php
@@ -131,8 +132,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
 
                     <th>Division</th>
-                    <th>MFO/PAP Code</th>
-                    <th>MFO/PAP Name</th>
+                    <th style="width: 250px;">MFO/PAP </th>
+                    <th>Account</th>
                     <th>Beginning Balance</th>
                     <th>Allotment Recieved</th>
                     <th>Obligation Incured</th>
@@ -255,8 +256,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 str = mfo_loop + '_' + str.replace(/[\. ,:-]+/g, "-")
                 row = `<tr class='data_row'  id='${str}'>
                 <td colspan='' style='font-weight:bold;background-color:#cccccc' class='major-header'>` + division_name.toUpperCase() + `</td>
-                      <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc' >` + mfo[mfo_name][0]['code'] + `</td>
-                    <td colspan='' style='text-align:left;font-weight:bold;background-color:#cccccc' class='major-header'>` + mfo_name + `</td>
+                      <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc' >` + mfo[mfo_name][0]['code'] +' - '+mfo_name+ `</td>
+                    <td colspan='' style='text-align:left;font-weight:bold;background-color:#cccccc' class='major-header'></td>
                         <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
                         <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
                         <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
@@ -301,7 +302,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         <td class='amount'>` + thousands_separators(allotment) + `</td>
                         <td class='amount'>` + thousands_separators(current_total_ors) + `</td>
                         <td class='amount'>` + thousands_separators(balance) + `</td>
-                        <td class='amount'>` + '%' + thousands_separators(utilization) + `</td>
+                        <td class='amount'>` + thousands_separators(utilization) + '%' + `</td>
                         </tr>`
 
                         $('#fur_table tbody').append(row)
@@ -321,7 +322,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 }
                 row = `<tr class='data_row'>
                         <td rowspan='${qqq}'></td>
-                        <td rowspan='${qqq}' style='padding:5px'>` + mfo[mfo_name][0]['description'] + `</td>
+                        <td rowspan='${qqq}' style='padding:5px;text-align:left'>` + mfo[mfo_name][0]['description'] + `</td>
              
                         </tr>`
 
@@ -333,11 +334,11 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         <td ></td>
                         <td ></td>
                         <td style='font-weight:bold'>Total</td>
-                        <td >` + '' + `</td>
+                        <td class='amount'>` + thousands_separators(total_begin_balance) + `</td>
                         <td class='amount'>` + thousands_separators(total_allotment) + `</td>
                         <td class='amount'>` + thousands_separators(total_ors) + `</td>
-                        <td class='amount'>` + thousands_separators(total_allotment - total_ors) + `</td>
-                        <td class='amount'>` + '%' + thousands_separators(ut) + `</td>
+                        <td class='amount'>` + thousands_separators(total_begin_balance - total_ors) + `</td>
+                        <td class='amount'>`  + thousands_separators(ut)+ '%' + `</td>
                         </tr>`
 
                 $('#fur_table tbody').append(row)

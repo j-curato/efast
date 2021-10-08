@@ -306,7 +306,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 var sub_major_name = sub_major_keys[x]
 
                 row = `<tr class='data_row'>
-                        <td colspan='' style='text-align:center;font-weight:bold'>` + sub_major_name + `</td>
+                        <td colspan='' style='text-align:left;font-weight:bold'>` + sub_major_name + `</td>
                         <td ></td>
                         <td></td>
                         <td></td>
@@ -339,33 +339,33 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                     var allotment_uacs = res[major_name][sub_major_name][y]['major_object_code']
                     var mfo_name = res[major_name][sub_major_name][y]['mfo_name']
                     var utilization = 0
-                    if (
-                        allotment == 0
+                    // if (
+                    //     allotment == 0
 
-                    ) {
-                        console.log(mfo_name, document,
-                            allotment_uacs)
-                        var allotment_begin_balance = parseFloat(major[mfo_name][document][allotment_uacs])
-                        balance = allotment_begin_balance - to_date
-                        major[mfo_name][document][allotment_uacs] = balance
-                        utilization = to_date / allotment_begin_balance
-                    } else {
-                        balance = allotment - to_date
-                    }
+                    // ) {
+                    //     console.log(mfo_name, document,
+                    //         allotment_uacs)
+                    //     var allotment_begin_balance = parseFloat(major[mfo_name][document][allotment_uacs])
+                    //     balance = allotment_begin_balance - to_date
+                    //     major[mfo_name][document][allotment_uacs] = balance
+                    //     utilization = to_date / allotment_begin_balance
+                    // } else {
+                    //     balance = allotment - to_date
+                    // }
 
-
+                    balance = allotment - to_date
 
                     if (allotment != 0 || to_date != 0) {
 
                         // console.log(res[major_name][sub_major_name][y]['ors_object_code'])
                         row = `<tr class='data_row'>
-                        <td style ='text-align:center'>` + res[major_name][sub_major_name][y]['uacs'] + '-' + res[major_name][sub_major_name][y]['general_ledger'] + `</td>
+                        <td style ='text-align:left'>` + res[major_name][sub_major_name][y]['uacs'] + '-' + res[major_name][sub_major_name][y]['general_ledger'] + `</td>
                         <td class='amount'>` + thousands_separators(allotment) + `</td>
                         <td class='amount'>` + thousands_separators(prev) + `</td>
                         <td class='amount'>` + thousands_separators(current) + `</td>
                         <td class='amount'>` + thousands_separators(to_date) + `</td>
                         <td class='amount'>` + thousands_separators(balance) + `</td>
-                        <td class='amount'>` + '%' + thousands_separators(utilization) + `</td>
+                        <td class='amount'>`  + thousands_separators(utilization)+ '%' + `</td>
                         <td style ='text-align:right'>` + mfo_name + `</td>
                         <td style ='text-align:right'>` + document + `</td>
                     
@@ -391,14 +391,21 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
 
                 }
             }
-            total_utilization = parseFloat(total_to_date.toFixed(2)) / parseFloat(total_allotment.toFixed(2))
-            total_utilization = parseFloat(total_utilization.toFixed(2))
 
-            var bal = total_allotment - total_to_date
+
+
+
             if (
                 total_allotment != 0 ||
                 total_to_date != 0
             ) {
+                if (total_allotment != 0) {
+                    total_utilization = parseFloat(total_to_date) / parseFloat(total_allotment)
+
+                }
+                else{
+                    total_utilization = 0
+                }
 
                 row = `<tr class='data_row'>
                         <td colspan='' style='font-weight:bold'>Total</td>
@@ -406,8 +413,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         <td class='amount'>` + thousands_separators(parseFloat(total_prev.toFixed(2))) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_current.toFixed(2))) + `</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_to_date.toFixed(2))) + `</td>
-                        <td class='amount'>` + thousands_separators(parseFloat(bal.toFixed(2))) + `</td>
-                        <td class='amount'>` + '%' + thousands_separators(total_utilization) + `</td>
+                        <td class='amount'>` + thousands_separators(parseFloat(total_balance.toFixed(2))) + `</td>
+                        <td class='amount'>` + thousands_separators(total_utilization)+ '%'  + `</td>
                         <td ></td>
                         <td ></td>
                         </tr>`
@@ -443,7 +450,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 <td class='amount'>` + thousands_separators(current) + `</td>
                 <td class='amount'>` + thousands_separators(to_date) + `</td>
                 <td class='amount'>` + thousands_separators(balance) + `</td>
-                <td class='amount'>` + thousands_separators(utilization) + `</td>
+                <td class='amount'>` + thousands_separators(utilization)+'%'  + `</td>
             </tr>`
             $('#summary_table tbody').append(row)
             total_beginning_balance += beginning_balance
@@ -461,7 +468,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 <td class='amount'>` + thousands_separators(total_current.toFixed(2)) + `</td>
                 <td class='amount'>` + thousands_separators(total_to_date.toFixed(2)) + `</td>
                 <td class='amount'>` + thousands_separators(total_balance.toFixed(2)) + `</td>
-                <td class='amount'>` + thousands_separators(total_utilization.toFixed(2)) + `</td>
+                <td class='amount'>` + thousands_separators(total_utilization.toFixed(2))+'%' + `</td>
             </tr>`
         $('#summary_table tbody').append(row)
     }
@@ -478,13 +485,6 @@ $script = <<< JS
         'sds' : 'Surigao Del Sur',
         'pdi' : 'Province of Dinagat Islands',
     }
-
-
-
-
-
-
-
 JS;
 $this->registerJs($script);
 ?>

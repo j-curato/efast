@@ -180,6 +180,9 @@ $this->params['breadcrumbs'][] = $this->title;
         text-align: center;
         padding: 12px;
     }
+    table{
+        margin-top:20px
+    }
 
     #summary_table {
         margin-top: 30px;
@@ -246,24 +249,44 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 // var conso = res.conso
                 // mfo = res.mfo_pap
                 // allotment_balances = res.allotments
-                console.log(res.results)
-                displayData(res.results)
+                displayData(res.results, res.begin_balance, res.adjustment)
                 // addToSummaryTable(res.conso_saob)
 
                 setTimeout(() => {
                     $('#con').show()
                     $('#dots5').hide()
-                }, 3000);
+                }, 2000);
 
             }
 
         })
     })
 
-    function displayData(res) {
+
+    function displayData(res, begin_balance, adjustment) {
         $("#cadadr tbody").html('');
         var arr = []
-        var balance = 0
+        var balance = parseFloat(begin_balance)
+        row = `<tr class='data_row'>
+                <td colspan='' ></td>
+                <td colspan='' ></td>
+                <td colspan='' ></td>
+                <td colspan='' ></td>
+                <td colspan='' ></td>
+                <td></td>
+                <td colspan='' ></td>
+                <td></td>
+                <td colspan='' >` + 'Begining Balance' + `</td>
+                <td  class='amount'></td>
+                <td  class='amount'></td>
+                <td class='amount' ></td>
+                <td  class='amount'>` + thousands_separators(balance) + `</td>
+                  
+                </tr>`
+        var total_nca_recieve = 0
+        var total_check_issued = 0
+        var total_ada_issued = 0
+        $('#cadadr tbody').append(row)
         for (var i = 0; i < res.length; i++) {
             var data = res[i]
             var dv_number = data['dv_number']
@@ -302,13 +325,70 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 <td  class='amount'>` + thousands_separators(nca_recieve) + `</td>
                 <td  class='amount'>` + thousands_separators(check_issued) + `</td>
                 <td  class='amount'>` + thousands_separators(ada_issued) + `</td>
-                <td class='amount' >` + thousands_separators(balance.toFixed(2)) + `</td>
+                <td class='amount' >` + thousands_separators(balance) + `</td>
+                  
+                </tr>`
+            $('#cadadr tbody').append(row)
+            total_nca_recieve += nca_recieve
+            total_check_issued += check_issued
+            total_ada_issued += ada_issued
+
+        }
+        row = `<tr class='data_row'>
+                <td  ></td>
+                <td  ></td>
+                <td  ></td>
+                <td  ></td>
+                <td  ></td>
+                <td></td>
+                <td  ></td>
+                <td></td>
+                <td style='font-weight:bold' >` + 'Total' + `</td>
+                <td  class='amount'>` + thousands_separators(total_nca_recieve.toFixed(2)) + `</td>
+                <td  class='amount'>` + thousands_separators(total_check_issued) + `</td>
+                <td class='amount' >` + thousands_separators(total_ada_issued) + `</td>
+                <td  class='amount'>` + thousands_separators(balance) + `</td>
+                  
+                </tr>`
+        $('#cadadr tbody').append(row)
+
+        if (adjustment.length >= 1) {
+            row = `<tr class='data_row'>
+        
+                <td colspan='13' style='font-weight:bold;background-color:#cccccc'>` + 'Adjustment' + `</td>
+  
                   
                 </tr>`
             $('#cadadr tbody').append(row)
 
         }
-        console.log(arr)
+        for (var adjustment_loop = 0; adjustment_loop < adjustment.length; adjustment_loop++) {
+
+            var adjust_amount = parseFloat(adjustment[adjustment_loop]['amount'])
+            var adjust_particular = adjustment[adjustment_loop]['particular']
+
+            var b_balance = balance
+            balance = parseFloat(balance.toFixed(2)) + parseFloat(adjust_amount)
+            console.log(balance, adjust_amount)
+            row = `<tr class='data_row'>
+                <td colspan='' ></td>
+                <td colspan='' ></td>
+                <td colspan='' ></td>
+                <td colspan='' ></td>
+                <td colspan='' ></td>
+                <td></td>
+                <td colspan='' ></td>
+                <td></td>
+                <td colspan='' >` + adjust_particular + `</td>
+                <td  class='amount'>` + thousands_separators(b_balance.toFixed(2)) + `</td>
+                <td  class='amount'></td>
+                <td class='amount' >` + thousands_separators(adjust_amount) + `</td>
+                <td  class='amount'>` + thousands_separators(balance) + `</td>
+                  
+                </tr>`
+            $('#cadadr tbody').append(row)
+        }
+
 
 
     }

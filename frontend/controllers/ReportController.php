@@ -65,7 +65,7 @@ class ReportController extends \yii\web\Controller
                             'temp-import',
                             'detailed-dv-aucs',
                             'conso-detailed-dv',
-                            'saobs'
+
 
                         ],
                         'allow' => true,
@@ -84,7 +84,7 @@ class ReportController extends \yii\web\Controller
                             'fund-source-fur',
                             'summary-fund-source-fur',
                             'budget-year-fur',
-                            
+
                             'git-pull'
 
 
@@ -95,10 +95,11 @@ class ReportController extends \yii\web\Controller
                     [
                         'actions' => [
                             'division-fur',
+                            'saobs',
 
                         ],
                         'allow' => true,
-                        'roles' => ['department-offices','super-user']
+                        'roles' => ['department-offices', 'super-user']
                     ],
 
                     [
@@ -1852,8 +1853,8 @@ class ReportController extends \yii\web\Controller
             $division = !empty($_POST['division']) ? $_POST['division'] : '';
             $document_recieve = $_POST['document_recieve'];
 
-            if (Yii::$app->user->can('department-offices')){
-                $division= Yii::$app->user->identity->division; 
+            if (Yii::$app->user->can('department-offices')) {
+                $division = Yii::$app->user->identity->division;
             }
             $current_ors = new Query();
             $current_ors->select([
@@ -2009,6 +2010,35 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->bindValue(':book', $book)
                 ->queryAll();
+            $begin_balance = Yii::$app->db->createCommand("SELECT 
+            IFNULL(SUM(total_nca_recieve) - (SUM(total_check_issued)+SUM(total_ada_issued)),0) as begin_balance
+           FROM cadadr_balances
+           WHERE 
+           cadadr_balances.reporting_period < :from_reporting_period 
+           AND cadadr_balances.book_name = :book
+           ")
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->bindValue(':book', $book)
+                ->queryScalar();
+            $adjustment_begin_balance = Yii::$app->db->createCommand("SELECT
+            SUM(cash_adjustment.amount) as total_amount
+            FROM  cash_adjustment
+            LEFT JOIN books ON cash_adjustment.book_id = books.id
+            WHERE 
+            cash_adjustment.reporting_period < :from_reporting_period 
+            AND books.name = :book")
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->bindValue(':book', $book)
+                ->queryScalar();
+            $begin_balance  += $adjustment_begin_balance;
+            $adjustment = Yii::$app->db->createCommand("SELECT * 
+           FROM cash_adjustment
+           WHERE reporting_period <= :to_reporting_period
+           AND reporting_period >= :from_reporting_period
+           ")
+                ->bindValue(':to_reporting_period', $to_reporting_period)
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->queryAll();
             // $result2 = ArrayHelper::index($query, null, [function ($element) {
             //     return $element['division'];
             // }, 'mfo_name', 'major_name', 'sub_major_name',]);
@@ -2016,7 +2046,7 @@ class ReportController extends \yii\web\Controller
             // var_dump($query);
             // echo "</pre>";
             // die();
-            return json_encode(['results' => $query]);
+            return json_encode(['results' => $query, 'begin_balance' => $begin_balance, 'adjustment' => $adjustment]);
         }
         return $this->render('cadadr');
     }
