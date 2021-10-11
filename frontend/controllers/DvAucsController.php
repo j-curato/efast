@@ -840,13 +840,26 @@ class DvAucsController extends Controller
             $id = $_POST['id'];
 
             $model = DvAucs::findOne($id);
-            if (!empty($model->cashDisbursement->id)) {
+            // if (!empty($model->cashDisbursement->id)) {
 
-                if ($model->cashDisbursement->is_cancelled === 0) {
-                    return json_encode(['isSuccess' => false, 'cancelled' => 'Disbursement is Not Cancelled']);
-                    die();
-                }
+            //     if ($model->cashDisbursement->is_cancelled === 0) {
+            //         return json_encode(['isSuccess' => false, 'cancelled' => 'Disbursement is Not Cancelled']);
+            //         die();
+            //     }
+            // }
+            $q = Yii::$app->db->createCommand("SELECT EXISTS(SELECT 
+            *
+            FROM
+            cash_disbursement 
+            WHERE dv_aucs_id = :dv_id
+            AND is_cancelled =1) ")->bindValue(':dv_id', $model->id)
+                ->queryScalar();
+            if (intval($q) === 1) {
+                return json_encode(['isSuccess' => false, 'cancelled' => 'Disbursement is Not Cancelled']);
+                die();
             }
+
+
             if (!empty($model->dvAucsEntries)) {
                 foreach ($model->dvAucsEntries as $val) {
                     if ($val->processOrs->is_cancelled === 1) {
@@ -947,9 +960,9 @@ class DvAucsController extends Controller
             $timestamp  = date('Y-m-d H:i:s', strtotime($_POST['time'] . ' ' . $_POST['date']));
             $model = $this->findModel($id);
             if (!empty($model->return_timestamp)) {
-               if (empty($model->accept_timestamp)){
-                   return json_encode(['success'=>false,'error'=>'Cannot Out Dv is not Accepted Yet']);
-               }
+                if (empty($model->accept_timestamp)) {
+                    return json_encode(['success' => false, 'error' => 'Cannot Out Dv is not Accepted Yet']);
+                }
             }
             $model->out_timestamp = $timestamp;
             if ($model->save(false)) {

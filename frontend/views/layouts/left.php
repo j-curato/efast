@@ -289,7 +289,8 @@
                                     'items' => [
                                         ['label' => 'Cash Disbursement', 'icon' => 'circle-o', 'url' => ['/cash-disbursement'],],
                                         ['label' => 'Cash Recieved', 'icon' => 'circle-o', 'url' => ['/cash-recieved'],],
-                                        ['label' => 'Adjustment', 'icon' => 'circle-o', 'url' => ['/cash-adjustment'],],
+                                        ['label' => 'Lapse Amounts', 'icon' => 'circle-o', 'url' => ['/cash-adjustment'],],
+                                        ['label' => 'Cancel Disbursement', 'icon' => 'circle-o', 'url' => ['/cash-disbursement/cancel-disbursement-index'],],
 
                                     ],
                                 ],

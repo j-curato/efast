@@ -2,6 +2,8 @@
 
 namespace frontend\controllers;
 
+use app\models\CancelledDisbursements;
+use app\models\CancelledDisbursementsSearch;
 use Yii;
 use app\models\CashDisbursement;
 use app\models\CashDisbursementSearch;
@@ -9,6 +11,7 @@ use app\models\DvAccountingEntries;
 use app\models\DvAucs;
 use app\models\DvAucsEntries;
 use DateTime;
+use ErrorException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -38,7 +41,7 @@ class CashDisbursementController extends Controller
                     'get-all-dv',
                     'get-cash-disbursement',
                     'cancel',
-              
+
                 ],
 
                 'rules' => [
@@ -155,9 +158,15 @@ class CashDisbursementController extends Controller
      */
     public function actionDelete($id)
     {
+        $model =  $this->findModel($id);
+        if ($model->is_cancelled === 1) {
+            $model->delete();
+        } else {
+            return $this->redirect(['index']);
+        }
         // $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        return $this->redirect(['cancel-disbursement-index']);
     }
 
     /**
@@ -235,7 +244,7 @@ class CashDisbursementController extends Controller
                     return json_encode(['isSuccess' => 'exist', 'id' => $query['id']]);
                 }
             }
-            
+
             if (empty($good_cancelled)) {
                 $good_cancelled = 0;
             }
@@ -545,5 +554,67 @@ class CashDisbursementController extends Controller
                 return json_encode(['isSuccess' => true, 'cancelled' => $model->is_cancelled]);
             }
         }
+    }
+    public function actionCancelDisbursement()
+    {
+        $searchModel = new CashDisbursementSearch();
+        $searchModel->is_cancelled = 0;
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
+
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $selected = $_POST['selection'];
+            $model = CashDisbursement::findOne($selected[0]);
+
+            $query = Yii::$app->db->createCommand("SELECT EXISTS(
+                SELECT *
+                FROM cash_disbursement
+                WHERE `parent_disbursement` =  :parent_id  AND is_cancelled = 1)")
+                ->bindValue(':parent_id', $model->id)
+                ->queryScalar();
+            if (intval($query) === 1) {
+                return json_encode(['isSuccess' => false, 'cancelled' => 'cancel', 'error' => 'na cancel na']);
+            }
+            try {
+
+                $new_model  = new CashDisbursement();
+                $new_model->book_id = $model->book_id;
+                $new_model->dv_aucs_id = $model->dv_aucs_id;
+                $new_model->reporting_period = $reporting_period;
+                $new_model->mode_of_payment = $model->mode_of_payment;
+                $new_model->check_or_ada_no = $model->check_or_ada_no;
+                $new_model->is_cancelled = 1;
+                $new_model->issuance_date = $model->issuance_date;
+                $new_model->ada_number = $model->ada_number;
+                $new_model->parent_disbursement = $model->id;
+
+                if ($new_model->validate()) {
+
+                    if ($new_model->save(false)) {
+                        return json_encode(['isSuccess' => true, 'cancelled' => $new_model->is_cancelled]);
+                    }
+                } else {
+                    return json_encode(['isSuccess' => false, 'cancelled' => $new_model->errors, 'error' => $new_model->errors['reporting_period']]);
+                }
+            } catch (ErrorException $e) {
+                return json_encode(['isSuccess' => false, 'cancelled' => 'cancel', 'error' => $e->getMessage()]);
+            }
+        }
+        return $this->render('cancel_disbursement', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionCancelDisbursementIndex()
+    {
+        $searchModel = new CancelledDisbursementsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
+        return $this->render('cancel_disbursement_index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 }
