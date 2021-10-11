@@ -12,11 +12,13 @@ use app\models\DvAucs;
 use app\models\PoTransmittalsPendingSearch;
 
 use app\models\TransactionArchiveSearch;
+use Da\QrCode\QrCode;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 
 class ReportController extends \yii\web\Controller
 {
@@ -2050,6 +2052,27 @@ class ReportController extends \yii\web\Controller
         }
         return $this->render('cadadr');
     }
+
+    public function actionX()
+    {
+        $text = "Name: Jhon Doe";
+        $text .= "'\n'Adress: Butuan";
+        $text .= "'\n'Work: Programmer";
+        $path = 'images';
+
+
+        $qrCode = (new QrCode($text))
+            ->setSize(250);
+        header('Content-Type: ' . $qrCode->getContentType());
+        $base_path =  \Yii::getAlias('@webroot');
+        $qrCode->writeFile($base_path . '/images/code2.png');
+        // writer defaults to PNG when none is specified
+
+        // display directly to the browser 
+        // echo '<img src="' . $qrCode->writeDataUri() . '">';
+        echo $qrCode->writeString();
+    }
+
 }
 
 // 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

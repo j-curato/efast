@@ -189,7 +189,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 return $x;
             }
         ],
-        'dvAucs.created_at'
+        'dvAucs.created_at',
+        'dvAucs.books.name'
 
     ];
     ?>

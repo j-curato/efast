@@ -41,7 +41,8 @@
         "kartik-v/yii2-export": "@dev",
         "2amigos/qrcode-library": "^2.0",
         "yii2tech/https": "*",
-        "yii2tech/ar-softdelete": "*"
+        "yii2tech/ar-softdelete": "*",
+        "2amigos/yii2-google-maps-library" : "*"
 
 
     },

@@ -1,23 +1,11 @@
 <!-- <link href="/frontend/web/css/site.css" rel="stylesheet" /> -->
 <?php
 
-use app\models\AdvancesEntries;
 use app\models\Books;
-use app\models\DvAucs;
-use app\models\FundSourceType;
-use app\models\MajorAccounts;
-use app\models\MfoPapCode;
-use kartik\grid\GridView;
-use yii\widgets\Pjax;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
-use kartik\export\ExportMenu;
 use kartik\select2\Select2;
-use Mpdf\Tag\Select;
-use yii\data\ActiveDataProvider;
-use yii\db\Query;
 use yii\helpers\ArrayHelper;
-use yii\web\JsExpression;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
