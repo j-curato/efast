@@ -26,6 +26,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel' => [
+            'type' => GridView::TYPE_PRIMARY,
+            'heading' => 'List of Laps Amounts',
+        ],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 

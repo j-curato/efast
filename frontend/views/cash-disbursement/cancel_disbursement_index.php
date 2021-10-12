@@ -62,6 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => Gridview::TYPE_PRIMARY,
+            'heading' => 'List of Cancelled Checks'
         ],
         'toolbar' =>  [
             [

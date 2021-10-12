@@ -13,6 +13,7 @@ class m210811_054106_create_cdr_advances_balance_view extends Migration
     public function safeUp()
     {
         $sql = <<<SQL
+        CREATE VIEW cdr_advances_balance as 
             SELECT 
             advances.province,
             advances_entries.reporting_period,

@@ -266,6 +266,7 @@
                                     'items' => [
                                         Yii::$app->user->can('super-user') ?     ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/report/saobs'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'FUR', 'icon' => 'circle-o', 'url' => ['/report/division-fur'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'RAO', 'icon' => 'circle-o', 'url' => ['/report/rao'],] : [],
 
 
                                     ],
@@ -289,7 +290,7 @@
                                     'items' => [
                                         ['label' => 'Cash Disbursement', 'icon' => 'circle-o', 'url' => ['/cash-disbursement'],],
                                         ['label' => 'Cash Recieved', 'icon' => 'circle-o', 'url' => ['/cash-recieved'],],
-                                        ['label' => 'Lapse Amounts', 'icon' => 'circle-o', 'url' => ['/cash-adjustment'],],
+                                        ['label' => 'Laps Amounts', 'icon' => 'circle-o', 'url' => ['/cash-adjustment'],],
                                         ['label' => 'Cancel Disbursement', 'icon' => 'circle-o', 'url' => ['/cash-disbursement/cancel-disbursement-index'],],
 
                                     ],
@@ -316,6 +317,7 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Detailed Dv', 'icon' => 'circle-o', 'url' => ['/report/detailed-dv-aucs'],] : [],
                                 Yii::$app->user->can('conso_dv') ?    ['label' => 'Conso Dv', 'icon' => 'circle-o', 'url' => ['/report/conso-detailed-dv'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Tax Remittance', 'icon' => 'circle-o', 'url' => ['/report/tax-remittance'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Annex 3', 'icon' => 'circle-o', 'url' => ['/report/annex3'],] : [],
                             ],
                         ] : [],
                         Yii::$app->user->can('province') ? [

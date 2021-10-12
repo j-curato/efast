@@ -14,7 +14,6 @@ class m210630_055507_create_po_transaction_table extends Migration
     {
         $this->createTable('{{%po_transaction}}', [
             'id' => $this->primaryKey(),
-            'responsibility_center_id' => $this->integer(),
             'payee' => $this->string(),
             'particular' => $this->text(),
             'amount' => $this->decimal(10, 2),

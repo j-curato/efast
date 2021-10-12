@@ -356,7 +356,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             var adjust_particular = adjustment[adjustment_loop]['particular']
 
             var b_balance = balance
-            balance = parseFloat(balance.toFixed(2)) + parseFloat(adjust_amount)
+            balance = parseFloat(balance.toFixed(2)) - parseFloat(adjust_amount)
             console.log(balance, adjust_amount)
             row = `<tr class='data_row'>
                 <td colspan='' ></td>

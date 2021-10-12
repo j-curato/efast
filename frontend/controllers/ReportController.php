@@ -10,7 +10,7 @@ use app\models\DetailedDvAucsSearch;
 use app\models\DvAucs;
 
 use app\models\PoTransmittalsPendingSearch;
-
+use app\models\RaoSearch;
 use app\models\TransactionArchiveSearch;
 use Da\QrCode\QrCode;
 use Yii;
@@ -151,6 +151,16 @@ class ReportController extends \yii\web\Controller
     public function actionUnpaidObligation()
     {
         return $this->render('unpaid_obligation');
+    }
+    public function actionRao()
+    {
+        $searchModel = new RaoSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('rao_index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
     public function actionSaob()
     {
@@ -477,7 +487,9 @@ class ReportController extends \yii\web\Controller
 
             $q = Yii::$app->db->createCommand("SELECT
             chart_of_accounts.uacs as gl_object_code,
-            ROUND(SUM(withdrawals),2)+ROUND(SUM(vat_nonvat),2)+ROUND(SUM(expanded_tax),2) as debit,
+            ROUND(IFNULL(SUM(withdrawals),0),2)+
+            ROUND(IFNULL(SUM(vat_nonvat),0),2)+
+            ROUND(IFNULL(SUM(expanded_tax),0),2)  as debit,
             ROUND(SUM(withdrawals),2) as total_withdrawals,
             ROUND(SUM(vat_nonvat),2) as total_vat_nonvat,
             ROUND(SUM(expanded_tax),2) as total_expanded_tax
@@ -2052,6 +2064,59 @@ class ReportController extends \yii\web\Controller
         }
         return $this->render('cadadr');
     }
+    public function actionAnnex3()
+    {
+        if ($_POST) {
+            $from_reporting_period = $_POST['from_reporting_period'];
+            $to_reporting_period = $_POST['to_reporting_period'];
+
+            $query = Yii::$app->db->createCommand("SELECT
+            advances_entries.report_type,
+            CONCAT(accounting_codes.object_code,'-',accounting_codes.account_title) as account_name,
+            cash_disbursement.check_or_ada_no as check_number,
+            cash_disbursement.issuance_date as check_date,
+            dv_aucs.particular,
+            advances_entries.amount  as advances_amount,
+            IFNULL(current.current_liquidation,0) as current_liquidation,
+            IFNULL(prev.prev_liquidation,0) as prev_liquidation,
+            IFNULL(current.current_liquidation,0) + IFNULL(prev.prev_liquidation,0) as total_liquidation_this_date,
+            advances_entries.amount - (IFNULL(current.current_liquidation,0) + IFNULL(prev.prev_liquidation,0)) as unliquidated
+            
+            FROM 
+            advances_entries
+            LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
+            LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
+            LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id 
+            LEFT JOIN 
+            (
+            
+            SELECT 
+            liquidation_balance_per_advances.advances_entries_id,
+            SUM(liquidation_balance_per_advances.total_withdrawals) as current_liquidation
+            FROM 
+            liquidation_balance_per_advances 
+            WHERE liquidation_balance_per_advances.reporting_period >= :from_reporting_period
+            AND liquidation_balance_per_advances.reporting_period <= :to_reporting_period
+            GROUP BY liquidation_balance_per_advances.advances_entries_id
+            ) as current ON advances_entries.id = current.advances_entries_id
+            LEFT JOIN (
+            SELECT 
+            liquidation_balance_per_advances.advances_entries_id,
+            SUM(liquidation_balance_per_advances.total_withdrawals) as prev_liquidation
+            FROM 
+            liquidation_balance_per_advances 
+            WHERE liquidation_balance_per_advances.reporting_period < :from_reporting_period
+            
+            GROUP BY liquidation_balance_per_advances.advances_entries_id
+            ) as prev ON advances_entries.id= prev.advances_entries_id
+            ")
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->bindValue(':to_reporting_period', $to_reporting_period)
+                ->queryAll();
+            return json_encode($query);
+        }
+        return $this->render('annex3');
+    }
 
     public function actionX()
     {
@@ -2072,7 +2137,6 @@ class ReportController extends \yii\web\Controller
         // echo '<img src="' . $qrCode->writeDataUri() . '">';
         echo $qrCode->writeString();
     }
-
 }
 
 // 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

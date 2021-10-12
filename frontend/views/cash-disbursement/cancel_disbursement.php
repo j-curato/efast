@@ -122,6 +122,7 @@ use yii\helpers\Html;
                     'filterModel' => $searchModel,
                     'panel' => [
                         'type' => Gridview::TYPE_PRIMARY,
+ 
                     ],
 
                     'export' => false,
