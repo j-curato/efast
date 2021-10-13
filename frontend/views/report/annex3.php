@@ -21,22 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="jev-preparation-index" style="background-color: white;">
     <form id='filter'>
         <div class="row">
-            <div class="col-sm-2">
-                <label for="from_reporting_period">From Reporting Period</label>
-                <?php
 
-                echo DatePicker::widget([
-                    'id' => 'from_reporting_period',
-                    'name' => 'from_reporting_period',
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'startView' => 'months',
-                        'minViewMode' => 'months',
-                        'format' => 'yyyy-mm'
-                    ]
-                ])
-                ?>
-            </div>
             <div class="col-sm-2">
                 <label for="to_reporting_period">To Reporting Period</label>
                 <?php
@@ -53,56 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ])
                 ?>
             </div>
-            <!-- <div class="col-sm-2">
-                <label for="province">Province</label>
-                <?php
-                echo Select2::widget([
-                    'name' => 'province',
-                    'id' => 'province',
-                    'data' => [
-                        'adn' => 'ADN',
-                        'ads' => 'ADS',
-                        'sdn' => 'SDN',
-                        'sds' => 'SDS',
-                        'pdi' => 'PDI',
-                    ],
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'placeholder' => 'Select Province'
-                    ]
-                ])
-                ?>
-            </div> -->
-            <!-- <div class="col-sm-3">
-                <label for="book">Book</label>
-                <?php
-                echo Select2::widget([
-                    'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'name', 'name'),
-                    'id' => 'book',
-                    'name' => 'book',
-                    'pluginOptions' => [
-                        'placeholder' => 'Select Book'
-                    ]
-                ])
-                ?>
-            </div>
-            <div class="col-sm-3">
-                <label for="report_type">Advance Type</label>
-                <?php
 
-                echo Select2::widget([
-                    'data' => [
-                        'Advances for Operating Expenses' => 'OPEX',
-                        'Advances to Special Disbursing Officer' => 'SDO'
-                    ],
-                    'name' => 'report_type',
-                    'id' => 'report_type',
-                    'pluginOptions' => [
-                        'placeholder' => 'Select Advance Type'
-                    ]
-                ])
-                ?>
-            </div> -->
             <div class="col-sm-2">
                 <button class="btn btn-success" id="generate" style="margin-top:23px">Generate</button>
             </div>
@@ -112,19 +48,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <table id="annex_table">
         <thead>
-            <th>Report Type</th>
-            <th>Account Code</th>
             <th>Name</th>
             <th>Date CA Granted</th>
             <th>Particulars</th>
             <th>Reference (Check/ADA NO.)</th>
             <th>Total Amount</th>
-            <th>Liquidation Previous Month</th>
             <th>Liquidation for the Month</th>
-            <th>Total Liquidation</th>
             <th>Unliquidation as of to date</th>
             <th>Less than 30 days</th>
             <th>31-60 days</th>
+            <th>61-365 days</th>
+            <th>Over 1 year</th>
         </thead>
         <tbody>
 
@@ -148,9 +82,11 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         text-align: right;
         padding: 8px;
     }
-table{
-    margin-top:20px
-}
+
+    table {
+        margin-top: 20px
+    }
+
     table,
     th,
     td {
@@ -192,6 +128,15 @@ table{
 </style>
 
 <script>
+    var target_date = ''
+    const province_data = {
+        'adn': 'Rosie R. Vellesco',
+        'ads': 'Maria Prescylin C. Lademora',
+        'sdn': 'Ferdinand R. Inres',
+        'sds': 'Fritzie N. Usares',
+        'pdi': 'Venus A. Custodio',
+        'ro': 'RO',
+    }
     $('#generate').click((e) => {
         e.preventDefault()
         $('#annex_table').hide()
@@ -202,46 +147,99 @@ table{
             data: $("#filter").serialize(),
             success: function(data) {
                 var res = JSON.parse(data)
-                console.log(res)
-                displaData(res)
+                target_date = res.target_date
+                displaData(res.result)
                 $('#dots5').hide()
                 $('#annex_table').show()
+                console.log(province_data['adn'])
+
             }
         })
     })
 
     function displaData(data) {
-
-        for (var i = 0; i < data.length; i++) {
-
-            var report_type = data[i]['report_type']
-            var account_name = data[i]['account_name']
-            var check_number = data[i]['check_number']
-            var check_date = data[i]['check_date']
-            var particular = data[i]['particular']
-            var advances_amount = data[i]['advances_amount']
-            var current_liquidation = data[i]['current_liquidation']
-            var prev_liquidation = data[i]['prev_liquidation']
-            var total_liquidation_this_date = data[i]['total_liquidation_this_date']
-            var unliquidated = data[i]['unliquidated']
+        $('#annex_table tbody').html('')
+        var advance_type_keys = Object.keys(data)
+        for (var advance_type_loop = 0; advance_type_loop < advance_type_keys.length; advance_type_loop++) {
+            var advance_name = advance_type_keys[advance_type_loop]
             var row = `<tr class='data_row'>
-                <td  >` + report_type + `</td>
-                <td  >` + account_name + `</td>
-                <td></td>
-                <td  >` + check_date + `</td>
-                <td  >` + particular + `</td>
-                <td  >` + check_number + `</td>
-                <td class='amount' >` + thousands_separators(advances_amount) + `</td>
-                <td class='amount' >` + thousands_separators(prev_liquidation) + `</td>
-                <td class='amount' >` + thousands_separators(current_liquidation) + `</td>
-                <td class='amount' >` + thousands_separators(total_liquidation_this_date) + `</td>
-                <td class='amount' >` + thousands_separators(unliquidated) + `</td>
-                <td></td>
-                <td  >` + '' + `</td>
+                <td colspan='11' style='font-weight:bold' >` + advance_name + `</td>
+
                 </tr>`
             $('#annex_table tbody').append(row)
+            var total_amount = 0
+            var total_liquidation = 0
+            var total_unliquidated = 0
+            for (var i = 0; i < data[advance_name].length; i++) {
 
+                var account_name = data[advance_name][i]['account_name']
+                var check_number = data[advance_name][i]['check_number']
+                var check_date = data[advance_name][i]['check_date']
+                var particular = data[advance_name][i]['particular']
+                var advances_amount = data[advance_name][i]['advances_amount']
+                var total_liquidation_this_date = data[advance_name][i]['total_liquidation']
+                var unliquidated = data[advance_name][i]['unliquidated']
+                var province = data[advance_name][i]['province']
+                var name = province_data[province.toLowerCase()]
+                var date1 = new Date(target_date);
+                var date2 = new Date(check_date);
+                var Difference_In_Time = date1.getTime() - date2.getTime();
+                var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
+                var less_30 = ''
+                var between_31_to_60 = ''
+                var between_61_to_365 = ''
+                var over_year = ''
+                if (Difference_In_Days <= 30) {
+                    less_30 = Difference_In_Days
+                } else if (Difference_In_Days >= 31 && Difference_In_Days <= 61) {
+                    between_31_to_60 = Difference_In_Days
+                } else if (Difference_In_Days >= 61 && Difference_In_Days <= 365) {
+                    between_61_to_365 = Difference_In_Days
+                } else if (Difference_In_Days > 365) {
+                    var y = 0
+                    var m = 0
+                    var d = parseInt(Difference_In_Days)
+
+                    y = d / 365
+                    d = d % 365
+                    m = d / 30
+                    d = d % 30
+                    over_year = parseInt(y) + ' Year ' + parseInt(m) + ' Month(s) ' + d + ' Day(s) '
+                }
+
+                var row = `<tr class='data_row'>
+                    <td  >` + name + `</td>
+                    <td  >` + check_date + `</td>
+                    <td  >` + particular + `</td>
+                    <td  >` + check_number + `</td>
+                    <td class='amount' >` + thousands_separators(advances_amount) + `</td>
+                    <td class='amount' >` + thousands_separators(total_liquidation_this_date) + `</td>
+                    <td class='amount' >` + thousands_separators(unliquidated) + `</td>
+                    <td  >` + less_30 + `</td>
+                    <td>` + between_31_to_60 + `</td>
+                    <td class='amount' >` + between_61_to_365 + `</td>
+                    <td class='amount' >` + over_year + `</td>
+            
+                    </tr>`
+                $('#annex_table tbody').append(row)
+                total_amount += parseFloat(advances_amount)
+                total_liquidation += parseFloat(total_liquidation_this_date)
+                total_unliquidated += parseFloat(unliquidated)
+            }
+            var row = `<tr class='data_row'>
+                    <td  style='font-weight:bold;' colspan='3'>Total</td>
+                    <td  ></td>
+                    <td class='amount' >` + thousands_separators(total_amount) + `</td>
+                    <td class='amount' >` + thousands_separators(total_liquidation) + `</td>
+                    <td class='amount' >` + thousands_separators(total_unliquidated) + `</td>
+                    <td  ></td>
+                    <td></td>
+                    <td class='amount' ></td>
+                    <td class='amount' ></td>
+                    </tr>`
+            $('#annex_table tbody').append(row)
         }
+
 
     }
 </script>

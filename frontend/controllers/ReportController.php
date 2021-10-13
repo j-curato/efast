@@ -13,6 +13,7 @@ use app\models\PoTransmittalsPendingSearch;
 use app\models\RaoSearch;
 use app\models\TransactionArchiveSearch;
 use Da\QrCode\QrCode;
+use DateTime;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -2067,26 +2068,42 @@ class ReportController extends \yii\web\Controller
     public function actionAnnex3()
     {
         if ($_POST) {
-            $from_reporting_period = $_POST['from_reporting_period'];
             $to_reporting_period = $_POST['to_reporting_period'];
-
+            $from_reporting_period = date('Y-01', strtotime($to_reporting_period));
             $query = Yii::$app->db->createCommand("SELECT
-            advances_entries.report_type,
-            CONCAT(accounting_codes.object_code,'-',accounting_codes.account_title) as account_name,
+            cash_disbursement.id,
             cash_disbursement.check_or_ada_no as check_number,
             cash_disbursement.issuance_date as check_date,
             dv_aucs.particular,
-            advances_entries.amount  as advances_amount,
-            IFNULL(current.current_liquidation,0) as current_liquidation,
-            IFNULL(prev.prev_liquidation,0) as prev_liquidation,
-            IFNULL(current.current_liquidation,0) + IFNULL(prev.prev_liquidation,0) as total_liquidation_this_date,
-            advances_entries.amount - (IFNULL(current.current_liquidation,0) + IFNULL(prev.prev_liquidation,0)) as unliquidated
-            
+            CONCAT(accounting_codes.object_code,' - ',accounting_codes.account_title) as account_name,
+            IFNULL(totals.advances_amount,0) as advances_amount,
+            IFNULL(totals.total_liquidation,0) as total_liquidation,
+            IFNULL(totals.advances_amount,0)-
+            IFNULL(totals.total_liquidation,0) as unliquidated,
+            totals.province,
+            totals.advances_type
+            FROM
+            cash_disbursement 
+            LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id  = dv_aucs.id
+            INNER JOIN 
+            (
+            SELECT
+            advances.province,
+            advances_entries.advances_type,
+            cash_disbursement.id,
+            accounting_codes.coa_object_code,
+            SUM(advances_entries.amount)  as advances_amount,
+            IFNULL(SUM(current.current_liquidation),0) as current_liquidation,
+            SUM(advances_entries.amount)   -  IFNULL(SUM(current.current_liquidation),0) as current_unliquidated,
+            IFNULL(SUM(prev.current_liquidation),0) as prev_liquidation,
+            SUM(advances_entries.amount)   -  IFNULL(SUM(prev.current_liquidation),0) as prev_unliquidated,
+            IFNULL(SUM(current.current_liquidation),0) +  IFNULL(SUM(prev.current_liquidation),0) as total_liquidation
             FROM 
             advances_entries
             LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
             LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
-            LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id 
+            LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
+            LEFT JOIN advances ON advances_entries.advances_id = advances.id
             LEFT JOIN 
             (
             
@@ -2095,25 +2112,44 @@ class ReportController extends \yii\web\Controller
             SUM(liquidation_balance_per_advances.total_withdrawals) as current_liquidation
             FROM 
             liquidation_balance_per_advances 
-            WHERE liquidation_balance_per_advances.reporting_period >= :from_reporting_period
-            AND liquidation_balance_per_advances.reporting_period <= :to_reporting_period
-            GROUP BY liquidation_balance_per_advances.advances_entries_id
-            ) as current ON advances_entries.id = current.advances_entries_id
-            LEFT JOIN (
-            SELECT 
-            liquidation_balance_per_advances.advances_entries_id,
-            SUM(liquidation_balance_per_advances.total_withdrawals) as prev_liquidation
-            FROM 
-            liquidation_balance_per_advances 
-            WHERE liquidation_balance_per_advances.reporting_period < :from_reporting_period
+            WHERE 
+             liquidation_balance_per_advances.reporting_period >= :from_reporting_period
+             AND liquidation_balance_per_advances.reporting_period <= :to_reporting_period
             
             GROUP BY liquidation_balance_per_advances.advances_entries_id
-            ) as prev ON advances_entries.id= prev.advances_entries_id
+            ) as current ON advances_entries.id = current.advances_entries_id
+            LEFT JOIN 
+            (
+            
+            SELECT 
+            liquidation_balance_per_advances.advances_entries_id,
+            SUM(liquidation_balance_per_advances.total_withdrawals) as current_liquidation
+            FROM 
+            liquidation_balance_per_advances 
+            WHERE 
+             liquidation_balance_per_advances.reporting_period < :from_reporting_period
+            
+            GROUP BY liquidation_balance_per_advances.advances_entries_id
+            ) as prev ON advances_entries.id = prev.advances_entries_id
+            WHERE 
+            
+            dv_aucs.reporting_period <= :to_reporting_period
+            GROUP BY 
+            advances.province,
+            advances_entries.advances_type,
+            cash_disbursement.id,
+            accounting_codes.coa_object_code) as totals ON cash_disbursement.id = totals.id
+            LEFT JOIN accounting_codes ON totals.coa_object_code = accounting_codes.object_code
+            WHERE totals.prev_unliquidated >0
+            ORDER BY totals.province,cash_disbursement.check_or_ada_no
             ")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->queryAll();
-            return json_encode($query);
+            $d = new DateTime($to_reporting_period);
+            $target_date = $d->format('Y-m-t');
+            $result = ArrayHelper::index($query, null, 'advances_type');
+            return json_encode(['result'=>$result,'target_date'=>$target_date]);
         }
         return $this->render('annex3');
     }
