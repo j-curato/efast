@@ -48,6 +48,33 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <table id="annex_table">
         <thead>
+            <tr>
+                <th style='border:0;text-align:center' colspan="11">
+                    <span>Annex 3 - Report of Aginf of Cash Advances</span><br>
+                    <span>Schedule of Advances to Officers and Employees</span><br>
+                    <span>Fund Cluster 01 - RA</span><br>
+                    <span>As of May 31, 2021</span>
+                </th>
+
+            </tr>
+            <tr>
+                <th>Agency Name: </th>
+                <th colspan="5"></th>
+                <th>Book No</th>
+                <th colspan="4"></th>
+            </tr>
+            <tr>
+                <th>Agency Code: </th>
+                <th colspan="5"></th>
+                <th>Account Title:</th>
+                <th colspan="4"></th>
+            </tr>
+            <tr>
+                <th colspan="6"></th>
+                <th>Account Code: </th>
+                <th colspan="4"></th>
+
+            </tr>
             <th>Name</th>
             <th>Date CA Granted</th>
             <th>Particulars</th>
@@ -61,7 +88,30 @@ $this->params['breadcrumbs'][] = $this->title;
             <th>Over 1 year</th>
         </thead>
         <tbody>
-
+            <tr>
+                <td style="border:0;text-align: center;"></td>
+                <td colspan="3" style="border:0;text-align: center;">Certified Correct</td>
+                <td colspan="3" style="border:0;text-align: center;">Aprroved By:</td>
+                <td colspan="3" style="border:0;text-align: center;">Recieved By:</td>
+                <td style="border:0;text-align: center;"></td>
+            </tr>
+            <tr>
+                <td style="border:0;text-align: center;"></td>
+                <td colspan="3" style="border:0;text-align: center;">
+                    <span>JOHN VOLTAIRE ANCLA</span><br>
+                    <span>Accountant III</span>
+                </td>
+                <td colspan="3" style="border:0;text-align: center;">
+                    <span>GAY A. TIDALGO</span><br>
+                    <span>Regional Director</span>
+                </td>
+                <td colspan="3" style="border:0;text-align: center;">
+                    <span>MARION T. MONROID</span><br>
+                    <span>State Auditor III / Audit Team Leader</span> <br>
+                    <span>Comission On Audit - Region XIII</span>
+                </td>
+                <td style="border:0;text-align: center;"></td>
+            </tr>
         </tbody>
 
     </table>
@@ -160,6 +210,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
     function displaData(data) {
         $('#annex_table tbody').html('')
         var advance_type_keys = Object.keys(data)
+        var grand_total_amount = 0
+        var grand_total_liquidation = 0
+        var grand_total_unliquidated = 0
         for (var advance_type_loop = 0; advance_type_loop < advance_type_keys.length; advance_type_loop++) {
             var advance_name = advance_type_keys[advance_type_loop]
             var row = `<tr class='data_row'>
@@ -178,7 +231,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 var particular = data[advance_name][i]['particular']
                 var advances_amount = data[advance_name][i]['advances_amount']
                 var total_liquidation_this_date = data[advance_name][i]['total_liquidation']
-                var unliquidated = data[advance_name][i]['unliquidated']
+                var unliquidated = parseFloat(data[advance_name][i]['unliquidated'])
                 var province = data[advance_name][i]['province']
                 var name = province_data[province.toLowerCase()]
                 var date1 = new Date(target_date);
@@ -189,13 +242,13 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 var between_31_to_60 = ''
                 var between_61_to_365 = ''
                 var over_year = ''
-                if (Difference_In_Days <= 30) {
-                    less_30 = Difference_In_Days
-                } else if (Difference_In_Days >= 31 && Difference_In_Days <= 61) {
-                    between_31_to_60 = Difference_In_Days
-                } else if (Difference_In_Days >= 61 && Difference_In_Days <= 365) {
-                    between_61_to_365 = Difference_In_Days
-                } else if (Difference_In_Days > 365) {
+                if (Difference_In_Days <= 30 && unliquidated != 0) {
+                    less_30 = thousands_separators(unliquidated)
+                } else if (Difference_In_Days >= 31 && Difference_In_Days <= 61 && unliquidated != 0) {
+                    between_31_to_60 = thousands_separators(unliquidated)
+                } else if (Difference_In_Days >= 61 && Difference_In_Days <= 365 && unliquidated != 0) {
+                    between_61_to_365 = thousands_separators(unliquidated)
+                } else if (Difference_In_Days > 365 && unliquidated != 0) {
                     var y = 0
                     var m = 0
                     var d = parseInt(Difference_In_Days)
@@ -204,7 +257,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                     d = d % 365
                     m = d / 30
                     d = d % 30
-                    over_year = parseInt(y) + ' Year ' + parseInt(m) + ' Month(s) ' + d + ' Day(s) '
+                    over_year = thousands_separators(unliquidated)
                 }
 
                 var row = `<tr class='data_row'>
@@ -225,9 +278,12 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 total_amount += parseFloat(advances_amount)
                 total_liquidation += parseFloat(total_liquidation_this_date)
                 total_unliquidated += parseFloat(unliquidated)
+                grand_total_amount += parseFloat(advances_amount)
+                grand_total_liquidation += parseFloat(total_liquidation_this_date)
+                grand_total_unliquidated += parseFloat(unliquidated)
             }
             var row = `<tr class='data_row'>
-                    <td  style='font-weight:bold;' colspan='3'>Total</td>
+                    <td  style='font-weight:bold;text-align:center;' colspan='3'>Total ` + advance_name + `</td>
                     <td  ></td>
                     <td class='amount' >` + thousands_separators(total_amount) + `</td>
                     <td class='amount' >` + thousands_separators(total_liquidation) + `</td>
@@ -239,6 +295,18 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                     </tr>`
             $('#annex_table tbody').append(row)
         }
+        var row = `<tr class='data_row'>
+                    <td  style='font-weight:bold;text-align:center;' colspan='3'>Grand Total</td>
+                    <td  ></td>
+                    <td class='amount' >` + thousands_separators(grand_total_amount) + `</td>
+                    <td class='amount' >` + thousands_separators(grand_total_liquidation) + `</td>
+                    <td class='amount' >` + thousands_separators(grand_total_unliquidated) + `</td>
+                    <td  ></td>
+                    <td></td>
+                    <td class='amount' ></td>
+                    <td class='amount' ></td>
+                    </tr>`
+        $('#annex_table tbody').append(row)
 
 
     }

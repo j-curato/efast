@@ -228,6 +228,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         'sdn': 'Surigao Del Norte',
         'sds': 'Surigao Del Sur',
         'pdi': 'Province of Dinagat Islands',
+        'ro': 'RO For Recon',
     }
 
     $('#generate').click((e) => {
