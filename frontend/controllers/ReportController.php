@@ -1212,7 +1212,7 @@ class ReportController extends \yii\web\Controller
                 ->from('advances_entries')
                 ->join('LEFT JOIN', "advances", 'advances_entries.advances_id = advances.id')
                 ->join('LEFT JOIN', "fund_source_type", 'advances_entries.fund_source_type = fund_source_type.`name`')
-                ->andWhere("advances_entries.is_deleted != 1",);
+                ->andWhere("advances_entries.is_deleted != 1");
             if ($province !== 'all') {
 
                 $q->andWhere("advances.province =:province", ['province' => $province]);
