@@ -22,41 +22,41 @@ date_default_timezone_set('Asia/Manila');
 $time = date('h:i:s A');
 $date = date('Y-M-d');
 $id = $model->id;
-Modal::begin(
-    [
-        //'header' => '<h2>Create New Region</h2>',
-        'id' => 'cancelModal',
-        'size' => 'modal-md',
-        'clientOptions' => ['backdrop' => 'static', 'keyboard' => TRUE, 'class' => 'modal modal-primary '],
-        'options' => [
-            'tabindex' => false // important for Select2 to work properly
-        ],
-    ]
-);
-echo "<div class='box box-success' id='modalContent'></div>";
-echo "<form id='cancelForm'>";
-echo "<div class='row'>";
-echo "<input type='hidden' name='cancelId' value='$id' style='display:none;'/>";
-echo "<label for='date' style='text-align:center'>Date</label>";
-echo DatePicker::widget([
-    'name' => 'reporting_period',
-    'id' => 'reporting_period',
-    'options' => [
-        'readOnly' => true,
-        'style' => 'background-color:white;'
-    ],
-    'pluginOptions' => [
-        'format' => 'yyyy-M',
-        'autoclose' => true,
-        'startView' => 'months',
-        'minViewMode' => 'months'
-    ]
-]);
-echo "</div>";
+// Modal::begin(
+//     [
+//         //'header' => '<h2>Create New Region</h2>',
+//         'id' => 'cancelModal',
+//         'size' => 'modal-md',
+//         'clientOptions' => ['backdrop' => 'static', 'keyboard' => TRUE, 'class' => 'modal modal-primary '],
+//         'options' => [
+//             'tabindex' => false // important for Select2 to work properly
+//         ],
+//     ]
+// );
+// echo "<div class='box box-success' id='modalContent'></div>";
+// echo "<form id='cancelForm'>";
+// echo "<div class='row'>";
+// echo "<input type='hidden' name='cancelId' value='$id' style='display:none;'/>";
+// echo "<label for='date' style='text-align:center'>Date</label>";
+// echo DatePicker::widget([
+//     'name' => 'reporting_period',
+//     'id' => 'reporting_period',
+//     'options' => [
+//         'readOnly' => true,
+//         'style' => 'background-color:white;'
+//     ],
+//     'pluginOptions' => [
+//         'format' => 'yyyy-M',
+//         'autoclose' => true,
+//         'startView' => 'months',
+//         'minViewMode' => 'months'
+//     ]
+// ]);
+// echo "</div>";
 
-echo "<button type='submit' class='btn btn-success' id='save'>Save</button>";
-echo '<form>';
-Modal::end();
+// echo "<button type='submit' class='btn btn-success' id='save'>Save</button>";
+// echo '<form>';
+// Modal::end();
 ?>
 <div class="liquidation-view">
 
@@ -67,14 +67,16 @@ Modal::end();
         <?php if (\Yii::$app->user->can('create_liquidation')) { ?>
             <p>
                 <?= Html::a('Re-Align/Update', ['re-align', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+
+                <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Add Link</button>
                 <?php
 
-                if ($model->is_cancelled) {
-                    echo "<button class='btn btn-success' id='cancel' style='margin:5px'>Activate</button>";
-                } else {
-                    echo "<button class='btn btn-danger' id='cancel' style='margin:5px'>Cancel</button>";
-                }
-                echo "<input type='text' id='cancel_id' value='$model->id' style='display:none;'/>";
+                // if ($model->is_cancelled) {
+                //     echo "<button class='btn btn-success' id='cancel' style='margin:5px'>Activate</button>";
+                // } else {
+                //     echo "<button class='btn btn-danger' id='cancel' style='margin:5px'>Cancel</button>";
+                // }
+                // echo "<input type='text' id='cancel_id' value='$model->id' style='display:none;'/>";
 
 
                 $total_withdrawal = 0;
@@ -96,9 +98,41 @@ Modal::end();
                         ]
                     ]);
                 }
+                $document_link = '';
+                if (!empty($model->document_link)) {
+                    $document_link = $model->document_link;
+                    echo Html::a('Soft Copy Link', $document_link, ['class' => 'btn btn-info ']);;
+                }
                 ?>
             </p>
         <?php } ?>
+
+        <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <form id="add_link">
+                        <div class='modal-body'>
+                            <hr>
+                            <label for="ledger"> Insert Link</label>
+
+                            <input type="text " style="display: none;" class="form-control" name="id" value='<?= $model->id ?>'>
+
+                            <input type="text " class="form-control" name="link" value='<?= $document_link ?>'>
+                        </div>
+                        <div class="row" style="margin: 10px;padding:12px">
+                            <div class="col-sm-3">
+
+                                <button type="submit" class="btn btn-success">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <form id='new_uacs'>
 
             <table class="table table-striped">
@@ -224,25 +258,57 @@ Modal::end();
     }
 </style>
 
+<script>
 
+</script>
 <?php
 SweetAlertAsset::register($this);
 $script = <<<JS
 
-    $('#cancel').click(function(e) {
-        e.preventDefault();    
-        $('#cancelModal').modal('show').find('#link').attr('href',$(this).attr('value'))
-    });
+    // $('#cancel').click(function(e) {
+    //     e.preventDefault();    
+    //     $('#cancelModal').modal('show').find('#link').attr('href',$(this).attr('value'))
+    // });
     
-    $('#cancelForm').submit(function(e){
-        e.preventDefault();
+    // $('#cancelForm').submit(function(e){
+    //     e.preventDefault();
         
+    //     $.ajax({
+    //         type:'POST',
+    //         url:window.location.pathname + '?r=liquidation/cancel',
+    //         data:$('#cancelForm').serialize(),
+    //         success:function(data){
+    //             console.log(data)
+    //         }
+    //     })
+    // })
+    $('#add_link').submit((e) => {
+        e.preventDefault();
+        console.log('qwe')
         $.ajax({
-            type:'POST',
-            url:window.location.pathname + '?r=liquidation/cancel',
-            data:$('#cancelForm').serialize(),
-            success:function(data){
-                console.log(data)
+            type: 'POST',
+            url: window.location.pathname + '?r=liquidation/add-link',
+            data: $("#add_link").serialize(),
+            success: function(data) {
+                $('#uploadmodal').modal('toggle');
+                var res = JSON.parse(data)
+                if (res.isSuccess) {
+                    swal({
+                        title: 'Success',
+                        type: 'success',
+                        button: false,
+                        timer: 3000,
+                    }, function() {
+                        location.reload(true)
+                    })
+                } else {
+                    swal({
+                        title: "Error Adding Fail",
+                        type: 'error',
+                        button: false,
+                        timer: 3000,
+                    })
+                }
             }
         })
     })

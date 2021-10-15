@@ -66,7 +66,7 @@ class LiquidationController extends Controller
                         'allow' => true,
                         'roles' => ['super-user', 'create_liquidation']
                     ],
-                    
+
                     [
                         'actions' => [
                             'index',
@@ -1063,11 +1063,11 @@ class LiquidationController extends Controller
         if ($_POST) {
             $from_reporting_period = $_POST['from_reporting_period'];
             $to_reporting_period = $_POST['to_reporting_period'];
-          
+
 
             $province = strtolower(Yii::$app->user->identity->province);
 
-           
+
             // $province = strtolower(Yii::$app->user->identity->province);
             $q = (new \yii\db\Query())
                 ->select(["*",])
@@ -1186,6 +1186,20 @@ class LiquidationController extends Controller
             // return json_encode(['res' => "transaction\ckdj_excel_$id.xlsx"]);
             // return json_encode($file);
             // exit;
+        }
+    }
+    public function actionAddLink()
+    {
+        if ($_POST) {
+            $link = $_POST['link'];
+            $id = $_POST['id'];
+            $dv  = Liquidation::findOne($id);
+
+            $dv->document_link = $link;
+            if ($dv->save(false)) {
+                return json_encode(['isSuccess' => true, 'cancelled' => 'save success']);
+            }
+            return json_encode(['isSuccess' => true, 'cancelled' => $link]);
         }
     }
 }

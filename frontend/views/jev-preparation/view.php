@@ -46,9 +46,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 ->from('dv_aucs')
                 ->where('dv_aucs.dv_number =:dv_number', ['dv_number' => $model->dv_number])
                 ->one();
-            $dv_link = yii::$app->request->baseUrl . '/index.php?r=dv-aucs/view&id=' . $q['id'];
-
-            echo "<a type='button' href='$dv_link' class='btn btn-success'>DV</a>";
+            if (!empty($q)) {
+                $dv_link = yii::$app->request->baseUrl . '/index.php?r=dv-aucs/view&id=' . $q['id'];
+                echo "<a type='button' href='$dv_link' class='btn btn-success'>DV</a>";
+            }
         }
         if (!empty($model->cash_disbursement_id)) {
             $cash_link = yii::$app->request->baseUrl . '/index.php?r=cash-disbursement/view&id=' . $model->cash_disbursement_id;
