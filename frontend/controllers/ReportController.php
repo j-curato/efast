@@ -1206,11 +1206,13 @@ class ReportController extends \yii\web\Controller
                 "advances.`province`,
                 fund_source_type.`division`,
                 fund_source_type.`name` as fund_source_type
-                FROM advances_entries
+                 
             "
             ])
+                ->from('advances_entries')
                 ->join('LEFT JOIN', "advances", 'advances_entries.advances_id = advances.id')
-                ->join('LEFT JOIN', "fund_source_type", 'advances_entries.fund_source_type = fund_source_type.`name`');
+                ->join('LEFT JOIN', "fund_source_type", 'advances_entries.fund_source_type = fund_source_type.`name`')
+                ->andWhere("advances_entries.is_deleted != 1",);
             if ($province !== 'all') {
 
                 $q->andWhere("advances.province =:province", ['province' => $province]);
@@ -1240,7 +1242,6 @@ class ReportController extends \yii\web\Controller
                 ->where("advances_entries.reporting_period >= :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
                 ->andwhere("advances_entries.reporting_period <= :to_reporting_period", ['to_reporting_period' => $to_reporting_period]);
             if ($province !== 'all') {
-
                 $current_advances->andWhere("advances.province =:province", ['province' => $province]);
             }
             if ($division !== 'all') {
@@ -1294,6 +1295,7 @@ class ReportController extends \yii\web\Controller
             $current_advances_query = $current_advances->createCommand()->getRawSql();
             $prev_advances_query = $prev_advances->createCommand()->getRawSql();
             $current_liquidation_query = $current_liquidation->createCommand()->getRawSql();
+
             $q4 = $query->createCommand()->getRawSql();
             $final_query  = Yii::$app->db->createCommand(
                 "SELECT
@@ -1370,7 +1372,8 @@ class ReportController extends \yii\web\Controller
             ])
                 ->from('advances_entries')
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id=  advances.id')
-                ->join('LEFT JOIN', 'fund_source_type', 'advances_entries.fund_source_type=  fund_source_type.`name`');
+                ->join('LEFT JOIN', 'fund_source_type', 'advances_entries.fund_source_type=  fund_source_type.`name`')
+                ->where('is_deleted != 1');
             if ($province !== 'all') {
                 $budget_fur->andWhere("advances.province =:province", ['province' => $province]);
             }
@@ -2246,10 +2249,11 @@ class ReportController extends \yii\web\Controller
                 return $element['advance_type'];
             }, 'object_code']);
             $result = ArrayHelper::index($query, null, 'advance_type');
-            return json_encode(['result' => $result, 
-            'target_date' => $target_date,
-            'res'=>$res
-        ]);
+            return json_encode([
+                'result' => $result,
+                'target_date' => $target_date,
+                'res' => $res
+            ]);
         }
         return $this->render('annex_a');
     }
