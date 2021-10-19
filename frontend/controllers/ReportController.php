@@ -2090,55 +2090,56 @@ class ReportController extends \yii\web\Controller
             LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id  = dv_aucs.id
             INNER JOIN 
             (
-            SELECT
-            advances.province,
-            report_type.advance_type,
-            cash_disbursement.id,
-            accounting_codes.coa_object_code,
-            SUM(advances_entries.amount)  as advances_amount,
-            IFNULL(SUM(current.current_liquidation),0) as current_liquidation,
-            SUM(advances_entries.amount)   -  IFNULL(SUM(current.current_liquidation),0) as current_unliquidated,
-            IFNULL(SUM(prev.current_liquidation),0) as prev_liquidation,
-            SUM(advances_entries.amount)   -  IFNULL(SUM(prev.current_liquidation),0) as prev_unliquidated,
-            IFNULL(SUM(current.current_liquidation),0) +  IFNULL(SUM(prev.current_liquidation),0) as total_liquidation
-            FROM 
-            advances_entries
-            LEFT JOIN report_type ON advances_entries.report_type = report_type.name
-            LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
-            LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
-            LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
-            LEFT JOIN advances ON advances_entries.advances_id = advances.id
-            LEFT JOIN 
-            (
+                SELECT
+                advances.province,
+                report_type.advance_type,
+                cash_disbursement.id,
+                accounting_codes.coa_object_code,
+                SUM(advances_entries.amount)  as advances_amount,
+                IFNULL(SUM(current.current_liquidation),0) as current_liquidation,
+                SUM(advances_entries.amount)   -  IFNULL(SUM(current.current_liquidation),0) as current_unliquidated,
+                IFNULL(SUM(prev.current_liquidation),0) as prev_liquidation,
+                SUM(advances_entries.amount)   -  IFNULL(SUM(prev.current_liquidation),0) as prev_unliquidated,
+                IFNULL(SUM(current.current_liquidation),0) +  IFNULL(SUM(prev.current_liquidation),0) as total_liquidation
+                FROM 
+                advances_entries
+                LEFT JOIN report_type ON advances_entries.report_type = report_type.name
+                LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
+                LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
+                LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
+                LEFT JOIN advances ON advances_entries.advances_id = advances.id
+                LEFT JOIN 
+               (
             
-            SELECT 
-            liquidation_balance_per_advances.advances_entries_id,
-            SUM(liquidation_balance_per_advances.total_withdrawals) as current_liquidation
-            FROM 
-            liquidation_balance_per_advances 
-            WHERE 
-             liquidation_balance_per_advances.reporting_period >= :from_reporting_period
-             AND liquidation_balance_per_advances.reporting_period <= :to_reporting_period
-            
-            GROUP BY liquidation_balance_per_advances.advances_entries_id
-            ) as current ON advances_entries.id = current.advances_entries_id
-            LEFT JOIN 
-            (
-            
-            SELECT 
-            liquidation_balance_per_advances.advances_entries_id,
-            SUM(liquidation_balance_per_advances.total_withdrawals) as current_liquidation
-            FROM 
-            liquidation_balance_per_advances 
-            WHERE 
-             liquidation_balance_per_advances.reporting_period < :from_reporting_period
-            
-            GROUP BY liquidation_balance_per_advances.advances_entries_id
-            ) as prev ON advances_entries.id = prev.advances_entries_id
+                    SELECT 
+                    liquidation_balance_per_advances.advances_entries_id,
+                    SUM(liquidation_balance_per_advances.total_withdrawals) as current_liquidation
+                    FROM 
+                    liquidation_balance_per_advances 
+                    WHERE 
+                    liquidation_balance_per_advances.reporting_period >= :from_reporting_period
+                    AND liquidation_balance_per_advances.reporting_period <= :to_reporting_period
+                    
+                    GROUP BY liquidation_balance_per_advances.advances_entries_id
+                ) as current ON advances_entries.id = current.advances_entries_id
+                LEFT JOIN 
+                (
+                
+                    SELECT 
+                    liquidation_balance_per_advances.advances_entries_id,
+                    SUM(liquidation_balance_per_advances.total_withdrawals) as current_liquidation
+                    FROM 
+                    liquidation_balance_per_advances 
+                    WHERE 
+                    liquidation_balance_per_advances.reporting_period < :from_reporting_period
+                    
+                    GROUP BY liquidation_balance_per_advances.advances_entries_id
+                ) as prev ON advances_entries.id = prev.advances_entries_id
             WHERE 
             
             dv_aucs.reporting_period <= :to_reporting_period
             AND  report_type.advance_type  NOT LIKE 'Others'
+            AND advances_entries.is_deleted !=1
             GROUP BY 
             advances.province,
             report_type.advance_type,
@@ -2154,8 +2155,9 @@ class ReportController extends \yii\web\Controller
             $d = new DateTime($to_reporting_period);
             $report = $d->format('F t, Y');
             $result = ArrayHelper::index($query, null, 'advance_type');
-            return json_encode(['result' => $result,
-             'reporting_period' => $report
+            return json_encode([
+                'result' => $result,
+                'reporting_period' => $report
             ]);
         }
         return $this->render('annex3');
@@ -2232,6 +2234,7 @@ class ReportController extends \yii\web\Controller
             
             dv_aucs.reporting_period <= :to_reporting_period
             AND  report_type.advance_type  NOT LIKE 'Others'
+            AND advances_entries.is_deleted !=1
             GROUP BY 
             advances.province,
             report_type.advance_type,
@@ -2279,6 +2282,47 @@ class ReportController extends \yii\web\Controller
         // display directly to the browser 
         // echo '<img src="' . $qrCode->writeDataUri() . '">';
         echo $qrCode->writeString();
+    }
+    public function actionRaaf()
+    {
+
+        $query = Yii::$app->db->createCommand("SELECT liquidation.check_range_id,
+        liquidation.check_number FROM liquidation WHERE liquidation.check_range_id ")->queryAll();
+        $check_range = Yii::$app->db->createCommand("SELECT  * FROM check_range")->queryAll();
+        $result2 = ArrayHelper::index($query, null, 'check_range_id');
+        $check = ArrayHelper::index($check_range, null, 'id');
+        $ids = ArrayHelper::getColumn($result2[8], 'check_number');
+        $check_keys = array_keys($result2);
+        $arr = array();
+        foreach ($check_keys as $val) {
+            foreach (range($check[$val][0]['from'], $check[$val][0]['to']) as $number) {
+                $arr[$val][] = $number;
+            }
+        }
+
+        // echo "<pre>";
+        // var_dump($arr);
+        // echo "</pre>";
+        // die();
+        foreach ($result2 as $key => $q) {
+            foreach ($q as $w) {
+                // echo "<pre>";
+                // var_dump($arr[$key]);
+                // echo "</pre>";
+                // die();
+                $qqq = array_search($w['check_number'], $arr[$key]);
+                // echo $qqq;
+                if (!empty($qqq)) {
+                    // echo $w['check_number'];
+                    // echo "<br>";
+                    unset($arr[$key][$qqq]);
+                }
+            }
+        }
+        echo "<pre>";
+        var_dump($arr);
+        echo "</pre>";
+        die();
     }
 }
 

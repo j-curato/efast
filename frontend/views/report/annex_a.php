@@ -223,6 +223,18 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
 
                     if (Difference_In_Days > 0) {
                         age_of_advances = Difference_In_Days
+                        if (Difference_In_Days <30){
+                            age_of_advances = 'Less Than 30 Days'
+                        }
+                        else if (Difference_In_Days >30 && Difference_In_Days <=60){
+                            age_of_advances='31 to 60 Days'
+                        }
+                        else if (Difference_In_Days >60 && Difference_In_Days <=365){
+                            age_of_advances = '61 to 365 Days'
+                        }
+                        else if (Difference_In_Days> 365){
+                            age_of_advances ='Over 1 Year'
+                        }
                     }
                     var row = `<tr class='data_row'>
                         <td  >` + object_code + `</td>
@@ -230,7 +242,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                             <td  >` + particular + `</td>
                             <td  >` + check_date + `</td>
                             <td class='amount' >` + thousands_separators(unliquidated) + `</td>
-                            <td  ></td>
+                            <td  >upon completion of the project</td>
                             <td  ></td>
                             <td  >` + age_of_advances + `</td>
                             <td  ></td>

@@ -22,7 +22,7 @@ use Yii;
  * @property ResponsibilityCenter $responsibilityCenter
  * @property Books $books
  */
-class JevPreparation extends \yii\db\ActiveRecord   
+class JevPreparation extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -39,11 +39,12 @@ class JevPreparation extends \yii\db\ActiveRecord
     {
         return [
             [['book_id', 'reporting_period', 'date', 'jev_number', 'explaination', 'ref_number'], 'required'],
-            [['responsibility_center_id', 'fund_cluster_code_id', 'cash_flow_id', 'payee_id','book_id'], 'integer'],
+            [['responsibility_center_id', 'fund_cluster_code_id', 'cash_flow_id', 'payee_id', 'book_id'], 'integer'],
             [['date'], 'safe'],
             [['reporting_period'], 'string', 'max' => 50],
             [['jev_number', 'dv_number', 'lddap_number', 'ref_number'], 'string', 'max' => 100],
-            [[ 'explaination',], 'string', 'max' => 1000],
+            [['explaination',], 'string', 'max' => 1000],
+            [['jev_number',], 'unique'],
             [['cadadr_serial_number', 'check_ada'], 'string', 'max' => 255],
             [['fund_cluster_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => FundClusterCode::class, 'targetAttribute' => ['fund_cluster_code_id' => 'id']],
             [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
@@ -119,6 +120,4 @@ class JevPreparation extends \yii\db\ActiveRecord
     {
         return $this->hasOne(CashDisbursement::class, ['id' => 'cash_disbursement_id']);
     }
-
-
 }

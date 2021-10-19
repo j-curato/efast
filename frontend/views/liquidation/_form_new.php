@@ -26,8 +26,9 @@ use yii\helpers\ArrayHelper;
             !empty($update_type) ? $t = $update_type : $t = '';
             echo "<input type='text' value='$x' name='update_id' id='update_id' style='display:none'/>";
             echo "<input type='text' value='$t' name='update_type' id='update_type' style='display:none'/>";
+            $_SESSION['nonce'] = $nonce = md5('salt' . microtime());
+            echo "<input type='hidden' value='$nonce' name='save_form_token' />";
             $particular = '';
-
             $payee = '';
             $check_date = '';
             $check_number = '';
@@ -527,7 +528,7 @@ SweetAlertAsset::register($this);
                 $(`#ewt-${transaction_table_count}`).prop('readonly', true)
                 $(`#liq_damages-${transaction_table_count}`).prop('readonly', true)
 
-            } 
+            }
 
             if ($('#update_id') != null) {
                 $(`#chart-${transaction_table_count}`).val(result[i]['chart_of_account_id']).trigger('change')
