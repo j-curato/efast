@@ -59,14 +59,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
             </tr>
             <tr >
-                <th class="noBorder" >Agency Name: </th>
-                <th class="noBorder" colspan="5"></th>
+                <th class="noBorder" colspan='2' >Agency Name: </th>
+                <th class="noBorder" colspan="4">Department of Trade and Industry - Region XIII CARAGA</th>
                 <th class="noBorder">Book No:</th>
                 <th class="noBorder" colspan="4"></th>
             </tr>
             <tr>
-                <th class="noBorder">Agency Code: </th>
-                <th class="noBorder" colspan="5"></th>
+                <th class="noBorder" colspan='2'>Agency Code: </th>
+                <th class="noBorder" colspan="4">220010300016</th>
                 <th class="noBorder">Account Title:</th>
                 <th class="noBorder" colspan="4"></th>
             </tr>
