@@ -49,30 +49,31 @@ $this->params['breadcrumbs'][] = $this->title;
     <table id="annex_table">
         <thead>
             <tr>
-                <th style='border:0;text-align:center' colspan="11">
+                <th class="noBorder" style='border:0;text-align:center' colspan="11">
                     <span>Annex 3 - Report of Aginf of Cash Advances</span><br>
                     <span>Schedule of Advances to Officers and Employees</span><br>
                     <span>Fund Cluster 01 - RA</span><br>
-                    <span>As of May 31, 2021</span>
+                    <span>As of </span>
+                    <span id="r_period"></span>
                 </th>
 
             </tr>
-            <tr>
-                <th>Agency Name: </th>
-                <th colspan="5"></th>
-                <th>Book No</th>
-                <th colspan="4"></th>
+            <tr >
+                <th class="noBorder" >Agency Name: </th>
+                <th class="noBorder" colspan="5"></th>
+                <th class="noBorder">Book No:</th>
+                <th class="noBorder" colspan="4"></th>
             </tr>
             <tr>
-                <th>Agency Code: </th>
-                <th colspan="5"></th>
-                <th>Account Title:</th>
-                <th colspan="4"></th>
+                <th class="noBorder">Agency Code: </th>
+                <th class="noBorder" colspan="5"></th>
+                <th class="noBorder">Account Title:</th>
+                <th class="noBorder" colspan="4"></th>
             </tr>
             <tr>
-                <th colspan="6"></th>
-                <th>Account Code: </th>
-                <th colspan="4"></th>
+                <th class="noBorder" colspan="6"></th>
+                <th class="noBorder">Account Code: </th>
+                <th class="noBorder" colspan="4"></th>
 
             </tr>
             <th>Name</th>
@@ -88,30 +89,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <th>Over 1 year</th>
         </thead>
         <tbody>
-            <tr>
-                <td style="border:0;text-align: center;"></td>
-                <td colspan="3" style="border:0;text-align: center;">Certified Correct</td>
-                <td colspan="3" style="border:0;text-align: center;">Aprroved By:</td>
-                <td colspan="3" style="border:0;text-align: center;">Recieved By:</td>
-                <td style="border:0;text-align: center;"></td>
-            </tr>
-            <tr>
-                <td style="border:0;text-align: center;"></td>
-                <td colspan="3" style="border:0;text-align: center;">
-                    <span>JOHN VOLTAIRE ANCLA</span><br>
-                    <span>Accountant III</span>
-                </td>
-                <td colspan="3" style="border:0;text-align: center;">
-                    <span>GAY A. TIDALGO</span><br>
-                    <span>Regional Director</span>
-                </td>
-                <td colspan="3" style="border:0;text-align: center;">
-                    <span>MARION T. MONROID</span><br>
-                    <span>State Auditor III / Audit Team Leader</span> <br>
-                    <span>Comission On Audit - Region XIII</span>
-                </td>
-                <td style="border:0;text-align: center;"></td>
-            </tr>
+          
         </tbody>
 
     </table>
@@ -133,6 +111,12 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         padding: 8px;
     }
 
+.foot{
+    border:0;
+    text-align: left;
+    font-weight:bold;
+}
+
     table {
         margin-top: 20px
     }
@@ -143,6 +127,13 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         border: 1px solid black;
         padding: 12px;
     }
+
+ .noBorder {
+                 border: 0;
+                padding:3px;
+                padding-left:12px
+              }
+
 
     .header {
         border: none;
@@ -202,6 +193,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 $('#dots5').hide()
                 $('#annex_table').show()
                 console.log(province_data['adn'])
+                $('#r_period').text(res.reporting_period)
 
             }
         })
@@ -306,6 +298,34 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                     <td class='amount' ></td>
                     <td class='amount' ></td>
                     </tr>`
+        $('#annex_table tbody').append(row)
+        var row = `  <tr>
+                <td  class='foot'></td>
+                <td colspan="2" class='foot'>Certified Correct</td>
+                <td colspan="3" class='foot'>Aprroved By:</td>
+
+                <td colspan="3" class='foot'>Recieved By:</td>
+                <td style="border:0;text-align: center;"></td>
+            </tr>
+            <tr>
+            <td  class='foot'></td>
+
+                <td class='foot' colspan="2"  >
+                    <span>JOHN VOLTAIRE ANCLA</span><br>
+                    <span>Accountant III</span>
+                </td>
+                <td colspan="3" class='foot' >
+                    <span>GAY A. TIDALGO</span><br>
+                    <span>Regional Director</span>
+                </td>
+
+                <td colspan="3" class='foot' >
+                    <span>MARION T. MONROID</span><br>
+                    <span>State Auditor III / Audit Team Leader</span> <br>
+                    <span>Comission On Audit - Region XIII</span>
+                </td>
+                <td style="border:0;text-align: center;"></td>
+            </tr>`
         $('#annex_table tbody').append(row)
 
 

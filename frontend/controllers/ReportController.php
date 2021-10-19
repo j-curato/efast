@@ -2152,9 +2152,11 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->queryAll();
             $d = new DateTime($to_reporting_period);
-            $target_date = $d->format('Y-m-t');
+            $report = $d->format('F t, Y');
             $result = ArrayHelper::index($query, null, 'advance_type');
-            return json_encode(['result' => $result, 'target_date' => $target_date]);
+            return json_encode(['result' => $result,
+             'reporting_period' => $report
+            ]);
         }
         return $this->render('annex3');
     }
@@ -2252,7 +2254,8 @@ class ReportController extends \yii\web\Controller
             return json_encode([
                 'result' => $result,
                 'target_date' => $target_date,
-                'res' => $res
+                'res' => $res,
+                'reporting_period' => $d->format('F t, Y')
             ]);
         }
         return $this->render('annex_a');
