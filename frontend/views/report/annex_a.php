@@ -174,11 +174,11 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         var advance_type_keys = Object.keys(data)
         for (var advance_type_loop = 0; advance_type_loop < advance_type_keys.length; advance_type_loop++) {
             var advance_name = advance_type_keys[advance_type_loop]
-            var row = `<tr class='data_row'>
-                <td colspan='12' style='font-weight:bold' >` + advance_name + `</td>
+            // var row = `<tr class='data_row'>
+            //     <td colspan='12' style='font-weight:bold' >` + advance_name + `</td>
 
-                </tr>`
-            $('#annex_table tbody').append(row)
+            //     </tr>`
+            // $('#annex_table tbody').append(row)
             var total_amount = 0
             var total_liquidation = 0
             var total_unliquidated = 0
@@ -186,9 +186,10 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             console.log(uacs_keys)
             for (var uacs_loop = 0; uacs_loop < uacs_keys.length; uacs_loop++) {
                 var uacs = uacs_keys[uacs_loop]
+                var q = uacs + '_total_amount'
                 var row = `<tr class='data_row'>
-                <td colspan='4' style='font-weight:bold' >` + uacs + ' - ' + data[advance_name][uacs][0]['account_title'] + `</td>
-                <td ><span id='${uacs}_total_amount'></span></td>
+                <td colspan='4' style='font-weight:bold;text-align:center;' >` + uacs + ' - ' + data[advance_name][uacs][0]['account_title'] + `</td>
+                <td id='${q}' class='amount'></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -244,38 +245,38 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                     uacs_total_liquidation += parseFloat(total_liquidation_this_date)
                     uacs_total_unliquidated += parseFloat(unliquidated)
                 }
-                $(`${uacs}_total_amount`).text('qweqweqw')
+                $(`#${q}`).text(thousands_separators(uacs_total_unliquidated));
                 // console.log(`${uacs}_total_amount`, uacs_total_amount)
-                var row = `<tr class='data_row'>
-                    <td  style='font-weight:bold;text-align:center;' colspan='3'>Total </td>
-                    <td  ></td>
-                    <td class='amount' >` + thousands_separators(uacs_total_amount) + `</td>
-                    <td class='amount' >` + thousands_separators(uacs_total_liquidation) + `</td>
-                    <td class='amount' >` + thousands_separators(uacs_total_unliquidated) + `</td>
-                    <td  ></td>
-                    <td  ></td>
-                    <td  ></td>
-                    <td  ></td>
-                    <td  ></td>
+                // var row = `<tr class='data_row'>
+                //     <td  style='font-weight:bold;text-align:center;' colspan='3'>Total </td>
+                //     <td  ></td>
+                //     <td class='amount' >` + thousands_separators(uacs_total_unliquidated) + `</td>
+                //     <td class='amount' ></td>
+                //     <td class='amount' ></td>
+                //     <td  ></td>
+                //     <td  ></td>
+                //     <td  ></td>
+                //     <td  ></td>
+                //     <td  ></td>
          
-                    </tr>`
-                $('#annex_table tbody').append(row)
+                //     </tr>`
+                // $('#annex_table tbody').append(row)
             }
 
-            var row = `<tr class='data_row'>
-                    <td  style='font-weight:bold;text-align:center;' colspan='3'>Total ` + advance_name + `</td>
-                    <td  ></td>
-                    <td class='amount' >` + thousands_separators(total_amount) + `</td>
-                    <td class='amount' >` + thousands_separators(total_liquidation) + `</td>
-                    <td class='amount' >` + thousands_separators(total_unliquidated) + `</td>
-                    <td  ></td>
-                    <td  ></td>
-                    <td  ></td>
-                    <td  ></td>
-                    <td  ></td>
+            // var row = `<tr class='data_row'>
+            //         <td  style='font-weight:bold;text-align:center;' colspan='3'>Total ` + advance_name + `</td>
+            //         <td  ></td>
+            //         <td class='amount' >` + thousands_separators(total_unliquidated) + `</td>
+            //         <td class='amount' ></td>
+            //         <td class='amount' ></td>
+            //         <td  ></td>
+            //         <td  ></td>
+            //         <td  ></td>
+            //         <td  ></td>
+            //         <td  ></td>
              
-                    </tr>`
-            $('#annex_table tbody').append(row)
+            //         </tr>`
+            // $('#annex_table tbody').append(row)
         }
 
 

@@ -226,7 +226,7 @@ $id = $model->id;
                     }
 
                     echo "<tr>
-                <td colspan='9' style='text-align:center;font-weight:bold;'>Total</td>
+                <td colspan='10' style='text-align:center;font-weight:bold;'>Total</td>
                 <td class='number' style='font-weight:bold'>" . number_format($total_withdrawal, 2) . "</td>
                 <td class='number' style='font-weight:bold'>" . number_format($total_vat_nonvat, 2) . "</td>
                 <td class='number' style='font-weight:bold'>" . number_format($total_ewt, 2) . "</td>

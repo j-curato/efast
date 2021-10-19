@@ -1,14 +1,7 @@
 <?php
 
-use app\models\Books;
-use app\models\DvAucs;
-use kartik\grid\GridView;
 use yii\widgets\Pjax;
 use aryelds\sweetalert\SweetAlertAsset;
-use kartik\date\DatePicker;
-use kartik\select2\Select2;
-use yii\data\ActiveDataProvider;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
@@ -29,20 +22,52 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php
     $prov = [];
     $color = $model->is_final === 1 ? 'btn-danger' : 'btn-success';
-
+    $document_link = '';
     // return json_encode($dataProvider);
     ?>
     <div class="row">
 
         <div class="col-sm-3">
 
+            <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Add Link</button>
             <?php
             if (Yii::$app->user->can('create_cibr')) {
 
                 echo Html::a($model->is_final === 1 ? 'Draft' : 'Final', ['final', 'id' => $model->id], ['class' => "btn $color"]);
             }
+            $document_link = '';
+            if (!empty($model->document_link)) {
+                $document_link = $model->document_link;
+                echo Html::a('Soft Copy Link', $document_link, ['class' => 'btn btn-info ']);;
+            }
             ?>
 
+        </div>
+    </div>
+
+    <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <form id="add_link">
+                    <div class='modal-body'>
+                        <hr>
+                        <label for="ledger"> Insert Link</label>
+
+                        <input type="text " style="display: none;" class="form-control" name="id" value='<?= $model->id ?>'>
+
+                        <input type="text " class="form-control" name="link" value='<?= $document_link ?>'>
+                    </div>
+                    <div class="row" style="margin: 10px;padding:12px">
+                        <div class="col-sm-3">
+
+                            <button type="submit" class="btn btn-success">Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     <div id="con">
@@ -335,6 +360,37 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depe
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/jquery.dataTables.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
+<script>
+    $('#add_link').submit((e) => {
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: window.location.pathname + '?r=cibr/add-link',
+            data: $("#add_link").serialize(),
+            success: function(data) {
+                $('#uploadmodal').modal('toggle');
+                var res = JSON.parse(data)
+                if (res.isSuccess) {
+                    swal({
+                        title: 'Success',
+                        type: 'success',
+                        button: false,
+                        timer: 3000,
+                    }, function() {
+                        location.reload(true)
+                    })
+                } else {
+                    swal({
+                        title: "Error Adding Fail",
+                        type: 'error',
+                        button: false,
+                        timer: 3000,
+                    })
+                }
+            }
+        })
+    })
+</script>
 <?php
 SweetAlertAsset::register($this);
 $script = <<< JS

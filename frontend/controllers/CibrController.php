@@ -364,4 +364,18 @@ class CibrController extends Controller
             ->queryScalar();
         $balance = $q1 - $q2;
     }
+    public function actionAddLink()
+    {
+        if ($_POST) {
+            $link = $_POST['link'];
+            $id = $_POST['id'];
+            $dv  = Cibr::findOne($id);
+
+            $dv->document_link = $link;
+            if ($dv->save(false)) {
+                return json_encode(['isSuccess' => true, 'cancelled' => 'save success']);
+            }
+            return json_encode(['isSuccess' => true, 'cancelled' => $link]);
+        }
+    }
 }
