@@ -188,12 +188,12 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             data: $("#filter").serialize(),
             success: function(data) {
                 var res = JSON.parse(data)
-                target_date = res.target_date
+                target_date = res.reporting_period
                 displaData(res.result)
                 $('#dots5').hide()
                 $('#annex_table').show()
                 console.log(province_data['adn'])
-                $('#r_period').text(res.reporting_period)
+                $('#r_period').text(target_date)
 
             }
         })
