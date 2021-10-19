@@ -172,6 +172,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
     function displayData(data) {
         $('#annex_table tbody').html('')
         var advance_type_keys = Object.keys(data)
+        var grand_total_unliquidated=0
         for (var advance_type_loop = 0; advance_type_loop < advance_type_keys.length; advance_type_loop++) {
             var advance_name = advance_type_keys[advance_type_loop]
             // var row = `<tr class='data_row'>
@@ -244,6 +245,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                     uacs_total_amount += parseFloat(advances_amount)
                     uacs_total_liquidation += parseFloat(total_liquidation_this_date)
                     uacs_total_unliquidated += parseFloat(unliquidated)
+                    grand_total_unliquidated += parseFloat(unliquidated)
                 }
                 $(`#${q}`).text(thousands_separators(uacs_total_unliquidated));
                 // console.log(`${uacs}_total_amount`, uacs_total_amount)
@@ -263,21 +265,22 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 // $('#annex_table tbody').append(row)
             }
 
-            // var row = `<tr class='data_row'>
-            //         <td  style='font-weight:bold;text-align:center;' colspan='3'>Total ` + advance_name + `</td>
-            //         <td  ></td>
-            //         <td class='amount' >` + thousands_separators(total_unliquidated) + `</td>
-            //         <td class='amount' ></td>
-            //         <td class='amount' ></td>
-            //         <td  ></td>
-            //         <td  ></td>
-            //         <td  ></td>
-            //         <td  ></td>
-            //         <td  ></td>
-             
-            //         </tr>`
-            // $('#annex_table tbody').append(row)
+   
         }
+        var row = `<tr class='data_row'>
+                    <td  style='font-weight:bold;text-align:center;' colspan='3'>Total ` + advance_name + `</td>
+                    <td  ></td>
+                    <td class='amount' >` + thousands_separators(grand_total_unliquidated) + `</td>
+                    <td class='amount' ></td>
+                    <td class='amount' ></td>
+                    <td  ></td>
+                    <td  ></td>
+                    <td  ></td>
+                    <td  ></td>
+                    <td  ></td>
+             
+                    </tr>`
+            $('#annex_table tbody').append(row)
 
 
     }
