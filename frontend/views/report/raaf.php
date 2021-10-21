@@ -222,7 +222,6 @@ $this->params['breadcrumbs'][] = $this->title;
             var row = `<tr>
                 <td >` + range + `</td>
                 <td ></td>
-                <td ></td>
             </tr>`
             $('#skipped_check > tbody').append(row)
             var child = Object.keys(data[range])

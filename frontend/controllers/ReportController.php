@@ -2387,8 +2387,7 @@ class ReportController extends \yii\web\Controller
                     }
                     // CONVERT(liquidation.check_number ,UNSIGNED INTEGER) as check_number
                     $q = Yii::$app->db->createCommand("SELECT
-     
-                     CAST(liquidation.check_number AS UNSIGNED) as check_number
+                    CAST(liquidation.check_number AS UNSIGNED) as check_number
                     FROM liquidation
                     WHERE
                     liquidation.check_number >= :current_min
