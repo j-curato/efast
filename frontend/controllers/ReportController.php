@@ -2397,7 +2397,9 @@ class ReportController extends \yii\web\Controller
                     WHERE
                     liquidation.check_number >= :current_min
                     AND liquidation.check_number <= :current_max
-                    AND liquidation.check_range_id = :id ")
+                    AND liquidation.check_range_id = :id
+                    GROUP BY liquidation.check_number
+                     ")
                         ->bindValue(':current_min', $current_min)
                         ->bindValue(':current_max', $current_max)
                         ->bindValue(':id', $val['id'])
