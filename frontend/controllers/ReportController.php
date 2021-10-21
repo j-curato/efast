@@ -50,7 +50,11 @@ class ReportController extends \yii\web\Controller
                     'budget-year-fur',
                     'saobs',
                     'division-fur',
-                    'git-pull'
+                    'git-pull',
+                    'cadadr',
+                    'annex3',
+                    'annex-A',
+                    'raaf',
 
                 ],
                 'rules' => [
@@ -87,8 +91,11 @@ class ReportController extends \yii\web\Controller
                             'fund-source-fur',
                             'summary-fund-source-fur',
                             'budget-year-fur',
-
-                            'git-pull'
+                            'git-pull',
+                            'cadadr',
+                            'annex3',
+                            'annex-A',
+                            'raaf',
 
 
                         ],
@@ -2286,43 +2293,129 @@ class ReportController extends \yii\web\Controller
     public function actionRaaf()
     {
 
-        $query = Yii::$app->db->createCommand("SELECT liquidation.check_range_id,
-        liquidation.check_number FROM liquidation WHERE liquidation.check_range_id ")->queryAll();
-        $check_range = Yii::$app->db->createCommand("SELECT  * FROM check_range")->queryAll();
-        $result2 = ArrayHelper::index($query, null, 'check_range_id');
-        $check = ArrayHelper::index($check_range, null, 'id');
-        $ids = ArrayHelper::getColumn($result2[8], 'check_number');
-        $check_keys = array_keys($result2);
-        $arr = array();
-        foreach ($check_keys as $val) {
-            foreach (range($check[$val][0]['from'], $check[$val][0]['to']) as $number) {
-                $arr[$val][] = $number;
-            }
-        }
 
-        // echo "<pre>";
-        // var_dump($arr);
-        // echo "</pre>";
-        // die();
-        foreach ($result2 as $key => $q) {
-            foreach ($q as $w) {
-                // echo "<pre>";
-                // var_dump($arr[$key]);
-                // echo "</pre>";
-                // die();
-                $qqq = array_search($w['check_number'], $arr[$key]);
-                // echo $qqq;
-                if (!empty($qqq)) {
-                    // echo $w['check_number'];
-                    // echo "<br>";
-                    unset($arr[$key][$qqq]);
+
+        if ($_POST) {
+            $reporting_period = $_POST['to_reporting_period'];
+            $province = $_POST['province'];
+            $current_check = new Query();
+            $current_check->select([
+                "COUNT(liquidation.check_number) as current_count",
+                "liquidation.check_range_id",
+                "MAX(liquidation.check_number) as current_max",
+                "MIN(liquidation.check_number) as current_min"
+
+            ])
+                ->from('liquidation')
+                ->where("liquidation.check_number IS NOT NULL")
+                ->andWhere("liquidation.check_range_id IS NOT NULL")
+                ->andWhere("liquidation.check_number > 0")
+                ->andWhere("liquidation.reporting_period = :reporting_period", ['reporting_period' => $reporting_period])
+                ->groupBy("liquidation.check_range_id");
+            $prev_check = new Query();
+            $prev_check->select([
+                "COUNT(liquidation.check_number) as prev_count",
+                "liquidation.check_range_id",
+            ])
+                ->from('liquidation')
+                ->where("liquidation.check_number IS NOT NULL")
+                ->andWhere("liquidation.check_range_id IS NOT NULL")
+                ->andWhere("liquidation.check_number > 0")
+                ->andWhere("liquidation.reporting_period < :reporting_period", ['reporting_period' => $reporting_period])
+                ->groupBy("liquidation.check_range_id");
+            $current_query = $current_check->createCommand()->getRawSql();
+            $prev_query = $prev_check->createCommand()->getRawSql();
+            $query = Yii::$app->db->createCommand("SELECT
+                check_range.`id`,
+                check_range.`from`,
+                check_range.`to`,
+                check_range.province,
+                check_range.`to` - check_range.`from` +1 as range_total,
+                (check_range.`to` - check_range.`from` +1) -  IFNULL(prev.prev_count,0 ) as begin_balance,
+                IFNULL(prev.prev_count,'') as  prev_count, 
+                IFNULL(current.current_count,'') as current_count,
+                IFNULL(current.current_max,'') as current_max,
+                IFNULL(current.current_min,'') as current_min,
+                IFNULL(prev.prev_count,0) +
+                IFNULL(current.current_count,0) as total_use,
+                (check_range.`to` - check_range.`from` +1) -(IFNULL(prev.prev_count,0) +
+                IFNULL(current.current_count,0)) as balance
+                FROM 
+                check_range
+                LEFT JOIN  ($prev_query) as prev ON check_range.id = prev.check_range_id
+                LEFT JOIN  ($current_query) as current ON check_range.id = current.check_range_id
+                WHERE 
+                check_range.province = :province
+                AND check_range.from >0
+                ORDER BY  check_range.`from`
+                ")
+                ->bindValue(':province', $province)
+                ->queryAll();
+            $duplicates = array();
+            $skipped_check_number = array();
+            foreach ($query as $val) {
+                $range = $val['from'] . ' to ' . $val['to'];
+                if ($val['balance'] < 0) {
+                    $q = Yii::$app->db->createCommand("SELECT
+                        * FROM 
+                        (
+                        SELECT
+                        COUNT(liquidation.check_number) as dup_count,
+                        liquidation.check_number
+                        FROM liquidation
+                        
+                        WHERE
+                        liquidation.check_range_id =:id
+                        
+                        GROUP BY liquidation.check_number 
+                        ) as dup
+                        WHERE dup.dup_count >1")
+                        ->bindValue(':id', $val['id'])
+                        ->queryAll();
+
+                    $duplicates[$range] = $q;
+                }
+                $current_min  = intval($val['current_min']);
+                $current_max  = intval($val['current_max']);
+                $skipped_range = intval($val['current_count']) - ($current_max - $current_min + 1);
+                if ($skipped_range > 0) {
+                    $skipped_check_number[] = $skipped_range;
+                    $checks = array();
+                    foreach (range($current_min, $current_max) as $number) {
+                        $checks[] = $number;
+                    }
+                    // CONVERT(liquidation.check_number ,UNSIGNED INTEGER) as check_number
+                    $q = Yii::$app->db->createCommand("SELECT
+     
+                     CAST(liquidation.check_number AS UNSIGNED) as check_number
+                    FROM liquidation
+                    WHERE
+                    liquidation.check_number >= :current_min
+                    AND liquidation.check_number <= :current_max
+                    AND liquidation.check_range_id = 13")
+                        ->bindValue(':current_min', $current_min)
+                        ->bindValue(':current_max', $current_max)
+                        ->queryAll();
+                    foreach (array_column($q, 'check_number') as $qwe) {
+                        $liquidation_checks[] = intval($qwe);
+                    }
+
+                    $skipped_check_number[$range]  = array_diff($checks, $liquidation_checks);
                 }
             }
+            // ob_clean();
+            // echo "<pre>";
+            // var_dump($skipped_check_number);
+            // echo "</pre>";
+            // return ob_get_clean();
+            return json_encode(['results' => $query, 'duplicates' => $duplicates, 'skiped_checks' => $skipped_check_number]);
         }
-        echo "<pre>";
-        var_dump($arr);
-        echo "</pre>";
-        die();
+        return $this->render('raaf');
+    }
+    public function actionQr()
+    {
+
+        return $this->render('qr');
     }
 }
 

@@ -45,6 +45,7 @@ if (Yii::$app->controller->action->id === 'login') {
 
         <link href='<?php echo yii::$app->request->baseUrl ?>/js/fullcalendar/main.css' rel='stylesheet' />
         <script src='<?php echo yii::$app->request->baseUrl ?>/js/fullcalendar/main.js'></script>
+        <script src='<?php echo yii::$app->request->baseUrl ?>/js/instascan.js'></script>
         <?= Html::csrfMetaTags() ?>
         <title><?= Html::encode($this->title) ?></title>
         <?php $this->head() ?>
