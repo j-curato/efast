@@ -78,6 +78,7 @@ class ReportController extends \yii\web\Controller
                         'allow' => true,
                         'roles' => ['super-user']
                     ],
+
                     [
                         'actions' => [
                             'index',
@@ -2395,10 +2396,12 @@ class ReportController extends \yii\web\Controller
                     AND liquidation.check_range_id = 13")
                         ->bindValue(':current_min', $current_min)
                         ->bindValue(':current_max', $current_max)
+                        ->bindValue(':id', $val['id'])
                         ->queryAll();
                     foreach (array_column($q, 'check_number') as $qwe) {
                         $liquidation_checks[] = intval($qwe);
                     }
+
 
                     $skipped_check_number[$range]  = array_diff($checks, $liquidation_checks);
                 }

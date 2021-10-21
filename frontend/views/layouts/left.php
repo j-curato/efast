@@ -319,6 +319,7 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Tax Remittance', 'icon' => 'circle-o', 'url' => ['/report/tax-remittance'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Annex 3', 'icon' => 'circle-o', 'url' => ['/report/annex3'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Annex A', 'icon' => 'circle-o', 'url' => ['/report/annex-a'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'RAAF', 'icon' => 'circle-o', 'url' => ['/report/raaf'],] : [],
                             ],
                         ] : [],
                         Yii::$app->user->can('province') ? [
