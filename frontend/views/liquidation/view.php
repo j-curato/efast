@@ -19,44 +19,46 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php
 date_default_timezone_set('Asia/Manila');
-$time = date('h:i:s A');
-$date = date('Y-M-d');
-$id = $model->id;
-// Modal::begin(
-//     [
-//         //'header' => '<h2>Create New Region</h2>',
-//         'id' => 'cancelModal',
-//         'size' => 'modal-md',
-//         'clientOptions' => ['backdrop' => 'static', 'keyboard' => TRUE, 'class' => 'modal modal-primary '],
-//         'options' => [
-//             'tabindex' => false // important for Select2 to work properly
-//         ],
-//     ]
-// );
-// echo "<div class='box box-success' id='modalContent'></div>";
-// echo "<form id='cancelForm'>";
-// echo "<div class='row'>";
-// echo "<input type='hidden' name='cancelId' value='$id' style='display:none;'/>";
-// echo "<label for='date' style='text-align:center'>Date</label>";
-// echo DatePicker::widget([
-//     'name' => 'reporting_period',
-//     'id' => 'reporting_period',
-//     'options' => [
-//         'readOnly' => true,
-//         'style' => 'background-color:white;'
-//     ],
-//     'pluginOptions' => [
-//         'format' => 'yyyy-M',
-//         'autoclose' => true,
-//         'startView' => 'months',
-//         'minViewMode' => 'months'
-//     ]
-// ]);
-// echo "</div>";
+$period = !empty($model->cancel_reporting_period) ? $model->cancel_reporting_period : '';
 
-// echo "<button type='submit' class='btn btn-success' id='save'>Save</button>";
-// echo '<form>';
-// Modal::end();
+$id = $model->id;
+
+Modal::begin(
+    [
+        //'header' => '<h2>Create New Region</h2>',
+        'id' => 'cancelModal',
+        'size' => 'modal-md',
+        'clientOptions' => ['backdrop' => 'static', 'keyboard' => TRUE, 'class' => 'modal modal-primary '],
+        'options' => [
+            'tabindex' => false // important for Select2 to work properly
+        ],
+    ]
+);
+echo "<div class='box box-success' id='modalContent'></div>";
+echo "<form id='cancelForm'>";
+echo "<div class='row'>";
+echo "<input type='hidden' name='cancelId' value='$id' style='display:none;'/>";
+echo "<label for='date' style='text-align:center'>Reporting Period</label>";
+echo DatePicker::widget([
+    'name' => 'reporting_period',
+    'id' => 'reporting_period',
+    'value'=>$period,
+    'options' => [
+        'readOnly' => true,
+        'style' => 'background-color:white;'
+    ],
+    'pluginOptions' => [
+        'format' => 'yyyy-M',
+        'autoclose' => true,
+        'startView' => 'months',
+        'minViewMode' => 'months'
+    ]
+]);
+echo "</div>";
+
+echo "<button type='submit' class='btn btn-success' id='save'>Save</button>";
+echo '<form>';
+Modal::end();
 ?>
 <div class="liquidation-view">
 
@@ -71,12 +73,12 @@ $id = $model->id;
                 <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Add Link</button>
                 <?php
 
-                // if ($model->is_cancelled) {
-                //     echo "<button class='btn btn-success' id='cancel' style='margin:5px'>Activate</button>";
-                // } else {
-                //     echo "<button class='btn btn-danger' id='cancel' style='margin:5px'>Cancel</button>";
-                // }
-                // echo "<input type='text' id='cancel_id' value='$model->id' style='display:none;'/>";
+                if (!empty($model->cancel_reporting_period)) {
+                    echo "<button class='btn btn-success' id='cancel' style='margin:5px'>Activate</button>";
+                } else {
+                    echo "<button class='btn btn-danger' id='cancel' style='margin:5px'>Cancel</button>";
+                }
+                echo "<input type='text' id='cancel_id' value='$model->id' style='display:none;'/>";
 
 
                 $total_withdrawal = 0;
@@ -265,23 +267,43 @@ $id = $model->id;
 SweetAlertAsset::register($this);
 $script = <<<JS
 
-    // $('#cancel').click(function(e) {
-    //     e.preventDefault();    
-    //     $('#cancelModal').modal('show').find('#link').attr('href',$(this).attr('value'))
-    // });
+    $('#cancel').click(function(e) {
+        e.preventDefault();    
+        $('#cancelModal').modal('show').find('#link').attr('href',$(this).attr('value'))
+    });
     
-    // $('#cancelForm').submit(function(e){
-    //     e.preventDefault();
+    $('#cancelForm').submit(function(e){
+        e.preventDefault();
         
-    //     $.ajax({
-    //         type:'POST',
-    //         url:window.location.pathname + '?r=liquidation/cancel',
-    //         data:$('#cancelForm').serialize(),
-    //         success:function(data){
-    //             console.log(data)
-    //         }
-    //     })
-    // })
+        $.ajax({
+            type:'POST',
+            url:window.location.pathname + '?r=liquidation/cancel',
+            data:$('#cancelForm').serialize(),
+            success:function(data){
+                var res = JSON.parse(data)
+           
+           if (res.isSuccess) {
+               swal({
+                   title: 'Success',
+                   type: 'success',
+                   button: false,
+                   timer: 3000,
+               }, function() {
+                   location.reload(true)
+               })
+           } else {
+               swal({
+                   title: "Error Adding Fail",
+                   type: 'error',
+                   button: false,
+                   timer: 3000,
+               })
+           }
+                
+            }
+
+        })
+    })
     $('#add_link').submit((e) => {
         e.preventDefault();
         console.log('qwe')
@@ -292,7 +314,8 @@ $script = <<<JS
             success: function(data) {
                 $('#uploadmodal').modal('toggle');
                 var res = JSON.parse(data)
-                if (res.isSuccess) {
+           
+                if (res.isSuccess=='true') {
                     swal({
                         title: 'Success',
                         type: 'success',

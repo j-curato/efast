@@ -2312,6 +2312,7 @@ class ReportController extends \yii\web\Controller
                 ->andWhere("liquidation.check_range_id IS NOT NULL")
                 ->andWhere("liquidation.check_number > 0")
                 ->andWhere("liquidation.reporting_period = :reporting_period", ['reporting_period' => $reporting_period])
+                // ->orWhere("liquidation.cancel_reporting_period = :reporting_period", ['reporting_period' => $reporting_period])
                 ->groupBy("liquidation.check_range_id");
             $prev_check = new Query();
             $prev_check->select([
