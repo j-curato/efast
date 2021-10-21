@@ -11,6 +11,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class=" panel panel-default">
+
     <form id='filter'>
         <div class="row">
 
@@ -57,81 +58,90 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </form>
-    <table id="raaf_table">
-        <thead>
-            <tr>
-                <th colspan="7">
-                    <span>Entity Name: </span>
-                    <span>Department of Trade and Industry -ADN</span>
-                </th>
-                <th colspan="8">
-                    <span>Fund Cluster: </span>
-                    <span>01</span>
-                </th>
-            </tr>
-            <tr>
-                <th colspan="3">Accountable Forms</th>
-                <th colspan="3">Beginning Balance</th>
-                <th colspan="3">Reciept</th>
-                <th colspan="3">Issue</th>
-                <th colspan="3">Ending Balance</th>
-            </tr>
-            <tr>
-                <th rowspan="2">Name of Form</th>
-                <th rowspan="2"> Number</th>
-                <th rowspan="2">Face Value</th>
-                <th rowspan="2">Quantity</th>
-                <th rowspan="1" colspan="2"> Inclusive Serial Nos.</th>
-                <th rowspan="2"> Quantity.</th>
-                <th rowspan="1" colspan="2"> Inclusive Serial Nos.</th>
-                <th rowspan="2"> Quantity.</th>
-                <th rowspan="1" colspan="2"> Inclusive Serial Nos.</th>
-                <th rowspan="2"> Quantity.</th>
-                <th rowspan="1" colspan="2"> Inclusive Serial Nos.</th>
-            </tr>
-            <tr>
-                <th rowspan="1"> From</th>
-                <th rowspan="1"> To</th>
-                <th rowspan="1"> From</th>
-                <th rowspan="1"> To</th>
-                <th rowspan="1"> From</th>
-                <th rowspan="1"> To</th>
-                <th rowspan="1"> From</th>
-                <th rowspan="1"> To</th>
-            </tr>
-            <tr>
-                <th colspan="15"> A. WITH FACE VALUE</th>
-            </tr>
-            <tr>
-                <th colspan="15"> B. WITHOUT FACE VALUE</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="con">
 
-        </tbody>
-    </table>
+        <table id="raaf_table">
+            <thead>
+                <tr>
+                    <th colspan="7">
+                        <span>Entity Name: </span>
+                        <span>Department of Trade and Industry -ADN</span>
+                    </th>
+                    <th colspan="8">
+                        <span>Fund Cluster: </span>
+                        <span>01</span>
+                    </th>
+                </tr>
+                <tr>
+                    <th colspan="3">Accountable Forms</th>
+                    <th colspan="3">Beginning Balance</th>
+                    <th colspan="3">Reciept</th>
+                    <th colspan="3">Issue</th>
+                    <th colspan="3">Ending Balance</th>
+                </tr>
+                <tr>
+                    <th rowspan="2">Name of Form</th>
+                    <th rowspan="2"> Number</th>
+                    <th rowspan="2">Face Value</th>
+                    <th rowspan="2">Quantity</th>
+                    <th rowspan="1" colspan="2"> Inclusive Serial Nos.</th>
+                    <th rowspan="2"> Quantity.</th>
+                    <th rowspan="1" colspan="2"> Inclusive Serial Nos.</th>
+                    <th rowspan="2"> Quantity.</th>
+                    <th rowspan="1" colspan="2"> Inclusive Serial Nos.</th>
+                    <th rowspan="2"> Quantity.</th>
+                    <th rowspan="1" colspan="2"> Inclusive Serial Nos.</th>
+                </tr>
+                <tr>
+                    <th rowspan="1"> From</th>
+                    <th rowspan="1"> To</th>
+                    <th rowspan="1"> From</th>
+                    <th rowspan="1"> To</th>
+                    <th rowspan="1"> From</th>
+                    <th rowspan="1"> To</th>
+                    <th rowspan="1"> From</th>
+                    <th rowspan="1"> To</th>
+                </tr>
+                <tr>
+                    <th colspan="15"> A. WITH FACE VALUE</th>
+                </tr>
+                <tr>
+                    <th colspan="15"> B. WITHOUT FACE VALUE</th>
+                </tr>
+            </thead>
+            <tbody>
 
-    <table id="duplicate">
-        <thead>
-            <th>Range</th>
-            <th>Check Number</th>
-            <th>Count</th>
-        </thead>
-        <tbody>
+            </tbody>
+        </table>
 
-        </tbody>
-    </table>
-    <table id="skipped_check">
-        <thead>
-            <th>Range</th>
-            <th>Check Number</th>
-        </thead>
-        <tbody>
+        <table id="duplicate">
+            <thead>
+                <th>Range</th>
+                <th>Check Number</th>
+                <th>Count</th>
+            </thead>
+            <tbody>
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+        <table id="skipped_check">
+            <thead>
+                <th>Range</th>
+                <th>Check Number</th>
+            </thead>
+            <tbody>
 
+            </tbody>
+        </table>
 
+    </div>
+
+</div>
+<div id="dots5" style="display: none;">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
 </div>
 <style>
     table,
@@ -145,12 +155,21 @@ $this->params['breadcrumbs'][] = $this->title;
         width: 100%;
     }
 
+    .con {
+        display: none;
+    }
+
     #duplicate {
         margin-top: 20px;
     }
 </style>
+<?php
+$this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
+?>
 <script>
     $("#filter").submit((e) => {
+        $('#dots5').show()
+        $('.con').hide()
         e.preventDefault()
         $.ajax({
             type: 'POST',
@@ -161,6 +180,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 displayData(res.results)
                 duplicates(res.duplicates)
                 skipped(res.skiped_checks)
+                setTimeout(() => {
+                    $('#dots5').hide()
+                    $('.con').show()
+                }, 1000);
             }
         })
     })

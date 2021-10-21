@@ -2359,7 +2359,7 @@ class ReportController extends \yii\web\Controller
             $lc = array();
             foreach ($query as $val) {
                 $range = $val['from'] . ' to ' . $val['to'];
-                if ($val['balance'] < 0) {
+                // if ($val['balance'] < 0) {
                     $q = Yii::$app->db->createCommand("SELECT
                         * FROM 
                         (
@@ -2376,9 +2376,11 @@ class ReportController extends \yii\web\Controller
                         WHERE dup.dup_count >1")
                         ->bindValue(':id', $val['id'])
                         ->queryAll();
+                    if (!empty($q)){
 
-                    $duplicates[$range] = $q;
-                }
+                        $duplicates[$range] = $q;
+                    }
+                // }
                 $current_min  = intval($val['current_min']);
                 $current_max  = intval($val['current_max']);
                 $skipped_range = intval($val['current_count']) - ($current_max - $current_min + 1);
