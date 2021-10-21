@@ -2354,6 +2354,8 @@ class ReportController extends \yii\web\Controller
                 ->queryAll();
             $duplicates = array();
             $skipped_check_number = array();
+            $c = array();
+            $lc = array();
             foreach ($query as $val) {
                 $range = $val['from'] . ' to ' . $val['to'];
                 if ($val['balance'] < 0) {
@@ -2403,6 +2405,8 @@ class ReportController extends \yii\web\Controller
 
 
                     $skipped_check_number[$range]  = array_diff($checks, $liquidation_checks);
+                    $c = $checks;
+                    $lc = $liquidation_checks;
                 }
             }
             // ob_clean();
@@ -2410,7 +2414,13 @@ class ReportController extends \yii\web\Controller
             // var_dump($skipped_check_number);
             // echo "</pre>";
             // return ob_get_clean();
-            return json_encode(['results' => $query, 'duplicates' => $duplicates, 'skiped_checks' => $skipped_check_number]);
+            return json_encode(['results' => $query, 
+            'duplicates' => $duplicates, 
+            'skiped_checks' => $skipped_check_number,
+            'c' => $c,
+            'lc' => $lc,
+            
+        ]);
         }
         return $this->render('raaf');
     }
