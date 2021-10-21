@@ -2360,7 +2360,7 @@ class ReportController extends \yii\web\Controller
             foreach ($query as $val) {
                 $range = $val['from'] . ' to ' . $val['to'];
                 // if ($val['balance'] < 0) {
-                    $q = Yii::$app->db->createCommand("SELECT
+                $q = Yii::$app->db->createCommand("SELECT
                         * FROM 
                         (
                         SELECT
@@ -2374,12 +2374,12 @@ class ReportController extends \yii\web\Controller
                         GROUP BY liquidation.check_number 
                         ) as dup
                         WHERE dup.dup_count >1")
-                        ->bindValue(':id', $val['id'])
-                        ->queryAll();
-                    if (!empty($q)){
+                    ->bindValue(':id', $val['id'])
+                    ->queryAll();
+                if (!empty($q)) {
 
-                        $duplicates[$range] = $q;
-                    }
+                    $duplicates[$range] = $q;
+                }
                 // }
                 $current_min  = intval($val['current_min']);
                 $current_max  = intval($val['current_max']);
@@ -2399,6 +2399,7 @@ class ReportController extends \yii\web\Controller
                     AND liquidation.check_number <= :current_max
                     AND liquidation.check_range_id = :id
                     GROUP BY liquidation.check_number
+                    ORDER BY liquidation.check_number
                      ")
                         ->bindValue(':current_min', $current_min)
                         ->bindValue(':current_max', $current_max)
@@ -2419,13 +2420,15 @@ class ReportController extends \yii\web\Controller
             // var_dump($skipped_check_number);
             // echo "</pre>";
             // return ob_get_clean();
-            return json_encode(['results' => $query, 
-            'duplicates' => $duplicates, 
-            'skiped_checks' => $skipped_check_number,
-            'c' => $c,
-            'lc' => $lc,
-            
-        ]);
+            return json_encode([
+                'results' => $query,
+                'duplicates' => $duplicates,
+                'skiped_checks' => $skipped_check_number,
+                'c' => $c,
+                'lc' => $lc,
+                'province' => $province,
+
+            ]);
         }
         return $this->render('raaf');
     }
