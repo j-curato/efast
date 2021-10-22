@@ -5,7 +5,10 @@
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
+use app\models\Books;
+use kartik\select2\Select2;
 use kartik\widgets\DatePicker;
+use yii\helpers\ArrayHelper;
 
 $this->title = "CDJ";
 $this->params['breadcrumbs'][] = $this->title;
@@ -31,6 +34,23 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]
                 ])
 
+                ?>
+            </div>
+            <div class="col-sm-3">
+                <?php
+                $data = [
+                    '101' => 'Fund 101',
+                    'Fund 07' => 'Fund 07',
+                    'RAPID LP' => 'RAPID LP',
+
+                ];
+                echo Select2::widget([
+                    'data' => $data,
+                    'name' => 'book',
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Book'
+                    ]
+                ]);
                 ?>
             </div>
             <div class="col-sm-3">

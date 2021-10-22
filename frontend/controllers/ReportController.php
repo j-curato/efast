@@ -2488,9 +2488,10 @@ class ReportController extends \yii\web\Controller
     public function actionCdj()
     {
 
-            if ($_POST){
-                $reporting_period = $_POST['reporting_period'];
-                $q  = Yii::$app->db->createCommand("SELECT
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $book = $_POST['book'];
+            $q  = Yii::$app->db->createCommand("SELECT
                 cdr.id,
                 cdr.province,
                 cdr.serial_number,
@@ -2526,11 +2527,14 @@ class ReportController extends \yii\web\Controller
                  AND cdr.report_type = cdj_data.report_type )
                 LEFT JOIN chart_of_accounts ON cdj_data.chart_of_account_id = chart_of_accounts.id
                 WHERE cdr.reporting_period = :reporting_period
+                AND cdr.serial_number LIKE :book
                 ")
-                ->bindValue(':reporting_period',$reporting_period);
-                $query = $q->queryAll();
-                $q_sql = $q->getRawSql();
-                $conso = Yii::$app->db->createCommand("SELECT
+                ->bindValue(':reporting_period', $reporting_period)
+                ->bindValue(':book' , $book.'%');
+            $query = $q->queryAll();
+
+            $q_sql = $q->getRawSql();
+            $conso = Yii::$app->db->createCommand("SELECT
                        q.uacs,
                 q.general_ledger,
                 SUM(q.withdrawals)+SUM(q.vat_nonvat)+SUM(q.expanded_tax)  as debit
@@ -2540,11 +2544,10 @@ class ReportController extends \yii\web\Controller
                 q.general_ledger
                 ")
                 ->queryAll();
-                $result = ArrayHelper::index($query, null, 'serial_number');
-                
-                return json_encode(['result'=>$result,'conso'=>$conso]);
+            $result = ArrayHelper::index($query, null, 'serial_number');
 
-            }
+            return json_encode(['result' => $result, 'conso' => $conso]);
+        }
         return $this->render('cdj');
     }
 }
