@@ -213,10 +213,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td></td>
                 <td>` + ser_num + `</td>
                 <td></td>
-                <td id='${opex}'></td>
-                <td id='${sdo}'></td>
-                <td id='${due}'></td>
-                <td id='${total}'></td>
+                <td class='amount' id='${opex}'></td>
+                <td class='amount' id='${sdo}'></td>
+                <td class='amount' id='${due}'></td>
+                <td class='amount' id='${total}'></td>
                 <td></td>
                 <td></td>
                 <td></td>
