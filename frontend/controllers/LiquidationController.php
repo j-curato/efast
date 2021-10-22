@@ -635,67 +635,76 @@ class LiquidationController extends Controller
         $string = substr(str_repeat(0, 4) . $num, -4);
         return strtoupper($province) . '-' . $reporting_period . '-' . $string;
     }
-    public function actionCancel()
+    public function actionExcludeRaaf($id)
     {
-        if ($_POST) {
-            $id = $_POST['cancelId'];
-            $reporting_period =!empty($_POST['reporting_period'])? date('Y-m', strtotime($_POST['reporting_period'])):null;
-            $liq = Liquidation::findOne($id);
-            // echo "<pre>";
-            // var_dump($liq);
-            // echo "</pre>";
-            // die();
+        $model = Liquidation::findOne($id);
 
-            $liq->cancel_reporting_period = $reporting_period;
-            if ($liq->save(false)) {
-                return json_encode(['isSuccess' => true, 'error' => 'none']);
-            }
-            // $transaction = Yii::$app->db->beginTransaction();
-            // try {
-            //     $l = Liquidation::findOne($id);
-            //     // $l->is_cancelled = $l->is_cancelled === 0 ? 1 : 0;
-
-            //     if ($flag = $l->save(false)) {
-            //         if ($l->is_cancelled === 0) {
-
-            //             $liquidation = new Liquidation();
-            //             $liquidation->check_date = $l->check_date;
-            //             $liquidation->check_number = $l->check_number;
-            //             $liquidation->reporting_period = $reporting_period;
-            //             $liquidation->po_transaction_id = $l->po_transaction_id;
-            //             $liquidation->check_range_id = $l->check_range_id;
-            //             $liquidation->dv_number = $l->dv_number;
-            //             $liquidation->province = $l->province;
-            //             // $liquidation->is_cancelled = 1;
-            //             if ($liquidation->save(false)) {
-            //                 foreach ($l->liquidationEntries as $val) {
-            //                     $liq_entries = new LiquidationEntries();
-            //                     $liq_entries->liquidation_id = $liquidation->id;
-            //                     $liq_entries->chart_of_account_id = $val->chart_of_account_id;
-            //                     $liq_entries->advances_entries_id = $val->advances_entries_id;
-            //                     $liq_entries->withdrawals = 0 - $val->withdrawals;
-            //                     $liq_entries->vat_nonvat = 0 - $val->vat_nonvat;
-            //                     $liq_entries->expanded_tax = 0 - $val->expanded_tax;
-            //                     $liq_entries->liquidation_damage = 0 - $val->liquidation_damage;
-            //                     $liq_entries->reporting_period = $reporting_period;
-            //                     if ($liq_entries->save(false)) {
-            //                     }
-            //                 }
-            //             }
-            //         } else {
-            //             $transaction->rollBack();
-            //             return json_encode(['isSuccess' => false, 'error' => 'save error in liquidation entries']);
-            //         }
-            //     }
-            //     if ($flag) {
-            //         $transaction->commit();
-            //         return json_encode(['isSuccess' => true, 'error' => 'none']);
-            //     }
-            // } catch (ErrorException $e) {
-            //     return json_encode(['isSuccess' => false, 'error' => $e->getMessage()]);
-            // }
+        $model->exclude_in_raaf = $model->exclude_in_raaf === 1 ? 0 : 1;
+        if ($model->save(false)) {
+          return   $this->actionView($id);
         }
     }
+    // public function actionCancel()
+    // {
+    //     if ($_POST) {
+    //         $id = $_POST['cancelId'];
+    //         $reporting_period =!empty($_POST['reporting_period'])? date('Y-m', strtotime($_POST['reporting_period'])):null;
+    //         $liq = Liquidation::findOne($id);
+    //         // echo "<pre>";
+    //         // var_dump($liq);
+    //         // echo "</pre>";
+    //         // die();
+
+    //         $liq->cancel_reporting_period = $reporting_period;
+    //         if ($liq->save(false)) {
+    //             return json_encode(['isSuccess' => true, 'error' => 'none']);
+    //         }
+    //         // $transaction = Yii::$app->db->beginTransaction();
+    //         // try {
+    //         //     $l = Liquidation::findOne($id);
+    //         //     // $l->is_cancelled = $l->is_cancelled === 0 ? 1 : 0;
+
+    //         //     if ($flag = $l->save(false)) {
+    //         //         if ($l->is_cancelled === 0) {
+
+    //         //             $liquidation = new Liquidation();
+    //         //             $liquidation->check_date = $l->check_date;
+    //         //             $liquidation->check_number = $l->check_number;
+    //         //             $liquidation->reporting_period = $reporting_period;
+    //         //             $liquidation->po_transaction_id = $l->po_transaction_id;
+    //         //             $liquidation->check_range_id = $l->check_range_id;
+    //         //             $liquidation->dv_number = $l->dv_number;
+    //         //             $liquidation->province = $l->province;
+    //         //             // $liquidation->is_cancelled = 1;
+    //         //             if ($liquidation->save(false)) {
+    //         //                 foreach ($l->liquidationEntries as $val) {
+    //         //                     $liq_entries = new LiquidationEntries();
+    //         //                     $liq_entries->liquidation_id = $liquidation->id;
+    //         //                     $liq_entries->chart_of_account_id = $val->chart_of_account_id;
+    //         //                     $liq_entries->advances_entries_id = $val->advances_entries_id;
+    //         //                     $liq_entries->withdrawals = 0 - $val->withdrawals;
+    //         //                     $liq_entries->vat_nonvat = 0 - $val->vat_nonvat;
+    //         //                     $liq_entries->expanded_tax = 0 - $val->expanded_tax;
+    //         //                     $liq_entries->liquidation_damage = 0 - $val->liquidation_damage;
+    //         //                     $liq_entries->reporting_period = $reporting_period;
+    //         //                     if ($liq_entries->save(false)) {
+    //         //                     }
+    //         //                 }
+    //         //             }
+    //         //         } else {
+    //         //             $transaction->rollBack();
+    //         //             return json_encode(['isSuccess' => false, 'error' => 'save error in liquidation entries']);
+    //         //         }
+    //         //     }
+    //         //     if ($flag) {
+    //         //         $transaction->commit();
+    //         //         return json_encode(['isSuccess' => true, 'error' => 'none']);
+    //         //     }
+    //         // } catch (ErrorException $e) {
+    //         //     return json_encode(['isSuccess' => false, 'error' => $e->getMessage()]);
+    //         // }
+    //     }
+    // }
 
     public function actionImport()
     {

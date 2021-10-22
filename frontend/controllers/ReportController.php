@@ -2300,31 +2300,60 @@ class ReportController extends \yii\web\Controller
             $reporting_period = $_POST['to_reporting_period'];
             $province = $_POST['province'];
             $current_check = new Query();
+            // "MAX(liquidation.check_number) as current_max",
+            // "MIN(liquidation.check_number) as current_min"
             $current_check->select([
-                "COUNT(liquidation.check_number) as current_count",
-                "liquidation.check_range_id",
-                "MAX(liquidation.check_number) as current_max",
-                "MIN(liquidation.check_number) as current_min"
+                "liquidation.check_number",
+                "liquidation.check_range_id"
 
             ])
+
                 ->from('liquidation')
                 ->where("liquidation.check_number IS NOT NULL")
                 ->andWhere("liquidation.check_range_id IS NOT NULL")
                 ->andWhere("liquidation.check_number > 0")
                 ->andWhere("liquidation.reporting_period = :reporting_period", ['reporting_period' => $reporting_period])
+                ->andWhere("liquidation.exclude_in_raaf = 0")
                 // ->orWhere("liquidation.cancel_reporting_period = :reporting_period", ['reporting_period' => $reporting_period])
-                ->groupBy("liquidation.check_range_id");
+                // ->groupBy("liquidation.check_range_id")
+            ;
+          
             $prev_check = new Query();
             $prev_check->select([
-                "COUNT(liquidation.check_number) as prev_count",
-                "liquidation.check_range_id",
+                "liquidation.check_number",
+                "liquidation.check_range_id"
+
+
             ])
+
                 ->from('liquidation')
                 ->where("liquidation.check_number IS NOT NULL")
                 ->andWhere("liquidation.check_range_id IS NOT NULL")
                 ->andWhere("liquidation.check_number > 0")
                 ->andWhere("liquidation.reporting_period < :reporting_period", ['reporting_period' => $reporting_period])
-                ->groupBy("liquidation.check_range_id");
+                ->andWhere("liquidation.exclude_in_raaf = 0")
+
+                // ->orWhere("liquidation.cancel_reporting_period = :reporting_period", ['reporting_period' => $reporting_period])
+                // ->groupBy("liquidation.check_range_id")
+            ;
+              // $qqq =  $current_check->all();
+            // ob_clean();
+            // echo "<pre>";
+            // var_dump($qqq);
+            // echo "</pre>";
+            // return ob_get_clean();
+
+            // $prev_check = new Query();
+            // $prev_check->select([
+            //     "COUNT(liquidation.check_number) as prev_count",
+            //     "liquidation.check_range_id",
+            // ])
+            //     ->from('liquidation')
+            //     ->where("liquidation.check_number IS NOT NULL")
+            //     ->andWhere("liquidation.check_range_id IS NOT NULL")
+            //     ->andWhere("liquidation.check_number > 0")
+            //     ->andWhere("liquidation.reporting_period < :reporting_period", ['reporting_period' => $reporting_period])
+            //     ->groupBy("liquidation.check_range_id");
             $current_query = $current_check->createCommand()->getRawSql();
             $prev_query = $prev_check->createCommand()->getRawSql();
             $query = Yii::$app->db->createCommand("SELECT
@@ -2344,8 +2373,25 @@ class ReportController extends \yii\web\Controller
                 IFNULL(current.current_count,0)) as balance
                 FROM 
                 check_range
-                LEFT JOIN  ($prev_query) as prev ON check_range.id = prev.check_range_id
-                LEFT JOIN  ($current_query) as current ON check_range.id = current.check_range_id
+                
+                LEFT JOIN  (
+                    SELECT 
+                    COUNT(q.check_number) as prev_count,
+                q.check_range_id
+                FROM 
+                    ($prev_query) as q
+                    GROUP BY q.check_range_id
+                    ) as prev ON check_range.id = prev.check_range_id
+                LEFT JOIN  (
+                    SELECT 
+                    COUNT(q.check_number) as current_count,
+                MAX(q.check_number) as current_max,
+                MIN(q.check_number) as current_min,
+                q.check_range_id
+                FROM 
+                    ($current_query) as q
+                    GROUP BY q.check_range_id
+                    ) as current ON check_range.id = current.check_range_id
                 WHERE 
                 check_range.province = :province
                 AND check_range.from >0
@@ -2370,7 +2416,7 @@ class ReportController extends \yii\web\Controller
                         
                         WHERE
                         liquidation.check_range_id =:id
-                        
+                        AND liquidation.exclude_in_raaf = 0
                         GROUP BY liquidation.check_number 
                         ) as dup
                         WHERE dup.dup_count >1")
