@@ -103,12 +103,13 @@ class CheckRangeController extends Controller
             $reporting_period = $_POST['reporting_period'];
             $begin_balance = $_POST['begin_balance'];
             $province = Yii::$app->user->identity->province;
-            $x = $to  -  $from + 1;
-            if ($x !== 100) {
-                return json_encode(['success' => false, 'error' => 'Not 100']);
-            }
+
 
             if ($from > 0 && $to > 0) {
+                $x = $to  -  $from + 1;
+                if ($x !== 100) {
+                    return json_encode(['success' => false, 'error' => 'Not 100']);
+                }
                 $query = Yii::$app->db->createCommand("SELECT 
                 *
                 FROM 
