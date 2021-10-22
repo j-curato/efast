@@ -323,7 +323,7 @@ $script = <<<JS
                 $('#uploadmodal').modal('toggle');
                 var res = JSON.parse(data)
            
-                if (res.isSuccess=='true') {
+                if (res.isSuccess) {
                     swal({
                         title: 'Success',
                         type: 'success',
