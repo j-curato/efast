@@ -19,6 +19,7 @@ class CheckRangeSearch extends CheckRange
     {
         return [
             [['id', 'from', 'to'], 'integer'],
+            [['province' ], 'string'],
         ];
     }
 
@@ -72,6 +73,7 @@ class CheckRangeSearch extends CheckRange
             'from' => $this->from,
             'to' => $this->to,
         ]);
+        $query->andFilterWhere(['like', 'province', $this->province]);
 
         return $dataProvider;
     }

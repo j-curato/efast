@@ -27,7 +27,7 @@ class CheckRange extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['from', 'to'], 'integer'],
+            [['from', 'to','begin_balance'], 'integer'],
             [['from', 'to', 'reporting_period'], 'required'],
             [['province', 'reporting_period'], 'string'],
         ];
@@ -44,6 +44,7 @@ class CheckRange extends \yii\db\ActiveRecord
             'to' => 'To',
             'province' => 'Province',
             'reporting_period' => 'Reporting Period',
+            'begin_balance' => 'Begin Balance',
         ];
     }
 }

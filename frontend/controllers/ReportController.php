@@ -2362,9 +2362,11 @@ class ReportController extends \yii\web\Controller
                 check_range.`to`,
                 check_range.province,
                 check_range.`to` - check_range.`from` +1 as range_total,
-                (check_range.`to` - check_range.`from` +1) -  IFNULL(prev.prev_count,0 ) as begin_balance,
+                (check_range.`to` - check_range.`from` +1) -  IFNULL(prev.prev_count,0 ) as q_begin_balance,
+                IF (check_range.begin_balance IS NULL ,  (check_range.`to` - check_range.`from`  + 1)-  IFNULL(prev.prev_count,0),check_range.begin_balance -  IFNULL(prev.prev_count,0))
+                    as begin_balance,
                 IFNULL(prev.prev_count,'') as  prev_count, 
-                IFNULL(current.current_count,'') as current_count,
+                IFNULL(current.current_count,0) as current_count,
                 IFNULL(current.current_max,'') as current_max,
                 IFNULL(current.current_min,'') as current_min,
                 IFNULL(prev.prev_count,0) +

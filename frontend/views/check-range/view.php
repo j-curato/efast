@@ -26,6 +26,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'from',
             'to',
+            'reporting_period',
+            'begin_balance',
         ],
     ]) ?>
 

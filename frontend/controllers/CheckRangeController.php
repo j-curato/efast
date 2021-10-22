@@ -95,17 +95,54 @@ class CheckRangeController extends Controller
      */
     public function actionCreate()
     {
-        $model = new CheckRange();
-        $model->province = Yii::$app->user->identity->province;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        $model = new CheckRange();
+        if ($_POST) {
+            $from =  intval($_POST['from']);
+            $to =  intval($_POST['to']);
+            $reporting_period = $_POST['reporting_period'];
+            $begin_balance = $_POST['begin_balance'];
+            $province = Yii::$app->user->identity->province;
+            $x = $to  -  $from + 1;
+            if ($x !== 100) {
+                return json_encode(['success' => false, 'error' => 'Not 100']);
+            }
+
+            if ($from > 0 && $to > 0) {
+                $query = Yii::$app->db->createCommand("SELECT 
+                *
+                FROM 
+                check_range
+                WHERE 
+                :from_num  BETWEEN check_range.`from` AND check_range.`to`
+                OR :to_num  BETWEEN check_range.`from` AND check_range.`to`
+                AND check_range.province = :province 
+                ")
+                    ->bindValue(':from_num', $from)
+                    ->bindValue(':to_num', $to)
+                    ->bindvalue(':province', $province)
+                    ->queryAll();
+                if (!empty($query)) {
+                    return json_encode(['success' => false, 'error' => 'Check Exist where From or To are in between']);
+                }
+            }
+            $model->province = $province;
+            $model->from = $from;
+            $model->to = $to;
+            $model->reporting_period = $reporting_period;
+            $model->begin_balance = $begin_balance;
+
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->renderAjax('create', [
             'model' => $model,
         ]);
     }
+
+
 
     /**
      * Updates an existing CheckRange model.

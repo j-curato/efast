@@ -320,6 +320,9 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
     function displayData(data) {
         $('#raaf_table tbody').html('')
         for (var i = 0; i < data.length; i++) {
+            var cur_count = data[i]['current_count'] ==0?'':data[i]['current_count'];
+            console.log(cur_count)
+            var balance = parseInt(data[i]['begin_balance']) - parseInt( data[i]['current_count'])
             var row = `<tr>
                 <td></td>
                 <td></td>
@@ -330,10 +333,10 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
                 <td></td>
                 <td>` + data[i]['from'] + `</td>
                 <td>` + data[i]['to'] + `</td>
-                <td>` + data[i]['current_count'] + `</td>
+                <td>` + cur_count + `</td>
                 <td>` + data[i]['current_min'] + `</td>
                 <td>` + data[i]['current_max'] + `</td>
-                <td>` + data[i]['balance'] + `</td>
+                <td>` + balance + `</td>
                 <td>` + data[i]['from'] + `</td>
                 <td>` + data[i]['to'] + `</td>
             </tr>`
