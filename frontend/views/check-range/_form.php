@@ -42,14 +42,17 @@ use yii\widgets\ActiveForm;
     $to = '';
     $begin_balance = '';
     $reporting_period = '';
+    $model_id = '';
     if (!empty($model)) {
         $from = $model->from;
         $to = $model->to;
         $begin_balance = $model->begin_balance;
         $reporting_period = $model->reporting_period;
+        $model_id = $model->id;
     }
     ?>
     <form id="check_form">
+        <input type="hidden" name='model_id' value='<?php echo $model_id ?>'>
         <div class="form-group">
             <label for="from">From</label>
             <input type="number" class="form-control" name="from" placeholder="From" value='<?php echo $from ?>' required>

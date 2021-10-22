@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\CheckRange;
 use app\models\CheckRangeSearch;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -103,38 +104,52 @@ class CheckRangeController extends Controller
             $reporting_period = $_POST['reporting_period'];
             $begin_balance = $_POST['begin_balance'];
             $province = Yii::$app->user->identity->province;
-
+            if (!empty($_POST['model_id'])) {
+                $check = CheckRange::findOne($_POST['model_id']);
+            } else {
+                $check = new CheckRange();
+            }
 
             if ($from > 0 && $to > 0) {
                 $x = $to  -  $from + 1;
                 if ($x !== 100) {
                     return json_encode(['success' => false, 'error' => 'Not 100']);
                 }
-                $query = Yii::$app->db->createCommand("SELECT 
-                *
-                FROM 
-                check_range
-                WHERE 
-                :from_num  BETWEEN check_range.`from` AND check_range.`to`
-                OR :to_num  BETWEEN check_range.`from` AND check_range.`to`
-                AND check_range.province = :province 
-                ")
-                    ->bindValue(':from_num', $from)
-                    ->bindValue(':to_num', $to)
-                    ->bindvalue(':province', $province)
-                    ->queryAll();
+                $q = new Query();
+                $q->select('*')
+                    ->from('check_range')
+                    ->where(':from_num BETWEEN check_range.`from` AND check_range.`to`', ['from_num' => $from])
+                    ->orWhere(':to_num BETWEEN check_range.`from` AND check_range.`to`', ['to_num' => $to])
+                    ->andWhere('check_range.province = :province ', ['province' => $province]);
+                if (!empty($_POST['model_id'])) {
+                    $q->andWhere('check_range.id != :model_id ', [':model_id' => $_POST['model_id']]);
+                }
+                $query = $q->all();
+                // $query = Yii::$app->db->createCommand("SELECT 
+                // *
+                // FROM 
+                // check_range
+                // WHERE 
+                // :from_num  BETWEEN check_range.`from` AND check_range.`to`
+                // OR :to_num  BETWEEN check_range.`from` AND check_range.`to`
+                // AND check_range.province = :province 
+                // ")
+                //     ->bindValue(':from_num', $from)
+                //     ->bindValue(':to_num', $to)
+                //     ->bindvalue(':province', $province)
+                //     ->queryAll();
                 if (!empty($query)) {
                     return json_encode(['success' => false, 'error' => 'Check Exist where From or To are in between']);
                 }
             }
-            $model->province = $province;
-            $model->from = $from;
-            $model->to = $to;
-            $model->reporting_period = $reporting_period;
-            $model->begin_balance = $begin_balance;
+            $check->province = $province;
+            $check->from = $from;
+            $check->to = $to;
+            $check->reporting_period = $reporting_period;
+            $check->begin_balance = $begin_balance;
 
-            if ($model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            if ($check->save()) {
+                return $this->redirect(['view', 'id' => $check->id]);
             }
         }
 

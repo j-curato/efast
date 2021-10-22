@@ -333,7 +333,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
                 <td></td>
                 <td>` + data[i]['from'] + `</td>
                 <td>` + data[i]['to'] + `</td>
-                <td>` + cur_count + `</td>
+                <td>` + data[i]['current_count'] + `</td>
                 <td>` + data[i]['current_min'] + `</td>
                 <td>` + data[i]['current_max'] + `</td>
                 <td>` + balance + `</td>

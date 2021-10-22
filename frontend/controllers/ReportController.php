@@ -2317,7 +2317,7 @@ class ReportController extends \yii\web\Controller
                 // ->orWhere("liquidation.cancel_reporting_period = :reporting_period", ['reporting_period' => $reporting_period])
                 // ->groupBy("liquidation.check_range_id")
             ;
-          
+
             $prev_check = new Query();
             $prev_check->select([
                 "liquidation.check_number",
@@ -2336,7 +2336,7 @@ class ReportController extends \yii\web\Controller
                 // ->orWhere("liquidation.cancel_reporting_period = :reporting_period", ['reporting_period' => $reporting_period])
                 // ->groupBy("liquidation.check_range_id")
             ;
-              // $qqq =  $current_check->all();
+            // $qqq =  $current_check->all();
             // ob_clean();
             // echo "<pre>";
             // var_dump($qqq);
@@ -2484,6 +2484,68 @@ class ReportController extends \yii\web\Controller
     {
 
         return $this->render('qr');
+    }
+    public function actionCdj()
+    {
+
+            if ($_POST){
+                $reporting_period = $_POST['reporting_period'];
+                $q  = Yii::$app->db->createCommand("SELECT
+                cdr.id,
+                cdr.province,
+                cdr.serial_number,
+                cdr.reporting_period,
+                cdr.report_type,
+                IFNULL(cdj_data.withdrawals,0) as withdrawals,
+                IFNULL(cdj_data.vat_nonvat,0) as vat_nonvat,
+                IFNULL(cdj_data.expanded_tax,0) as expanded_tax,
+                chart_of_accounts.uacs,
+                chart_of_accounts.general_ledger,
+                report_type.advance_type
+                FROM cdr
+                LEFT JOIN report_type ON cdr.report_type = report_type.name
+                LEFT JOIN (
+                
+                SELECT
+                liquidation_for_cdj.province,
+                liquidation_for_cdj.reporting_period,
+                liquidation_for_cdj.report_type,
+                liquidation_for_cdj.chart_of_account_id,
+                SUM(liquidation_for_cdj.withdrawals) as withdrawals,
+                SUM(liquidation_for_cdj.vat_nonvat) as vat_nonvat,
+                SUM(liquidation_for_cdj.expanded_tax) as expanded_tax
+                
+                FROM liquidation_for_cdj
+                
+                GROUP BY liquidation_for_cdj.province,
+                liquidation_for_cdj.reporting_period,
+                liquidation_for_cdj.report_type,
+                liquidation_for_cdj.chart_of_account_id
+                ) as cdj_data ON (cdr.province  =cdj_data.province 
+                AND cdr.reporting_period = cdj_data.reporting_period
+                 AND cdr.report_type = cdj_data.report_type )
+                LEFT JOIN chart_of_accounts ON cdj_data.chart_of_account_id = chart_of_accounts.id
+                WHERE cdr.reporting_period = :reporting_period
+                ")
+                ->bindValue(':reporting_period',$reporting_period);
+                $query = $q->queryAll();
+                $q_sql = $q->getRawSql();
+                $conso = Yii::$app->db->createCommand("SELECT
+                       q.uacs,
+                q.general_ledger,
+                SUM(q.withdrawals)+SUM(q.vat_nonvat)+SUM(q.expanded_tax)  as debit
+                FROM 
+                ($q_sql) as q
+                GROUP BY q.uacs,
+                q.general_ledger
+                ")
+                ->queryAll();
+                $result = ArrayHelper::index($query, null, 'serial_number');
+                
+                return json_encode(['result'=>$result,'conso'=>$conso]);
+
+            }
+        return $this->render('cdj');
     }
 }
 
