@@ -2530,7 +2530,7 @@ class ReportController extends \yii\web\Controller
                 AND cdr.serial_number LIKE :book
                 ")
                 ->bindValue(':reporting_period', $reporting_period)
-                ->bindValue(':book' , $book.'%');
+                ->bindValue(':book', $book . '%');
             $query = $q->queryAll();
 
             $q_sql = $q->getRawSql();
@@ -2545,8 +2545,13 @@ class ReportController extends \yii\web\Controller
                 ")
                 ->queryAll();
             $result = ArrayHelper::index($query, null, 'serial_number');
-
-            return json_encode(['result' => $result, 'conso' => $conso]);
+            $d = new DateTime($reporting_period);
+            $report = $d->format('F t, Y');
+            return json_encode([
+                'result' => $result,
+                'conso' => $conso,
+                'period' => $report
+            ]);
         }
         return $this->render('cdj');
     }

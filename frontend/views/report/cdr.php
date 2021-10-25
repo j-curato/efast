@@ -419,6 +419,7 @@ $this->params['breadcrumbs'][] = $this->title;
     td {
         border: 1px solid black;
     }
+    
 
     .header {
         border: none;

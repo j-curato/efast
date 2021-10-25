@@ -131,6 +131,11 @@ $this->params['breadcrumbs'][] = $this->title;
         margin-top: 20px;
     }
 
+    #conso_table {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
     .header {
         border: none;
         font-weight: bold;
@@ -168,6 +173,14 @@ $this->params['breadcrumbs'][] = $this->title;
     var grand_total_opex = 0
     var grand_total_sdo = 0
     var grand_total_due = 0
+    var period = ''
+    var officer = {
+        'adn': 'ROSIE R. VELLESCO',
+        'ads': 'PRESCYLIN C. LADEMORA',
+        'sdn': 'FERDINAND R. INRES',
+        'pdi': 'VENUS A. CUSTODIO',
+        'sds': 'FRITZIE N. USARES',
+    }
     $("#filter").submit((e) => {
         e.preventDefault()
         $.ajax({
@@ -176,12 +189,13 @@ $this->params['breadcrumbs'][] = $this->title;
             data: $('#filter').serialize(),
             success: function(data) {
                 var res = JSON.parse(data)
-                console.log(res.conso)
                 grand_total_opex = 0
                 grand_total_sdo = 0
                 grand_total_due = 0
+                period = res.period
                 displayData(res.result)
                 displayConsoTable(res.conso)
+
             }
         })
     })
@@ -199,7 +213,10 @@ $this->params['breadcrumbs'][] = $this->title;
             var sdo_id = '';
             var due_id = '';
             var advance_type = ''
+            var officer_name = ''
+            var officer_id = ''
             var total_id = ''
+            var period_id = ''
             for (var i = 0; i < data[serial_number].length; i++) {
                 var ser_num = ''
                 var withdrawal = parseFloat(data[serial_number][i]['withdrawals'])
@@ -209,6 +226,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 var sdo = ''
                 var due = ''
                 var total = ''
+                var ofr_id = ''
+                var r_period
                 if (i == 0) {
                     ser_num = serial_number
                     opex_id = 'opex_' + data[serial_number][i]['id']
@@ -219,8 +238,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     due = 'due_' + data[serial_number][i]['id']
                     total_id = 'total_' + data[serial_number][i]['id']
                     total = 'total_' + data[serial_number][i]['id']
+                    total_id = 'total_' + data[serial_number][i]['id']
+                    officer_id = 'officer_' + data[serial_number][i]['id']
+                    ofr_id = 'officer_' + data[serial_number][i]['id']
+                    period_id = 'period_' + data[serial_number][i]['id']
+                    r_period = 'period_' + data[serial_number][i]['id']
                     // advance_type = data[serial_number][i]['advance_type']
-
+                    officer_name = officer[data[serial_number][i]['province']]
                     if (data[serial_number][i]['advance_type'] == 'Advances to Special Disbursing Officer') {
 
                         advance_type = 'sdo'
@@ -228,11 +252,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         advance_type = 'opex'
                     }
                 }
+                // console.log(officer[data[serial_number][i]['province']])
+
                 row = `<tr>
-                <td></td>
+                <td id='${period_id}'>` + period + `</td>
                 <td></td>
                 <td>` + ser_num + `</td>
-                <td></td>
+                <td id='${ofr_id}' ></td>
                 <td class='amount' id='${opex}'></td>
                 <td class='amount' id='${sdo}'></td>
                 <td class='amount' id='${due}'></td>
@@ -244,7 +270,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td></td>
                 <td>` + data[serial_number][i]['uacs'] + ' - ' + data[serial_number][i]['general_ledger'] + `</td>
                 <td></td>
-                <td class='amount'>` + withdrawal + `</td>
+                <td class='amount'>` + thousands_separators(withdrawal) + `</td>
             
             </tr>`
                 $('#cdj_table').append(row)
@@ -254,6 +280,8 @@ $this->params['breadcrumbs'][] = $this->title;
             var total = total_withdrawal + total_due_to_bir
             grand_total_due += total_due_to_bir
             grand_total += total
+            $(`#${officer_id}`).text(officer_name)
+            $(`#${period_id}`).text()
             $(`#${due_id}`).text(thousands_separators(total_due_to_bir.toFixed(2)))
             $(`#${total_id}`).text(thousands_separators(total.toFixed(2)))
             if (advance_type == 'sdo') {

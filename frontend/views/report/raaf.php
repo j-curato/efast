@@ -289,10 +289,10 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
     }
     var officer = {
         'adn': 'ROSIE R. VELLESCO',
-        'ads': 'Agusan Del Sur',
-        'sdn': 'Surigao Del Norte',
-        'sds': 'Surigao Del Sur',
-        'pdi': 'Province of Dinagat Islands',
+        'ads': 'PRESCYLIN C. LADEMORA',
+        'sdn': 'FERDINAND R. INRES',
+        'pdi': 'VENUS A. CUSTODIO',
+        'sds': 'FRITZIE N. USARES',
     }
     $("#filter").submit((e) => {
         $('#dots5').show()
@@ -320,9 +320,9 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
     function displayData(data) {
         $('#raaf_table tbody').html('')
         for (var i = 0; i < data.length; i++) {
-            var cur_count = data[i]['current_count'] ==0?'':data[i]['current_count'];
+            var cur_count = data[i]['current_count'] == 0 ? '' : data[i]['current_count'];
             console.log(cur_count)
-            var balance = parseInt(data[i]['begin_balance']) - parseInt( data[i]['current_count'])
+            var balance = parseInt(data[i]['begin_balance']) - parseInt(data[i]['current_count'])
             var row = `<tr>
                 <td></td>
                 <td></td>
