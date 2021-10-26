@@ -58,63 +58,92 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </form>
-    <table id="cdj_table">
-        <thead>
-            <tr>
-                <th rowspan="3">DATE</th>
-                <th rowspan="3"> JEV No.</th>
-                <th rowspan="3">RCDISB No.</th>
-                <th rowspan="3">Name of Disbursing Officer</th>
-                <th rowspan="1" colspan="7">Credit</th>
-                <th rowspan="1" colspan="5">Debit</th>
+    <div class="con">
 
-            </tr>
-            <tr>
-                <th rowspan="1"> 1990101000</th>
-                <th rowspan="1"> 1990103000</th>
-                <th rowspan="1"> 2020101000</th>
-                <th rowspan="2"> Total</th>
-                <th rowspan="1" colspan="3"> Sundry</th>
-                <th rowspan="1"> </th>
-                <th rowspan="2"> Total</th>
-                <th rowspan="1" colspan="3"> Sundry</th>
-
-
-            </tr>
-            <tr>
-                <th rowspan="1"> Advances for Operating Expenses</th>
-                <th rowspan="1"> Advances to Special Disbursing Officer</th>
-                <th rowspan="1"> Due to BIR</th>
-                <th rowspan="1"> UACS Object Code</th>
-                <th rowspan="1"> p</th>
-                <th rowspan="1"> Amount</th>
-                <th rowspan="1"> </th>
-                <th rowspan="1"> UACS Object Code</th>
-                <th rowspan="1"> P</th>
-                <th rowspan="1"> Amount</th>
-            </tr>
-
-        </thead>
-        <tbody></tbody>
-
-    </table>
-    <div style="margin-top: 30px;">
-        <table id="conso_table">
-
+        <table id="cdj_table">
             <thead>
-                <th>Account Code</th>
-                <th>Account Title</th>
-                <th> Debit</th>
-                <th>Credit</th>
-            </thead>
-            <tbody>
+                <tr>
+                    <th colspan="16" style="border: 0;">
+                        <span> CASH DISBURSEMENT JOURNAL</span>
+                        <br>
+                        <span>For the month of </span>
+                        <span id="r_period"></span>
 
-            </tbody>
+                    </th>
+                </tr>
+                <tr>
+                    <th  style="text-align: left;border:0;" colspan="16">
+                        <span>Entity Name: DEPARTMENT OF TRADE AND INDUSTRY - CARAGA</span>
+                    </th>
+                </tr>
+                <tr>
+                    <th  style="text-align: left;border:0;padding-top:0;" colspan="16">
+                    <span>Fund Cluster:</span>    
+                    <span id="cluster"></span>    
+
+                    </th>
+                </tr>
+                <tr>
+                    <th rowspan="3">DATE</th>
+                    <th rowspan="3"> JEV No.</th>
+                    <th rowspan="3">RCDISB No.</th>
+                    <th rowspan="3">Name of Disbursing Officer</th>
+                    <th rowspan="1" colspan="7">Credit</th>
+                    <th rowspan="1" colspan="5">Debit</th>
+
+                </tr>
+                <tr>
+                    <th rowspan="1"> 1990101000</th>
+                    <th rowspan="1"> 1990103000</th>
+                    <th rowspan="1"> 2020101000</th>
+                    <th rowspan="2"> Total</th>
+                    <th rowspan="1" colspan="3"> Sundry</th>
+                    <th rowspan="1"> </th>
+                    <th rowspan="2"> Total</th>
+                    <th rowspan="1" colspan="3"> Sundry</th>
+
+
+                </tr>
+                <tr>
+                    <th rowspan="1"> Advances for Operating Expenses</th>
+                    <th rowspan="1"> Advances to Special Disbursing Officer</th>
+                    <th rowspan="1"> Due to BIR</th>
+                    <th rowspan="1"> UACS Object Code</th>
+                    <th rowspan="1"> p</th>
+                    <th rowspan="1"> Amount</th>
+                    <th rowspan="1"> </th>
+                    <th rowspan="1"> UACS Object Code</th>
+                    <th rowspan="1"> P</th>
+                    <th rowspan="1"> Amount</th>
+                </tr>
+
+            </thead>
+            <tbody></tbody>
+
         </table>
+        <div style="margin-top: 30px;">
+            <table id="conso_table">
+
+                <thead>
+                    <th>Account Code</th>
+                    <th>Account Title</th>
+                    <th> Debit</th>
+                    <th>Credit</th>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
     </div>
 
 
-
+</div>
+<div id="dots5" style="display: none;">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
 </div>
 <style>
     .amount {
@@ -181,8 +210,24 @@ $this->params['breadcrumbs'][] = $this->title;
         'pdi': 'VENUS A. CUSTODIO',
         'sds': 'FRITZIE N. USARES',
     }
+    var months = {
+        '0': 'January',
+        '1': 'February',
+        '2': 'March',
+        '3': 'April',
+        '4': 'May',
+        '5': 'June',
+        '6': 'July',
+        '7': 'August',
+        '8': 'September',
+        '9': 'October',
+        '10': 'November',
+        '11': 'December',
+    }
     $("#filter").submit((e) => {
         e.preventDefault()
+        $('.con').hide()
+        $('#dots5').show()
         $.ajax({
             type: 'POST',
             url: window.location.pathname + '?r=report/cdj',
@@ -195,6 +240,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 period = res.period
                 displayData(res.result)
                 displayConsoTable(res.conso)
+                var date = new Date(period)
+                $('#r_period').text(months[date.getMonth()] + ', ' + date.getFullYear())
+                $('#cluster').text(res.book)
+                setTimeout(() => {
+                    $('#dots5').hide()
+                    $('.con').show()
+                }, 1000);
 
             }
         })
@@ -313,6 +365,7 @@ $this->params['breadcrumbs'][] = $this->title;
     function displayConsoTable(data) {
         var total_debit = 0
         var total_credit = 0
+        $('#conso_table tbody').html('')
         for (var i = 0; i < data.length; i++) {
             row = `<tr>
          
@@ -320,8 +373,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td>` + data[i]['general_ledger'] + `</td>
                 <td class='amount'>` + thousands_separators(data[i]['debit']) + `</td>
                 <td></td>
-       
- 
             
             </tr>`
             $('#conso_table').append(row)

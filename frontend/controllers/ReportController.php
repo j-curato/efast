@@ -2281,7 +2281,7 @@ class ReportController extends \yii\web\Controller
 
 
         $qrCode = (new QrCode($text))
-            ->setSize(250);
+            ->setSize(100);
         header('Content-Type: ' . $qrCode->getContentType());
         $base_path =  \Yii::getAlias('@webroot');
         $qrCode->writeFile($base_path . '/images/code2.png');
@@ -2550,7 +2550,8 @@ class ReportController extends \yii\web\Controller
             return json_encode([
                 'result' => $result,
                 'conso' => $conso,
-                'period' => $report
+                'period' => $report,
+                'book'=>$book
             ]);
         }
         return $this->render('cdj');

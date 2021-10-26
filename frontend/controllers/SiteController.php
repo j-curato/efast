@@ -184,7 +184,8 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             if ($model->signup()) {
             }
-            Yii::$app->session->setFlash('success', 'Thank you for registration. Please check your inbox for verification email.');
+            Yii::$app->session->setFlash('success', 
+            'Thank you for registration. Please check your inbox for verification email.');
             return $this->goHome();
         }
 
@@ -425,7 +426,6 @@ class SiteController extends Controller
     }
     public function actionUpdateSystem()
     {
-        echo 'qwerqw';
         echo  shell_exec('git pull git@github.com:kiotipot1/dti-afms-2.git');
         echo   shell_exec('yii migrate --interactive=0');
     }
