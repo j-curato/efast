@@ -74,32 +74,67 @@ $this->params['breadcrumbs'][] = $this->title;
     $exportSearchModel = new DvAucsEntriesSearch();
     $exportDataProvider = $exportSearchModel->search(Yii::$app->request->queryParams);
     $exportColumns = [
+
+        [
+            'label' => 'Payee',
+            'value' => 'dvAucs.payee.account_name'
+        ],
+        [
+            'label' => 'Particular',
+            'value' => 'dvAucs.particular'
+        ],
+
+        [
+            'label' => 'Gross Amount',
+            'value' => function ($model) {
+                $query  = Yii::$app->db->createCommand("SELECT SUM(process_ors_entries.amount) as total_disbursed 
+                FROM process_ors_entries WHERE process_ors_id = :ors_id")
+                    ->bindValue(':ors_id', $model->process_ors_id)
+                    ->queryScalar();
+                return $query;
+            }
+
+        ],
+        [
+            'label' => 'Net Disbursement',
+            'value' => 'amount_disbursed'
+            // function ($model) {
+            //     $query  = Yii::$app->db->createCommand("SELECT SUM(dv_aucs_entries.amount_disbursed) as total_disbursed 
+            //     FROM dv_aucs_entries WHERE dv_aucs_id = :dv_id")
+            //         ->bindValue(':dv_id', $model->dvAucs->id)
+            //         ->queryScalar();
+            //     return $query;
+            // }
+        ],
         [
             'label' => "DV Number",
             'value' => "dvAucs.dv_number"
-        ],
-        [
-            'label'=>'Particular',
-            'value'=>'dvAucs.particular'
-        ],
-        [
-            'label' => "Reporting Period",
-            'value' => "dvAucs.reporting_period"
         ],
         [
             'label' => "ORS Number",
             'value' => "processOrs.serial_number"
         ],
 
-        'dvAucs.created_at',
-        'dvAucs.transaction_begin_time',
-        'dvAucs.return_timestamp',
-        'dvAucs.accept_timestamp',
-        'dvAucs.out_timestamp',
-        'processOrs.created_at',
-        'processOrs.transaction.created_at',
+
         [
-            'label' => 'calculated',
+            'label' => 'DV Begin Time',
+            'value' => 'dvAucs.transaction_begin_time',
+        ],
+
+        [
+            'label' => 'DV Return Time',
+            'value' => 'dvAucs.return_timestamp',
+        ],
+        [
+            'label' => 'DV Accept Time',
+            'value' => 'dvAucs.accept_timestamp',
+        ],
+        [
+            'label' => 'DV Out Time',
+            'value' => 'dvAucs.out_timestamp',
+        ],
+        [
+            'label' => 'DV  Calculated',
             'value' => function ($model) {
                 $year = explode('-', $model->dvAucs->return_timestamp);
                 $begin_timestamp = $model->dvAucs->transaction_begin_time;
@@ -177,13 +212,31 @@ $this->params['breadcrumbs'][] = $this->title;
             }
         ],
         [
-            'label'=>'Cash Disbursement IN',
-            'value'=>'dvAucs.cashDisbursement.begin_time'
+            'label' => 'Cash Disbursement IN',
+            'value' => 'dvAucs.cashDisbursement.begin_time'
         ],
         [
-            'label'=>'Cash Disbursement OUT',
-            'value'=>'dvAucs.cashDisbursement.out_time'
+            'label' => 'Cash Disbursement OUT',
+            'value' => 'dvAucs.cashDisbursement.out_time'
         ],
+        [
+            'label' => 'Cash Time Diff',
+            'value' => function ($model) {
+
+                $in_time = !empty($model->dvAucs->cashDisbursement->begin_time) ? $model->dvAucs->cashDisbursement->begin_time : '';
+                $out_time = !empty($model->dvAucs->cashDisbursement->out_time) ? $model->dvAucs->cashDisbursement->out_time : '';
+
+                if (!empty($in_time) && !empty($out_time)) {
+                    $in = new DateTime($in_time); //start time
+                    $out = new DateTime($out_time); //start time
+                    $interval = $in->diff($out);
+                    return  $interval->format('%H:%i:%s');
+                }
+
+
+                return '';
+            }
+        ]
 
 
     ];
@@ -195,9 +248,9 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'process_ors_id',
             'dv_number',
             [
-                'label'=>'Payee',
-                'attribute'=>'payee_id',
-                'value'=>'payee.account_name'
+                'label' => 'Payee',
+                'attribute' => 'payee_id',
+                'value' => 'payee.account_name'
             ],
             'created_at',
             'transaction_begin_time',
@@ -258,7 +311,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'content' => ExportMenu::widget([
                     'dataProvider' => $exportDataProvider,
                     'columns' => $exportColumns,
-                    'filename' => "DV",
+                    'filename' => "Turn Around Time",
                     'exportConfig' => [
                         ExportMenu::FORMAT_CSV => false,
                         ExportMenu::FORMAT_TEXT => false,

@@ -1692,12 +1692,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-export.git",
-                "reference": "643f7d4e7d8cd8dbecaa6c4b70979ffe7906be18"
+                "reference": "6b313c5af225aefcf258777d9914b940e69cea99"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-export/zipball/643f7d4e7d8cd8dbecaa6c4b70979ffe7906be18",
-                "reference": "643f7d4e7d8cd8dbecaa6c4b70979ffe7906be18",
+                "url": "https://api.github.com/repos/kartik-v/yii2-export/zipball/6b313c5af225aefcf258777d9914b940e69cea99",
+                "reference": "6b313c5af225aefcf258777d9914b940e69cea99",
                 "shasum": ""
             },
             "require": {
@@ -1755,7 +1755,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2021-07-08T12:12:31+00:00"
+            "time": "2021-11-03T04:59:42+00:00"
         },
         {
             "name": "kartik-v/yii2-field-range",
