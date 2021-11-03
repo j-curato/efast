@@ -68,4 +68,12 @@ class Par extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Employee::class, ['employee_id' => 'employee_id']);
     }
+    public function getPropertyCard()
+    {
+        return $this->hasOne(PropertyCard::class, ['par_number' => 'par_number']);
+    }
+    public function getPtr()
+    {
+        return $this->hasOne(Ptr::class, ['par_number' => 'par_number']);
+    }
 }

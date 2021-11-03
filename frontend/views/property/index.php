@@ -1,7 +1,7 @@
 <?php
 
+use kartik\grid\GridView;
 use yii\helpers\Html;
-use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\PropertySearch */
@@ -23,6 +23,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel'=>[
+            'type'=>GRIDVIEW::TYPE_PRIMARY,
+            'heading'=>'Property',
+        ],
+        'export'=>[
+            'fontAwesome'=>true
+        ],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 

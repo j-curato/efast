@@ -42,7 +42,8 @@
         "2amigos/qrcode-library": "^2.0",
         "yii2tech/https": "*",
         "yii2tech/ar-softdelete": "*",
-        "2amigos/yii2-google-maps-library" : "*"
+        "2amigos/yii2-google-maps-library" : "*",
+        "vilochane/yii2-barcode-generator": "dev-master"
 
 
     },

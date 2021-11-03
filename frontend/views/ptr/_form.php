@@ -1,6 +1,8 @@
 <?php
 
 use app\models\Par;
+use app\models\TransferType;
+use kartik\date\DatePicker;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -8,11 +10,11 @@ use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\PropertyCard */
+/* @var $model app\models\Ptr */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="property-card-form">
+<div class="ptr-form">
 
     <?php $form = ActiveForm::begin(); ?>
 
@@ -23,35 +25,36 @@ use yii\widgets\ActiveForm;
         $par = ArrayHelper::map(Par::find()->where(['par_number' => $model->par_number]), 'par_number', 'par_number');
     }
     ?>
-    <?= $form->field($model, 'par_number')->widget(Select2::class, [
-        'data' => $par,
-        'name' => 'par_number',
-        'id' => 'par_number',
-        'options' => [
-            'placeholder' => 'Search for a Fund Source ...',
-        ],
-
-        'pluginOptions' => [
-            'allowClear' => true,
-            'minimumInputLength' => 1,
-            'language' => [
-                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+    <?= $form->field($model, 'par_number')->widget(
+        Select2::class,
+        [
+            'data' => $par,
+            'name' => 'par_number',
+            'id' => 'par_number',
+            'options' => [
+                'placeholder' => 'Search for a Fund Source ...',
             ],
-            'ajax' => [
-                'url' => Yii::$app->request->baseUrl . '?r=property/search-property',
-                'dataType' => 'json',
-                'delay' => 250,
-                'data' => new JsExpression('function(params) { return {q:params.term ,province: params.province}; }'),
-                'cache' => true
-            ],
-            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-            'templateResult' => new JsExpression('function(par_number) { return par_number.text; }'),
-            'templateSelection' => new JsExpression('function (par_number) { return par_number.text; }'),
-        ],
 
-    ]) ?>
+            'pluginOptions' => [
+                'allowClear' => true,
+                'minimumInputLength' => 1,
+                'language' => [
+                    'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                ],
+                'ajax' => [
+                    'url' => Yii::$app->request->baseUrl . '?r=property/search-property',
+                    'dataType' => 'json',
+                    'delay' => 250,
+                    'data' => new JsExpression('function(params) { return {q:params.term ,province: params.province}; }'),
+                    'cache' => true
+                ],
+                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                'templateResult' => new JsExpression('function(par_number) { return par_number.text; }'),
+                'templateSelection' => new JsExpression('function (par_number) { return par_number.text; }'),
+            ],
+        ]
+    ) ?>
     <table id="par_table">
-
         <tr>
             <th>Property Number</th>
             <td id="property_number"></td>
@@ -98,6 +101,25 @@ use yii\widgets\ActiveForm;
         </tbody>
     </table>
 
+    <?= $form->field($model, 'transfer_type')->widget(Select2::class,[
+        'data'=>ArrayHelper::map(TransferType::find()->asArray()->all(),'id','type'),
+        'pluginOptions'=>[
+            'placeholder'=>'Select Transfer Type'
+        ]
+    ]) ?>
+
+    <?= $form->field($model, 'date')->widget(DatePicker::class,[
+        'pluginOptions'=>[
+            'format'=>'yyyy-mm-dd'
+        ]
+    ]) ?>
+
+    <?= $form->field($model, 'reason')->textarea(['rows' => 6]) ?>
+
+    <?= $form->field($model, 'from')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'to')->textInput(['maxlength' => true]) ?>
+
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>
@@ -128,11 +150,11 @@ use yii\widgets\ActiveForm;
         padding: 20px;
     }
 </style>
-
 <?php
 $js = <<<JS
-    var property_card = $('#propertycard-par_number')
+    var property_card = $('#ptr-par_number')
     property_card.change(()=>{
+
         $.ajax({
             type:'POST',
             url:window.location.pathname +'?r=par/par-details',

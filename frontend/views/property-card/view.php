@@ -2,7 +2,8 @@
 
 use Da\QrCode\QrCode;
 use yii\helpers\Html;
-use yii\widgets\DetailView;
+use barcode\barcode\BarcodeGenerator as BarcodeGenerator;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PropertyCard */
@@ -14,7 +15,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="property-card-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->pc_number], ['class' => 'btn btn-primary']) ?>
@@ -25,6 +25,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
+        <?php
+        if (!empty($model->par_number)) {
+            $t = yii::$app->request->baseUrl . "/index.php?r=par/view&id={$model->par_number}";
+            echo  Html::a('PAR Link', $t, ['class' => 'btn btn-success ']);
+        }
+        ?>
     </p>
 
     <?php
@@ -41,36 +47,64 @@ $this->params['breadcrumbs'][] = $this->title;
     }
     ?>
 
+    <?php
+
+
+    $optionsArray = array(
+        'elementId' => 'showBarcode', /* div or canvas id*/
+        'value' => $model->pc_number, /* value for EAN 13 be careful to set right values for each barcode type */
+        'type' => 'code128',/*supported types ean8, ean13, upc, std25, int25, code11, code39, code93, code128, codabar, msi, datamatrix*/
+
+    );
+    BarcodeGenerator::widget($optionsArray);
+    ?>
 
     <table id="qr_table">
         <tbody>
             <tr>
-                <td rowspan="7" style="padding-left:12px;padding-right:12px"> <?php echo Html::img("@web/qr_codes/$model->pc_number.png", ['class' => 'qr']) ?></td>
+                <td rowspan="7">
+
+                    <span style="width: 100%;">
+                        <?php echo Html::img("@web/frontend/web/dti3.png", ['style' => 'width:100px;height:100px']) ?>
+                    </span>
+                    <br>
+                    <span>
+                        <?php echo Html::img("@web/qr_codes/$model->pc_number.png", ['class' => 'qr']) ?>
+                    </span>
+                    <br>
+                    <br>
+                    <span id="showBarcode"></span>
+                </td>
             </tr>
+
+
             <tr>
-                <td>Property No.: </td>
+                <th>Property No.: </th>
                 <td><?php echo $model->pc_number ?></td>
             </tr>
             <tr>
-                <td>Serial No.:</td>
+                <th>Serial No.:</th>
                 <td><?php echo $model->par->property->serial_number ?></td>
             </tr>
             <tr>
-                <td>Acquisition Cost</td>
+                <th>Acquisition Cost</th>
                 <td><?php echo $model->par->property->acquisition_amount ?></td>
 
             </tr>
             <tr>
-                <td>Acquisition Date</td>
+                <th>Acquisition Date</th>
                 <td><?php echo $model->par->property->date ?></td>
             </tr>
             <tr>
-                <td>Person Accountable</td>
-                <td><?php echo $model->par->employee->l_name ?></td>
+                <th>Person Accountable</th>
+                <td><?php
+                    $name = "{$model->par->employee->f_name} {$model->par->employee->m_name[0]}. {$model->par->employee->l_name} ";
+                    echo $name;
+                    ?></td>
 
             </tr>
             <tr>
-                <td>Validation Signature</td>
+                <th>Validation Signature</th>
                 <td></td>
             </tr>
         </tbody>
@@ -119,8 +153,34 @@ $this->params['breadcrumbs'][] = $this->title;
             <th>Qty.</th>
         </tr>
         <tbody>
+            <?php
+            $transfer_quantity = '';
+            $balance = 1;
+            if (!empty($model->par->ptr->ptr_number)) {
+                $transfer_quantity = 1;
+                $balance -=1;
+            }
+            echo "<tr>
+                    <td>{$model->par->date}</td>
+                    <td>{$model->par->par_number}</td>
+                    <td>1</td>
+                    <td>$transfer_quantity</td>
+                    <td></td>
+                    <td>$balance</td>
+                    <td></td>
+                    <td></td>
+                </tr>";
+
+            ?>
             <tr>
-                <th></th>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
             </tr>
         </tbody>
     </table>
@@ -160,5 +220,30 @@ $this->params['breadcrumbs'][] = $this->title;
     .qr {
         width: 100px;
         height: 100px;
+    }
+
+    @media print {
+        .btn {
+            display: none;
+        }
+
+        .main-footer {
+            display: none;
+        }
+
+        #qr_table {
+            padding: 3px;
+            margin-top: 0;
+
+        }
+
+        #qr_table td {
+            padding: 8px;
+            margin: 0;
+            font-size: 10px;
+
+        }
+
+
     }
 </style>

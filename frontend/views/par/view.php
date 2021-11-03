@@ -15,14 +15,21 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p class=''>
-        <?= Html::a('Update', ['update', 'id' => $model->property_number], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->property_number], [
+        <?= Html::a('Update', ['update', 'id' => $model->par_number], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Delete', ['delete', 'id' => $model->par_number], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
                 'method' => 'post',
             ],
         ]) ?>
+        <?php
+        if (!empty($model->propertyCard->pc_number)) {
+
+            $t = yii::$app->request->baseUrl . "/index.php?r=property-card/view&id={$model->propertyCard->pc_number}";
+            echo  Html::a('Property Card Link', $t, ['class' => 'btn btn-success ']);
+        }
+        ?>
     </p>
 
 
@@ -65,8 +72,8 @@ $this->params['breadcrumbs'][] = $this->title;
             <tbody>
 
                 <?php
-                 $d = new DateTime($model->property->date);
-                 $dateAquired = $d->format('F d, Y');
+                $d = new DateTime($model->property->date);
+                $dateAquired = $d->format('F d, Y');
                 echo "<tr>
                         <td>{$model->property->quantity}</td>
                         <td>{$model->property->unitOfMeasure->unit_of_measure}</td>
