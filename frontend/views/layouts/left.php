@@ -331,6 +331,7 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Employee', 'icon' => 'circle-o', 'url' => ['/employee'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'PAR', 'icon' => 'circle-o', 'url' => ['/par'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Property', 'icon' => 'circle-o', 'url' => ['/property'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'PTR', 'icon' => 'circle-o', 'url' => ['/ptr'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Agency', 'icon' => 'circle-o', 'url' => ['/agency'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Unit of Measure', 'icon' => 'circle-o', 'url' => ['/unit-of-measure'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Property Card', 'icon' => 'circle-o', 'url' => ['/property-card'],] : [],

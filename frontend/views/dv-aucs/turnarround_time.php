@@ -79,6 +79,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'value' => "dvAucs.dv_number"
         ],
         [
+            'label'=>'Particular',
+            'value'=>'dvAucs.particular'
+        ],
+        [
             'label' => "Reporting Period",
             'value' => "dvAucs.reporting_period"
         ],
@@ -171,7 +175,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 // echo $total_end_date->format('%H:%I:%S');
                 return $final_hrs;
             }
-        ]
+        ],
+        [
+            'label'=>'Cash Disbursement IN',
+            'value'=>'dvAucs.cashDisbursement.begin_time'
+        ],
+        [
+            'label'=>'Cash Disbursement OUT',
+            'value'=>'dvAucs.cashDisbursement.out_time'
+        ],
+
 
     ];
     $columns =

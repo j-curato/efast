@@ -377,5 +377,5 @@
         
 
 JS;
-    $this->registerJs($script);
-    ?>
+$this->registerJs($script);
+?>

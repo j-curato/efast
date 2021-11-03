@@ -157,7 +157,7 @@ class EmployeeController extends Controller
         if (!is_null($q)) {
             $query = new Query();
             $query->select('employee_id as id, UPPER(employee_name) AS text')
-                ->from('employee_searh_view')
+                ->from('employee_search_view')
                 ->where(['like', 'employee_name', $q]);
             $command = $query->createCommand();
             $data = $command->queryAll();
