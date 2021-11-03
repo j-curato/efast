@@ -233,7 +233,7 @@ $this->params['breadcrumbs'][] = $this->title;
             }
         ],
         [
-            'label' => 'Cash  + dv',
+            'label' => 'Total',
             'value' => function ($model) {
                 $year = explode('-', $model->dvAucs->return_timestamp);
                 $begin_timestamp = $model->dvAucs->transaction_begin_time;
