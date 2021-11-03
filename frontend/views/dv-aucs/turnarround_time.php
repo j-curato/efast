@@ -73,7 +73,17 @@ $this->params['breadcrumbs'][] = $this->title;
     Modal::end();
     $exportSearchModel = new DvAucsEntriesSearch();
     $exportDataProvider = $exportSearchModel->search(Yii::$app->request->queryParams);
+    $dv_time = '';
+    function q($q)
+    {
+        $dv_time = $q;
+        return $dv_time;
+    }
     $exportColumns = [
+        [
+            'label' => 'Reporting Period',
+            'value' => 'dvAucs.reporting_period'
+        ],
 
         [
             'label' => 'Payee',
@@ -83,6 +93,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'label' => 'Particular',
             'value' => 'dvAucs.particular'
         ],
+
 
         [
             'label' => 'Gross Amount',
@@ -191,23 +202,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 
-                // echo date_diff(date('Y-m-d H:i:s',strtotime($out_date .' 08:00:00')),$time_out);
 
-                // echo 'qweqwe';
-                // echo $out_date .' 08:00:00' . ' end date begin<br>';
-                // echo $begin_timestamp . ' begin_timestamp<br>';
-                // echo $time_out . ' timeout<br>';
-                // echo $since_start->h . ' hours<br>';
-                // echo $since_start->i . ' minutes<br>';
-                // echo $since_start->s . ' seconds<br>';
-
-                // echo $since_start->d . ' days<br>';
-                // echo $total_end_date->h . ' end hours<br>';
-                // echo $total_end_date->i . ' end minutes<br>';
-                // echo $total_end_date->s . ' end sec<br>';
-
-                // // $total_end_date->i +20;
-                // echo $total_end_date->format('%H:%I:%S');
                 return $final_hrs;
             }
         ],
@@ -235,6 +230,81 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
                 return '';
+            }
+        ],
+        [
+            'label' => 'Cash  + dv',
+            'value' => function ($model) {
+                $year = explode('-', $model->dvAucs->return_timestamp);
+                $begin_timestamp = $model->dvAucs->transaction_begin_time;
+                $time_out = $model->dvAucs->out_timestamp;
+
+                // echo $begin_timestamp;
+                if (empty($time_out) && explode('-', $time_out)[0] <= 0) {
+                    return '';
+                }
+                if (!empty($model->dvAucs->return_timestamp) && $year[0] > 0) {
+                    $begin_timestamp = $model->dvAucs->accept_timestamp;
+                }
+
+
+                $begin_date = date('Y-m-d', strtotime($begin_timestamp));
+                $begin_time = date('H:i:s', strtotime($begin_timestamp));
+                $out_date = date('Y-m-d', strtotime($time_out));
+                $out_time = date('H:i:s', strtotime($time_out));
+                $hrs = 0;
+                $mnt = 0;
+                $sec = 0;
+                $final_hrs = 0;
+                $final_mnts = 0;
+                if ($begin_date !== $out_date) {
+
+
+                    $start_date = new DateTime($begin_timestamp);
+                    $since_start = $start_date->diff(new DateTime($begin_date . '17:00:00'));
+
+                    if (strtotime($begin_time) > strtotime('17:00:00')) {
+                        $hrs = 0;
+                        $mnt = 30;
+                        $sec = 0;
+                    } else {
+                        $hrs = $since_start->h;
+                        $mnt = $since_start->i;
+                        $sec = $since_start->s;
+                    }
+
+                    $end_date = new DateTime(date('Y-m-d H:i:s', strtotime($out_date . ' 08:00:00')));
+                    $total_end_date = $end_date->diff(new DateTIme(date(
+                        'Y-m-d H:i:s',
+                        strtotime($time_out . "+{$hrs} hours +{$mnt} minutes +$sec seconds")
+                    )));
+                    $final_hrs = $total_end_date->format('%H:%I:%S');
+                    // $final_mnts = $total_end_date->i;
+                } else {
+
+                    $q = new DateTime($begin_timestamp);
+                    $x = $q->diff(new DateTime($time_out));
+                    $final_hrs = $x->format('%H:%I:%S');
+                    // $final_mnts = $q->i;
+                }
+
+
+                $in_time = !empty($model->dvAucs->cashDisbursement->begin_time) ? $model->dvAucs->cashDisbursement->begin_time : '';
+                $out_time = !empty($model->dvAucs->cashDisbursement->out_time) ? $model->dvAucs->cashDisbursement->out_time : '';
+                $cash_diff = '00:00:00';
+                if (!empty($in_time) && !empty($out_time)) {
+                    $in = new DateTime($in_time); //start time
+                    $out = new DateTime($out_time); //start time
+                    $interval = $in->diff($out);
+                    $cash_diff = $interval->format('%H:%i:%s');
+                }
+
+                $q = strtotime($final_hrs) + strtotime($cash_diff) - strtotime('00:00:00');
+                $time1 = '15:20:00';
+                $time2 = '00:30:00';
+                $time = strtotime($final_hrs) + strtotime($cash_diff) - strtotime('00:00:00');
+                return $time = date('H:i:s', $time);
+                return date('h:i:s', $q);
             }
         ]
 
