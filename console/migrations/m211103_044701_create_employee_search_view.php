@@ -29,7 +29,7 @@ class m211103_044701_create_employee_search_view extends Migration
      */
     public function safeDown()
     {
-        Yii::$app->db - createCommand("DROP VIEW IF EXISTS employee_search_view")->query();
+        Yii::$app->db->createCommand("DROP VIEW IF EXISTS employee_search_view")->query();
     }
 
     /*
