@@ -324,7 +324,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'label' => 'In Timestamp',
-                'attribute' => 'transaction_begin_time'
+                'attribute' => 'in_timestamp'
             ],
             'out_timestamp',
             [

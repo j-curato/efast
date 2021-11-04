@@ -952,7 +952,6 @@ class DvAucsController extends Controller
     }
     public function actionOut($id)
     {
-
         if ($_POST) {
 
             date_default_timezone_set('Asia/Manila');
