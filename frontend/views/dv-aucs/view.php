@@ -73,7 +73,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
         </div>
-        <table class="table table-striped">
+        <table class="">
 
             <tbody>
                 <thead>
@@ -88,6 +88,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     </th>
                     <th>
                         Payee
+                    </th>
+                    <th>
+                        Particular
                     </th>
                     <th>
                         Amount Disbursed
@@ -143,27 +146,30 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>
                         {$val->dvAucs->payee->account_name}
                     </td>
-                    <td >"
+                    <td>
+                        {$val->dvAucs->particular}
+                    </td>
+                    <td  class='amount'>"
                         . number_format($val->amount_disbursed, 2) .
                         "</td>
-                    <td>
+                    <td class='amount'>
                         " . number_format($val->vat_nonvat, 2) . "
                     </td>
-                    <td>
+                    <td class='amount'>
                        " . number_format($val->ewt_goods_services, 2) . " 
                     </td>
-                    <td>
+                    <td class='amount'>
                        " . number_format($val->compensation, 2) . " 
                     </td>
-                    <td>
+                    <td class='amount'>
                         " . number_format($total_withheld, 2) . "
                     </td>
-                    <td>
+                    <td class='amount'>
                         " . number_format($val->other_trust_liabilities, 2) . "
                     </td>
                     <td class='link'>" .
 
-                        Html::a('ORS', $t, ['class' => 'btn-xs btn-success '])
+                        Html::a('ORS', $t, ['class' => ' btn btn-xs btn-success '])
                         . "
                 
                 </td>
@@ -180,7 +186,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
     <div class=" container panel panel-default">
 
-        <table class="table table-striped">
+        <table class="">
             <thead>
                 <th>Object Code</th>
                 <th>Account Title</th>
@@ -188,12 +194,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th style='text-align:right'>Credit</th>
             </thead>
             <tbody>
-
-
                 <?php
                 $total_debit = 0;
                 $total_credit = 0;
-                foreach ($model->dvAccountingEntries as $val) {
+                $is_even = '';
+
+                foreach ($model->dvAccountingEntries as $i => $val) {
 
                     $account_title = '';
                     $total_debit += $val->debit;
@@ -217,33 +223,85 @@ $this->params['breadcrumbs'][] = $this->title;
                      where object_code =:object_code")
                         ->bindValue(':object_code', $val->object_code)
                         ->queryOne();
-                    
+
                     // ob_clean();
                     // echo "<pre>";
                     // var_dump($val->object_code);
                     // echo "</pre>";
                     // return ob_get_clean();
-                    echo "<tr>
+                    if ($i % 2 === 0) {
+                        $is_even = 'even';
+                    } else {
+                        $is_even = '';
+                    }
+                    echo "<tr class='$is_even'>
                         <td>{$val->object_code}</td>
                         <td>{$account_title['account_title']}</td>
-                        <td style='text-align:right'>$debit</td>
-                        <td style='text-align:right'>$credit</td>
-                    
+                        <td  class='amount'>$debit</td>
+                        <td  class='amount'>$credit</td>
                     </tr>";
                 }
-                ?>
 
-                <tr>
-                    <?php
-                    echo "<tr>
+                echo "<tr class='total'>
                 <td colspan='2' style='font-weight:bold'>Total</td>
                 <td style='text-align:right'>" . number_format($total_debit, 2) . "</td>
                 <td style='text-align:right'>" . number_format($total_credit, 2) . "</td>
                 </tr>";
-                    ?>
-                </tr>
+                ?>
+
             </tbody>
 
+
+
+        </table>
+        <table class='assig'>
+            <thead>
+                <tr> 
+                    <td colspan="2"  class='q'>
+
+                        <div>
+                            <h6>
+                                Prepared By:
+                            </h6>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="width: 70px;height:50px;margin-left:auto;margin-right:auto">
+                                <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/charles_sign.png', [
+                                    'alt' => 'some', 'class' => 'pull-left img-responsive',
+                                    'style' => 'width: 80px;height:50px;margin-left:auto'
+                                ]); ?>
+                            </div>
+                            <h5>
+                                CHARLIE C. DECHOS, CPA
+                            </h5>
+
+                            <h6>
+                                Accountant II
+                            </h6>
+                        </div>
+                    </td>
+                    <td colspan="2"  class='q'>
+
+                        <div>
+                            <h6>
+                                Certified Correct:
+                            </h6>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="width: 70px;height:50px;margin-left:auto;margin-right:auto">
+
+                            </div>
+                            <h5>
+                                JOHN VOLTAIRE S. ANCLA, CPA
+                            </h5>
+
+                            <h6>
+                                Accountant III
+                            </h6>
+                        </div>
+                    </td>
+                </tr>
+            </thead>
         </table>
     </div>
     <style>
@@ -251,8 +309,28 @@ $this->params['breadcrumbs'][] = $this->title;
             font-weight: bold;
         }
 
+        .total td {
+            font-weight: bold;
+        }
+
+        .amount {
+            text-align: right;
+        }
+
+        .total {
+            background-color: #d5ff80;
+        }
+
+        .even {
+            background-color: #cce6ff;
+        }
+
         .container {
             padding: 15px
+        }
+
+        .q {
+            margin-top: 3rem;
         }
 
         .checkbox {
@@ -277,8 +355,26 @@ $this->params['breadcrumbs'][] = $this->title;
             width: 100%;
         }
 
+        table,
+        th,
+        td {
+            padding: 10px;
+        }
+
+        th {
+            text-align: center;
+        }
+
         @media print {
             .actions {
+                display: none;
+            }
+
+            .link {
+                display: none;
+            }
+
+            .btn {
                 display: none;
             }
 
@@ -286,7 +382,7 @@ $this->params['breadcrumbs'][] = $this->title;
             th,
             td {
                 border: 1px solid black;
-                padding: 5px;
+                padding: 8px;
                 font-size: 10px;
             }
 
@@ -313,28 +409,22 @@ $this->params['breadcrumbs'][] = $this->title;
                 background-color: white;
             }
 
+
             .container {
 
                 border: none;
             }
 
-            table {
-                page-break-after: auto
+            .q {
+                border: 0;
             }
-
-            tr {
-                page-break-inside: avoid;
-                page-break-after: auto
+            .assig{
+                border: 0;
             }
-
-            td {
-                page-break-inside: avoid;
-                page-break-after: auto
-            }
-
-            /* thead {
-        display: table-header-group
-    } */
+h1{
+    font-size: 12px;
+}
+     
 
             .main-footer {
                 display: none;
@@ -343,9 +433,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </style>
 
 </div>
-<script>
 
-</script>
 <?php
 SweetAlertAsset::register($this);
 $script = <<<JS

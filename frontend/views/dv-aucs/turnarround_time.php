@@ -322,42 +322,32 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'payee_id',
                 'value' => 'payee.account_name'
             ],
-            'created_at',
-            'transaction_begin_time',
-            'return_timestamp',
-            'accept_timestamp',
+            [
+                'label' => 'In Timestamp',
+                'attribute' => 'transaction_begin_time'
+            ],
             'out_timestamp',
             [
                 'label' => 'action',
                 'format' => 'raw',
                 'value' => function ($model) {
-
-
                     return ' '
                         // . Html::a('View', ['turnarround-view', 'id' => $model->id], ['class' => 'btn-sm btn-primary'])
                         . Html::button(
-                            'Accept',
+                            'IN',
                             [
-                                'value' => '/?r=dv-aucs/accept&id=' . $model->id,
+                                'value' => '/?r=dv-aucs/iin&id=' . $model->id,
                                 'class' => 'btn-sm btn-success turn-arround-btn',
                                 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
                             ]
                         )
                         . Html::button(
-                            'Return',
-                            [
-                                'value' => Url::to('?r=dv-aucs/return&id=' . $model->id),
-                                'class' => 'btn-sm btn-danger  turn-arround-btn',
-                                'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
-                            ]
-                        )
-                        . Html::button(
                             'Out',
-
                             [
                                 'value' => Url::to('?r=dv-aucs/out&id=' . $model->id),
                                 'class' => 'btn-sm btn-warning  turn-arround-btn',
                                 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
+                                
                             ]
                         );
                 }

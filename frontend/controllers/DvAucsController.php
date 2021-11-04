@@ -933,7 +933,7 @@ class DvAucsController extends Controller
             }
         }
     }
-    public function actionAccept($id)
+    public function actionIn($id)
     {
         if ($_POST) {
             date_default_timezone_set('Asia/Manila');
@@ -941,10 +941,10 @@ class DvAucsController extends Controller
             $timestamp  = date('Y-m-d H:i:s', strtotime($_POST['time'] . ' ' . $_POST['date']));
             $model = $this->findModel($id);
 
-            if (empty($model->return_timestamp)) {
-                return json_encode(['success' => false, 'error' => 'DV is not returned']);
-            }
-            $model->accept_timestamp = $timestamp;
+            // if (empty($model->return_timestamp)) {
+            //     return json_encode(['success' => false, 'error' => 'DV is not returned']);
+            // }
+            $model->in_timestamp = $timestamp;
             if ($model->save(false)) {
                 return json_encode(['success' => true]);
             }

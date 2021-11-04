@@ -210,7 +210,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <td class="bold" style="margin:0">Chief Accountant <br>
-                        <span class="note" s>TIme in left blank unless if Accountant II is on leave or upon compliance of lacking documents, if any</span><br>
+                        <span class="note">Time in left blank unless if Accountant II is on leave or upon compliance of lacking documents, if any</span><br>
                         <span class="note">Time out when the DV's were acknowledged to be complete,correct and consistent or upon compliance of lacking documents, whichever is later</span>
                     </td>
                     <td><?php echo $acc_3_date; ?></td>
@@ -238,7 +238,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td><?php
 
                         if (!empty($model->dvAucs->cashDisbursement->issuance_date)) {
-                            echo 'date';
+                            // echo 'date';
                         }
                         ?></td>
                     <td></td>
@@ -254,10 +254,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         <br>
                         <span class="note">
                             (Date and TIme For Check Issuance)
+
                         </span>
 
                     </td>
-                    <td></td>
+                    <td><?php
+
+                        if (!empty($model->dvAucs->cashDisbursement->issuance_date)) {
+                            // echo $model->dvAucs->cashDisbursement->issuance_date;
+                            $cash_date = date('F d, Y', strtotime($model->dvAucs->cashDisbursement->issuance_date));
+                            return $cash_date;
+                        }
+                        ?></td>
                     <td></td>
                     <td></td>
                     <td></td>

@@ -212,7 +212,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' =>  $val->process_ors_id])
                                 ->one();
                             // $q = !empty($val->process_ors_id) ? $val->process_ors_id : '';
-                            $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$q->id";
+                            if (!empty($q)) {
+
+                                $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$q->id";
+                            }
                         }
 
                         $amount = number_format($val->amount_disbursed, 2);
@@ -548,7 +551,8 @@ $this->params['breadcrumbs'][] = $this->title;
             margin-right: auto;
             width: 100%;
         }
-        .pos{
+
+        .pos {
             text-align: center;
         }
 

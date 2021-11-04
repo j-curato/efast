@@ -48,13 +48,14 @@ class DvAucs extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'payee_id'=>'Payee',
+            'payee_id' => 'Payee',
             'dv_number' => 'Dv Number',
             'reporting_period' => 'Reporting Period',
             'tax_withheld' => 'Tax Withheld',
             'other_trust_liability_withheld' => 'Other Trust Liability Withheld',
             'net_amount_paid' => 'Net Amount Paid',
             'transaction_begin_time' => 'Transaction Begin Time',
+            'in_timestamp' => 'IN Timestamp',
         ];
     }
 
