@@ -336,7 +336,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         . Html::button(
                             'IN',
                             [
-                                'value' => '/?r=dv-aucs/iin&id=' . $model->id,
+                                'value' => '/?r=dv-aucs/in&id=' . $model->id,
                                 'class' => 'btn-sm btn-success turn-arround-btn',
                                 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
                             ]
