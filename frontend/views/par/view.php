@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
 
-    <div class="con">
+    <div class="container">
 
         <table>
             <thead>
@@ -164,14 +164,20 @@ $this->params['breadcrumbs'][] = $this->title;
         border: 1px solid black;
     }
 
+    table {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
     .foot {
         text-align: center;
         border-bottom: 0;
         border-top: 0;
     }
 
-    .con {
+    .container {
         background-color: white;
+        padding: 20px;
     }
 
     @media print {

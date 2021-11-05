@@ -9,6 +9,7 @@ use app\models\SubAccounts1;
 use Yii;
 use yii\base\Component;
 use yii\helpers\Html;
+use Da\QrCode\QrCode;
 
 class MyComponent extends Component
 {
@@ -166,6 +167,50 @@ class MyComponent extends Component
         $token = str_replace('+', '.', base64_encode($token));
 
         // \Yii::$app->session->set(\Yii::$app->params['form_token_param'], $token);
-        return Html::input('text','token', $token);
+        return Html::input('text', 'token', $token);
+    }
+    public function getParNumber()
+    {
+
+        $query = Yii::$app->db->createCommand("SELECT
+        SUBSTRING_INDEX(par.par_number,'-',-1) as p_number
+        FROM par
+        ORDER BY  p_number DESC LIMIT 1")->queryScalar();
+        $num = 1;
+        if (!empty($query)) {
+            $num = intval($query) + 1;
+        }
+        $new_num = substr(str_repeat(0, 5) . $num, -5);
+        $string = 'DTI XIII-' . $new_num;
+        return $string;
+    }
+    function getPcNumber()
+    {
+
+        $query = Yii::$app->db->createCommand("SELECT substring_index(pc_number,'-',-1) as pc_number
+        FROM property_card
+        
+        ORDER BY pc_number DESC LIMIT 1
+        ")->queryScalar();
+        $num = 1;
+        if (!empty($query)) {
+            $num = $query + 1;
+        }
+        $period = date('Y-m');
+        $l_num = substr(str_repeat(0, 5) . $num, -5);
+        $string = "PC $period-" . $l_num;
+
+        return $string;
+    }
+    public function generatePcQr($pc_number)
+    {
+
+        $text = $pc_number;
+        $path = 'qr_codes';
+        $qrCode = (new QrCode($text))
+            ->setSize(250);
+        header('Content-Type: ' . $qrCode->getContentType());
+        $base_path =  \Yii::getAlias('@webroot');
+        $qrCode->writeFile($base_path . "/qr_codes/$text.png");
     }
 }

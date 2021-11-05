@@ -1863,12 +1863,8 @@ class ReportController extends \yii\web\Controller
         echo "<pre>";
         echo  shell_exec("git pull https://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@github.com/kiotipot1/dti-afms-2.git");
         echo "</pre>";
-
         echo "<pre>";
         echo  shell_exec("yii migrate --interactive=0");
-        echo "</pre>";
-        echo "<pre>";
-        echo  "qweqweq";
         echo "</pre>";
     }
     public function actionDivisionFur()
@@ -2551,7 +2547,7 @@ class ReportController extends \yii\web\Controller
                 'result' => $result,
                 'conso' => $conso,
                 'period' => $report,
-                'book'=>$book
+                'book' => $book
             ]);
         }
         return $this->render('cdj');

@@ -111,21 +111,30 @@ $this->params['breadcrumbs'][] = $this->title;
     </table>
     <table id="pc_form">
         <tr>
-            <th colspan="8" style="text-align: center;">
+            <th colspan="8" style="text-align: center;border:0;">
                 PROPERTY CARD
             </th>
         </tr>
         <tr>
-            <th colspan="6">
+            <th colspan="6" style="border:0;">
                 <span>Entity Name:</span>
+                <span>Department of Trade and Idustry (Caraga-XIII)</span>
             </th>
-            <th colspan="2">
+            <th colspan="2" style="border:0;">
                 <span>Fund Cluster:</span>
+                <span><?php echo $model->par->property->book->name; ?></span>
             </th>
         </tr>
         <tr>
             <th colspan="6">
                 <span>Property, Plant and Equipment :</span>
+                <span>
+                    <?php
+                    echo $model->par->property->article;
+
+                    ?>
+                </span>
+
             </th>
             <th colspan="2">
                 <span> Property Number:</span>
@@ -134,7 +143,16 @@ $this->params['breadcrumbs'][] = $this->title;
             </th>
         </tr>
         <tr>
-            <th colspan="6"><span>Description</span></th>
+            <th colspan="6">
+                <span>Description: </span>
+                <span>
+                    <?php
+                    echo $model->par->property->model;
+                    echo ',';
+                    echo $model->par->property->serial_number;
+                    ?>
+                </span>
+            </th>
             <th colspan="2"></th>
         </tr>
         <tr>
@@ -158,10 +176,15 @@ $this->params['breadcrumbs'][] = $this->title;
             $balance = 1;
             if (!empty($model->par->ptr->ptr_number)) {
                 $transfer_quantity = 1;
-                $balance -=1;
+                $balance -= 1;
+            }
+            $date = New DateTime($model->par->date);
+            $remark = '';
+            if (!empty($model->par->ptr)){
+                $remark = $model->par->ptr->transfer_type_id;
             }
             echo "<tr>
-                    <td>{$model->par->date}</td>
+                    <td>".$date->format('F d, Y')."</td>
                     <td>{$model->par->par_number}</td>
                     <td>1</td>
                     <td>$transfer_quantity</td>

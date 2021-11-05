@@ -1,5 +1,6 @@
 <?php
 
+use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -22,7 +23,10 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'status')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'property_custodian')->textInput() ?>
+    <?= $form->field($model, 'property_custodian')->widget(Select2::class, [
+        'data' => [0 => 'False', 1 => 'True'],
+   
+    ]) ?>
 
     <?= $form->field($model, 'position')->textInput(['maxlength' => true]) ?>
 

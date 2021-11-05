@@ -15,7 +15,7 @@ class m211027_062055_create_ptr_table extends Migration
         $this->createTable('{{%ptr}}', [
             'ptr_number' => $this->string(),
             'par_number' => $this->string(),
-            'transfer_type' => $this->integer(),
+            'transfer_type_id' => $this->integer(),
             'date' => $this->date(),
             'reason' => $this->text(),
             'from' => $this->string(),

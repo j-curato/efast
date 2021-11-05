@@ -43,9 +43,9 @@ class Employee extends \yii\db\ActiveRecord
     {
         return [
             'employee_id' => 'Employee ID',
-            'f_name' => 'F Name',
-            'l_name' => 'L Name',
-            'm_name' => 'M Name',
+            'f_name' => 'First Name',
+            'l_name' => 'Last Name',
+            'm_name' => 'Middle Name',
             'status' => 'Status',
             'property_custodian' => 'Property Custodian',
             'position' => 'Position',

@@ -328,6 +328,14 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'out_timestamp',
             [
+                'label'=>'Cash Disbursement IN',
+                'value'=>'cashDisbursement.begin_time'
+            ],
+            [
+                'label'=>'Cash Disbursement OUT',
+                'value'=>'cashDisbursement.out_time'
+            ],
+            [
                 'label' => 'action',
                 'format' => 'raw',
                 'value' => function ($model) {
