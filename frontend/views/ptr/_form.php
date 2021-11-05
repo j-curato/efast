@@ -16,118 +16,170 @@ use yii\widgets\ActiveForm;
 
 <div class="ptr-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <div class="panel panel-default">
 
-    <?php
-    $par = '';
-    if (!empty($model)) {
+        <div class="row">
+            <div class="col-sm-3">
+                <label for="date">Date</label>
+                <?php
+                $date = '';
+                $transfer_type = '';
+                if (!empty($model)) {
+                    $date = $model->date;
+                    $transfer_type = $model->transfer_type;
+                }
+                echo DatePicker::widget([
+                    'name' => 'date',
+                    'id' => 'date',
+                    'value' => $date,
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm-dd',
+                        'autoclose'=>true
+                    ]
+                ]) ?>
+            </div>
+            <div class="col-sm-3">
+                <label for="transfer_type">Transfer Type</label>
+                <?= Select2::widget([
+                    'id' => 'transfer_type',
+                    'name' => 'transger_type',
+                    'value' => $transfer_type,
+                    'data' => ArrayHelper::map(TransferType::find()->asArray()->all(), 'id', 'type'),
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Transfer Type'
+                    ]
+                ]) ?>
+            </div>
 
-        $par = ArrayHelper::map(Par::find()->where(['par_number' => $model->par_number]), 'par_number', 'par_number');
-    }
-    ?>
-    <?= $form->field($model, 'par_number')->widget(
-        Select2::class,
-        [
-            'data' => $par,
-            'name' => 'par_number',
-            'id' => 'par_number',
-            'options' => [
-                'placeholder' => 'Search for a Fund Source ...',
-            ],
+            <div class="col-sm-4">
 
-            'pluginOptions' => [
-                'allowClear' => true,
-                'minimumInputLength' => 1,
-                'language' => [
-                    'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                ],
-                'ajax' => [
-                    'url' => Yii::$app->request->baseUrl . '?r=property/search-property',
-                    'dataType' => 'json',
-                    'delay' => 250,
-                    'data' => new JsExpression('function(params) { return {q:params.term ,province: params.province}; }'),
-                    'cache' => true
-                ],
-                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                'templateResult' => new JsExpression('function(par_number) { return par_number.text; }'),
-                'templateSelection' => new JsExpression('function (par_number) { return par_number.text; }'),
-            ],
-        ]
-    ) ?>
-    <table id="par_table">
-        <tr>
-            <th>Property Number</th>
-            <td id="property_number"></td>
-            <th>PAR Number</th>
-            <td id="par_number"></td>
+                <label for="par_number">PAR Number</label>
 
-        </tr>
-        <tr>
-            <th>Quantity</th>
-            <td id="quantity"></td>
-            <th>Amount</th>
-            <td id="amount"></td>
-        </tr>
-        <tr>
-            <th>Article</th>
-            <td id="article"></td>
-            <th>PAR Date</th>
-            <td id="par_date"></td>
-        </tr>
-        <tr>
-            <th>Description</th>
-            <td>
-                <span>Model:</span>
-                <span id="model"></span>
-                <br>
-                <span>Serial Number:</span>
-                <span id="serial_number"></span>
-                <br>
-                <span>IAR Number:</span>
-                <span id="iar_number"></span>
-                <br>
+                <?php
+                $par = '';
+                $par_number  = '';
+                if (!empty($model)) {
+                    $par_number  = $model->par_number;
+                    $par = ArrayHelper::map(Par::find()->where(['par_number' => $model->par_number]), 'par_number', 'par_number');
+                }
+                ?>
+                <?=
+                Select2::widget(
+                    [
+                        'data' => $par,
+                        'name' => 'par_number',
+                        'value' => [$par_number],
+                        'id' => 'par_number',
+                        'options' => [
+                            'placeholder' => 'Search for a PAR ...',
+                        ],
 
-            </td>
-            <th>Recieved By</th>
-            <td id="recieved_by"></td>
-        </tr>
-        <tr>
-            <th>Book</th>
-            <td id="book"></td>
-            <th>Unit of Measure</th>
-            <td id="unit_of_measure"></td>
-        </tr>
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                            'minimumInputLength' => 1,
+                            'language' => [
+                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                            ],
+                            'ajax' => [
+                                'url' => Yii::$app->request->baseUrl . '?r=par/search-par',
+                                'dataType' => 'json',
+                                'delay' => 250,
+                                'data' => new JsExpression('function(params) { return {q:params.term ,province: params.province}; }'),
+                                'cache' => true
+                            ],
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            'templateResult' => new JsExpression('function(par_number) { return par_number.text; }'),
+                            'templateSelection' => new JsExpression('function (par_number) { return par_number.text; }'),
+                        ],
+                    ]
+                )
+                ?>
+            </div>
+        </div>
+        <table id="par_table">
+            <tr>
+                <th>Property Number</th>
+                <td id="property_number"></td>
+                <th>PAR Number</th>
+                <td id="par_no"></td>
 
-        </tbody>
-    </table>
+            </tr>
+            <tr>
+                <th>Quantity</th>
+                <td id="quantity"></td>
+                <th>Amount</th>
+                <td id="amount"></td>
+            </tr>
+            <tr>
+                <th>Article</th>
+                <td id="article"></td>
+                <th>PAR Date</th>
+                <td id="par_date"></td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>
+                    <span>Model:</span>
+                    <span id="model"></span>
+                    <br>
+                    <span>Serial Number:</span>
+                    <span id="serial_number"></span>
+                    <br>
+                    <span>IAR Number:</span>
+                    <span id="iar_number"></span>
+                    <br>
 
-    <?= $form->field($model, 'transfer_type')->widget(Select2::class,[
-        'data'=>ArrayHelper::map(TransferType::find()->asArray()->all(),'id','type'),
-        'pluginOptions'=>[
-            'placeholder'=>'Select Transfer Type'
-        ]
-    ]) ?>
+                </td>
+                <th>Recieved By</th>
+                <td id="recieved_by"></td>
+            </tr>
+            <tr>
+                <th>Book</th>
+                <td id="book"></td>
+                <th>Unit of Measure</th>
+                <td id="unit_of_measure"></td>
+            </tr>
 
-    <?= $form->field($model, 'date')->widget(DatePicker::class,[
-        'pluginOptions'=>[
-            'format'=>'yyyy-mm-dd'
-        ]
-    ]) ?>
+            </tbody>
+        </table>
 
-    <?= $form->field($model, 'reason')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'from')->textInput(['maxlength' => true]) ?>
+        <div class="row">
+            <div class="col-sm-6">
+                <label for="from">From </label>
+                <select class="from" id='from' style="width: 100%;" name="from">
+                    <option></option>
+                </select>
+            </div>
+            <div class="col-sm-6">
+                <label for="to">To</label>
+                <select class="to" id='to' style="width: 100%;" name="to">
+                    <option></option>
+                </select>
+            </div>
+        </div>
 
-    <?= $form->field($model, 'to')->textInput(['maxlength' => true]) ?>
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+
+
+
+
     </div>
-
-    <?php ActiveForm::end(); ?>
 
 </div>
 <style>
+    .panel {
+        padding: 20px;
+    }
+
+    .to {
+        display: none;
+    }
+
+    .from {
+        display: none;
+    }
+
     table,
     th,
     td {
@@ -152,7 +204,120 @@ use yii\widgets\ActiveForm;
 </style>
 <?php
 $js = <<<JS
-    var property_card = $('#ptr-par_number')
+    var property_card = $('#par_number')
+    $('#transfer_type').change(()=>{
+        var selectedText = $("#transfer_type option:selected").html();
+
+        if (selectedText.toLowerCase() == 'donation' || selectedText.toLowerCase() == 'relocate'
+        || selectedText.toLowerCase() == 'disposal'){
+            $.getJSON('/afms/frontend/web/index.php?r=agency/get-agency')
+                .then(function(data) {
+
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.name
+                        })
+                    })
+                    transaction = array
+                    $('#from').select2({
+                        data: transaction,
+                        placeholder: "Select to",
+
+                    }).show()
+                    $('#to').select2({
+                        data: transaction,
+                        placeholder: "Select to",
+
+                    }).show()
+
+                 });
+            
+        }
+        else{
+            $('#from').select2({
+                ajax: {
+                    url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code',
+                    dataType: 'json',
+                    data: function(params) {
+
+                        return {
+                            q: params.term,
+                            page: params.page
+                        };
+                    },
+                    processResults: function(data,params) {
+                        // Transforms the top-level key of the response object to 'items' to 'results'
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: {
+                               more: (params.page * 30) < data.total_count
+                            }
+                        };
+                    }
+                },
+                placeholder:"Select to ",
+                minimumInputLength: 1,
+      
+
+            }).show();
+            $('#to').select2({
+                ajax: {
+                    url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code',
+                    dataType: 'json',
+                    data: function(params) {
+
+                        return {
+                            q: params.term,
+                            page: params.page
+                        };
+                    },
+                    processResults: function(data,params) {
+                        // Transforms the top-level key of the response object to 'items' to 'results'
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: {
+                               more: (params.page * 30) < data.total_count
+                            }
+                        };
+                    }
+                },
+                placeholder:"Select to ",
+                minimumInputLength: 1,
+      
+
+            }).show();
+     
+        }
+        changeFrom()
+    })
+    var employee_data=[]
+    var employee_id=''
+    var employee_name=''
+    var agency_id = ''
+    function changeFrom(){
+        var fromSelect = $('.from');
+       const transfer_type =  $("#transfer_type option:selected").html()
+       console.log(agency_id)
+       if (transfer_type.toLowerCase() == 'donation'
+       || transfer_type.toLowerCase() == 'relocate'
+       ||transfer_type.toLowerCase() == 'disposal'){
+            fromSelect.val(agency_id).trigger('change');
+       }
+       else{
+        var option = new Option( [employee_name],[employee_id], true, true);
+        fromSelect.append(option).trigger('change');
+        fromSelect.trigger({
+            type: 'select2:select',
+            params: {
+            data: employee_data
+            }
+        });
+       }
+    }
     property_card.change(()=>{
 
         $.ajax({
@@ -163,8 +328,7 @@ $js = <<<JS
             },
             success:function(data){
                 var res = JSON.parse(data)
-                console.log(res)
-                $('#par_number').text(res.par_number)
+                $('#par_no').text(res.par_number)
                 $('#property_number').text(res.property_number)
                 $('#article').text(res.article)
                 $('#quantity').text(res.quantity)
@@ -177,14 +341,32 @@ $js = <<<JS
                 $('#iar_number').text(res.iar_number)
                 $('#amount').text(res.acquisition_amount)
                 $('#par_table').show()
+                agency_id = res.agency_id
+                employee_id=res.employee_id
+                employee_name=res.rcv_by_employee_name
+                 employee_data = [
+             
+                    {
+                        id: res.employee_id,
+                        text: res.rcv_by_employee_name
+                    },
+                  
+                ];
+
+                changeFrom()
 
             }
         })
     })
     $(document).ready(()=>{
+        if ($('#transfer_type').val()!=''){
+            $('#transfer_type').trigger('change')
+        }
         if (property_card.val()!=''){
             property_card.trigger('change')
         }
+    
+
     })
 JS;
 $this->registerJs($js);

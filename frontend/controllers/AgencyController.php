@@ -124,4 +124,9 @@ class AgencyController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+    public function actionGetAgency()
+    {
+        $na = (new \yii\db\Query())->select('*')->from('agency')->all();
+        return json_encode($na);
+    }
 }

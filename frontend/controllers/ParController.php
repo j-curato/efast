@@ -167,7 +167,10 @@ class ParController extends Controller
             $query = new Query();
             $query->select('par.par_number as id, par.par_number AS text')
                 ->from('par')
-                ->where(['like', 'par.par_number', $q]);
+                ->join('LEFT JOIN','ptr','par.par_number = ptr.par_number')
+                ->where(['like', 'par.par_number', $q])
+                ->andWhere("ptr.ptr_number IS NULL")
+                ;
 
             $command = $query->createCommand();
             $data = $command->queryAll();
@@ -195,7 +198,9 @@ class ParController extends Controller
             unit_of_measure.unit_of_measure,
             books.`name` as book_name,
             agency.`name` as agency_name,
-            UPPER(recieved_by.employee_name) as rcv_by_employee_name
+            agency.`id` as agency_id,
+            UPPER(recieved_by.employee_name) as rcv_by_employee_name,
+            recieved_by.employee_id
             FROM par
             LEFT JOIN property ON par.property_number = property.property_number
             LEFT JOIN employee_search_view as recieved_by ON par.employee_id  = recieved_by.employee_id

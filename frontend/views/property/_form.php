@@ -18,84 +18,112 @@ use yii\widgets\ActiveForm;
 
 <div class="property-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+
+    <div class="panel panel-default">
+
+        <?php $form = ActiveForm::begin(); ?>
+
+        <div class="row">
+            <div class="col-sm-3">
+                <?= $form->field($model, 'date')->widget(DatePicker::class, [
+                    'name' => 'date',
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Date',
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd'
+
+                    ]
+                ]) ?>
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'book_id')->widget(Select2::class, [
+                    'name' => 'book_id',
+                    'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Book'
+                    ]
+                ]) ?>
+
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'unit_of_measure_id')->widget(Select2::class, [
+                    'name' => 'unit_of_measure_id',
+                    'data' => ArrayHelper::map(UnitOfMeasure::find()->asArray()->all(), 'id', 'unit_of_measure'),
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Unit of Measure'
+                    ]
+                ]) ?>
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'serial_number')->textInput(['maxlength' => true]) ?>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
 
 
-    
-    <?= $form->field($model, 'date')->widget(DatePicker::class, [
-        'name' => 'date',
-        'pluginOptions' => [
-            'placeholder' => 'Select Date',
-            'autoclose' => true,
-            'format' => 'yyyy-mm-dd'
+                <?php
 
-        ]
-    ]) ?>
-    <?= $form->field($model, 'book_id')->widget(Select2::class, [
-        'name' => 'book_id',
-        'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
-        'pluginOptions' => [
-            'placeholder' => 'Select Book'
-        ]
-    ]) ?>
-
-    <?= $form->field($model, 'unit_of_measure_id')->widget(Select2::class, [
-        'name' => 'unit_of_measure_id',
-        'data' => ArrayHelper::map(UnitOfMeasure::find()->asArray()->all(), 'id', 'unit_of_measure'),
-        'pluginOptions' => [
-            'placeholder' => 'Select Unit of Measure'
-        ]
-    ]) ?>
-
-    <?php
-
-    $query = Yii::$app->db->createCommand("SELECT 
-                employee_id ,
-                CONCAT(f_name,' ',LEFT(m_name,1),'. ' , l_name) as `text`
-                FROM 
-                employee
-                WHERE employee.property_custodian  = 1
-            ")
-        ->queryAll();
-    $data = ArrayHelper::map($query, 'employee_id', 'text');
-    ?>
-    <?= $form->field($model, 'employee_id')->widget(Select2::class, [
-        'data' => $data,
-        'pluginOptions' => [
-            'placeholder' => "Select Custodian"
-        ]
+                $query = Yii::$app->db->createCommand("SELECT 
+            employee_id ,
+            CONCAT(f_name,' ',LEFT(m_name,1),'. ' , l_name) as `text`
+            FROM 
+            employee
+            WHERE employee.property_custodian  = 1
+        ")
+                    ->queryAll();
+                $data = ArrayHelper::map($query, 'employee_id', 'text');
+                ?>
+                <?= $form->field($model, 'employee_id')->widget(Select2::class, [
+                    'data' => $data,
+                    'pluginOptions' => [
+                        'placeholder' => "Select Custodian"
+                    ]
 
 
 
-    ]) ?>
+                ]) ?>
+            </div>
+            <div class="col-sm-4">
+                <?= $form->field($model, 'model')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'iar_number')->textInput(['maxlength' => true]) ?>
+            </div>
+            <div class="col-sm-2">
+                <?= $form->field($model, 'iar_number')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'article')->textInput(['maxlength' => true]) ?>
+            </div>
+            <div class="col-sm-2">
+                <?= $form->field($model, 'quantity')->textInput() ?>
 
-    <?= $form->field($model, 'model')->textInput(['maxlength' => true]) ?>
+            </div>
 
-    <?= $form->field($model, 'serial_number')->textInput(['maxlength' => true]) ?>
+        </div>
 
-    <?= $form->field($model, 'quantity')->textInput() ?>
+        <?= $form->field($model, 'article')->textarea(['maxlength' => true]) ?>
+        <?= $form->field($model, 'acquisition_amount')->widget(
+            MaskMoney::class,
+            [
+                'options' => [
+                    'class' => 'amounts',
+                ],
+                'pluginOptions' => [
+                    'prefix' => 'PHP ',
+                    'allowNegative' => true
+                ],
+            ]
+        ) ?>
 
-    <?= $form->field($model, 'acquisition_amount')->widget(
-        MaskMoney::class,
-        [
-            'options' => [
-                'class' => 'amounts',
-            ],
-            'pluginOptions' => [
-                'prefix' => 'PHP ',
-                'allowNegative' => true
-            ],
-        ]
-    ) ?>
-
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <div class="form-group">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        </div>
     </div>
 
     <?php ActiveForm::end(); ?>
 
 </div>
+<style>
+    .panel{
+        padding: 20px;
+    }
+</style>
