@@ -1,5 +1,6 @@
 <?php
 
+use app\models\RaoWithDvSearch;
 use kartik\export\ExportMenu;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
@@ -230,6 +231,86 @@ $this->params['breadcrumbs'][] = $this->title;
             'hiddenFromExport' => true,
         ],
     ];
+    $raoWithDvSearch = new RaoWithDvSearch();
+    $roaWithDvDataProvider = $raoWithDvSearch->search(Yii::$app->request->queryParams);
+    $raoWithDvCol = [
+        'id',
+        'reporting_period',
+        'date',
+        'tracking_number',
+
+        [
+            'label' => 'Obligation Number',
+            'value' => "serial_number"
+        ],
+        'ors_uacs',
+        'ors_account_title',
+        'ors_book',
+        [
+            'label' => 'Allotment Number',
+            'value' => "allotment_serial_number"
+        ],
+        'allotment_book',
+        'allotment_uacs',
+        'allotment_account_title',
+        'mfo_name',
+        'document_name',
+
+
+        "payee",
+        'particular',
+        [
+            'label' => 'Obligation Incured',
+            'attribute' => 'amount',
+            'format' => ['decimal', 2],
+            'pageSummary' => true,
+        ],
+        [
+
+            'label' => "NCA/NTA",
+            'value' => function ($model) {
+                $x = '';
+                if ($model->document_name === 'GARO') {
+                    $x = 'NCA';
+                } else {
+                    $x = 'NTA';
+                }
+                return $x;
+            }
+
+        ],
+        [
+
+            'label' => "CARP/101",
+            'value' => function ($model) {
+                $x = '';
+                if ($model->mfo_name === 'CARP') {
+                    $x = 'CARP';
+                } else {
+                    $x = '101';
+                }
+                return $x;
+            }
+
+        ],
+        'is_cancelled',
+
+        [
+            'label' => 'Total Amount Disbursed',
+            'value' => function ($model) {
+                $query = Yii::$app->db->createCommand("SELECT SUM(dv_aucs_entries.amount_disbursed) as total
+                    FROM dv_aucs_entries
+                    WHERE  dv_aucs_entries.process_ors_id = $model->id
+                     ")->queryScalar();
+                return $query;
+            },
+            'format' => ['decimal', 2]
+        ],
+        'dv_number',
+        'dv_amount_disburse',
+        'dv_cancelled',
+        'cash_cancelled',
+    ];
 
 
     ?>
@@ -247,8 +328,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'toolbar' => [
             [
                 'content' => ExportMenu::widget([
-                    'dataProvider' => $dataProvider3,
-                    'columns' => $exportColumns,
+                    'dataProvider' => $roaWithDvDataProvider,
+                    'columns' => $raoWithDvCol,
                     'filename' => "ORS",
                     'exportConfig' => [
                         ExportMenu::FORMAT_CSV => false,

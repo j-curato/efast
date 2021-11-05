@@ -13,7 +13,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="ptr-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->ptr_number], ['class' => 'btn btn-primary']) ?>
@@ -25,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
     </p>
-    <div class="container">
+    <div class="con">
 
         <table>
             <thead>
@@ -45,7 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <span>_______________________</span>
                         <br>
                         <span>To Accountable Officer/Agency/Fund CLuster:</span>
-                        <span>_______________________</span>
+                        <span>________________________</span>
                     </th>
                     <th colspan="3">
                         <span>PTR No. :</span>
@@ -56,37 +55,67 @@ $this->params['breadcrumbs'][] = $this->title;
                     </th>
                 </tr>
                 <tr>
-                    <th colspan="6" style="width: 100px;">
-                        <div style="width: 600px; border:1px solid red">
+                    <th style="border: 0;" colspan="2"></th>
+                    <th colspan="1" style="border: 0;">
 
 
-                            <span style="width:100px;margin-right: auto;">
-                                <span class="chk_box">....</span>
+                        <span style="width:100px;margin-right: auto;">
+                            <span class="chk_box">
 
-                                Donation
+
+                                <?php
+                                $transfer_type = strtolower($model->transferType->type);
+                                if ($transfer_type === 'donation') {
+                                    echo "<span>&#10003;</span>";
+                                } else {
+                                    echo "<span class='q'>...</span>";
+                                }
+
+                                ?>
                             </span>
+                            Donation
+                        </span>
 
-                            <span style="width:100px;margin-left:auto;">
-                                <span class="chk_box">....</span>
+                        <!-- <span>&#10003;</span> -->
+                        <br>
+                        <span style="right: -10px;">
 
-                                Relocate
+                            <span class="chk_box">
+                                <?php
+                                if ($transfer_type === 'reassignment') {
+                                    echo "<span>&#10003;</span>";
+                                } else {
+                                    echo "<span class='q'>....</span>";
+                                }
+                                ?>
                             </span>
-                            <!-- <span>&#10003;</span> -->
-                            <br>
-                            <span style="width: 30px;">
-
-                                <span class="chk_box">....</span>
-                                Reassignment
-                            </span>
-                            <span style="width: 30px;margin-left:auto;">
-
-                                <span class="chk_box" style="width:12px">....</span>
-                                Others (Specify) __________________
-                            </span>
-                        </div>
-
+                            Reassignment
+                        </span>
 
                     </th>
+                    <th colspan="3" style="border: 0;">
+                        <span>
+                            <span class="chk_box">
+
+                                <?php
+                                if ($transfer_type === 'relocate') {
+                                    echo "<span>&#10003;</span>";
+                                } else {
+                                    echo "<span class='q'>...</span>";
+                                }
+                                ?>
+
+                            </span>
+                            Relocate
+                        </span>
+                        <br>
+                        <span>
+
+                            <span class="chk_box" style="width:12px"><span class='q'>....</span></span>
+                            Others (Specify) __________________
+                        </span>
+                    </th>
+
                 </tr>
                 <tr>
                     <th colspan="2">Date Acquired</th>
@@ -102,39 +131,45 @@ $this->params['breadcrumbs'][] = $this->title;
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="6">
+                    <th colspan="6">
                         <span>Reason for Transfer:</span>
-                    </td>
+                    </th>
                 </tr>
                 <tr>
                     <td></td>
-                    <td>Aprroved By:</td>
-                    <td>Released/Issued By:</td>
-                    <td>Recieved By:</td>
+                    <th>Aprroved By:</th>
+                    <th>Released/Issued By:</th>
+                    <th>Recieved By:</th>
+                    <td></td>
+                    <td></td>
                 </tr>
                 <tr>
-                    <td>Signature:</td>
-                    <td>________________</td>
-                    <td>________________</td>
-                    <td>________________</td>
+                    <th>Signature:</th>
+                    <td>______________________</td>
+                    <td>______________________</td>
+                    <td>______________________</td>
+                    <td colspan="2"></td>
                 </tr>
                 <tr>
-                    <td>Printed Name:</td>
-                    <td>________________</td>
-                    <td>________________</td>
-                    <td>________________</td>
+                    <th>Printed Name:</th>
+                    <td>______________________</td>
+                    <td>______________________</td>
+                    <td>______________________</td>
+                    <td colspan="2"></td>
                 </tr>
                 <tr>
-                    <td>Designation:</td>
-                    <td>________________</td>
-                    <td>________________</td>
-                    <td>________________</td>
+                    <th>Designation:</th>
+                    <td>______________________</td>
+                    <td>______________________</td>
+                    <td>______________________</td>
+                    <td colspan="2"></td>
                 </tr>
                 <tr>
-                    <td>Date:</td>
-                    <td>________________</td>
-                    <td>________________</td>
-                    <td>________________</td>
+                    <th>Date:</th>
+                    <td>______________________</td>
+                    <td>______________________</td>
+                    <td>______________________</td>
+                    <td colspan="2"></td>
                 </tr>
             </tfoot>
         </table>
@@ -142,18 +177,19 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 <style>
-    .container {
+    .con {
         background-color: white;
         padding: 20px;
     }
-    table{
-        margin-left: auto;
-        margin-right: auto;
+
+    tfoot>tr>td,
+    tfoot>tr>th {
+        border: 0;
     }
 
-    [contenteditable="true"] {
-        padding: 20px;
-    }
+
+
+
 
     table,
     th,
@@ -162,15 +198,56 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 12px;
     }
 
+    .q {
+        visibility: hidden;
+    }
+
     .chk_box {
         border: 1px solid black;
-        color: white;
 
     }
 
     @media print {
+
+        @page {
+            margin: 0;
+        }
+
         .chk_box {
-            color: white;
+            color: currentColor !important;
+        }
+
+        .main-footer {
+            display: none;
+        }
+
+        .btn {
+            display: none;
+        }
+
+        .con {
+            padding: 0;
+        }
+
+        table {
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        table,
+        th,
+        td {
+            padding: 5px;
+            font-size: 10px;
+            width: 100%;
+        }
+
+        .main-header {
+            display: none;
+        }
+
+        .q {
+            visibility: hidden;
         }
     }
 </style>

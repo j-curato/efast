@@ -71,4 +71,8 @@ class Ptr extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Par::class, ['par_number' => 'par_number']);
     }
+    public function getTransferType()
+    {
+        return $this->hasOne(TransferType::class, ['id' => 'transfer_type_id']);
+    }
 }

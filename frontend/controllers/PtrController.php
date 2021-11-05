@@ -117,6 +117,11 @@ class PtrController extends Controller
                         $parModel->par_number = Yii::$app->memem->getParNumber();
                         $parModel->property_number = $model->par->property_number;
                         $parModel->agency_id = 1;
+                        $parModel->date = $model->date;
+                        $em = Yii::$app->db->createCommand("SELECT employee_id FROM employee WHERE office ='ro'")->queryScalar();
+                        if (!empty($em)){
+                            $parModel->employee_id = $em;
+                        }
 
                         if ($parModel->save()) {
                             $pc = new PropertyCard();

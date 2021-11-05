@@ -157,7 +157,7 @@ use yii\widgets\ActiveForm;
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-sm-3">
                     <label for="transfer_from">From </label>
                     <!-- <select class="from" id='from' style="width: 100%;" name="from">
                         <option></option>
@@ -166,7 +166,7 @@ use yii\widgets\ActiveForm;
                     <span id="transfer_from" class="transfer_from"></span>
                 </div>
                 <div class="col-sm-6">
-                            <label for=""> To</label>
+                    <label for=""> To</label>
                     <?php
                     $employee = [];
                     $employee_id = '';
@@ -414,9 +414,6 @@ $js = <<<JS
            $('#transfer_from').text(employee_name)
            $('#employee_container').show()
              $('#agency_container').hide()
-//              agency_container
-// employee_container
-
         // $('#from').text(employee_data[employee_id])
         // var option = new Option( [employee_name],[employee_id], true, true);
         // fromSelect.append(option).trigger('change');
@@ -453,6 +450,7 @@ $js = <<<JS
                 $('#par_table').show()
                 agency_name=res.agency_name
                 employee_name=res.rcv_by_employee_name
+                console.log(employee_name)
                 changeFrom()
                
             }
