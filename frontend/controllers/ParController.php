@@ -195,6 +195,7 @@ class ParController extends Controller
             property.iar_number,
             property.model,
             property.serial_number,
+            property_card.pc_number,
             unit_of_measure.unit_of_measure,
             books.`name` as book_name,
             agency.`name` as agency_name,
@@ -207,6 +208,7 @@ class ParController extends Controller
             LEFT JOIN books ON property.book_id = books.id
             LEFT JOIN unit_of_measure ON property.unit_of_measure_id = unit_of_measure.id
             LEFT JOIN agency ON par.agency_id = agency.id
+            LEFT JOIN property_card ON par.par_number = property_card.par_number
             WHERE par.par_number = :par_number
             ")
                 ->bindValue(':par_number', $par_number)
@@ -241,6 +243,15 @@ class ParController extends Controller
         $string = "PC $period-" . $l_num;
 
         return $string;
+    }
+    public function actionGetPar(){
+        if ($_POST){
+            $pc_number = $_POST['id'];
+            $query = Yii::$app->db->createCommand("SELECT par_number  FROM property_card where pc_number =:pc_number")
+            ->bindValue(':pc_number',$pc_number)
+            ->queryScalar();
+            return json_encode($query);
+        }
     }
     
 }

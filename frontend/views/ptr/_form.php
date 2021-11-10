@@ -18,6 +18,16 @@ use yii\widgets\ActiveForm;
 <div class="ptr-form">
 
     <div class="panel panel-default">
+        <div class="row">
+            <div class="col-sm-3">
+
+                <button id="scan" type='button' class='btn btn-primary'>Scan QR</button>
+            </div>
+            <div class="col-sm-3">
+                <video id="preview" style="transform: scaleX(1);"></video>
+            </div>
+        </div>
+
         <form id="ptr_form">
             <div class="row">
                 <div class="col-sm-3">
@@ -145,6 +155,12 @@ use yii\widgets\ActiveForm;
                     <th>Unit of Measure</th>
                     <td id="unit_of_measure"></td>
                 </tr>
+                <tr>
+                    <th>PC Number</th>
+                    <td id="pc_number"></td>
+                    <th></th>
+                    <td></td>
+                </tr>
 
                 </tbody>
             </table>
@@ -246,6 +262,22 @@ use yii\widgets\ActiveForm;
         display: none;
     }
 
+    #preview {
+        display: none;
+        height: 280px;
+        width: 280px;
+        margin: 0;
+        padding: 0;
+        transform: scaleX(1);
+
+    }
+
+    video {
+        transform: scaleX(1);
+        transform: rotateY(180deg);
+        -webkit-transform: rotateY(180deg);
+        /* Safari and Chrome */
+    }
 
     .row {
         margin: 5px;
@@ -285,7 +317,61 @@ use yii\widgets\ActiveForm;
     }
 </style>
 <script>
-    window.location.pathname
+    let scanner = new Instascan.Scanner({
+        video: document.getElementById('preview')
+    });
+    Instascan.Camera.getCameras().then(function(cameras) {
+        if (cameras.length > 0) {
+            scanner.start(cameras[0]);
+        } else {
+            console.error('No cameras found.');
+        }
+    }).catch(function(e) {
+        console.error(e);
+    });
+    scanner.addListener('scan', (c) => {
+        $.ajax({
+            type: 'POST',
+            url: window.location.pathname + '?r=par/get-par',
+            data: {
+                id: c
+            },
+            success: function(data) {
+                var res = JSON.parse(data)
+                var studentSelect = $('#par_number');
+                var option = new Option([res], [res], true, true);
+                studentSelect.append(option).trigger('change');
+
+            }
+        })
+        play()
+        scanner.stop()
+        $('#preview').hide()
+
+    })
+
+    $('#scan').click(() => {
+
+
+        if ($('#preview').is(':visible')) {
+            $('#preview').hide()
+
+        } else {
+            $('#preview').show()
+
+        }
+
+
+
+
+    })
+
+
+    function play() {
+        var beepsound = new Audio(
+            '/afms/frontend/web/beep.mp3');
+        beepsound.play();
+    }
 </script>
 <?php
 $js = <<<JS
@@ -447,10 +533,10 @@ $js = <<<JS
                 $('#serial_number').text(res.serial_number)
                 $('#iar_number').text(res.iar_number)
                 $('#amount').text(res.acquisition_amount)
+                $('#pc_number').text(res.pc_number)
                 $('#par_table').show()
                 agency_name=res.agency_name
                 employee_name=res.rcv_by_employee_name
-                console.log(employee_name)
                 changeFrom()
                
             }

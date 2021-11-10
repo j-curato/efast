@@ -43,9 +43,10 @@ class m211012_084352_create_rao_view extends Migration
             LEFT JOIN authorization_code ON record_allotments.authorization_code_id = authorization_code.id
             LEFT JOIN fund_source ON record_allotments.fund_source_id = fund_source.id
             LEFT JOIN books ON record_allotments.book_id = books.id
-
+            LEFT JOIN process_ors ON process_ors_entries.process_ors_id = process_ors.id
+            WHERE
+            process_ors.is_cancelled = 0
             UNION ALL
-
             SELECT 
             document_recieve.`name` as document_name,
             fund_cluster_code.`name` as fund_cluster_code_name,
