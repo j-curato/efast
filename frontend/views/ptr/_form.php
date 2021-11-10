@@ -24,7 +24,7 @@ use yii\widgets\ActiveForm;
                 <button id="scan" type='button' class='btn btn-primary'>Scan QR</button>
             </div>
             <div class="col-sm-3">
-                <video id="preview" style="transform: scaleX(1);"></video>
+                <video id="preview" style="transform: scaleX(1);" allow="camera"></video>
             </div>
         </div>
 
