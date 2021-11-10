@@ -351,7 +351,15 @@ use yii\widgets\ActiveForm;
     })
 
     $('#scan').click(() => {
-
+        navigator.permissions.query({
+                name: 'camera'
+            })
+            .then((permissionObj) => {
+                console.log(permissionObj.state);
+            })
+            .catch((error) => {
+                console.log('Got error :', error);
+            })
 
         if ($('#preview').is(':visible')) {
             $('#preview').hide()
