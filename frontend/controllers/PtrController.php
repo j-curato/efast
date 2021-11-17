@@ -8,6 +8,7 @@ use Yii;
 use app\models\Ptr;
 use app\models\PtrSearch;
 use app\models\TransferType;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -23,7 +24,35 @@ class PtrController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'create',
+                    'update',
+                    'delete',
+                    'insert-ptr'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'delete',
+                            'insert-ptr'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
+
+
+                ]
+            ],
             'verbs' => [
+
                 'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
@@ -119,7 +148,7 @@ class PtrController extends Controller
                         $parModel->agency_id = 1;
                         $parModel->date = $model->date;
                         $em = Yii::$app->db->createCommand("SELECT employee_id FROM employee WHERE office ='ro'")->queryScalar();
-                        if (!empty($em)){
+                        if (!empty($em)) {
                             $parModel->employee_id = $em;
                         }
 
@@ -129,7 +158,6 @@ class PtrController extends Controller
                             $pc->par_number = $model->par_number;
                             Yii::$app->memem->generatePcQr($pc->pc_number);
                             if ($pc->save()) {
-                              
                             } else {
                                 return json_encode($pc->errors);
                             }
@@ -138,7 +166,6 @@ class PtrController extends Controller
                         }
                     }
                     return $this->redirect(['view', 'id' => $model->ptr_number]);
-                    
                 } else {
                     return json_encode('wala na save');
                 }

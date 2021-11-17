@@ -1081,6 +1081,7 @@ class LiquidationController extends Controller
         if ($_POST) {
             $from_reporting_period = $_POST['from_reporting_period'];
             $to_reporting_period = $_POST['to_reporting_period'];
+            
 
 
             $province = strtolower(Yii::$app->user->identity->province);

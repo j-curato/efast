@@ -24,8 +24,8 @@ class m210316_041421_create_jev_accounting_entries_table extends Migration
             'cashflow_id' => $this->integer(),
             'net_asset_equity_id' => $this->integer(),
             'chart_of_account_id' => $this->integer(),
-            'debit' => $this->double(),
-            'credit' => $this->double(),
+            'debit' => $this->decimal(10,2),
+            'credit' => $this->decimal(10,2),
             'closing_nonclosing'=>$this->string(50),
             'current_noncurrent'=>$this->string(),
             'lvl'=>$this->integer(),
@@ -48,7 +48,7 @@ class m210316_041421_create_jev_accounting_entries_table extends Migration
             'jev_preparation_id',
             '{{%jev_preparation}}',
             'id',
-            'CASCADE'
+            'NO ACTION'
         );
 
         // creates index for column `cashflow_id`
@@ -65,7 +65,7 @@ class m210316_041421_create_jev_accounting_entries_table extends Migration
             'cashflow_id',
             '{{%cash_flow}}',
             'id',
-            'CASCADE'
+            'NO ACTION'
         );
 
         // creates index for column `net_asset_equity_id`
@@ -82,7 +82,7 @@ class m210316_041421_create_jev_accounting_entries_table extends Migration
             'net_asset_equity_id',
             '{{%net_asset_equity}}',
             'id',
-            'CASCADE'
+            'NO ACTION'
         );
 
         // creates index for column `chart_of_account_id`
@@ -99,7 +99,7 @@ class m210316_041421_create_jev_accounting_entries_table extends Migration
             'chart_of_account_id',
             '{{%chart_of_accounts}}',
             'id',
-            'CASCADE'
+            'NO ACTION'
         );
     }
 

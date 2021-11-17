@@ -1,21 +1,21 @@
 <?php
 
-use kartik\grid\GridView;
 use yii\helpers\Html;
+use yii\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\TransferTypeSearch */
+/* @var $searchModel app\models\PpeConditionSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Transfer Types';
+$this->title = 'Ppe Conditions';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="transfer-type-index">
+<div class="ppe-condition-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Transfer Type', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Ppe Condition', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -23,15 +23,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-        'panel'=>[
-            'type'=>Gridview::TYPE_PRIMARY,
-            'heading'=>'Transfer Type'
-        ],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'type',
+            'condition',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

@@ -3,17 +3,16 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\Agency;
-use app\models\AgencySearch;
-use yii\filters\AccessControl;
+use app\models\PpeCondition;
+use app\models\PpeConditionSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * AgencyController implements the CRUD actions for Agency model.
+ * PpeConditionController implements the CRUD actions for PpeCondition model.
  */
-class AgencyController extends Controller
+class PpeConditionController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -21,35 +20,8 @@ class AgencyController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::class,
-                'only' => [
-                    'index',
-                    'view',
-                    'create',
-                    'update',
-                    'delete',
-                    'get-agency'
-                ],
-                'rules' => [
-                    [
-                        'actions' => [
-                            'index',
-                            'view',
-                            'create',
-                            'update',
-                            'delete',
-                            'get-agency'
-                        ],
-                        'allow' => true,
-                        'roles' => ['@']
-                    ],
-
-
-                ]
-            ],
             'verbs' => [
-                'class' => VerbFilter::class,
+                'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -58,12 +30,12 @@ class AgencyController extends Controller
     }
 
     /**
-     * Lists all Agency models.
+     * Lists all PpeCondition models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new AgencySearch();
+        $searchModel = new PpeConditionSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -73,7 +45,7 @@ class AgencyController extends Controller
     }
 
     /**
-     * Displays a single Agency model.
+     * Displays a single PpeCondition model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -86,13 +58,13 @@ class AgencyController extends Controller
     }
 
     /**
-     * Creates a new Agency model.
+     * Creates a new PpeCondition model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Agency();
+        $model = new PpeCondition();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -104,7 +76,7 @@ class AgencyController extends Controller
     }
 
     /**
-     * Updates an existing Agency model.
+     * Updates an existing PpeCondition model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -124,7 +96,7 @@ class AgencyController extends Controller
     }
 
     /**
-     * Deletes an existing Agency model.
+     * Deletes an existing PpeCondition model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -138,23 +110,18 @@ class AgencyController extends Controller
     }
 
     /**
-     * Finds the Agency model based on its primary key value.
+     * Finds the PpeCondition model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Agency the loaded model
+     * @return PpeCondition the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Agency::findOne($id)) !== null) {
+        if (($model = PpeCondition::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
-    }
-    public function actionGetAgency()
-    {
-        $na = (new \yii\db\Query())->select('*')->from('agency')->all();
-        return json_encode($na);
     }
 }

@@ -3,18 +3,17 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\PropertyCard;
-use app\models\PropertyCardSearch;
+use app\models\Rpcppe;
+use app\models\RpcppeSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use Da\QrCode\QrCode;
-use yii\filters\AccessControl;
 
 /**
- * PropertyCardController implements the CRUD actions for PropertyCard model.
+ * RpcppeController implements the CRUD actions for Rpcppe model.
  */
-class PropertyCardController extends Controller
+class RpcppeController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -30,7 +29,6 @@ class PropertyCardController extends Controller
                     'create',
                     'update',
                     'delete',
-                    'property-details',
 
                 ],
                 'rules' => [
@@ -41,7 +39,6 @@ class PropertyCardController extends Controller
                             'create',
                             'update',
                             'delete',
-                            'property-details',
 
                         ],
                         'allow' => true,
@@ -61,12 +58,12 @@ class PropertyCardController extends Controller
     }
 
     /**
-     * Lists all PropertyCard models.
+     * Lists all Rpcppe models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new PropertyCardSearch();
+        $searchModel = new RpcppeSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -76,7 +73,7 @@ class PropertyCardController extends Controller
     }
 
     /**
-     * Displays a single PropertyCard model.
+     * Displays a single Rpcppe model.
      * @param string $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -89,29 +86,55 @@ class PropertyCardController extends Controller
     }
 
     /**
-     * Creates a new PropertyCard model.
+     * Creates a new Rpcppe model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new PropertyCard();
-        if ($model->load(Yii::$app->request->post())) {
-            $model->pc_number = $this->getPcNumber();
-            $this->generateQr($model->pc_number);
-            if ($model->save()) {
-            }
+        $model = new Rpcppe();
 
-            return $this->redirect(['view', 'id' => $model->pc_number]);
-        }
 
         return $this->render('create', [
             'model' => $model,
         ]);
     }
+    public function actionInsert()
+    {
+
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $book_id = $_POST['book_id'];
+            $ppe_condition = $_POST['ppe_condition'];
+
+
+            $certified_by = $_POST['certified_by'];
+            $aprroved_by = $_POST['aprroved_by'];
+            $verified_by = $_POST['verified_by'];
+            $verified_by_pos = null;
+            if (!empty($_POST['rpcppe_id'])) {
+                $model = Rpcppe::findOne($_POST['rpcppe_id']);
+            } else {
+
+                $model = new Rpcppe();
+            }
+
+            $model->rpcppe_number = $this->getRpcppeNumber();
+            $model->reporting_period = $reporting_period;
+            $model->book_id = $book_id;
+            $model->certified_by = $certified_by;
+            $model->approved_by = $aprroved_by;
+            $model->verified_by = $verified_by;
+            $model->verified_pos = $verified_by_pos;
+            if ($model->save()) {
+
+                return $this->redirect(['view', 'id' => $model->rpcppe_number]);
+            }
+        }
+    }
 
     /**
-     * Updates an existing PropertyCard model.
+     * Updates an existing Rpcppe model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param string $id
      * @return mixed
@@ -122,7 +145,7 @@ class PropertyCardController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->pc_number]);
+            return $this->redirect(['view', 'id' => $model->rpcppe_number]);
         }
 
         return $this->render('update', [
@@ -131,7 +154,7 @@ class PropertyCardController extends Controller
     }
 
     /**
-     * Deletes an existing PropertyCard model.
+     * Deletes an existing Rpcppe model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param string $id
      * @return mixed
@@ -145,78 +168,54 @@ class PropertyCardController extends Controller
     }
 
     /**
-     * Finds the PropertyCard model based on its primary key value.
+     * Finds the Rpcppe model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param string $id
-     * @return PropertyCard the loaded model
+     * @return Rpcppe the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = PropertyCard::findOne($id)) !== null) {
+        if (($model = Rpcppe::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    function getPcNumber()
+    public function getRpcppeNumber()
     {
-
-        $query = Yii::$app->db->createCommand("SELECT substring_index(pc_number,'-',-1) as pc_number
-        FROM property_card
-        
-        ORDER BY pc_number DESC LIMIT 1
-        ")->queryScalar();
+        $query = Yii::$app->db->createCommand("SELECT substring_index(rpcppe_number,'-',-1) as q FROM rpcppe ORDER BY q DESC LIMIT 1")->queryScalar();
         $num = 1;
         if (!empty($query)) {
-            $num = $query + 1;
+            $num = intval($query) + 1;
         }
-        $period = date('Y-m');
-        $l_num = substr(str_repeat(0, 5) . $num, -5);
-        $string = "PC $period-" . $l_num;
 
-        return $string;
+        $string = substr(str_repeat(0, 5) . $num, -5);
+        return 'DTI XIII-' . $string;
     }
-    public function generateQr($pc_number)
-    {
-        $text = $pc_number;
-        $path = 'qr_codes';
-        $qrCode = (new QrCode($text))
-            ->setSize(250);
-        header('Content-Type: ' . $qrCode->getContentType());
-        $base_path =  \Yii::getAlias('@webroot');
-        $qrCode->writeFile($base_path . "/qr_codes/$text.png");
-    }
-    public function actionPropertyDetails()
+    public function actionGenerate()
     {
         if ($_POST) {
-            $id = $_POST['id'];
-            $query  = Yii::$app->db->createCommand("SELECT
-            par.par_number,
+            $book = $_POST['book_id'];
+            $ppe_condition = $_POST['ppe_condition'];
+
+            $query = Yii::$app->db->createCommand("SELECT 
+            UPPER(employee_search_view.employee_name) as employee_name,
+            property.*,
+            
             IFNULL(ptr.ptr_number,'') as ptr_number,
-            par.date as par_date,
-            property.property_number,
-            property.quantity,
-            property.acquisition_amount,
-            property.article,
-            property.iar_number,
-            property.model,
-            property.serial_number,
-            property.date as date_acquired,
-            property_card.pc_number,
-            UPPER(recieved_by.employee_name) as accountable_officer
-            FROM property_card
-			LEFT JOIN par ON  property_card.par_number =par.par_number
-            LEFT JOIN property ON par.property_number = property.property_number
-            LEFT JOIN employee_search_view as recieved_by ON par.employee_id  = recieved_by.employee_id
+            IFNULL(transfer_type.type,'') as transfer_type
+            
+            FROM property
+            INNER JOIN par ON property.property_number = par.property_number
+            LEFT JOIN employee_search_view ON par.employee_id = employee_search_view.employee_id
             LEFT JOIN ptr ON par.par_number = ptr.par_number
-            WHERE property_card.pc_number = :pc_number
-          ")
-                ->bindValue(':pc_number', $id)
-                ->queryOne();
+            LEFT JOIN transfer_type ON ptr.transfer_type_id = transfer_type.id
+            WHERE property.book_id = :book_id
+            ORDER BY employee_search_view.employee_id")
+                ->bindValue(':book_id', $book)
+                ->queryAll();
             return json_encode($query);
         }
-
-        return $this->render("qr_scanner");
     }
 }

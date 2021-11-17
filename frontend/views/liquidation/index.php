@@ -309,7 +309,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'placeholder' => 'From',
                             'readOnly' => true,
                             'style' => 'background-color:white;width:120px',
-                            'class'=>'col-sm-3'
+                            'class' => 'col-sm-3'
                         ],
                     ]) .
                     '</span>'

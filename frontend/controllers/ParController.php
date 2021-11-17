@@ -8,6 +8,7 @@ use app\models\ParSearch;
 use app\models\PropertyCard;
 use Da\QrCode\QrCode;
 use yii\db\Query;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -24,6 +25,41 @@ class ParController extends Controller
     public function behaviors()
     {
         return [
+
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'create',
+                    'update',
+                    'delete',
+                    'search-employee',
+                    'search-par',
+                    'par-details',
+                    'get-par',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'delete',
+                            'search-employee',
+                            'search-par',
+                            'par-details',
+                            'get-par',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
+
+
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -167,10 +203,9 @@ class ParController extends Controller
             $query = new Query();
             $query->select('par.par_number as id, par.par_number AS text')
                 ->from('par')
-                ->join('LEFT JOIN','ptr','par.par_number = ptr.par_number')
+                ->join('LEFT JOIN', 'ptr', 'par.par_number = ptr.par_number')
                 ->where(['like', 'par.par_number', $q])
-                ->andWhere("ptr.ptr_number IS NULL")
-                ;
+                ->andWhere("ptr.ptr_number IS NULL");
 
             $command = $query->createCommand();
             $data = $command->queryAll();
@@ -244,14 +279,14 @@ class ParController extends Controller
 
         return $string;
     }
-    public function actionGetPar(){
-        if ($_POST){
+    public function actionGetPar()
+    {
+        if ($_POST) {
             $pc_number = $_POST['id'];
             $query = Yii::$app->db->createCommand("SELECT par_number  FROM property_card where pc_number =:pc_number")
-            ->bindValue(':pc_number',$pc_number)
-            ->queryScalar();
+                ->bindValue(':pc_number', $pc_number)
+                ->queryScalar();
             return json_encode($query);
         }
     }
-    
 }

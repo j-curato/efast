@@ -3,17 +3,18 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\Agency;
-use app\models\AgencySearch;
-use yii\filters\AccessControl;
+use app\models\InventoryReport;
+use app\models\InventoryReportEntries;
+use app\models\InventoryReportSearch;
+use ErrorException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * AgencyController implements the CRUD actions for Agency model.
+ * InventoryReportController implements the CRUD actions for InventoryReport model.
  */
-class AgencyController extends Controller
+class InventoryReportController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -21,35 +22,8 @@ class AgencyController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::class,
-                'only' => [
-                    'index',
-                    'view',
-                    'create',
-                    'update',
-                    'delete',
-                    'get-agency'
-                ],
-                'rules' => [
-                    [
-                        'actions' => [
-                            'index',
-                            'view',
-                            'create',
-                            'update',
-                            'delete',
-                            'get-agency'
-                        ],
-                        'allow' => true,
-                        'roles' => ['@']
-                    ],
-
-
-                ]
-            ],
             'verbs' => [
-                'class' => VerbFilter::class,
+                'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -58,12 +32,12 @@ class AgencyController extends Controller
     }
 
     /**
-     * Lists all Agency models.
+     * Lists all InventoryReport models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new AgencySearch();
+        $searchModel = new InventoryReportSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -73,7 +47,7 @@ class AgencyController extends Controller
     }
 
     /**
-     * Displays a single Agency model.
+     * Displays a single InventoryReport model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -86,16 +60,17 @@ class AgencyController extends Controller
     }
 
     /**
-     * Creates a new Agency model.
+     * Creates a new InventoryReport model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Agency();
+        $model = new InventoryReport();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($_POST) {
+
+            return json_encode($_POST['pc_number']);
         }
 
         return $this->render('create', [
@@ -104,7 +79,7 @@ class AgencyController extends Controller
     }
 
     /**
-     * Updates an existing Agency model.
+     * Updates an existing InventoryReport model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -124,7 +99,7 @@ class AgencyController extends Controller
     }
 
     /**
-     * Deletes an existing Agency model.
+     * Deletes an existing InventoryReport model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -138,23 +113,61 @@ class AgencyController extends Controller
     }
 
     /**
-     * Finds the Agency model based on its primary key value.
+     * Finds the InventoryReport model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Agency the loaded model
+     * @return InventoryReport the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Agency::findOne($id)) !== null) {
+        if (($model = InventoryReport::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function actionGetAgency()
+    public function actionInsert()
     {
-        $na = (new \yii\db\Query())->select('*')->from('agency')->all();
-        return json_encode($na);
+        if ($_POST) {
+            $pc_numbers = $_POST['pc_number'];
+            $transaction = Yii::$app->db->beginTransaction();
+
+            if (!empty($_POST['id'])) {
+                $model = InventoryReport::findOne($_POST['id']);
+                foreach($model->inventoryReportEntries as $val){
+                    $val->delete();
+                }
+
+            } else {
+                $model = new InventoryReport();
+            }
+
+
+            try {
+
+
+                if ($flag = $model->save(false)) {
+
+
+                    foreach ($pc_numbers as $val) {
+
+                        $entries = new InventoryReportEntries();
+                        $entries->pc_number = $val;
+                        $entries->inventory_report_id = $model->id;
+                        if ($entries->save(false)) {
+                        }
+
+                    }
+                }
+                if ($flag) {
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
+
+                }
+            } catch (ErrorException $e) {
+                return json_encode($e->getMessage());
+            }
+        }
     }
 }

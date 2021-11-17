@@ -5,7 +5,9 @@ namespace frontend\controllers;
 use Yii;
 use app\models\Property;
 use app\models\PropertySearch;
+use DateTime;
 use yii\db\Query;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -21,6 +23,36 @@ class PropertyController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'create',
+                    'update',
+                    'delete',
+                    'search-property',
+                    'get-property',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'delete',
+                            'search-property',
+                            'get-property',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
+
+
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -196,6 +228,112 @@ class PropertyController extends Controller
             return json_encode($query);
         }
     }
+    public function actionImport()
+    {
+        if (!empty($_POST)) {
+            $name = $_FILES["file"]["name"];
+
+            $id = uniqid();
+            $file = "transaction/{$id}_{$name}";
+            if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
+            } else {
+                return "ERROR 2: MOVING FILES FAILED.";
+                die();
+            }
+            $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+            $excel = $reader->load($file);
+            $excel->setActiveSheetIndexByName('Property');
+            $worksheet = $excel->getActiveSheet();
+
+            $data = [];
+
+            foreach ($worksheet->getRowIterator(2) as $key => $row) {
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                $cells = [];
+                $y = 0;
+                foreach ($cellIterator as $x => $cell) {
+                    $q = '';
+                    if (
+
+                        $y === 0 ||
+                        $y === 1 ||
+                        $y === 2
+                        || $y === 3
+                        || $y === 4
+                        || $y === 5
+                        || $y === 6
+                        || $y === 7
+                        || $y === 8
+                    ) {
+                        $cells[] = $cell->getFormattedValue();
+                    } else {
+                        $cells[] =   $cell->getValue();
+                    }
+                    $y++;
+                }
+                if (!empty($cells)) {
+                    $d = new DateTime($cells[0]);
+                    $date =  $d->format('Y-m-d');
+                    $book_id =  $cells[1];
+                    $unit_measure = $cells[2];
+                    $serial = $cells[3];
+                    $model = $cells[4];
+                    $iar = $cells[5];
+                    $quantity = $cells[6];
+                    $article = $cells[7];
+                    $amount =  $cells[8];
+                    // return $book_id;
 
 
+                    $p = new Property();
+                    $p->property_number = $this->getPropertyNumber();
+                    $p->book_id = $book_id;
+                    $p->unit_of_measure_id = $unit_measure;
+                    $p->employee_id = 'ro-1';
+                    $p->iar_number = $iar;
+                    $p->article = $article;
+                    $p->model = $model;
+                    $p->serial_number = $serial;
+                    $p->quantity = $quantity;
+                    $p->acquisition_amount = $amount;
+                    $p->date = $date;
+                    if ($p->save(false)) {
+                    }
+                    $data[] = [
+                        $date,
+                        $book_id,
+                        $unit_measure,
+                        $serial,
+                        $model,
+                        $quantity,
+                        $article,
+                        $amount,
+
+                    ];
+                }
+            }
+
+            $column = [
+                'book_id',
+                'dv_aucs_id',
+                'reporting_period',
+                'issuance_date',
+                'mode_of_payment',
+                'check_or_ada_no',
+                'is_cancelled',
+                'ada_number',
+            ];
+            // $ja = Yii::$app->db->createCommand()->batchInsert('cash_disbursement', $column, $data)->execute();
+
+            // return $this->redirect(['index']);
+            // return json_encode(['isSuccess' => true]);
+            ob_clean();
+            echo "<pre>";
+            var_dump($data);
+            echo "</pre>";
+            return ob_get_clean();
+        }
+    }
 }
