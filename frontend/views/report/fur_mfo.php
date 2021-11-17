@@ -341,9 +341,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         <td class='amount'>` + thousands_separators(to_date) + `</td>
                         <td class='amount'>` + thousands_separators(balance) + `</td>
                         <td class='amount'>` + thousands_separators(utilization) + '%' + `</td>
-                        <td style ='text-align:right'>` + mfo_name + `</td>
-                        <td style ='text-align:right'>` + document + `</td>
-                        <td style ='text-align:right'>` + book_name + `</td>
+                        <td >` + mfo_name + `</td>
+                        <td >` + document + `</td>
+                        <td >` + book_name + `</td>
                     
                     </tr>`
                         if (uacs == 5010000000 ||
@@ -355,7 +355,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
 
                             $('#fur_table tbody').append(row)
                         }
-
                         total_allotment += allotment
                         total_prev += prev
                         total_current += current

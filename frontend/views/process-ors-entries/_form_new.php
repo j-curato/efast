@@ -107,6 +107,7 @@ use kartik\select2\Select2;
 
         <table id="transaction_table" class="table table-striped">
             <thead>
+                <th>Entry ID</th>
                 <th>Reporting Period</th>
                 <th>MFO/PAP Code</th>
                 <th>MFO/PAP Code Name</th>
@@ -374,6 +375,7 @@ use kartik\select2\Select2;
                 }
                 var row = `<tr>
                             <td style="display:none"> <input value='${result[i]['raoud_id']}' type='text' name='raoud_id[]' id='raoud_${select_id}' class='raoud_id' /></td>
+                            <td > ${result[i]['raoud_id']}</td>
                             <td > <input  type='month' id='date_${select_id}' name='new_reporting_period[]'  id="new_reporting_period-${select_id}" required /></td>
                             <td> <div class='mfo_pap_code'>${result[i]['mfo_pap_code_code']}</div></td>
                             <td><div class='mfo_pap_name'> ${result[i]['mfo_pap_name']}</div></td>
