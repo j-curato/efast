@@ -34,7 +34,8 @@ class m210930_073031_update_process_ors_new_view extends Migration
                 mfo_pap_code.`name` as mfo_name,
                 document_recieve.`name` as document_name,
                 allotment_book.`name` as allotment_book,
-                ors_book.`name` as ors_book
+                ors_book.`name` as ors_book,
+                EXISTS (SELECT 1 FROM dv_aucs_entries dv WHERE dv.process_ors_id = process_ors_entries.process_ors_id) as with_dv
 
 
         FROM process_ors_entries

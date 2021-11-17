@@ -77,6 +77,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php
     $gridColumns3 = [
         'id',
+        'with_dv',
         'serial_number',
         'reporting_period',
         'tracking_number',
