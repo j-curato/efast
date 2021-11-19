@@ -60,11 +60,22 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-sm-2">
                 <label for="mfo_code">MFO/PAP Code</label>
                 <?php
-
-                $data = Yii::$app->db->createCommand("SELECT 'all' as id, 'ALL' as `new_text`
+                $user = Yii::$app->user->identity->division;
+                if (!empty($user)) {
+                    $data = Yii::$app->db->createCommand("SELECT 'all' as id, 'ALL' as `new_text`
                 UNION
                 SELECT id,CONCAT(code,'-',`name`) as new_text FROM mfo_pap_code
-                 ")->queryAll();
+                WHERE mfo_pap_code.division = :division
+                 ")
+                        ->bindValue(':division', $user)
+                        ->queryAll();
+                } else {
+                    $data = Yii::$app->db->createCommand("SELECT 'all' as id, 'ALL' as `new_text`
+                    UNION
+                    SELECT id,CONCAT(code,'-',`name`) as new_text FROM mfo_pap_code
+                     ")->queryAll();
+                }
+
                 // ->where('code IN (100000100001000,)')
 
                 echo Select2::widget([
@@ -154,6 +165,10 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 <style>
+    .document-row {
+        background-color: #ffff99;
+    }
+
     table,
     th,
     td {
@@ -278,7 +293,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
 
                 var sub_major_name = sub_major_keys[x]
 
-                row = `<tr class='data_row'>
+                row = `<tr class='data_row document-row'>
                         <td colspan='' style='text-align:left;font-weight:bold'>` + sub_major_name + `</td>
                         <td ></td>
                         <td></td>
@@ -290,13 +305,19 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         <td></td>
                         <td></td>
                         </tr>`
-                if (sub_major_name == major_name) {
-                    // $(`#${str}`).after(row)
-                } else {
+                // if (sub_major_name == major_name) {
+                //     // $(`#${str}`).after(row)
+                // } else {
 
-                    $('#fur_table tbody').append(row)
-                }
+                $('#fur_table tbody').append(row)
+                // }
                 var uacs_keys = Object.keys(res[major_name][sub_major_name])
+                var document_total_allotment = 0
+                var document_total_prev = 0
+                var document_total_current = 0
+                var document_total_to_date = 0
+                var document_total_balance = 0
+                var document_total_utilization = 0
                 for (var y = 0; y < uacs_keys.length; y++) {
                     var uacs = uacs_keys[y]
                     // var ors_object_codes_keys = Object.keys(res[major_name][sub_major_name][uacs])
@@ -314,6 +335,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                     var mfo_name = res[major_name][sub_major_name][y]['mfo_name']
                     var book_name = res[major_name][sub_major_name][y]['book_name']
                     var utilization = 0
+                    if (allotment > 0) {
+                        utilization = to_date / allotment * 100
+                    }
                     // if (
                     //     allotment == 0
 
@@ -346,25 +370,45 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         <td >` + book_name + `</td>
                     
                     </tr>`
-                        if (uacs == 5010000000 ||
-                            uacs == 5020000000 ||
-                            uacs == 5060000000
-                        ) {
-                            $(`#${str}`).after(row)
-                        } else {
+                        // if (uacs == 5010000000 ||
+                        //     uacs == 5020000000 ||
+                        //     uacs == 5060000000
+                        // ) {
+                        //     $(`#${str}`).after(row)
+                        // } else {
 
                             $('#fur_table tbody').append(row)
-                        }
+                        // }
                         total_allotment += allotment
                         total_prev += prev
                         total_current += current
                         total_to_date += to_date
                         total_balance += balance
+
+                        document_total_allotment += allotment
+                        document_total_prev += prev
+                        document_total_current += current
+                        document_total_to_date += to_date
+                        document_total_balance += balance
                     }
 
 
 
                 }
+                document_total_utilization = document_total_to_date/document_total_allotment*100
+                row = `<tr class='data_row'>
+                        <td  class='total-bg' colspan='' style='font-weight:bold'>`+ major_name+' '+sub_major_name+` Total</td>
+                        <td class='amount total-bg'>` + thousands_separators(parseFloat(document_total_allotment.toFixed(2))) + `</td>
+                        <td class='amount total-bg'>` + thousands_separators(parseFloat(document_total_prev.toFixed(2))) + `</td>
+                        <td class='amount total-bg'>` + thousands_separators(parseFloat(document_total_current.toFixed(2))) + `</td>
+                        <td class='amount total-bg'>` + thousands_separators(parseFloat(document_total_to_date.toFixed(2))) + `</td>
+                        <td class='amount total-bg'>` + thousands_separators(parseFloat(document_total_balance.toFixed(2))) + `</td>
+                        <td class='amount total-bg'>` + thousands_separators(document_total_utilization) + '%' + `</td>
+                        <td class='total-bg'  ></td>
+                        <td class='total-bg'  ></td>
+                        <td class='total-bg'  ></td>
+                        </tr>`
+                $('#fur_table tbody').append(row)
             }
 
 
@@ -375,23 +419,23 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 total_to_date != 0
             ) {
                 if (total_allotment != 0) {
-                    total_utilization = parseFloat(total_to_date) / parseFloat(total_allotment)
+                    total_utilization = parseFloat(total_to_date) / parseFloat(total_allotment) * 100
 
                 } else {
                     total_utilization = 0
                 }
 
-                row = `<tr class='data_row'>
-                        <td  class='total-bg' colspan='' style='font-weight:bold'>Total</td>
-                        <td class='amount total-bg'>` + thousands_separators(parseFloat(total_allotment.toFixed(2))) + `</td>
-                        <td class='amount total-bg'>` + thousands_separators(parseFloat(total_prev.toFixed(2))) + `</td>
-                        <td class='amount total-bg'>` + thousands_separators(parseFloat(total_current.toFixed(2))) + `</td>
-                        <td class='amount total-bg'>` + thousands_separators(parseFloat(total_to_date.toFixed(2))) + `</td>
-                        <td class='amount total-bg'>` + thousands_separators(parseFloat(total_balance.toFixed(2))) + `</td>
-                        <td class='amount total-bg'>` + thousands_separators(total_utilization) + '%' + `</td>
-                        <td class='total-bg'  ></td>
-                        <td class='total-bg'  ></td>
-                        <td class='total-bg'  ></td>
+                row = `<tr class='data_row' style='background-color:#ffcc99'>
+                        <td   colspan='' style='font-weight:bold'>`+major_name +` Total</td>
+                        <td class='amount '>` + thousands_separators(parseFloat(total_allotment.toFixed(2))) + `</td>
+                        <td class='amount '>` + thousands_separators(parseFloat(total_prev.toFixed(2))) + `</td>
+                        <td class='amount '>` + thousands_separators(parseFloat(total_current.toFixed(2))) + `</td>
+                        <td class='amount '>` + thousands_separators(parseFloat(total_to_date.toFixed(2))) + `</td>
+                        <td class='amount '>` + thousands_separators(parseFloat(total_balance.toFixed(2))) + `</td>
+                        <td class='amount '>` + thousands_separators(total_utilization) + '%' + `</td>
+                        <td   ></td>
+                        <td   ></td>
+                        <td   ></td>
                         </tr>`
                 $('#fur_table tbody').append(row)
             }
@@ -415,7 +459,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             var prev = parseFloat(conso[i]['prev'])
             var current = parseFloat(conso[i]['current'])
             var to_date = parseFloat(conso[i]['to_date'])
-            var utilization = to_date / beginning_balance
+            var utilization = to_date / beginning_balance * 100
             var balance = beginning_balance - to_date
             var row = `<tr>
                 <td  >` + conso[i]['mfo_name'] + `</td>
@@ -436,7 +480,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
 
             total_balance += balance
         }
-        total_utilization = total_to_date / total_beginning_balance
+        total_utilization = total_to_date / total_beginning_balance * 100
         row = `<tr>
                 <td class='total-bg' style='font-weight:bold' colspan='3'>Total</td>
                 <td class='amount total-bg'>` + thousands_separators(total_beginning_balance.toFixed(2)) + `</td>
@@ -464,3 +508,6 @@ $script = <<< JS
 JS;
 $this->registerJs($script);
 ?>
+git pull https://kiotipot1:Fuckthis.1.@github.com/kiotipot1/dti-afms-2.git master
+
+git@github.com:kiotipot1/dti-afms-2.git

@@ -2581,6 +2581,9 @@ class ReportController extends \yii\web\Controller
             if (strtolower($mfo_code) !== 'all') {
 
                 $current_ors->andWhere("saob_rao.mfo_pap_code_id = :mfo_code", ['mfo_code' => $mfo_code]);
+            } 
+            else  if (strtolower($mfo_code) === 'all' && !empty(Yii::$app->user->identity->division)) {
+                $current_ors->andWhere("saob_rao.mfo_pap_code_id IN (SELECT id FROM mfo_pap_code WHERE mfo_pap_code.division = :division) ", ['division' => Yii::$app->user->identity->division]);
             }
 
             $current_ors->groupBy(
@@ -2608,6 +2611,9 @@ class ReportController extends \yii\web\Controller
 
                 $prev_ors->andWhere("saob_rao.mfo_pap_code_id = :mfo_code", ['mfo_code' => $mfo_code]);
             }
+             else  if (strtolower($mfo_code) === 'all' && !empty(Yii::$app->user->identity->division)) {
+                $prev_ors->andWhere("saob_rao.mfo_pap_code_id IN (SELECT id FROM mfo_pap_code WHERE mfo_pap_code.division = :division) ", ['division' => Yii::$app->user->identity->division]);
+            }
 
             $prev_ors->groupBy(
                 "saob_rao.mfo_pap_code_id,
@@ -2616,13 +2622,9 @@ class ReportController extends \yii\web\Controller
                 saob_rao.chart_of_account_id"
             );
 
-
-
-
-
             $sql_current_ors = $current_ors->createCommand()->getRawSql();
             $sql_prev_ors = $prev_ors->createCommand()->getRawSql();
-            $query = Yii::$app->db->createCommand("SELECT
+            $query = Yii::$app->db->createCommand("SELECT 
             mfo_pap_code.`name` as mfo_name,
             document_recieve.`name` as document_name,
             major_accounts.`name` as major_name,
@@ -2690,7 +2692,6 @@ class ReportController extends \yii\web\Controller
 
 
 
-
             $result = ArrayHelper::index($query, 'uacs', [function ($element) {
                 return $element['mfo_name'];
             }, 'document_name', 'book_name']);
@@ -2716,7 +2717,7 @@ class ReportController extends \yii\web\Controller
 
             $result2 = ArrayHelper::index($query, null, [function ($element) {
                 return $element['major_name'];
-            }, 'sub_major_name',]);
+            }, 'document_name',]);
             $conso_saob = array();
             $sort_by_mfo_document = ArrayHelper::index($query, null, [function ($element) {
                 return $element['mfo_name'];
