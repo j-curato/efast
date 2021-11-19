@@ -508,6 +508,3 @@ $script = <<< JS
 JS;
 $this->registerJs($script);
 ?>
-git pull https://kiotipot1:Fuckthis.1.@github.com/kiotipot1/dti-afms-2.git master
-
-git@github.com:kiotipot1/dti-afms-2.git
