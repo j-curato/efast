@@ -404,12 +404,10 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             ) {
                 if (total_allotment != 0) {
                     total_utilization = parseFloat(total_to_date) / parseFloat(total_allotment)*100
-
                 }
                 else{
                     total_utilization = 0
                 }
-
                 row = `<tr class='data_row'>
                         <td colspan='' style='font-weight:bold'>Total</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_allotment.toFixed(2))) + `</td>

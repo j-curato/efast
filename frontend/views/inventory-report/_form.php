@@ -115,7 +115,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
                         <?php
-                        $id='';
+                        $id = '';
                         if (!empty($model->id)) {
                             $id = $model->id;
 
@@ -409,7 +409,19 @@ SweetAlertAsset::register($this);
 
         //     }
         // })
-        detailsApi()
+
+        $.when(detailsApi()).done(() => {
+
+
+            setTimeout(function() {
+                addToList()
+            }, 500);
+
+        })
+
+
+
+
         play()
     })
 

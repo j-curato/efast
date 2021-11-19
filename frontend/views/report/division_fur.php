@@ -225,7 +225,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 // var conso = res.conso
                 mfo = res.mfo_pap
                 allotment_balances = res.allotments
-                console.log(mfo)
                 addData(res.result)
                 // addToSummaryTable(res.conso_saob)
 
@@ -294,7 +293,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                             utilization = 0
                         }
 
-                        console.log(utilization)
                         row = `<tr class='data_row'>
                       
                         <td colspan=''  >` + major_name + `</td>
@@ -327,9 +325,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         </tr>`
 
                 $(`#${str}`).after(row)
-                console.log(total_to_date, total_allotment)
                 var ut = parseFloat(total_to_date) / parseFloat(total_allotment)
-                console.log(ut)
                 row = `<tr class='data_row'>
                         <td ></td>
                         <td ></td>

@@ -50,6 +50,7 @@ class ReportController extends \yii\web\Controller
                     'budget-year-fur',
                     'saobs',
                     'division-fur',
+                    'fur-mfo',
                     'git-pull',
                     'cadadr',
                     'annex3',
@@ -122,6 +123,16 @@ class ReportController extends \yii\web\Controller
                         ],
                         'allow' => true,
                         'roles' => ['province', 'super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'saobs',
+                            'division-fur',
+                            'fur-mfo',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['saob', 'fur-mfo', 'fur-ro', 'super-user']
                     ],
 
 
@@ -1878,7 +1889,7 @@ class ReportController extends \yii\web\Controller
             $division = !empty($_POST['division']) ? $_POST['division'] : '';
             $document_recieve = $_POST['document_recieve'];
 
-            if (Yii::$app->user->can('department-offices')) {
+            if (!empty(Yii::$app->user->identity->division)) {
                 $division = Yii::$app->user->identity->division;
             }
             $current_ors = new Query();
@@ -1988,31 +1999,32 @@ class ReportController extends \yii\web\Controller
             }, 'mfo_name', 'document_name']);
             $mfo = Yii::$app->db->createCommand("SELECT * FROM mfo_pap_code")->queryAll();
             $mfo_final = ArrayHelper::index($mfo, null, 'name');
-            return json_encode(['result' => $result, 'mfo_pap' => $mfo_final]);
-            echo "<pre>";
-            var_dump($result);
-            echo "</pre>";
-            die();
+            return json_encode(['result' => $result,'mfo_pap' => $mfo_final]);
+            // 
+            // echo "<pre>";
+            // var_dump($result);
+            // echo "</pre>";
+            // die();
 
-            $allotment_total = array();
-            foreach ($result as $mfo => $val1) {
-                foreach ($val1 as $document => $val2) {
-                    foreach ($val2 as $uacs => $val3) {
-                        $allot = floatval($result[$mfo][$document][$uacs]['allotment']);
-                        if ($allot != 0) {
+            // $allotment_total = array();
+            // foreach ($result as $mfo => $val1) {
+            //     foreach ($val1 as $document => $val2) {
+            //         foreach ($val2 as $uacs => $val3) {
+            //             $allot = floatval($result[$mfo][$document][$uacs]['allotment']);
+            //             if ($allot != 0) {
 
-                            $allotment_total[$mfo][$document][$uacs] = $allot;
-                        }
-                    }
-                }
-            }
-            $mfo = Yii::$app->db->createCommand("SELECT * FROM mfo_pap_code")->queryAll();
-            $mfo_final = ArrayHelper::index($mfo, null, 'name');
-            $result2 = ArrayHelper::index($query, null, [function ($element) {
-                return $element['division'];
-            }, 'mfo_name', 'major_name', 'sub_major_name',]);
+            //                 $allotment_total[$mfo][$document][$uacs] = $allot;
+            //             }
+            //         }
+            //     }
+            // }
+            // $mfo = Yii::$app->db->createCommand("SELECT * FROM mfo_pap_code")->queryAll();
+            // $mfo_final = ArrayHelper::index($mfo, null, 'name');
+            // $result2 = ArrayHelper::index($query, null, [function ($element) {
+            //     return $element['division'];
+            // }, 'mfo_name', 'major_name', 'sub_major_name',]);
 
-            return json_encode(['result' => $result2, 'allotments' => $allotment_total, 'mfo_pap' => $mfo_final]);
+            // return json_encode(['result' => $result2, 'allotments' => $allotment_total, 'mfo_pap' => $mfo_final]);
         }
         return $this->render('division_fur');
     }
@@ -2581,8 +2593,7 @@ class ReportController extends \yii\web\Controller
             if (strtolower($mfo_code) !== 'all') {
 
                 $current_ors->andWhere("saob_rao.mfo_pap_code_id = :mfo_code", ['mfo_code' => $mfo_code]);
-            } 
-            else  if (strtolower($mfo_code) === 'all' && !empty(Yii::$app->user->identity->division)) {
+            } else  if (strtolower($mfo_code) === 'all' && !empty(Yii::$app->user->identity->division)) {
                 $current_ors->andWhere("saob_rao.mfo_pap_code_id IN (SELECT id FROM mfo_pap_code WHERE mfo_pap_code.division = :division) ", ['division' => Yii::$app->user->identity->division]);
             }
 
@@ -2610,8 +2621,7 @@ class ReportController extends \yii\web\Controller
             if (strtolower($mfo_code) !== 'all') {
 
                 $prev_ors->andWhere("saob_rao.mfo_pap_code_id = :mfo_code", ['mfo_code' => $mfo_code]);
-            }
-             else  if (strtolower($mfo_code) === 'all' && !empty(Yii::$app->user->identity->division)) {
+            } else  if (strtolower($mfo_code) === 'all' && !empty(Yii::$app->user->identity->division)) {
                 $prev_ors->andWhere("saob_rao.mfo_pap_code_id IN (SELECT id FROM mfo_pap_code WHERE mfo_pap_code.division = :division) ", ['division' => Yii::$app->user->identity->division]);
             }
 
@@ -2750,6 +2760,10 @@ class ReportController extends \yii\web\Controller
             return json_encode(['result' => $result2, 'allotments' => $allotment_total, 'conso_saob' => $conso_saob]);
         }
         return $this->render('fur_mfo');
+    }
+    public function actionPass()
+    {
+        echo substr(md5(uniqid(mt_rand(), true)), 0, 8);
     }
 }
 

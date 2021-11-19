@@ -35,7 +35,7 @@ class DvAucs extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['net_amount_paid'], 'number'],
+            [['net_amount_paid','tracking_sheet_id'], 'number'],
             [['dv_number', 'tax_withheld', 'other_trust_liability_withheld'], 'string', 'max' => 255],
             [['reporting_period'], 'string', 'max' => 50],
         ];
@@ -56,6 +56,7 @@ class DvAucs extends \yii\db\ActiveRecord
             'net_amount_paid' => 'Net Amount Paid',
             'transaction_begin_time' => 'Transaction Begin Time',
             'in_timestamp' => 'IN Timestamp',
+            'tracking_sheet_id' => 'IN Timestamp',
         ];
     }
 

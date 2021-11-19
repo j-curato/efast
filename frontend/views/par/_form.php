@@ -62,7 +62,7 @@ use yii\widgets\ActiveForm;
                     'name' => 'property_number',
                     'id' => 'property_number',
                     'options' => [
-                        'placeholder' => 'Search for a Fund Source ...',
+                        'placeholder' => 'Search Property Number ...',
 
                     ],
 

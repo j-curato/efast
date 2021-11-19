@@ -138,26 +138,18 @@ class InventoryReportController extends Controller
                 foreach($model->inventoryReportEntries as $val){
                     $val->delete();
                 }
-
             } else {
                 $model = new InventoryReport();
             }
-
-
             try {
-
-
                 if ($flag = $model->save(false)) {
 
-
                     foreach ($pc_numbers as $val) {
-
                         $entries = new InventoryReportEntries();
                         $entries->pc_number = $val;
                         $entries->inventory_report_id = $model->id;
                         if ($entries->save(false)) {
                         }
-
                     }
                 }
                 if ($flag) {
