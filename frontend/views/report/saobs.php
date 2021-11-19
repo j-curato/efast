@@ -339,6 +339,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                     var allotment_uacs = res[major_name][sub_major_name][y]['major_object_code']
                     var mfo_name = res[major_name][sub_major_name][y]['mfo_name']
                     var utilization = 0
+                    if (allotment > 0) {
+                        utilization = to_date / allotment * 100
+                    }
                     // if (
                     //     allotment == 0
 
@@ -400,7 +403,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 total_to_date != 0
             ) {
                 if (total_allotment != 0) {
-                    total_utilization = parseFloat(total_to_date) / parseFloat(total_allotment)
+                    total_utilization = parseFloat(total_to_date) / parseFloat(total_allotment)*100
 
                 }
                 else{
@@ -440,7 +443,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             var prev = parseFloat(conso[i]['prev'])
             var current = parseFloat(conso[i]['current'])
             var to_date = parseFloat(conso[i]['to_date'])
-            var utilization = to_date / beginning_balance
+            var utilization = to_date / beginning_balance*100
             var balance = beginning_balance - to_date
             var row = `<tr>
                 <td>` + conso[i]['mfo_name'] + `</td>
@@ -460,7 +463,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
 
             total_balance += balance
         }
-        total_utilization = total_to_date / total_beginning_balance
+        total_utilization = total_to_date / total_beginning_balance *100
         row = `<tr>
                 <td style='font-weight:bold' colspan='2'>Total</td>
                 <td class='amount'>` + thousands_separators(total_beginning_balance.toFixed(2)) + `</td>
