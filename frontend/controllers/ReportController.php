@@ -1999,7 +1999,7 @@ class ReportController extends \yii\web\Controller
             }, 'mfo_name', 'document_name']);
             $mfo = Yii::$app->db->createCommand("SELECT * FROM mfo_pap_code")->queryAll();
             $mfo_final = ArrayHelper::index($mfo, null, 'name');
-            return json_encode(['result' => $result,'mfo_pap' => $mfo_final]);
+            return json_encode(['result' => $result, 'mfo_pap' => $mfo_final]);
             // 
             // echo "<pre>";
             // var_dump($result);
@@ -2761,10 +2761,71 @@ class ReportController extends \yii\web\Controller
         }
         return $this->render('fur_mfo');
     }
-    public function actionPass()
+    public function actionDvCadadr()
     {
-        echo substr(md5(uniqid(mt_rand(), true)), 0, 8);
+        if ($_POST) {
+            $from_reporting_period = $_POST['from_reporting_period'];
+            $to_reporting_period = $_POST['to_reporting_period'];
+            $book = $_POST['book'];
+
+
+            $query = Yii::$app->db->createCommand("SELECT * FROM dv_cadadr
+            WHERE 
+            reporting_period >= :from_reporting_period
+            AND reporting_period <= :to_reporting_period
+            AND book_name = :book
+            ORDER BY issuance_date
+            ")
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->bindValue(':to_reporting_period', $to_reporting_period)
+                ->bindValue(':book', $book)
+                ->queryAll();
+            $begin_balance = Yii::$app->db->createCommand("SELECT 
+            IFNULL(SUM(total_nca_recieve) - (SUM(total_check_issued)+SUM(total_ada_issued)),0) as begin_balance
+           FROM cadadr_balances
+           WHERE 
+           cadadr_balances.reporting_period < :from_reporting_period 
+           AND cadadr_balances.book_name = :book
+           ")
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->bindValue(':book', $book)
+                ->queryScalar();
+            $adjustment_begin_balance = Yii::$app->db->createCommand("SELECT
+            SUM(cash_adjustment.amount) as total_amount
+            FROM  cash_adjustment
+            LEFT JOIN books ON cash_adjustment.book_id = books.id
+            WHERE 
+            cash_adjustment.reporting_period < :from_reporting_period 
+            AND books.name = :book")
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->bindValue(':book', $book)
+                ->queryScalar();
+            $begin_balance  += $adjustment_begin_balance;
+            $adjustment = Yii::$app->db->createCommand("SELECT * 
+           FROM cash_adjustment
+           WHERE reporting_period <= :to_reporting_period
+           AND reporting_period >= :from_reporting_period
+           ")
+                ->bindValue(':to_reporting_period', $to_reporting_period)
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->queryAll();
+            // $result2 = ArrayHelper::index($query, null, [function ($element) {
+            //     return $element['division'];
+            // }, 'mfo_name', 'major_name', 'sub_major_name',]);
+            // echo "<pre>";
+            // var_dump($query);
+            // echo "</pre>";
+            // die();
+            return json_encode(['results' => $query, 'begin_balance' => $begin_balance, 'adjustment' => $adjustment]);
+        }
+        return $this->render('dv_cadadr');
     }
+
+
+    // public function actionPass()
+    // {
+    //     echo substr(md5(uniqid(mt_rand(), true)), 0, 8);
+    // }
 }
 
 // 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

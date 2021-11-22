@@ -11,7 +11,7 @@ use yii\helpers\ArrayHelper;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = "CADADR";
+$this->title = "CADADR per DV";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index " style="background-color: white;padding:20px">
@@ -229,7 +229,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         $('#dots5').show()
         $.ajax({
             type: 'POST',
-            url: window.location.pathname + '?r=report/cadadr',
+            url: window.location.pathname + '?r=report/dv-cadadr',
             data: $("#filter").serialize(),
             success: function(data) {
                 var res = JSON.parse(data)
@@ -269,6 +269,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 <td  class='amount'></td>
                 <td class='amount' ></td>
                 <td  class='amount'>` + thousands_separators(balance) + `</td>
+                  
                 </tr>`
         var total_nca_recieve = 0
         var total_check_issued = 0
@@ -356,7 +357,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
 
             var b_balance = balance
             balance = parseFloat(balance.toFixed(2)) - parseFloat(adjust_amount)
-            console.log(balance, adjust_amount)
             row = `<tr class='data_row'>
                 <td colspan='' ></td>
                 <td colspan='' ></td>

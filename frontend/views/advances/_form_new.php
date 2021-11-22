@@ -445,7 +445,8 @@ $script = <<<JS
         })
     })
    function subAccounts(){
-        return $.getJSON('afms/frontend/web/index.php?r=database-view/sub-accounts')
+       
+        return $.getJSON(window.location.pathname + '?r=database-view/sub-accounts')
     }
     $.when(subAccounts()).done(function(sub_accounts){
                 var array = []

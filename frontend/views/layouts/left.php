@@ -306,6 +306,7 @@
                                     'url' => '#',
                                     'items' => [
                                         Yii::$app->user->can('super-user') ?     ['label' => 'CADADR', 'icon' => 'circle-o', 'url' => ['/report/cadadr'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'CADADR per DV', 'icon' => 'circle-o', 'url' => ['/report/dv-cadadr'],] : [],
                                     ],
                                 ],
                             ],
