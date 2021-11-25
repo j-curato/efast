@@ -230,7 +230,7 @@ $this->title = 'Dashboard';
                                 <span>
                                     <?php
                                     $result = ArrayHelper::index($total_cash_disbursed, null, 'name');
-                                   
+
                                     // ob_clean();
                                     // echo "<pre>";
                                     // var_dump($result['Fund 01'][0]['total_disbursed']);
@@ -526,9 +526,31 @@ $this->title = 'Dashboard';
 
 <script>
     let x = undefined;
+
+    $('#update_cloud').click(function(e) {
+        e.preventDefault();
+        $.post(window.location.pathname + '?r=sync-database/ro-lan-to-cloud', // url
+            {
+                myData: ''
+            }, // data to be submit
+            function(data) { // success callback
+                var d = JSON.parse(data)
+                // console.log(d)
+                $.ajax({
+                    type: "post",
+                    url:  'https://fisdticaraga.com/index.php?r=sync-database/update-database',
+                    data: {
+                        json: JSON.stringify(data)
+                    },
+                    dataType: 'json',
+                    success: function(newdata) {
+                        console.log(newdata)
+                    }
+                })
+            })
+    })
     $(document).ready(function() {
         $.getJSON(window.location.pathname + '?r=site/q').then(function(data) {
-            console.log(data)
             cal(data)
         })
     })
@@ -581,7 +603,6 @@ $script = <<<JS
             var num_parts = number.toString().split(".");
             num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             return num_parts.join(".");
-            console.log(num)
         }
 
 
@@ -597,7 +618,6 @@ $script = <<<JS
             url:window.location.pathname + '?r=report/get-cash',
             success:function(data){
                 var res = JSON.parse(data)
-                console.log(res)
                 $('#total_cash_disbursed').text(thousands_separators(res['cash_balance']))
                 $('#total_amount_pending').text(thousands_separators(res['total_amount_pending']))
                 $('#cash_balance_per_accounting').text(thousands_separators(res['cash_balance_per_accounting']))
@@ -612,22 +632,7 @@ $script = <<<JS
               var url = window.location.pathname + '?r=event/create&date='+date
             $('#genericModal').modal('show').find('#modalContent').load(url);
         })
-        $('#update_cloud').click(function(){
-            $.post(window.location.pathname +'?r=sync-database/ro-lan-to-cloud',   // url
-                    { myData: '' }, // data to be submit
-                    function(data ) {// success callback
-                        var d = JSON.parse(data)
-                        $.ajax({
-                            type:"post",
-                            url:window.location.pathname +'?r=sync-database/update-database',
-                            data: {json: JSON.stringify(data)},
-                            dataType: 'json',
-                            success:function(newdata){
-                                console.log(JSON.parse(newdata))
-                            }
-                        })
-                    })
-        })
+   
 JS;
 $this->registerJs($script);
 ?>

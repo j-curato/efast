@@ -15,7 +15,7 @@ class m211012_084352_create_rao_view extends Migration
         $sql = <<<SQL
         DROP VIEW IF EXISTS rao;
         CREATE VIEW rao as 
-            SELECT
+        SELECT
             document_recieve.`name` as document_name,
             fund_cluster_code.`name` as fund_cluster_code_name,
             CONCAT(financing_source_code.`name`,'-',financing_source_code.`description`) as financing_source_code_name,
@@ -29,8 +29,18 @@ class m211012_084352_create_rao_view extends Migration
             books.`name` as book_name,
             process_ors_entries.amount as ors_amount,
             0 as allotment_amount,
-            mfo_pap_code.division
+            mfo_pap_code.division,
+                record_allotments.serial_number as allotment_number,
+                process_ors.serial_number as ors_number,
+        payee.account_name as payee,
+        `transaction`.particular ,
+        process_ors.is_cancelled
+
             FROM process_ors_entries
+                LEFT JOIN process_ors ON process_ors_entries.process_ors_id = process_ors.id
+                LEFT JOIN `transaction` ON process_ors.transaction_id = `transaction`.id
+        LEFT JOIN payee ON `transaction`.payee_id = payee.id
+
             LEFT JOIN record_allotment_entries ON process_ors_entries.record_allotment_entries_id = record_allotment_entries.id
             LEFT JOIN record_allotments ON record_allotment_entries.record_allotment_id = record_allotments.id
             LEFT JOIN mfo_pap_code ON record_allotments.mfo_pap_code_id = mfo_pap_code.id
@@ -43,25 +53,31 @@ class m211012_084352_create_rao_view extends Migration
             LEFT JOIN authorization_code ON record_allotments.authorization_code_id = authorization_code.id
             LEFT JOIN fund_source ON record_allotments.fund_source_id = fund_source.id
             LEFT JOIN books ON record_allotments.book_id = books.id
-            LEFT JOIN process_ors ON process_ors_entries.process_ors_id = process_ors.id
-            WHERE
-            process_ors.is_cancelled = 0
+
             UNION ALL
+
             SELECT 
-            document_recieve.`name` as document_name,
-            fund_cluster_code.`name` as fund_cluster_code_name,
-            CONCAT(financing_source_code.`name`,'-',financing_source_code.`description`) as financing_source_code_name,
-            fund_category_and_classification_code.`name` as fund_category_and_classification_code_name,
-            authorization_code.`name` as authorization_code_name,
-            mfo_pap_code.`name` as mfo_pap_code_name,
-            fund_source.`name` as fund_source_name,
-            record_allotments.reporting_period,
-            chart_of_accounts.uacs,
-            chart_of_accounts.general_ledger,
-            books.`name` as book_name,
+
+            CONVERT(document_recieve.`name` USING utf8) as document_name,
+        CONVERT( fund_cluster_code.`name`USING utf8) as fund_cluster_code_name,
+            CONCAT(financing_source_code.`name`,'-',financing_source_code.`description`)  as financing_source_code_name,
+            CONVERT(fund_category_and_classification_code.`name`USING utf8) as fund_category_and_classification_code_name,
+            CONVERT(authorization_code.`name`USING utf8) as authorization_code_name,
+            CONVERT(mfo_pap_code.`name`USING utf8) as mfo_pap_code_name,
+            CONVERT(fund_source.`name`USING utf8) as fund_source_name,
+            CONVERT(record_allotments.reporting_period USING utf8) as reporting_period,
+            CONVERT(chart_of_accounts.uacs USING utf8) as uacs,
+            CONVERT(chart_of_accounts.general_ledger USING utf8)as general_ledger,
+            CONVERT(books.`name` USING utf8) as book_name,
             0 as ors_amount,
-            record_allotment_entries.amount as allotment_amount,
-            mfo_pap_code.division
+            CONVERT(record_allotment_entries.amount USING utf8) as allotment_amount,
+        CONVERT( mfo_pap_code.division USING utf8) as division,
+            record_allotments.serial_number as allotment_number,
+            '' as ors_number,
+            '' as payee,
+            '' as particular ,
+            '' as is_cancelled
+
             FROM record_allotment_entries
             LEFT JOIN record_allotments ON record_allotment_entries.record_allotment_id = record_allotments.id
             LEFT JOIN mfo_pap_code ON record_allotments.mfo_pap_code_id = mfo_pap_code.id
@@ -72,10 +88,7 @@ class m211012_084352_create_rao_view extends Migration
             LEFT JOIN fund_category_and_classification_code ON record_allotments.fund_category_and_classification_code_id = fund_category_and_classification_code.id
             LEFT JOIN authorization_code ON record_allotments.authorization_code_id = authorization_code.id
             LEFT JOIN fund_source ON record_allotments.fund_source_id = fund_source.id
-            LEFT JOIN books ON record_allotments.book_id = books.id
-
-
-
+            LEFT JOIN books ON record_allotments.book_id = books.id 
 
 
         SQL;

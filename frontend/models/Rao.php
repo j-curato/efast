@@ -66,6 +66,7 @@ class Rao extends \yii\db\ActiveRecord
             'ors_amount' => 'Ors Amount',
             'allotment_amount' => 'Allotment Amount',
             'division' => 'Division',
+            'is_cancelled' => 'Cancelled',
         ];
     }
 }

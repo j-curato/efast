@@ -20,40 +20,40 @@ $fieldOptions2 = [
 ];
 ?>
 
-<div class="login-box">
-    <div class="login-logo">
-        <a href="#"><b>DTI</b> System</a>
-    </div>
-    <!-- /.login-logo -->
-    <div class="login-box-body">
-        <p class="login-box-msg">Sign in to start your session</p>
 
-        <?php $form = ActiveForm::begin(['id' => 'login-form', 'enableClientValidation' => false]); ?>
-
-        <?= $form
-            ->field($model, 'username', $fieldOptions1)
-            ->label(false)
-            ->textInput(['placeholder' => $model->getAttributeLabel('username')]) ?>
-
-        <?= $form
-            ->field($model, 'password', $fieldOptions2)
-            ->label(false)
-            ->passwordInput(['placeholder' => $model->getAttributeLabel('password')]) ?>
-
-        <div class="row">
-            <div class="col-xs-8">
-                <?= $form->field($model, 'rememberMe')->checkbox() ?>
-            </div>
-            <!-- /.col -->
-            <div class="col-xs-4">
-                <?= Html::submitButton('Sign in', ['class' => 'btn btn-primary btn-block btn-flat', 'name' => 'login-button']) ?>
-            </div>
-            <!-- /.col -->
+    <div class="login-box panel panel-default">
+        <div class="login-logo">
+            <a href="#"><b>DTI</b> System</a>
         </div>
+        <!-- /.login-logo -->
+        <div class="login-box-body">
+
+            <?php $form = ActiveForm::begin(['id' => 'login-form', 'enableClientValidation' => false]); ?>
+
+            <?= $form
+                ->field($model, 'username', $fieldOptions1)
+                ->label(false)
+                ->textInput(['placeholder' => $model->getAttributeLabel('username')]) ?>
+
+            <?= $form
+                ->field($model, 'password', $fieldOptions2)
+                ->label(false)
+                ->passwordInput(['placeholder' => $model->getAttributeLabel('password')]) ?>
+
+            <div class="row">
+                <div class="col-xs-8">
+                    <?= $form->field($model, 'rememberMe')->checkbox() ?>
+                </div>
+                <!-- /.col -->
+                <div class="col-xs-4">
+                    <?= Html::submitButton('Sign in', ['class' => 'btn btn-primary btn-block btn-flat', 'name' => 'login-button']) ?>
+                </div>
+                <!-- /.col -->
+            </div>
 
 
-        <?php ActiveForm::end(); ?>
-        <!-- 
+            <?php ActiveForm::end(); ?>
+            <!-- 
         <div class="social-auth-links text-center">
             <p>- OR -</p>
             <a href="#" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i> Sign in
@@ -61,11 +61,25 @@ $fieldOptions2 = [
             <a href="#" class="btn btn-block btn-social btn-google-plus btn-flat"><i class="fa fa-google-plus"></i> Sign
                 in using Google+</a>
         </div> -->
-        <!-- /.social-auth-links -->
+            <!-- /.social-auth-links -->
 
-        <!-- <a href="#">I forgot my password</a><br> -->
-        <!-- <a href="index.php?r=site/signup" class="text-center">Register a new membership</a> -->
+            <!-- <a href="#">I forgot my password</a><br> -->
+            <!-- <a href="index.php?r=site/signup" class="text-center">Register a new membership</a> -->
 
-    </div>
-    <!-- /.login-box-body -->
-</div><!-- /.login-box -->
+        </div>
+        <!-- /.login-box-body -->
+    </div><!-- /.login-box -->
+
+
+<style>
+ 
+ .login-page{
+     background-color: #E4EAF3;
+ }
+ .login-box, .register-box {
+    width: 400px;
+    padding: 1em;
+    margin: 15% auto;   
+}
+
+</style>

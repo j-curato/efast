@@ -2047,26 +2047,59 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->bindValue(':book', $book)
                 ->queryAll();
-            $begin_balance = Yii::$app->db->createCommand("SELECT 
-            IFNULL(SUM(total_nca_recieve) - (SUM(total_check_issued)+SUM(total_ada_issued)),0) as begin_balance
-           FROM cadadr_balances
-           WHERE 
-           cadadr_balances.reporting_period < :from_reporting_period 
-           AND cadadr_balances.book_name = :book
-           ")
-                ->bindValue(':from_reporting_period', $from_reporting_period)
-                ->bindValue(':book', $book)
-                ->queryScalar();
-            $adjustment_begin_balance = Yii::$app->db->createCommand("SELECT
-            SUM(cash_adjustment.amount) as total_amount
-            FROM  cash_adjustment
-            LEFT JOIN books ON cash_adjustment.book_id = books.id
-            WHERE 
-            cash_adjustment.reporting_period < :from_reporting_period 
-            AND books.name = :book")
-                ->bindValue(':from_reporting_period', $from_reporting_period)
-                ->bindValue(':book', $book)
-                ->queryScalar();
+            $d = new DateTime($from_reporting_period);
+            $w = new DateTime('2021-10');
+            $begin_balance = 0;
+            $adjustment_begin_balance = 0;
+            if ($d->format('Y-m') >= $w->format('Y-m')) {
+                $begin_balance = Yii::$app->db->createCommand("SELECT 
+                    IFNULL(SUM(total_nca_recieve) - (SUM(total_check_issued)+SUM(total_ada_issued)),0) as begin_balance
+                   FROM cadadr_balances
+                   WHERE 
+                   cadadr_balances.reporting_period < :from_reporting_period 
+                   and
+                   cadadr_balances.reporting_period >= '2021-10' 
+                   AND cadadr_balances.book_name = :book
+                   ")
+                    ->bindValue(':from_reporting_period', $from_reporting_period)
+                    ->bindValue(':book', $book)
+                    ->queryScalar();
+                $adjustment_begin_balance = Yii::$app->db->createCommand("SELECT
+                    SUM(cash_adjustment.amount) as total_amount
+                    FROM  cash_adjustment
+                    LEFT JOIN books ON cash_adjustment.book_id = books.id
+                    WHERE 
+                    cash_adjustment.reporting_period < :from_reporting_period 
+                    AND
+                    cash_adjustment.reporting_period >= '2021-10' 
+                    AND books.name = :book")
+                    ->bindValue(':from_reporting_period', $from_reporting_period)
+                    ->bindValue(':book', $book)
+                    ->queryScalar();
+            } else {
+                $begin_balance = Yii::$app->db->createCommand("SELECT 
+                    IFNULL(SUM(total_nca_recieve) - (SUM(total_check_issued)+SUM(total_ada_issued)),0) as begin_balance
+                   FROM cadadr_balances
+                   WHERE 
+                   cadadr_balances.reporting_period < :from_reporting_period 
+                   AND cadadr_balances.book_name = :book
+                   ")
+                    ->bindValue(':from_reporting_period', $from_reporting_period)
+                    ->bindValue(':book', $book)
+                    ->queryScalar();
+                $adjustment_begin_balance = Yii::$app->db->createCommand("SELECT
+                    SUM(cash_adjustment.amount) as total_amount
+                    FROM  cash_adjustment
+                    LEFT JOIN books ON cash_adjustment.book_id = books.id
+                    WHERE 
+                    cash_adjustment.reporting_period < :from_reporting_period 
+                    AND books.name = :book")
+                    ->bindValue(':from_reporting_period', $from_reporting_period)
+                    ->bindValue(':book', $book)
+                    ->queryScalar();
+            }
+
+
             $begin_balance  += $adjustment_begin_balance;
             $adjustment = Yii::$app->db->createCommand("SELECT * 
            FROM cash_adjustment
@@ -2079,10 +2112,12 @@ class ReportController extends \yii\web\Controller
             // $result2 = ArrayHelper::index($query, null, [function ($element) {
             //     return $element['division'];
             // }, 'mfo_name', 'major_name', 'sub_major_name',]);
+
             // echo "<pre>";
-            // var_dump($query);
+            // var_dump($month);
             // echo "</pre>";
             // die();
+
             return json_encode(['results' => $query, 'begin_balance' => $begin_balance, 'adjustment' => $adjustment]);
         }
         return $this->render('cadadr');
@@ -2780,26 +2815,69 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->bindValue(':book', $book)
                 ->queryAll();
-            $begin_balance = Yii::$app->db->createCommand("SELECT 
-            IFNULL(SUM(total_nca_recieve) - (SUM(total_check_issued)+SUM(total_ada_issued)),0) as begin_balance
-           FROM cadadr_balances
-           WHERE 
-           cadadr_balances.reporting_period < :from_reporting_period 
-           AND cadadr_balances.book_name = :book
-           ")
-                ->bindValue(':from_reporting_period', $from_reporting_period)
-                ->bindValue(':book', $book)
-                ->queryScalar();
-            $adjustment_begin_balance = Yii::$app->db->createCommand("SELECT
-            SUM(cash_adjustment.amount) as total_amount
-            FROM  cash_adjustment
-            LEFT JOIN books ON cash_adjustment.book_id = books.id
-            WHERE 
-            cash_adjustment.reporting_period < :from_reporting_period 
-            AND books.name = :book")
-                ->bindValue(':from_reporting_period', $from_reporting_period)
-                ->bindValue(':book', $book)
-                ->queryScalar();
+            $d = new DateTime($from_reporting_period);
+            $w = new DateTime('2021-10');
+            $begin_balance = 0;
+            if ($d->format('Y-m') >= $w->format('Y-m')) {
+                $begin_balance = Yii::$app->db->createCommand("SELECT 
+                    IFNULL(SUM(total_nca_recieve) - (SUM(total_check_issued)+SUM(total_ada_issued)),0) as begin_balance
+                   FROM cadadr_balances
+                   WHERE 
+                   cadadr_balances.reporting_period < :from_reporting_period 
+                   and
+                   cadadr_balances.reporting_period >= '2021-10' 
+                   AND cadadr_balances.book_name = :book
+                   ")
+                    ->bindValue(':from_reporting_period', $from_reporting_period)
+                    ->bindValue(':book', $book)
+                    ->queryScalar();
+                $adjustment_begin_balance = Yii::$app->db->createCommand("SELECT
+                    SUM(cash_adjustment.amount) as total_amount
+                    FROM  cash_adjustment
+                    LEFT JOIN books ON cash_adjustment.book_id = books.id
+                    WHERE 
+                    cash_adjustment.reporting_period < :from_reporting_period 
+                    AND
+                    cash_adjustment.reporting_period >= '2021-10' 
+                    AND books.name = :book")
+                    ->bindValue(':from_reporting_period', $from_reporting_period)
+                    ->bindValue(':book', $book)
+                    ->queryScalar();
+            } else {
+                $begin_balance = Yii::$app->db->createCommand("SELECT 
+                    IFNULL(SUM(total_nca_recieve) - (SUM(total_check_issued)+SUM(total_ada_issued)),0) as begin_balance
+                   FROM cadadr_balances
+                   WHERE 
+                   cadadr_balances.reporting_period < :from_reporting_period 
+                   AND cadadr_balances.book_name = :book
+                   ")
+                    ->bindValue(':from_reporting_period', $from_reporting_period)
+                    ->bindValue(':book', $book)
+                    ->queryScalar();
+                $adjustment_begin_balance = Yii::$app->db->createCommand("SELECT
+                    SUM(cash_adjustment.amount) as total_amount
+                    FROM  cash_adjustment
+                    LEFT JOIN books ON cash_adjustment.book_id = books.id
+                    WHERE 
+                    cash_adjustment.reporting_period < :from_reporting_period 
+                    AND books.name = :book")
+                    ->bindValue(':from_reporting_period', $from_reporting_period)
+                    ->bindValue(':book', $book)
+                    ->queryScalar();
+            }
+
+
+
+            // $adjustment_begin_balance = Yii::$app->db->createCommand("SELECT
+            // SUM(cash_adjustment.amount) as total_amount
+            // FROM  cash_adjustment
+            // LEFT JOIN books ON cash_adjustment.book_id = books.id
+            // WHERE 
+            // cash_adjustment.reporting_period < :from_reporting_period 
+            // AND books.name = :book")
+            //     ->bindValue(':from_reporting_period', $from_reporting_period)
+            //     ->bindValue(':book', $book)
+            //     ->queryScalar();
             $begin_balance  += $adjustment_begin_balance;
             $adjustment = Yii::$app->db->createCommand("SELECT * 
            FROM cash_adjustment
@@ -2816,6 +2894,7 @@ class ReportController extends \yii\web\Controller
             // var_dump($query);
             // echo "</pre>";
             // die();
+
             return json_encode(['results' => $query, 'begin_balance' => $begin_balance, 'adjustment' => $adjustment]);
         }
         return $this->render('dv_cadadr');

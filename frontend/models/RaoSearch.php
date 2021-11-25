@@ -32,6 +32,11 @@ class RaoSearch extends Rao
                 'general_ledger',
                 'book_name',
                 'division',
+                'allotment_number',
+                'ors_number',
+                'payee',
+                'particular',
+                'is_cancelled'
             ], 'safe'],
         ];
     }
@@ -73,6 +78,7 @@ class RaoSearch extends Rao
         // grid filtering conditions
 
 
+
         $query->andFilterWhere(['like', 'document_name', $this->document_name])
             ->andFilterWhere(['like', 'fund_cluster_code_name', $this->fund_cluster_code_name])
             ->andFilterWhere(['like', 'financing_source_code_name', $this->financing_source_code_name])
@@ -86,6 +92,11 @@ class RaoSearch extends Rao
             ->andFilterWhere(['like', 'book_name', $this->book_name])
             ->andFilterWhere(['like', 'ors_amount', $this->ors_amount])
             ->andFilterWhere(['like', 'allotment_amount', $this->allotment_amount])
+            ->andFilterWhere(['like', 'allotment_number', $this->allotment_number])
+            ->andFilterWhere(['like', 'ors_number', $this->ors_number])
+            ->andFilterWhere(['like', 'payee', $this->payee])
+            ->andFilterWhere(['like', 'particular', $this->particular])
+            ->andFilterWhere(['like', 'is_cancelled', $this->is_cancelled])
             ->andFilterWhere(['like', 'division', $this->division]);
 
         return $dataProvider;
