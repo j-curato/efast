@@ -1415,7 +1415,8 @@ class ReportController extends \yii\web\Controller
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id=  advances.id')
                 ->join('LEFT JOIN', 'fund_source_type', 'advances_entries.fund_source_type = fund_source_type.`name`')
                 ->where("advances_entries.reporting_period >=:from_reporting_period", ['from_reporting_period' => $from_reporting_period])
-                ->andWhere("advances_entries.reporting_period <=:to_reporting_period", ['to_reporting_period' => $to_reporting_period]);
+                ->andWhere("advances_entries.reporting_period <=:to_reporting_period", ['to_reporting_period' => $to_reporting_period])
+                ->andWhere("advances_entries.is_deleted !=1");
             if ($province !== 'all') {
                 $current_advances->andWhere("advances.province =:province", ['province' => $province]);
             }
@@ -1435,7 +1436,9 @@ class ReportController extends \yii\web\Controller
                 ->from('advances_entries')
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id=  advances.id')
                 ->join('LEFT JOIN', 'fund_source_type', 'advances_entries.fund_source_type = fund_source_type.`name`')
-                ->where(' advances_entries.reporting_period < :from_reporting_period ', ['from_reporting_period' => $from_reporting_period]);
+                ->where(' advances_entries.reporting_period < :from_reporting_period ', ['from_reporting_period' => $from_reporting_period])
+                ->andWhere("advances_entries.is_deleted !=1")
+                ;
             if ($province !== 'all') {
                 $prev_advances->andWhere("advances.province =:province", ['province' => $province]);
             }
