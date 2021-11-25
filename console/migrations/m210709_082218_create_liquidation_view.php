@@ -30,6 +30,7 @@ class m210709_082218_create_liquidation_view extends Migration
         + IFNULL(total_liq.total_vat,0) as gross_payment,
                 liquidation.province,
                         liquidation.is_cancelled,
+                        po_transaction.tracking_number,
                         po_transaction.payee as tr_payee,
         po_transaction.particular as tr_particular,
         liquidation.is_final

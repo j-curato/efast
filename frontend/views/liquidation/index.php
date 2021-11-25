@@ -208,7 +208,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'check_number',
         'dv_number',
         'reporting_period',
-        // 'particular',
+        'tracking_number',
+        
         [
             'label' => 'Payee',
             'attribute' => 'payee',

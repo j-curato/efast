@@ -573,7 +573,8 @@ class LiquidationController extends Controller
                     'advances.nft_number',
                     'advances.province',
                     'advances.report_type',
-                    'liquidation_entries.chart_of_account_id',
+                    'IFNULL(liquidation_entries.new_chart_of_account_id,liquidation_entries.chart_of_account_id) chart_of_account_id',
+
                     'liquidation_entries.expanded_tax',
                     'liquidation_entries.vat_nonvat',
                     'liquidation_entries.withdrawals',
