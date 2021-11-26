@@ -940,4 +940,12 @@ class SyncDatabaseController extends \yii\web\Controller
             return 'success';
         }
     }
+
+    public function actionQ()
+    {
+        
+        $q= Yii::$app->db->createCommand("SELECT * FROM books")->queryAll();
+
+        return json_encode($q);
+    }
 }
