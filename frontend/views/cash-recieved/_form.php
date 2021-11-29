@@ -101,7 +101,8 @@ use yii\widgets\ActiveForm;
         ],
         'pluginOptions' => [
             'prefix' => '₱ ',
-            'precision' => 2
+            'precision' => 2,
+            'allowNegative' => true,
         ]
     ]) ?>
 

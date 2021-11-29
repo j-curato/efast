@@ -2047,6 +2047,7 @@ class ReportController extends \yii\web\Controller
             reporting_period >= :from_reporting_period
             AND reporting_period <= :to_reporting_period
             AND book_name = :book
+            AND is_cancelled =0
             ORDER BY issuance_date
             ")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
@@ -2066,6 +2067,7 @@ class ReportController extends \yii\web\Controller
                    and
                    cadadr_balances.reporting_period >= '2021-10' 
                    AND cadadr_balances.book_name = :book
+
                    ")
                     ->bindValue(':from_reporting_period', $from_reporting_period)
                     ->bindValue(':book', $book)
@@ -2115,6 +2117,17 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->queryAll();
+                $cancelled_checks = Yii::$app->db->createCommand("SELECT * FROM cadadr
+                WHERE 
+                cancelled_r_period >= :from_reporting_period
+                AND cancelled_r_period <= :to_reporting_period
+                AND book_name = :book
+                ORDER BY issuance_date
+                ")
+                    ->bindValue(':from_reporting_period', $from_reporting_period)
+                    ->bindValue(':to_reporting_period', $to_reporting_period)
+                    ->bindValue(':book', $book)
+                    ->queryAll();
             // $result2 = ArrayHelper::index($query, null, [function ($element) {
             //     return $element['division'];
             // }, 'mfo_name', 'major_name', 'sub_major_name',]);
@@ -2124,7 +2137,11 @@ class ReportController extends \yii\web\Controller
             // echo "</pre>";
             // die();
 
-            return json_encode(['results' => $query, 'begin_balance' => $begin_balance, 'adjustment' => $adjustment]);
+            return json_encode(['results' => $query,
+             'begin_balance' => $begin_balance,
+              'adjustment' => $adjustment,
+              'cancelled_checks'=>$cancelled_checks
+            ]);
         }
         return $this->render('cadadr');
     }

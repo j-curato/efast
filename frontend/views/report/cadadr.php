@@ -151,8 +151,52 @@ $this->params['breadcrumbs'][] = $this->title;
         </table>
 
 
+
+
+        <table id="cancelled_checks_table">
+            <thead>
+                <thead>
+
+                    <tr>
+                        <th class='head' colspan="14">CANCELLED CHECKS</th>
+                    </tr>
+
+                    <tr>
+                        <th rowspan="" colspan="2 ">NCA/DS/DV/Payroll</th>
+                        <th rowspan="" colspan="4 "> Check/ADA</th>
+                        <th rowspan="4">Payee</th>
+                        <th rowspan="4">UACS</th>
+                        <th rowspan="4">Nature of Payment</th>
+                        <th rowspan="3" colspan="4">Amount</th>
+
+                    </tr>
+                    <tr>
+                        <th rowspan="3"> No. </th>
+                        <th rowspan="3"> Date </th>
+
+                    </tr>
+                    <tr>
+                        <th colspan="2">Serial Number</th>
+                        <th rowspan="2">Date</th>
+                        <th rowspan="2">Date Released / Credited</th>
+
+
+                    </tr>
+                    <tr>
+                        <th>Check</th>
+                        <th>ADA</th>
+                        <th>NCA Received</th>
+                        <th>Check Issued</th>
+                        <th>ADA Issued</th>
+                    </tr>
+                </thead>
+            <tbody></tbody>
+        </table>
     </div>
+
+
     <!-- </div> -->
+
     <div id="dots5" style="display: none;">
         <span></span>
         <span></span>
@@ -161,6 +205,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 <style>
+
     table,
     th,
     td {
@@ -168,8 +213,9 @@ $this->params['breadcrumbs'][] = $this->title;
         text-align: center;
         padding: 12px;
     }
-    table{
-        margin-top:20px
+
+    table {
+        margin-top: 20px
     }
 
     #summary_table {
@@ -187,6 +233,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
     .amount {
         text-align: right;
+    }
+    #cancelled_checks_table > th {
+        padding:0 ;
+        font-size: 10px;
     }
 
     @media print {
@@ -239,6 +289,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 // allotment_balances = res.allotments
                 displayData(res.results, res.begin_balance, res.adjustment)
                 // addToSummaryTable(res.conso_saob)
+                displayCancelledChecks(res.cancelled_checks)
 
                 setTimeout(() => {
                     $('#con').show()
@@ -250,6 +301,42 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         })
     })
 
+    function displayCancelledChecks(res) {
+        for (var i = 0; i < res.length; i++) {
+            var data = res[i]
+            var dv_number = data['dv_number']
+            var dv_date = data['dv_date']
+            var payee = data['account_name']
+            var ada_issued = parseFloat(data['ada_issued'])
+            var ada_number = data['ada_number']
+            var book_name = data['book_name']
+            var check_issued = parseFloat(data['check_issued'])
+            var check_or_ada_no = data['check_or_ada_no']
+            var issuance_date = data['issuance_date']
+            var particular = data['particular']
+            var reporting_period = data['reporting_period']
+            var nca_recieve = parseFloat(data['nca_recieve'])
+            
+            row = `<tr class='data_row'>
+                <td colspan='' >` + dv_number + `</td>
+                <td colspan='' >` + dv_date + `</td>
+                <td colspan='' >` + check_or_ada_no + `</td>
+                <td colspan='' >` + ada_number + `</td>
+                <td colspan='' >` + issuance_date + `</td>
+                <td></td>
+                <td colspan='' >` + payee + `</td>
+                <td></td>
+                <td colspan='' >` + particular + `</td>
+                <td  class='amount'>` + thousands_separators(nca_recieve) + `</td>
+                <td  class='amount'>` + thousands_separators(check_issued) + `</td>
+                <td  class='amount'>` + thousands_separators(ada_issued) + `</td>
+                </tr>`
+            $('#cancelled_checks_table tbody').append(row)
+      
+
+        }
+
+    }
 
     function displayData(res, begin_balance, adjustment) {
         $("#cadadr tbody").html('');
