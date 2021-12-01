@@ -19,7 +19,9 @@ class TransactionApiController extends \yii\rest\ActiveController
         $behavios['authenticator']['authMethods'] = [
             HttpBearerAuth::class
         ];
-        return $behaviors;
+        return array_merge([
+            'corsFilter' => Cors::class,
+        ], $behaviors);
     }
     public function actions()
     {

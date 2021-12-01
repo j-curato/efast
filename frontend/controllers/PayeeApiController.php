@@ -21,7 +21,7 @@ class PayeeApiController extends \yii\rest\ActiveController
         ];
           return array_merge([
             'corsFilter' => Cors::class,
-        ], $behaviors);;
+        ], $behaviors);
     }
 
     public function actions()
