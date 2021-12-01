@@ -122,6 +122,9 @@ class SyncDatabaseController extends \yii\web\Controller
             $assignatory = $db->createCommand('SELECT * FROM assignatory')->queryAll();
             $authorization_code = $db->createCommand('SELECT * FROM authorization_code')->queryAll();
 
+            return json_encode(
+                $process_ors
+            );
             return json_encode([
                 'payee' => $payee,
                 'chart_of_accounts' => $chart_of_accounts,
@@ -166,6 +169,35 @@ class SyncDatabaseController extends \yii\web\Controller
                 // 'transmittal' => $transmittal,
                 // 'transmittal_entries' => $transmittal_entries,
             ]);
+        }
+    }
+    public function actionPayee()
+    {
+
+        if ($_POST) {
+            $db = Yii::$app->ryn_db;
+            $payee = $db->createCommand('SELECT * FROM payee')->queryAll();
+            return json_encode($payee);
+        }
+    }
+    public function actionTransaction()
+    {
+        $db = Yii::$app->ryn_db;
+        $transaction = $db->createCommand("SELECT * FROM `transaction`")->queryAll();
+        return json_encode($transaction);
+    }
+    public function actionRecordAllotment()
+    {
+        if ($_POST) {
+            $db = Yii::$app->ryn_db;
+            $record_allotments = $db->createCommand('SELECT * FROM record_allotments')->queryAll();
+            $record_allotments_entries = $db->createCommand('SELECT * FROM record_allotment_entries')->queryAll();
+            return json_encode(
+                [
+                    'record_allotments' => $record_allotments,
+                    'record_allotment_entries' => $record_allotments_entries
+                ]
+            );
         }
     }
 
@@ -943,8 +975,8 @@ class SyncDatabaseController extends \yii\web\Controller
 
     public function actionQ()
     {
-        
-        $q= Yii::$app->db->createCommand("SELECT * FROM books")->queryAll();
+
+        $q = Yii::$app->db->createCommand("SELECT * FROM books")->queryAll();
 
         return json_encode($q);
     }

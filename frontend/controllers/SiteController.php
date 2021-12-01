@@ -33,7 +33,11 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout', 'signup', 'index', 'q', 'update-system'],
+                'only' => [
+                    'logout', 'signup', 'index', 'q',
+                    'update-system',
+                    'token'
+                ],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -41,7 +45,7 @@ class SiteController extends Controller
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout', 'index', 'q'],
+                        'actions' => ['logout', 'index', 'q', 'token'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -184,8 +188,10 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             if ($model->signup()) {
             }
-            Yii::$app->session->setFlash('success', 
-            'Thank you for registration. Please check your inbox for verification email.');
+            Yii::$app->session->setFlash(
+                'success',
+                'Thank you for registration. Please check your inbox for verification email.'
+            );
             return $this->goHome();
         }
 
@@ -428,5 +434,14 @@ class SiteController extends Controller
     {
         echo  shell_exec('git pull git@github.com:kiotipot1/dti-afms-2.git');
         echo   shell_exec('yii migrate --interactive=0');
+    }
+    public function actionToken()
+    {
+
+        if ($_POST) {
+
+            $token = 'C0ocZR073FC8lOWDXi1uoNxCwIBuPLKN';
+            return json_encode(['token' => $token]);
+        }
     }
 }

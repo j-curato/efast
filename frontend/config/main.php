@@ -1,4 +1,7 @@
 <?php
+
+use yii\web\JsonParser;
+
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
@@ -21,6 +24,9 @@ return [
             //     'httpOnly' => true,
             //     'path' => 'site/login',
             // ],
+            'parsers'=>[
+                'application/json'=>JsonParser::class
+            ]
         ],
         'user' => [
             'identityClass' => 'common\models\User',

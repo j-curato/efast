@@ -7,7 +7,6 @@ use yii\helpers\ArrayHelper;
 $this->title = 'Dashboard';
 ?>
 <div class="site-index">
-
     <?php
     if (Yii::$app->user->can('super-user')) {
         echo " <button class='btn btn-success' id='update_cloud'>Update the cloud</button>";
@@ -524,27 +523,84 @@ $this->title = 'Dashboard';
 </style>
 
 
+
 <script>
     let x = undefined;
 
+
+
+    function updateDataApi() {
+
+    }
     $('#update_cloud').click(function(e) {
         e.preventDefault();
-        $.post(window.location.pathname + '?r=sync-database/ro-lan-to-cloud', // url
+
+        $.post(window.location.pathname + '?r=site/token', {
+            data: ''
+        }, function(data) {
+            localStorage.setItem('token', JSON.parse(data).token)
+        })
+
+        // PAYEE
+        $.post(window.location.pathname + '?r=sync-database/payee', // url
             {
                 myData: ''
             }, // data to be submit
             function(data) { // success callback
                 var d = JSON.parse(data)
-                // console.log(d)
                 $.ajax({
                     type: "post",
-                    url:  'https://fisdticaraga.com/index.php?r=sync-database/update-database',
-                    data: {
-                        json: JSON.stringify(data)
-                    },
+                    url: 'https://localhost/afms/index.php?r=payee-api/create',
+                    contentType: "application/json",
+                    data: JSON.stringify(d),
                     dataType: 'json',
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem('token')}`
+                    },
                     success: function(newdata) {
                         console.log(newdata)
+                    }
+                })
+            })
+        // RECORD ALLOTMENT API
+        $.post(window.location.pathname + '?r=sync-database/record-allotment', // url
+            {
+                myData: ''
+            }, // data to be submit
+            function(data) { // success callback
+                var d = JSON.parse(data)
+                $.ajax({
+                    type: "post",
+                    url: 'https://localhost/afms/index.php?r=record-allotment-api/create',
+                    contentType: "application/json",
+                    data: JSON.stringify(d),
+                    dataType: 'json',
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem('token')}`
+                    },
+                    success: function(newdata) {
+                        console.log(json)
+                    }
+                })
+            })
+        // TRANSACTION API
+        $.post(window.location.pathname + '?r=sync-database/transaction', // url
+            {
+                myData: ''
+            }, // data to be submit
+            function(data) { // success callback
+                var d = JSON.parse(data)
+                $.ajax({
+                    type: "post",
+                    url: 'https://localhost/afms/index.php?r=transaction-api/create',
+                    contentType: "application/json",
+                    data: JSON.stringify(d),
+                    dataType: 'json',
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem('token')}`
+                    },
+                    success: function(newdata) {
+                        console.log(json)
                     }
                 })
             })
@@ -605,11 +661,6 @@ $script = <<<JS
             return num_parts.join(".");
         }
 
-
-        
-        // $('.fc-sticky').click(function(){
-        //     console.log(this)
-        // })
     $(document).ready(function(){
 
         // CASH RECIEVED AND DISBURSEMENT
@@ -624,15 +675,14 @@ $script = <<<JS
             }
         })
     })
-
-
         $(document).on('click','.fc-daygrid-day-number',function(){
             var date = $(this).closest('td').attr('data-date');
             //   console.log( $(this).closest('.fc-day'))
               var url = window.location.pathname + '?r=event/create&date='+date
             $('#genericModal').modal('show').find('#modalContent').load(url);
         })
-   
+
 JS;
 $this->registerJs($script);
+
 ?>

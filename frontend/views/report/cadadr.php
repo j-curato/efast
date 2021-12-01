@@ -162,7 +162,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </tr>
 
                     <tr>
-                        <th rowspan="" colspan="2 ">NCA/DS/DV/Payroll</th>
+                        <th rowspan="" colspan="3 ">NCA/DS/DV/Payroll</th>
                         <th rowspan="" colspan="4 "> Check/ADA</th>
                         <th rowspan="4">Payee</th>
                         <th rowspan="4">UACS</th>
@@ -173,6 +173,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     <tr>
                         <th rowspan="3"> No. </th>
                         <th rowspan="3"> Date </th>
+                        <th rowspan="3">Reporting Period Cancelled</th>
+
 
                     </tr>
                     <tr>
@@ -302,6 +304,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
     })
 
     function displayCancelledChecks(res) {
+        $('#cancelled_checks_table tbody').html('')
         for (var i = 0; i < res.length; i++) {
             var data = res[i]
             var dv_number = data['dv_number']
@@ -314,12 +317,13 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             var check_or_ada_no = data['check_or_ada_no']
             var issuance_date = data['issuance_date']
             var particular = data['particular']
-            var reporting_period = data['reporting_period']
+            var reporting_period = data['reporting_period'] 
             var nca_recieve = parseFloat(data['nca_recieve'])
             
             row = `<tr class='data_row'>
                 <td colspan='' >` + dv_number + `</td>
                 <td colspan='' >` + dv_date + `</td>
+                <td colspan='' >` + reporting_period + `</td>
                 <td colspan='' >` + check_or_ada_no + `</td>
                 <td colspan='' >` + ada_number + `</td>
                 <td colspan='' >` + issuance_date + `</td>
