@@ -6,6 +6,7 @@ use common\models\Transaction;
 use ErrorException;
 use Yii;
 use yii\filters\auth\HttpBearerAuth;
+use yii\filters\Cors;
 
 class TransactionApiController extends \yii\rest\ActiveController
 {
