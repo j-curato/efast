@@ -328,10 +328,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
         'toolbar' => [
             [
-                'content' => ExportMenu::widget([
-                    'dataProvider' => $roaWithDvDataProvider,
-                    'columns' => $raoWithDvCol,
-                    'filename' => "ORS",
+                'content' => '<div>Conso</div>'. ExportMenu::widget([
+                    'dataProvider' => $dataProvider3,
+                    'columns' => $exportColumns,
+                    'filename' => "Conso ORS",
                     'exportConfig' => [
                         ExportMenu::FORMAT_CSV => false,
                         ExportMenu::FORMAT_TEXT => false,
@@ -340,7 +340,21 @@ $this->params['breadcrumbs'][] = $this->title;
                         ExportMenu::FORMAT_EXCEL => false,
 
                     ]
-                ]),
+                    
+                ]).' <div>Breakdown</div>'.ExportMenu::widget([
+                    'dataProvider' => $roaWithDvDataProvider,
+                    'columns' => $raoWithDvCol,
+                    'filename' => "Breakdown ORS",
+                    'exportConfig' => [
+                        ExportMenu::FORMAT_CSV => false,
+                        ExportMenu::FORMAT_TEXT => false,
+                        ExportMenu::FORMAT_PDF => false,
+                        ExportMenu::FORMAT_HTML => false,
+                        ExportMenu::FORMAT_EXCEL => false,
+
+                    ]
+                    
+                ]) ,
                 'options' => [
                     'class' => 'btn-group mr-2', 'style' => 'margin-right:20px'
                 ]

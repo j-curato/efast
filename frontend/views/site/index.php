@@ -522,7 +522,11 @@ $this->title = 'Dashboard';
     }
 </style>
 
+<?php
+$csrfToken = Yii::$app->request->csrfToken;
 
+echo $csrfToken;
+?>
 
 <script>
     let x = undefined;
@@ -542,68 +546,73 @@ $this->title = 'Dashboard';
         })
 
         // PAYEE
-        $.post(window.location.pathname + '?r=sync-database/payee', // url
-            {
-                myData: ''
-            }, // data to be submit
-            function(data) { // success callback
-                var d = JSON.parse(data)
-                $.ajax({
-                    type: "post",
-                    url: 'https://localhost/afms/index.php?r=payee-api/create',
-                    contentType: "application/json",
-                    data: JSON.stringify(d),
-                    dataType: 'json',
-                    headers: {
-                        "Authorization": `Bearer ${localStorage.getItem('token')}`
-                    },
-                    success: function(newdata) {
-                        console.log(newdata)
-                    }
-                })
-            })
+        // $.post(window.location.pathname + '?r=sync-database/payee', // url
+        //     {
+        //         myData: ''
+        //     }, // data to be submit
+        //     function(data) { // success callback
+        //         var d = JSON.parse(data)
+             
+                
+        //         $.ajax({
+        //             type: "post",
+        //             url: 'https://fisdticaraga.com/index.php?r=payee-api/create',
+        //             contentType: "application/json",
+        //             data:JSON.stringify(d),
+        //             dataType: 'json',
+        //             headers: {
+        //                 "Authorization": `Bearer ${localStorage.getItem('token')}`
+        //             },
+        //             success: function(newdata) {
+        //                 console.log(newdata)
+        //             }
+        //         })
+        //     })
         // RECORD ALLOTMENT API
-        $.post(window.location.pathname + '?r=sync-database/record-allotment', // url
-            {
-                myData: ''
-            }, // data to be submit
-            function(data) { // success callback
-                var d = JSON.parse(data)
-                $.ajax({
-                    type: "post",
-                    url: 'https://localhost/afms/index.php?r=record-allotment-api/create',
-                    contentType: "application/json",
-                    data: JSON.stringify(d),
-                    dataType: 'json',
-                    headers: {
-                        "Authorization": `Bearer ${localStorage.getItem('token')}`
-                    },
-                    success: function(newdata) {
-                        console.log(newdata)
-                    }
-                })
-            })
+        // $.post(window.location.pathname + '?r=sync-database/record-allotment', // url
+        //     {
+        //         myData: ''
+        //     }, // data to be submit
+        //     function(data) { // success callback
+        //         var d = JSON.parse(data)
+        //         $.ajax({
+        //             type: "post",
+        //             url: 'https://localhost/afms/index.php?r=record-allotment-api/create',
+        //             contentType: "application/json",
+        //             data: JSON.stringify(d),
+        //             dataType: 'json',
+        //             headers: {
+        //                 "Authorization": `Bearer ${localStorage.getItem('token')}`
+        //             },
+        //             success: function(newdata) {
+        //                 console.log(newdata)
+        //             }
+        //         })
+        //     })
         // TRANSACTION API
-        $.post(window.location.pathname + '?r=sync-database/transaction', // url
-            {
-                myData: ''
-            }, // data to be submit
-            function(data) { // success callback
-                var d = JSON.parse(data)
-                $.ajax({
-                    type: "post",
-                    url: 'https://localhost/afms/index.php?r=transaction-api/create',
-                    contentType: "application/json",
-                    data: JSON.stringify(d),
-                    dataType: 'json',
-                    headers: {
-                        "Authorization": `Bearer ${localStorage.getItem('token')}`
-                    },
-                    success: function(newdata) {
-                        console.log(newdata)
-                    }
-                })
-            })
+        // $.post(window.location.pathname + '?r=sync-database/transaction', // url
+        //     {
+        //         myData: ''
+        //     }, // data to be submit
+        //     function(data) { // success callback
+        //         var d = JSON.parse(data)
+             
+                
+        //         $.ajax({
+        //             type: "post",
+        //             url: 'https://fisdticaraga.com/index.php?r=transaction-api/create',
+        //             contentType: "application/json",
+        //             data:JSON.stringify(d),
+        //             dataType: 'json',
+        //             headers: {
+        //                 "Authorization": `Bearer ${localStorage.getItem('token')}`
+        //             },
+        //             success: function(newdata) {
+        //                 console.log(newdata)
+        //             }
+        //         })
+        //     })
+   
     })
     $(document).ready(function() {
         $.getJSON(window.location.pathname + '?r=site/q').then(function(data) {
