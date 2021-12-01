@@ -579,7 +579,7 @@ $this->title = 'Dashboard';
                         "Authorization": `Bearer ${localStorage.getItem('token')}`
                     },
                     success: function(newdata) {
-                        console.log(json)
+                        console.log(newdata)
                     }
                 })
             })
@@ -600,7 +600,7 @@ $this->title = 'Dashboard';
                         "Authorization": `Bearer ${localStorage.getItem('token')}`
                     },
                     success: function(newdata) {
-                        console.log(json)
+                        console.log(newdata)
                     }
                 })
             })
