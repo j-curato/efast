@@ -2,9 +2,10 @@
 
 namespace frontend\controllers;
 
-use common\models\ProcessOrsEntries;
-use ErrorException;
 use Yii;
+use ErrorException;
+use yii\filters\Cors;
+use common\models\ProcessOrsEntries;
 use yii\filters\auth\HttpBearerAuth;
 
 class ProcessOrsEntriesApiController extends \yii\rest\ActiveController
@@ -17,7 +18,7 @@ class ProcessOrsEntriesApiController extends \yii\rest\ActiveController
         $behaviors['authenticator']['authMethods'] = [
             HttpBearerAuth::class
         ];
-        return $behaviors;
+        return array_merge(['corsFilter'=>Cors::class],$behaviors);
     }
     public function actions()
     {

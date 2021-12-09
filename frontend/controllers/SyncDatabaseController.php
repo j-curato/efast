@@ -200,6 +200,46 @@ class SyncDatabaseController extends \yii\web\Controller
             );
         }
     }
+    public function actionProcessOrs()
+    {
+        if ($_POST) {
+            $db = Yii::$app->ryn_db;
+            $process_ors = $db->createCommand('SELECT * FROM process_ors')->queryAll();
+            $process_ors_entries = $db->createCommand('SELECT * FROM process_ors_entries')->queryAll();
+            return json_encode(
+                [
+                    'process_ors' => $process_ors,
+                    'process_ors_entries' => $process_ors_entries
+                ]
+            );
+        }
+    }
+    public function actionChartOfAccount()
+    {
+        if ($_POST) {
+            $db = Yii::$app->ryn_db;
+            $chart_of_account = $db->createCommand('SELECT * FROM chart_of_accounts')->queryAll();
+            return json_encode(
+                    $chart_of_account
+            );
+        }
+    }
+    public function actionSubAccount1()
+    {
+        if ($_POST) {
+            $db = Yii::$app->ryn_db;
+            $sub_account1 = $db->createCommand('SELECT * FROM sub_accounts1')->queryAll();
+            return json_encode($sub_account1);
+        }
+    }    public function actionSubAccount2()
+    {
+        if ($_POST) {
+            $db = Yii::$app->ryn_db;
+            $sub_account2 = $db->createCommand('SELECT * FROM sub_accounts2')->queryAll();
+            return json_encode($sub_account2);
+        }
+    }
+    
 
     public function actionUpdateDatabase()
     {
@@ -972,6 +1012,7 @@ class SyncDatabaseController extends \yii\web\Controller
             return 'success';
         }
     }
+    
 
     public function actionQ()
     {

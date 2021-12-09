@@ -2,11 +2,12 @@
 
 namespace frontend\controllers;
 
-use common\models\RecordAllotmentEntries;
-use common\models\RecordAllotments;
-use ErrorException;
 use Yii;
+use ErrorException;
+use yii\filters\Cors;
+use common\models\RecordAllotments;
 use yii\filters\auth\HttpBearerAuth;
+use common\models\RecordAllotmentEntries;
 
 class RecordAllotmentApiController extends \yii\rest\ActiveController
 {
@@ -20,8 +21,11 @@ class RecordAllotmentApiController extends \yii\rest\ActiveController
         $behaviors['authenticator']['authMethods'] = [
             HttpBearerAuth::class
         ];
-        return $behaviors;
+        return array_merge([
+            'corsFilter'=>Cors::class
+        ],$behaviors);
     }
+    
     public function actions()
     {
         $actions = parent::actions();
@@ -114,7 +118,6 @@ class RecordAllotmentApiController extends \yii\rest\ActiveController
 
                 if ($flag) {
                     $transaction->commit();
-                    return 'success s';
                 }
             } catch (ErrorException $e) {
                 return json_encode($e->getMessage());

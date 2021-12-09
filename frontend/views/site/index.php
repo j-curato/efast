@@ -2,6 +2,7 @@
 
 /* @var $this yii\web\View */
 
+use yii\filters\Cors;
 use yii\helpers\ArrayHelper;
 
 $this->title = 'Dashboard';
@@ -530,12 +531,6 @@ echo $csrfToken;
 
 <script>
     let x = undefined;
-
-
-
-    function updateDataApi() {
-
-    }
     $('#update_cloud').click(function(e) {
         e.preventDefault();
 
@@ -544,6 +539,202 @@ echo $csrfToken;
         }, function(data) {
             localStorage.setItem('token', JSON.parse(data).token)
         })
+        let baseUrl = window.location.pathname
+
+        const res = []
+        const chartOfAccountApi = new Promise((resolve, reject) => {
+            // CHART OF ACCOUNTS API
+            $.post(window.location.pathname + '?r=sync-database/chart-of-account', // url
+                {
+                    myData: ''
+                }, // data to be submit
+                function(data) { // success callback
+                    var d = JSON.parse(data)
+
+
+                    $.ajax({
+                        type: "post",
+                        url: 'https://fisdticaraga.com/index.php?r=chart-of-accounts-api/create',
+                        contentType: "application/json",
+                        data: JSON.stringify(d),
+                        dataType: 'json',
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem('token')}`
+                        },
+                        success: function(newdata) {
+                            resolve(newdata)
+                        }
+                    })
+                })
+        })
+        const subAccount1Api = new Promise((resolve, reject) => {
+            // SUB ACCOUNTS 1 API
+            $.post(window.location.pathname + '?r=sync-database/sub-account1', // url
+                {
+                    myData: ''
+                }, // data to be submit
+                function(data) { // success callback
+                    var d = JSON.parse(data)
+
+
+                    $.ajax({
+                        type: "post",
+                        url: 'https://fisdticaraga.com/index.php?r=sub-accounts1-api/create',
+                        contentType: "application/json",
+                        data: JSON.stringify(d),
+                        dataType: 'json',
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem('token')}`
+                        },
+                        success: function(newdata) {
+                            resolve(newdata)
+                        }
+                    })
+                })
+        })
+        const subAccount2Api = new Promise((resolve, reject) => {
+            // SUB ACCOUNTS 2 API
+            $.post(window.location.pathname + '?r=sync-database/sub-account2', // url
+                {
+                    myData: ''
+                }, // data to be submit
+                function(data) { // success callback
+                    var d = JSON.parse(data)
+
+
+                    $.ajax({
+                        type: "post",
+                        url: 'https://fisdticaraga.com/index.php?r=sub-accounts2-api/create',
+                        contentType: "application/json",
+                        data: JSON.stringify(d),
+                        dataType: 'json',
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem('token')}`
+                        },
+                        success: function(newdata) {
+                            resolve(newdata)
+                        }
+                    })
+                })
+        })
+        const payeeApi = new Promise((resolve, reject) => {
+            $.post(window.location.pathname + '?r=sync-database/payee', // url
+                {
+                    myData: ''
+                }, // data to be submit
+                function(data) { // success callback
+                    var d = JSON.parse(data)
+
+
+                    $.ajax({
+                        type: "post",
+                        url: 'https://fisdticaraga.com/index.php?r=payee-api/create',
+                        contentType: "application/json",
+                        data: JSON.stringify(d),
+                        dataType: 'json',
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem('token')}`
+                        },
+                        success: function(newdata) {
+
+                            res[0] = {
+                                payee: newdata
+                            }
+                            resolve(newdata)
+                        }
+                    })
+                })
+        })
+        const transactionApi = new Promise((resolve, reject) => {
+            $.post(window.location.pathname + '?r=sync-database/transaction', // url
+                {
+                    myData: ''
+                }, // data to be submit
+                function(data) { // success callback
+                    var d = JSON.parse(data)
+                    $.ajax({
+                        type: "post",
+                        url: 'https://fisdticaraga.com/index.php?r=transaction-api/create',
+                        contentType: "application/json",
+                        data: JSON.stringify(d),
+                        dataType: 'json',
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem('token')}`
+                        },
+                        success: function(newdata) {
+                            resolve(newdata)
+                        }
+                    })
+                })
+        });
+        const recordAllotmentApi = new Promise((resolve, reject) => {
+            // RECORD ALLOTMENT API
+            $.post(window.location.pathname + '?r=sync-database/record-allotment', // url
+                {
+                    myData: ''
+                }, // data to be submit
+                function(data) { // success callback
+                    var d = JSON.parse(data)
+                    $.ajax({
+                        type: "post",
+                        url: 'https://localhost/afms/index.php?r=record-allotment-api/create',
+                        contentType: "application/json",
+                        data: JSON.stringify(d),
+                        dataType: 'json',
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem('token')}`
+                        },
+                        success: function(newdata) {
+                            resolve(newdata)
+                        }
+                    })
+                })
+        })
+        const processOrsApi = new Promise((resolve, reject) => {
+            // PROCESS ORS  API
+            $.post(window.location.pathname + '?r=sync-database/process-ors', // url
+                {
+                    myData: ''
+                }, // data to be submit
+                function(data) { // success callback
+                    var d = JSON.parse(data)
+                    $.ajax({
+                        type: "post",
+                        url: 'https://localhost/afms/index.php?r=process-ors-api/create',
+                        contentType: "application/json",
+                        data: JSON.stringify(d),
+                        dataType: 'json',
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem('token')}`
+                        },
+                        success: function(newdata) {
+                            resolve(newdata)
+                        }
+                    })
+                })
+        })
+
+        // At this point, "promiseA" is already settled.
+        Promise.all([
+            transactionApi,
+            payeeApi,
+            chartOfAccountApi,
+            subAccount1Api,
+            subAccount2Api,
+            recordAllotmentApi,
+            processOrsApi,
+        ]).then(values => {
+            console.log(values)
+            console.log("We waited until ajax ended: " + values);
+            // console.log("My few ajax ended, lets do some things!!")
+        }, reason => {
+            console.log("Promises failed: " + reason);
+        });
+
+
+
+
+
 
         // PAYEE
         // $.post(window.location.pathname + '?r=sync-database/payee', // url
@@ -552,32 +743,11 @@ echo $csrfToken;
         //     }, // data to be submit
         //     function(data) { // success callback
         //         var d = JSON.parse(data)
-             
-                
+
+
         //         $.ajax({
         //             type: "post",
         //             url: 'https://fisdticaraga.com/index.php?r=payee-api/create',
-        //             contentType: "application/json",
-        //             data:JSON.stringify(d),
-        //             dataType: 'json',
-        //             headers: {
-        //                 "Authorization": `Bearer ${localStorage.getItem('token')}`
-        //             },
-        //             success: function(newdata) {
-        //                 console.log(newdata)
-        //             }
-        //         })
-        //     })
-        // RECORD ALLOTMENT API
-        // $.post(window.location.pathname + '?r=sync-database/record-allotment', // url
-        //     {
-        //         myData: ''
-        //     }, // data to be submit
-        //     function(data) { // success callback
-        //         var d = JSON.parse(data)
-        //         $.ajax({
-        //             type: "post",
-        //             url: 'https://localhost/afms/index.php?r=record-allotment-api/create',
         //             contentType: "application/json",
         //             data: JSON.stringify(d),
         //             dataType: 'json',
@@ -589,30 +759,14 @@ echo $csrfToken;
         //             }
         //         })
         //     })
+
         // TRANSACTION API
-        // $.post(window.location.pathname + '?r=sync-database/transaction', // url
-        //     {
-        //         myData: ''
-        //     }, // data to be submit
-        //     function(data) { // success callback
-        //         var d = JSON.parse(data)
-             
-                
-        //         $.ajax({
-        //             type: "post",
-        //             url: 'https://fisdticaraga.com/index.php?r=transaction-api/create',
-        //             contentType: "application/json",
-        //             data:JSON.stringify(d),
-        //             dataType: 'json',
-        //             headers: {
-        //                 "Authorization": `Bearer ${localStorage.getItem('token')}`
-        //             },
-        //             success: function(newdata) {
-        //                 console.log(newdata)
-        //             }
-        //         })
-        //     })
-   
+
+
+
+
+
+
     })
     $(document).ready(function() {
         $.getJSON(window.location.pathname + '?r=site/q').then(function(data) {

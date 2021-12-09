@@ -6,6 +6,7 @@ use common\models\CashDisbursement;
 use ErrorException;
 use Yii;
 use yii\filters\auth\HttpBearerAuth;
+use yii\filters\Cors;
 
 class CashDisbursementApiController extends \yii\rest\ActiveController
 {
@@ -17,7 +18,7 @@ class CashDisbursementApiController extends \yii\rest\ActiveController
         $behaviors['authenticator']['authMethods'] = [
             HttpBearerAuth::class
         ];
-        return $behaviors;
+        return array_merge(['corsFilter'=>Cors::class],$behaviors);
     }
     public function actions()
     {

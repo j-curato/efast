@@ -6,6 +6,7 @@ use common\models\DvAucs;
 use ErrorException;
 use Yii;
 use yii\filters\auth\HttpBearerAuth;
+use yii\filters\Cors;
 
 class DvAucsApiController extends \yii\rest\ActiveController
 {
@@ -18,7 +19,7 @@ class DvAucsApiController extends \yii\rest\ActiveController
         $behaviors['authenticator']['authMethods']=[
             HttpBearerAuth::class
         ];
-        return $behaviors;
+        return array_merge(['corsFilter'=>Cors::class],$behaviors);
     }
     public function actions()
     {

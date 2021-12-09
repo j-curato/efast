@@ -2,10 +2,11 @@
 
 namespace frontend\controllers;
 
-use common\models\RecordAllotmentEntries;
-use ErrorException;
 use Yii;
+use ErrorException;
+use yii\filters\Cors;
 use yii\filters\auth\HttpBearerAuth;
+use common\models\RecordAllotmentEntries;
 
 class RecordAllotmentEntriesApiController extends \yii\rest\ActiveController
 {
@@ -19,7 +20,7 @@ class RecordAllotmentEntriesApiController extends \yii\rest\ActiveController
         $behaviors['authenticator']['authMehtods']=[
             HttpBearerAuth::class
         ];
-        return $behaviors;
+        return array_merge(['corsFilter'=>Cors::class],$behaviors);
     }
     public function actions()
     {

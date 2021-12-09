@@ -2,9 +2,10 @@
 
 namespace frontend\controllers;
 
-use common\models\ChartOfAccounts;
-use ErrorException;
 use Yii;
+use ErrorException;
+use yii\filters\Cors;
+use common\models\ChartOfAccounts;
 use yii\filters\auth\HttpBearerAuth;
 
 class ChartOfAccountsApiController extends \yii\rest\ActiveController
@@ -16,12 +17,12 @@ class ChartOfAccountsApiController extends \yii\rest\ActiveController
         $behaviors = parent::behaviors();
         $behaviors['authenticator']['only'] = ['create', 'delete', 'update'];
         $behaviors['authenticator']['authMethods'] = [
-            HttpBearerAuth::class
+            HttpBearerAuth::class                       
         ];
-        return $behaviors;
+        return array_merge(['corsFilter'=>Cors::class],$behaviors);
     }
     public function actions()
-    {
+    {               
         $actions = parent::actions();
         unset($actions['create']);
     }
