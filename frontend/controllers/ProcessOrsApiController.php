@@ -19,7 +19,7 @@ class ProcessOrsApiController extends \yii\rest\ActiveController
         $behaviors['authenticator']['authMethods'] = [
             HttpBearerAuth::class
         ];
-        return array_merge(['corsFilter'=>Cors::class],$behaviors);
+        return array_merge(['corsFilter' => Cors::class], $behaviors);
     }
     public function actions()
     {
@@ -34,7 +34,6 @@ class ProcessOrsApiController extends \yii\rest\ActiveController
     {
         $transaction = Yii::$app->db->beginTransaction();
         $source_json = Yii::$app->getRequest()->getBodyParams();
-        
 
         $source_process_ors = $source_json['process_ors'];
         $target_process_ors = Yii::$app->db->createCommand("SELECT * FROM `process_ors`")->queryAll();
@@ -106,7 +105,8 @@ class ProcessOrsApiController extends \yii\rest\ActiveController
             }
         }
 
-        $source_process_ors_entries =$source_json['process_ors_entries'];
+        $transaction = Yii::$app->db->beginTransaction();
+        $source_process_ors_entries = $source_json['process_ors_entries'];
         $target_process_ors_entries = Yii::$app->db->createCommand("SELECT * FROM `process_ors_entries`")->queryAll();
         $source_process_ors_entries_difference = array_map(
             'unserialize',
@@ -163,7 +163,7 @@ class ProcessOrsApiController extends \yii\rest\ActiveController
                     return 'success s';
                 }
             } catch (ErrorException $e) {
-                return json_encode($e->getMessage());
+                return json_encode('entries' . $e->getMessage());
             }
         }
         return 'success';

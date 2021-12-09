@@ -35,8 +35,8 @@ class RecordAllotmentEntriesApiController extends \yii\rest\ActiveController
     {
         
         $transaction = Yii::$app->db->beginTransaction();
-        $source_jason = Yii::$app->getRequest()->getBodyParams();
-        $source_record_allotment_entries = $source_jason;
+        $source_json = Yii::$app->getRequest()->getBodyParams();
+        $source_record_allotment_entries = $source_json;
         $target_record_allotment_entries = Yii::$app->db->createCommand("SELECT * FROM `record_allotment_entries`")->queryAll();
         $source_record_allotment_entries_difference = array_map(
             'unserialize',
@@ -89,7 +89,7 @@ class RecordAllotmentEntriesApiController extends \yii\rest\ActiveController
                 return json_encode($e->getMessage());
             }
         }
-        return 'success';
+        return $source_json;
 
     }
 }

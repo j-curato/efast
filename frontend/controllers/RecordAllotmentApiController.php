@@ -123,6 +123,7 @@ class RecordAllotmentApiController extends \yii\rest\ActiveController
                 return json_encode($e->getMessage());
             }
         }
+        $transaction = Yii::$app->db->beginTransaction();
         $source_record_allotment_entries = $source_json['record_allotment_entries'];
         $target_record_allotment_entries = Yii::$app->db->createCommand("SELECT * FROM `record_allotment_entries`")->queryAll();
         $source_record_allotment_entries_difference = array_map(

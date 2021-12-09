@@ -17,12 +17,12 @@ class ChartOfAccountsApiController extends \yii\rest\ActiveController
         $behaviors = parent::behaviors();
         $behaviors['authenticator']['only'] = ['create', 'delete', 'update'];
         $behaviors['authenticator']['authMethods'] = [
-            HttpBearerAuth::class                       
+            HttpBearerAuth::class
         ];
-        return array_merge(['corsFilter'=>Cors::class],$behaviors);
+        return array_merge(['corsFilter' => Cors::class], $behaviors);
     }
     public function actions()
-    {               
+    {
         $actions = parent::actions();
         unset($actions['create']);
     }
@@ -59,7 +59,7 @@ class ChartOfAccountsApiController extends \yii\rest\ActiveController
                             $p->is_active = $val['is_active'];
                             if ($p->save(false)) {
                             } else {
-                                return json_encode('wala na save');
+                                return 'wala na save';
                             }
                         } else {
                             $new_chart = new ChartOfAccounts();

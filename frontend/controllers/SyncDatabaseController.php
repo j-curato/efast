@@ -27,6 +27,20 @@ use Yii;
 
 class SyncDatabaseController extends \yii\web\Controller
 {
+    public function beforeAction($action)
+    {
+        if ($action->id == 'process-ors') {
+            $this->enableCsrfValidation = false;
+        }
+        if ($action->id == 'dv-accounting-entries') {
+            $this->enableCsrfValidation = false;
+        }
+        if ($action->id == 'dv-aucs-entries') {
+            $this->enableCsrfValidation = false;
+        }
+
+        return parent::beforeAction($action);
+    }
     public function actionIndex()
     {
         return $this->render('index');
@@ -195,7 +209,7 @@ class SyncDatabaseController extends \yii\web\Controller
             return json_encode(
                 [
                     'record_allotments' => $record_allotments,
-                    'record_allotment_entries' => $record_allotments_entries
+                    'record_allotment_entries' => $record_allotments_entries,
                 ]
             );
         }
@@ -209,9 +223,42 @@ class SyncDatabaseController extends \yii\web\Controller
             return json_encode(
                 [
                     'process_ors' => $process_ors,
-                    'process_ors_entries' => $process_ors_entries
+                    'process_ors_entries' => $process_ors_entries,
+                    // '_csrf' => Yii::$app->request->getCsrfToken()
                 ]
             );
+        }
+    }
+    public function actionDvAucs()
+    {
+        if ($_POST) {
+            $db = Yii::$app->ryn_db;
+            $dv_aucs = $db->createCommand('SELECT * FROM dv_aucs')->queryAll();
+            return json_encode($dv_aucs);
+        }
+    }
+    public function actionDvAucsEntries()
+    {
+        if ($_POST) {
+            $db = Yii::$app->ryn_db;
+            $dv_aucs_entries = $db->createCommand('SELECT * FROM dv_aucs_entries')->queryAll();
+            return json_encode($dv_aucs_entries);
+        }
+    }
+    public function actionDvAccountingEntries()
+    {
+        if ($_POST) {
+            $db = Yii::$app->ryn_db;
+            $dv_accounting_entries = $db->createCommand('SELECT * FROM dv_accounting_entries')->queryAll();
+            return json_encode($dv_accounting_entries);
+        }
+    }
+    public function actionCashDisbursement()
+    {
+        if ($_POST) {
+            $db = Yii::$app->ryn_db;
+            $cash_disbursement = $db->createCommand('SELECT * FROM cash_disbursement')->queryAll();
+            return json_encode($cash_disbursement);
         }
     }
     public function actionChartOfAccount()
@@ -220,7 +267,7 @@ class SyncDatabaseController extends \yii\web\Controller
             $db = Yii::$app->ryn_db;
             $chart_of_account = $db->createCommand('SELECT * FROM chart_of_accounts')->queryAll();
             return json_encode(
-                    $chart_of_account
+                $chart_of_account
             );
         }
     }
@@ -231,7 +278,8 @@ class SyncDatabaseController extends \yii\web\Controller
             $sub_account1 = $db->createCommand('SELECT * FROM sub_accounts1')->queryAll();
             return json_encode($sub_account1);
         }
-    }    public function actionSubAccount2()
+    }
+    public function actionSubAccount2()
     {
         if ($_POST) {
             $db = Yii::$app->ryn_db;
@@ -239,7 +287,8 @@ class SyncDatabaseController extends \yii\web\Controller
             return json_encode($sub_account2);
         }
     }
-    
+
+
 
     public function actionUpdateDatabase()
     {
@@ -1012,7 +1061,7 @@ class SyncDatabaseController extends \yii\web\Controller
             return 'success';
         }
     }
-    
+
 
     public function actionQ()
     {

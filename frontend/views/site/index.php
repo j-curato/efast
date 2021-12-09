@@ -525,8 +525,8 @@ $this->title = 'Dashboard';
 
 <?php
 $csrfToken = Yii::$app->request->csrfToken;
-
-echo $csrfToken;
+$csrfName = Yii::$app->request->csrfParam;
+echo $csrfName;
 ?>
 
 <script>
@@ -562,7 +562,7 @@ echo $csrfToken;
                             "Authorization": `Bearer ${localStorage.getItem('token')}`
                         },
                         success: function(newdata) {
-                            resolve(newdata)
+                            resolve('chartOfAccountApi ' + newdata)
                         }
                     })
                 })
@@ -587,7 +587,7 @@ echo $csrfToken;
                             "Authorization": `Bearer ${localStorage.getItem('token')}`
                         },
                         success: function(newdata) {
-                            resolve(newdata)
+                            resolve('subAccount1Api' + newdata)
                         }
                     })
                 })
@@ -612,7 +612,7 @@ echo $csrfToken;
                             "Authorization": `Bearer ${localStorage.getItem('token')}`
                         },
                         success: function(newdata) {
-                            resolve(newdata)
+                            resolve('subAccount2Api' + newdata)
                         }
                     })
                 })
@@ -663,10 +663,35 @@ echo $csrfToken;
                         },
                         success: function(newdata) {
                             resolve(newdata)
+                            console.log('newdata')
+
                         }
                     })
                 })
         });
+        transactionApi.then(() => {
+            $.post(window.location.pathname + '?r=sync-database/process-ors', // url
+                {
+                    myData: '',
+                }, // data to be submit
+                function(data) { // success callback
+                    var d = JSON.parse(data)
+                    console.log(d)
+                    $.ajax({
+                        type: "post",
+                        url: 'https://fisdticaraga.com/index.php?r=process-ors-api/create',
+                        contentType: "application/json",
+                        data: JSON.stringify(d),
+                        dataType: 'json',
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem('token')}`
+                        },
+                        success: function(newdata) {
+                            console.log(newdata)
+                        }
+                    })
+                })
+        })
         const recordAllotmentApi = new Promise((resolve, reject) => {
             // RECORD ALLOTMENT API
             $.post(window.location.pathname + '?r=sync-database/record-allotment', // url
@@ -677,7 +702,7 @@ echo $csrfToken;
                     var d = JSON.parse(data)
                     $.ajax({
                         type: "post",
-                        url: 'https://localhost/afms/index.php?r=record-allotment-api/create',
+                        url: 'https://fisdticaraga.com/index.php?r=record-allotment-api/create',
                         contentType: "application/json",
                         data: JSON.stringify(d),
                         dataType: 'json',
@@ -690,9 +715,8 @@ echo $csrfToken;
                     })
                 })
         })
-        const processOrsApi = new Promise((resolve, reject) => {
-            // PROCESS ORS  API
-            $.post(window.location.pathname + '?r=sync-database/process-ors', // url
+        const dvAucsApi = new Promise((resolve, reject) => {
+            $.post(window.location.pathname + '?r=sync-database/dv-aucs', // url
                 {
                     myData: ''
                 }, // data to be submit
@@ -700,7 +724,73 @@ echo $csrfToken;
                     var d = JSON.parse(data)
                     $.ajax({
                         type: "post",
-                        url: 'https://localhost/afms/index.php?r=process-ors-api/create',
+                        url: 'https://fisdticaraga.com/index.php?r=dv-aucs-api/create',
+                        contentType: "application/json",
+                        data: JSON.stringify(d),
+                        dataType: 'json',
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem('token')}`
+                        },
+                        success: function(newdata) {
+                            resolve(newdata)
+                            // DV AUCS ENTRIES
+                            $.post(window.location.pathname + '?r=sync-database/dv-aucs-entries', // url
+                                {
+                                    myData: '',
+                                    '<?= $csrfName ?>': "<?= $csrfToken ?>"
+                                }, // data to be submit
+                                function(data) { // success callback
+                                    var d = JSON.parse(data)
+                                    $.ajax({
+                                        type: "post",
+                                        url: 'https://fisdticaraga.com/index.php?r=dv-aucs-entries-api/create',
+                                        contentType: "application/json",
+                                        data: JSON.stringify(d),
+                                        dataType: 'json',
+                                        headers: {
+                                            "Authorization": `Bearer ${localStorage.getItem('token')}`
+                                        },
+                                        success: function(newdata) {
+                                            resolve(newdata)
+                                        }
+                                    })
+                                })
+                            // DV ACCOUNTING ENTRIES
+                            $.post(window.location.pathname + '?r=sync-database/dv-accounting-entries', // url
+                                {
+                                    myData: ''
+                                }, // data to be submit
+                                function(data) { // success callback
+                                    var d = JSON.parse(data)
+                                    $.ajax({
+                                        type: "post",
+                                        url: 'https://fisdticaraga.com/index.php?r=dv-accounting-entries-api/create',
+                                        contentType: "application/json",
+                                        data: JSON.stringify(d),
+                                        dataType: 'json',
+                                        headers: {
+                                            "Authorization": `Bearer ${localStorage.getItem('token')}`
+                                        },
+                                        success: function(newdata) {
+                                            resolve(newdata)
+                                        }
+                                    })
+                                })
+                        }
+                    })
+                })
+        })
+        dvAucsApi.then(() => {
+            // RECORD ALLOTMENT API
+            $.post(window.location.pathname + '?r=sync-database/cash-disbursement', // url
+                {
+                    myData: ''
+                }, // data to be submit
+                function(data) { // success callback
+                    var d = JSON.parse(data)
+                    $.ajax({
+                        type: "post",
+                        url: 'https://fisdticaraga.com/index.php?r=cash-disbursement-api/create',
                         contentType: "application/json",
                         data: JSON.stringify(d),
                         dataType: 'json',
@@ -714,7 +804,38 @@ echo $csrfToken;
                 })
         })
 
+        // const processOrsApi = new Promise((resolve, reject) => {
+        //     // PROCESS ORS  API
+        //     $.post(window.location.pathname + '?r=sync-database/process-ors', // url
+        //         {
+        //             myData: ''
+        //         }, // data to be submit
+        //         function(data) { // success callback
+        //             var d = JSON.parse(data)
+        //             $.ajax({
+        //                 type: "post",
+        //                 url: 'https://localhost/afms/index.php?r=process-ors-api/create',
+        //                 contentType: "application/json",
+        //                 data: JSON.stringify(d),
+        //                 dataType: 'json',
+        //                 headers: {
+        //                     "Authorization": `Bearer ${localStorage.getItem('token')}`
+        //                 },
+        //                 success: function(newdata) {
+        //                     resolve(newdata)
+        //                 }
+        //             })
+        //         })
+        // })
+        // const processOrsApi = new Promise((resolve, reject) => {F
+        // PROCESS ORS  API
+
+        // })
+        // processOrsApi.then((data) => {
+        //     console.log(data)
+        // })
         // At this point, "promiseA" is already settled.
+
         Promise.all([
             transactionApi,
             payeeApi,
@@ -722,8 +843,12 @@ echo $csrfToken;
             subAccount1Api,
             subAccount2Api,
             recordAllotmentApi,
-            processOrsApi,
+            dvAucsApi,
+            cashDisbursementApi
+
         ]).then(values => {
+
+
             console.log(values)
             console.log("We waited until ajax ended: " + values);
             // console.log("My few ajax ended, lets do some things!!")
