@@ -460,7 +460,7 @@ SweetAlertAsset::register($this);
         for (var i = 0; i < result.length; i++) {
             var row = `<tr>
                     <td style='display:none'> <input value='${result[i]['id']}' id='advances_${transaction_table_count}' class='advances_id' type='text' name='advances_id[]'/></td>
-                    <td > <input style='width:140px' type='month'data-date='' data-date-format='yyyy-mm' id='date_${transaction_table_count}' name='new_reporting_period[]' required /></td>
+                    <td > <input type='month'data-date='' data-date-format='yyyy-mm' id='date_${transaction_table_count}' name='new_reporting_period[]' required /></td>
                     <td class='nft_number' style='display:none'> ${result[i]['nft_number']}</td>
                     <td class='report_type' style='display:none'> ${result[i]['report_type']}</td>
                     <td class=''province> ${result[i]['province']}</td>
