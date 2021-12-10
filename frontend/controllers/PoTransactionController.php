@@ -165,7 +165,7 @@ class PoTransactionController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function actionTrackingNumber($responsibility_center_id)
+    public function getTrackingNumber($responsibility_center_id)
     {
         $date = date("Y");
         $responsibility_center = (new \yii\db\Query())
