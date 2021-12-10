@@ -202,7 +202,7 @@ class PoTransactionController extends Controller
         
 
         // $final_number .= $last_number;
-        $tracking_number = strtoupper(\Yii::$app->user->identity->province) . '-' . $responsibility_center['name'] . '-' . $date . '-' . $final_number;
+        $tracking_number = strtoupper(\Yii::$app->user->identity->province) . '-' .trim( $responsibility_center['name']) . '-' . $date . '-' . $final_number;
         return  $tracking_number;
     }
     public function actionGetTransaction()
