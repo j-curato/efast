@@ -10,19 +10,19 @@ use yii\filters\Cors;
 
 class DvAucsEntriesApiController extends \yii\rest\ActiveController
 {
-    public $modelClass=DvAucsEntries::class;
+    public $modelClass = DvAucsEntries::class;
     public function behaviors()
     {
-        $behaviors=parent::behaviors();
-        $behaviors['authenticator']['only']=['create','delete','update','view','index'];
-        $behaviors['authenticator']['authMethods']=[
+        $behaviors = parent::behaviors();
+        $behaviors['authenticator']['only'] = ['create', 'delete', 'update', 'view', 'index'];
+        $behaviors['authenticator']['authMethods'] = [
             HttpBearerAuth::class
         ];
-        return array_merge(['corsFilter'=>Cors::class],$behaviors);
+        return array_merge(['corsFilter' => Cors::class], $behaviors);
     }
     public function actions()
     {
-        $actions=parent::actions();
+        $actions = parent::actions();
         unset($actions['update']);
         unset($actions['delete']);
         unset($actions['view']);
@@ -31,37 +31,55 @@ class DvAucsEntriesApiController extends \yii\rest\ActiveController
     }
     public function actionCreate()
     {
-        $transaction = Yii::$app->db->beginTransaction();
-        $source_dv_aucs_entries = Yii::$app->getRequest()->getBodyParams();
-        $target_dv_aucs_entries = Yii::$app->db->createCommand("SELECT * FROM `dv_aucs_entries`")->queryAll();
-        $source_dv_aucs_entries_difference = array_map(
-            'unserialize',
-            array_diff(array_map('serialize', $source_dv_aucs_entries), array_map('serialize', $target_dv_aucs_entries))
+       
+        $source_json = Yii::$app->getRequest()->getBodyParams();
+        $source_dv_aucs_entries = $source_json['new_dv_aucs_entries'];
+        // $target_dv_aucs_entries = Yii::$app->db->createCommand("SELECT * FROM `dv_aucs_entries`")->queryAll();
+        // $source_dv_aucs_entries_difference = array_map(
+        //     'unserialize',
+        //     array_diff(array_map('serialize', $source_dv_aucs_entries), array_map('serialize', $target_dv_aucs_entries))
 
-        );
+        // );
 
+        // return json_encode($source_json['to_delete']);
+        if (!empty($source_json['to_delete'])) {
+            $transaction = Yii::$app->db->beginTransaction();
 
-        if (!empty($source_dv_aucs_entries_difference)) {
+            foreach ($source_json['to_delete'] as $val) {
+
+                // return $val;
+                $q = Yii::$app->db->createCommand("DELETE FROM dv_aucs_entries WHERE id = :id")->bindValue(':id', $val)->execute();
+                // $q = DvAucsEntries::findOne($val);
+                // return $q->id;
+                // $q->delete();
+
+            }
+            $transaction->commit();
+
+        }
+        if (!empty($source_dv_aucs_entries)) {
+            $transaction = Yii::$app->db->beginTransaction();
+
             try {
 
                 if ($flag = true) {
 
-                    foreach ($source_dv_aucs_entries_difference as $val) {
+                    foreach ($source_dv_aucs_entries as $val) {
                         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `dv_aucs_entries` WHERE id = :id)")
                             ->bindValue(':id', $val['id'])
                             ->queryScalar();
                         if (intval($query) === 1) {
                             $update_dv_aucs_entries = DvAucsEntries::findOne($val['id']);
 
-                            $update_dv_aucs_entries->dv_aucs_id=$val['dv_aucs_id'];
-                            $update_dv_aucs_entries->raoud_id=$val['raoud_id'];
-                            $update_dv_aucs_entries->amount_disbursed=$val['amount_disbursed'];
-                            $update_dv_aucs_entries->vat_nonvat=$val['vat_nonvat'];
-                            $update_dv_aucs_entries->ewt_goods_services=$val['ewt_goods_services'];
-                            $update_dv_aucs_entries->compensation=$val['compensation'];
-                            $update_dv_aucs_entries->other_trust_liabilities=$val['other_trust_liabilities'];
-                            $update_dv_aucs_entries->total_withheld=$val['total_withheld'];
-                            $update_dv_aucs_entries->process_ors_id=$val['process_ors_id'];
+                            $update_dv_aucs_entries->dv_aucs_id = $val['dv_aucs_id'];
+                            $update_dv_aucs_entries->raoud_id = $val['raoud_id'];
+                            $update_dv_aucs_entries->amount_disbursed = $val['amount_disbursed'];
+                            $update_dv_aucs_entries->vat_nonvat = $val['vat_nonvat'];
+                            $update_dv_aucs_entries->ewt_goods_services = $val['ewt_goods_services'];
+                            $update_dv_aucs_entries->compensation = $val['compensation'];
+                            $update_dv_aucs_entries->other_trust_liabilities = $val['other_trust_liabilities'];
+                            $update_dv_aucs_entries->total_withheld = $val['total_withheld'];
+                            $update_dv_aucs_entries->process_ors_id = $val['process_ors_id'];
 
                             if ($update_dv_aucs_entries->save(false)) {
                             } else {
@@ -71,16 +89,16 @@ class DvAucsEntriesApiController extends \yii\rest\ActiveController
                         } else {
                             $new_dv_aucs_entries = new DvAucsEntries();
                             $new_dv_aucs_entries->id = $val['id'];
-                            $new_dv_aucs_entries->dv_aucs_id=$val['dv_aucs_id'];
-                            $new_dv_aucs_entries->raoud_id=$val['raoud_id'];
-                            $new_dv_aucs_entries->amount_disbursed=$val['amount_disbursed'];
-                            $new_dv_aucs_entries->vat_nonvat=$val['vat_nonvat'];
-                            $new_dv_aucs_entries->ewt_goods_services=$val['ewt_goods_services'];
-                            $new_dv_aucs_entries->compensation=$val['compensation'];
-                            $new_dv_aucs_entries->other_trust_liabilities=$val['other_trust_liabilities'];
-                            $new_dv_aucs_entries->total_withheld=$val['total_withheld'];
-                            $new_dv_aucs_entries->process_ors_id=$val['process_ors_id'];
-                           
+                            $new_dv_aucs_entries->dv_aucs_id = $val['dv_aucs_id'];
+                            $new_dv_aucs_entries->raoud_id = $val['raoud_id'];
+                            $new_dv_aucs_entries->amount_disbursed = $val['amount_disbursed'];
+                            $new_dv_aucs_entries->vat_nonvat = $val['vat_nonvat'];
+                            $new_dv_aucs_entries->ewt_goods_services = $val['ewt_goods_services'];
+                            $new_dv_aucs_entries->compensation = $val['compensation'];
+                            $new_dv_aucs_entries->other_trust_liabilities = $val['other_trust_liabilities'];
+                            $new_dv_aucs_entries->total_withheld = $val['total_withheld'];
+                            $new_dv_aucs_entries->process_ors_id = $val['process_ors_id'];
+
                             if ($new_dv_aucs_entries->save(false)) {
                             } else {
                                 $transaction->rollBack();
@@ -92,13 +110,12 @@ class DvAucsEntriesApiController extends \yii\rest\ActiveController
 
                 if ($flag) {
                     $transaction->commit();
-                    return 'success s';
+                    return 'success ss';
                 }
             } catch (ErrorException $e) {
                 return json_encode($e->getMessage());
             }
         }
         return 'success';
-
     }
 }

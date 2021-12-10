@@ -272,7 +272,7 @@ class ProcessOrsEntriesController extends Controller
             $transaction_timestamp = $_POST['transaction_timestamp'];
 
 
-
+            // DISABLED REPORTING PERIOD
             $q = OrsReportingPeriod::find()->where("reporting_period = :reporting_period", ['reporting_period' => $reporting_period])->one();
 
             $y = date('Y', strtotime($reporting_period));

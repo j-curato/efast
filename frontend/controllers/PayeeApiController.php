@@ -46,12 +46,12 @@ class PayeeApiController extends \yii\rest\ActiveController
         // var_dump($source_payee_difference);
         // return json_encode($source_payee_difference);
 
-        if (!empty($source_payee_difference)) {
+        if (!empty($source_payee)) {
             try {
                 if ($flag = true) {
 
 
-                    foreach ($source_payee_difference as $val) {
+                    foreach ($source_payee as $val) {
                         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM payee WHERE payee.id = :id)")
                             ->bindValue(':id', $val['id'])
                             ->queryScalar();

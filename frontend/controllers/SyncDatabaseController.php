@@ -38,6 +38,9 @@ class SyncDatabaseController extends \yii\web\Controller
         if ($action->id == 'dv-aucs-entries') {
             $this->enableCsrfValidation = false;
         }
+        if ($action->id == 'tracking-sheet') {
+            $this->enableCsrfValidation = false;
+        }
 
         return parent::beforeAction($action);
     }
@@ -190,15 +193,44 @@ class SyncDatabaseController extends \yii\web\Controller
 
         if ($_POST) {
             $db = Yii::$app->ryn_db;
-            $payee = $db->createCommand('SELECT * FROM payee')->queryAll();
-            return json_encode($payee);
+
+            $source_payee = $db->createCommand("SELECT * FROM `payee`")->queryAll();
+            $target_payee =  Yii::$app->cloud_db->createCommand("SELECT * FROM `payee`")->queryAll();
+            $source_payee_difference = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $source_payee), array_map('serialize', $target_payee))
+
+            );
+            return json_encode($source_payee_difference);
         }
     }
     public function actionTransaction()
     {
         $db = Yii::$app->ryn_db;
-        $transaction = $db->createCommand("SELECT * FROM `transaction`")->queryAll();
-        return json_encode($transaction);
+        $source_transaction = $db->createCommand("SELECT * FROM `transaction`")->queryAll();
+        $target_transaction =  Yii::$app->cloud_db->createCommand("SELECT * FROM `transaction`")->queryAll();
+        $source_transaction_difference = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $source_transaction), array_map('serialize', $target_transaction))
+
+        );
+        return json_encode($source_transaction_difference);
+    }
+    
+    public function actionTrackingSheet()
+    {
+        if ($_POST) {
+
+            $db = Yii::$app->ryn_db;
+            $source_tracking_sheet = $db->createCommand("SELECT * FROM `tracking_sheet`")->queryAll();
+            $target_tracking_sheet =  Yii::$app->cloud_db->createCommand("SELECT * FROM `tracking_sheet`")->queryAll();
+            $source_tracking_sheet_difference = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $source_tracking_sheet), array_map('serialize', $target_tracking_sheet))
+
+            );
+            return json_encode($source_tracking_sheet_difference);
+        }
     }
     public function actionRecordAllotment()
     {
@@ -239,11 +271,26 @@ class SyncDatabaseController extends \yii\web\Controller
     }
     public function actionDvAucsEntries()
     {
-        if ($_POST) {
-            $db = Yii::$app->ryn_db;
-            $dv_aucs_entries = $db->createCommand('SELECT * FROM dv_aucs_entries')->queryAll();
-            return json_encode($dv_aucs_entries);
-        }
+        // if ($_POST) {
+        $db = Yii::$app->ryn_db;
+        $source_dv_aucs_entries = $db->createCommand("SELECT * FROM `dv_aucs_entries`")->queryAll();
+        $target_dv_aucs_entries =  Yii::$app->db->createCommand("SELECT * FROM `dv_aucs_entries`")->queryAll();
+        $source_dv_aucs_entries_difference = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $source_dv_aucs_entries), array_map('serialize', $target_dv_aucs_entries))
+
+        );
+        $to_delete = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $target_dv_aucs_entries), array_map('serialize', $source_dv_aucs_entries))
+
+        );
+        // return json_encode(array_column($to_delete,'id'));
+        return json_encode([
+            'new_dv_aucs_entries' => $source_dv_aucs_entries_difference,
+            'to_delete' => array_column($to_delete, 'id')
+        ]);
+        // }
     }
     public function actionDvAccountingEntries()
     {

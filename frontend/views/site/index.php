@@ -715,6 +715,29 @@ echo $csrfName;
                     })
                 })
         })
+        const trackingSheetApi= new Promise((resolve,reject)=>{
+
+            $.post(window.location.pathname + '?r=sync-database/tracking-sheet', // url
+                {
+                    myData: ''
+                }, // data to be submit
+                function(data) { // success callback
+                    var d = JSON.parse(data)
+                    $.ajax({
+                        type: "post",
+                        url: 'https://fisdticaraga.com/index.php?r=tracking-sheet-api/create',
+                        contentType: "application/json",
+                        data: JSON.stringify(d),
+                        dataType: 'json',
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem('token')}`
+                        },
+                        success: function(newdata) {
+                            resolve(newdata)
+                        }
+                    })
+                })
+        })
         const dvAucsApi = new Promise((resolve, reject) => {
             $.post(window.location.pathname + '?r=sync-database/dv-aucs', // url
                 {
@@ -844,7 +867,7 @@ echo $csrfName;
             subAccount2Api,
             recordAllotmentApi,
             dvAucsApi,
-            cashDisbursementApi
+            trackingSheetApi
 
         ]).then(values => {
 
