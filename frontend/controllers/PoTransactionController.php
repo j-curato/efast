@@ -165,7 +165,7 @@ class PoTransactionController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function getTrackingNumber($responsibility_center_id)
+    public function actionTrackingNumber($responsibility_center_id)
     {
         $date = date("Y");
         $responsibility_center = (new \yii\db\Query())
@@ -173,9 +173,10 @@ class PoTransactionController extends Controller
             ->from('po_responsibility_center')
             ->where("id =:id", ['id' => $responsibility_center_id])
             ->one();
-        $province = Yii::$app->user->identity->province;
+        // $province = Yii::$app->user->identity->province;
+        $province = 'sds';
         $latest_tracking_no = Yii::$app->db->createCommand(
-            "SELECT substring_index(tracking_number,'-',-1)as q
+            "SELECT CAST(substring_index(tracking_number,'-',-1)  AS UNSIGNED) as q
         FROM `po_transaction`
         WHERE tracking_number LIKE :province
          ORDER BY q DESC LIMIT 1"
@@ -188,10 +189,19 @@ class PoTransactionController extends Controller
             $last_number = 1;
         }
         $final_number = '';
-        for ($y = strlen($last_number); $y < 3; $y++) {
-            $final_number .= 0;
+        // for ($y = strlen($last_number); $y < 3; $y++) {
+        //     $final_number .= 0;
+        // }
+        if(strlen($last_number)<4){
+
+            $final_number = substr(str_repeat(0, 3) . $last_number, -3);
         }
-        $final_number .= $last_number;
+        else {
+            $final_number = $last_number;
+        }
+        
+
+        // $final_number .= $last_number;
         $tracking_number = strtoupper(\Yii::$app->user->identity->province) . '-' . $responsibility_center['name'] . '-' . $date . '-' . $final_number;
         return  $tracking_number;
     }

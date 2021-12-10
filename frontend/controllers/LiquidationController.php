@@ -612,7 +612,7 @@ class LiquidationController extends Controller
         ];
 
         $province = Yii::$app->user->identity->province;
-        $q = Yii::$app->db->createCommand("SELECT substring_index(substring(dv_number, instr(dv_number, '-')+1), '-', -1) as q 
+        $q = Yii::$app->db->createCommand("SELECT CAST( substring_index(substring(dv_number, instr(dv_number, '-')+1), '-', -1) as UNSIGNED) as q 
         from liquidation
         WHERE liquidation.province = :province
         AND liquidation.reporting_period >= '2021-09'
@@ -632,8 +632,13 @@ class LiquidationController extends Controller
             // $num = 1;
             $num = $arr[$province];
         }
+        if (strlen($num) < 4) {
 
-        $string = substr(str_repeat(0, 4) . $num, -4);
+            $string = substr(str_repeat(0, 4) . $num, -4);
+        } else {
+            $string = $num;
+        }
+
         return strtoupper($province) . '-' . $reporting_period . '-' . $string;
     }
     public function actionExcludeRaaf($id)
@@ -642,7 +647,7 @@ class LiquidationController extends Controller
 
         $model->exclude_in_raaf = $model->exclude_in_raaf === 1 ? 0 : 1;
         if ($model->save(false)) {
-          return   $this->actionView($id);
+            return   $this->actionView($id);
         }
     }
     // public function actionCancel()
@@ -1082,7 +1087,7 @@ class LiquidationController extends Controller
         if ($_POST) {
             $from_reporting_period = $_POST['from_reporting_period'];
             $to_reporting_period = $_POST['to_reporting_period'];
-            
+
 
 
             $province = strtolower(Yii::$app->user->identity->province);

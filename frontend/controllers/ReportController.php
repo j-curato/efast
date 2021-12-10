@@ -2924,10 +2924,55 @@ class ReportController extends \yii\web\Controller
     }
 
 
-    // public function actionPass()
-    // {
-    //     echo substr(md5(uniqid(mt_rand(), true)), 0, 8);
-    // }
+    public function actionPass()
+    {
+        // echo substr(md5(uniqid(mt_rand(), true)), 0, 8);
+        // $num = 123456789;
+        // if(strlen($num)<4){
+
+        //     $string = substr(str_repeat(0, 4) . $num, -4);
+        // }
+        // else {
+        //     $string = $num;
+        // }
+        $date = date("Y");
+        $responsibility_center = (new \yii\db\Query())
+            ->select("name")
+            ->from('po_responsibility_center')
+            ->where("id =:id", ['id' => 4])
+            ->one();
+        // $province = Yii::$app->user->identity->province;
+        $province = 'sds';
+        $latest_tracking_no = Yii::$app->db->createCommand(
+            "SELECT substring_index(tracking_number,'-',-1)as q
+        FROM `po_transaction`
+        WHERE tracking_number LIKE :province
+         ORDER BY q DESC LIMIT 1"
+        )
+            ->bindValue(':province', $province . '%')
+            ->queryScalar();
+        if (!empty($latest_tracking_no)) {
+            $last_number = $latest_tracking_no + 1;
+        } else {
+            $last_number = 1;
+        }
+        $final_number = '';
+        // for ($y = strlen($last_number); $y < 3; $y++) {
+        //     $final_number .= 0;
+        // }
+        if(strlen($last_number)<4){
+
+            $final_number = substr(str_repeat(0, 3) . $last_number, -3);
+        }
+        else {
+            $final_number = $last_number;
+        }
+        
+
+        // $final_number .= $last_number;
+        $tracking_number ='SDS' . '-' . trim($responsibility_center['name']) . '-' . $date . '-' . $final_number;
+        return  $tracking_number;
+    }
 }
 
 // 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
