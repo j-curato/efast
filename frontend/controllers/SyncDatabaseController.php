@@ -216,7 +216,7 @@ class SyncDatabaseController extends \yii\web\Controller
         );
         return json_encode($source_transaction_difference);
     }
-    
+
     public function actionTrackingSheet()
     {
         if ($_POST) {
@@ -271,32 +271,50 @@ class SyncDatabaseController extends \yii\web\Controller
     }
     public function actionDvAucsEntries()
     {
-        // if ($_POST) {
-        $db = Yii::$app->ryn_db;
-        $source_dv_aucs_entries = $db->createCommand("SELECT * FROM `dv_aucs_entries`")->queryAll();
-        $target_dv_aucs_entries =  Yii::$app->db->createCommand("SELECT * FROM `dv_aucs_entries`")->queryAll();
-        $source_dv_aucs_entries_difference = array_map(
-            'unserialize',
-            array_diff(array_map('serialize', $source_dv_aucs_entries), array_map('serialize', $target_dv_aucs_entries))
+        if ($_POST) {
+            $db = Yii::$app->ryn_db;
+            $source_dv_aucs_entries = $db->createCommand("SELECT * FROM `dv_aucs_entries`")->queryAll();
+            $target_dv_aucs_entries =  Yii::$app->db->createCommand("SELECT * FROM `dv_aucs_entries`")->queryAll();
+            $source_dv_aucs_entries_difference = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $source_dv_aucs_entries), array_map('serialize', $target_dv_aucs_entries))
 
-        );
-        $to_delete = array_map(
-            'unserialize',
-            array_diff(array_map('serialize', $target_dv_aucs_entries), array_map('serialize', $source_dv_aucs_entries))
+            );
+            $to_delete = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $target_dv_aucs_entries), array_map('serialize', $source_dv_aucs_entries))
 
-        );
-        // return json_encode(array_column($to_delete,'id'));
-        return json_encode([
-            'new_dv_aucs_entries' => $source_dv_aucs_entries_difference,
-            'to_delete' => array_column($to_delete, 'id')
-        ]);
-        // }
+            );
+            // return json_encode(array_column($to_delete,'id'));
+            return json_encode([
+                'new_dv_aucs_entries' => $source_dv_aucs_entries_difference,
+                'to_delete' => array_column($to_delete, 'id')
+            ]);
+        }
     }
     public function actionDvAccountingEntries()
     {
         if ($_POST) {
             $db = Yii::$app->ryn_db;
             $dv_accounting_entries = $db->createCommand('SELECT * FROM dv_accounting_entries')->queryAll();
+            $db = Yii::$app->ryn_db;
+            $source_dv_accounting_entries = $db->createCommand("SELECT * FROM `dv_accounting_entries`")->queryAll();
+            $target_dv_accounting_entries =  Yii::$app->db->createCommand("SELECT * FROM `dv_accounting_entries`")->queryAll();
+            $source_dv_accounting_entries_difference = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $source_dv_accounting_entries), array_map('serialize', $target_dv_accounting_entries))
+
+            );
+            $to_delete = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $target_dv_accounting_entries), array_map('serialize', $source_dv_accounting_entries))
+
+            );
+            // return json_encode(array_column($to_delete,'id'));
+            return json_encode([
+                'new_dv_accounting_entries' => $source_dv_accounting_entries_difference,
+                'to_delete' => array_column($to_delete, 'id')
+            ]);
             return json_encode($dv_accounting_entries);
         }
     }
@@ -305,7 +323,17 @@ class SyncDatabaseController extends \yii\web\Controller
         if ($_POST) {
             $db = Yii::$app->ryn_db;
             $cash_disbursement = $db->createCommand('SELECT * FROM cash_disbursement')->queryAll();
-            return json_encode($cash_disbursement);
+
+
+
+            $source_cash_disbursement = $db->createCommand("SELECT * FROM `cash_disbursement`")->queryAll();
+            $target_cash_disbursement =  Yii::$app->db->createCommand("SELECT * FROM `cash_disbursement`")->queryAll();
+            $source_cash_disbursement_difference = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $source_cash_disbursement), array_map('serialize', $target_cash_disbursement))
+
+            );
+            return json_encode($source_cash_disbursement_difference);
         }
     }
     public function actionChartOfAccount()

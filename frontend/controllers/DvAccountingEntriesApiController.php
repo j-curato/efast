@@ -34,7 +34,7 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
     {
         $transaction = Yii::$app->db->beginTransaction();
         $source_json = Yii::$app->getRequest()->getBodyParams();
-        $source_dv_accounting_entries = $source_json;
+        $source_dv_accounting_entries = $source_json['new_dv_accounting_entries'];
         $target_dv_accounting_entries = Yii::$app->db->createCommand("SELECT * FROM `dv_accounting_entries`")->queryAll();
         $source_dv_accounting_entries_difference = array_map(
             'unserialize',
@@ -43,12 +43,12 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
         );
 
 
-        if (!empty($source_dv_accounting_entries_difference)) {
+        if (!empty($source_json)) {
             try {
 
                 if ($flag = true) {
 
-                    foreach ($source_dv_accounting_entries_difference as $val) {
+                    foreach ($source_json as $val) {
                         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `dv_accounting_entries` WHERE id = :id)")
                             ->bindValue(':id', $val['id'])
                             ->queryScalar();

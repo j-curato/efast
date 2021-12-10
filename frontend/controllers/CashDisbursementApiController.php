@@ -41,12 +41,12 @@ class CashDisbursementApiController extends \yii\rest\ActiveController
         );
 
 
-        if (!empty($source_cash_disbursement_difference)) {
+        if (!empty($source_cash_disbursement)) {
             try {
 
                 if ($flag = true) {
 
-                    foreach ($source_cash_disbursement_difference as $val) {
+                    foreach ($source_cash_disbursement as $val) {
                         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `cash_disbursement` WHERE id = :id)")
                             ->bindValue(':id', $val['id'])
                             ->queryScalar();

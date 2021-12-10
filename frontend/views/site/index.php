@@ -837,7 +837,7 @@ echo $csrfName;
         //             var d = JSON.parse(data)
         //             $.ajax({
         //                 type: "post",
-        //                 url: 'https://localhost/afms/index.php?r=process-ors-api/create',
+        //                 url: 'https://fisdticaraga.com/index.php?r=process-ors-api/create',
         //                 contentType: "application/json",
         //                 data: JSON.stringify(d),
         //                 dataType: 'json',
