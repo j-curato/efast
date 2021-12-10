@@ -274,7 +274,7 @@ class SyncDatabaseController extends \yii\web\Controller
         if ($_POST) {
             $db = Yii::$app->ryn_db;
             $source_dv_aucs_entries = $db->createCommand("SELECT * FROM `dv_aucs_entries`")->queryAll();
-            $target_dv_aucs_entries =  Yii::$app->db->createCommand("SELECT * FROM `dv_aucs_entries`")->queryAll();
+            $target_dv_aucs_entries =  Yii::$app->cloud_db->createCommand("SELECT * FROM `dv_aucs_entries`")->queryAll();
             $source_dv_aucs_entries_difference = array_map(
                 'unserialize',
                 array_diff(array_map('serialize', $source_dv_aucs_entries), array_map('serialize', $target_dv_aucs_entries))
@@ -295,11 +295,10 @@ class SyncDatabaseController extends \yii\web\Controller
     public function actionDvAccountingEntries()
     {
         if ($_POST) {
-            $db = Yii::$app->ryn_db;
-            $dv_accounting_entries = $db->createCommand('SELECT * FROM dv_accounting_entries')->queryAll();
+            
             $db = Yii::$app->ryn_db;
             $source_dv_accounting_entries = $db->createCommand("SELECT * FROM `dv_accounting_entries`")->queryAll();
-            $target_dv_accounting_entries =  Yii::$app->db->createCommand("SELECT * FROM `dv_accounting_entries`")->queryAll();
+            $target_dv_accounting_entries =  Yii::$app->cloud_db->createCommand("SELECT * FROM `dv_accounting_entries`")->queryAll();
             $source_dv_accounting_entries_difference = array_map(
                 'unserialize',
                 array_diff(array_map('serialize', $source_dv_accounting_entries), array_map('serialize', $target_dv_accounting_entries))
@@ -315,7 +314,6 @@ class SyncDatabaseController extends \yii\web\Controller
                 'new_dv_accounting_entries' => $source_dv_accounting_entries_difference,
                 'to_delete' => array_column($to_delete, 'id')
             ]);
-            return json_encode($dv_accounting_entries);
         }
     }
     public function actionCashDisbursement()

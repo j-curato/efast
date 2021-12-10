@@ -41,7 +41,11 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
             array_diff(array_map('serialize', $source_dv_accounting_entries), array_map('serialize', $target_dv_accounting_entries))
 
         );
-
+        if (!empty($source_json['to_delete'])) {
+            foreach($source_json['to_delete'] as $val ){
+                $q = Yii::$app->db->createCommand("DELETE FROM dv_accounting_entries WHERE id = :id")->bindValue(':id', $val)->execute();
+            }
+        }
 
         if (!empty($source_json)) {
             try {
@@ -97,10 +101,7 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
                     }
                 }
 
-                if ($flag) {
-                    $transaction->commit();
-                    return 'success s';
-                }
+                $transaction->commit();
             } catch (ErrorException $e) {
                 return json_encode($e->getMessage());
             }
