@@ -173,8 +173,7 @@ class PoTransactionController extends Controller
             ->from('po_responsibility_center')
             ->where("id =:id", ['id' => $responsibility_center_id])
             ->one();
-        // $province = Yii::$app->user->identity->province;
-        $province = 'sds';
+        $province = Yii::$app->user->identity->province;
         $latest_tracking_no = Yii::$app->db->createCommand(
             "SELECT CAST(substring_index(tracking_number,'-',-1)  AS UNSIGNED) as q
         FROM `po_transaction`
