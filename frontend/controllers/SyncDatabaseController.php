@@ -332,7 +332,7 @@ class SyncDatabaseController extends \yii\web\Controller
 
             $db = Yii::$app->ryn_db;
             $source_advances = $db->createCommand("SELECT * FROM `advances`")->queryAll();
-            $target_advances =  Yii::$app->cloud_db->createCommand("SELECT * FROM `advances`")->queryAll();
+            $target_advances =  Yii::$app->cloud_db->createCommand("SELECT * FROM `advances`")->queryAll();     
             $source_advances_difference = array_map(
                 'unserialize',
                 array_diff(array_map('serialize', $source_advances), array_map('serialize', $target_advances))

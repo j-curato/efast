@@ -518,6 +518,16 @@ class LiquidationController extends Controller
                                 list($vat) = sscanf(implode(explode(',', $vat_nonvat[$index])), "%f");
                                 list($e) = sscanf(implode(explode(',', $expanded_tax[$index])), "%f");
                                 list($liq) = sscanf(implode(explode(',', $liq_damages[$index])), "%f");
+                                $advances_entries_balance = Yii::$app->db->createCommand("SELECT advances_entries_for_liquidation.balance FROM advances_entries_for_liquidation
+                                WHERE advances_entries_for_liquidation.id = :id")
+                                ->bindValue(':id',$val)
+                                ->queryScalar();
+                                $res = $advances_entries_balance - $withd;
+
+                                if ($res < 0 ){
+                                    $transaction->rollBack();
+                                    return json_encode(['isSuccess' => false, 'error' => 'Cannot Insert Advances Balance is not enough']);
+                                }
                                 $liq_entries = new LiquidationEntries();
                                 $liq_entries->liquidation_id = $liquidation->id;
                                 $liq_entries->chart_of_account_id = $chart_of_account[$index];
