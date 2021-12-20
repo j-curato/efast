@@ -2968,7 +2968,6 @@ class ReportController extends \yii\web\Controller
             $final_number = $last_number;
         }
         
-
         // $final_number .= $last_number;
         $tracking_number ='SDS' . '-' . trim($responsibility_center['name']) . '-' . $date . '-' . $final_number;
         return  $tracking_number;

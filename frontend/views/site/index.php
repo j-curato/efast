@@ -10,7 +10,8 @@ $this->title = 'Dashboard';
 <div class="site-index">
     <?php
     if (Yii::$app->user->can('super-user')) {
-        echo " <button class='btn btn-success' id='update_cloud'>Update the cloud</button>";
+        echo " <button class='btn btn-success' id='update_cloud' style='margin-bottom:12px'>Update  Cloud</button>";
+        echo " <button class='btn btn-warning' id='update_lan'>Update LAN</button>";
     }
     $query = (new \yii\db\Query())
         ->select([
@@ -537,11 +538,26 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
 <?php
 $csrfToken = Yii::$app->request->csrfToken;
 $csrfName = Yii::$app->request->csrfParam;
-echo $csrfName;
 ?>
 
 <script>
     let x = undefined;
+    $('#update_lan').click((e) => {
+        e.preventDefault()
+        $('.site-index').hide();
+        $('#dots5').show()
+        $.ajax({
+            type: 'POST',
+            url: window.location.pathname + '?r=sync-database/update-lan',
+            data: {
+                data: ''
+            },
+            success: function(data) {
+                $('.site-index').show();
+                $('#dots5').hide()
+            }
+        })
+    })
     $('#update_cloud').click(function(e) {
         e.preventDefault();
         $('.site-index').hide();
@@ -948,8 +964,8 @@ echo $csrfName;
             $('.site-index').show();
             $('#dots5').hide()
 
-            console.log(values)
-            console.log("We waited until ajax ended: " + values);
+            // console.log(values)
+            // console.log("We waited until ajax ended: " + values);
             // console.log("My few ajax ended, lets do some things!!")
         }, reason => {
             console.log("Promises failed: " + reason);

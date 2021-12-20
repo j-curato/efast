@@ -6,19 +6,29 @@ use app\models\Advances;
 use app\models\AuthorizationCode;
 use app\models\Books;
 use app\models\CashFlow;
+use app\models\Cdr;
 use app\models\ChartOfAccounts;
+use app\models\CheckRange;
+use app\models\Cibr;
 use app\models\DocumentRecieve;
 use app\models\FinancingSourceCode;
 use app\models\FundCategoryAndClassificationCode;
 use app\models\FundClusterCode;
 use app\models\FundSource;
 use app\models\FundSourceType;
+use app\models\Fur;
+use app\models\Liquidation;
+use app\models\LiquidationEntries;
 use app\models\MajorAccounts;
 use app\models\MrdClassification;
 use app\models\NatureOfTransaction;
 use app\models\NetAssetEquity;
 use app\models\Payee;
+use app\models\PoAsignatory;
+use app\models\PoTransaction;
 use app\models\ResponsibilityCenter;
+use app\models\Rod;
+use app\models\RodEntries;
 use app\models\SubAccounts1;
 use app\models\SubAccounts2;
 use app\models\SubMajorAccounts;
@@ -295,7 +305,7 @@ class SyncDatabaseController extends \yii\web\Controller
     public function actionDvAccountingEntries()
     {
         if ($_POST) {
-            
+
             $db = Yii::$app->ryn_db;
             $source_dv_accounting_entries = $db->createCommand("SELECT * FROM `dv_accounting_entries`")->queryAll();
             $target_dv_accounting_entries =  Yii::$app->cloud_db->createCommand("SELECT * FROM `dv_accounting_entries`")->queryAll();
@@ -314,6 +324,38 @@ class SyncDatabaseController extends \yii\web\Controller
                 'new_dv_accounting_entries' => $source_dv_accounting_entries_difference,
                 'to_delete' => array_column($to_delete, 'id')
             ]);
+        }
+    }
+    public function actionAdvances()
+    {
+        if ($_POST) {
+
+            $db = Yii::$app->ryn_db;
+            $source_advances = $db->createCommand("SELECT * FROM `advances`")->queryAll();
+            $target_advances =  Yii::$app->cloud_db->createCommand("SELECT * FROM `advances`")->queryAll();
+            $source_advances_difference = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $source_advances), array_map('serialize', $target_advances))
+
+            );
+            // return json_encode(array_column($to_delete,'id'));
+            return json_encode([$source_advances_difference]);
+        }
+    }
+    public function actionAdvancesEntries()
+    {
+        if ($_POST) {
+
+            $db = Yii::$app->ryn_db;
+            $source_advances_entries = $db->createCommand("SELECT * FROM `advances_entries`")->queryAll();
+            $target_advances_entries =  Yii::$app->cloud_db->createCommand("SELECT * FROM `advances_entries`")->queryAll();
+            $source_advances_entries_difference = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $source_advances_entries), array_map('serialize', $target_advances_entries))
+
+            );
+            // return json_encode(array_column($to_delete,'id'));
+            return json_encode([$source_advances_entries_difference]);
         }
     }
     public function actionCashDisbursement()
@@ -1136,11 +1178,604 @@ class SyncDatabaseController extends \yii\web\Controller
     }
 
 
-    public function actionQ()
+    public function actionUpdateLan()
     {
+        $cloud_liquidation = Yii::$app->cloud_db->createCommand("SELECT * FROM liquidation")->queryAll();
+        $cloud_liquidation_entries = Yii::$app->cloud_db->createCommand("SELECT * FROM liquidation_entries")->queryAll();
+        $cloud_po_transaction = Yii::$app->cloud_db->createCommand("SELECT * FROM po_transaction")->queryAll();
+        $cloud_check_range = Yii::$app->cloud_db->createCommand("SELECT * FROM check_range")->queryAll();
+        $cloud_po_asignatory = Yii::$app->cloud_db->createCommand("SELECT * FROM po_asignatory")->queryAll();
+        $cloud_po_responsibility_center = Yii::$app->cloud_db->createCommand("SELECT * FROM po_responsibility_center")->queryAll();
+        $cloud_cdr = Yii::$app->cloud_db->createCommand("SELECT * FROM cdr")->queryAll();
+        $cloud_cibr = Yii::$app->cloud_db->createCommand("SELECT * FROM cibr")->queryAll();
+        $cloud_fur = Yii::$app->cloud_db->createCommand("SELECT * FROM fur")->queryAll();
+        $cloud_rod = Yii::$app->cloud_db->createCommand("SELECT * FROM rod")->queryAll();
+        $cloud_rod_entries = Yii::$app->cloud_db->createCommand("SELECT * FROM rod_entries")->queryAll();
 
-        $q = Yii::$app->db->createCommand("SELECT * FROM books")->queryAll();
 
-        return json_encode($q);
+        $lan_liquidation = Yii::$app->db->createCommand("SELECT * FROM liquidation")->queryAll();
+        $lan_liquidation_entries = Yii::$app->db->createCommand("SELECT * FROM liquidation_entries")->queryAll();
+        $lan_po_transaction = Yii::$app->db->createCommand("SELECT * FROM po_transaction")->queryAll();
+        $lan_check_range = Yii::$app->db->createCommand("SELECT * FROM check_range")->queryAll();
+        $lan_po_asignatory = Yii::$app->db->createCommand("SELECT * FROM po_asignatory")->queryAll();
+        $lan_po_responsibility_center = Yii::$app->db->createCommand("SELECT * FROM po_responsibility_center")->queryAll();
+        $lan_cdr = Yii::$app->db->createCommand("SELECT * FROM cdr")->queryAll();
+        $lan_cibr = Yii::$app->db->createCommand("SELECT * FROM cibr")->queryAll();
+        $lan_fur = Yii::$app->db->createCommand("SELECT * FROM fur")->queryAll();
+        $lan_rod = Yii::$app->db->createCommand("SELECT * FROM rod")->queryAll();
+        $lan_rod_entries = Yii::$app->db->createCommand("SELECT * FROM rod_entries")->queryAll();
+
+
+        $liquidation_difference = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $cloud_liquidation), array_map('serialize', $lan_liquidation))
+
+        );
+        $liquidation_to_delete = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $lan_liquidation), array_map('serialize', $cloud_liquidation))
+
+        );
+
+        $liquidation_entries_difference = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $cloud_liquidation_entries), array_map('serialize', $lan_liquidation_entries))
+
+        );
+        $liquidation_entries_to_delete = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $lan_liquidation_entries), array_map('serialize', $cloud_liquidation_entries))
+
+        );
+        $po_transaction_difference = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $cloud_po_transaction), array_map('serialize', $lan_po_transaction))
+
+        );
+        $check_range_difference = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $cloud_check_range), array_map('serialize', $lan_check_range))
+
+        );
+        $po_asignatory_difference = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $cloud_po_asignatory), array_map('serialize', $lan_po_asignatory))
+
+        );
+        $po_asignatory_difference = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $cloud_po_responsibility_center), array_map('serialize', $lan_po_responsibility_center))
+
+        );
+        $cdr_difference = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $cloud_cdr), array_map('serialize', $lan_cdr))
+
+        );
+        $cibr_difference = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $cloud_cibr), array_map('serialize', $lan_cibr))
+
+        );
+        $fur_difference = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $cloud_fur), array_map('serialize', $lan_fur))
+
+        );
+        $rod_difference = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $cloud_rod), array_map('serialize', $lan_rod))
+
+        );
+        $rod_entries_difference = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $cloud_rod_entries), array_map('serialize', $lan_rod_entries))
+
+        );
+
+        $rod_entries_to_delete = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $lan_rod_entries), array_map('serialize', $cloud_rod_entries))
+
+        );
+
+
+
+        // return json_encode($liquidation_difference);
+
+        if (!empty($liquidation_difference)) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($flag = true) {
+                    foreach ($liquidation_difference as $val) {
+                        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `liquidation` WHERE id = :id)")
+                            ->bindValue(':id', $val['id'])
+                            ->queryScalar();
+                        if (intval($query) === 1) {
+                            $update_liquidation = Liquidation::findOne($val['id']);
+                            $update_liquidation->payee_id = $val['payee_id'];
+                            $update_liquidation->responsibility_center_id = $val['responsibility_center_id'];
+                            $update_liquidation->check_date = $val['check_date'];
+                            $update_liquidation->check_number = $val['check_number'];
+                            $update_liquidation->dv_number = $val['dv_number'];
+                            $update_liquidation->particular = $val['particular'];
+                            $update_liquidation->reporting_period = $val['reporting_period'];
+                            $update_liquidation->is_cancelled = $val['is_cancelled'];
+                            $update_liquidation->created_at = $val['created_at'];
+                            $update_liquidation->po_transaction_id = $val['po_transaction_id'];
+                            $update_liquidation->check_range_id = $val['check_range_id'];
+                            $update_liquidation->is_locked = $val['is_locked'];
+                            $update_liquidation->status = $val['status'];
+                            $update_liquidation->province = $val['province'];
+                            $update_liquidation->payee = $val['payee'];
+                            $update_liquidation->is_final = $val['is_final'];
+                            $update_liquidation->document_link = $val['document_link'];
+                            $update_liquidation->cancel_reporting_period = $val['cancel_reporting_period'];
+                            $update_liquidation->exclude_in_raaf = $val['exclude_in_raaf'];
+
+
+
+                            if ($update_liquidation->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return false;
+                            }
+                        } else {
+                            $new_liquidation = new Liquidation();
+                            $new_liquidation->id = $val['id'];
+                            $new_liquidation->payee_id = $val['payee_id'];
+                            $new_liquidation->responsibility_center_id = $val['responsibility_center_id'];
+                            $new_liquidation->check_date = $val['check_date'];
+                            $new_liquidation->check_number = $val['check_number'];
+                            $new_liquidation->dv_number = $val['dv_number'];
+                            $new_liquidation->particular = $val['particular'];
+                            $new_liquidation->reporting_period = $val['reporting_period'];
+                            $new_liquidation->is_cancelled = $val['is_cancelled'];
+                            $new_liquidation->created_at = $val['created_at'];
+                            $new_liquidation->po_transaction_id = $val['po_transaction_id'];
+                            $new_liquidation->check_range_id = $val['check_range_id'];
+                            $new_liquidation->is_locked = $val['is_locked'];
+                            $new_liquidation->status = $val['status'];
+                            $new_liquidation->province = $val['province'];
+                            $new_liquidation->payee = $val['payee'];
+                            $new_liquidation->is_final = $val['is_final'];
+                            $new_liquidation->document_link = $val['document_link'];
+                            $new_liquidation->cancel_reporting_period = $val['cancel_reporting_period'];
+                            $new_liquidation->exclude_in_raaf = $val['exclude_in_raaf'];
+                            if ($new_liquidation->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return false;
+                            }
+                        }
+                    }
+                }
+
+                $transaction->commit();
+            } catch (ErrorException $e) {
+                return json_encode($e->getMessage());
+            }
+        }
+        if (!empty($liquidation_to_delete)) {
+            foreach ($liquidation_to_delete as $val) {
+                $li = Liquidation::findOne($val['id']);
+                $li->delete();
+            }
+        }
+        if (!empty($liquidation_entries_difference)) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($flag = true) {
+                    foreach ($liquidation_entries_difference as $val) {
+                        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `liquidation_entries` WHERE id = :id)")
+                            ->bindValue(':id', $val['id'])
+                            ->queryScalar();
+                        if (intval($query) === 1) {
+                            $update_liquidation_entries = LiquidationEntries::findOne($val['id']);
+                            $update_liquidation_entries->liquidation_id = $val['liquidation_id'];
+                            $update_liquidation_entries->chart_of_account_id = $val['chart_of_account_id'];
+                            $update_liquidation_entries->withdrawals = $val['withdrawals'];
+                            $update_liquidation_entries->vat_nonvat = $val['vat_nonvat'];
+                            $update_liquidation_entries->expanded_tax = $val['expanded_tax'];
+                            $update_liquidation_entries->reporting_period = $val['reporting_period'];
+                            $update_liquidation_entries->advances_entries_id = $val['advances_entries_id'];
+                            $update_liquidation_entries->liquidation_damage = $val['liquidation_damage'];
+                            $update_liquidation_entries->is_realign = $val['is_realign'];
+                            $update_liquidation_entries->new_chart_of_account_id = $val['new_chart_of_account_id'];
+
+                            if ($update_liquidation_entries->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in Liquidation Entries Update';
+                            }
+                        } else {
+                            $new_liquidation_entries = new LiquidationEntries();
+                            $new_liquidation_entries->id = $val['id'];
+                            $new_liquidation_entries->liquidation_id = $val['liquidation_id'];
+                            $new_liquidation_entries->chart_of_account_id = $val['chart_of_account_id'];
+                            $new_liquidation_entries->withdrawals = $val['withdrawals'];
+                            $new_liquidation_entries->vat_nonvat = $val['vat_nonvat'];
+                            $new_liquidation_entries->expanded_tax = $val['expanded_tax'];
+                            $new_liquidation_entries->reporting_period = $val['reporting_period'];
+                            $new_liquidation_entries->advances_entries_id = $val['advances_entries_id'];
+                            $new_liquidation_entries->liquidation_damage = $val['liquidation_damage'];
+                            $new_liquidation_entries->is_realign = $val['is_realign'];
+                            $new_liquidation_entries->new_chart_of_account_id = $val['new_chart_of_account_id'];
+
+                            if ($new_liquidation_entries->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in Liquidation Entries New';
+                            }
+                        }
+                    }
+                }
+
+                $transaction->commit();
+            } catch (ErrorException $e) {
+                return json_encode($e->getMessage());
+            }
+        }
+        if(!empty($liquidation_entries_to_delete)){
+            foreach ($liquidation_entries_to_delete as $val) {
+                $li = LiquidationEntries::findOne($val['id']);
+                $li->delete();
+            }
+        }
+        if (!empty($po_transaction_difference)) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($flag = true) {
+                    foreach ($po_transaction_difference as $val) {
+                        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `po_transaction` WHERE id = :id)")
+                            ->bindValue(':id', $val['id'])
+                            ->queryScalar();
+                        if (intval($query) === 1) {
+                            $update_po_transaction = PoTransaction::findOne($val['id']);
+                            $update_po_transaction->payee = $val['payee'];
+                            $update_po_transaction->particular = $val['particular'];
+                            $update_po_transaction->amount = $val['amount'];
+                            $update_po_transaction->payroll_number = $val['payroll_number'];
+                            $update_po_transaction->tracking_number = $val['tracking_number'];
+                            $update_po_transaction->po_responsibility_center_id = $val['po_responsibility_center_id'];
+                            $update_po_transaction->province = $val['province'];
+
+
+
+                            if ($update_po_transaction->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in PoTransaction Update';
+                            }
+                        } else {
+                            $new_po_transaction = new PoTransaction();
+                            $new_po_transaction->id = $val['id'];
+                            $new_po_transaction->payee = $val['payee'];
+                            $new_po_transaction->particular = $val['particular'];
+                            $new_po_transaction->amount = $val['amount'];
+                            $new_po_transaction->payroll_number = $val['payroll_number'];
+                            $new_po_transaction->tracking_number = $val['tracking_number'];
+                            $new_po_transaction->po_responsibility_center_id = $val['po_responsibility_center_id'];
+                            $new_po_transaction->province = $val['province'];
+
+                            if ($new_po_transaction->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in PoTransaction New';
+                            }
+                        }
+                    }
+                }
+
+                $transaction->commit();
+            } catch (ErrorException $e) {
+                return json_encode($e->getMessage());
+            }
+        }
+        if (!empty($check_range_difference)) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($flag = true) {
+                    foreach ($check_range_difference as $val) {
+                        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `check_range` WHERE id = :id)")
+                            ->bindValue(':id', $val['id'])
+                            ->queryScalar();
+                        if (intval($query) === 1) {
+                            $update_check_range = CheckRange::findOne($val['id']);
+                            $update_check_range->from = $val['from'];
+                            $update_check_range->to = $val['to'];
+                            $update_check_range->province = $val['province'];
+                            $update_check_range->reporting_period = $val['reporting_period'];
+                            $update_check_range->begin_balance = $val['begin_balance'];
+
+                            if ($update_check_range->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in Check Range Update';
+                            }
+                        } else {
+                            $new_check_range = new CheckRange();
+                            $new_check_range->id = $val['id'];
+                            $new_check_range->from = $val['from'];
+                            $new_check_range->to = $val['to'];
+                            $new_check_range->province = $val['province'];
+                            $new_check_range->reporting_period = $val['reporting_period'];
+                            $new_check_range->begin_balance = $val['begin_balance'];
+
+                            if ($new_check_range->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in Check Range New';
+                            }
+                        }
+                    }
+                }
+
+                $transaction->commit();
+            } catch (ErrorException $e) {
+                return json_encode($e->getMessage());
+            }
+        }
+        if (!empty($po_asignatory_difference)) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($flag = true) {
+                    foreach ($po_asignatory_difference as $val) {
+                        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `po_asignatory` WHERE id = :id)")
+                            ->bindValue(':id', $val['id'])
+                            ->queryScalar();
+                        if (intval($query) === 1) {
+                            $update_po_asignatory = PoAsignatory::findOne($val['id']);
+                            $update_po_asignatory->name = $val['name'];
+                            $update_po_asignatory->position = $val['position'];
+                            $update_po_asignatory->province = $val['province'];
+
+
+
+                            if ($update_po_asignatory->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in PoAsignatory Update';
+                            }
+                        } else {
+                            $new_po_asignatory = new PoAsignatory();
+                            $new_po_asignatory->id = $val['id'];
+                            $new_po_asignatory->name = $val['name'];
+                            $new_po_asignatory->position = $val['position'];
+                            $new_po_asignatory->province = $val['province'];
+                            if ($new_po_asignatory->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in PoAsignatory New';
+                            }
+                        }
+                    }
+                }
+
+                $transaction->commit();
+            } catch (ErrorException $e) {
+                return json_encode($e->getMessage());
+            }
+        }
+        if (!empty($cdr_difference)) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($flag = true) {
+                    foreach ($cdr_difference as $val) {
+                        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `cdr` WHERE id = :id)")
+                            ->bindValue(':id', $val['id'])
+                            ->queryScalar();
+                        if (intval($query) === 1) {
+                            $update_po_asignatory = Cdr::findOne($val['id']);
+                            $update_po_asignatory->serial_number = $val['serial_number'];
+                            $update_po_asignatory->reporting_period = $val['reporting_period'];
+                            $update_po_asignatory->province = $val['province'];
+                            $update_po_asignatory->book_name = $val['book_name'];
+                            $update_po_asignatory->report_type = $val['report_type'];
+                            $update_po_asignatory->is_final = $val['is_final'];
+                            $update_po_asignatory->document_link = $val['document_link'];
+
+                            if ($update_po_asignatory->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in Cdr Update';
+                            }
+                        } else {
+                            $new_po_asignatory = new Cdr();
+                            $new_po_asignatory->id = $val['id'];
+                            $new_po_asignatory->serial_number = $val['serial_number'];
+                            $new_po_asignatory->reporting_period = $val['reporting_period'];
+                            $new_po_asignatory->province = $val['province'];
+                            $new_po_asignatory->book_name = $val['book_name'];
+                            $new_po_asignatory->report_type = $val['report_type'];
+                            $new_po_asignatory->is_final = $val['is_final'];
+                            $new_po_asignatory->document_link = $val['document_link'];
+                            if ($new_po_asignatory->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in Cdr New';
+                            }
+                        }
+                    }
+                }
+
+                $transaction->commit();
+            } catch (ErrorException $e) {
+                return json_encode($e->getMessage());
+            }
+        }
+        if (!empty($cibr_difference)) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($flag = true) {
+                    foreach ($cibr_difference as $val) {
+                        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `cibr` WHERE id = :id)")
+                            ->bindValue(':id', $val['id'])
+                            ->queryScalar();
+                        if (intval($query) === 1) {
+                            $update_po_asignatory = Cibr::findOne($val['id']);
+                            $update_po_asignatory->serial_number = $val['serial_number'];
+                            $update_po_asignatory->reporting_period = $val['reporting_period'];
+                            $update_po_asignatory->province = $val['province'];
+                            $update_po_asignatory->book_name = $val['book_name'];
+                            $update_po_asignatory->is_final = $val['is_final'];
+                            $update_po_asignatory->document_link = $val['document_link'];
+
+
+                            if ($update_po_asignatory->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in Cibr Update';
+                            }
+                        } else {
+                            $new_po_asignatory = new Cibr();
+                            $new_po_asignatory->id = $val['id'];
+                            $new_po_asignatory->serial_number = $val['serial_number'];
+                            $new_po_asignatory->reporting_period = $val['reporting_period'];
+                            $new_po_asignatory->province = $val['province'];
+                            $new_po_asignatory->book_name = $val['book_name'];
+                            $new_po_asignatory->is_final = $val['is_final'];
+                            $new_po_asignatory->document_link = $val['document_link'];
+                            if ($new_po_asignatory->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in Cibr New';
+                            }
+                        }
+                    }
+                }
+
+                $transaction->commit();
+            } catch (ErrorException $e) {
+                return json_encode($e->getMessage());
+            }
+        }
+        if (!empty($fur_difference)) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($flag = true) {
+                    foreach ($fur_difference as $val) {
+                        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `fur` WHERE id = :id)")
+                            ->bindValue(':id', $val['id'])
+                            ->queryScalar();
+                        if (intval($query) === 1) {
+                            $update_po_asignatory = Fur::findOne($val['id']);
+                            $update_po_asignatory->reporting_period = $val['reporting_period'];
+                            $update_po_asignatory->province = $val['province'];
+                            $update_po_asignatory->created_at = $val['created_at'];
+                            $update_po_asignatory->document_link = $val['document_link'];
+
+
+
+                            if ($update_po_asignatory->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in Fur Update';
+                            }
+                        } else {
+                            $new_po_asignatory = new Fur();
+                            $new_po_asignatory->id = $val['id'];
+                            $new_po_asignatory->reporting_period = $val['reporting_period'];
+                            $new_po_asignatory->province = $val['province'];
+                            $new_po_asignatory->created_at = $val['created_at'];
+                            $new_po_asignatory->document_link = $val['document_link'];
+
+                            if ($new_po_asignatory->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in Fur New';
+                            }
+                        }
+                    }
+                }
+
+                $transaction->commit();
+            } catch (ErrorException $e) {
+                return json_encode($e->getMessage());
+            }
+        }
+        if (!empty($rod_difference)) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($flag = true) {
+                    foreach ($rod_difference as $val) {
+                        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `rod` WHERE rod_number = :id)")
+                            ->bindValue(':id', $val['rod_number'])
+                            ->queryScalar();
+                        if (intval($query) === 1) {
+                            $update_po_asignatory = Rod::findOne($val['rod_number']);
+                            $update_po_asignatory->rod_number = $val['rod_number'];
+                            $update_po_asignatory->province = $val['province'];
+
+                            if ($update_po_asignatory->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in Rod Update';
+                            }
+                        } else {
+                            $new_po_asignatory = new Rod();
+                            $new_po_asignatory->rod_number = $val['rod_number'];
+                            $new_po_asignatory->province = $val['province'];
+
+
+                            if ($new_po_asignatory->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in Rod New';
+                            }
+                        }
+                    }
+                }
+
+                $transaction->commit();
+            } catch (ErrorException $e) {
+                return json_encode($e->getMessage());
+            }
+        }
+        if (!empty($rod_entries_difference)) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($flag = true) {
+                    foreach ($rod_entries_difference as $val) {
+                        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `rod_entries` WHERE id = :id)")
+                            ->bindValue(':id', $val['id'])
+                            ->queryScalar();
+                        if (intval($query) === 1) {
+                            $update_po_asignatory = RodEntries::findOne($val['id']);
+                            $update_po_asignatory->rod_number = $val['rod_number'];
+                            $update_po_asignatory->advances_entries_id = $val['advances_entries_id'];
+
+                            if ($update_po_asignatory->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in RodEntries Update';
+                            }
+                        } else {
+                            $new_po_asignatory = new RodEntries();
+                            $new_po_asignatory->id = $val['id'];
+                            $new_po_asignatory->rod_number = $val['rod_number'];
+                            $new_po_asignatory->advances_entries_id = $val['advances_entries_id'];
+
+
+                            if ($new_po_asignatory->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in RodEntries New';
+                            }
+                        }
+                    }
+                }
+
+                $transaction->commit();
+            } catch (ErrorException $e) {
+                return json_encode($e->getMessage());
+            }
+        }
+        if (!empty($rod_entries_to_delete)){
+            foreach($rod_entries_to_delete as $val){
+                $q  = RodEntries::findOne($val['id']);
+                $q->delete();
+            }
+        }
     }
 }

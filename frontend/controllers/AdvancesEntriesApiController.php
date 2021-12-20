@@ -56,8 +56,6 @@ class AdvancesEntriesApiController extends \yii\rest\ActiveController
                             $update_advances_entries->report_type=$val['report_type'];
                             $update_advances_entries->is_deleted=$val['is_deleted'];
                             
-
-
                             if ($update_advances_entries->save(false)) {
                             } else {
                                 $transaction->rollBack();
