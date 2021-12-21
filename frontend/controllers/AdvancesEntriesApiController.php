@@ -43,7 +43,6 @@ class AdvancesEntriesApiController extends \yii\rest\ActiveController
                             ->queryScalar();
                         if (intval($query) == 1) {
                             $update_advances_entries = AdvancesEntries::findOne($val['id']);
-                            return json_encode($update_advances_entries->id);
                             $update_advances_entries->advances_id = $val['advances_id'];
                             $update_advances_entries->cash_disbursement_id = $val['cash_disbursement_id'];
                             $update_advances_entries->sub_account1_id = $val['sub_account1_id'];
