@@ -40,7 +40,7 @@ class AdvancesEntriesApiController extends \yii\rest\ActiveController
                         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `advances_entries` WHERE id = :id)")
                             ->bindValue(':id', $val['id'])
                             ->queryScalar();
-                        if (intval($query) === 1) {
+                        if (intval($query) == 1) {
                             $update_advances_entries = AdvancesEntries::findOne($val['id']);
                             $update_advances_entries->advances_id=$val['advances_id'];
                             $update_advances_entries->cash_disbursement_id=$val['cash_disbursement_id'];
