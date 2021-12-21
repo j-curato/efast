@@ -31,9 +31,10 @@ class AdvancesEntriesApiController extends \yii\rest\ActiveController
     }
     public function actionCreate()
     {
-        $transaction = Yii::$app->db->beginTransaction();
         $source_json = Yii::$app->getRequest()->getBodyParams();
         if (!empty($source_json)) {
+            $transaction = Yii::$app->db->beginTransaction();
+
             try {
                 if ($flag = true) {
                     foreach ($source_json as $val) {
@@ -93,6 +94,9 @@ class AdvancesEntriesApiController extends \yii\rest\ActiveController
                 }
                 if ($flag) {
                     $transaction->commit();
+                    return 'success commit';
+                } else {
+                    return 'yawa';
                 }
             } catch (ErrorException $e) {
                 return json_encode($e->getMessage());

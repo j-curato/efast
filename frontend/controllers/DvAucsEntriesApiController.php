@@ -31,7 +31,7 @@ class DvAucsEntriesApiController extends \yii\rest\ActiveController
     }
     public function actionCreate()
     {
-       
+
         $source_json = Yii::$app->getRequest()->getBodyParams();
         $source_dv_aucs_entries = $source_json['new_dv_aucs_entries'];
         // $target_dv_aucs_entries = Yii::$app->db->createCommand("SELECT * FROM `dv_aucs_entries`")->queryAll();
@@ -55,7 +55,6 @@ class DvAucsEntriesApiController extends \yii\rest\ActiveController
 
             }
             $transaction->commit();
-
         }
         if (!empty($source_dv_aucs_entries)) {
             $transaction = Yii::$app->db->beginTransaction();

@@ -32,7 +32,6 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
     }
     public function actionCreate()
     {
-        $transaction = Yii::$app->db->beginTransaction();
         $source_json = Yii::$app->getRequest()->getBodyParams();
         $source_dv_accounting_entries = $source_json['new_dv_accounting_entries'];
         $target_dv_accounting_entries = Yii::$app->db->createCommand("SELECT * FROM `dv_accounting_entries`")->queryAll();
@@ -42,13 +41,14 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
 
         );
         if (!empty($source_json['to_delete'])) {
-            foreach($source_json['to_delete'] as $val ){
+            foreach ($source_json['to_delete'] as $val) {
                 $q = Yii::$app->db->createCommand("DELETE FROM dv_accounting_entries WHERE id = :id")->bindValue(':id', $val)->execute();
             }
         }
 
         if (!empty($source_json)) {
             try {
+                $transaction = Yii::$app->db->beginTransaction();
 
                 if ($flag = true) {
 
@@ -76,6 +76,7 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
                             if ($update_dv_accounting_entries->save(false)) {
                             } else {
                                 $transaction->rollBack();
+                                $flag = false;
                                 return false;
                             }
                         } else {
@@ -95,13 +96,15 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
                             if ($new_dv_accounting_entries->save(false)) {
                             } else {
                                 $transaction->rollBack();
+                                $flag = false;
                                 return false;
                             }
                         }
                     }
                 }
-
-                $transaction->commit();
+                if ($flag) {
+                    $transaction->commit();
+                }
             } catch (ErrorException $e) {
                 return json_encode($e->getMessage());
             }
