@@ -46,13 +46,13 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
             }
         }
 
-        if (!empty($source_json)) {
+        if (!empty($source_dv_accounting_entries)) {
             try {
                 $transaction = Yii::$app->db->beginTransaction();
 
                 if ($flag = true) {
 
-                    foreach ($source_json as $val) {
+                    foreach ($source_dv_accounting_entries as $val) {
                         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `dv_accounting_entries` WHERE id = :id)")
                             ->bindValue(':id', $val['id'])
                             ->queryScalar();
