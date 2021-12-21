@@ -11,6 +11,7 @@ use app\models\DvAucsSearch;
 use app\models\ProcessOrsSearch;
 
 use app\models\SubAccounts2;
+use DateTime;
 use ErrorException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -286,7 +287,14 @@ class DvAucsController extends Controller
             $payee_id = $_POST['payee'];
             $book_id = !empty($_POST['book']) ? $_POST['book'] : 5;
             $transaction_type = strtolower($_POST['transaction_type']);
-            $transaction_timestamp = date('Y-m-d H:i:s', strtotime($_POST['transaction_timestamp']));
+
+            if (empty($_POST['transaction_timestamp'])) {
+                $now = new DateTime();
+                $bgn_time = $now->format('Y-m-d H:i:s');
+            } else {
+                $bgn_time = $_POST['transaction_timestamp'];
+            }
+            $transaction_timestamp = date('Y-m-d H:i:s', strtotime($bgn_time));
             $tracking_sheet = $_POST['tracking_sheet'];
             // if (array_sum($_POST['debit']) != array_sum($_POST['credit'])) {
             //     return json_encode(['isSuccess' => false, 'error' => 'Not Equal Debit and Credit']);

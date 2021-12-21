@@ -2935,6 +2935,10 @@ class ReportController extends \yii\web\Controller
         // else {
         //     $string = $num;
         // }
+        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `advances_entries` WHERE id = :id)")
+        ->bindValue(':id', 4705)
+        ->queryScalar();
+        // return intval($query);
         $date = date("Y");
         $responsibility_center = (new \yii\db\Query())
             ->select("name")

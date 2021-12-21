@@ -33,7 +33,7 @@ class AdvancesEntries extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['advances_id', 'cash_disbursement_id', 'sub_account1_id'], 'integer'],
+            [['advances_id', 'cash_disbursement_id', 'sub_account1_id','is_deleted'], 'integer'],
             [['amount'], 'number'],
             [['reporting_period'], 'required'],
             [['advances_id'], 'exist', 'skipOnError' => true, 'targetClass' => Advances::class, 'targetAttribute' => ['advances_id' => 'id']],
@@ -53,7 +53,8 @@ class AdvancesEntries extends \yii\db\ActiveRecord
             'cash_disbursement_id' => 'Cash Disbursement ID',
             'sub_account1_id' => 'Sub Account1 ID',
             'amount' => 'Amount',
-            'reporting_period'=>'Reporting Period'
+            'reporting_period'=>'Reporting Period',
+            'is_deleted'=>'Is Deleted'
         ];
     }
 

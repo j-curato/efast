@@ -344,7 +344,7 @@ class SyncDatabaseController extends \yii\web\Controller
     }
     public function actionAdvancesEntries()
     {
-        if ($_POST) {
+        // if ($_POST) {
 
             $db = Yii::$app->ryn_db;
             $source_advances_entries = $db->createCommand("SELECT * FROM `advances_entries`")->queryAll();
@@ -356,7 +356,7 @@ class SyncDatabaseController extends \yii\web\Controller
             );
             // return json_encode(array_column($to_delete,'id'));
             return json_encode([$source_advances_entries_difference]);
-        }
+        // }
     }
     public function actionCashDisbursement()
     {
