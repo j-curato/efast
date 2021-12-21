@@ -84,6 +84,7 @@ class DvAucsEntriesApiController extends \yii\rest\ActiveController
                             if ($update_dv_aucs_entries->save(false)) {
                             } else {
                                 $transaction->rollBack();
+                                $flag = false;
                                 return false;
                             }
                         } else {
@@ -102,6 +103,7 @@ class DvAucsEntriesApiController extends \yii\rest\ActiveController
                             if ($new_dv_aucs_entries->save(false)) {
                             } else {
                                 $transaction->rollBack();
+                                $flag = false;
                                 return false;
                             }
                         }
