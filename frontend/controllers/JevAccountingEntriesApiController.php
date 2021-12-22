@@ -8,7 +8,7 @@ use Yii;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
 
-class JevAccountingEntiresApiController extends \yii\rest\ActiveController
+class JevAccountingEntriesApiController extends \yii\rest\ActiveController
 {
 
     public $modelClass = JevAccountingEntries::class;
