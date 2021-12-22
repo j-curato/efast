@@ -61,7 +61,7 @@ class SyncDatabaseController extends \yii\web\Controller
     public function actionRoLanToCloud()
     {
         if ($_POST) {
-            $db = Yii::$app->ryn_db;
+            $db = Yii::$app->db;
             $local_db = Yii::$app->db;
             // Advances
             $advances = $db->createCommand("SELECT * FROM advances")->queryAll();
@@ -202,7 +202,7 @@ class SyncDatabaseController extends \yii\web\Controller
     {
 
         if ($_POST) {
-            $db = Yii::$app->ryn_db;
+            $db = Yii::$app->db;
 
             $source_payee = $db->createCommand("SELECT * FROM `payee`")->queryAll();
             $target_payee =  Yii::$app->cloud_db->createCommand("SELECT * FROM `payee`")->queryAll();
@@ -216,7 +216,9 @@ class SyncDatabaseController extends \yii\web\Controller
     }
     public function actionTransaction()
     {
-        $db = Yii::$app->ryn_db;
+        if ($_POST){
+
+        $db = Yii::$app->db;
         $source_transaction = $db->createCommand("SELECT * FROM `transaction`")->queryAll();
         $target_transaction =  Yii::$app->cloud_db->createCommand("SELECT * FROM `transaction`")->queryAll();
         $source_transaction_difference = array_map(
@@ -227,11 +229,13 @@ class SyncDatabaseController extends \yii\web\Controller
         return json_encode($source_transaction_difference);
     }
 
+    }
+
     public function actionTrackingSheet()
     {
         if ($_POST) {
 
-            $db = Yii::$app->ryn_db;
+            $db = Yii::$app->db;
             $source_tracking_sheet = $db->createCommand("SELECT * FROM `tracking_sheet`")->queryAll();
             $target_tracking_sheet =  Yii::$app->cloud_db->createCommand("SELECT * FROM `tracking_sheet`")->queryAll();
             $source_tracking_sheet_difference = array_map(
@@ -245,7 +249,7 @@ class SyncDatabaseController extends \yii\web\Controller
     public function actionRecordAllotment()
     {
         if ($_POST) {
-            $db = Yii::$app->ryn_db;
+            $db = Yii::$app->db;
             $record_allotments = $db->createCommand('SELECT * FROM record_allotments')->queryAll();
             $record_allotments_entries = $db->createCommand('SELECT * FROM record_allotment_entries')->queryAll();
             return json_encode(
@@ -259,7 +263,7 @@ class SyncDatabaseController extends \yii\web\Controller
     public function actionProcessOrs()
     {
         if ($_POST) {
-            $db = Yii::$app->ryn_db;
+            $db = Yii::$app->db;
             $process_ors = $db->createCommand('SELECT * FROM process_ors')->queryAll();
             $process_ors_entries = $db->createCommand('SELECT * FROM process_ors_entries')->queryAll();
             return json_encode(
@@ -274,7 +278,7 @@ class SyncDatabaseController extends \yii\web\Controller
     public function actionDvAucs()
     {
         if ($_POST) {
-            $db = Yii::$app->ryn_db;
+            $db = Yii::$app->db;
             $dv_aucs = $db->createCommand('SELECT * FROM dv_aucs')->queryAll();
             return json_encode($dv_aucs);
         }
@@ -282,7 +286,7 @@ class SyncDatabaseController extends \yii\web\Controller
     public function actionDvAucsEntries()
     {
         if ($_POST) {
-            $db = Yii::$app->ryn_db;
+            $db = Yii::$app->db;
             $source_dv_aucs_entries = $db->createCommand("SELECT * FROM `dv_aucs_entries`")->queryAll();
             $target_dv_aucs_entries =  Yii::$app->cloud_db->createCommand("SELECT * FROM `dv_aucs_entries`")->queryAll();
             $source_dv_aucs_entries_difference = array_map(
@@ -306,47 +310,47 @@ class SyncDatabaseController extends \yii\web\Controller
     {
         if ($_POST) {
 
-            $db = Yii::$app->ryn_db;
-            $source_dv_accounting_entries = $db->createCommand("SELECT * FROM `dv_accounting_entries`")->queryAll();
-            $target_dv_accounting_entries =  Yii::$app->cloud_db->createCommand("SELECT * FROM `dv_accounting_entries`")->queryAll();
-            $source_dv_accounting_entries_difference = array_map(
-                'unserialize',
-                array_diff(array_map('serialize', $source_dv_accounting_entries), array_map('serialize', $target_dv_accounting_entries))
+        $db = Yii::$app->db;
+        $source_dv_accounting_entries = $db->createCommand("SELECT * FROM `dv_accounting_entries`")->queryAll();
+        $target_dv_accounting_entries =  Yii::$app->cloud_db->createCommand("SELECT * FROM `dv_accounting_entries`")->queryAll();
+        $source_dv_accounting_entries_difference = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $source_dv_accounting_entries), array_map('serialize', $target_dv_accounting_entries))
 
-            );
-            $to_delete = array_map(
-                'unserialize',
-                array_diff(array_map('serialize', $target_dv_accounting_entries), array_map('serialize', $source_dv_accounting_entries))
+        );
+        $to_delete = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $target_dv_accounting_entries), array_map('serialize', $source_dv_accounting_entries))
 
-            );
-            // return json_encode(array_column($to_delete,'id'));
-            return json_encode([
-                'new_dv_accounting_entries' => $source_dv_accounting_entries_difference,
-                'to_delete' => array_column($to_delete, 'id')
-            ]);
+        );
+        // return json_encode(array_column($to_delete,'id'));
+        return json_encode([
+            'new_dv_accounting_entries' => $source_dv_accounting_entries_difference,
+            'to_delete' => array_column($to_delete, 'id')
+        ]);
         }
     }
     public function actionAdvances()
     {
         if ($_POST) {
 
-            $db = Yii::$app->ryn_db;
+            $db = Yii::$app->db;
             $source_advances = $db->createCommand("SELECT * FROM `advances`")->queryAll();
-            $target_advances =  Yii::$app->cloud_db->createCommand("SELECT * FROM `advances`")->queryAll();     
+            $target_advances =  Yii::$app->cloud_db->createCommand("SELECT * FROM `advances`")->queryAll();
             $source_advances_difference = array_map(
                 'unserialize',
                 array_diff(array_map('serialize', $source_advances), array_map('serialize', $target_advances))
 
             );
             // return json_encode(array_column($to_delete,'id'));
-            return json_encode([$source_advances_difference]);
+            return json_encode($source_advances_difference);
         }
     }
     public function actionAdvancesEntries()
     {
-        // if ($_POST) {
+        if ($_POST) {
 
-            $db = Yii::$app->ryn_db;
+            $db = Yii::$app->db;
             $source_advances_entries = $db->createCommand("SELECT * FROM `advances_entries`")->queryAll();
             $target_advances_entries =  Yii::$app->cloud_db->createCommand("SELECT * FROM `advances_entries`")->queryAll();
             $source_advances_entries_difference = array_map(
@@ -355,13 +359,14 @@ class SyncDatabaseController extends \yii\web\Controller
 
             );
             // return json_encode(array_column($to_delete,'id'));
-            return json_encode([$source_advances_entries_difference]);
-        // }
+
+            return json_encode($source_advances_entries_difference);
+        }
     }
     public function actionCashDisbursement()
     {
         if ($_POST) {
-            $db = Yii::$app->ryn_db;
+            $db = Yii::$app->db;
             $cash_disbursement = $db->createCommand('SELECT * FROM cash_disbursement')->queryAll();
 
 
@@ -379,7 +384,7 @@ class SyncDatabaseController extends \yii\web\Controller
     public function actionChartOfAccount()
     {
         if ($_POST) {
-            $db = Yii::$app->ryn_db;
+            $db = Yii::$app->db;
             $chart_of_account = $db->createCommand('SELECT * FROM chart_of_accounts')->queryAll();
             return json_encode(
                 $chart_of_account
@@ -389,7 +394,7 @@ class SyncDatabaseController extends \yii\web\Controller
     public function actionSubAccount1()
     {
         if ($_POST) {
-            $db = Yii::$app->ryn_db;
+            $db = Yii::$app->db;
             $sub_account1 = $db->createCommand('SELECT * FROM sub_accounts1')->queryAll();
             return json_encode($sub_account1);
         }
@@ -397,7 +402,7 @@ class SyncDatabaseController extends \yii\web\Controller
     public function actionSubAccount2()
     {
         if ($_POST) {
-            $db = Yii::$app->ryn_db;
+            $db = Yii::$app->db;
             $sub_account2 = $db->createCommand('SELECT * FROM sub_accounts2')->queryAll();
             return json_encode($sub_account2);
         }
@@ -1416,7 +1421,7 @@ class SyncDatabaseController extends \yii\web\Controller
                 return json_encode($e->getMessage());
             }
         }
-        if(!empty($liquidation_entries_to_delete)){
+        if (!empty($liquidation_entries_to_delete)) {
             foreach ($liquidation_entries_to_delete as $val) {
                 $li = LiquidationEntries::findOne($val['id']);
                 $li->delete();
@@ -1771,8 +1776,8 @@ class SyncDatabaseController extends \yii\web\Controller
                 return json_encode($e->getMessage());
             }
         }
-        if (!empty($rod_entries_to_delete)){
-            foreach($rod_entries_to_delete as $val){
+        if (!empty($rod_entries_to_delete)) {
+            foreach ($rod_entries_to_delete as $val) {
                 $q  = RodEntries::findOne($val['id']);
                 $q->delete();
             }
