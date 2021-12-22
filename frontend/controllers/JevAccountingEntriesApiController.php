@@ -10,12 +10,12 @@ use yii\filters\Cors;
 
 class JevAccountingEntriesApiController extends \yii\rest\ActiveController
 {
+    public $modelClass = JevAccountingEntries::class;
 
-    public $modelCLass = JevAccountingEntries::class;
     public function behaviors()
     {
         $behaviors = parent::behaviors();
-        $behaviors['authenticator']['only'] = ['create', 'delete', 'update', 'view', 'index'];
+        $behaviors['authenticator']['only'] = ['create', 'delete', 'update'];
         $behaviors['authenticator']['authMethods'] = [
             HttpBearerAuth::class
         ];
@@ -23,13 +23,12 @@ class JevAccountingEntriesApiController extends \yii\rest\ActiveController
     }
     public function actions()
     {
-
         $actions = parent::actions();
-        unset($actions['create']);
         unset($actions['delete']);
+        unset($actions['create']);
+        unset($actions['view']);
         unset($actions['index']);
         unset($actions['update']);
-        unset($actions['view']);
     }
     public function actionCreate()
     {
