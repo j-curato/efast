@@ -33,12 +33,12 @@ class CashDisbursementApiController extends \yii\rest\ActiveController
     {
         $transaction = Yii::$app->db->beginTransaction();
         $source_cash_disbursement = Yii::$app->getRequest()->getBodyParams();
-        $target_cash_disbursement = Yii::$app->db->createCommand("SELECT * FROM `cash_disbursement`")->queryAll();
-        $source_cash_disbursement_difference = array_map(
-            'unserialize',
-            array_diff(array_map('serialize', $source_cash_disbursement), array_map('serialize', $target_cash_disbursement))
+        // $target_cash_disbursement = Yii::$app->db->createCommand("SELECT * FROM `cash_disbursement`")->queryAll();
+        // $source_cash_disbursement_difference = array_map(
+        //     'unserialize',
+        //     array_diff(array_map('serialize', $source_cash_disbursement), array_map('serialize', $target_cash_disbursement))
 
-        );
+        // );
 
 
         if (!empty($source_cash_disbursement)) {
@@ -66,6 +66,7 @@ class CashDisbursementApiController extends \yii\rest\ActiveController
                             if ($update_cash_disbursement->save(false)) {
                             } else {
                                 $transaction->rollBack();
+                                $flag=false;
                                 return false;
                             }
                         } else {
@@ -85,6 +86,7 @@ class CashDisbursementApiController extends \yii\rest\ActiveController
                             if ($new_cash_disbursement->save(false)) {
                             } else {
                                 $transaction->rollBack();
+                                $flag=false;
                                 return false;
                             }
                         }

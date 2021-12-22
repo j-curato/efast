@@ -59,6 +59,7 @@ class ChartOfAccountsApiController extends \yii\rest\ActiveController
                             $p->is_active = $val['is_active'];
                             if ($p->save(false)) {
                             } else {
+                                $flag = false;
                                 return 'wala na save';
                             }
                         } else {
@@ -78,6 +79,7 @@ class ChartOfAccountsApiController extends \yii\rest\ActiveController
 
                             if ($new_chart->save(false)) {
                             } else {
+                                $flag = false;
                                 return 'wala na sulod  sa chart of accounts';
                             }
                         }
