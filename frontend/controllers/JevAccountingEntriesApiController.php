@@ -15,7 +15,7 @@ class JevAccountingEntriesApiController extends \yii\rest\ActiveController
     public function behaviors()
     {
         $behaviors = parent::behaviors();
-        $behaviors['authenticator']['only'] = ['create', 'update', 'delete', 'index', 'view'];
+        $behaviors['authenticator']['only'] = ['create', 'delete', 'update', 'view', 'index'];
         $behaviors['authenticator']['authMethods'] = [
             HttpBearerAuth::class
         ];
