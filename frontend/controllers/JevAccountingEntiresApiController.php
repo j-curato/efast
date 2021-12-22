@@ -5,7 +5,6 @@ namespace frontend\controllers;
 use common\models\JevAccountingEntries;
 use ErrorException;
 use Yii;
-use yii\filters\auth\HttpBasicAuth;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
 
