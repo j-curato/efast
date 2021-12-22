@@ -36,16 +36,16 @@ class ProcessOrsApiController extends \yii\rest\ActiveController
         $source_json = Yii::$app->getRequest()->getBodyParams();
 
         $source_process_ors = $source_json['process_ors'];
-        $target_process_ors = Yii::$app->db->createCommand("SELECT * FROM `process_ors`")->queryAll();
-        $source_process_ors_difference = array_map(
-            'unserialize',
-            array_diff(array_map('serialize', $source_process_ors), array_map('serialize', $target_process_ors))
+        // $target_process_ors = Yii::$app->db->createCommand("SELECT * FROM `process_ors`")->queryAll();
+        // $source_process_ors_difference = array_map(
+        //     'unserialize',
+        //     array_diff(array_map('serialize', $source_process_ors), array_map('serialize', $target_process_ors))
 
-        );
-        if (!empty($source_process_ors_difference)) {
+        // );
+        if (!empty($source_process_ors)) {
             try {
                 if ($flag = true) {
-                    foreach ($source_process_ors_difference as $val) {
+                    foreach ($source_process_ors as $val) {
                         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `process_ors` WHERE id = :id)")
                             ->bindValue(':id', $val['id'])
                             ->queryScalar();
@@ -107,20 +107,20 @@ class ProcessOrsApiController extends \yii\rest\ActiveController
 
         $transaction = Yii::$app->db->beginTransaction();
         $source_process_ors_entries = $source_json['process_ors_entries'];
-        $target_process_ors_entries = Yii::$app->db->createCommand("SELECT * FROM `process_ors_entries`")->queryAll();
-        $source_process_ors_entries_difference = array_map(
-            'unserialize',
-            array_diff(array_map('serialize', $source_process_ors_entries), array_map('serialize', $target_process_ors_entries))
+        // $target_process_ors_entries = Yii::$app->db->createCommand("SELECT * FROM `process_ors_entries`")->queryAll();
+        // $source_process_ors_entries_difference = array_map(
+        //     'unserialize',
+        //     array_diff(array_map('serialize', $source_process_ors_entries), array_map('serialize', $target_process_ors_entries))
 
-        );
+        // );
 
 
-        if (!empty($source_process_ors_entries_difference)) {
+        if (!empty($process_ors_entries)) {
             try {
 
                 if ($flag = true) {
 
-                    foreach ($source_process_ors_entries_difference as $val) {
+                    foreach ($process_ors_entries as $val) {
                         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `process_ors_entries` WHERE id = :id)")
                             ->bindValue(':id', $val['id'])
                             ->queryScalar();

@@ -41,23 +41,23 @@ class RecordAllotmentApiController extends \yii\rest\ActiveController
         $source_json = Yii::$app->getRequest()->getBodyParams();
 
         $source_record_allotment = $source_json['record_allotments'];
-        $target_record_allotment = Yii::$app->db->createCommand("SELECT * FROM `record_allotments`")->queryAll();
-        $source_record_allotment_difference = array_map(
-            'unserialize',
-            array_diff(array_map('serialize', $source_record_allotment), array_map('serialize', $target_record_allotment))
+        // $target_record_allotment = Yii::$app->db->createCommand("SELECT * FROM `record_allotments`")->queryAll();
+        // $source_record_allotment_difference = array_map(
+        //     'unserialize',
+        //     array_diff(array_map('serialize', $source_record_allotment), array_map('serialize', $target_record_allotment))
 
-        );
+        // );
         // return json_encode($source_record_allotment_difference);
 
         // var_dump($source_record_allotment_difference);
         // return json_encode($source_record_allotment_difference);
 
-        if (!empty($source_record_allotment_difference)) {
+        if (!empty($source_record_allotment)) {
             try {
 
                 if ($flag = true) {
 
-                    foreach ($source_record_allotment_difference as $val) {
+                    foreach ($source_record_allotment as $val) {
                         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `record_allotments` WHERE id = :id)")
                             ->bindValue(':id', $val['id'])
                             ->queryScalar();
@@ -125,19 +125,19 @@ class RecordAllotmentApiController extends \yii\rest\ActiveController
         }
         $transaction = Yii::$app->db->beginTransaction();
         $source_record_allotment_entries = $source_json['record_allotment_entries'];
-        $target_record_allotment_entries = Yii::$app->db->createCommand("SELECT * FROM `record_allotment_entries`")->queryAll();
-        $source_record_allotment_entries_difference = array_map(
-            'unserialize',
-            array_diff(array_map('serialize', $source_record_allotment_entries), array_map('serialize', $target_record_allotment_entries))
+        // $target_record_allotment_entries = Yii::$app->db->createCommand("SELECT * FROM `record_allotment_entries`")->queryAll();
+        // $source_record_allotment_entries_difference = array_map(
+        //     'unserialize',
+        //     array_diff(array_map('serialize', $source_record_allotment_entries), array_map('serialize', $target_record_allotment_entries))
 
-        );
+        // );
 
-        if (!empty($source_record_allotment_entries_difference)) {
+        if (!empty($source_record_allotment_entries)) {
             try {
 
                 if ($flag = true) {
 
-                    foreach ($source_record_allotment_entries_difference as $val) {
+                    foreach ($source_record_allotment_entries as $val) {
                         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `record_allotment_entries` WHERE id = :id)")
                             ->bindValue(':id', $val['id'])
                             ->queryScalar();

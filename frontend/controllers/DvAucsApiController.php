@@ -35,20 +35,20 @@ class DvAucsApiController extends \yii\rest\ActiveController
         $transaction = Yii::$app->db->beginTransaction();
         $source_json = Yii::$app->getRequest()->getBodyParams();
         $source_dv_aucs = $source_json;
-        $target_dv_aucs = Yii::$app->db->createCommand("SELECT * FROM `dv_aucs`")->queryAll();
-        $source_dv_aucs_difference = array_map(
-            'unserialize',
-            array_diff(array_map('serialize', $source_dv_aucs), array_map('serialize', $target_dv_aucs))
+        // $target_dv_aucs = Yii::$app->db->createCommand("SELECT * FROM `dv_aucs`")->queryAll();
+        // $source_dv_aucs_difference = array_map(
+        //     'unserialize',
+        //     array_diff(array_map('serialize', $source_dv_aucs), array_map('serialize', $target_dv_aucs))
 
-        );
+        // );
 
 
-        if (!empty($source_dv_aucs_difference)) {
+        if (!empty($source_dv_aucs)) {
             try {
 
                 if ($flag = true) {
 
-                    foreach ($source_dv_aucs_difference as $val) {
+                    foreach ($source_dv_aucs as $val) {
                         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `dv_aucs` WHERE id = :id)")
                             ->bindValue(':id', $val['id'])
                             ->queryScalar();

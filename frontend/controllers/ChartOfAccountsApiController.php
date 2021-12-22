@@ -33,15 +33,15 @@ class ChartOfAccountsApiController extends \yii\rest\ActiveController
 
         $transaction = Yii::$app->db->beginTransaction();
         $source_chart_of_accounts = Yii::$app->getRequest()->getBodyParams();
-        $target_chart_of_accounts = Yii::$app->db->createCommand('SELECT * FROM chart_of_accounts')->queryAll();
-        $source_chart_of_accounts_diff = array_map(
-            'unserialize',
-            array_diff(array_map('serialize', $source_chart_of_accounts), array_map('serialize', $target_chart_of_accounts))
-        );
-        if (!empty($source_chart_of_accounts_diff)) {
+        // $target_chart_of_accounts = Yii::$app->db->createCommand('SELECT * FROM chart_of_accounts')->queryAll();
+        // $source_chart_of_accounts_diff = array_map(
+        //     'unserialize',
+        //     array_diff(array_map('serialize', $source_chart_of_accounts), array_map('serialize', $target_chart_of_accounts))
+        // );
+        if (!empty($source_chart_of_accounts)) {
             try {
                 if ($flag = true) {
-                    foreach ($source_chart_of_accounts_diff as $val) {
+                    foreach ($source_chart_of_accounts as $val) {
                         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM chart_of_accounts WHERE chart_of_accounts.id = :id)")
                             ->bindValue(':id', $val['id'])
                             ->queryScalar();

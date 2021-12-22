@@ -33,15 +33,15 @@ class SubAccounts1ApiController extends \yii\rest\ActiveController
         $transaction = Yii::$app->db->beginTransaction();
 
         $source_sub_account1 = Yii::$app->getRequest()->getBodyParams();
-        $target_sub_account1 = Yii::$app->db->createCommand('SELECT * FROM sub_accounts1')->queryAll();
-        $source_sub_account1_diff = array_map(
-            'unserialize',
-            array_diff(array_map('serialize', $source_sub_account1), array_map('serialize', $target_sub_account1))
-        );
-        if (!empty($source_sub_account1_diff)) {
+        // $target_sub_account1 = Yii::$app->db->createCommand('SELECT * FROM sub_accounts1')->queryAll();
+        // $source_sub_account1_diff = array_map(
+        //     'unserialize',
+        //     array_diff(array_map('serialize', $source_sub_account1), array_map('serialize', $target_sub_account1))
+        // );
+        if (!empty($source_sub_account1)) {
             try {
                 if ($flag=true)
-                foreach ($source_sub_account1_diff as $val) {
+                foreach ($source_sub_account1 as $val) {
                     $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM sub_accounts1 WHERE sub_accounts1.id = :id)")
                         ->bindValue(':id', $val['id'])
                         ->queryScalar();
