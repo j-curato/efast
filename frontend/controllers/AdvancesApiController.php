@@ -57,6 +57,7 @@ class AdvancesApiController extends \yii\rest\ActiveController
                             if ($update_advances->save(false)) {
                             } else {
                                 $transaction->rollBack();
+                                $flag=false;
                                 return false;
                             }
                         } else {
@@ -73,13 +74,17 @@ class AdvancesApiController extends \yii\rest\ActiveController
                             if ($new_advances->save(false)) {
                             } else {
                                 $transaction->rollBack();
+                                $flag=false;
                                 return false;
                             }
                         }
                     }
                 }
 
-                $transaction->commit();
+                if($flag){
+
+                    $transaction->commit();
+                }
             } catch (ErrorException $e) {
                 return json_encode($e->getMessage());
             }

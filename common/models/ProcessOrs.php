@@ -86,7 +86,7 @@ class ProcessOrs extends \yii\db\ActiveRecord
      */
     public function getTransaction()
     {
-        return $this->hasOne(Transaction::className(), ['id' => 'transaction_id']);
+        return $this->hasOne(Transaction::class, ['id' => 'transaction_id']);
     }
 
     /**
@@ -96,7 +96,7 @@ class ProcessOrs extends \yii\db\ActiveRecord
      */
     public function getProcessOrsEntries()
     {
-        return $this->hasMany(ProcessOrsEntries::className(), ['process_ors_id' => 'id']);
+        return $this->hasMany(ProcessOrsEntries::class, ['process_ors_id' => 'id']);
     }
 
     /**
@@ -104,10 +104,10 @@ class ProcessOrs extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery|\common\models\query\RaoudsQuery
      */
-    public function getRaouds()
-    {
-        return $this->hasMany(Raouds::className(), ['process_ors_id' => 'id']);
-    }
+    // public function getRaouds()
+    // {
+    //     return $this->hasMany(Raouds::class, ['process_ors_id' => 'id']);
+    // }
 
     /**
      * Gets query for [[TrackingSheets]].
@@ -116,7 +116,7 @@ class ProcessOrs extends \yii\db\ActiveRecord
      */
     public function getTrackingSheets()
     {
-        return $this->hasMany(TrackingSheet::className(), ['process_ors_id' => 'id']);
+        return $this->hasMany(TrackingSheet::class, ['process_ors_id' => 'id']);
     }
 
     /**
