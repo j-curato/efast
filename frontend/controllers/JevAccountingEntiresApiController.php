@@ -6,6 +6,7 @@ use common\models\JevAccountingEntries;
 use ErrorException;
 use Yii;
 use yii\filters\auth\HttpBasicAuth;
+use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
 
 class JevAccountingEntiresApiController extends \yii\rest\ActiveController
@@ -18,7 +19,7 @@ class JevAccountingEntiresApiController extends \yii\rest\ActiveController
         $behaviors = parent::behaviors();
         $behaviors['authenticator']['only'] = ['create', 'index', 'view', 'delete', 'update'];
         $behaviors['authenticator']['authMethods'] = [
-            HttpBasicAuth::class
+            HttpBearerAuth::class
         ];
         return array_merge(['corsFilter' => Cors::class], $behaviors);
     }

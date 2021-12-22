@@ -76,7 +76,7 @@ class CashRecieved extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Book]].
      *
-     * @return \yii\db\ActiveQuery|BooksQuery
+     * @return \yii\db\ActiveQuery|\common\models\query\BooksQuery
      */
     public function getBook()
     {
@@ -86,7 +86,7 @@ class CashRecieved extends \yii\db\ActiveRecord
     /**
      * Gets query for [[DocumentRecieved]].
      *
-     * @return \yii\db\ActiveQuery|DocumentRecieveQuery
+     * @return \yii\db\ActiveQuery|\common\models\query\DocumentRecieveQuery
      */
     public function getDocumentRecieved()
     {
@@ -96,7 +96,7 @@ class CashRecieved extends \yii\db\ActiveRecord
     /**
      * Gets query for [[MfoPapCode]].
      *
-     * @return \yii\db\ActiveQuery|MfoPapCodeQuery
+     * @return \yii\db\ActiveQuery|\common\models\query\MfoPapCodeQuery
      */
     public function getMfoPapCode()
     {
@@ -105,10 +105,10 @@ class CashRecieved extends \yii\db\ActiveRecord
 
     /**
      * {@inheritdoc}
-     * @return CashRecievedQuery the active query used by this AR class.
+     * @return \common\models\query\CashRecievedQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new CashRecievedQuery(get_called_class());
+        return new \common\models\query\CashRecievedQuery(get_called_class());
     }
 }
