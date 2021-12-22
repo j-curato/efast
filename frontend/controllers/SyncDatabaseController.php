@@ -408,7 +408,7 @@ class SyncDatabaseController extends \yii\web\Controller
 
 
             $source_cash_disbursement = $db->createCommand("SELECT * FROM `cash_disbursement`")->queryAll();
-            $target_cash_disbursement =  Yii::$app->cloud_db->createCommand("SELECT * FROM `cash_disbursement`")->queryAll();
+            $target_cash_disbursement = Yii::$app->cloud_db->createCommand("SELECT * FROM `cash_disbursement`")->queryAll();
             $source_cash_disbursement_difference = array_map(
                 'unserialize',
                 array_diff(array_map('serialize', $source_cash_disbursement), array_map('serialize', $target_cash_disbursement))
@@ -417,12 +417,25 @@ class SyncDatabaseController extends \yii\web\Controller
             return json_encode($source_cash_disbursement_difference);
         }
     }
+    public function actionCashRecieve()
+    {
+        if ($_POST) {
+            $db = Yii::$app->ryn_db;
+            $source_cash_recieve = $db->createCommand("SELECT * FROM cash_recieved")->queryAll();
+            $target_cash_recieve = Yii::$app->cloud_db->createCommand("SELECT * FROM cash_recieved")->queryAll();
+            $source_cash_recieve_diff = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $source_cash_recieve), array_map('serialize', $target_cash_recieve))
+            );
+            return json_encode($source_cash_recieve_diff);
+        }
+    }
     public function actionChartOfAccount()
     {
         if ($_POST) {
             $db = Yii::$app->ryn_db;
             $source_chart_of_account = $db->createCommand('SELECT * FROM chart_of_accounts')->queryAll();
-            $target_chart_of_account =  Yii::$app->cloud_db->createCommand("SELECT * FROM `chart_of_account`")->queryAll();
+            $target_chart_of_account =  Yii::$app->cloud_db->createCommand("SELECT * FROM `chart_of_accounts`")->queryAll();
             $source_chart_of_account_difference = array_map(
                 'unserialize',
                 array_diff(array_map('serialize', $source_chart_of_account), array_map('serialize', $target_chart_of_account))
@@ -457,6 +470,34 @@ class SyncDatabaseController extends \yii\web\Controller
 
             );
             return json_encode($source_sub_accounts2_difference);
+        }
+    }
+    public function actionJevPreparation()
+    {
+        if ($_POST) {
+            $db = Yii::$app->ryn_db;
+            $source_jev_preparation = $db->createCommand('SELECT * FROM jev_preparation')->queryAll();
+            $target_jev_preparation =  Yii::$app->cloud_db->createCommand("SELECT * FROM `jev_preparation`")->queryAll();
+            $source_jev_preparation_difference = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $source_jev_preparation), array_map('serialize', $target_jev_preparation))
+
+            );
+            return json_encode($source_jev_preparation_difference);
+        }
+    }
+    public function actionJevAccountingEntries()
+    {
+        if ($_POST) {
+            $db = Yii::$app->ryn_db;
+            $source_jev_accounting_entries = $db->createCommand('SELECT * FROM jev_accounting_entries')->queryAll();
+            $target_jev_accounting_entries =  Yii::$app->cloud_db->createCommand("SELECT * FROM `jev_accounting_entries`")->queryAll();
+            $source_jev_accounting_entries_difference = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $source_jev_accounting_entries), array_map('serialize', $target_jev_accounting_entries))
+
+            );
+            return json_encode($source_jev_accounting_entries_difference);
         }
     }
 

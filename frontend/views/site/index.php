@@ -860,6 +860,29 @@ $csrfName = Yii::$app->request->csrfParam;
                     }
                 })
         })
+        const cashRecieveApi = new Promise((resolve, reject) => {
+            $.post(window.location.pathname + '?r=sync-database/cash-recieve', // url
+                {
+                    myData: ''
+                }, // data to be submit
+                function(data) { // success callback
+                    var d = JSON.parse(data)
+
+                    $.ajax({
+                        type: "post",
+                        url: 'https://fisdticaraga.com/index.php?r=cash-recieved-api/create',
+                        contentType: "application/json",
+                        data: JSON.stringify(d),
+                        dataType: 'json',
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem('token')}`
+                        },
+                        success: function(newdata) {
+                            resolve(newdata)
+                        }
+                    })
+                })
+        })
         const cashDisbursementApi = new Promise((resolve, reject) => {
 
             dvAucsApi.then(() => {
@@ -936,7 +959,54 @@ $csrfName = Yii::$app->request->csrfParam;
                     })
             })
         })
+        const jevPreparationApi = new Promise((resolve, reject) => {
+            $.post(window.location.pathname + '?r=sync-database/jev-preparation', // url
+                {
+                    myData: ''
+                }, // data to be submit
+                function(data) { // success callback
+                    var d = JSON.parse(data)
 
+                    $.ajax({
+                        type: "post",
+                        url: 'https://fisdticaraga.com/index.php?r=jev-preparation-api/create',
+                        contentType: "application/json",
+                        data: JSON.stringify(d),
+                        dataType: 'json',
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem('token')}`
+                        },
+                        success: function(newdata) {
+                            resolve(newdata)
+                        }
+                    })
+                })
+        })
+        const jevAccountingEntriesApi = new Promise((resolve, reject) => {
+            jevPreparationApi.then(() => {
+                // RECORD ALLOTMENT API
+                $.post(window.location.pathname + '?r=sync-database/jev-accounting-entries', // url
+                    {
+                        myData: ''
+                    }, // data to be submit
+                    function(data) { // success callback
+                        var d = JSON.parse(data)
+                        $.ajax({
+                            type: "post",
+                            url: 'https://fisdticaraga.com/index.php?r=jev-accounting-entries-api/create',
+                            contentType: "application/json",
+                            data: JSON.stringify(d),
+                            dataType: 'json',
+                            headers: {
+                                "Authorization": `Bearer ${localStorage.getItem('token')}`
+                            },
+                            success: function(newdata) {
+                                resolve(newdata)
+                            }
+                        })
+                    })
+            })
+        })
 
         // const processOrsApi = new Promise((resolve, reject) => {
         //     // PROCESS ORS  API
@@ -981,7 +1051,10 @@ $csrfName = Yii::$app->request->csrfParam;
             cashDisbursementApi,
             trackingSheetApi,
             advancesApi,
-            advancesEntries
+            advancesEntries,
+            cashRecieveApi,
+            jevPreparationApi,
+            jevAccountingEntriesApi
 
         ]).then(values => {
             $('.site-index').show();
