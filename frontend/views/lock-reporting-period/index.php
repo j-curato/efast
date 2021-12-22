@@ -13,7 +13,7 @@ $this->title = 'Lock Reporting Period';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="major-accounts-index">
-    <form>
+    <form id="lock">
 
         <?php
         $data = [
@@ -27,8 +27,8 @@ $this->params['breadcrumbs'][] = $this->title;
         ];
         echo Select2::widget([
             'attribute' => 'state_2',
-            'name' => 'q',
-            'id' => 'q',
+            'name' => 'data',
+            'id' => 'data',
             'data' => $data,
 
             'options' => ['placeholder' => 'Select a state ...', 'multiple' => true,],
@@ -51,22 +51,34 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'pluginOptions' => [
                 'autoclose' => true,
-                'format' => 'yyyy/mmm',
+                'format' => 'yyyy-mm',
                 'minViewMode' => 'months',
             ]
         ])
 
         ?>
-        
 
 
 
-
+        <button class="btn btn-success" type="submit">SAVE</button>
 
     </form>
 </div>
-
+<script>
+    $('#lock').submit((e)=>{
+        e.preventDefault()
+        $.ajax({
+            type:'POST',
+            url:window.location.pathname + '?r=lock-reporting-period/insert',
+            data:$('#lock').serialize(),
+            success:function(data){
+                console.log(data)
+            }
+        })
+    })
+</script>
 <?php
+
 
 $js = <<< JS
 

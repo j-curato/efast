@@ -46,11 +46,12 @@ class ProcessOrs extends \yii\db\ActiveRecord
         return [
             [['transaction_id', 'document_recieve_id', 'mfo_pap_code_id', 'fund_source_id', 'book_id', 'is_cancelled'], 'integer'],
             [['created_at', 'transaction_begin_time'], 'safe'],
+            [[ 'transaction_id'], 'required'],
             [['reporting_period', 'serial_number', 'obligation_number'], 'string', 'max' => 255],
             [['funding_code'], 'string', 'max' => 50],
             [['date'], 'string', 'max' => 20],
             [['type'], 'string', 'max' => 10],
-            [['transaction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Transaction::className(), 'targetAttribute' => ['transaction_id' => 'id']],
+            [['transaction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Transaction::class, 'targetAttribute' => ['transaction_id' => 'id']],
         ];
     }
 

@@ -243,7 +243,7 @@ class SyncDatabaseController extends \yii\web\Controller
                 array_diff(array_map('serialize', $source_tracking_sheet), array_map('serialize', $target_tracking_sheet))
 
             );
-            return json_encode($source_tracking_sheet_difference);
+            return json_encode($source_tracking_sheet_difference);  
         }
     }
     public function actionRecordAllotment()
