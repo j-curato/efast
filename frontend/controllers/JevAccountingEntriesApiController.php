@@ -11,12 +11,11 @@ use yii\filters\Cors;
 class JevAccountingEntriesApiController extends \yii\rest\ActiveController
 {
 
-    public $modelClass = JevAccountingEntries::class;
-
+    public $modelCLass = JevAccountingEntries::class;
     public function behaviors()
     {
         $behaviors = parent::behaviors();
-        $behaviors['authenticator']['only'] = ['create', 'index', 'view', 'delete', 'update'];
+        $behaviors['authenticator']['only'] = ['create', 'update', 'delete', 'index', 'view'];
         $behaviors['authenticator']['authMethods'] = [
             HttpBearerAuth::class
         ];
@@ -26,10 +25,10 @@ class JevAccountingEntriesApiController extends \yii\rest\ActiveController
     {
 
         $actions = parent::actions();
-        unset($actions['update']);
-        unset($actions['delete']);
         unset($actions['create']);
+        unset($actions['delete']);
         unset($actions['index']);
+        unset($actions['update']);
         unset($actions['view']);
     }
     public function actionCreate()
@@ -79,6 +78,7 @@ class JevAccountingEntriesApiController extends \yii\rest\ActiveController
                             $new_jev_accounting_entries->current_noncurrent = $val['current_noncurrent'];
                             $new_jev_accounting_entries->lvl = $val['lvl'];
                             $new_jev_accounting_entries->object_code = $val['object_code'];
+
                             if ($new_jev_accounting_entries->save(false)) {
                             } else {
                                 $transaction->rollBack();
