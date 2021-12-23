@@ -497,7 +497,15 @@ class SyncDatabaseController extends \yii\web\Controller
                 array_diff(array_map('serialize', $source_jev_accounting_entries), array_map('serialize', $target_jev_accounting_entries))
 
             );
-            return json_encode(count($source_jev_accounting_entries_difference));
+            $to_delete = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $target_jev_accounting_entries), array_map('serialize', $source_jev_accounting_entries))
+
+            );
+            return json_encode([
+                'jev_accounting_entries' => $source_jev_accounting_entries_difference,
+                'to_delete' => array_column($to_delete, 'id')
+            ]);
         }
     }
 

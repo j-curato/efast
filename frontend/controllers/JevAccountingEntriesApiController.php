@@ -34,7 +34,22 @@ class JevAccountingEntriesApiController extends \yii\rest\ActiveController
     {
 
         $transaction = Yii::$app->db->beginTransaction();
-        $source_jev_accounting_entries = Yii::$app->getRequest()->getBodyParams();
+        $source = Yii::$app->getRequest()->getBodyParams();
+        $source_jev_accounting_entries = $source['jev_accounting_entries'];
+        $to_delete = $source['to_delete'];
+        
+
+        if(!empty($to_delete)){
+            foreach($to_delete as $val){
+
+
+                $q = JevAccountingEntries::findOne($val);
+                $q->delete();
+            }
+        }
+
+
+
 
         if (!empty($source_jev_accounting_entries)) {
             try {
