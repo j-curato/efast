@@ -45,6 +45,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 echo Html::a('Soft Copy Link', $dv_link, ['class' => 'btn btn-info ']);;
             }
             ?>
+            <?php
+            $jev_link = yii::$app->request->baseUrl . "/index.php?r=jev-preparation/dv-to-jev&id={$model->id}";
+
+            if ($model->is_payable === 1) {
+                echo "<button class='btn btn-success' id='is_payable' style='margin:5px'>Not Payable</button>";
+                echo Html::a('To JEV', $jev_link, ['class' => 'btn btn-primary']) ;
+            } else {
+                echo "<button class='btn btn-danger' id='is_payable' style='margin:5px'>Payable</button>";
+            }
+
+            ?>
 
         </p>
 
@@ -256,8 +267,8 @@ $this->params['breadcrumbs'][] = $this->title;
         </table>
         <table class='assig'>
             <thead>
-                <tr> 
-                    <td colspan="2"  class='q'>
+                <tr>
+                    <td colspan="2" class='q'>
 
                         <div>
                             <h6>
@@ -280,7 +291,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             </h6>
                         </div>
                     </td>
-                    <td colspan="2"  class='q'>
+                    <td colspan="2" class='q'>
 
                         <div>
                             <h6>
@@ -418,13 +429,15 @@ $this->params['breadcrumbs'][] = $this->title;
             .q {
                 border: 0;
             }
-            .assig{
+
+            .assig {
                 border: 0;
             }
-h1{
-    font-size: 12px;
-}
-     
+
+            h1 {
+                font-size: 12px;
+            }
+
 
             .main-footer {
                 display: none;
@@ -518,9 +531,55 @@ $script = <<<JS
 
             } 
         })
+    })
+    $("#is_payable").click(function(){
+        swal({
+            title: "Are you sure?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: '#DD6B55',
+            confirmButtonText: 'Yes',
+            cancelButtonText: "No",
+            closeOnConfirm: false,
+            closeOnCancel: true
+         },
+         function(isConfirm){
 
-    
+           if (isConfirm){
+                    $.ajax({
+                        type:"POST",
+                        url:window.location.pathname + "?r=dv-aucs/is-payable",
+                        data:{
+                            id:$("#cancel_id").val()
+                        },
+                        success:function(data){
+                            var res = JSON.parse(data)
+                            var cancelled = res.cancelled?"Successfuly Cancelled":"Successfuly Activated";
+                            if(res.isSuccess){
+                                swal({
+                                        title:'Success',
+                                        type:'success',
+                                        button:false,
+                                        timer:3000,
+                                    },function(){
+                                        location.reload(true)
+                                    })
+                            }
+                            else{
+                                swal({
+                                        title:"Error ",
+                                        type:'error',
+                                        button:false,
+                                        timer:3000,
+                                    })
+                            }
 
+                        }
+                    })
+
+
+            } 
+        })
     })
 JS;
 $this->registerJs($script);

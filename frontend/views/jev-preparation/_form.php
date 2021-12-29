@@ -21,6 +21,18 @@ use yii\helpers\ArrayHelper;
         if (!empty($type)) {
             echo " <input type='text' id='type' name='type'  value='$type' style='display:none'>";
         }
+        $dv_number = '';
+        $payee_id = '';
+        $reporting_period = '';
+        $book_id = '';
+        $particular = '';
+        if (!empty($dv_data)) {
+            $dv_number = $dv_data->dv_number;
+            $payee_id = $dv_data->payee_id;
+            $reporting_period = $dv_data->reporting_period;
+            $book_id = $dv_data->book_id;
+            $particular = $dv_data->particular;
+        }
         ?>
         <div class="row">
             <div class="col-sm-3">
@@ -119,6 +131,7 @@ use yii\helpers\ArrayHelper;
                 <select id="book" name="book" class="book select" style="width: 100%; margin-top:50px" required>
                     <option></option>
                 </select>
+
             </div>
             <div class="col-sm-3">
                 <label for="r_center_id">Responisibility Center</label>
@@ -152,7 +165,7 @@ use yii\helpers\ArrayHelper;
             <div class="col-sm-3">
                 <label for="dv_number">DV Number</label>
 
-                <input type="text" name="dv_number" id="dv_number" placeholder="DV NUMBER">
+                <input type="text" name="dv_number" id="dv_number" value='<?php echo $dv_number ?>' placeholder="DV NUMBER">
             </div>
             <div class="col-sm-3">
                 <label for="cadadr_number">CADADR </label>
@@ -172,7 +185,6 @@ use yii\helpers\ArrayHelper;
         </div>
 
         <!-- BUTTON -->
-
         <div id="form-0" class="accounting_entries">
             <!-- chart of accounts -->
 
@@ -243,6 +255,7 @@ use yii\helpers\ArrayHelper;
             </div>
 
         </div>
+
         <input type="submit" name="submit" id="submit" class="btn btn-info" value="Submit" />
 
     </form>
@@ -314,6 +327,7 @@ use yii\helpers\ArrayHelper;
     <script>
         <?php SweetAlertAsset::register($this); ?>
         // global variable
+
 
         var fund_clusters = [];
         var r_center = [];
@@ -472,9 +486,13 @@ use yii\helpers\ArrayHelper;
 
 
         var accounts = []
-
+        var dv_entries = <?php if (!empty($dv_entries)) {
+                                echo json_encode($dv_entries);
+                            } else {
+                                echo json_encode('');
+                            } ?>;
         $(document).ready(function() {
-
+            console.log(dv_entries)
             getResponsibilityCenters().then(function(data) {
                 var array = []
                 $.each(data, function(key, val) {
@@ -522,7 +540,7 @@ use yii\helpers\ArrayHelper;
 
 
             })
-  
+
             // REFERENCE
             reference = ["CDJ", "CRJ", "GJ"]
             $('#reference').select2({
@@ -547,8 +565,6 @@ use yii\helpers\ArrayHelper;
             })
 
             // SUBMIT DATA
-
-
 
 
         })
@@ -634,6 +650,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
 
 
 <?php
+
 
 $script = <<< JS
  
@@ -769,10 +786,30 @@ $script = <<< JS
                         placeholder: 'Select Account'
                     }
 
+                    
                 )
+                $(".coa").select2({
+                    data: accounts,
+                    placeholder: "Select Chart of Account",
+
+                });
                 update_id = $('#update_id').val();
         var type = $('#type').val();
+        if (dv_entries.length >0){
+
+            for(var x = 0 ;x<dv_entries.length ;x++){
+                console.log(x)
+                $("#chart-"+x).val(dv_entries[x]['object_code']).trigger('change');
+                $("#debit-"+x).val(dv_entries[x]['debit'])
+                $("#credit-"+x).val(dv_entries[x]['credit'])
+                if (x != dv_entries.length-1){
+                    add()
+                }
+            }
+           
+        }
         // KUNG NAAY SULOD ANG UPDATE ID KUHAON ANG IYANG MGA DATA
+   
         if (update_id > 0 && type=='update' ) {
                  $('#container').hide();
 
@@ -900,12 +937,34 @@ $script = <<< JS
                    }
                })
         }
-    })
-     $(document).ready(function() { 
-  
-        
+        if ($('#type').val() == 'dv_payable') {
+                $('#reporting_period').val(`$reporting_period`)
+                // $('#check_ada_date').val(jev['check_ada_date'])
+                $('#particular').val(`$particular`)
+                // $('#date').val(jev['date'])
+                // $('#ada_number').val(jev['check_ada_number'])
+                // $('#lddap').val(jev['lddap_number'])
+                // $('#dv_number').val(jev['dv_number'])
+                // $('#cadadr_number').val(jev['cadadr_serial_number'])
+                $('#reference').val('GJ').trigger('change')
+                // $('#reference').val(jev['ref_number']).trigger('change');
+                // $('#r_center_id').val(jev['responsibility_center_id']).trigger('change');
+                // $('#check_ada').val(jev['check_ada']);
+                // $('#check_ada').trigger('change');
+                // $('#payee').val(jev['payee_id']);
+                $('#payee').val(`$payee_id`).trigger('change');
+                $('#book').val(`$book_id`).trigger('change');
+                
+            }
+
     })
 
+     $(document).ready(function() { 
+  
+
+
+        
+    })
     
 
 JS;

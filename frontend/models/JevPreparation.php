@@ -76,6 +76,7 @@ class JevPreparation extends \yii\db\ActiveRecord
             'check_ada_number' => 'Check/ADA Number',
             'chek_ada_date' => 'Check/ADA Date',
             'book_id' => 'Book',
+            'is_payable'=>'Is Payable'
         ];
     }
 

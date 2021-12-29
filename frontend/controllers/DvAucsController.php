@@ -983,4 +983,24 @@ class DvAucsController extends Controller
             'model' => $this->findModel($id)
         ]);
     }
+    public function actionIsPayable()
+    {
+
+        if ($_POST) {
+            $id = $_POST['id'];
+            $dv = DvAucs::findOne($id);
+
+            if ($dv->is_payable === 1) {
+                $dv->is_payable = 0;
+            } else {
+                $dv->is_payable = 1;
+            }
+
+            if ($dv->save(false)) {
+                return json_encode(['isSuccess' => true, 'cancelled' => $dv->is_cancelled]);
+            } else {
+                return json_encode(['isSuccess' => false, 'cancelled' => 'save failed']);
+            }
+        }
+    }
 }

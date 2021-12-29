@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use app\models\Books;
 use app\models\CashFlow;
 use app\models\ChartOfAccounts;
+use app\models\DvAucs;
 use app\models\FundClusterCode;
 use app\models\JevAccountingEntries;
 use Yii;
@@ -1481,6 +1482,7 @@ class JevPreparationController extends Controller
                 $transaction = \Yii::$app->db->beginTransaction();
 
                 $jev_preparation = new JevPreparation();
+         
                 // kung update and transaction
                 if ($_POST['update_id'] > 0) {
 
@@ -2091,7 +2093,7 @@ class JevPreparationController extends Controller
     {
         // $reporting_period = "2021-12";
         $q = date("Y%", strtotime($reporting_period));
-        $query = Yii::$app->db->createCommand("SELECT SUBSTRING_INDEX(jev_number,'-',-1) as q
+        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(jev_number,'-',-1) AS UNSIGNED)  as q
         from jev_preparation
 
         WHERE reporting_period LIKE :r_year
@@ -2713,11 +2715,25 @@ class JevPreparationController extends Controller
     }
 
     public function actionCdrJev($id)
-
     {
         return $this->render('create', [
             'model' => $id,
             'type' => 'cdr',
+
+        ]);
+    }
+    public function actionDvToJev($id)
+    {
+
+        $dv_entries = Yii::$app->db->createCommand("SELECT object_code,debit,credit FROM dv_accounting_entries WHERE dv_aucs_id = :id")
+            ->bindValue(':id', $id)
+            ->queryAll();
+        $dv = DvAucs::findOne($id);
+        return $this->render('create', [
+            'model' => '',
+            'type' => 'dv_payable',
+            'dv_accounting_entries' => $dv_entries,
+            'dv' => $dv
 
         ]);
     }

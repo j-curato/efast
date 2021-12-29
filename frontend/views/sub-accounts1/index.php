@@ -74,7 +74,6 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </div>
-
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>
 
@@ -119,11 +118,6 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\ActionColumn',],
         ],
     ]); ?>
-
-
-
-
-
 
     <div id="myModal" class="modal fade" role="dialog">
         <div class="modal-dialog">

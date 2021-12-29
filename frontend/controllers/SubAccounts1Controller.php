@@ -185,6 +185,7 @@ class SubAccounts1Controller extends Controller
             if ($model->validate()) {
 
                 if ($model->save()) {
+                    return $this->redirect('?r=sub-accounts2/view&id=' . $model->id);
                     return json_encode('success');
                 }
             } else {
