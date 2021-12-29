@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
             $dv_link = '';
             if (!empty($model->dv_link)) {
                 $dv_link = $model->dv_link;
-                echo Html::a('Soft Copy Link', $dv_link, ['class' => 'btn btn-info ']);;
+                echo Html::a('Soft Copy Link', $dv_link, ['class' => 'btn btn-info ']);
             }
             ?>
             <?php
@@ -50,7 +50,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
             if ($model->is_payable === 1) {
                 echo "<button class='btn btn-success' id='is_payable' style='margin:5px'>Not Payable</button>";
-                echo Html::a('To JEV', $jev_link, ['class' => 'btn btn-primary']) ;
+
+
+                $exist  = Yii::$app->db->createCommand("SELECT id FROM jev_preparation WHERE dv_number = :dv_number
+                    
+                ")->bindValue(':dv_number', $model->dv_number)
+                    ->queryOne();
+                if (!empty($exist)) {
+                    $j = yii::$app->request->baseUrl . "/index.php?r=jev-preparation/view&id={$exist['id']}";
+                    echo Html::a('Payable JEV', $j, ['class' => 'btn btn-primary']);
+                } else {
+                    echo Html::a('To JEV', $jev_link, ['class' => 'btn btn-primary']);
+                }
             } else {
                 echo "<button class='btn btn-danger' id='is_payable' style='margin:5px'>Payable</button>";
             }
