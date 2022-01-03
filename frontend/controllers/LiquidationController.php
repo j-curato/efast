@@ -332,9 +332,9 @@ class LiquidationController extends Controller
             }
 
             // return json_encode(['isSuccess' => false, 'error' => 'qweqwr']);
-            if (date('Y', strtotime($reporting_period)) < date('Y')) {
-                return json_encode(['isSuccess' => false, 'error' => "Invalid Reporting Period"]);
-            } else {
+            // if (date('Y', strtotime($reporting_period)) < date('Y')) {
+            //     return json_encode(['isSuccess' => false, 'error' => "Invalid Reporting Period"]);
+            // } else {
 
                 $xyz = (new \yii\db\Query())
                     ->select('*')
@@ -363,7 +363,7 @@ class LiquidationController extends Controller
                 //     return json_encode(['isSuccess' => false, 'error' => ]);
                 // }
 
-            }
+            // }
 
             $liq_r_period = (new \yii\db\Query())
                 ->select('reporting_period')
