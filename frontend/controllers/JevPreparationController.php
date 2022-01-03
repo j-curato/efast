@@ -1415,9 +1415,9 @@ class JevPreparationController extends Controller
 
             $reporting_period = $_POST['reporting_period'];
 
-            if (date('Y', strtotime($reporting_period)) < date('Y')) {
-                return json_encode(['isSuccess' => false, 'error' => "Invalid Reporting Period"]);
-            } else {
+            // if (date('Y', strtotime($reporting_period)) < date('Y')) {
+            //     return json_encode(['isSuccess' => false, 'error' => "Invalid Reporting Period"]);
+            // } else {
                 $xyz = (new \yii\db\Query())
                     ->select('*')
                     ->from('jev_reporting_period')
@@ -1431,7 +1431,7 @@ class JevPreparationController extends Controller
                 //     return json_encode(['isSuccess' => false, 'error' => $xyz['reporting_period']]);
                 // }
 
-            }
+            // }
             $check_ada_date = !empty($_POST['check_ada_date']) ? $_POST['check_ada_date'] : '';
             $date = !empty($_POST['date']) ? $_POST['date'] : '';
             // $fund_cluster_code = $_POST['fund_cluster_code'] ? $_POST['fund_cluster_code'] : '';
