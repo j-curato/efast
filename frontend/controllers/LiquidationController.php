@@ -501,7 +501,7 @@ class LiquidationController extends Controller
                                 if (!empty($new_reporting_period)) {
                                     $r_period = date('Y-m', strtotime($new_reporting_period[$index]));
                                     $line = $index + 1;
-                                    if (date('Y', strtotime($r_period)) < date('Y', strtotime($last_lock_reporting_period))) {
+                                    if (date('Y', strtotime($r_period)) < date('Y', strtotime($last_lock_reporting_period['reporting_period']))) {
                                         return json_encode(['isSuccess' => false, 'error' => "Invalid Reporting Period On Line $line"]);
                                     } else {
                                         $qqq = (new \yii\db\Query())
