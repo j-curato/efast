@@ -332,38 +332,38 @@ class LiquidationController extends Controller
             }
 
             // return json_encode(['isSuccess' => false, 'error' => 'qweqwr']);
-            if (date('Y', strtotime($reporting_period)) < date('Y')) {
-                return json_encode(['isSuccess' => false, 'error' => "Invalid Reporting Period"]);
-            } else {
+            // if (date('Y', strtotime($reporting_period)) < date('Y')) {
+            //     return json_encode(['isSuccess' => false, 'error' => "Invalid Reporting Period"]);
+            // } else {
 
-                $xyz = (new \yii\db\Query())
-                    ->select('*')
-                    ->from('liquidation_reporting_period')
-                    ->where('liquidation_reporting_period.reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
-                    ->andWhere('liquidation_reporting_period.province LIKE :province', ['province' => $province])
-                    ->one();
+            $xyz = (new \yii\db\Query())
+                ->select('*')
+                ->from('liquidation_reporting_period')
+                ->where('liquidation_reporting_period.reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+                ->andWhere('liquidation_reporting_period.province LIKE :province', ['province' => $province])
+                ->one();
 
-                if (!empty($update_id)) {
-                    $liq = Liquidation::findOne($update_id);
+            if (!empty($update_id)) {
+                $liq = Liquidation::findOne($update_id);
 
-                    if ($reporting_period !== $liq->reporting_period) {
-                        if (!empty($xyz)) {
-                            return json_encode(['isSuccess' => false, 'error' => " Reporting Period is Disabled"]);
-                        }
-                    }
-                } else {
+                if ($reporting_period !== $liq->reporting_period) {
                     if (!empty($xyz)) {
                         return json_encode(['isSuccess' => false, 'error' => " Reporting Period is Disabled"]);
                     }
                 }
-
-
-                // else
-                // {
-                //     return json_encode(['isSuccess' => false, 'error' => ]);
-                // }
-
+            } else {
+                if (!empty($xyz)) {
+                    return json_encode(['isSuccess' => false, 'error' => " Reporting Period is Disabled"]);
+                }
             }
+
+
+            // else
+            // {
+            //     return json_encode(['isSuccess' => false, 'error' => ]);
+            // }
+
+            // }
 
             $liq_r_period = (new \yii\db\Query())
                 ->select('reporting_period')
@@ -492,13 +492,16 @@ class LiquidationController extends Controller
 
 
                         if (!empty($advances_id)) {
-
+                            $last_lock_reporting_period = Yii::$app->db->createCommand("SELECT reporting_period FROM `liquidation_reporting_period`
+                                    WHERE province = :province ORDER BY reporting_period DESC limit 1")
+                                ->bindValue(':province', $province)
+                                ->queryOne();
                             foreach ($advances_id as $index => $val) {
 
                                 if (!empty($new_reporting_period)) {
                                     $r_period = date('Y-m', strtotime($new_reporting_period[$index]));
                                     $line = $index + 1;
-                                    if (date('Y', strtotime($r_period)) < date('Y')) {
+                                    if (date('Y', strtotime($r_period)) < date('Y', strtotime($last_lock_reporting_period['reporting_period']))) {
                                         return json_encode(['isSuccess' => false, 'error' => "Invalid Reporting Period On Line $line"]);
                                     } else {
                                         $qqq = (new \yii\db\Query())
@@ -520,11 +523,11 @@ class LiquidationController extends Controller
                                 list($liq) = sscanf(implode(explode(',', $liq_damages[$index])), "%f");
                                 $advances_entries_balance = Yii::$app->db->createCommand("SELECT advances_entries_for_liquidation.balance FROM advances_entries_for_liquidation
                                 WHERE advances_entries_for_liquidation.id = :id")
-                                ->bindValue(':id',$val)
-                                ->queryScalar();
+                                    ->bindValue(':id', $val)
+                                    ->queryScalar();
                                 $res = $advances_entries_balance - $withd;
 
-                                if ($res < 0 ){
+                                if ($res < 0) {
                                     $transaction->rollBack();
                                     return json_encode(['isSuccess' => false, 'error' => 'Cannot Insert Advances Balance is not enough']);
                                 }
