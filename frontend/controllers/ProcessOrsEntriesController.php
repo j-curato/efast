@@ -276,9 +276,9 @@ class ProcessOrsEntriesController extends Controller
             $q = OrsReportingPeriod::find()->where("reporting_period = :reporting_period", ['reporting_period' => $reporting_period])->one();
 
             $y = date('Y', strtotime($reporting_period));
-            if ($y < date('Y')) {
-                return json_encode(['isSuccess' => false, 'error' => 'Reporting Period Year  Must be ' . date('Y')]);
-            }
+            // if ($y < date('Y')) {
+            //     return json_encode(['isSuccess' => false, 'error' => 'Reporting Period Year  Must be ' . date('Y')]);
+            // }
             // return json_encode(['isSuccess' => false, 'error' => 'Success']);
 
 
