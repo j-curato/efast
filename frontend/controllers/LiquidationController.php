@@ -938,9 +938,9 @@ class LiquidationController extends Controller
 
             $year = date('Y');
             $r_year = date('Y', strtotime($reporting_period));
-            if ($r_year < $year) {
-                return json_encode(['isSuccess' => false, 'error' => "Please Insert Reporting Period in $year "]);
-            }
+            // if ($r_year < $year) {
+            //     return json_encode(['isSuccess' => false, 'error' => "Please Insert Reporting Period in $year "]);
+            // }
             $check = (new \yii\db\Query())
                 ->select([
                     'check_range.from',
