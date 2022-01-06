@@ -81,6 +81,14 @@ class DvAucsController extends Controller
             ],
         ];
     }
+    public function beforeAction($action)
+    {
+        if ($action->id == 'update-dv') {
+            $this->enableCsrfValidation = false;
+        }
+
+        return parent::beforeAction($action);
+    }
 
     /**
      * Lists all DvAucs models.
@@ -548,6 +556,7 @@ class DvAucsController extends Controller
                     "dv_aucs.transaction_type",
                     "dv_aucs.book_id",
                     "dv_aucs.tracking_sheet_id",
+                    'tracking_sheet.tracking_number',
                     "process_ors.serial_number",
                     "process_ors.id as ors_id",
                     "FORMAT(total_obligated.total,'N','en-us') as total",
@@ -560,6 +569,7 @@ class DvAucsController extends Controller
                 ->join("LEFT JOIN", "process_ors", "dv_aucs_entries.process_ors_id = process_ors.id")
                 ->join("LEFT JOIN", "transaction", "process_ors.transaction_id = transaction.id")
                 ->join("LEFT JOIN", "payee", "transaction.payee_id = payee.id")
+                ->join("LEFT JOIN", "tracking_sheet", "dv_aucs.tracking_sheet_id = tracking_sheet.id")
                 ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount)as total,process_ors.id as ors_id
                 FROM process_ors,raouds,raoud_entries
 
@@ -593,33 +603,44 @@ class DvAucsController extends Controller
             $model = DvAucs::findOne($dv_id);
             $dv_accounting_entries = [];
             if (!empty($model->dvAccountingEntries)) {
+                $dv_accounting_entries = Yii::$app->db->createCommand("SELECT 
+                dv_accounting_entries.dv_aucs_id,
+                                       dv_accounting_entries.debit,
+                                      dv_accounting_entries.credit,
+                                       dv_accounting_entries.net_asset_equity_id,
+                                       dv_accounting_entries.object_code,
+                                      dv_accounting_entries.cashflow_id,
+               accounting_codes.account_title
+               FROM dv_accounting_entries 
+               LEFT JOIN accounting_codes ON dv_accounting_entries.object_code = accounting_codes.object_code
+               WHERE dv_accounting_entries.dv_aucs_id = :dv_id")->bindValue(':dv_id',$model->id)
+               ->queryAll();
+                // foreach ($model->dvAccountingEntries as $val) {
 
-                foreach ($model->dvAccountingEntries as $val) {
-
-                    if ($val->lvl === 2) {
-                        $chart_id = (new \yii\db\Query())->select(['sub_accounts1.id'])->from('sub_accounts1')
-                            ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
-                            ->where('sub_accounts1.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
-                    } else if ($val->lvl === 3) {
-                        $chart_id = (new \yii\db\Query())->select(['sub_accounts2.id'])->from('sub_accounts2')
-                            // ->join("LEFT JOIN", 'sub_accounst1', 'sub_accounts2.sub_accounts1_id = sub_accounts1.id')
-                            // ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
-                            ->where('sub_accounts2.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
-                    } else {
-                        $chart_id =  $val->chart_of_account_id;
-                    }
-                    $dv_accounting_entries[] = [
-                        'dv_aucs_id' => $val->dv_aucs_id,
-                        'chart_of_account_id' => $val->chart_of_account_id,
-                        'id' => $chart_id,
-                        'debit' => $val->debit,
-                        'credit' => $val->credit,
-                        'net_asset_equity_id' => $val->net_asset_equity_id,
-                        'object_code' => $val->object_code,
-                        'lvl' => $val->lvl,
-                        'cashflow_id' => $val->cashflow_id,
-                    ];
-                }
+                //     if ($val->lvl === 2) {
+                //         $chart_id = (new \yii\db\Query())->select(['sub_accounts1.id'])->from('sub_accounts1')
+                //             ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+                //             ->where('sub_accounts1.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
+                //     } else if ($val->lvl === 3) {
+                //         $chart_id = (new \yii\db\Query())->select(['sub_accounts2.id'])->from('sub_accounts2')
+                //             // ->join("LEFT JOIN", 'sub_accounst1', 'sub_accounts2.sub_accounts1_id = sub_accounts1.id')
+                //             // ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+                //             ->where('sub_accounts2.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
+                //     } else {
+                //         $chart_id =  $val->chart_of_account_id;
+                //     }
+                //     $dv_accounting_entries[] = [
+                //         'dv_aucs_id' => $val->dv_aucs_id,
+                //         'chart_of_account_id' => $val->chart_of_account_id,
+                //         'id' => $chart_id,
+                //         'debit' => $val->debit,
+                //         'credit' => $val->credit,
+                //         'net_asset_equity_id' => $val->net_asset_equity_id,
+                //         'object_code' => $val->object_code,
+                //         'lvl' => $val->lvl,
+                //         'cashflow_id' => $val->cashflow_id,
+                //     ];
+                // }
             }
 
             return json_encode(["result" => $query, 'dv_accounting_entries' => $dv_accounting_entries]);

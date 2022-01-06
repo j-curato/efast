@@ -285,4 +285,22 @@ class TrackingSheetController extends Controller
         }
         return $out;
     }
+    public function actionGetTrackingSheetData()
+    {
+        if ($_POST) {
+            $id =  $_POST['id'];
+
+            $query = Yii::$app->db->createCommand("SELECT
+            payee.id as payee_id,
+            payee.account_name as payee_name,
+            tracking_sheet.particular,
+            tracking_sheet.transaction_type
+             FROM tracking_sheet
+            LEFT JOIN payee ON tracking_sheet.payee_id = payee.id
+             WHERE tracking_sheet.id = :id")
+                ->bindValue(':id', $id)
+                ->queryOne();
+            return json_encode($query);
+        }
+    }
 }

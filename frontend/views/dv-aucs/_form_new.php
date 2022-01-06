@@ -186,7 +186,7 @@ use yii\helpers\ArrayHelper;
                         <div class="col-sm-5 ">
 
                             <div>
-                                <select id="chart-0" name="chart_of_account_id[]" class="chart-of-account" onchange=isCurrent(this,0) style="width: 100%">
+                                <select id="chart-0" name="chart_of_account_id[]" class="chart-of-accounts" onchange=isCurrent(this,0) style="width: 100%">
                                     <option></option>
                                 </select>
                             </div>
@@ -224,6 +224,7 @@ use yii\helpers\ArrayHelper;
                 </div>
 
             </div>
+
             <button type="submit" class="btn btn-success" style="width: 100%;" id="save" name="save"> SAVE</button>
         </form>
 
@@ -484,7 +485,11 @@ use yii\helpers\ArrayHelper;
 <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
 <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
+<?php
 
+// $csrfTokenName = Yii::$app->request->csrfTokenName;
+$csrfToken = Yii::$app->request->csrfToken;
+?>
 
 <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
 <script>
@@ -623,10 +628,29 @@ use yii\helpers\ArrayHelper;
                     
             </div>
             `)
-        $(`#chart-${i}`).select2({
-            data: accounts,
-            placeholder: "Select Chart of Account",
+        // $(`#chart-${i}`).select2({
+        //     data: accounts,
+        //     placeholder: "Select Chart of Account",
 
+        // });
+        $('.chart-0').select2('destroy');
+        $('.chart-of-accounts').select2({
+            ajax: {
+                url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code',
+                dataType: 'json',
+                data: function(params) {
+
+                    return {
+                        q: params.term,
+                    };
+                },
+                processResults: function(data) {
+                    // Transforms the top-level key of the response object from 'items' to 'results'
+                    return {
+                        results: data.results
+                    };
+                }
+            }
         });
         $(`#cashflow-${i}`).select2({
             data: cashflow,
@@ -763,27 +787,27 @@ use yii\helpers\ArrayHelper;
     var dv_count = 1;
     var tracking_sheet = []
     var sheet = []
-
+    var net_asset = []
     $(document).ready(function() {
         // $("#payee ").select2({'readonly'});
         // $("#particular").prop({disabled:'readonly'});
         $("#bok").hide();
 
 
-        getPayee().then(function(data) {
-            var array = []
-            $.each(data, function(key, val) {
-                array.push({
-                    id: val.id,
-                    text: val.account_name
-                })
-                payee = array
-                $('#payee').select2({
-                    data: payee,
-                    placeholder: 'Select Payee'
-                })
-            })
-        })
+        // getPayee().then(function(data) {
+        //     var array = []
+        //     $.each(data, function(key, val) {
+        //         array.push({
+        //             id: val.id,
+        //             text: val.account_name
+        //         })
+        //         payee = array
+        //         $('#payee').select2({
+        //             data: payee,
+        //             placeholder: 'Select Payee'
+        //         })
+        //     })
+        // })
         getNatureOfTransactions().then(function(data) {
             var array = []
             $.each(data, function(key, val) {
@@ -903,17 +927,207 @@ use yii\helpers\ArrayHelper;
         //  })
         // $(this).val().replact
     }
+    $('#tracking_sheet').select2({
+        ajax: {
+            url: window.location.pathname + '?r=tracking-sheet/search-tracking-sheet',
+            dataType: 'json',
+            data: function(params) {
+
+                return {
+                    q: params.term,
+                };
+            },
+            processResults: function(data) {
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results
+                };
+            }
+        }
+    });
+    $('#payee').select2({
+        ajax: {
+            url: window.location.pathname + '?r=payee/search-payee',
+            dataType: 'json',
+            data: function(params) {
+
+                return {
+                    q: params.term,
+                };
+            },
+            processResults: function(data) {
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results
+                };
+            }
+        },
+        placeholder: 'Search for a Payee',
+    });
     $(document).on("keyup change", ".credit, .debit", function() {
         getDebitCreditTotal()
 
     })
+
+    // $("#yearDropdown").live('change', function() {
+    //     alert('The option with value ' + $(this).val());
+    // });
+
+
+    /* DOM ready */
+    function onTrackingSheetChange(tracking_id) {
+        $.ajax({
+            type: 'POST',
+            url: window.location.pathname + '?r=tracking-sheet/get-tracking-sheet-data',
+            data: {
+                id: tracking_id
+            },
+            success: function(data) {
+                var res = JSON.parse(data)
+                $("#transaction").val(res.transaction_type).trigger('change')
+                $("#particular").val(res.particular).trigger('change')
+                var payeeSelect = $('#payee');
+                var option = new Option([res.payee_name], [res.payee_id], true, true);
+                payeeSelect.append(option).trigger('change');
+            }
+        })
+    }
+    $("#tracking_sheet").change(function() {
+        // console.log(this.value)
+        onTrackingSheetChange(this.value)
+    })
+
+    $(document).ready(() => {
+
+        $('.chart-of-accounts').select2({
+            ajax: {
+                url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code',
+                dataType: 'json',
+                data: function(params) {
+
+                    return {
+                        q: params.term,
+                    };
+                },
+                processResults: function(data) {
+                    // Transforms the top-level key of the response object from 'items' to 'results'
+                    return {
+                        results: data.results
+                    };
+                }
+            }
+        });
+        var update_id = $('#update_id').val()
+        if (update_id > 0) {
+
+            $.ajax({
+                url: window.location.pathname + "?r=dv-aucs/update-dv",
+                type: "POST",
+                data: {
+                    dv_id: update_id,
+                    _csrf: "<?php echo $csrfToken ?>"
+                },
+                success: function(data) {
+
+                    var res = JSON.parse(data)
+                    console.log(res.result)
+                    var transaction_type = res.result[0]['transaction_type']
+                    var type = '';
+
+                    if (!transaction_type) {
+                        if (res.result.length > 1) {
+                            type = 'Multiple'
+                        } else if (res.result.length === 1) {
+                            type = 'Single'
+                        } else if (res.result.length === 0) {
+                            type = 'No Ors'
+                        }
+                    } else {
+                        type = transaction_type
+                    }
+                    // if (type !='No Ors'){
+
+                    addDvToTable(res.result)
+                    // }
+
+
+                    // $("#particular").val(res.result[0]['particular'])
+                    // $("#payee").val(res.result[0]['payee_id']).trigger('change');
+                    $("#mrd_classification").val(res.result[0]['mrd_classification_id']).trigger("change");
+                    $("#nature_of_transaction").val(res.result[0]['nature_of_transaction_id']).trigger("change");
+                    $("#reporting_period").val(res.result[0]['reporting_period'])
+                    // $('#transaction').val(type).trigger('change')
+                    $('#book').val(res.result[0]['book_id']).trigger('change')
+
+                    if (res.result[0]['tracking_sheet_id'] == null) {
+                        $('#transaction').val(type).trigger('change')
+                        $("#particular").val(res.result[0]['particular'])
+                        $("#payee").val(res.result[0]['payee_id']).trigger('change');
+
+                    } else {
+
+                        var trackingSheetSelect = $('#tracking_sheet');
+                        var option = new Option([res.result[0]['tracking_number']], [res.result[0]['tracking_sheet_id']], true, true);
+                        trackingSheetSelect.append(option).trigger('change')
+                        onTrackingSheetChange(res.result[0]['tracking_sheet_id'])
+                        // $('#tracking_sheet').val(res.result[0]['tracking_sheet_id']).trigger('change')
+
+                    }
+
+                    var x = 0
+
+                    var dv_accounting_entries = res.dv_accounting_entries;
+                    console.log(dv_accounting_entries)
+                    for (x; x < res.dv_accounting_entries.length; x++) {
+                        $("#debit-" + x).val(dv_accounting_entries[x]['debit'])
+                        $("#credit-" + x).val(dv_accounting_entries[x]['credit'])
+                        var chart = dv_accounting_entries[x]['object_code'] + "-" + dv_accounting_entries[x]['account_title']
+
+                        var cashflow = dv_accounting_entries[x]['cashflow_id'];
+                        var net_asset = dv_accounting_entries[x]['net_asset_equity_id'];
+                        // $("#chart-" + x).val(dv_accounting_entries[x]['object_code']).trigger('change');
+
+                        var chartAccSelect = $('#chart-' + x);
+                        var option = new Option([chart], [dv_accounting_entries[x]['object_code']], true, true);
+                        chartAccSelect.append(option).trigger('change')
+                        $("#isEquity-" + x).val(dv_accounting_entries[x]['net_asset_equity_id']).trigger('change');
+                        $("#cashflow-" + x).val(cashflow).trigger('change');
+                        if ($("#cashflow-" + x).length) {} else {}
+                        if (x < res.dv_accounting_entries.length - 1) {
+                            add()
+                        }
+                    }
+                    getDebitCreditTotal()
+
+                }
+            })
+        }
+    })
+
+    // $.when(getChartOfAccounts()).done(function(chart) {
+    //     var array = []
+    //     // console.log(chart)
+    //     $.each(chart, function(key, val) {
+    //         array.push({
+    //             id: val.object_code,
+    //             text: val.object_code + ' ' + val.account_title
+    //         })
+
+    //     })
+    //     accounts = array
+    //     $("#chart-0").select2({
+    //         data: accounts,
+    //         placeholder: 'Select Account'
+    //     })
+    //     var update_id = $('#update_id').val()
+
+    // });
 </script>
 
 
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-?>
-<?php SweetAlertAsset::register($this); ?>
+SweetAlertAsset::register($this); ?>
 <?php
 
 $script = <<< JS
@@ -925,85 +1139,7 @@ $script = <<< JS
         var books=[];
         var bbb=undefined;
 
-        $("#tracking_sheet").change(function()  {
-            // console.log(sheet)
-            var transaction_type ='';
-            var payee = 0;
-            var particular =''
-            var ors_id = []
-            var x={}
-            var pay= []
-            var y =1
-            var t_type=[]
-            // $('#transaction_table >tbody').html('')
-            // $('#transaction_table tbody').html()=''
-            $.each(sheet,function(key,val){
-                if (val.id ==$('#tracking_sheet').val()){
-                    transaction_type =val.transaction_type
-                    payee = val.payee_id
-                    particular =val.particular
-                    ors_id.push(val.process_ors_id) 
-                    x= '{'+val.process_ors_id+':0}'
-                    y = val.process_ors_id
-                    pay.push({
-                        id:val.p_id,
-                        text:val.account_name
-                    })
-                    t_type.push(transaction_type)
-                    return false
-                }
-            })
-            // $('#payee_id').select2({
-            //     data:pay,
-            // })
-            $("#payee").val(payee).trigger('change')
-            // $(`#transaction option:not(:selected)`).attr('disabled', false);
-            // $('#transaction').select2({
-            //     data:t_type
-            // })
-            $("#transaction").val(transaction_type).trigger('change')
-            // $(`#transaction option:not(:selected)`).attr('disabled', true);
-            $("#payee").val(payee).trigger('change')
-            $("#particular").val(particular).trigger('change')
-            // console.log(x)
-            // if (transaction_type =='Single'){
-            //     console.log(ors_id)
-            //         $.ajax({
-            //         url: window.location.pathname + '?r=dv-aucs/get-dv',
-            //         method: "POST",
-            //         data:{selection:ors_id,
-            //         transaction_type:transaction_type,
-            //         amount_disbursed:x,
-            //         vat_nonvat:x,
-            //         ewt_goods_services:x,
-            //         compensation:x,
-            //         other_trust_liabilities:x,
-
-
-                
-            //     },
-            //         success: function(data) {
-            //             var res = JSON.parse(data)
-            //             // console.log(data)
-            //             if (res.isSuccess) {
-
-            //                 addDvToTable(res.results)
-            //             } else {
-            //                 swal({
-            //                     title: "Error",
-            //                     text: res.error,
-            //                     type: "error",
-            //                     timer: 6000,
-            //                     button: false
-            //                     // confirmButtonText: "Yes, delete it!",
-            //                 });
-            //             }
-
-            //         }
-            //     });
-            // }
        
-        })
 
 
     $('#transaction_table').on('change keyup', ['.amount_disbursed','.ewt','.vat','.compensation','.liabilities'], function() {
@@ -1046,159 +1182,13 @@ $script = <<< JS
             
         }
     })
-    // function chart(){
-        
-    //     return  $.getJSON('/afms/frontend/web/index.php?r=transaction/get-all-transaction')
-    //     .then(function (data) {
 
-    //         var array = []
-    //         $.each(data, function (key, val) {
-    //             array.push({
-    //                 id: val.id,
-    //                 text: val.tracking_number
-    //             })
-    //         })
-    //         transaction = array
-    //         $('#transaction_id').select2({
-    //             data: transaction,
-    //             placeholder: "Select Transaction",
 
-    //         })
-
-    //     });
-    // }
-    $.when(getChartOfAccounts() ).done(function(chart){
-            var array = []
-            // console.log(chart)
-            $.each(chart, function(key, val) {
-                array.push({
-                    id: val.object_code,
-                    text: val.object_code + ' ' + val.account_title
-                })
-
-            })
-            accounts = array
-            $("#chart-0").select2({
-                data: accounts,
-                placeholder: 'Select Account'
-            })
-        var update_id= $('#update_id').val()
-        if (update_id>0){
-            $.ajax({
-                url:window.location.pathname + "?r=dv-aucs/update-dv",
-                type:"POST",
-                data:{dv_id:update_id},
-                success:function(data){
-
-                    var res = JSON.parse(data)
-                    console.log(res.result)
-                    var transaction_type=res.result[0]['transaction_type']
-                    var type='';
-
-                        if (!transaction_type){
-                            if (res.result.length >1){
-                                type='Multiple'
-                            }
-                            else if(res.result.length ===1){
-                                type='Single'
-                            }
-                            else if(res.result.length ===0){
-                                type='No Ors'
-                            }
-                        }
-                        else{
-                            type = transaction_type
-                        }
-                        // if (type !='No Ors'){
-
-                            addDvToTable(res.result)
-                        // }
-                    
-                      
-                    // $("#particular").val(res.result[0]['particular'])
-                    // $("#payee").val(res.result[0]['payee_id']).trigger('change');
-                    $("#mrd_classification").val(res.result[0]['mrd_classification_id']).trigger("change");
-                    $("#nature_of_transaction").val(res.result[0]['nature_of_transaction_id']).trigger("change");
-                    $("#reporting_period").val(res.result[0]['reporting_period'])
-                    // $('#transaction').val(type).trigger('change')
-                    $('#book').val(res.result[0]['book_id']).trigger('change')
-                 
-                    if (res.result[0]['tracking_sheet_id'] ==null){
-                     $('#transaction').val(type).trigger('change')
-                                          
-                    $("#particular").val(res.result[0]['particular'])
-                    $("#payee").val(res.result[0]['payee_id']).trigger('change');
-                        
-                    }
-                    else{
-                        $('#tracking_sheet').val(res.result[0]['tracking_sheet_id']).trigger('change')
-                    }
-
-                    var x=0
-               
-                        var dv_accounting_entries = res.dv_accounting_entries;
-                        console.log(dv_accounting_entries)
-                        for (x; x<res.dv_accounting_entries.length;x++){
-                            $("#debit-"+x).val(dv_accounting_entries[x]['debit'])
-                            $("#credit-"+x).val(dv_accounting_entries[x]['credit'])
-                            var chart = dv_accounting_entries[x]['id'] +"-" +dv_accounting_entries[x]['object_code']+"-"+dv_accounting_entries[x]['lvl']
-                            
-                            var cashflow = dv_accounting_entries[x]['cashflow_id'];
-                            var net_asset= dv_accounting_entries[x]['net_asset_equity_id'];
-                            $("#chart-"+x).val(dv_accounting_entries[x]['object_code']).trigger('change');
-                            $("#isEquity-"+x).val(dv_accounting_entries[x]['net_asset_equity_id']).trigger('change');
-                            $("#cashflow-"+x).val(cashflow).trigger('change');
-                            if ($( "#cashflow-"+x ).length ){
-                            }
-                            else{
-                            }
-                            if (x < res.dv_accounting_entries.length -1){
-                                add()
-                            }
-                        }
-            getDebitCreditTotal()
-                    
-                }
-            })
-        }
-    });
 
 
     $(document).ready(function() {
 
-        getAllTrackingSheet().then(function(data) {
 
-        var array = []
-        sheet = data
-        $.each(data, function(key, val) {
-            array.push({
-                id: val.id,
-                text: val.tracking_number
-            })
-        })
-        tracking_sheet = array
-        $('#tracking_sheet').select2({
-            data: tracking_sheet,
-            placeholder: 'Select Tracking Sheet'
-        })
-        });
-
-
-        // CHART OF ACCOUNTS
-
-        // $.getJSON('/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-general-ledger')
-        //         .then(function(data) {
-        //             var array = []
-        //             $.each(data, function(key, val) {
-        //                 array.push({
-        //                     id: val.id,
-        //                     text: val.object_code + ' ' + val.title
-        //                 })
-        //             })
-        //             accounts = array
-       
-        //         })
-                // GET ALL MRD CLASSIFICATIOn
 
             // TRANSACTION TYPE
            var transaction = ["Single", "Multiple","No Ors"]
@@ -1209,7 +1199,7 @@ $script = <<< JS
             })  
             // $("#transaction option:not(:selected)").attr('disabled',true)    
             // INSERT ANG DATA SA DATABASE
-  
+           
 
 
     })
