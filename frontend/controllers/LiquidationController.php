@@ -941,6 +941,14 @@ class LiquidationController extends Controller
             // if ($r_year < $year) {
             //     return json_encode(['isSuccess' => false, 'error' => "Please Insert Reporting Period in $year "]);
             // }
+            $last_lock_reporting_period = Yii::$app->db->createCommand("SELECT reporting_period FROM `liquidation_reporting_period`
+            WHERE province = :province ORDER BY reporting_period DESC limit 1")
+                ->bindValue(':province', $province)
+                ->queryOne();
+            $r_period = date('Y-m', strtotime($reporting_period));
+            if (date('Y', strtotime($r_period)) < date('Y', strtotime($last_lock_reporting_period['reporting_period']))) {
+                return json_encode(['isSuccess' => false, 'error' => "Please Insert Reporting Period in $year "]);
+            }
             $check = (new \yii\db\Query())
                 ->select([
                     'check_range.from',
