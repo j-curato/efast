@@ -258,6 +258,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 SweetAlertAsset::register($this);
 ?>
+<script src='<?php echo yii::$app->request->baseUrl ?>/js/instascan.js'></script>
 <script>
     var constraints = {
         video: true,

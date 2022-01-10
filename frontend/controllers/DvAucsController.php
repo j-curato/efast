@@ -98,7 +98,7 @@ class DvAucsController extends Controller
     {
         $searchModel = new DvAucsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
+        $dataProvider->sort = ['defaultOrder' => ['id' => SORT_DESC]];
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -936,7 +936,7 @@ class DvAucsController extends Controller
     {
         $searchModel = new DvAucsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
+        $dataProvider->sort = ['defaultOrder' => ['id' => SORT_DESC]];
 
         return $this->render('turnarround_time', [
             'searchModel' => $searchModel,

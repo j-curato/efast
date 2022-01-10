@@ -522,6 +522,29 @@ class ChartOfAccountsController extends Controller
 
         return json_encode($query2->all());
     }
+    public function actionSearchChartOfAccounts($q = null, $id = null, $province = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+            $query->select(["id as id, CONCAT (uacs ,'-',general_ledger) as text"])
+                ->from('chart_of_accounts')
+                ->where(['like', 'general_ledger', $q])
+                ->orWhere(['like', 'uacs', $q])
+                ->andWhere('is_active = 1');
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        //  elseif ($id > 0) {
+        //     $out['results'] = ['id' => $id, 'text' => AdvancesEntries::find($id)->fund_source];
+        // }
+        return $out;
+    }
     public function actionSearchAccountingCode($q = null, $id = null, $province = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -538,6 +561,7 @@ class ChartOfAccountsController extends Controller
             $query->select(["object_code as id, CONCAT (object_code ,'-',account_title) as text"])
                 ->from('accounting_codes')
                 ->where(['like', 'account_title', $q])
+                ->orWhere(['like', 'object_code', $q])
                 ->andWhere('is_active =1 AND coa_is_active = 1 AND sub_account_is_active = 1');
 
             $command = $query->createCommand();

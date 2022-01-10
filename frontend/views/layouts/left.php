@@ -141,7 +141,7 @@
                                 Yii::$app->user->can('fur-ro') ?     ['label' => 'FUR', 'icon' => 'circle-o', 'url' => ['/report/division-fur'],] : [],
                                 Yii::$app->user->can('saob') ?     ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/report/saobs'],] : [],
                                 Yii::$app->user->can('fur-mfo') ?     ['label' => 'FUR per MFO/PAP', 'icon' => 'circle-o', 'url' => ['/report/fur-mfo'],] : [],
-                         
+
                             ],
                         ],
 
@@ -345,6 +345,18 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Scan QR', 'icon' => 'circle-o', 'url' => ['/property-card/property-details'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'RPCPPE', 'icon' => 'circle-o', 'url' => ['/rpcppe'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Inventory', 'icon' => 'circle-o', 'url' => ['/inventory-report'],] : [],
+                            ],
+                        ] : [],
+                        Yii::$app->user->can('super-user') ?    [
+                            'label' => 'Procurement',
+                            'url' => '#',
+                            'items' => [
+
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Office/Section', 'icon' => 'circle-o', 'url' => ['/pr-office'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Stock/Property', 'icon' => 'circle-o', 'url' => ['/pr-stock'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Activity/Project Procurement', 'icon' => 'circle-o', 'url' => ['/pr-project-procurement'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Purchase Request', 'icon' => 'circle-o', 'url' => ['/pr-purchase-request'],] : [],
+                            
                             ],
                         ] : [],
                         Yii::$app->user->can('province') ? [

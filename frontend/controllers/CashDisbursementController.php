@@ -12,6 +12,7 @@ use app\models\DvAucs;
 use app\models\DvAucsEntries;
 use DateTime;
 use ErrorException;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -88,7 +89,7 @@ class CashDisbursementController extends Controller
     {
         $searchModel = new CashDisbursementSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
+        $dataProvider->sort = ['defaultOrder' => ['id' => SORT_DESC]];
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -471,35 +472,47 @@ class CashDisbursementController extends Controller
             $model = DvAucs::findOne($query['dv_aucs_id']);
 
             $dv_accounting_entries = [];
-            if (!empty($model->dvAccountingEntries)) {
+            $dv_accounting_entries = Yii::$app->db->createCommand("SELECT 
+            dv_accounting_entries.dv_aucs_id,
+                                   dv_accounting_entries.debit,
+                                  dv_accounting_entries.credit,
+                                   dv_accounting_entries.net_asset_equity_id,
+                                   dv_accounting_entries.object_code,
+                                  dv_accounting_entries.cashflow_id,
+           accounting_codes.account_title
+           FROM dv_accounting_entries 
+           LEFT JOIN accounting_codes ON dv_accounting_entries.object_code = accounting_codes.object_code
+           WHERE dv_accounting_entries.dv_aucs_id = :dv_id")->bindValue(':dv_id', $model->id)
+                ->queryAll();
+            // if (!empty($model->dvAccountingEntries)) {
 
-                foreach ($model->dvAccountingEntries as $val) {
+            //     foreach ($model->dvAccountingEntries as $val) {
 
-                    if ($val->lvl === 2) {
-                        $chart_id = (new \yii\db\Query())->select(['sub_accounts1.id'])->from('sub_accounts1')
-                            ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
-                            ->where('sub_accounts1.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
-                    } else if ($val->lvl === 3) {
-                        $chart_id = (new \yii\db\Query())->select(['sub_accounts2.id'])->from('sub_accounts2')
-                            // ->join("LEFT JOIN", 'sub_accounst1', 'sub_accounts2.sub_accounts1_id = sub_accounts1.id')
-                            // ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
-                            ->where('sub_accounts2.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
-                    } else {
-                        $chart_id =  $val->chart_of_account_id;
-                    }
-                    $dv_accounting_entries[] = [
-                        'dv_aucs_id' => $val->dv_aucs_id,
-                        'chart_of_account_id' => $val->chart_of_account_id,
-                        'id' => $chart_id,
-                        'debit' => $val->debit,
-                        'credit' => $val->credit,
-                        'net_asset_equity_id' => $val->net_asset_equity_id,
-                        'object_code' => $val->object_code,
-                        'lvl' => $val->lvl,
-                        'cashflow_id' => $val->cashflow_id,
-                    ];
-                }
-            }
+            //         if ($val->lvl === 2) {
+            //             $chart_id = (new \yii\db\Query())->select(['sub_accounts1.id'])->from('sub_accounts1')
+            //                 ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+            //                 ->where('sub_accounts1.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
+            //         } else if ($val->lvl === 3) {
+            //             $chart_id = (new \yii\db\Query())->select(['sub_accounts2.id'])->from('sub_accounts2')
+            //                 // ->join("LEFT JOIN", 'sub_accounst1', 'sub_accounts2.sub_accounts1_id = sub_accounts1.id')
+            //                 // ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+            //                 ->where('sub_accounts2.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
+            //         } else {
+            //             $chart_id =  $val->chart_of_account_id;
+            //         }
+            //         $dv_accounting_entries[] = [
+            //             'dv_aucs_id' => $val->dv_aucs_id,
+            //             'chart_of_account_id' => $val->chart_of_account_id,
+            //             'id' => $chart_id,
+            //             'debit' => $val->debit,
+            //             'credit' => $val->credit,
+            //             'net_asset_equity_id' => $val->net_asset_equity_id,
+            //             'object_code' => $val->object_code,
+            //             'lvl' => $val->lvl,
+            //             'cashflow_id' => $val->cashflow_id,
+            //         ];
+            //     }
+            // }
 
             return json_encode(['results' => $query, 'dv_accounting_entries' => $dv_accounting_entries]);
         }
@@ -560,7 +573,7 @@ class CashDisbursementController extends Controller
         $searchModel = new CashDisbursementSearch();
         $searchModel->is_cancelled = 0;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
+        $dataProvider->sort = ['defaultOrder' => ['id' => SORT_DESC]];
 
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
@@ -611,10 +624,32 @@ class CashDisbursementController extends Controller
     {
         $searchModel = new CancelledDisbursementsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
+        $dataProvider->sort = ['defaultOrder' => ['id' => SORT_DESC]];
         return $this->render('cancel_disbursement_index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+
+    public function actionSearchDv($q = null, $id = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+            $query->select(['cash_disbursement.id as id', 'dv_aucs.dv_number as text'])
+                ->from('cash_disbursement')
+                ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id  = dv_aucs.id')
+                ->andWhere('cash_disbursement.is_cancelled = :is_cancelled', ['is_cancelled' => false])
+                ->andWhere(['like', 'dv_aucs.dv_number', $q]);
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+
+        return $out;
     }
 }

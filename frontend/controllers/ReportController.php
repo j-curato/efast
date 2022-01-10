@@ -147,6 +147,14 @@ class ReportController extends \yii\web\Controller
             ],
         ];
     }
+    public function beforeAction($action)
+    {
+        if ($action->id == 'get-cdr') {
+            $this->enableCsrfValidation = false;
+        }
+
+        return parent::beforeAction($action);
+    }
     public function actionIndex()
     {
         return $this->render('index');
@@ -506,7 +514,8 @@ class ReportController extends \yii\web\Controller
             $cdr  = Cdr::findOne($id);
 
             $q = Yii::$app->db->createCommand("SELECT
-            chart_of_accounts.uacs as gl_object_code,
+            chart_of_accounts.uacs as object_code,
+            chart_of_accounts.general_ledger as account_title,
             ROUND(IFNULL(SUM(withdrawals),0),2)+
             ROUND(IFNULL(SUM(vat_nonvat),0),2)+
             ROUND(IFNULL(SUM(expanded_tax),0),2)  as debit,
@@ -559,19 +568,19 @@ class ReportController extends \yii\web\Controller
                 ->where("uacs =:uacs", ['uacs' => 2020101000])
                 ->one();
 
-            // if (empty($account)) {
+            if (empty($account)) {
 
-            //     $account = Yii::$app->memem->createSubAccount1($acc, $c_id['id']);
-            // }
+                $account = Yii::$app->memem->createSubAccount1($acc, $c_id['id']);
+            }
 
-            // if (empty($vat)) {
+            if (empty($vat)) {
 
-            //     $vat = Yii::$app->memem->createSubAccount1($v, $c_id['id']);
-            // }
-            // if (empty($expanded)) {
+                $vat = Yii::$app->memem->createSubAccount1($v, $c_id['id']);
+            }
+            if (empty($expanded)) {
 
-            //     $expanded = Yii::$app->memem->createSubAccount1($e, $c_id['id']);
-            // }
+                $expanded = Yii::$app->memem->createSubAccount1($e, $c_id['id']);
+            }
             // ob_clean();
             // echo "<pre>";
             // var_dump($account);
@@ -1260,8 +1269,7 @@ class ReportController extends \yii\web\Controller
                 ->join('LEFT JOIN', "fund_source_type", 'advances_entries.fund_source_type = fund_source_type.`name`')
                 ->where("advances_entries.reporting_period >= :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
                 ->andwhere("advances_entries.reporting_period <= :to_reporting_period", ['to_reporting_period' => $to_reporting_period])
-                ->andWhere("advances_entries.is_deleted != 1")
-                ;
+                ->andWhere("advances_entries.is_deleted != 1");
             if ($province !== 'all') {
                 $current_advances->andWhere("advances.province =:province", ['province' => $province]);
             }
@@ -1440,8 +1448,7 @@ class ReportController extends \yii\web\Controller
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id=  advances.id')
                 ->join('LEFT JOIN', 'fund_source_type', 'advances_entries.fund_source_type = fund_source_type.`name`')
                 ->where(' advances_entries.reporting_period < :from_reporting_period ', ['from_reporting_period' => $from_reporting_period])
-                ->andWhere("advances_entries.is_deleted !=1")
-                ;
+                ->andWhere("advances_entries.is_deleted !=1");
             if ($province !== 'all') {
                 $prev_advances->andWhere("advances.province =:province", ['province' => $province]);
             }
@@ -2117,17 +2124,17 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->queryAll();
-                $cancelled_checks = Yii::$app->db->createCommand("SELECT * FROM cadadr
+            $cancelled_checks = Yii::$app->db->createCommand("SELECT * FROM cadadr
                 WHERE 
                 cancelled_r_period >= :from_reporting_period
                 AND cancelled_r_period <= :to_reporting_period
                 AND book_name = :book
                 ORDER BY issuance_date
                 ")
-                    ->bindValue(':from_reporting_period', $from_reporting_period)
-                    ->bindValue(':to_reporting_period', $to_reporting_period)
-                    ->bindValue(':book', $book)
-                    ->queryAll();
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->bindValue(':to_reporting_period', $to_reporting_period)
+                ->bindValue(':book', $book)
+                ->queryAll();
             // $result2 = ArrayHelper::index($query, null, [function ($element) {
             //     return $element['division'];
             // }, 'mfo_name', 'major_name', 'sub_major_name',]);
@@ -2137,10 +2144,11 @@ class ReportController extends \yii\web\Controller
             // echo "</pre>";
             // die();
 
-            return json_encode(['results' => $query,
-             'begin_balance' => $begin_balance,
-              'adjustment' => $adjustment,
-              'cancelled_checks'=>$cancelled_checks
+            return json_encode([
+                'results' => $query,
+                'begin_balance' => $begin_balance,
+                'adjustment' => $adjustment,
+                'cancelled_checks' => $cancelled_checks
             ]);
         }
         return $this->render('cadadr');
@@ -2936,8 +2944,8 @@ class ReportController extends \yii\web\Controller
         //     $string = $num;
         // }
         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `advances_entries` WHERE id = :id)")
-        ->bindValue(':id', 4705)
-        ->queryScalar();
+            ->bindValue(':id', 4705)
+            ->queryScalar();
         // return intval($query);
         $date = date("Y");
         $responsibility_center = (new \yii\db\Query())
@@ -2964,16 +2972,15 @@ class ReportController extends \yii\web\Controller
         // for ($y = strlen($last_number); $y < 3; $y++) {
         //     $final_number .= 0;
         // }
-        if(strlen($last_number)<4){
+        if (strlen($last_number) < 4) {
 
             $final_number = substr(str_repeat(0, 3) . $last_number, -3);
-        }
-        else {
+        } else {
             $final_number = $last_number;
         }
-        
+
         // $final_number .= $last_number;
-        $tracking_number ='SDS' . '-' . trim($responsibility_center['name']) . '-' . $date . '-' . $final_number;
+        $tracking_number = 'SDS' . '-' . trim($responsibility_center['name']) . '-' . $date . '-' . $final_number;
         return  $tracking_number;
     }
 }

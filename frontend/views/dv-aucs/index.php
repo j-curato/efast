@@ -174,6 +174,13 @@ $this->params['breadcrumbs'][] = $this->title;
             }
         ],
         [
+            'label' => "Payable",
+            'value' => function ($model) {
+
+                return $model->dvAucs->is_payable === 1 ? 'Payable' : 'Not Payable';
+            }
+        ],
+        [
             'label' => "Allotment Class",
             'value' => function ($model) {
                 $x = '';
@@ -219,6 +226,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ExportMenu::FORMAT_EXCEL => false,
 
                     ]
+
                 ]),
                 'options' => [
                     'class' => 'btn-group mr-2', 'style' => 'margin-right:20px'

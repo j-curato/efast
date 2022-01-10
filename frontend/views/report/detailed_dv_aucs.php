@@ -89,6 +89,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'dataProvider' => $dataProvider,
                     'columns' => $gridColumn,
                     'filename' => 'Detailed_Dv',
+                    'batchSize' => 1,
                     'exportConfig' => [
                         ExportMenu::FORMAT_TEXT => false,
                         // ExportMenu::FORMAT_PDF => false,
@@ -96,7 +97,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ExportMenu::FORMAT_HTML => false,
                     ]
 
-                ]),
+                ]), 
                 'options' => ['class' => 'btn-group mr-2', 'style' => 'margin-right:20px']
             ],
 

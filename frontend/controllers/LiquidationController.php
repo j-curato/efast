@@ -48,7 +48,7 @@ class LiquidationController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-                            'index',
+
                             'create',
                             'update',
                             'delete',
@@ -66,10 +66,17 @@ class LiquidationController extends Controller
                         'allow' => true,
                         'roles' => ['super-user', 'create_liquidation']
                     ],
-
                     [
                         'actions' => [
                             'index',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
+
+                    [
+                        'actions' => [
+
                             'create',
                             'update',
                             'delete',
@@ -521,7 +528,9 @@ class LiquidationController extends Controller
                                 list($vat) = sscanf(implode(explode(',', $vat_nonvat[$index])), "%f");
                                 list($e) = sscanf(implode(explode(',', $expanded_tax[$index])), "%f");
                                 list($liq) = sscanf(implode(explode(',', $liq_damages[$index])), "%f");
-                                $advances_entries_balance = Yii::$app->db->createCommand("SELECT advances_entries_for_liquidation.balance FROM advances_entries_for_liquidation
+                                $advances_entries_balance = Yii::$app->db->createCommand("SELECT 
+                                advances_entries_for_liquidation.balance
+                                 FROM advances_entries_for_liquidation
                                 WHERE advances_entries_for_liquidation.id = :id")
                                     ->bindValue(':id', $val)
                                     ->queryScalar();
@@ -529,7 +538,7 @@ class LiquidationController extends Controller
 
                                 if ($res < 0) {
                                     $transaction->rollBack();
-                                    return json_encode(['isSuccess' => false, 'error' => 'Cannot Insert Advances Balance is not enough']);
+                                    return json_encode(['isSuccess' => false, 'error' => 'Cannot Insert Advances Balance is not enough in line ' . $line]);
                                 }
                                 $liq_entries = new LiquidationEntries();
                                 $liq_entries->liquidation_id = $liquidation->id;
@@ -784,7 +793,6 @@ class LiquidationController extends Controller
                     $province = $cells[0];
                     $check_date = date("Y-m-d", strtotime($cells[1]));
                     $check_number = trim($cells[2]);
-
                     $is_cancel =  $cells[3];
                     $dv_number = $cells[4];
                     $reporting_period = date("Y-m", strtotime($cells[5]));

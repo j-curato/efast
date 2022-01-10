@@ -7,7 +7,7 @@
     use aryelds\sweetalert\SweetAlertAsset;
     use kartik\date\DatePicker;
     use kartik\grid\GridView;
-    use kartik\select2\Select2;
+    use kartik\select2\Select2; 
     use kartik\time\TimePicker;
     use yii\helpers\ArrayHelper;
     use yii\helpers\Html;
@@ -193,7 +193,7 @@
                 $searchModel->is_cancelled = 0;
 
                 $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-                $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
+                $dataProvider->sort = ['defaultOrder' => ['id' => SORT_DESC]];
 
                 $qwe = DvAucs::find()->select(['id'])->all();
                 $x = [];;

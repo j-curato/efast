@@ -650,7 +650,8 @@ $csrfToken = Yii::$app->request->csrfToken;
                         results: data.results
                     };
                 }
-            }
+            },
+            placeholder: 'Search Accounting Code'
         });
         $(`#cashflow-${i}`).select2({
             data: cashflow,
@@ -927,43 +928,7 @@ $csrfToken = Yii::$app->request->csrfToken;
         //  })
         // $(this).val().replact
     }
-    $('#tracking_sheet').select2({
-        ajax: {
-            url: window.location.pathname + '?r=tracking-sheet/search-tracking-sheet',
-            dataType: 'json',
-            data: function(params) {
 
-                return {
-                    q: params.term,
-                };
-            },
-            processResults: function(data) {
-                // Transforms the top-level key of the response object from 'items' to 'results'
-                return {
-                    results: data.results
-                };
-            }
-        }
-    });
-    $('#payee').select2({
-        ajax: {
-            url: window.location.pathname + '?r=payee/search-payee',
-            dataType: 'json',
-            data: function(params) {
-
-                return {
-                    q: params.term,
-                };
-            },
-            processResults: function(data) {
-                // Transforms the top-level key of the response object from 'items' to 'results'
-                return {
-                    results: data.results
-                };
-            }
-        },
-        placeholder: 'Search for a Payee',
-    });
     $(document).on("keyup change", ".credit, .debit", function() {
         getDebitCreditTotal()
 
@@ -992,12 +957,51 @@ $csrfToken = Yii::$app->request->csrfToken;
             }
         })
     }
-    $("#tracking_sheet").change(function() {
-        // console.log(this.value)
-        onTrackingSheetChange(this.value)
-    })
+
 
     $(document).ready(() => {
+        $("#tracking_sheet").change(function() {
+            // console.log(this.value)
+            onTrackingSheetChange(this.value)
+        })
+        $('#tracking_sheet').select2({
+            ajax: {
+                url: window.location.pathname + '?r=tracking-sheet/search-tracking-sheet',
+                dataType: 'json',
+                data: function(params) {
+
+                    return {
+                        q: params.term,
+                    };
+                },
+                processResults: function(data) {
+                    // Transforms the top-level key of the response object from 'items' to 'results'
+                    return {
+                        results: data.results
+                    };
+                }
+            },
+            placeholder: 'Search Tracking Sheet'
+        });
+        $('#payee').select2({
+            ajax: {
+                url: window.location.pathname + '?r=payee/search-payee',
+                dataType: 'json',
+                data: function(params) {
+
+                    return {
+                        q: params.term,
+                    };
+                },
+                processResults: function(data) {
+                    // Transforms the top-level key of the response object from 'items' to 'results'
+                    return {
+                        results: data.results
+                    };
+                }
+            },
+            placeholder: 'Search for a Payee',
+        });
 
         $('.chart-of-accounts').select2({
             ajax: {
@@ -1015,11 +1019,11 @@ $csrfToken = Yii::$app->request->csrfToken;
                         results: data.results
                     };
                 }
-            }
+            },
+            placeholder: 'Search Accounting Code'
         });
         var update_id = $('#update_id').val()
         if (update_id > 0) {
-
             $.ajax({
                 url: window.location.pathname + "?r=dv-aucs/update-dv",
                 type: "POST",
@@ -1028,12 +1032,10 @@ $csrfToken = Yii::$app->request->csrfToken;
                     _csrf: "<?php echo $csrfToken ?>"
                 },
                 success: function(data) {
-
                     var res = JSON.parse(data)
                     console.log(res.result)
                     var transaction_type = res.result[0]['transaction_type']
                     var type = '';
-
                     if (!transaction_type) {
                         if (res.result.length > 1) {
                             type = 'Multiple'

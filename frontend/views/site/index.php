@@ -1,12 +1,15 @@
 <?php
 
+
 /* @var $this yii\web\View */
 
 use aryelds\sweetalert\SweetAlertAsset;
 use yii\filters\Cors;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 
 $this->title = 'Dashboard';
+// echo Url::base(); 
 ?>
 <div class="site-index">
     <?php
@@ -541,7 +544,8 @@ SweetAlertAsset::register($this);
 $csrfToken = Yii::$app->request->csrfToken;
 $csrfName = Yii::$app->request->csrfParam;
 ?>
-
+<script src='<?php echo yii::$app->request->baseUrl ?>/js/fullcalendar/main.min.js'></script>
+<link href='<?php echo yii::$app->request->baseUrl ?>/js/fullcalendar/main.min.css' rel='stylesheet' />
 <script>
     let x = undefined;
     $('#update_lan').click((e) => {

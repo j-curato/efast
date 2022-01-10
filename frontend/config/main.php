@@ -15,7 +15,7 @@ return [
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
     // 'defaultRoute' => 'site/login',
-    
+
 
     'components' => [
         'request' => [
@@ -24,20 +24,32 @@ return [
             //     'httpOnly' => true,
             //     'path' => 'site/login',
             // ],
-            'parsers'=>[
-                'application/json'=>JsonParser::class
+            'parsers' => [
+                'application/json' => JsonParser::class
             ]
         ],
+        // 'user' => [
+        //     'identityClass' => 'common\models\User',
+        //     'enableAutoLogin' => false,
+        //     'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
+        // ],
+        // 'session' => [
+        //     // this is the name of the session cookie used for login on the frontend
+        //     // 'name' => 'advanced-frontend',
+        //     'name' => 'PHPFRONTSESSID',
+        //     'savePath' => sys_get_temp_dir(),
+        // ],
         'user' => [
             'identityClass' => 'common\models\User',
-            'enableAutoLogin' => false,
-            'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
+            'enableAutoLogin' => true,
+            'identityCookie' => [
+                'name' => '_frontendUser', // unique for frontend
+                'path' => '/frontend/web'  // correct path for the frontend app.
+            ]
         ],
         'session' => [
-            // this is the name of the session cookie used for login on the frontend
-            // 'name' => 'advanced-frontend',
-            'name' => 'PHPFRONTSESSID',
-            'savePath' => sys_get_temp_dir(),
+            'name' => '_frontendSessionId', // unique for frontend
+            'savePath' => __DIR__ . '/../runtime', // a temporary folder on frontend
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

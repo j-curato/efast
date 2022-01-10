@@ -132,7 +132,12 @@ class JevPreparationController extends Controller
     {
         if ($action->id == 'ledger') {
             $this->enableCsrfValidation = false;
+        } else if ($action->id == 'update-jev') {
+            $this->enableCsrfValidation = false;
+        } else if ($action->id == 'is-current') {
+            $this->enableCsrfValidation = false;
         }
+
 
         return parent::beforeAction($action);
     }
@@ -2158,68 +2163,83 @@ class JevPreparationController extends Controller
     public function actionUpdateJev()
     {
 
-        $model = JevPreparation::findOne($_POST['update_id']);
+        if ($_POST) {
 
-        $res = [];
+            $model = JevPreparation::findOne($_POST['update_id']);
 
-        // foreach ($model as $val) {
+            $res = [];
 
-        // }
+            // foreach ($model as $val) {
 
-        $jev = [
-            'reporting_period' => $model->reporting_period,
-            'responsibility_center_id' => $model->responsibility_center_id,
-            'fund_cluster_code_id' => $model->fund_cluster_code_id,
-            'date' => $model->date,
-            'ref_number' => $model->ref_number,
-            'dv_number' => $model->dv_number,
-            'lddap_number' => $model->lddap_number,
-            // 'entity_name' => $model->entity_name,
-            'explaination' => $model->explaination,
-            'payee_id' => $model->payee_id,
-            'cash_flow_id' => $model->cash_flow_id,
-            'mrd_classification_id' => $model->mrd_classification_id,
-            'cadadr_serial_number' => $model->cadadr_serial_number,
-            'check_ada' => $model->check_ada,
-            'check_ada_number' => $model->check_ada_number,
-            'check_ada_date' => $model->check_ada_date,
-            'book_id' => $model->book_id,
-            'cash_disbursement_id' => $model->cash_disbursement_id,
-        ];
-        $jev_ae = [];
-        foreach ($model->jevAccountingEntries as $val) {
+            // }
 
-            if ($val->lvl === 2) {
-                $chart_id = (new \yii\db\Query())->select(['sub_accounts1.id'])->from('sub_accounts1')
-                    ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
-                    ->where('sub_accounts1.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
-            } else if ($val->lvl === 3) {
-                $chart_id = (new \yii\db\Query())->select(['sub_accounts2.id'])->from('sub_accounts2')
-                    // ->join("LEFT JOIN", 'sub_accounst1', 'sub_accounts2.sub_accounts1_id = sub_accounts1.id')
-                    // ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
-                    ->where('sub_accounts2.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
-            } else {
-                $chart_id =  $val->chart_of_account_id;
-            }
-            $jev_ae[] = [
-                'jev_preparation_id' => $val->jev_preparation_id,
-                'chart_of_account_id' => $val->chart_of_account_id,
-                'id' => $chart_id,
-                'debit' => $val->debit,
-                'credit' => $val->credit,
-                'current_noncurrent' => $val->current_noncurrent,
-                // 'cash_flow_transaction' => intval($val->cash_flow_transaction),
-                'net_asset_equity_id' => $val->net_asset_equity_id,
-                'object_code' => $val->object_code,
-                'lvl' => $val->lvl,
-                'cashflow_id' => $val->cashflow_id,
+            $jev = [
+                'reporting_period' => $model->reporting_period,
+                'responsibility_center_id' => $model->responsibility_center_id,
+                'fund_cluster_code_id' => $model->fund_cluster_code_id,
+                'date' => $model->date,
+                'ref_number' => $model->ref_number,
+                'dv_number' => $model->dv_number,
+                'lddap_number' => $model->lddap_number,
+                // 'entity_name' => $model->entity_name,
+                'explaination' => $model->explaination,
+                'payee_id' => $model->payee_id,
+                'payee_name' => $model->payee->account_name,
+                'cash_flow_id' => $model->cash_flow_id,
+                'mrd_classification_id' => $model->mrd_classification_id,
+                'cadadr_serial_number' => $model->cadadr_serial_number,
+                'check_ada' => $model->check_ada,
+                'check_ada_number' => $model->check_ada_number,
+                'check_ada_date' => $model->check_ada_date,
+                'book_id' => $model->book_id,
+                'cash_disbursement_id' => $model->cash_disbursement_id,
+
             ];
-        }
+            $jev_ae =  Yii::$app->db->createCommand("SELECT 
+        jev_accounting_entries.jev_preparation_id,
+                               jev_accounting_entries.debit,
+                              jev_accounting_entries.credit,
+                               jev_accounting_entries.net_asset_equity_id,
+                               jev_accounting_entries.object_code,
+                              jev_accounting_entries.cashflow_id,
+       accounting_codes.account_title
+       FROM jev_accounting_entries 
+       LEFT JOIN accounting_codes ON jev_accounting_entries.object_code = accounting_codes.object_code
+       WHERE jev_accounting_entries.jev_preparation_id = :dv_id")->bindValue(':dv_id', $model->id)->queryAll();
+            // foreach ($model->jevAccountingEntries as $val) {
 
-        // echo "<pre>";
-        // var_dump($jev_ae);
-        // echo "</pre>";
-        return json_encode(['jev_preparation' => $jev, 'jev_accounting_entries' => $jev_ae]);
+            //     if ($val->lvl === 2) {
+            //         $chart_id = (new \yii\db\Query())->select(['sub_accounts1.id'])->from('sub_accounts1')
+            //             ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+            //             ->where('sub_accounts1.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
+            //     } else if ($val->lvl === 3) {
+            //         $chart_id = (new \yii\db\Query())->select(['sub_accounts2.id'])->from('sub_accounts2')
+            //             // ->join("LEFT JOIN", 'sub_accounst1', 'sub_accounts2.sub_accounts1_id = sub_accounts1.id')
+            //             // ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
+            //             ->where('sub_accounts2.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
+            //     } else {
+            //         $chart_id =  $val->chart_of_account_id;
+            //     }
+            //     $jev_ae[] = [
+            //         'jev_preparation_id' => $val->jev_preparation_id,
+            //         'chart_of_account_id' => $val->chart_of_account_id,
+            //         'id' => $chart_id,
+            //         'debit' => $val->debit,
+            //         'credit' => $val->credit,
+            //         'current_noncurrent' => $val->current_noncurrent,
+            //         // 'cash_flow_transaction' => intval($val->cash_flow_transaction),
+            //         'net_asset_equity_id' => $val->net_asset_equity_id,
+            //         'object_code' => $val->object_code,
+            //         'lvl' => $val->lvl,
+            //         'cashflow_id' => $val->cashflow_id,
+            //     ];
+            // }
+
+            // echo "<pre>";
+            // var_dump($jev_ae);
+            // echo "</pre>";
+            return json_encode(['jev_preparation' => $jev, 'jev_accounting_entries' => $jev_ae]);
+        }
     }
 
     public function getCashflow($reporting_period, $book_id)
@@ -2723,7 +2743,15 @@ class JevPreparationController extends Controller
     public function actionDvToJev($id)
     {
 
-        $dv_entries = Yii::$app->db->createCommand("SELECT object_code,debit,credit FROM dv_accounting_entries WHERE dv_aucs_id = :id")
+        $dv_entries = Yii::$app->db->createCommand("SELECT 
+        accounting_codes.account_title,
+        dv_accounting_entries.object_code,
+        dv_accounting_entries.debit,
+        dv_accounting_entries.credit 
+        FROM dv_accounting_entries
+        LEFT JOIN accounting_codes ON dv_accounting_entries.object_code = accounting_codes.object_code
+        
+         WHERE dv_aucs_id = :id")
             ->bindValue(':id', $id)
             ->queryAll();
         $dv = DvAucs::findOne($id);
