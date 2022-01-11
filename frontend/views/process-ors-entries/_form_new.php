@@ -130,6 +130,7 @@ use yii\widgets\Pjax;
         $dataProvider->pagination = ['pageSize' => 10];
         $col = [
             'entry_id',
+            'reporting_period',
             'serial_number',
             'mfo_code',
             'mfo_name',
@@ -176,7 +177,7 @@ use yii\widgets\Pjax;
         ];
 
         ?>
-        <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>
+        <!-- <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?> -->
 
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
@@ -195,7 +196,7 @@ use yii\widgets\Pjax;
 
             'columns' => $col
         ]); ?>
-        <?php Pjax::end() ?>
+        <!-- <?php Pjax::end() ?> -->
 
         <button type="submit" class="btn btn-primary" name="submit" id='add' style="width: 100%;"> ADD</button>
     </form>
@@ -740,18 +741,19 @@ $script = <<< JS
 
 
         $('#reporting_period').change(function(e){
-        e.preventDefault()
-        
-            $.pjax({
-                container: "#journal", 
-                url: window.location.pathname + '?r=process-ors-entries/create',
-                type:'POST',
-                data:{
-                    reporting_period:$(this).val()
+            e.preventDefault()
+            $('input[name="RecordAllotmentsViewSearch[reporting_period]"]').val($(this).val().substring(0,4)).trigger('change');
+
+        // $.pjax({
+        //     container: "#journal", 
+        //     url: window.location.pathname + '?r=process-ors-entries/create',
+        //     type:'POST',
+        //     data:{
+        //         reporting_period:$(this).val()
                 
                   
-                }
-             });
+        //         }
+        //      });
          })
       
 
