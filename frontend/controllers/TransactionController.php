@@ -8,6 +8,7 @@ use app\models\SubAccounts1;
 use Yii;
 use app\models\Transaction;
 use app\models\TransactionSearch;
+use DateTime;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -122,7 +123,7 @@ class TransactionController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
 
-            $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1);
+            $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date);
             $model->transaction_date = date('m-d-Y');
             // $model->created_at = date('2020-07-19 13:01:57');
             $date = date('Y-m-d H:i:s');
@@ -164,9 +165,19 @@ class TransactionController extends Controller
         // if (Yii::$app->user->can('update-transaction')) {
 
         $model = $this->findModel($id);
+        $old =  $this->findModel($id);
+        if ($model->load(Yii::$app->request->post())) {
+            $old_year = DateTime::createFromFormat('m-d-Y', $old->transaction_date);
+            $new_year = DateTime::createFromFormat('m-d-Y', $model->transaction_date);
+            if ($old_year->format('Y') != $new_year->format('Y')) {
+                $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date);
+            }
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+
+            if ($model->save(false)) {
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->renderAjax('update', [
@@ -343,7 +354,7 @@ class TransactionController extends Controller
                                 'payee_id' => $payee_id,
                                 'particular' => $particular,
                                 'gross_amount' => $amount,
-                                'tracking_number' => $this->getTrackingNumber($responsibility_center['id'], $qwe),
+                                'tracking_number' => $this->getTrackingNumber($responsibility_center['id'], $qwe, date('m-d-y')),
                                 // 'earmark_no' => $earmark_number,
                                 'payroll_number' => $payroll_number,
                                 // 'transaction_date' => $date
@@ -398,11 +409,14 @@ class TransactionController extends Controller
     }
 
 
-    public function getTrackingNumber($responsibility_center_id, $to_add)
+    public function getTrackingNumber($responsibility_center_id, $to_add, $d)
     {
         // $responsibility_center ='FAD';
         // $date = date('Y-m-d');
-        $date = date("Y");
+        // $q = new DATE($d);
+
+        $q  = DateTime::createFromFormat('m-d-Y', $d);
+        $date = $q->format('Y');
         $responsibility_center = (new \yii\db\Query())
             ->select("name")
             ->from('responsibility_center')

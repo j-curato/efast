@@ -70,7 +70,7 @@ class RecordAllotmentsViewSearch extends RecordAllotmentsView
      *
      * @return ActiveDataProvider
      */
-    public function search($params, $type)
+    public function search($params, $type, $year)
     {
         $query = RecordAllotmentsView::find();
 
@@ -93,6 +93,9 @@ class RecordAllotmentsViewSearch extends RecordAllotmentsView
             $query->andFilterWhere(['!=', 'book', 'Fund 07']);
         }
 
+        if (!empty($year)) {
+            $query->andFilterWhere(['LIKE', 'reporting_period', $year]);
+        }
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,

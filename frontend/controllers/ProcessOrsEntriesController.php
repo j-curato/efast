@@ -16,6 +16,7 @@ use app\models\Raouds;
 use app\models\RecordAllotmentForOrsSearch;
 use app\models\RecordAllotmentsView;
 use app\models\RecordAllotmentsViewSearch;
+use DateTime;
 use ErrorException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -137,8 +138,16 @@ class ProcessOrsEntriesController extends Controller
         // return $this->render('create', [
         //     'model' => $model,
         // ]);
+
         $searchModel = new RecordAllotmentsViewSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors', '');
+        if ($_POST) {
+            if (!empty($_POST['reporting_period'])) {
+                $d = Datetime::createFromFormat('Y-m',$_POST['reporting_period']);
+                $year = $d->format('Y');
+                $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors', $year);
+            }
+        }
 
         return $this->render('create', [
             'searchModel' => $searchModel,
@@ -160,7 +169,7 @@ class ProcessOrsEntriesController extends Controller
     {
 
         $searchModel = new RecordAllotmentsViewSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors', '');
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -172,7 +181,7 @@ class ProcessOrsEntriesController extends Controller
     public function actionAdjust($id)
     {
         $searchModel = new RecordAllotmentsViewSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors', '');
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -185,7 +194,7 @@ class ProcessOrsEntriesController extends Controller
     public function actionReAlign($id)
     {
         $searchModel = new RecordAllotmentsViewSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors', '');
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -405,22 +414,41 @@ class ProcessOrsEntriesController extends Controller
 
         // WHERE process_ors.type LIKE 'ors'
         // ORDER BY q DESC
-        $query = (new \yii\db\Query())
-            ->select("serial_number")
-            ->from('process_ors')
-            ->where("process_ors.type=:type", ['type' => 'ors'])
-            ->orderBy("id DESC")
-            ->one();
-        // $reporting_period = "2021-01";
-        $year = date('Y', strtotime($reporting_period));
-        if (empty($query['serial_number'])) {
+        $year = DateTime::createFromFormat('Y-m', $reporting_period)->format('Y');
+        // echo $year;
+        // die();
+        // $query = (new \yii\db\Query())
+        //     ->select("serial_number")
+        //     ->from('process_ors')
+        //     ->where("process_ors.type=:type", ['type' => 'ors'])
+        //     ->orderBy("id DESC")
+        //     ->one();
+        // // $reporting_period = "2021-01";
+        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(process_ors.serial_number,'-',-1) AS UNSIGNED) last_number
+        FROM process_ors
+        WHERE
+        
+        process_ors.type = 'ors'
+        AND process_ors.reporting_period LIKE :_year
+        ORDER BY last_number DESC LIMIT 1")
+            ->bindValue(':_year', $year . '%')
+            ->queryScalar();
+
+
+        if (empty($query)) {
             $x = 1;
         } else {
-            $last_number = explode('-', $query['serial_number']);
-            $x = intval($last_number[3]) + 1;
-        }
 
-        $serial_number = $book->name . '-' . $reporting_period . '-' . $x;
+            $x = intval($query) + 1;
+        }
+        $final_number = '';
+        for ($y = strlen($x); $y < 3; $y++) {
+            $final_number .= 0;
+        }
+        // echo $x;
+        // die();
+
+        $serial_number = $book->name . '-' . $reporting_period . '-' . $final_number . $x;
         // ob_start();
         // echo "<pre>";
         // var_dump( $last_number[1]);

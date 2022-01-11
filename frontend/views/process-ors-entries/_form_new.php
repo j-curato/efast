@@ -13,6 +13,8 @@ use kartik\money\MaskMoney;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use kartik\select2\Select2;
+use yii\widgets\Pjax;
+
 ?>
 <div class="test">
     <!-- <div id="container" class="container">
@@ -174,6 +176,7 @@ use kartik\select2\Select2;
         ];
 
         ?>
+        <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>
 
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
@@ -192,6 +195,8 @@ use kartik\select2\Select2;
 
             'columns' => $col
         ]); ?>
+        <?php Pjax::end() ?>
+
         <button type="submit" class="btn btn-primary" name="submit" id='add' style="width: 100%;"> ADD</button>
     </form>
 
@@ -732,6 +737,23 @@ $script = <<< JS
         //         }
         //     })
         // }
+
+
+        $('#reporting_period').change(function(e){
+        e.preventDefault()
+        
+            $.pjax({
+                container: "#journal", 
+                url: window.location.pathname + '?r=process-ors-entries/create',
+                type:'POST',
+                data:{
+                    reporting_period:$(this).val()
+                
+                  
+                }
+             });
+         })
+      
 
     })
 JS;
