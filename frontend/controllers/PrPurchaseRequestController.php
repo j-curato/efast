@@ -100,6 +100,7 @@ class PrPurchaseRequestController extends Controller
                 $pr_stocks_id = $_POST['pr_stocks_id'];
                 $specification = $_POST['specification'];
             }
+
             $transaction = Yii::$app->db->beginTransaction();
 
             try {
@@ -246,12 +247,12 @@ class PrPurchaseRequestController extends Controller
 
         $province = 'RO';
         $date = '2022-07-03';
-        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_number,'-',-1) AS UNSIGNED) as last_number FROM pr_purchase_request  ")
-            ->queryOne();
+        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_number,'-',-1) AS UNSIGNED) as last_number FROM pr_purchase_request ORDER BY last_number DESC LIMIT 1")
+            ->queryScalar();
 
         $num  = 1;
         if (!empty($query)) {
-            $num = intval($query['last_number']) + 1;
+            $num = intval($query) + 1;
         }
         $final = '';
         for ($i =  strlen($num); $i < 4; $i++) {

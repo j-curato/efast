@@ -226,4 +226,85 @@ class PrStockController extends Controller
             return json_encode($query);
         }
     }
+    public function actionImport()
+    {
+        if (!empty($_POST)) {
+            // $chart_id = $_POST['chart_id'];
+            $name = $_FILES["file"]["name"];
+            // var_dump($_FILES['file']);
+            // die();
+            $id = uniqid();
+            $file = "transaction/{$id}_{$name}";
+            if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
+            } else {
+                return "ERROR 2: MOVING FILES FAILED.";
+                die();
+            }
+            $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+            $excel = $reader->load($file);
+            $excel->setActiveSheetIndexByName('stock');
+            $worksheet = $excel->getActiveSheet();
+
+            $data = [];
+
+            foreach ($worksheet->getRowIterator(4) as $key => $row) {
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                $cells = [];
+                $y = 0;
+                foreach ($cellIterator as $x => $cell) {
+                    $q = '';
+                    if ($y === 7) {
+                        $cells[] = $cell->getFormattedValue();
+                    } else {
+                        $cells[] =   $cell->getValue();
+                    }
+                    $y++;
+                }
+                if (!empty($cells)) {
+
+
+                    // $stock = $cells[];
+                    // $bac_code = $cells[];
+                    // $unit_of_measure = $cells[];
+                    // $description = $cells[];
+                    // $amount = $cells[];
+
+
+                    // $data[] = [
+                    //     'book_id' => $book['id'],
+                    //     'dv_id' => $dv_id,
+                    //     'reporting_period' => $reporting_period,
+                    //     'issuance_date' => $issuance_date,
+                    //     'mode_of_payment' => $mode_of_payment,
+                    //     'check_ada_number' => $check_ada_number,
+                    //     'good_cancelled' => $good_cancelled,
+                    //     'ada_number' => $ada_number
+
+                    // ];
+                }
+            }
+
+            $column = [
+                'book_id',
+                'dv_aucs_id',
+                'reporting_period',
+                'issuance_date',
+                'mode_of_payment',
+                'check_or_ada_no',
+                'is_cancelled',
+                'ada_number',
+            ];
+            $ja = Yii::$app->db->createCommand()->batchInsert('cash_disbursement', $column, $data)->execute();
+
+            // return $this->redirect(['index']);
+            // return json_encode(['isSuccess' => true]);
+            ob_clean();
+            echo "<pre>";
+            var_dump($data);
+            echo "</pre>";
+            return ob_get_clean();
+        }
+    }
 }

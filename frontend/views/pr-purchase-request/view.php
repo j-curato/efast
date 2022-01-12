@@ -101,6 +101,24 @@ $this->params['breadcrumbs'][] = $this->title;
                     </tr>";
                 }
                 ?>
+                <tr>
+                    <td style="height: 3rem;"></td>
+                    <td></td>
+                    <td>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td class='amount'></td>
+                </tr>
+                <tr>
+                    <td style="height: 3rem;"></td>
+                    <td></td>
+                    <td>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td class='amount'></td>
+                </tr>
 
 
                 <tr>
@@ -115,6 +133,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                 </tr>
 
+
                 <tr>
                     <td colspan="6">
                         <table id="footer_table">
@@ -128,10 +147,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
                                     <td>Signature:</td>
                                     <td class="center">
-                                        <span class="center">__________________________________________</span>
+                                        <span class="center">__________________________________</span>
                                     </td>
                                     <td class="center">
-                                        <span class="center">__________________________________________</span>
+                                        <span class="center">__________________________________</span>
 
                                     </td>
                                 </tr>
@@ -162,10 +181,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <tr>
                                     <td>Designation:</td>
                                     <td class="center">
-                                        <span>__________________________________________</span>
+                                        <span>__________________________________</span>
                                     </td>
                                     <td class="center">
-                                        <span>__________________________________________</span>
+                                        <span>__________________________________</span>
 
                                     </td>
                                 </tr>

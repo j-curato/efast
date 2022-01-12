@@ -34,141 +34,154 @@ if (!empty($model->id)) {
 ?>
 
 <div class="pr-purchase-request-form" style="background-color: #e6f3ff;padding:3rem">
-    <div class="panel panel-default">
 
-        <?php $form = ActiveForm::begin(); ?>
-        <div class="row">
+    <div class="panel-group">
 
-
-            <div class="col-sm-6">
-                <?= $form->field($model, 'pr_project_procurement_id')->widget(Select2::class, [
-                    'data' => $pr_project,
-                    'options' => ['placeholder' => 'Search for a Activity/Project ...'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=pr-project-procurement/search-project',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    ],
-
-                ]) ?>
-            </div>
-
-            <div class="col-sm-4">
-
-                <?= $form->field($model, 'date')->widget(DatePicker::class, [
-                    'name' => 'date',
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'format' => 'yyyy-mm-dd'
-                    ],
-                    'options' => [
-                        'readonly' => true,
-                        'style' => 'background-color:white'
-                    ]
-                ]) ?>
-            </div>
-            <div class="col-sm-2">
-                <?= $form->field($model, 'book_id')->widget(Select2::class, [
-                    'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
-                    'pluginOptions' => [
-                        'placeholder' => 'Select Book'
-                    ]
-                ]) ?>
-            </div>
-        </div>
+        <div class="panel panel-primary">
 
 
 
+            <div class="panel-body">
+
+                <?php $form = ActiveForm::begin(); ?>
+                <div class="row">
 
 
+                    <div class="col-sm-6">
+                        <?= $form->field($model, 'pr_project_procurement_id')->widget(Select2::class, [
+                            'data' => $pr_project,
+                            'options' => ['placeholder' => 'Search for a Activity/Project ...'],
+                            'pluginOptions' => [
+                                'allowClear' => true,
+                                'minimumInputLength' => 1,
+                                'language' => [
+                                    'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                                ],
+                                'ajax' => [
+                                    'url' => Yii::$app->request->baseUrl . '?r=pr-project-procurement/search-project',
+                                    'dataType' => 'json',
+                                    'delay' => 250,
+                                    'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                                    'cache' => true
+                                ],
+                                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                                'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                                'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                            ],
 
-        <?= $form->field($model, 'purpose')->textarea(['rows' => 4]) ?>
+                        ]) ?>
+                    </div>
 
-        <div class="row">
-            <div class="col-sm-6">
-                <?= $form->field($model, 'requested_by_id')->widget(Select2::class, [
-                    'data' => $requested_by,
-                    'options' => ['placeholder' => 'Search for a Employee ...'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    ],
+                    <div class="col-sm-4">
 
-                ]) ?>
-            </div>
-            <div class="col-sm-6">
-                <?= $form->field($model, 'approved_by_id')->widget(Select2::class, [
-                    'data' => $approved_by,
-                    'options' => ['placeholder' => 'Search for a Employee ...'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    ],
-
-                ]) ?>
-            </div>
-        </div>
+                        <?= $form->field($model, 'date')->widget(DatePicker::class, [
+                            'name' => 'date',
+                            'pluginOptions' => [
+                                'autoclose' => true,
+                                'format' => 'yyyy-mm-dd'
+                            ],
+                            'options' => [
+                                'readonly' => true,
+                                'style' => 'background-color:white'
+                            ]
+                        ]) ?>
+                    </div>
+                    <div class="col-sm-2">
+                        <?= $form->field($model, 'book_id')->widget(Select2::class, [
+                            'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
+                            'pluginOptions' => [
+                                'placeholder' => 'Select Book'
+                            ]
+                        ]) ?>
+                    </div>
+                </div>
 
 
 
 
 
-        <table class="table" id="form_fields_data">
-            <thead>
-                <tr>
-                    <th>Specification</th>
-                    <th>&nbsp;</th>
-                </tr>
-            </thead>
-            <tbody>
 
-                <?php
-                $row_num = 0;
-                if (!empty($model->prItem)) {
+                <?= $form->field($model, 'purpose')->textarea(['rows' => 4]) ?>
 
-                    foreach ($model->prItem as $i => $val) {
-                        $specification  = preg_replace('#\[n\]#', "\n", $val->specification);
-                        echo "<tr>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <?= $form->field($model, 'requested_by_id')->widget(Select2::class, [
+                            'data' => $requested_by,
+                            'options' => ['placeholder' => 'Search for a Employee ...'],
+                            'pluginOptions' => [
+                                'allowClear' => true,
+                                'minimumInputLength' => 1,
+                                'language' => [
+                                    'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                                ],
+                                'ajax' => [
+                                    'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                                    'dataType' => 'json',
+                                    'delay' => 250,
+                                    'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                                    'cache' => true
+                                ],
+                                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                                'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                                'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                            ],
+
+                        ]) ?>
+                    </div>
+                    <div class="col-sm-6">
+                        <?= $form->field($model, 'approved_by_id')->widget(Select2::class, [
+                            'data' => $approved_by,
+                            'options' => ['placeholder' => 'Search for a Employee ...'],
+                            'pluginOptions' => [
+                                'allowClear' => true,
+                                'minimumInputLength' => 1,
+                                'language' => [
+                                    'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                                ],
+                                'ajax' => [
+                                    'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                                    'dataType' => 'json',
+                                    'delay' => 250,
+                                    'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                                    'cache' => true
+                                ],
+                                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                                'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                                'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                            ],
+
+                        ]) ?>
+                    </div>
+                </div>
+
+                <hr style="  position: relative;
+        top: 10px;
+        border: none;
+        height: 2px;
+        background: black;
+        margin-bottom: 20px;">
+
+
+
+                <table class="table" id="form_fields_data">
+                    <thead>
+                        <tr>
+                            <th colspan="2" style="text-align: center;">
+                                <h3>Specification</h3>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <?php
+                        $row_num = 1;
+                        if (!empty($model->prItem)) {
+
+                            foreach ($model->prItem as $i => $val) {
+                                $specification  = preg_replace('#\[n\]#', "\n", $val->specification);
+                                echo "<tr class='panel panel-default spacer'>
                     <td>
-                        <div class='row'>
+                        <div class='row' >
                             <div class='col-sm-6'>
                                 <label for='stocks'>Stock</label>
                                 <select required name='pr_stocks_id[$i]' class='stocks' style='width: 100%'>
@@ -205,69 +218,90 @@ if (!empty($model->id)) {
                         </div>
                     </td>
                 </tr>";
+                                echo " <tr>
+                                <td colspan='2'>
+                                <hr>
+                                </td>
+                            </tr>";
 
-                        $row_num++;
-                    }
-                } else {
-                ?>
-                    <tr>
-                        <td style="max-width:100rem;">
+                                $row_num++;
+                            }
+                        } else {
+                        ?>
+                            <tr class="panel  panel-default" style="margin-top: 2rem;margin-bottom:2rem;">
+                                <td style="max-width:100rem;">
 
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <label for="stocks">Stock</label>
-                                    <select required name="pr_stocks_id[0]" class="stocks form-control" style="width: 100%">
-                                        <option></option>
-                                    </select>
-                                </div>
-
-
-
-                                <div class="col-sm-4">
-                                    <label for="amount">Unit Cost</label>
-                                    <input type="text" class="amount form-control">
-                                    <input type="hidden" name="unit_cost[0]" class="unit_cost">
-                                </div>
-
-                                <div class="col-sm-2">
-
-                                    <label for="quantity">Quantity</label>
-                                    <input type="number" name='quantity[0]' class="form-control quantity">
-
-                                </div>
-
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <label for="specs_view">Specification</label>
-                                    <textarea rows="2" class="specs_view form-control" id="q"></textarea>
-                                    <input name="specification[0]" rows="2" class="specs" type='hidden'>
-                                </div>
-                            </div>
-
-
-                        </td>
-                        <td style='  text-align: center;'>
-                            <div class='pull-left'>
-                                <button class='add_new_row btn btn-primary btn-xs'><i class='fa fa-plus fa-fw'></i> </button>
-                                <a class='remove_this_row btn btn-danger btn-xs disabled' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
-                            </div>
-                        </td>
-                    </tr>
-                <?php } ?>
-
-            </tbody>
-        </table>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label for="stocks">Stock</label>
+                                            <select required name="pr_stocks_id[0]" class="stocks form-control" style="width: 100%">
+                                                <option></option>
+                                            </select>
+                                        </div>
 
 
 
+                                        <div class="col-sm-4">
+                                            <label for="amount">Unit Cost</label>
+                                            <input type="text" class="amount form-control">
+                                            <input type="hidden" name="unit_cost[0]" class="unit_cost">
+                                        </div>
 
-        <div class="form-group" style="text-align: center;">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:15em;font-size:15px']) ?>
+                                        <div class="col-sm-2">
+
+                                            <label for="quantity">Quantity</label>
+                                            <input type="number" name='quantity[0]' class="form-control quantity">
+
+                                        </div>
+
+                                    </div>
+                                    <div class="row" style="padding-top: 3rem;padding-bottom:3rem">
+
+                                        <div class="col-sm-12">
+                                            <label>Description:</label>
+                                            <span class="desc"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <label for="specs_view">Specification</label>
+                                            <textarea rows="2" class="specs_view form-control" id="q"></textarea>
+                                            <input name="specification[0]" rows="2" class="specs" type='hidden'>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style='  text-align: center;'>
+                                    <div class='pull-left'>
+                                        <button class='add_new_row btn btn-primary btn-xs'><i class='fa fa-plus fa-fw'></i> </button>
+                                        <a class='remove_this_row btn btn-danger btn-xs disabled' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                                    </div>
+                                </td>
+                            <tr>
+                                <td colspan="2">
+                                    <hr>
+                                </td>
+                            </tr>
+
+                            </tr>
+
+
+                        <?php } ?>
+
+                    </tbody>
+                </table>
+
+
+
+
+                <div class="form-group" style="text-align: center;">
+                    <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:15em;font-size:15px']) ?>
+                </div>
+
+                <?php ActiveForm::end(); ?>
+            </div>
         </div>
-
-        <?php ActiveForm::end(); ?>
     </div>
+
 
 </div>
 <style>
@@ -351,6 +385,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
                     console.log(data)
                     var res = JSON.parse(data)
                     source.children('td').eq(0).find('.amount').val(res.amount).trigger('change')
+                    source.children('td').eq(0).find('.desc').text(res.description)
 
 
                 }
@@ -367,9 +402,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
             event.preventDefault();
             $('.stocks').select2('destroy');
             $('.unit_cost').maskMoney('destroy');
-            var source = $(this).closest('tr');
+            var source = $(this).closest('tr');;
             var clone = source.clone(true);
-
+            clone.children('td').eq(0).find('.desc').text('')
             clone.children('td').eq(0).find('.quantity').val(0)
             clone.children('td').eq(0).find('.quantity').attr('name', 'quantity[' + x + ']')
             clone.children('td').eq(0).find('.stocks').val('')
@@ -381,13 +416,19 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
             clone.children('td').eq(0).find('.specs_view').val(null)
             clone.children('td').eq(0).find('.specs').attr('name', 'specification[' + x + ']');
 
-
             // clone.children('td').eq(0).find('.specification').val('')
             $('#form_fields_data').append(clone);
+            var spacer = `<tr>
+                        <td colspan="2">
+                            <hr>
+                        </td>
+                    </tr>`
+            $('#form_fields_data').append(spacer);
             clone.find('.remove_this_row').removeClass('disabled');
             stockSelect()
             maskAmount()
             x++
+
 
         });
         $('.specs_remove_this_row').on('click', function(event) {
