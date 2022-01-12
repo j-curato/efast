@@ -71,7 +71,7 @@ use kartik\select2\Select2;
 
     <div class="row">
         <div class="col-sm-4">
-            <?= $form->field($model, 'tracking_number')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'tracking_number')->textInput(['maxlength' => true,'readOnly'=>true]) ?>
 
         </div>
         <div class="col-sm-4">
