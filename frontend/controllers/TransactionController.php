@@ -165,11 +165,11 @@ class TransactionController extends Controller
         // if (Yii::$app->user->can('update-transaction')) {
 
         $model = $this->findModel($id);
-        $old =  $this->findModel($id);
         if ($model->load(Yii::$app->request->post())) {
-            $old_year = DateTime::createFromFormat('m-d-Y', $old->transaction_date);
-            $new_year = DateTime::createFromFormat('m-d-Y', $model->transaction_date);
-            if ($old_year->format('Y') != $new_year->format('Y')) {
+            $old =  $this->findModel($id);
+            $old_year = DateTime::createFromFormat('m-d-Y', $old->transaction_date)->format('Y');
+            $new_year = DateTime::createFromFormat('m-d-Y', $model->transaction_date)->format('Y');
+            if (intval($old_year) !== intval($new_year)) {
                 $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date);
             }
 
