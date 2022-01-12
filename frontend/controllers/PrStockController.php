@@ -87,14 +87,14 @@ class PrStockController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
 
-            $specification = $_POST['specification'];
+            // $specification = $_POST['specification'];
             $transaction = Yii::$app->db->beginTransaction();
             try {
 
                 if ($flag = true) {
 
                     if ($model->save()) {
-                        $flag = $this->insertSpecs($specification, $model->id);
+                        // $flag = $this->insertSpecs($specification, $model->id);
                     } else {
                         $flag = false;
                     }
@@ -130,7 +130,7 @@ class PrStockController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post())) {
-            $specification = !empty($_POST['specification']) ? $_POST['specification'] : [];
+            // $specification = !empty($_POST['specification']) ? $_POST['specification'] : [];
             $transaction = Yii::$app->db->beginTransaction();
 
             try {
@@ -142,7 +142,7 @@ class PrStockController extends Controller
                 if ($flag = true) {
 
                     if ($model->save()) {
-                        $flag = $this->insertSpecs($specification, $model->id);
+                        // $flag = $this->insertSpecs($specification, $model->id);
                     } else {
                         $flag = false;
                     }

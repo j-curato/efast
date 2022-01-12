@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\PrProjectProcurement;
 use app\models\PrProjectProcurementSearch;
+use yii\db\Query;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -123,5 +124,26 @@ class PrProjectProcurementController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    public function actionSearchProject($q = null, $id = null, $province = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $user_province = strtolower(Yii::$app->user->identity->province);
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+            $query->select(' id, title AS text')
+                ->from('pr_project_procurement')
+                ->where(['like', 'title', $q]);
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        // elseif ($id > 0) {
+        //     $out['results'] = ['id' => $id, 'text' => ChartOfAccounts::find($id)->uacs];
+        // }
+        return $out;
     }
 }

@@ -41,7 +41,7 @@ class PrStock extends \yii\db\ActiveRecord
                 'description',
                 'amount',
             ], 'required'],
-            [['stock'], 'string', 'max' => 255],
+            [['stock','stock_number'], 'string', 'max' => 255],
             [['description'], 'string', 'max' => 1000],
         ];
     }
@@ -54,6 +54,7 @@ class PrStock extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'stock' => 'Stock Title',
+            'stock_number' => 'Stock Number',
             'bac_code' => 'Bac Code',
             'unit_of_measure_id' => 'Unit Of Measure ',
             'amount' => 'Amount',

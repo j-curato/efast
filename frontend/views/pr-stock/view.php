@@ -46,7 +46,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </tbody>
         </table>
 
-        <table class="table table-striped">
+        <!-- <table class="table table-striped">
             <thead>
                 <th>
                     <h4>Specifications</h4>
@@ -63,7 +63,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
                 ?>
             </tbody>
-        </table>
+        </table> -->
     </div>
 
 </div>

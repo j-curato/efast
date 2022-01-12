@@ -48,4 +48,8 @@ class PrProjectProcurement extends \yii\db\ActiveRecord
             'employee_id' => 'Employee ID',
         ];
     }
+    public function getOffice()
+    {
+        return $this->hasOne(PrOffice::class, ['id' => 'pr_office_id']);
+    }
 }

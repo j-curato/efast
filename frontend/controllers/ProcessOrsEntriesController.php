@@ -140,12 +140,12 @@ class ProcessOrsEntriesController extends Controller
         // ]);
 
         $searchModel = new RecordAllotmentsViewSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors', '');
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
         if ($_POST) {
             if (!empty($_POST['reporting_period'])) {
                 $d = Datetime::createFromFormat('Y-m',$_POST['reporting_period']);
                 $year = $d->format('Y');
-                $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors', $year);
+                $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
             }
         }
 
@@ -169,7 +169,7 @@ class ProcessOrsEntriesController extends Controller
     {
 
         $searchModel = new RecordAllotmentsViewSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors', '');
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors' );
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -181,7 +181,7 @@ class ProcessOrsEntriesController extends Controller
     public function actionAdjust($id)
     {
         $searchModel = new RecordAllotmentsViewSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors', '');
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -194,7 +194,7 @@ class ProcessOrsEntriesController extends Controller
     public function actionReAlign($id)
     {
         $searchModel = new RecordAllotmentsViewSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors', '');
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,

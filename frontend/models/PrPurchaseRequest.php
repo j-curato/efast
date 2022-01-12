@@ -69,12 +69,24 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
         ];
     }
-    public function getEmployee()
+    public function getRequestedBy()
     {
-        return $this->hasOne(Employee::class, ['id' => 'requested_by']);
+        return $this->hasOne(Employee::class, ['employee_id' => 'requested_by_id']);
+    }
+    public function getApprovedBy()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'approved_by_id']);
     }
     public function getPrItem()
     {
         return $this->hasMany(PrPurchaseRequestItem::class, ['pr_purchase_request_id' => 'id']);
+    }
+    public function getProjectProcurement()
+    {
+        return $this->hasOne(PrProjectProcurement::class, ['id' => 'pr_project_procurement_id']);
+    }
+    public function getBook()
+    {
+        return $this->hasOne(Books::class, ['id' => 'book_id']);
     }
 }

@@ -127,7 +127,10 @@ use kartik\select2\Select2;
 
         <?php
         $col = [
-
+            [
+                'label'=>'Reporting Period',
+                'attribute'=>'reporting_period',
+            ],
             'serial_number',
             'mfo_code',
             'mfo_name',
@@ -254,12 +257,12 @@ use kartik\select2\Select2;
     </style>
 
 
-<?php
-$this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-$this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+    <?php
+    $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+    $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+    $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 
-?>
+    ?>
     <script>
         var update_id = null;
         var account_name = undefined;
@@ -651,7 +654,6 @@ $script = <<< JS
       
         })
         update_id = $('#update_id').val()
-        console.log(update_id)
         //   update_id.change(function(){
         //       console.log(update_id.val())
         //   })
@@ -689,6 +691,10 @@ $script = <<< JS
             })
         }
 
+        $('#reporting_period').change(function(e){
+            e.preventDefault()
+            $('input[name="RecordAllotmentsViewSearch[reporting_period]"]').val($(this).val().substring(0,4)).trigger('change');
+         })
 
     })
 JS;

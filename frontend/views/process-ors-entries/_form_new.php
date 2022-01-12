@@ -744,16 +744,6 @@ $script = <<< JS
             e.preventDefault()
             $('input[name="RecordAllotmentsViewSearch[reporting_period]"]').val($(this).val().substring(0,4)).trigger('change');
 
-        // $.pjax({
-        //     container: "#journal", 
-        //     url: window.location.pathname + '?r=process-ors-entries/create',
-        //     type:'POST',
-        //     data:{
-        //         reporting_period:$(this).val()
-                
-                  
-        //         }
-        //      });
          })
       
 

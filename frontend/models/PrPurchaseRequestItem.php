@@ -32,6 +32,7 @@ class PrPurchaseRequestItem extends \yii\db\ActiveRecord
         return [
             [['pr_purchase_request_id', 'pr_stock_id', 'quantity'], 'integer'],
             [['unit_cost'], 'number'],
+            [['specification'], 'text'],
             [['created_at'], 'safe'],
         ];
     }
@@ -48,6 +49,7 @@ class PrPurchaseRequestItem extends \yii\db\ActiveRecord
             'quantity' => 'Quantity',
             'unit_cost' => 'Unit Cost',
             'created_at' => 'Created At',
+            'specification' => 'Specification',
         ];
     }
     public function getStock()

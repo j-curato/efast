@@ -5,14 +5,13 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\PrPurchaseRequest */
 
-$this->title = 'Update Pr Purchase Request: ' . $model->id;
+$this->title = 'Update Pr Purchase Request: ' . $model->pr_number;
 $this->params['breadcrumbs'][] = ['label' => 'Pr Purchase Requests', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => $model->pr_number, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="pr-purchase-request-update">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <?= $this->render('_form', [
         'model' => $model,

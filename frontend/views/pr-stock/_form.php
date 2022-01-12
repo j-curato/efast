@@ -108,7 +108,7 @@ if (!empty($model->id)) {
 
 
 
-        <table class="table table-striped table-bordered" id="form_fields_data">
+        <!-- <table class="table table-striped table-bordered" id="form_fields_data">
             <thead>
                 <tr>
                     <th>Specification</th>
@@ -116,15 +116,7 @@ if (!empty($model->id)) {
                 </tr>
             </thead>
             <tbody>
-                <!-- <tr>
-                    <td> <input type="text" name="specification[]" class="specification form-control" placeholder="Specification"> </td>
-                    <td style="  text-align: center;">
-                        <div class="pull-left">
-                            <button class="add_new_row btn btn-success btn-xs"><i class="fa fa-plus fa-fw"></i> </button>
-                            <a class="remove_this_row btn btn-danger btn-xs disabled" title="Delete Row"><i class="fa fa-times fa-fw"></i> </a>
-                        </div>
-                    </td>
-                </tr> -->
+        
 
                 <?php
 
@@ -156,7 +148,7 @@ if (!empty($model->id)) {
 
 
             </tbody>
-        </table>
+        </table> -->
         <div class="form-group" style="text-align: center;">
             <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:50rem;']) ?>
         </div>

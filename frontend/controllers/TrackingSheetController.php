@@ -228,8 +228,15 @@ class TrackingSheetController extends Controller
     }
     public function getTrackingNumber()
     {
-        $query = Yii::$app->db->createCommand("SELECT substring_index(tracking_number,'-',-1) as q
-         FROM tracking_sheet ORDER BY q DESC limit 1")->queryScalar();
+        $year = date('Y');
+        $query = Yii::$app->db->createCommand("SELECT CAST(substring_index(tracking_number,'-',-1) as UNSIGNED) as q
+        FROM tracking_sheet
+       WHERE created_at LIKE :_year
+        ORDER BY q DESC limit 1
+       
+       ")
+       ->bindValue(':_year',$year.'%')
+            ->queryScalar();
         $num = 1;
         if (!empty($query)) {
             $num = $query + 1;
