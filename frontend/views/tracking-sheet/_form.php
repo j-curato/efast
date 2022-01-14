@@ -53,7 +53,7 @@ use yii\widgets\ActiveForm;
 
                 <label for="gross_amount_display">Gross Amount</label>
                 <input type="text" id="gross_amount_display" class="form-control">
-                <input  type="hidden" id="gross_amount" name="gross_amount" class="form-control">
+                <input type="hidden" id="gross_amount" name="gross_amount" class="form-control">
             </div>
         </div>
         <div class="row">
@@ -186,7 +186,11 @@ $script = <<<JS
                 placeholder:'Select Payee'
             })
         })
-        var transaction = ["Single", "Multiple","No Ors"]
+        var transaction = ["Single",
+         "Multiple","Accounts Payable",
+         "Replacement to Stale Checks",
+        'Replacement of Check Issued'
+        ]
             $('#transaction_type').select2({
                 data: transaction,
                 placeholder: "Select transaction",
@@ -200,12 +204,13 @@ $script = <<<JS
                 data:{id:$('#update_id').val()},
                 success:function(data){
                     var res = JSON.parse(data)
-                    console.log(res[''])
+                    console.log(res)
                     $("#transaction_type").val(res['transaction_type']).trigger('change')
                     $("#ors").val(res['process_ors_id']).trigger('change')
                     $("#payee_id").val(res['payee_id']).trigger('change')
                     $("#particular").val(res['transaction_type'])
-                    // $("#gross_amount").val(res['transaction_type'])
+                    $("#gross_amount_display").val(res['gross_amount'])
+                    $("#gross_amount").val(res['gross_amount'])
                 }
             })
         } 

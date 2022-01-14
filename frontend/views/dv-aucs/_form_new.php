@@ -949,7 +949,14 @@ $csrfToken = Yii::$app->request->csrfToken;
             },
             success: function(data) {
                 var res = JSON.parse(data)
-                $("#transaction").val(res.transaction_type).trigger('change')
+                if (res.transaction_type =='No Ors'){
+
+                    $("#transaction").val("Accounts Payable").trigger('change')
+                }
+                else{
+
+                    $("#transaction").val(res.transaction_type).trigger('change')
+                }
                 $("#particular").val(res.particular).trigger('change')
                 var payeeSelect = $('#payee');
                 var option = new Option([res.payee_name], [res.payee_id], true, true);
@@ -981,7 +988,7 @@ $csrfToken = Yii::$app->request->csrfToken;
                     };
                 }
             },
-            placeholder: 'Search Tracking Sheet'
+            // placeholder: 'Search Tracking Sheet'
         });
         $('#payee').select2({
             ajax: {
@@ -1169,12 +1176,12 @@ $script = <<< JS
         var result=[1]
         // }
         var count=$('#transaction_table tbody tr').length
-        if (transaction_type ==='No Ors' && count-1 <0){
+        if (transaction_type ==='No Ors'|| transaction_type ==='Accounts Payable' && count-1 <0){
             addDvToTable(result)
            
             // $("#bok").prop('required',true);
         }
-        if (transaction_type==='No Ors'){
+        if (transaction_type==='No Ors' || transaction_type ==='Accounts Payable' ){
             $("#bok").show();
             $("#book").prop('required',true);
         }
@@ -1193,7 +1200,11 @@ $script = <<< JS
 
 
             // TRANSACTION TYPE
-           var transaction = ["Single", "Multiple","No Ors"]
+           var transaction = ["Single", "Multiple",
+                "Accounts Payable",
+                "Replacement to Stale Checks",
+                'Replacement of Check Issued'
+        ]
             $('#transaction').select2({
                 data: transaction,
                 placeholder: "Select transaction",
