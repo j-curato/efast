@@ -113,7 +113,7 @@ class PrStockController extends Controller
             }
         }
 
-        return $this->render('create', [
+        return $this->renderAjax('create', [
             'model' => $model,
         ]);
     }
@@ -161,7 +161,7 @@ class PrStockController extends Controller
             }
         }
 
-        return $this->render('update', [
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
     }

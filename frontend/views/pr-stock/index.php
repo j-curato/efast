@@ -4,6 +4,7 @@ use kartik\file\FileInput;
 use kartik\form\ActiveForm;
 use kartik\grid\GridView;
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\PrStockSearch */
@@ -17,7 +18,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Pr Stock', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=pr-stock/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+
         <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
     </p>
     <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -75,11 +77,15 @@ $this->params['breadcrumbs'][] = $this->title;
             'heading' => 'Stocks'
         ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
             'id',
+            'stock_number',
             'stock',
             'bac_code',
-            'unit_of_measure_id',
+            [
+                'label' => 'Unit of Measure',
+                'attribute' => 'unit_of_measure_id',
+                'value' => 'unitOfMeasure.unit_of_measure'
+            ],
             'amount',
             //'chart_of_account_id',
             //'created_at',
@@ -93,3 +99,19 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
+<?php
+$script = <<<JS
+            var i=false;
+        $('#modalButtoncreate').click(function(){
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+        });
+        $('a[title=Update]').click(function(e){
+            e.preventDefault();
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
+        });
+
+             
+        
+JS;
+$this->registerJs($script);
+?>

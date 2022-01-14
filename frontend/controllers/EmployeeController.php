@@ -122,7 +122,7 @@ class EmployeeController extends Controller
             return $this->redirect(['view', 'id' => $model->employee_id]);
         } else {
 
-            return $this->render('create', [
+            return $this->renderAjax('create', [
                 'model' => $model,
             ]);
         }
@@ -143,7 +143,7 @@ class EmployeeController extends Controller
             return $this->redirect(['view', 'id' => $model->employee_id]);
         }
 
-        return $this->render('update', [
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
     }

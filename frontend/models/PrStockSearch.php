@@ -17,8 +17,8 @@ class PrStockSearch extends PrStock
     public function rules()
     {
         return [
-            [['id', 'bac_code', 'unit_of_measure_id', 'chart_of_account_id'], 'integer'],
-            [['stock', 'created_at'], 'safe'],
+            [['id', 'bac_code',  'chart_of_account_id'], 'integer'],
+            [['stock', 'created_at', 'unit_of_measure_id'], 'safe'],
             [['amount'], 'number'],
         ];
     }
@@ -56,18 +56,18 @@ class PrStockSearch extends PrStock
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->joinWith('unitOfMeasure');
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
             'bac_code' => $this->bac_code,
-            'unit_of_measure_id' => $this->unit_of_measure_id,
             'amount' => $this->amount,
             'chart_of_account_id' => $this->chart_of_account_id,
             'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['like', 'stock', $this->stock]);
+        $query->andFilterWhere(['like', 'stock', $this->stock])
+            ->andFilterWhere(['like', 'unit_of_measure.unit_of_measure', $this->unit_of_measure_id]);
 
         return $dataProvider;
     }

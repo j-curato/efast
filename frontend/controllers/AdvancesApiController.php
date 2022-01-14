@@ -44,44 +44,44 @@ class AdvancesApiController extends \yii\rest\ActiveController
                             ->queryScalar();
                         if (intval($query) === 1) {
                             $update_advances = Advances::findOne($val['id']);
-                            $update_advances->province=$val['province'];
-                            $update_advances->report_type=$val['report_type'];
-                            $update_advances->particular=$val['particular'];
-                            $update_advances->nft_number=$val['nft_number'];
-                            $update_advances->created_at=$val['created_at'];
-                            $update_advances->reporting_period=$val['reporting_period'];
-                            $update_advances->book_id=$val['book_id'];
-                            $update_advances->advances_type=$val['advances_type'];
-                            
+                            $update_advances->province = $val['province'];
+                            $update_advances->report_type = $val['report_type'];
+                            $update_advances->particular = $val['particular'];
+                            $update_advances->nft_number = $val['nft_number'];
+                            $update_advances->created_at = $val['created_at'];
+                            $update_advances->reporting_period = $val['reporting_period'];
+                            $update_advances->book_id = $val['book_id'];
+                            $update_advances->advances_type = $val['advances_type'];
+
 
                             if ($update_advances->save(false)) {
                             } else {
                                 $transaction->rollBack();
-                                $flag=false;
+                                $flag = false;
                                 return false;
                             }
                         } else {
                             $new_advances = new Advances();
-                            $new_advances->id=$val['id'];
-                            $new_advances->province=$val['province'];
-                            $new_advances->report_type=$val['report_type'];
-                            $new_advances->particular=$val['particular'];
-                            $new_advances->nft_number=$val['nft_number'];
-                            $new_advances->created_at=$val['created_at'];
-                            $new_advances->reporting_period=$val['reporting_period'];
-                            $new_advances->book_id=$val['book_id'];
-                            $new_advances->advances_type=$val['advances_type'];
+                            $new_advances->id = $val['id'];
+                            $new_advances->province = $val['province'];
+                            $new_advances->report_type = $val['report_type'];
+                            $new_advances->particular = $val['particular'];
+                            $new_advances->nft_number = $val['nft_number'];
+                            $new_advances->created_at = $val['created_at'];
+                            $new_advances->reporting_period = $val['reporting_period'];
+                            $new_advances->book_id = $val['book_id'];
+                            $new_advances->advances_type = $val['advances_type'];
                             if ($new_advances->save(false)) {
                             } else {
                                 $transaction->rollBack();
-                                $flag=false;
+                                $flag = false;
                                 return false;
                             }
                         }
                     }
                 }
 
-                if($flag){
+                if ($flag) {
 
                     $transaction->commit();
                 }

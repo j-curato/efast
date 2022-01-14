@@ -17,8 +17,8 @@ class PrPurchaseRequestSearch extends PrPurchaseRequest
     public function rules()
     {
         return [
-            [['id', 'book_id', 'pr_project_procurement_id', 'requested_by_id', 'approved_by_id'], 'integer'],
-            [['pr_number', 'date', 'purpose', 'created_at'], 'safe'],
+            [['id'], 'integer'],
+            [[ 'requested_by_id', 'approved_by_id','pr_number', 'date', 'purpose', 'created_at', 'pr_project_procurement_id', 'book_id'], 'safe'],
         ];
     }
 
@@ -55,19 +55,24 @@ class PrPurchaseRequestSearch extends PrPurchaseRequest
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->joinWith('book');
+        $query->joinWith('projectProcurement');
+        $query->joinWith('requestedBy');
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
             'date' => $this->date,
-            'book_id' => $this->book_id,
-            'pr_project_procurement_id' => $this->pr_project_procurement_id,
-            'requested_by_id' => $this->requested_by_id,
-            'approved_by_id' => $this->approved_by_id,
+          
             'created_at' => $this->created_at,
         ]);
-
+    
         $query->andFilterWhere(['like', 'pr_number', $this->pr_number])
+            ->andFilterWhere(['like', 'books.name', $this->book_id])
+            ->orFilterWhere(['like', 'employee.f_name', $this->requested_by_id])
+            ->orFilterWhere(['like', 'employee.l_name', $this->requested_by_id])
+            ->orFilterWhere(['like', 'employee.f_name', $this->approved_by_id])
+            ->orFilterWhere(['like', 'employee.l_name', $this->approved_by_id])
+            ->andFilterWhere(['like', 'pr_project_procurement.title', $this->pr_project_procurement_id])
             ->andFilterWhere(['like', 'purpose', $this->purpose]);
 
         return $dataProvider;

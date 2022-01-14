@@ -17,7 +17,7 @@ class m220112_020202_create_pr_purchase_request_item_table extends Migration
     {
         $this->createTable('{{%pr_purchase_request_item}}', [
             'id' => $this->primaryKey(),
-            'pr_purchase_request_id' => $this->integer(),
+            'pr_purchase_request_id' => $this->bigInteger(),
             'pr_stock_id' => $this->integer(),
             'quantity' => $this->integer(),
             'unit_cost' => $this->decimal(10, 2),

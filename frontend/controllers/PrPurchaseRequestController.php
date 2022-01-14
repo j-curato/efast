@@ -9,6 +9,7 @@ use app\models\PrPurchaseRequestItem;
 use app\models\PrPurchaseRequestSearch;
 use DateTime;
 use ErrorException;
+use yii\db\Query;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -87,7 +88,7 @@ class PrPurchaseRequestController extends Controller
         $model = new PrPurchaseRequest();
 
         if ($model->load(Yii::$app->request->post())) {
-
+            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             $model->pr_number = $this->getPrNumber($model->date);
 
             $pr_stocks_id = [];
@@ -262,5 +263,50 @@ class PrPurchaseRequestController extends Controller
 
 
         return $province . '-' . $date . '-' . $final . $num;
+    }
+    public function actionSearchPr($q = null, $id = null, $province = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+
+            $query->select([" id, `pr_number` as text"])
+                ->from('pr_purchase_request')
+                ->where(['like', 'pr_number', $q]);
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+
+        return $out;
+    }
+    public function actionGetItems()
+    {
+
+        if ($_POST) {
+
+            $query = Yii::$app->db->createCommand("SELECT 
+            pr_purchase_request_item.id as pr_item_id,
+            pr_stock.stock_number,
+           pr_stock.description,
+           unit_of_measure.unit_of_measure,
+           pr_purchase_request_item.specification,
+           pr_purchase_request_item.unit_cost,
+           pr_purchase_request_item.quantity,
+           pr_purchase_request_item.unit_cost * pr_purchase_request_item.quantity as total_cost
+           
+           
+           FROM pr_purchase_request_item 
+           LEFT JOIN pr_stock  ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+           LEFT JOIN unit_of_measure ON pr_stock.unit_of_measure_id = unit_of_measure.id
+           WHERE pr_purchase_request_item.pr_purchase_request_id =:id")
+                ->bindValue(':id', $_POST['id'])
+                ->queryAll();
+            return json_encode($query);
+        }
     }
 }

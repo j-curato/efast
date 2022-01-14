@@ -14,7 +14,7 @@ class m220107_050931_create_pr_purchase_request_table extends Migration
     {
         $this->createTable('{{%pr_purchase_request}}', [
             'id' => $this->primaryKey(),
-            'pr_number' => $this->string()->unique(),
+            'pr_number' => $this->string()->unique()->notNull(),
             'date' => $this->date(),
             'book_id' => $this->integer(),
             'pr_project_procurement_id' => $this->integer(),
@@ -23,6 +23,7 @@ class m220107_050931_create_pr_purchase_request_table extends Migration
             'approved_by_id' => $this->integer(),
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
+        $this->alterColumn('{{%pr_purchase_request}}', 'id', $this->bigInteger() . ' NOT NULL default(uuid_short()) ');
     }
 
     /**

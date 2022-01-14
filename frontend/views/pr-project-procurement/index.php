@@ -32,13 +32,24 @@ $this->params['breadcrumbs'][] = $this->title;
             'heading' => 'Project Procurement'
         ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'title:ntext',
-            'pr_office_id',
+            [
+                'label' => 'Office',
+                'attribute' => 'pr_office_id',
+                'value' => function ($model) {
+                    return $model->office->office . ' ' . $model->office->division . ' ' . $model->office->unit;
+                }
+            ],
             'amount',
-            'employee_id',
+            [
+                'label' => 'Employee',
+                'attribute' => 'employee_id',
+                'value' => function ($model) {
+                    $name = $model->employee->f_name . ' '. $model->employee->m_name[0].'. '.$model->employee->l_name ; 
+                    return strtoupper($name);
+                }
+            ],
 
             [
                 'class' => '\kartik\grid\ActionColumn',

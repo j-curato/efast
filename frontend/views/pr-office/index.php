@@ -85,10 +85,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'office',
             'division',
             'unit',
+            'responsibility_code',
 
             [
 

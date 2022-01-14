@@ -473,9 +473,12 @@ class TransactionController extends Controller
         if (!is_null($q)) {
             $query = new Query();
 
-            $query->select(["id", "tracking_number as text"])
+            $query->select(["id", "tracking_number as text","SUBSTRING_INDEX(`transaction`.tracking_number,'-',-2) as q"])
                 ->from('transaction')
-                ->where(['like', 'tracking_number', $q]);
+                ->where(['like', 'tracking_number', $q])
+                ->orderBy('q DESC')
+                
+                ;
 
             $command = $query->createCommand();
             $data = $command->queryAll();

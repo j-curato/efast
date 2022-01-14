@@ -17,8 +17,8 @@ class PrProjectProcurementSearch extends PrProjectProcurement
     public function rules()
     {
         return [
-            [['id', 'pr_office_id', 'employee_id'], 'integer'],
-            [['title'], 'safe'],
+            [['id'], 'integer'],
+            [['title', 'employee_id', 'pr_office_id'], 'safe'],
             [['amount'], 'number'],
         ];
     }
@@ -56,16 +56,22 @@ class PrProjectProcurementSearch extends PrProjectProcurement
             // $query->where('0=1');
             return $dataProvider;
         }
+        $query->joinWith('office');
+        $query->joinWith('employee');
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'pr_office_id' => $this->pr_office_id,
             'amount' => $this->amount,
-            'employee_id' => $this->employee_id,
         ]);
 
-        $query->andFilterWhere(['like', 'title', $this->title]);
+        $query->andFilterWhere(['like', 'title', $this->title])
+            ->andFilterWhere(['like', 'pr_office.office', $this->pr_office_id])
+            ->orFilterWhere(['like', 'pr_office.division', $this->pr_office_id])
+            ->orFilterWhere(['like', 'pr_office.unit', $this->pr_office_id])
+            ->orFilterWhere(['like', 'employee.f_name', $this->employee_id])
+            ->orFilterWhere(['like', 'employee.l_name', $this->employee_id])
+            ->orFilterWhere(['like', 'employee.l_name', $this->employee_id]);
 
         return $dataProvider;
     }

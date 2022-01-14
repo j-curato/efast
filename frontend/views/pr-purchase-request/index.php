@@ -28,17 +28,37 @@ $this->params['breadcrumbs'][] = $this->title;
             'heading' => 'Purchase Requests'
         ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'pr_number',
             'date',
+            'purpose:ntext',
             'book_id',
-            'pr_project_procurement_id',
-            //'purpose:ntext',
-            //'requested_by_id',
-            //'approved_by_id',
-            //'created_at',
+            [
+                'label' => 'Book',
+                'attribute' => 'book_id',
+                'value' => 'book.name'
+            ],
+            [
+                'label' => 'Activity/Project',
+                'attribute' => 'pr_project_procurement_id',
+                'value' => 'projectProcurement.title'
+            ],
+            [
+                'label' => 'Requested By',
+                'attribute' => 'requested_by_id',
+                'value' => function ($model) {
+                    $name = $model->requestedBy->f_name . ' ' . $model->requestedBy->m_name[0] . '. ' . $model->requestedBy->l_name;
+                    return strtoupper($name);
+                }
+            ],
+            [
+                'label' => 'Approved By',
+                'attribute' => 'approved_by_id',
+                'value' => function ($model) {
+                    $name = $model->approvedBy->f_name . ' ' . $model->approvedBy->m_name[0] . '. ' . $model->approvedBy->l_name;
+                    return strtoupper($name);
+                }
+            ],
 
             ['class' => 'kartik\grid\ActionColumn'],
         ],

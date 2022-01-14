@@ -15,7 +15,7 @@ use yii\widgets\ActiveForm;
 ?>
 
 <div class="transmittal-form">
-<form id="add_data">
+    <form id="add_data">
         <?php
         $searchModel = new ForTransmittalSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -34,7 +34,7 @@ use yii\widgets\ActiveForm;
             ],
             [
                 'label' => 'Check/ada Number',
-                'attribute'=>'check_or_ada_no'
+                'attribute' => 'check_or_ada_no'
                 // 'value' => function ($model) {
                 //     $q = $model->mode_of_payment  . '-' . $model->check_or_ada_no;
                 //     return $q;
@@ -53,7 +53,7 @@ use yii\widgets\ActiveForm;
             [
                 'label' => "Amount Disbursed",
                 'format' => ['decimal', 2],
-                'attribute'=>'total_dv'
+                'attribute' => 'total_dv'
                 // 'value' => function ($model) {
                 //     $query = (new \yii\db\Query())
                 //         ->select(["SUM(dv_aucs_entries.amount_disbursed) as total_disbursed"])
@@ -156,7 +156,7 @@ use yii\widgets\ActiveForm;
         </table>
     </form>
 
-    
+
 </div>
 <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script> -->
 <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->

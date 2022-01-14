@@ -78,8 +78,8 @@ if (!empty($model->id)) {
 
     ]) ?>
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="form-group" style="text-align: center;">
+        <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:20rem']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

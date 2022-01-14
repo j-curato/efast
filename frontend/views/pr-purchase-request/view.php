@@ -100,25 +100,19 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td class='amount'>$total_cost</td>
                     </tr>";
                 }
+                for ($i = 0; $i < 3; $i++) {
+                    echo "<tr>
+                            <td style='height: 3rem;'></td>
+                            <td></td>
+                            <td>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td class='amount'></td>
+                        </tr>";
+                }
                 ?>
-                <tr>
-                    <td style="height: 3rem;"></td>
-                    <td></td>
-                    <td>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td class='amount'></td>
-                </tr>
-                <tr>
-                    <td style="height: 3rem;"></td>
-                    <td></td>
-                    <td>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td class='amount'></td>
-                </tr>
+
 
 
                 <tr>
@@ -130,12 +124,28 @@ $this->params['breadcrumbs'][] = $this->title;
                         <span style="font-weight:bold">Purpose: </span>
 
                         <span><?= $model->purpose ?></span>
+                        <span>
+                            <hr>
+                            <hr>
+                        </span>
                     </td>
                 </tr>
 
 
                 <tr>
-                    <td colspan="6">
+                    <td colspan="6" style="border-bottom: none;font-size:10px">
+              
+                        <span>
+                            Project Title:
+                        </span>
+                        <span>
+
+                            <?php echo $model->projectProcurement->title ?>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="border-top: none;">
                         <table id="footer_table">
                             <tbody>
                                 <tr>
@@ -181,10 +191,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <tr>
                                     <td>Designation:</td>
                                     <td class="center">
-                                        <span>__________________________________</span>
+                                        <span><?php
+                                                echo $name = $model->requestedBy->position;
+                                                ?></span>
                                     </td>
                                     <td class="center">
-                                        <span>__________________________________</span>
+                                        <span><?php
+                                                echo $name = $model->approvedBy->position
+                                                ?></span>
 
                                     </td>
                                 </tr>

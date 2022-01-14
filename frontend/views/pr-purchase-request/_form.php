@@ -20,7 +20,6 @@ if (!empty($model->id)) {
     $requested_by_query   = Yii::$app->db->createCommand("SELECT employee_id,UPPER(employee_name)  as employee_name FROM employee_search_view WHERE employee_id = :id")
         ->bindValue(':id', $model->requested_by_id)
         ->queryAll();
-
     $requested_by = ArrayHelper::map($requested_by_query, 'employee_id', 'employee_name');
     $approved_by_query   = Yii::$app->db->createCommand("SELECT employee_id,UPPER(employee_name)  as employee_name FROM employee_search_view WHERE employee_id = :id")
         ->bindValue(':id', $model->approved_by_id)
@@ -155,11 +154,11 @@ if (!empty($model->id)) {
                 </div>
 
                 <hr style="  position: relative;
-        top: 10px;
-        border: none;
-        height: 2px;
-        background: black;
-        margin-bottom: 20px;">
+                            top: 10px;
+                            border: none;
+                            height: 2px;
+                            background: black;
+                            margin-bottom: 20px;">
 
 
 
@@ -276,12 +275,13 @@ if (!empty($model->id)) {
                                         <a class='remove_this_row btn btn-danger btn-xs disabled' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
                                     </div>
                                 </td>
+
+
+                            </tr>
                             <tr>
                                 <td colspan="2">
                                     <hr>
                                 </td>
-                            </tr>
-
                             </tr>
 
 
@@ -386,8 +386,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
                     var res = JSON.parse(data)
                     source.children('td').eq(0).find('.amount').val(res.amount).trigger('change')
                     source.children('td').eq(0).find('.desc').text(res.description)
-
-
                 }
             })
 
@@ -396,13 +394,14 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
         stockSelect()
         $('.remove_this_row').on('click', function(event) {
             event.preventDefault();
+            $(this).closest('tr').next().remove();
             $(this).closest('tr').remove();
         });
         $('.add_new_row').on('click', function(event) {
             event.preventDefault();
             $('.stocks').select2('destroy');
             $('.unit_cost').maskMoney('destroy');
-            var source = $(this).closest('tr');;
+            var source = $(this).closest('tr');
             var clone = source.clone(true);
             clone.children('td').eq(0).find('.desc').text('')
             clone.children('td').eq(0).find('.quantity').val(0)

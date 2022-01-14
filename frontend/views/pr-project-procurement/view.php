@@ -13,27 +13,44 @@ $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="pr-project-procurement-view">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
     <p>
-
         <?= Html::button('Update', [
             'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=pr-project-procurement/update&id=' . $model->id),
             'id' => 'modalButtoncreate', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
         ]); ?>
     </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'title:ntext',
-            'pr_office_id',
-            'amount',
-            'employee_id',
-        ],
-    ]) ?>
+    <div class="panel panel-danger">
+        <div class="panel-heading"><?= $this->title ?></div>
+        <div class="panel-body">
+            <?= DetailView::widget([
+                'model' => $model,
+                'attributes' => [
+                    'id',
+                    'title:ntext',
+                    'amount',
+                    [
+                        'label' => 'Office',
+                        'attribute' => 'pr_office_id',
+                        'value' => function ($model) {
+                            return $model->office->office . ' ' . $model->office->division . ' ' . $model->office->unit;
+                        }
+                    ],
+                    [
+                        'label' => 'Employee',
+                        'attribute' => 'employee_id',
+                        'value' => function ($model) {
+                            $name = $model->employee->f_name . ' ' . $model->employee->m_name[0] . '. ' . $model->employee->l_name;
+                            return strtoupper($name);
+                        }
+                    ],
+                    'amount',
+
+                ],
+            ]) ?>
+        </div>
+    </div>
+
 
 </div>
 
