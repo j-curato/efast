@@ -432,9 +432,9 @@ class RecordAllotmentsController extends Controller
                 // Uacs
                 $uacs = $cells[15];
                 //Allotment Class	
-                $allotment_class = $cells[15];
+                $allotment_class = $cells[17];
                 //Amount 
-                $amount = $cells[16];
+                $amount = $cells[18];
 
 
                 // if (
