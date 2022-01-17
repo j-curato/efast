@@ -435,6 +435,7 @@ class RecordAllotmentsController extends Controller
                 $allotment_class = $cells[17];
                 //Amount 
                 $amount = $cells[18];
+                $book_name = $cells[19];
 
 
                 // if (
@@ -555,7 +556,7 @@ class RecordAllotmentsController extends Controller
                 $books = (new \yii\db\Query())
                     ->select(['id', 'name'])
                     ->from('books')
-                    ->where("books.name LIKE :book", ['book' => "%$fund_cluster_code_name"])
+                    ->where("books.name  = :book_name", ['book_name' => $book_name])
                     ->one();
                 // $exist = array_search($group_number, array_column($number_container, 'no'));
                 $fund_classification = '';
@@ -588,7 +589,7 @@ class RecordAllotmentsController extends Controller
                 $recordAllotment->authorization_code_id = $authorization_code['id'];
                 $recordAllotment->fund_category_and_classification_code_id = $fund_classification_code['id'];
                 $recordAllotment->fund_source_id = $fund_source['id'];
-                $recordAllotment->funding_code = $funding_code;
+                // $recordAllotment->funding_code = $funding_code;
                 $recordAllotment->responsibility_center_id = $responsibility_center['id'];
                 $recordAllotment->date_issued = $date_issued;
                 $recordAllotment->valid_until = $valid_until;
