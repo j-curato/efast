@@ -2097,6 +2097,7 @@ class ReportController extends \yii\web\Controller
                    FROM cadadr_balances
                    WHERE 
                    cadadr_balances.reporting_period < :from_reporting_period 
+                  AND  cadadr_balances.reporting_period >= '2021-01' 
                    AND cadadr_balances.book_name = :book
                    ")
                     ->bindValue(':from_reporting_period', $from_reporting_period)
@@ -2108,6 +2109,7 @@ class ReportController extends \yii\web\Controller
                     LEFT JOIN books ON cash_adjustment.book_id = books.id
                     WHERE 
                     cash_adjustment.reporting_period < :from_reporting_period 
+                    AND  cash_adjustment.reporting_period >= '2021-01' 
                     AND books.name = :book")
                     ->bindValue(':from_reporting_period', $from_reporting_period)
                     ->bindValue(':book', $book)
