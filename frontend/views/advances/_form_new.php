@@ -130,7 +130,7 @@ use yii\helpers\ArrayHelper;
         $searchModel = new AdvancesCashDisbursementSearch();
 
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->sort = ['defaultOrder' => ['id' => 'DESC']];
+        $dataProvider->sort = ['defaultOrder' => ['id' => SORT_DESC]];
         $dataProvider->pagination = ['pageSize' => 10];
 
 

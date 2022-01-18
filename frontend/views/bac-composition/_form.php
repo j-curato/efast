@@ -13,55 +13,70 @@ $x = 1;
 
 <div class="bac-composition-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <div class="container panel panel-primary">
 
-    <?= $form->field($model, 'effectivity_date')->widget(
-        DatePicker::class,
-        [
-            'pluginOptions' => [
-                'format' => 'yyyy-mm-dd',
-                'autoclose' => true
+        <?php $form = ActiveForm::begin(); ?>
 
-            ],
-            'options' => [
-                'readonly' => true,
-                'style' => 'background-color:white'
-            ]
-        ]
-    ) ?>
+        <div class="row">
 
-    <?= $form->field($model, 'expiration_date')->widget(
-        DatePicker::class,
-        [
-            'pluginOptions' => [
-                'format' => 'yyyy-mm-dd',
-                'autoclose' => true
+            <div class="col-sm-3">
+                <?= $form->field($model, 'effectivity_date')->widget(
+                    DatePicker::class,
+                    [
+                        'pluginOptions' => [
+                            'format' => 'yyyy-mm-dd',
+                            'autoclose' => true
 
-            ],
-            'options' => [
-                'readonly' => true,
-                'style' => 'background-color:white'
-            ]
-        ]
-    ) ?>
+                        ],
+                        'options' => [
+                            'readonly' => true,
+                            'style' => 'background-color:white'
+                        ]
+                    ]
+                ) ?>
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'expiration_date')->widget(
+                    DatePicker::class,
+                    [
+                        'pluginOptions' => [
+                            'format' => 'yyyy-mm-dd',
+                            'autoclose' => true
 
-    <?= $form->field($model, 'rso_number')->textInput(['maxlength' => true]) ?>
+                        ],
+                        'options' => [
+                            'readonly' => true,
+                            'style' => 'background-color:white'
+                        ]
+                    ]
+                ) ?>
+            </div>
+            <div class="col-sm-3">
 
-    <table class="table" id="form_fields_data">
-        <thead>
-            <tr>
-                <th colspan="2" style="text-align: center;">
-                    <h3>Specification</h3>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
+            </div>
+        </div>
 
-            if (!empty($model->bacCompositionMembers)) {
-                foreach ($model->bacCompositionMembers as $i => $val) {
 
-                    echo "<tr class='panel  panel-default' style='margin-top: 2rem;margin-bottom:2rem;'>
+
+
+
+        <?= $form->field($model, 'rso_number')->textInput(['maxlength' => true]) ?>
+
+        <table class="table" id="form_fields_data">
+            <thead>
+                <tr>
+                    <th colspan="2" style="text-align: center;">
+                        <h3>Members</h3>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+
+                if (!empty($model->bacCompositionMembers)) {
+                    foreach ($model->bacCompositionMembers as $i => $val) {
+
+                        echo "<tr class='panel  panel-default' style='margin-top: 2rem;margin-bottom:2rem;'>
                     <td style='max-width:100rem;'>
     
                         <div class='row'>
@@ -93,52 +108,58 @@ $x = 1;
                         <hr>
                     </td>
                 </tr>";
-                }
-            } else {
-            ?>
-                <tr class="panel  panel-default" style="margin-top: 2rem;margin-bottom:2rem;">
-                    <td style="max-width:100rem;">
+                    }
+                } else {
+                ?>
+                    <tr class="panel  panel-default" style="margin-top: 2rem;margin-bottom:2rem;">
+                        <td style="max-width:100rem;">
 
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <label for="employee">Employee</label>
-                                <select required name="employee_id[0]" class="employee form-control" style="width: 100%">
-                                    <option></option>
-                                </select>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label for="employee">Employee</label>
+                                    <select required name="employee_id[0]" class="employee form-control" style="width: 100%">
+                                        <option></option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="employee">Position</label>
+                                    <select required name="position[0]" class="position form-control" style="width: 100%">
+                                        <option></option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="col-sm-6">
-                                <label for="employee">Position</label>
-                                <select required name="position[0]" class="position form-control" style="width: 100%">
-                                    <option></option>
-                                </select>
+                        </td>
+                        <td style='  text-align: center;'>
+                            <div class='pull-left'>
+                                <button class='add_new_row btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </button>
+                                <a class='remove_this_row btn btn-danger btn-xs disabled' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
                             </div>
-                        </div>
-                    </td>
-                    <td style='  text-align: center;'>
-                        <div class='pull-left'>
-                            <button class='add_new_row btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </button>
-                            <a class='remove_this_row btn btn-danger btn-xs disabled' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <hr>
-                    </td>
-                </tr>
-            <?php } ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <hr>
+                        </td>
+                    </tr>
+                <?php } ?>
 
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <div class="form-group">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        </div>
+
+        <?php ActiveForm::end(); ?>
     </div>
 
-    <?php ActiveForm::end(); ?>
-
 </div>
+<style>
+    .container {
+        padding: 3rem;
+    }
+</style>
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);

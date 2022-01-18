@@ -31,10 +31,15 @@ class PrRfq extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'rfq_number'], 'required'],
+            [[
+                'id', 'rfq_number', 'pr_purchase_request_id',
+                'employee_id',
+                '_date',
+                'deadline',
+            ], 'required'],
             [['id', 'pr_purchase_request_id', 'rbac_composition_id'], 'integer'],
-            [['_date', 'created_at','deadline'], 'safe'],
-            [['rfq_number', 'employee_id'], 'string', 'max' => 255],
+            [['_date', 'created_at', 'deadline'], 'safe'],
+            [['rfq_number', 'employee_id', 'province'], 'string', 'max' => 255],
             [['rfq_number'], 'unique'],
             [['id'], 'unique'],
         ];
@@ -48,16 +53,21 @@ class PrRfq extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'rfq_number' => 'Rfq Number',
-            'pr_purchase_request_id' => 'Pr Purchase Request ID',
+            'pr_purchase_request_id' => 'Pr Purchase Request ',
             '_date' => 'Date',
-            'rbac_composition_id' => 'Rbac Composition ID',
-            'employee_id' => 'Employee ID',
+            'rbac_composition_id' => 'Rbac Composition ',
+            'employee_id' => 'Employee ',
             'created_at' => 'Created At',
-            'deadline'=>'Deadline'
+            'deadline' => 'Deadline',
+            'province' => 'Province',
         ];
     }
     public function getRfqItems()
     {
-        return $this->hasMany(PrRfqItem::class,['pr_rfq_id'=>'id']);
+        return $this->hasMany(PrRfqItem::class, ['pr_rfq_id' => 'id']);
+    }
+    public function getPurchaseRequest()
+    {
+        return $this->hasOne(PrPurchaseRequest::class, ['id' => 'pr_purchase_request_id']);
     }
 }

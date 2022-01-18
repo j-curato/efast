@@ -6,10 +6,14 @@ use Yii;
 use app\models\PrRfq;
 use app\models\PrRfqItem;
 use app\models\PrRfqSearch;
+
+use DateTime;
 use ErrorException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+
+
 
 /**
  * PrRfqController implements the CRUD actions for PrRfq model.
@@ -19,6 +23,7 @@ class PrRfqController extends Controller
     /**
      * {@inheritdoc}
      */
+
     public function behaviors()
     {
         return [
@@ -79,18 +84,67 @@ class PrRfqController extends Controller
         }
         return true;
     }
+
     public function actionCreate()
     {
+
+
         $model = new PrRfq();
 
         if ($model->load(Yii::$app->request->post())) {
-            $transaction = Yii::$app->db->beginTransaction();
-            $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-
             $pr_purchase_request_item_id = [];
+            $province  = 'RO';
             if (!empty($_POST['pr_purchase_request_item_id'])) {
                 $pr_purchase_request_item_id = $_POST['pr_purchase_request_item_id'];
             }
+            $pr_items = [];
+            $transaction = Yii::$app->db->beginTransaction();
+            $pr_date  = Yii::$app->db->createCommand("SELECT `date`  FROM pr_purchase_request  WHERE id = :id")
+                ->bindValue(':id', $model->pr_purchase_request_id)
+                ->queryOne();
+            foreach ($pr_purchase_request_item_id as $val) {
+                $pr_items[] = ['id' => $val];
+            }
+            if (strtotime($model->_date) < strtotime($pr_date['date'])) {
+
+                return $this->render('create', [
+                    'model' => $model,
+                    'error' => 'RFQ Deadline Should not be less than PR Date',
+                    'pr_items' => $pr_items
+
+                ]);
+            } else   if (strtotime($model->deadline) < strtotime($pr_date['date'])) {
+
+                return $this->render('create', [
+                    'model' => $model,
+                    'error' => 'RFQ Date Should not be less than PR Date',
+                    'pr_items' => $pr_items
+
+                ]);
+            }
+
+
+            $rbac_id = Yii::$app->db->createCommand("SELECT id FROM 
+            bac_composition
+            WHERE
+            :_date  >= bac_composition.effectivity_date 
+            AND 
+            :_date<= bac_composition.expiration_date ")
+                ->bindValue(':_date', $model->_date)
+                ->queryOne();
+            if (empty($rbac_id)) {
+                return $this->render('create', [
+                    'model' => $model,
+                    'error' => 'No RBAC Composition For Selected Date',
+                    'pr_items' => $pr_items
+
+                ]);
+            }
+            $model->rbac_composition_id = $rbac_id['id'];
+
+            $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+            $model->province = $province;
+            $model->rfq_number = $this->getRfqNumber($model->_date);
 
             try {
                 if ($flag = $model->save(false)) {
@@ -132,16 +186,56 @@ class PrRfqController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $transaction = Yii::$app->db->beginTransaction();
-            $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
 
             $pr_purchase_request_item_id = [];
             if (!empty($_POST['pr_purchase_request_item_id'])) {
                 $pr_purchase_request_item_id = $_POST['pr_purchase_request_item_id'];
             }
+
+            $pr_date  = Yii::$app->db->createCommand("SELECT `date`  FROM pr_purchase_request  WHERE id = :id")
+                ->bindValue(':id', $model->pr_purchase_request_id)
+                ->queryOne();
+            foreach ($pr_purchase_request_item_id as $val) {
+                $pr_items[] = ['id' => $val];
+            }
+            if (strtotime($model->_date) < strtotime($pr_date['date'])) {
+
+                return $this->render('update', [
+                    'model' => $model,
+                    'error' => 'RFQ Deadline Should not be less than PR Date',
+
+                ]);
+            } else   if (strtotime($model->deadline) < strtotime($pr_date['date'])) {
+
+                return $this->render('update', [
+                    'model' => $model,
+                    'error' => 'RFQ Date Should not be less than PR Date',
+
+                ]);
+            }
+
+
+            $rbac_id = Yii::$app->db->createCommand("SELECT id FROM 
+            bac_composition
+            WHERE
+            :_date  >= bac_composition.effectivity_date 
+            AND 
+            :_date<= bac_composition.expiration_date ")
+                ->bindValue(':_date', $model->_date)
+                ->queryOne();
+            if (empty($rbac_id)) {
+                return $this->render('update', [
+                    'model' => $model,
+                    'error' => 'No RBAC Composition For Selected Date',
+                ]);
+            }
+
+
+
             Yii::$app->db->createCommand("DELETE 
              FROM pr_rfq_item WHERE pr_rfq_id = :id")
-            ->bindValue(':id',$model->id)
-            ->query();
+                ->bindValue(':id', $model->id)
+                ->query();
 
             try {
                 if ($flag = $model->save(false)) {
@@ -197,5 +291,22 @@ class PrRfqController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    public function getRfqNumber($date)
+    {
+        // RO-2022-01-29-001 
+        // $date = '2022-01-05';
+        $province = 'ADN';
+        $d  = DateTime::createFromFormat('Y-m-d', $date);
+        $num  = 1;
+        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_rfq.rfq_number,'-',-1) AS UNSIGNED)  as last_num FROM pr_rfq")->queryScalar();
+        if (!empty($query)) {
+            $num = intval($query) + 1;
+        }
+        $zero = '';
+        for ($i = strlen($num); $i < 4; $i++) {
+            $zero .= 0;
+        }
+        return $province . '-' . $date . '-' . $zero . $num;
     }
 }

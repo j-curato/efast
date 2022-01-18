@@ -67,10 +67,17 @@ class PrPurchaseRequestController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function insertPrItems($model_id, $pr_stocks_id, $unit_cost, $quantity, $specification)
+    public function insertPrItems($model_id, $pr_stocks_id, $unit_cost, $quantity, $specification, $pr_item_id)
     {
+
         foreach ($pr_stocks_id as $i => $val) {
-            $item = new PrPurchaseRequestItem();
+
+            if (empty($pr_item_id[$i])) {
+
+                $item = new PrPurchaseRequestItem();
+            } else {
+                $item =  PrPurchaseRequestItem::findOne($pr_item_id[$i]);
+            }
             $item->pr_purchase_request_id = $model_id;
             $item->pr_stock_id = $val;
             $item->quantity = $quantity[$i];
@@ -93,6 +100,8 @@ class PrPurchaseRequestController extends Controller
 
             $pr_stocks_id = [];
             $specification = [];
+            $pr_item_id = [];
+
             $unit_cost = $_POST['unit_cost'];
             $quantity = $_POST['quantity'];
             if (empty($_POST['pr_stocks_id'])) {
@@ -113,7 +122,8 @@ class PrPurchaseRequestController extends Controller
                             $pr_stocks_id,
                             $unit_cost,
                             $quantity,
-                            $specification
+                            $specification,
+                            $pr_item_id
                         );
                     }
                 }
@@ -147,16 +157,20 @@ class PrPurchaseRequestController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $old = $this->findModel($id);
+
             $old_date =  $old->date;
             $new_date = $model->date;
 
 
             $pr_stocks_id = [];
             $specification = [];
-            $unit_cost = $_POST['unit_cost'];
-            $quantity = $_POST['quantity'];
+            $pr_item_id = [];
+
             if (empty($_POST['pr_stocks_id'])) {
-                return json_encode(['error' => true, 'message' => 'Please Insert Items']);
+                return $this->render('update', [
+                    'model' => $model,
+                    'error' => 'Please Insert Items'
+                ]);
             } else {
                 $pr_stocks_id = $_POST['pr_stocks_id'];
                 $specification = $_POST['specification'];
@@ -168,17 +182,65 @@ class PrPurchaseRequestController extends Controller
 
                 $model->pr_number  = $province . '-' . $model->date . '-' . $number;
             }
+            if (!empty($_POST['pr_item_id'])) {
+                $pr_item_id = $_POST['pr_item_id'];
+            }
+            $unit_cost = $_POST['unit_cost'];
+            $quantity = $_POST['quantity'];
+            // return json_encode(
+
+            //     [
+            //         $pr_stocks_id,
+            //         $pr_item_id
+            //     ]
+            // );
 
 
             // var_dump($specification);
             // echo "<br>";
-            // var_dump($pr_stocks_id);
-            // die();
+            //     var_dump($pr_item_id);
+            //     $x = in_array(12, $pr_item_id);
+            //   echo   $x;
+            //     die();
+
+
+
             $transaction = Yii::$app->db->beginTransaction();
 
-            Yii::$app->db->createCommand("DELETE FROM pr_purchase_request_item WHERE pr_purchase_request_id = :id")
-                ->bindValue(':id', $model->id)
-                ->query();
+
+            $query = Yii::$app->db->createCommand("SELECT id FROM pr_purchase_request_item WHERE pr_purchase_request_id = :pr_id")
+                ->bindValue(':pr_id', $model->id)->queryAll();
+
+            foreach ($query as $val) {
+
+
+                if (in_array($val['id'], $pr_item_id) != 1) {
+
+                    $check_query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT 1 FROM pr_rfq_item WHERE pr_rfq_item.pr_purchase_request_item_id =  :id) ")
+                        ->bindValue(':id', $val['id'])
+                        ->queryScalar();
+                    if (intval($check_query) === 0) {
+                        $q = PrPurchaseRequestItem::findOne($val['id']);
+                        $q->delete();
+                    } else {
+
+
+                        return $this->render('update', [
+                            'model' => $model,
+                            'error' => "PR Item Cannot Remove Having RFQ's"
+                        ]);
+                    }
+                }
+            }
+
+            // $query = (new \yii\db\Query())
+            //     ->delete()
+            //     ->from('pr_purchase_request_item')
+            //     ->where("$sql", $params);
+
+            // Yii::$app->db->createCommand("DELETE FROM pr_purchase_request_item WHERE pr_purchase_request_id = :id")
+            //     ->bindValue(':id', $model->id)
+            //     ->query();
             try {
                 if ($flag = true) {
 
@@ -188,7 +250,8 @@ class PrPurchaseRequestController extends Controller
                             $pr_stocks_id,
                             $unit_cost,
                             $quantity,
-                            $specification
+                            $specification,
+                            $pr_item_id
                         );
                     } else {
                         return 'error';
@@ -205,6 +268,7 @@ class PrPurchaseRequestController extends Controller
                 }
             } catch (ErrorException $e) {
                 $transaction->rollBack();
+
                 return json_encode($e->getMessage());
             }
         }

@@ -12,9 +12,15 @@ $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="pr-purchase-request-update">
 
+    <?php
+    $err = '';
 
+    if (!empty($error))
+        $err = $error;
+    ?>
     <?= $this->render('_form', [
         'model' => $model,
+        'error' => $err
     ]) ?>
 
 </div>

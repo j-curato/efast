@@ -465,7 +465,7 @@ class RecordAllotmentsController extends Controller
                 if (empty($chart)) {
                     $transaction->rollBack();
                     var_dump($chart);
-                    return json_encode(['error' => "Chart of Account Object Code Does Not Exist $key"]);
+                    return json_encode(['error' => "Chart of Account Object Code Does Not Exist in row  $key"]);
                     die();
                 }
                 $responsibility_center = (new \yii\db\Query())
@@ -475,7 +475,7 @@ class RecordAllotmentsController extends Controller
                     ->one();
                 if (empty($chart)) {
                     $transaction->rollBack();
-                    return json_encode(['error' => "responsibility_center Does Not Exist $key"]);
+                    return json_encode(['error' => "responsibility_center Does Not Exist in row  $key"]);
                     die();
                 }
                 $document_recieve = (new \yii\db\Query())
@@ -485,7 +485,7 @@ class RecordAllotmentsController extends Controller
                     ->one();
                 if (empty($document_recieve)) {
                     $transaction->rollBack();
-                    return json_encode(['error' => "Document Recieve  Does Not Exist $key"]);
+                    return json_encode(['error' => "Document Recieve  Does Not Exist in row  $key"]);
                     die();
                 }
                 $mfo_pap_code = (new \yii\db\Query())
@@ -495,7 +495,7 @@ class RecordAllotmentsController extends Controller
                     ->one();
                 if (empty($mfo_pap_code)) {
                     $transaction->rollBack();
-                    return json_encode(['error' => "MFO/PAP Code  Does Not Exist in line $key"]);
+                    return json_encode(['error' => "MFO/PAP Code  Does Not Exist in row $key"]);
                     die();
                 }
                 $fund_cluster_code = (new \yii\db\Query())
@@ -506,7 +506,7 @@ class RecordAllotmentsController extends Controller
 
                 if (empty($fund_cluster_code)) {
                     $transaction->rollBack();
-                    return json_encode(['error' => "Fund Cluster Code  Does Not Exist $key"]);
+                    return json_encode(['error' => "Fund Cluster Code  Does Not Exist in row  $key"]);
                     die();
                 }
                 $financing_source_code = (new \yii\db\Query())
@@ -516,7 +516,7 @@ class RecordAllotmentsController extends Controller
                     ->one();
                 if (empty($financing_source_code)) {
                     $transaction->rollBack();
-                    return json_encode(['error' => "Fund Source Code  Does Not Exist $key"]);
+                    return json_encode(['error' => "Fund Source Code  Does Not Exist in row  $key"]);
                     die();
                 }
                 $authorization_code = (new \yii\db\Query())
@@ -540,7 +540,7 @@ class RecordAllotmentsController extends Controller
                     ->queryOne();
                 if (empty($fund_classification_code)) {
                     $transaction->rollBack();
-                    return json_encode(['error' => "Fund Category and Classification Code  Does Not Exist $key"]);
+                    return json_encode(['error' => "Fund Category and Classification Code  Does Not Exist in row  $key"]);
                     die();
                 }
                 $fund_source = (new \yii\db\Query())
@@ -550,7 +550,7 @@ class RecordAllotmentsController extends Controller
                     ->one();
                 if (empty($fund_source)) {
                     $transaction->rollBack();
-                    return json_encode(['error' => 'Fund Source  Does Not Exist']);
+                    return json_encode(['error' => 'Fund Source  Does Not Exist in row $key']);
                     die();
                 }
                 $books = (new \yii\db\Query())
@@ -560,11 +560,15 @@ class RecordAllotmentsController extends Controller
                     ->one();
                 // $exist = array_search($group_number, array_column($number_container, 'no'));
                 $fund_classification = '';
+                if (empty($books)) {
+                    return json_encode(['error' => "Book  Does Not Exist in row  $key"]);
+                }
                 if ($books['name'] == 'Fund 01') {
                     $fund_classification = 101;
                 } else if ($books['name'] == 'Fund 07') {
                     $fund_classification = '107';
                 }
+
                 $exist = true;
                 // $reporting_period = "2021-01";
                 // if ($exist === false) {

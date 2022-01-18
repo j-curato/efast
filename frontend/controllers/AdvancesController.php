@@ -292,7 +292,6 @@ class AdvancesController extends Controller
                         if (!empty($entry_id[$index])) {
                             $ad_entry =  AdvancesEntries::findOne($entry_id[$index]);
                         } else {
-
                             $ad_entry = new AdvancesEntries();
                             $ad_entry->advances_id = $advances->id;
                             $ad_entry->cash_disbursement_id = $cash_disbursement_id[$index];

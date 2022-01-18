@@ -1,6 +1,7 @@
 <?php
 
 use app\models\Books;
+use aryelds\sweetalert\SweetAlert;
 use kartik\date\DatePicker;
 use kartik\money\MaskMoney;
 use kartik\select2\Select2;
@@ -13,6 +14,16 @@ use yii\widgets\ActiveForm;
 /* @var $model app\models\PrPurchaseRequest */
 /* @var $form yii\widgets\ActiveForm */
 
+echo $error;
+if (!empty($error)) {
+    echo SweetAlert::widget([
+        'options' => [
+            'title' => "Error",
+            'text' => "$error",
+            'type' => "error"
+        ]
+    ]);
+}
 $requested_by = '';
 $approved_by = '';
 $pr_project = '';
@@ -179,49 +190,51 @@ if (!empty($model->id)) {
                             foreach ($model->prItem as $i => $val) {
                                 $specification  = preg_replace('#\[n\]#', "\n", $val->specification);
                                 echo "<tr class='panel panel-default spacer'>
-                    <td>
-                        <div class='row' >
-                            <div class='col-sm-6'>
-                                <label for='stocks'>Stock</label>
-                                <select required name='pr_stocks_id[$i]' class='stocks' style='width: 100%'>
-                                <option value= '$val->pr_stock_id'>{$val->stock->stock}</option>
-                                </select>
-                            </div>
-                            <div class='col-sm-4'>
-                                <label for='amount'>Unit Cost</label>
-                                <input type='text' class='amount form-control' value='" . number_format($val->unit_cost, 2) . "'>
-                                <input type='hidden' name='unit_cost[$i]' class='unit_cost' value='$val->unit_cost'>
-                            </div>
+                                        <td>
 
-                            <div class='col-sm-2'>
+                                            <input type='text' name='pr_item_id[$i]'  class = 'pr_item_id' value='{$val->id}'>
+                                            <div class='row' >
+                                                <div class='col-sm-6'>
+                                                    <label for='stocks'>Stock</label>
+                                                    <select required name='pr_stocks_id[$i]' class='stocks' style='width: 100%'>
+                                                    <option value= '$val->pr_stock_id'>{$val->stock->stock}</option>
+                                                    </select>
+                                                </div>
+                                                <div class='col-sm-4'>
+                                                    <label for='amount'>Unit Cost</label>
+                                                    <input type='text' class='amount form-control' value='" . number_format($val->unit_cost, 2) . "'>
+                                                    <input type='hidden' name='unit_cost[$i]' class='unit_cost' value='$val->unit_cost'>
+                                                </div>
 
-                                <label for='quantity'>Quantity</label>
-                                <input type='number' name='quantity[$i]' class='form-control quantity' value='$val->quantity'>
-                            </div>
+                                                <div class='col-sm-2'>
 
-                        </div>
-                        <div class='row'>
-                            <div class='col-sm-12'>
-                                <label for='specs'>Specification</label>
-                                <textarea rows='2' class='specs_view' id='q'>$specification</textarea>
-                                <input name='specification[$i]' rows='2' class='specs' type='hidden' value='$val->specification'>
-                            </div>
-                        </div>
+                                                    <label for='quantity'>Quantity</label>
+                                                    <input type='number' name='quantity[$i]' class='form-control quantity' value='$val->quantity'>
+                                                </div>
+
+                                            </div>
+                                            <div class='row'>
+                                                <div class='col-sm-12'>
+                                                    <label for='specs'>Specification</label>
+                                                    <textarea rows='2' class='specs_view' id='q'>$specification</textarea>
+                                                    <input name='specification[$i]' rows='2' class='specs' type='hidden' value='$val->specification'>
+                                                </div>
+                                            </div>
 
 
-                    </td>
-                    <td style='  text-align: center;'>
-                        <div class='pull-left'>
-                            <button class='add_new_row btn btn-primary btn-xs'><i class='fa fa-plus fa-fw'></i> </button>
-                            <a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
-                        </div>
-                    </td>
-                </tr>";
+                                        </td>
+                                        <td style='  text-align: center;'>
+                                            <div class='pull-left'>
+                                                <button class='add_new_row btn btn-primary btn-xs'><i class='fa fa-plus fa-fw'></i> </button>
+                                                <a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                                            </div>
+                                        </td>
+                                    </tr>";
                                 echo " <tr>
-                                <td colspan='2'>
-                                <hr>
-                                </td>
-                            </tr>";
+                                            <td colspan='2'>
+                                            <hr>
+                                            </td>
+                                        </tr>";
 
                                 $row_num++;
                             }
@@ -406,6 +419,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
             clone.children('td').eq(0).find('.desc').text('')
             clone.children('td').eq(0).find('.quantity').val(0)
             clone.children('td').eq(0).find('.quantity').attr('name', 'quantity[' + x + ']')
+            clone.children('td').eq(0).find('.pr_item_id').val('')
+            clone.children('td').eq(0).find('.pr_item_id').attr('name', 'pr_item_id[' + x + ']')
             clone.children('td').eq(0).find('.stocks').val('')
             clone.children('td').eq(0).find('.stocks').attr('name', 'pr_stocks_id[' + x + ']')
             clone.children('td').eq(0).find('.unit_cost').val(0)

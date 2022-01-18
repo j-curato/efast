@@ -2120,9 +2120,14 @@ class ReportController extends \yii\web\Controller
             $begin_balance  += $adjustment_begin_balance;
             $adjustment = Yii::$app->db->createCommand("SELECT * 
            FROM cash_adjustment
-           WHERE reporting_period <= :to_reporting_period
-           AND reporting_period >= :from_reporting_period
+           LEFT JOIN books ON cash_adjustment.book_id = books.id
+
+           WHERE cash_adjustment.reporting_period <= :to_reporting_period
+           AND cash_adjustment.reporting_period >= :from_reporting_period
+           AND books.name = :book
            ")
+           
+                ->bindValue(':book', $book)
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->queryAll();

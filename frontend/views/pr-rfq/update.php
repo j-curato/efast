@@ -13,9 +13,19 @@ $this->params['breadcrumbs'][] = 'Update';
 <div class="pr-rfq-update">
 
     <h1><?= Html::encode($this->title) ?></h1>
-
+    <?php
+    $err = '';
+    $items = [];
+    if (!empty($error)) {
+        $err = $error;
+    }
+    if (!empty($pr_items))
+        $items = $pr_items;
+    ?>
     <?= $this->render('_form', [
         'model' => $model,
+        'error' => $err,
+        'pr_items' => $items
     ]) ?>
 
 </div>

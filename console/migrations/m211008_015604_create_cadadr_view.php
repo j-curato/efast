@@ -107,7 +107,7 @@ class m211008_015604_create_cadadr_view extends Migration
                             LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
 
                             LEFT JOIN payee ON dv_aucs.payee_id = payee.id
-                            LEFT JOIN books ON dv_aucs.book_id = books.id
+                            LEFT JOIN books ON cash_disbursement.book_id = books.id
                         LEFT JOIN (SELECT dv_aucs_entries.dv_aucs_id,SUM(dv_aucs_entries.amount_disbursed) as total_amount
                         FROM dv_aucs_entries GROUP BY dv_aucs_entries.dv_aucs_id) as total_dv ON dv_aucs.id = total_dv.dv_aucs_id
 

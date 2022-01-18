@@ -1,5 +1,6 @@
 <?php
 
+use aryelds\sweetalert\SweetAlert;
 use kartik\date\DatePicker;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
@@ -13,8 +14,24 @@ use yii\widgets\ActiveForm;
 
 $pr = '';
 $employee = '';
-$items=json_encode([]);
+$items = json_encode([]);
+$checked_items = [];
+if (!empty($pr_items)) {
+    $items = json_encode($pr_items);
+}
+
+if (!empty($error)) {
+    echo SweetAlert::widget([
+        'options' => [
+            'title' => "Error",
+            'text' => "$error",
+            'type' => "error"
+        ]
+    ]);
+}
+
 if (!empty($model->id)) {
+  
     $pr_query   = Yii::$app->db->createCommand("SELECT id,pr_number   FROM pr_purchase_request WHERE id = :id")
         ->bindValue(':id', $model->pr_purchase_request_id)
         ->queryAll();
@@ -28,105 +45,136 @@ if (!empty($model->id)) {
         ->bindValue(':id', $model->id)
         ->queryAll());
 }
+if (!empty($model->pr_purchase_request_id)) {
+    $pr_query   = Yii::$app->db->createCommand("SELECT id,pr_number   FROM pr_purchase_request WHERE id = :id")
+        ->bindValue(':id', $model->pr_purchase_request_id)
+        ->queryAll();
+    $pr = ArrayHelper::map($pr_query, 'id', 'pr_number');
+}
 ?>
 
 <div class="pr-rfq-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <div class="panel panel-primary">
 
 
-    <?= $form->field($model, 'rfq_number')->textInput(['maxlength' => true]) ?>
+        <div class="panel-body">
 
-    <?= $form->field($model, 'pr_purchase_request_id')->widget(Select2::class, [
-        'data' => $pr,
-        'options' => ['placeholder' => 'Search for a Purchase Request'],
-        'pluginOptions' => [
-            'allowClear' => true,
-            'minimumInputLength' => 1,
-            'language' => [
-                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-            ],
-            'ajax' => [
-                'url' => Yii::$app->request->baseUrl . '?r=pr-purchase-request/search-pr',
-                'dataType' => 'json',
-                'delay' => 250,
-                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                'cache' => true
-            ],
-            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-        ],
+            <?php $form = ActiveForm::begin(); ?>
 
-    ]) ?>
+            <div class="row">
 
-    <?= $form->field($model, '_date')->widget(DatePicker::class, [
-        'pluginOptions' => [
-            'format' => 'yyyy-mm-d',
-            'autoclose' => true
-        ],
-        'options' => [
-            'readonly' => true,
-            'style' => 'background-color:white'
-        ]
-    ]) ?>
-    <?= $form->field($model, 'deadline')->widget(DatePicker::class, [
-        'pluginOptions' => [
-            'format' => 'yyyy-mm-d',
-            'autoclose' => true
-        ],
-        'options' => [
+                <div class="col-sm-2">
+                    <?= $form->field($model, '_date')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'format' => 'yyyy-mm-d',
+                            'autoclose' => true
+                        ],
+                        'options' => [
+                            'readonly' => true,
+                            'style' => 'background-color:white'
+                        ]
+                    ]) ?>
+                </div>
+                <div class="col-sm-2">
+                    <?= $form->field($model, 'deadline')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'format' => 'yyyy-mm-d',
+                            'autoclose' => true
+                        ],
+                        'options' => [
 
-            'readonly' => true,
-            'style' => 'background-color:white'
-        ]
+                            'readonly' => true,
+                            'style' => 'background-color:white'
+                        ]
 
-    ]) ?>
+                    ]) ?>
 
+                </div>
+                <div class="col-sm-4">
+                    <?= $form->field($model, 'pr_purchase_request_id')->widget(Select2::class, [
+                        'data' => $pr,
+                        'options' => ['placeholder' => 'Search for a Purchase Request'],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                            'minimumInputLength' => 1,
+                            'language' => [
+                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                            ],
+                            'ajax' => [
+                                'url' => Yii::$app->request->baseUrl . '?r=pr-purchase-request/search-pr',
+                                'dataType' => 'json',
+                                'delay' => 250,
+                                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                                'cache' => true
+                            ],
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        ],
 
-    <?= $form->field($model, 'employee_id')->widget(Select2::class, [
-        'data' => $employee,
-        'options' => ['placeholder' => 'Search for a Employee ...'],
-        'pluginOptions' => [
-            'allowClear' => true,
-            'minimumInputLength' => 1,
-            'language' => [
-                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-            ],
-            'ajax' => [
-                'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                'dataType' => 'json',
-                'delay' => 250,
-                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                'cache' => true
-            ],
-            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-        ],
+                    ]) ?>
+                </div>
 
-    ]) ?>
+                <div class="col-sm-4">
+                    <?= $form->field($model, 'employee_id')->widget(Select2::class, [
+                        'data' => $employee,
+                        'options' => ['placeholder' => 'Search for a Employee ...'],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                            'minimumInputLength' => 1,
+                            'language' => [
+                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                            ],
+                            'ajax' => [
+                                'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                                'dataType' => 'json',
+                                'delay' => 250,
+                                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                                'cache' => true
+                            ],
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        ],
 
+                    ]) ?>
 
-    <table id="data-table" class="table table-striped">
-        <thead>
-        </thead>
-        <tbody>
+                </div>
 
-        </tbody>
-    </table>
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+            </div>
+            <table id="data-table" class="table table-striped">
+                <thead>
+                    <th>Checkbox</th>
+                    <th>Stock Number</th>
+                    <th>Description</th>
+                    <th>Unit of Measure</th>
+                    <th>Unit Cost</th>
+                    <th>Quantity</th>
+                    <th>Total Unit Cost</th>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+            <div class="form-group">
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+            </div>
+
+            <?php ActiveForm::end(); ?>
+        </div>
+
     </div>
-
-    <?php ActiveForm::end(); ?>
-
 </div>
+
 <style>
 
 </style>
 <script>
     var csrfToken = $('meta[name="csrf-token"]').attr("content");
+    $('#w0').on('submit', function(e) {
+        console.log($('#w0').serialize())
+    })
 
     function prItems() {
         $.ajax({
@@ -172,15 +220,17 @@ if (!empty($model->id)) {
                     $('#data-table tbody').append(row)
 
                 }
+                var itms = <?php echo $items ?>;
 
-                var pr_items = <?php echo $items?>;
-                if (pr_items.length > 0) {
 
-                    for (var i = 0; i < pr_items.length; i++) {
+                if (itms.length > 0) {
 
-                        item_id = pr_items[i]['id']
+                    for (var i = 0; i < itms.length; i++) {
+
+                        item_id = itms[i]['id']
+
                         $(`input[data-value='${item_id}']`).attr('checked', true)
-                  
+
 
                     }
                 }

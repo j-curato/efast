@@ -20,6 +20,7 @@ class m220113_024416_create_pr_rfq_table extends Migration
             'deadline' => $this->date(),
             'rbac_composition_id' => $this->bigInteger(),
             'employee_id' => $this->string(),
+            'province'=>$this->string(),
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
 
