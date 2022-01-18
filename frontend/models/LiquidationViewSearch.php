@@ -67,7 +67,7 @@ class LiquidationViewSearch extends LiquidationView
             $province === 'sdn' ||
             $province === 'pdi'
         ) {
-            $q->where('province LIKE :province', ['province' => $province]);
+            // $q->where('province LIKE :province', ['province' => $province]);
         }
         $query = $q->orderBy('check_date DESC');
 
@@ -84,7 +84,7 @@ class LiquidationViewSearch extends LiquidationView
             // $query->where('0=1');
             return $dataProvider;
         }
-        if ($province == 'ro_admin') {
+        if ($province === 'ro_admin') {
             $province = $this->province;
         }
 
@@ -100,19 +100,19 @@ class LiquidationViewSearch extends LiquidationView
             'is_final' => $this->is_final
         ]);
         $query
+            ->andFilterWhere(['or', ['like', 'payee', $this->payee], ['like', 'tr_payee', $this->payee]])
+            ->andFilterWhere(['or', ['like', 'tr_particular', $this->particular], ['like', 'particular', $this->particular]])
             ->andFilterWhere(['like', 'check_date', $this->check_date])
             ->andFilterWhere(['like', 'check_number', $this->check_number])
             ->andFilterWhere(['like', 'dv_number', $this->dv_number])
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
-            ->andFilterWhere(['like', 'payee', $this->payee])
-            ->orFilterWhere(['like', 'tr_payee', $this->payee])
-            ->andFilterWhere(['like', 'particular', $this->particular])
-            ->orFilterWhere(['like', 'tr_particular', $this->particular])
             ->andFilterWhere(['like', 'gross_payment', $this->gross_payment])
             ->andFilterWhere(['like', 'status', $this->status])
-            ->andFilterWhere(['like', 'tracking_number', $province]);
+            ->andFilterWhere(['like', 'province', $province]);
 
+        // var_dump($query->createCommand()->getRawSql());
 
+        // die();
 
 
         return $dataProvider;
