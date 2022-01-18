@@ -22,7 +22,7 @@ class LiquidationViewSearch extends LiquidationView
             $province = '';
         }
         return [
-            [['id','is_cancelled'], 'integer'],
+            [['id', 'is_cancelled'], 'integer'],
             [['total_withdrawal', 'total_expanded', 'total_liquidation_damage', 'total_vat'], 'number'],
             [[
 
@@ -84,6 +84,10 @@ class LiquidationViewSearch extends LiquidationView
             // $query->where('0=1');
             return $dataProvider;
         }
+        if ($province == 'ro_admin') {
+            $province = $this->province;
+        }
+
 
         // grid filtering conditions
         $query->andFilterWhere([
@@ -93,7 +97,7 @@ class LiquidationViewSearch extends LiquidationView
             'total_liquidation_damage' => $this->total_liquidation_damage,
             'total_vat' => $this->total_vat,
             'is_cancelled' => $this->is_cancelled,
-            'is_final'=>$this->is_final
+            'is_final' => $this->is_final
         ]);
         $query
             ->andFilterWhere(['like', 'check_date', $this->check_date])
@@ -106,8 +110,10 @@ class LiquidationViewSearch extends LiquidationView
             ->orFilterWhere(['like', 'tr_particular', $this->particular])
             ->andFilterWhere(['like', 'gross_payment', $this->gross_payment])
             ->andFilterWhere(['like', 'status', $this->status])
-            ->andFilterWhere(['like', 'tracking_number', $this->tracking_number])
-            ->andFilterWhere(['like', 'province', $this->province]);
+            ->andFilterWhere(['like', 'tracking_number', $province]);
+
+
+
 
         return $dataProvider;
     }
