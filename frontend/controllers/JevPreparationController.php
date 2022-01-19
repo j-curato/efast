@@ -2184,7 +2184,7 @@ class JevPreparationController extends Controller
                 // 'entity_name' => $model->entity_name,
                 'explaination' => $model->explaination,
                 'payee_id' => $model->payee_id,
-                'payee_name' => $model->payee->account_name,
+                'payee_name' => !empty($model->payee->account_name) ? $model->payee->account_name : '',
                 'cash_flow_id' => $model->cash_flow_id,
                 'mrd_classification_id' => $model->mrd_classification_id,
                 'cadadr_serial_number' => $model->cadadr_serial_number,
