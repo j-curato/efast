@@ -2065,7 +2065,7 @@ class ReportController extends \yii\web\Controller
             $w = new DateTime('2021-10');
             $begin_balance = 0;
             $adjustment_begin_balance = 0;
-            if ($d->format('Y-m') >= $w->format('Y-m')) {
+            if ($d->format('Y-m') >= $w->format('Y-m') && $book === 'Fund 01') {
                 $begin_balance = Yii::$app->db->createCommand("SELECT 
                     IFNULL(SUM(total_nca_recieve) - (SUM(total_check_issued)+SUM(total_ada_issued)),0) as begin_balance
                    FROM cadadr_balances
@@ -2126,7 +2126,7 @@ class ReportController extends \yii\web\Controller
            AND cash_adjustment.reporting_period >= :from_reporting_period
            AND books.name = :book
            ")
-           
+
                 ->bindValue(':book', $book)
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->bindValue(':from_reporting_period', $from_reporting_period)
@@ -2949,7 +2949,11 @@ class ReportController extends \yii\web\Controller
         // }
         // else {
         //     $string = $num;
+
         // }
+        $x = explode(' ', 'Common Electrical Supplies');
+        var_dump($x);
+        die();
         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `advances_entries` WHERE id = :id)")
             ->bindValue(':id', 4705)
             ->queryScalar();
@@ -2990,6 +2994,84 @@ class ReportController extends \yii\web\Controller
         $tracking_number = 'SDS' . '-' . trim($responsibility_center['name']) . '-' . $date . '-' . $final_number;
         return  $tracking_number;
     }
+    // public function actionQ()
+    // {
+
+    //     $q = [];
+
+
+    //     $q['part-1'] =
+
+
+    //         [
+
+
+
+    //             ['type' => 'PERFUMES OR COLOGNES OR FRAGRANCES', 'object_code' => 5020301000],
+    //             ['type' => 'ALCOHOL OR ACETONE BASED ANTISEPTICS	', 'object_code' => 5020301000],
+    //             ['type' => 'COLOR COMPOUNDS AND DISPERSIONS	', 'object_code' => 5020301000],
+    //             ['type' => 'FILMS', 'object_code' => 5020301000],
+    //             ['type' => 'PAPER MATERIALS AND PRODUCTS', 'object_code' => 5020301000],
+    //             ['type' => 'BATTERIES AND CELLS AND ACCESSORIES', 'object_code' => 5020399000],
+    //             ['type' => 'MANUFACTURING COMPONENTS AND SUPPLIES', 'object_code' => 5020301000],
+    //             ['type' => 'HEATING AND VENTILATION AND AIR CIRCULATION', 'object_code' => 5020399000],
+    //             ['type' => 'MEDICAL THERMOMETERS AND ACCESSORIES', 'object_code' => 5020399000],
+    //             ['type' => 'LIGHTING AND FIXTURES AND ACCESSORIES', 'object_code' => 5020399000],
+    //             ['type' => 'MEASURING AND OBSERVING AND TESTING EQUIPMENT	', 'object_code' => 5020301000],
+    //             ['type' => 'CLEANING EQUIPMENT AND SUPPLIES', 'object_code' => 5020399000],
+    //             ['type' => 'PERSONAL PROTECTIVE EQUIPMENT', 'object_code' => 5020399000],
+    //             ['type' => 'INFORMATION AND COMMUNICATION TECHNOLOGY (ICT) EQUIPMENT AND DEVICES AND ACCESSORIES', 'object_code' => 5020301000],
+    //             ['type' => 'OFFICE EQUIPMENT AND ACCESSORIES AND SUPPLIES', 'object_code' => 5020301000],
+    //             ['type' => 'PRINTER OR FACSIMILE OR PHOTOCOPIER SUPPLIES', 'object_code' => 5020301000],
+    //             ['type' => 'AUDIO AND VISUAL EQUIPMENT AND SUPPLIES', 'object_code' => 5060405003],
+    //             ['type' => 'FLAG OR ACCESSORIES', 'object_code' => 5020399000],
+    //             ['type' => 'PRINTED PUBLICATIONS', 'object_code' => 5020399000],
+    //             ['type' => 'FIRE FIGHTING EQUIPMENT', 'object_code' => 5020399000],
+    //             ['type' => 'CONSUMER ELECTRONICS', 'object_code' => 5060602000],
+    //             ['type' => 'FURNITURE AND FURNISHINGS', 'object_code' => 5020399000],
+    //             ['type' => 'ARTS AND CRAFTS EQUIPMENT AND ACCESSORIES AND SUPPLIES', 'object_code' => 5020301000],
+    //             ['type' => 'SOFTWARE', 'object_code' => 5060602000],
+    //         ];
+
+    //     $q['part-2'] = [
+    //         ['type' => 'Common Electrical Supplies', 'object_code' => 5020301000],
+    //         ['type' => 'Common Office Supplies', 'object_code' => 5020301000],
+    //         ['type' => 'Construction Supplies', 'object_code' => 5020399000],
+    //         ['type' => 'Common Janitorial Supplies', 'object_code' => 5020399000],
+    //         ['type' => 'Consumables', 'object_code' => 5020301000],
+    //         ['type' => 'Military, Police,and Traffic Supplies', 'object_code' => 5020312000],
+    //         ['type' => 'Clothing, textiles and Accessories', 'object_code' => 5020399000],
+
+
+
+    //     ];
+    //     $q['part-3'] = [
+
+
+
+    //         ['type' => 'Accountable Forms Expenses'],
+    //         ['type' => 'Agricultural and Marine Supplies Expenses'],
+    //         ['type' => 'Animal/Zoological Supplies Expenses'],
+    //         ['type' => 'Food Supplies Expenses'],
+    //         ['type' => 'Welfare Goods Expenses'],
+    //         ['type' => 'Drugs and Medicines Expenses'],
+    //         ['type' => 'Medical, Dental and Laboratory Supplies Expenses'],
+    //         ['type' => 'Fuel, Oil and Lubricants Expenses'],
+    //         ['type' => 'Other Suppplies and Material Expense'],
+    //         ['type' => 'POSTAGE AND COURIER SERVICES'],
+    //         ['type' => 'Repair and Maintenance-Transportation Equipment'],
+    //         ['type' => 'Repair and Maintenance-Machinery and Equipment'],
+    //         ['type' => 'Repair and Maintenance-Furniture and Fixture'],
+    //         ['type' => 'Other Maintenance and Operating Expenses'],
+    //         ['type' => 'Printing and Publication Expenses'],
+    //         ['type' => 'Other Professional Services'],
+
+    //     ];
+    //     $arr = Yii::$app->memem->getStockPart()['part-2'];
+
+    //     $x = array_search('Clothing, textiles and Accessories	', array_column($arr, 'type'));
+    //     return json_encode($x);
+    // }
 }
 
 // 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
