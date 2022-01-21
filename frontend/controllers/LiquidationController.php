@@ -860,7 +860,7 @@ class LiquidationController extends Controller
                         ->one();
 
 
-
+                    $liquidation_id = '';
                     if (empty($liq_id)) {
                         $liquidation = new Liquidation();
                         $liquidation->province = $province;
@@ -871,9 +871,9 @@ class LiquidationController extends Controller
                         $liquidation->reporting_period = $reporting_period;
 
                         if ($liquidation->save(false)) {
-                            $liq_id = $liquidation->id;
+                            $liquidation_id = $liquidation->id;
                             $liq_entries = new  LiquidationEntries();
-                            $liq_entries->liquidation_id = $liq_id;
+                            $liq_entries->liquidation_id = $liquidation->id;
                             $liq_entries->chart_of_account_id = $chart_of_account_id;
                             $liq_entries->withdrawals = $withdrawal;
                             $liq_entries->vat_nonvat = $vat_nonvat;
@@ -889,7 +889,7 @@ class LiquidationController extends Controller
                         }
                     } else {
                         $liq_entries = new  LiquidationEntries();
-                        $liq_entries->liquidation_id = $liq_id;
+                        $liq_entries->liquidation_id = $liquidation_id;
                         $liq_entries->chart_of_account_id = $chart_of_account_id;
                         $liq_entries->withdrawals = $withdrawal;
                         $liq_entries->vat_nonvat = $vat_nonvat;
