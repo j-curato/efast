@@ -17,6 +17,7 @@ class m220113_023802_create_bac_composition_table extends Migration
             'effectivity_date' => $this->date(),
             'expiration_date' => $this->date(),
             'rso_number' => $this->string(),
+            'created_at'=>$this->timestamp()->defaultExpression("CURRENT_TIMESTAMP")
 
         ]);
     }

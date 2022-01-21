@@ -186,20 +186,27 @@ if (!empty($model->id)) {
                         <?php
                         $row_num = 1;
                         if (!empty($model->prItem)) {
-
                             foreach ($model->prItem as $i => $val) {
                                 $specification  = preg_replace('#\[n\]#', "\n", $val->specification);
                                 echo "<tr class='panel panel-default spacer'>
                                         <td>
 
-                                            <input type='text' name='pr_item_id[$i]'  class = 'pr_item_id' value='{$val->id}'>
+                                            <input type='hidden' name='pr_item_id[$i]'  class = 'pr_item_id' value='{$val->id}'>
                                             <div class='row' >
                                                 <div class='col-sm-6'>
                                                     <label for='stocks'>Stock</label>
                                                     <select required name='pr_stocks_id[$i]' class='stocks' style='width: 100%'>
-                                                    <option value= '$val->pr_stock_id'>{$val->stock->stock}</option>
+                                                    <option value= '$val->pr_stock_id'>{$val->stock->stock_title}</option>
                                                     </select>
                                                 </div>
+                                                <div class='col-sm-4'>
+                                                <label for='unit_of_measure'>Unit of Measure</label>
+                                                <select required name='unit_of_measure_id[$i]' class='unit_of_measure form-control' style='width: 100%'>
+                                                <option value= '$val->unit_of_measure_id'>{$val->unitOfMeasure->unit_of_measure}</option>
+                                                <option></option>
+                                                </select>
+                                            </div>
+    
                                                 <div class='col-sm-4'>
                                                     <label for='amount'>Unit Cost</label>
                                                     <input type='text' class='amount form-control' value='" . number_format($val->unit_cost, 2) . "'>
@@ -244,12 +251,19 @@ if (!empty($model->id)) {
                                 <td style="max-width:100rem;">
 
                                     <div class="row">
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <label for="stocks">Stock</label>
                                             <select required name="pr_stocks_id[0]" class="stocks form-control" style="width: 100%">
                                                 <option></option>
                                             </select>
                                         </div>
+                                        <div class="col-sm-4">
+                                            <label for="unit_of_measure">Unit of Measure</label>
+                                            <select required name="unit_of_measure_id[0]" class="unit_of_measure form-control" style="width: 100%">
+                                                <option></option>
+                                            </select>
+                                        </div>
+
 
 
 
@@ -267,13 +281,7 @@ if (!empty($model->id)) {
                                         </div>
 
                                     </div>
-                                    <div class="row" style="padding-top: 3rem;padding-bottom:3rem">
 
-                                        <div class="col-sm-12">
-                                            <label>Description:</label>
-                                            <span class="desc"></span>
-                                        </div>
-                                    </div>
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <label for="specs_view">Specification</label>
@@ -283,7 +291,7 @@ if (!empty($model->id)) {
                                     </div>
                                 </td>
                                 <td style='  text-align: center;'>
-                                    <div class='pull-left'>
+                                    <div class='pull-right'>
                                         <button class='add_new_row btn btn-primary btn-xs'><i class='fa fa-plus fa-fw'></i> </button>
                                         <a class='remove_this_row btn btn-danger btn-xs disabled' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
                                     </div>
@@ -302,7 +310,6 @@ if (!empty($model->id)) {
 
                     </tbody>
                 </table>
-
 
 
 
@@ -349,8 +356,16 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
                     };
                 },
             },
-
         });
+    }
+
+    function unitOfMeasureSelect() {
+        $('.unit_of_measure').select2({
+            data: unit_of_measure,
+            placeholder: "Select Unit of Measure",
+
+        })
+
     }
 
     function maskAmount() {
@@ -362,10 +377,26 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
 
     }
 
-
+    var unit_of_measure = []
     $(document).ready(function() {
         var x = <?= $row_num ?>;
         maskAmount()
+        $.getJSON(window.location.pathname + '/frontend/web/index.php?r=unit-of-measure/get-all-measure')
+            .then(function(data) {
+
+                var array = []
+                $.each(data, function(key, val) {
+                    array.push({
+                        id: val.id,
+                        text: val.unit_of_measure
+                    })
+                })
+                unit_of_measure = array
+                unitOfMeasureSelect()
+
+            });
+
+
         // function addNewLine() {
         //     var text = document.getElementById('q').value;
         //     text = text.replace(/\n/g, "[n]");
@@ -398,7 +429,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
                     console.log(data)
                     var res = JSON.parse(data)
                     source.children('td').eq(0).find('.amount').val(res.amount).trigger('change')
-                    source.children('td').eq(0).find('.desc').text(res.description)
+                    source.children('td').eq(0).find('.unit_of_measure').val(res.unit_of_measure_id).trigger('change')
                 }
             })
 
@@ -413,12 +444,15 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
         $('.add_new_row').on('click', function(event) {
             event.preventDefault();
             $('.stocks').select2('destroy');
+            $('.unit_of_measure').select2('destroy');
             $('.unit_cost').maskMoney('destroy');
             var source = $(this).closest('tr');
             var clone = source.clone(true);
             clone.children('td').eq(0).find('.desc').text('')
             clone.children('td').eq(0).find('.quantity').val(0)
-            clone.children('td').eq(0).find('.quantity').attr('name', 'quantity[' + x + ']')
+            clone.children('td').eq(0).find('.quantity').attr('name', 'unit_of_measure[' + x + ']')
+            clone.children('td').eq(0).find('.unit_of_measure').val('')
+            clone.children('td').eq(0).find('.unit_of_measure').attr('name', 'unit_of_measure[' + x + ']')
             clone.children('td').eq(0).find('.pr_item_id').val('')
             clone.children('td').eq(0).find('.pr_item_id').attr('name', 'pr_item_id[' + x + ']')
             clone.children('td').eq(0).find('.stocks').val('')
@@ -441,6 +475,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
             clone.find('.remove_this_row').removeClass('disabled');
             stockSelect()
             maskAmount()
+            unitOfMeasureSelect()
             x++
 
 

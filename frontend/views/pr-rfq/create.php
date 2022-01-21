@@ -11,8 +11,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="pr-rfq-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
     <?php
     $err = '';
     $items = [];

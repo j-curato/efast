@@ -213,4 +213,79 @@ class MyComponent extends Component
         $base_path =  \Yii::getAlias('@webroot');
         $qrCode->writeFile($base_path . "/qr_codes/$text.png");
     }
+
+    public function getStockPart()
+    {
+        $q = [];
+
+
+        $q['part-1'] =
+
+
+
+            [
+
+
+                ['type' => 'PERFUMES OR COLOGNES OR FRAGRANCES', 'object_code' => '5020301000'],
+                ['type' => 'ALCOHOL OR ACETONE BASED ANTISEPTICS', 'object_code' => '5020301000'],
+                ['type' => 'COLOR COMPOUNDS AND DISPERSIONS', 'object_code' => '5020301000'],
+                ['type' => 'FILMS', 'object_code' => '5020301000'],
+                ['type' => 'PAPER MATERIALS AND PRODUCTS', 'object_code' => '5020301000'],
+                ['type' => 'BATTERIES AND CELLS AND ACCESSORIES', 'object_code' => '5020399000'],
+                ['type' => 'MANUFACTURING COMPONENTS AND SUPPLIES', 'object_code' => '5020301000'],
+                ['type' => 'HEATING AND VENTILATION AND AIR CIRCULATION', 'object_code' => '5020399000'],
+                ['type' => 'MEDICAL THERMOMETERS AND ACCESSORIES', 'object_code' => '5020399000'],
+                ['type' => 'LIGHTING AND FIXTURES AND ACCESSORIES', 'object_code' => '5020399000'],
+                ['type' => 'MEASURING AND OBSERVING AND TESTING EQUIPMENT', 'object_code' => '5020301000'],
+                ['type' => 'CLEANING EQUIPMENT AND SUPPLIES', 'object_code' => '5020399000'],
+                ['type' => 'PERSONAL PROTECTIVE EQUIPMENT', 'object_code' => '5020399000'],
+                ['type' => 'INFORMATION AND COMMUNICATION TECHNOLOGY (ICT) EQUIPMENT AND DEVICES AND ACCESSORIES', 'object_code' => '5020301000'],
+                ['type' => 'OFFICE EQUIPMENT AND ACCESSORIES AND SUPPLIES', 'object_code' => '5020301000'],
+                ['type' => 'PRINTER OR FACSIMILE OR PHOTOCOPIER SUPPLIES', 'object_code' => '5020301000'],
+                ['type' => 'AUDIO AND VISUAL EQUIPMENT AND SUPPLIES', 'object_code' => '5060405003'],
+                ['type' => 'FLAG OR ACCESSORIES', 'object_code' => '5020399000'],
+                ['type' => 'PRINTED PUBLICATIONS', 'object_code' => '5020399000'],
+                ['type' => 'FIRE FIGHTING EQUIPMENT', 'object_code' => '5020399000'],
+                ['type' => 'CONSUMER ELECTRONICS', 'object_code' => '5060602000'],
+                ['type' => 'FURNITURE AND FURNISHINGS', 'object_code' => '5020399000'],
+                ['type' => 'ARTS AND CRAFTS EQUIPMENT AND ACCESSORIES AND SUPPLIES', 'object_code' => '5020301000'],
+                ['type' => 'SOFTWARE', 'object_code' => '5060602000'],
+            ];
+
+        $q['part-2'] = [
+            ['type' => 'Common Electrical Supplies', 'object_code' => '5020301000'],
+            ['type' => 'Common Office Supplies', 'object_code' => '5020301000'],
+            ['type' => 'Construction Supplies', 'object_code' => '5020399000'],
+            ['type' => 'Common Janitorial Supplies', 'object_code' => '5020399000'],
+            ['type' => 'Consumables', 'object_code' => '5020301000'],
+            ['type' => 'Military, Police,and Traffic Supplies', 'object_code' => '5020312000'],
+            ['type' => 'Clothing, textiles and Accessories', 'object_code' => '5020399000'],
+
+
+
+        ];
+        $q['part-3'] = [
+
+
+
+            ['type' => 'Accountable Forms Expenses'],
+            ['type' => 'Agricultural and Marine Supplies Expenses'],
+            ['type' => 'Animal/Zoological Supplies Expenses'],
+            ['type' => 'Food Supplies Expenses'],
+            ['type' => 'Welfare Goods Expenses'],
+            ['type' => 'Drugs and Medicines Expenses'],
+            ['type' => 'Medical, Dental and Laboratory Supplies Expenses'],
+            ['type' => 'Fuel, Oil and Lubricants Expenses'],
+            ['type' => 'Other Suppplies and Material Expense'],
+            ['type' => 'POSTAGE AND COURIER SERVICES'],
+            ['type' => 'Repair and Maintenance-Transportation Equipment'],
+            ['type' => 'Repair and Maintenance-Machinery and Equipment'],
+            ['type' => 'Repair and Maintenance-Furniture and Fixture'],
+            ['type' => 'Other Maintenance and Operating Expenses'],
+            ['type' => 'Printing and Publication Expenses'],
+            ['type' => 'Other Professional Services'],
+
+        ];
+        return $q;
+    }
 }

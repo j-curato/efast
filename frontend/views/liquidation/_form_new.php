@@ -571,7 +571,7 @@ SweetAlertAsset::register($this);
     var transaction = [];
 
     function chart() {
-        return $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/chart-of-accounts')
+        return $.getJSON(window.location.pathname+'?r=chart-of-accounts/chart-of-accounts')
             .then(function(data) {
                 var array = []
                 $.each(data, function(key, val) {

@@ -60,7 +60,7 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'pr_number' => 'Pr Number',
-            'date' => 'Date',
+            'date' => 'Date Propose',
             'book_id' => 'Book ',
             'pr_project_procurement_id' => ' Project Procurement ',
             'purpose' => 'Purpose',

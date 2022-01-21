@@ -1275,7 +1275,6 @@ class JevPreparationController extends Controller
         if (!empty($_POST)) {
             $reporting_period = $_POST['reporting_period'];
             $book_id = $_POST['book_id'] ? $_POST['book_id'] : '';
-
             $x = explode('-', $reporting_period);
             $q = $x[0] - 1;
 

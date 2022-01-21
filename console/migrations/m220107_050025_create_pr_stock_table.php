@@ -14,13 +14,13 @@ class m220107_050025_create_pr_stock_table extends Migration
     {
         $this->createTable('{{%pr_stock}}', [
             'id' => $this->primaryKey(),
-            'stock' => $this->string(),
-            'stock_number' => $this->string(),
+            'stock_title' => $this->text(),
             'bac_code' => $this->string(),
             'unit_of_measure_id' => $this->integer(),
             'amount' => $this->decimal(10, 2),
             'chart_of_account_id' => $this->integer(),
-            'description' => $this->text(),
+            'part' => $this->text(),
+            'type' => $this->text(),
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
     }

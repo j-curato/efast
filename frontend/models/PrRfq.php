@@ -33,12 +33,11 @@ class PrRfq extends \yii\db\ActiveRecord
         return [
             [[
                 'id', 'rfq_number', 'pr_purchase_request_id',
-                'employee_id',
                 '_date',
                 'deadline',
             ], 'required'],
             [['id', 'pr_purchase_request_id', 'rbac_composition_id'], 'integer'],
-            [['_date', 'created_at', 'deadline'], 'safe'],
+            [['_date', 'created_at', 'deadline', 'project_location'], 'safe'],
             [['rfq_number', 'employee_id', 'province'], 'string', 'max' => 255],
             [['rfq_number'], 'unique'],
             [['id'], 'unique'],
@@ -56,10 +55,12 @@ class PrRfq extends \yii\db\ActiveRecord
             'pr_purchase_request_id' => 'Pr Purchase Request ',
             '_date' => 'Date',
             'rbac_composition_id' => 'Rbac Composition ',
-            'employee_id' => 'Employee ',
+            'employee_id' => 'Canvasser',
             'created_at' => 'Created At',
             'deadline' => 'Deadline',
             'province' => 'Province',
+            'project_location' => 'Location of Project',
+
         ];
     }
     public function getRfqItems()

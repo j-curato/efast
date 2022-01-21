@@ -29,7 +29,7 @@ class UnitOfMeasureController extends Controller
                     'create',
                     'update',
                     'delete',
-                    
+
                 ],
                 'rules' => [
                     [
@@ -39,7 +39,7 @@ class UnitOfMeasureController extends Controller
                             'create',
                             'update',
                             'delete',
-                            
+
                         ],
                         'allow' => true,
                         'roles' => ['@']
@@ -98,7 +98,7 @@ class UnitOfMeasureController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('create', [
+        return $this->renderAjax('create', [
             'model' => $model,
         ]);
     }
@@ -118,7 +118,7 @@ class UnitOfMeasureController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('update', [
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
     }
@@ -130,12 +130,12 @@ class UnitOfMeasureController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    // public function actionDelete($id)
+    // {
+    //     $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
-    }
+    //     return $this->redirect(['index']);
+    // }
 
     /**
      * Finds the UnitOfMeasure model based on its primary key value.
@@ -151,5 +151,12 @@ class UnitOfMeasureController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    public function actionGetAllMeasure()
+    {
+
+        $query = Yii::$app->db->createCommand("SELECT  * FROM unit_of_measure")->queryAll();
+
+        return json_encode($query);
     }
 }

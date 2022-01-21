@@ -41,6 +41,11 @@ class ChartOfAccountsController extends Controller
                     'sample-index',
                     'get-general-ledger',
                     'chart-of-accounts',
+                    'accounting-codes',
+                    'accounting-codes-dv',
+                    'search-chart-of-accounts',
+                    'search-accounting-code',
+                    'get-chart-info',
 
                 ],
                 'rules' => [
@@ -56,6 +61,8 @@ class ChartOfAccountsController extends Controller
                             'get-all-account',
                             'sample-index',
                             'get-general-ledger',
+                            'chart-of-accounts',
+
 
                         ],
                         'allow' => true,
@@ -66,6 +73,11 @@ class ChartOfAccountsController extends Controller
 
                             'get-all-account',
                             'chart-of-accounts',
+                            'accounting-codes',
+                            'accounting-codes-dv',
+                            'search-chart-of-accounts',
+                            'search-accounting-code',
+                            'get-chart-info',
 
                         ],
                         'allow' => true,
@@ -572,5 +584,15 @@ class ChartOfAccountsController extends Controller
         //     $out['results'] = ['id' => $id, 'text' => AdvancesEntries::find($id)->fund_source];
         // }
         return $out;
+    }
+    public function actionGetChartInfo()
+    {
+        if ($_POST) {
+
+            $query = Yii::$app->db->createCommand("SELECT id,CONCAT(uacs,'-',general_ledger) as chart_account FROM chart_of_accounts WHERE uacs = :object_code")
+                ->bindValue(':object_code', $_POST['object_code'])
+                ->queryOne();
+            return json_encode($query);
+        }
     }
 }

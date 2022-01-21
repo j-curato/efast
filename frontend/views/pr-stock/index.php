@@ -19,7 +19,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=pr-stock/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
-
         <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
     </p>
     <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -77,10 +76,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'heading' => 'Stocks'
         ],
         'columns' => [
-            'id',
-            'stock_number',
-            'stock',
             'bac_code',
+            'stock_title',
             [
                 'label' => 'Unit of Measure',
                 'attribute' => 'unit_of_measure_id',
@@ -100,18 +97,3 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 <?php
-$script = <<<JS
-            var i=false;
-        $('#modalButtoncreate').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-        $('a[title=Update]').click(function(e){
-            e.preventDefault();
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
-        });
-
-             
-        
-JS;
-$this->registerJs($script);
-?>

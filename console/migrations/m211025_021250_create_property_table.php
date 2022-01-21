@@ -16,7 +16,7 @@ class m211025_021250_create_property_table extends Migration
             'property_number' => $this->string(),
             'book_id' => $this->integer(),
             'unit_of_measure_id' => $this->integer(),
-            'employee_id' => $this->string(),
+            'employee_id' => $this->bigInteger(),
             'iar_number' => $this->string(),
             'article' => $this->string(),
             'model' => $this->string(),

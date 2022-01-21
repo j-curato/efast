@@ -233,8 +233,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     $q = Yii::$app->db->createCommand('SELECT * FROM accounting_codes where object_code =:object_code')
                         ->bindValue(":object_code", $value->object_code)
                         ->queryOne();
-                    $general_ledger = $q['account_title'];
-                    $object_code = $q['object_code'];
+                    if (!empty($q)) {
+
+                        $general_ledger = $q['account_title'];
+                        $object_code = $q['object_code'];
+                    }
+
                     $arr[] = [
                         'general_ledger' => $general_ledger,
                         'object_code' => $object_code,

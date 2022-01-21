@@ -12,6 +12,7 @@ use yii\widgets\ActiveForm;
 /* @var $model app\models\PrRfq */
 /* @var $form yii\widgets\ActiveForm */
 
+$model->project_location = 'DTI Regional Office XIII, Butuan City';
 $pr = '';
 $employee = '';
 $items = json_encode([]);
@@ -31,7 +32,7 @@ if (!empty($error)) {
 }
 
 if (!empty($model->id)) {
-  
+
     $pr_query   = Yii::$app->db->createCommand("SELECT id,pr_number   FROM pr_purchase_request WHERE id = :id")
         ->bindValue(':id', $model->pr_purchase_request_id)
         ->queryAll();
@@ -91,7 +92,7 @@ if (!empty($model->pr_purchase_request_id)) {
                     ]) ?>
 
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-3">
                     <?= $form->field($model, 'pr_purchase_request_id')->widget(Select2::class, [
                         'data' => $pr,
                         'options' => ['placeholder' => 'Search for a Purchase Request'],
@@ -143,12 +144,15 @@ if (!empty($model->pr_purchase_request_id)) {
                 </div>
 
             </div>
+            <?= $form->field($model, 'project_location')->textarea() ?>
             <table id="data-table" class="table table-striped">
                 <thead>
                     <th>Checkbox</th>
                     <th>Stock Number</th>
                     <th>Description</th>
                     <th>Unit of Measure</th>
+                    <th>Specification</th>
+
                     <th>Unit Cost</th>
                     <th>Quantity</th>
                     <th>Total Unit Cost</th>
@@ -188,16 +192,17 @@ if (!empty($model->pr_purchase_request_id)) {
                 $('#data-table tbody').html('')
                 var res = JSON.parse(data)
                 for (var i = 0; i < res.length; i++) {
+                    var myStr = res[i]['specification']
                     var row = `
                         <tr>
                             <td>
                                 <input type='checkbox' class='form-check-input' value='${res[i]['pr_item_id']}' name='pr_purchase_request_item_id[]' data-value = '${res[i]['pr_item_id']}'>
                             </td>
                             <td>
-                                ${res[i]['stock_number']}
+                                ${res[i]['bac_code']}
                             </td>
                             <td>
-                                ${res[i]['description']}
+                                ${res[i]['stock_title']}
                             </td>
                             <td>
                                 ${res[i]['unit_of_measure']}

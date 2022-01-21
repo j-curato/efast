@@ -67,7 +67,7 @@ class PrPurchaseRequestController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function insertPrItems($model_id, $pr_stocks_id, $unit_cost, $quantity, $specification, $pr_item_id)
+    public function insertPrItems($model_id, $pr_stocks_id, $unit_cost, $quantity, $specification, $pr_item_id, $unit_of_measure_id)
     {
 
         foreach ($pr_stocks_id as $i => $val) {
@@ -82,6 +82,7 @@ class PrPurchaseRequestController extends Controller
             $item->pr_stock_id = $val;
             $item->quantity = $quantity[$i];
             $item->unit_cost = $unit_cost[$i];
+            $item->unit_of_measure_id = $unit_of_measure_id[$i];
             $item->specification = empty($specification[$i]) ? null : $specification[$i];
             if ($item->save(false)) {
             } else {
@@ -100,6 +101,7 @@ class PrPurchaseRequestController extends Controller
 
             $pr_stocks_id = [];
             $specification = [];
+            $unit_of_measure_id = [];
             $pr_item_id = [];
 
             $unit_cost = $_POST['unit_cost'];
@@ -109,6 +111,7 @@ class PrPurchaseRequestController extends Controller
             } else {
                 $pr_stocks_id = $_POST['pr_stocks_id'];
                 $specification = $_POST['specification'];
+                $unit_of_measure_id = $_POST['unit_of_measure_id'];
             }
 
             $transaction = Yii::$app->db->beginTransaction();
@@ -123,7 +126,8 @@ class PrPurchaseRequestController extends Controller
                             $unit_cost,
                             $quantity,
                             $specification,
-                            $pr_item_id
+                            $pr_item_id,
+                            $unit_of_measure_id
                         );
                     }
                 }
@@ -164,6 +168,7 @@ class PrPurchaseRequestController extends Controller
 
             $pr_stocks_id = [];
             $specification = [];
+            $unit_of_measure_id = [];
             $pr_item_id = [];
 
             if (empty($_POST['pr_stocks_id'])) {
@@ -174,6 +179,7 @@ class PrPurchaseRequestController extends Controller
             } else {
                 $pr_stocks_id = $_POST['pr_stocks_id'];
                 $specification = $_POST['specification'];
+                $unit_of_measure_id = $_POST['unit_of_measure_id'];
             }
             if ($old_date !== $new_date) {
                 $arr =  explode('-', $model->pr_number);
@@ -186,6 +192,7 @@ class PrPurchaseRequestController extends Controller
                 $pr_item_id = $_POST['pr_item_id'];
             }
             $unit_cost = $_POST['unit_cost'];
+            // return var_dump($unit_cost);
             $quantity = $_POST['quantity'];
             // return json_encode(
 
@@ -251,7 +258,8 @@ class PrPurchaseRequestController extends Controller
                             $unit_cost,
                             $quantity,
                             $specification,
-                            $pr_item_id
+                            $pr_item_id,
+                            $unit_of_measure_id
                         );
                     } else {
                         return 'error';
@@ -307,11 +315,11 @@ class PrPurchaseRequestController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function getPrNumber($date)
+    public function getPrNumber($d)
     {
 
         $province = 'RO';
-        $date = '2022-07-03';
+        $date = DateTime::createFromFormat('Y-m-d', $d)->format('Y-m-d');
         $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_number,'-',-1) AS UNSIGNED) as last_number FROM pr_purchase_request ORDER BY last_number DESC LIMIT 1")
             ->queryScalar();
 
@@ -355,10 +363,10 @@ class PrPurchaseRequestController extends Controller
 
             $query = Yii::$app->db->createCommand("SELECT 
             pr_purchase_request_item.id as pr_item_id,
-            pr_stock.stock_number,
-           pr_stock.description,
+            pr_stock.bac_code,
+           pr_stock.stock_title,
            unit_of_measure.unit_of_measure,
-           pr_purchase_request_item.specification,
+           REPLACE( pr_purchase_request_item.specification, '[n]', '<br>') as specification,
            pr_purchase_request_item.unit_cost,
            pr_purchase_request_item.quantity,
            pr_purchase_request_item.unit_cost * pr_purchase_request_item.quantity as total_cost

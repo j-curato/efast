@@ -14,15 +14,15 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="pr-purchase-request-view">
 
 
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-    </p>
+
 
 
 
     <div class="container ">
 
-
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        </p>
         <table id="main_table">
             <thead>
                 <tr>
@@ -69,12 +69,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
 
-                    <th>Stock/ Property No.</th>
-                    <th>Unit</th>
-                    <th>Item Description</th>
-                    <th>Quantity</th>
-                    <th>Unit Cost</th>
-                    <th>Total Cost</th>
+                    <th class="center">Stock/ Property No.</th>
+                    <th class="center">Unit</th>
+                    <th class="center">Item Description</th>
+                    <th class="center">Quantity</th>
+                    <th class="center">Unit Cost</th>
+                    <th class="center">Total Cost</th>
                 </tr>
 
             </thead>
@@ -87,17 +87,18 @@ $this->params['breadcrumbs'][] = $this->title;
                     $total_cost = intval($val->quantity) * floatval($val->unit_cost);
                     $total += $total_cost;
                     $specs = preg_replace('#\[n\]#', "<br>", $val->specification);
+
                     echo "<tr>
-                        <td>{$val->stock->stock_number}</td>
-                        <td>{$val->stock->unitOfMeasure->unit_of_measure}</td>
-                        <td><span class='description'>" . $val->stock->description . "</span>" .
+                        <td>{$val->stock->bac_code}</td>
+                        <td class='center'>{$val->unitOfMeasure->unit_of_measure}</td>
+                        <td><span class='description'>" . $val->stock->stock_title . "</span>" .
                         "<br><span class='specs'>"
 
                         . $specs
                         . "</specs></td>
-                        <td>{$val->quantity}</td>
-                        <td class='amount'>{$val->unit_cost}</td>
-                        <td class='amount'>$total_cost</td>
+                        <td class='center'>{$val->quantity}</td>
+                        <td class='amount'>" . number_format($val->unit_cost, 2) . "</td>
+                        <td class='amount'>" . number_format($total_cost, 2) . "</td>
                     </tr>";
                 }
                 for ($i = 0; $i < 3; $i++) {
@@ -117,7 +118,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <tr>
                     <td colspan="5" class="total">GRAND TOTAL</td>
-                    <td class="amount" style="font-weight: bold;"><?= $total ?></td>
+                    <td class="amount" style="font-weight: bold;"><?= number_format($total, 2) ?></td>
                 </tr>
                 <tr>
                     <td colspan="6">
@@ -134,7 +135,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <tr>
                     <td colspan="6" style="border-bottom: none;font-size:10px">
-              
+
                         <span>
                             Project Title:
                         </span>
@@ -155,18 +156,20 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </tr>
                                 <tr>
 
-                                    <td>Signature:</td>
-                                    <td class="center">
-                                        <span class="center">__________________________________</span>
-                                    </td>
-                                    <td class="center">
-                                        <span class="center">__________________________________</span>
+                                    <td>
+
+                                        <span> Signature:</span>
+                                        <br>
+                                        <span> Printed Name:</span>
+                                        <br>
+                                        <span> Designation</span>
+
+
 
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td>Printed Name:</td>
                                     <td class="center">
+                                        <span class="center">__________________________________</span>
+                                        <br>
                                         <span style="text-decoration:underline;font-weight: bold;">
                                             <?php
                                             $name = $model->requestedBy->f_name
@@ -175,8 +178,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                             echo strtoupper($name);
                                             ?>
                                         </span>
+                                        <br>
+                                        <span><?php
+                                                echo $name = $model->requestedBy->position;
+                                                ?></span>
                                     </td>
                                     <td class="center">
+                                        <span class="center">__________________________________</span>
+                                        <br>
+
                                         <span style="text-decoration:underline;font-weight: bold;">
                                             <?php
                                             $name = $model->approvedBy->f_name
@@ -185,23 +195,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                             echo strtoupper($name);
                                             ?>
                                         </span>
+                                        <br>
+                                        <span>
+                                            <?php
+                                            echo $name = $model->approvedBy->position
+                                            ?>
+                                        </span>
 
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>Designation:</td>
-                                    <td class="center">
-                                        <span><?php
-                                                echo $name = $model->requestedBy->position;
-                                                ?></span>
-                                    </td>
-                                    <td class="center">
-                                        <span><?php
-                                                echo $name = $model->approvedBy->position
-                                                ?></span>
 
-                                    </td>
-                                </tr>
                             </tbody>
                         </table>
                     </td>
@@ -214,6 +217,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 <style>
+    .center {
+        text-align: center;
+    }
+
     .description {
 
         font-weight: bold;

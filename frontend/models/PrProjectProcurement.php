@@ -30,6 +30,12 @@ class PrProjectProcurement extends \yii\db\ActiveRecord
     {
         return [
             [['title'], 'string'],
+            [[
+                'title',
+                'pr_office_id',
+                'employee_id',
+                'amount'
+            ], 'required'],
             [['pr_office_id', 'employee_id'], 'integer'],
             [['amount'], 'number'],
         ];
@@ -43,9 +49,9 @@ class PrProjectProcurement extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'title' => 'Title',
-            'pr_office_id' => 'Pr Office ID',
+            'pr_office_id' => ' Office ',
             'amount' => 'Amount',
-            'employee_id' => 'Employee ID',
+            'employee_id' => 'Prepared By',
         ];
     }
     public function getOffice()

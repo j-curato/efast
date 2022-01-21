@@ -1,24 +1,22 @@
 <?php
 
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\UnitOfMeasure */
+/* @var $model app\models\JevBeginningBalance */
 
 $this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Unit Of Measures', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Jev Beginning Balances', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="unit-of-measure-view">
+<div class="jev-beginning-balance-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Update', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=unit-of-measure/update&id='.$model->id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
-
+        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
@@ -32,7 +30,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'unit_of_measure',
+            'year',
+            'object_code',
+            'amount',
+            'book_id',
         ],
     ]) ?>
 

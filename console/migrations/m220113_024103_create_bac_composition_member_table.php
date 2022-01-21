@@ -18,7 +18,7 @@ class m220113_024103_create_bac_composition_member_table extends Migration
         $this->createTable('{{%bac_composition_member}}', [
             'id' => $this->primaryKey(),
             'bac_composition_id' => $this->integer(),
-            'employee_id' => $this->string(),
+            'employee_id' => $this->bigInteger(),
             'bac_position_id' => $this->integer(),
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
         ]);

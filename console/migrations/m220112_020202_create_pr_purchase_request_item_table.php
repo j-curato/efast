@@ -22,6 +22,7 @@ class m220112_020202_create_pr_purchase_request_item_table extends Migration
             'quantity' => $this->integer(),
             'unit_cost' => $this->decimal(10, 2),
             'specification' => $this->text(),
+            'unit_of_measure_id'=>$this->integer(),
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
 

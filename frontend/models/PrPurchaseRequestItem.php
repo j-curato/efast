@@ -30,7 +30,7 @@ class PrPurchaseRequestItem extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['pr_purchase_request_id', 'pr_stock_id', 'quantity'], 'integer'],
+            [['pr_purchase_request_id', 'pr_stock_id', 'quantity', 'unit_of_measure_id'], 'integer'],
             [['unit_cost'], 'number'],
             [['specification'], 'text'],
             [['created_at'], 'safe'],
@@ -50,10 +50,15 @@ class PrPurchaseRequestItem extends \yii\db\ActiveRecord
             'unit_cost' => 'Unit Cost',
             'created_at' => 'Created At',
             'specification' => 'Specification',
+            'unit_of_measure_id' => 'Unit of Measure',
         ];
     }
     public function getStock()
     {
         return $this->hasOne(PrStock::class, ['id' => 'pr_stock_id']);
+    }
+    public function getUnitOfMeasure()
+    {
+        return $this->hasOne(UnitOfMeasure::class, ['id' => 'unit_of_measure_id']);
     }
 }

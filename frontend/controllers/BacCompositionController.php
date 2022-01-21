@@ -7,6 +7,7 @@ use app\models\BacComposition;
 use app\models\BacCompositionMember;
 use app\models\BacCompositionnSearch;
 use ErrorException;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -22,6 +23,31 @@ class BacCompositionController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'create',
+                    'update',
+                    'delete',
+
+
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -146,8 +172,8 @@ class BacCompositionController extends Controller
 
             $transaction = Yii::$app->db->beginTransaction();
             Yii::$app->db->createCommand("DELETE FROM bac_composition_member WHERE bac_composition_id = :id")
-            ->bindValue(':id',$model->id)
-            ->query();
+                ->bindValue(':id', $model->id)
+                ->query();
             try {
                 if ($flag = true) {
 
@@ -186,12 +212,12 @@ class BacCompositionController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    // public function actionDelete($id)
+    // {
+    //     $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
-    }
+    //     return $this->redirect(['index']);
+    // }
 
     /**
      * Finds the BacComposition model based on its primary key value.

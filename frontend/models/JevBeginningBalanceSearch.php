@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\PrStock;
+use app\models\JevBeginningBalance;
 
 /**
- * PrStockSearch represents the model behind the search form of `app\models\PrStock`.
+ * JevBeginningBalanceSearch represents the model behind the search form of `app\models\JevBeginningBalance`.
  */
-class PrStockSearch extends PrStock
+class JevBeginningBalanceSearch extends JevBeginningBalance
 {
     /**
      * {@inheritdoc}
@@ -17,9 +17,7 @@ class PrStockSearch extends PrStock
     public function rules()
     {
         return [
-            [['id', 'bac_code',  'chart_of_account_id'], 'integer'],
-            [['stock_title', 'created_at', 'unit_of_measure_id'], 'safe'],
-            [['amount'], 'number'],
+            [['id', 'year', 'book_id'], 'integer'],
         ];
     }
 
@@ -41,7 +39,7 @@ class PrStockSearch extends PrStock
      */
     public function search($params)
     {
-        $query = PrStock::find();
+        $query = JevBeginningBalance::find();
 
         // add conditions that should always apply here
 
@@ -56,18 +54,14 @@ class PrStockSearch extends PrStock
             // $query->where('0=1');
             return $dataProvider;
         }
-        $query->joinWith('unitOfMeasure');
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'bac_code' => $this->bac_code,
-            'amount' => $this->amount,
-            'chart_of_account_id' => $this->chart_of_account_id,
-            'created_at' => $this->created_at,
+            'year' => $this->year,
         ]);
 
-        $query->andFilterWhere(['like', 'stock_title', $this->stock_title])
-            ->andFilterWhere(['like', 'unit_of_measure.unit_of_measure', $this->unit_of_measure_id]);
+        $query->andFilterWhere(['like', 'book_id', $this->book_id]);
 
         return $dataProvider;
     }

@@ -99,9 +99,15 @@ class EmployeeController extends Controller
     {
         $model = new Employee();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
 
+            $model->employee_id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->employee_id]);
+            }
             // $sign_up = new SignupForm();
+
             // $sign_up->username = explode(' ', $model->f_name)[0] . '.' . $model->l_name;
             // $sign_up->email = 'email3@email.com';
             // $sign_up->password = 'abcde54321';
@@ -119,7 +125,7 @@ class EmployeeController extends Controller
             // }
 
 
-            return $this->redirect(['view', 'id' => $model->employee_id]);
+
         } else {
 
             return $this->renderAjax('create', [

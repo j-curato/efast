@@ -31,18 +31,17 @@ class PrStock extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['bac_code', 'unit_of_measure_id', 'chart_of_account_id'], 'integer'],
+            [['unit_of_measure_id', 'chart_of_account_id'], 'integer'],
             [['amount'], 'number'],
             [['created_at'], 'safe'],
             [[
                 'unit_of_measure_id',
                 'chart_of_account_id',
-                'stock',
-                'description',
+                'stock_title',
                 'amount',
+                'bac_code','part', 'type'
             ], 'required'],
-            [['stock','stock_number'], 'string', 'max' => 255],
-            [['description'], 'string', 'max' => 1000],
+            [['stock_title', 'part', 'type'], 'safe'],
         ];
     }
 
@@ -53,12 +52,13 @@ class PrStock extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'stock' => 'Stock Title',
-            'stock_number' => 'Stock Number',
+            'stock_title' => 'Stock Title',
             'bac_code' => 'Bac Code',
             'unit_of_measure_id' => 'Unit Of Measure ',
             'amount' => 'Amount',
             'chart_of_account_id' => 'Chart Of Account ',
+            'part' => 'Part No. ',
+            'type' => 'Stock Type ',
             'created_at' => 'Created At',
         ];
     }

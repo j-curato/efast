@@ -355,10 +355,11 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Office/Section', 'icon' => 'circle-o', 'url' => ['/pr-office'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Stock/Property', 'icon' => 'circle-o', 'url' => ['/pr-stock'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'BAC', 'icon' => 'circle-o', 'url' => ['/bac-composition'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'BAC position', 'icon' => 'circle-o', 'url' => ['/bac-position'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Activity/Project Procurement', 'icon' => 'circle-o', 'url' => ['/pr-project-procurement'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Purchase Request', 'icon' => 'circle-o', 'url' => ['/pr-purchase-request'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'RFQ', 'icon' => 'circle-o', 'url' => ['/pr-rfq'],] : [],
-                            
+
                             ],
                         ] : [],
                         Yii::$app->user->can('province') ? [

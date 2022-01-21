@@ -17,8 +17,10 @@ class m220107_045357_create_pr_project_procurement_table extends Migration
             'title' => $this->text(),
             'pr_office_id' => $this->integer(),
             'amount' => $this->decimal(10, 2),
-            'employee_id' => $this->integer()
+            'employee_id' => $this->bigInteger(),
+            'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
+        $this->alterColumn('{{%pr_project_procurement}}', 'id', $this->bigInteger() . ' NOT NULL default(uuid_short()) ');
     }
 
     /**
