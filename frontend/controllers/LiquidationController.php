@@ -10,6 +10,7 @@ use app\models\LiquidataionSearch;
 use app\models\LiquidationEntries;
 use app\models\LiquidationEntriesSearch;
 use app\models\LiquidationEntriesViewSearch;
+use DateTime;
 use ErrorException;
 use Exception;
 use Mpdf\Tag\Em;
@@ -632,14 +633,16 @@ class LiquidationController extends Controller
             'sds' => 1334,
             'pdi' => 026
         ];
-
+        $year = DateTime::createFromFormat('Y-m',$reporting_period)->format('Y');
         $province = Yii::$app->user->identity->province;
         $q = Yii::$app->db->createCommand("SELECT CAST( substring_index(substring(dv_number, instr(dv_number, '-')+1), '-', -1) as UNSIGNED) as q 
         from liquidation
         WHERE liquidation.province = :province
         AND liquidation.reporting_period >= '2021-09'
+        AND liquidation.reporting_period LIKE :_year
         ORDER BY q DESC  LIMIT 1")
             ->bindValue(':province', $province)
+            ->bindValue(':_year',$year .'%')
             ->queryScalar();
 
 
