@@ -900,7 +900,7 @@ class LiquidationController extends Controller
                         if ($liq_entries->save(false)) {
                         } else {
                             $transaction->rollback();
-                            return  $liq_entries->errors .  " Error pag save sa entries $key";
+                            return  json_encode([$liq_entries->errors, " Error pag save sa entries $key"]);
                         }
                     }
                 }
