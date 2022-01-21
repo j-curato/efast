@@ -633,7 +633,7 @@ class LiquidationController extends Controller
             'sds' => 1334,
             'pdi' => 026
         ];
-        $year = DateTime::createFromFormat('Y-m',$reporting_period)->format('Y');
+        $year = DateTime::createFromFormat('Y-m', $reporting_period)->format('Y');
         $province = Yii::$app->user->identity->province;
         $q = Yii::$app->db->createCommand("SELECT CAST( substring_index(substring(dv_number, instr(dv_number, '-')+1), '-', -1) as UNSIGNED) as q 
         from liquidation
@@ -642,7 +642,7 @@ class LiquidationController extends Controller
         AND liquidation.reporting_period LIKE :_year
         ORDER BY q DESC  LIMIT 1")
             ->bindValue(':province', $province)
-            ->bindValue(':_year',$year .'%')
+            ->bindValue(':_year', $year . '%')
             ->queryScalar();
 
 
@@ -794,105 +794,109 @@ class LiquidationController extends Controller
                 if (!empty($cells)) {
 
                     $province = $cells[0];
-                    $check_date = date("Y-m-d", strtotime($cells[1]));
-                    $check_number = trim($cells[2]);
-                    $is_cancel =  $cells[3];
-                    $dv_number = $cells[4];
-                    $reporting_period = date("Y-m", strtotime($cells[5]));
-                    $fund_source = trim($cells[6]);
-                    $payee = trim($cells[7]);
-                    $particular = trim($cells[8]);
-                    $object_code = trim($cells[9]);
-                    // $res_center = trim($cells[8]);
-                    $withdrawal = trim($cells[12]);
-                    $vat = trim($cells[13]);
-                    $expanded = trim($cells[14]);
-                    $advances_entries_id = null;
+                    $transaction_number = $cells[1];
+                    $reporting_period = $cells[2];
+                    $dv_number = $cells[3];
+                    $check_date = $cells[4];
+                    $check_number = $cells[5];
+                    $fund_source = $cells[6];
+                    $object_code = $cells[9];
+                    $withdrawal = $cells[11];
+                    $vat_nonvat = $cells[12];
+                    $expanded_tax = $cells[13];
+                    $liquidation_damage = $cells[14];
+
+
+
 
 
                     // return json_encode($key);
                     // return json_encode('qwer');
-                    $chart_id = (new \yii\db\Query())
-                        ->select("id")
-                        ->from('chart_of_accounts')
-                        ->where("chart_of_accounts.uacs =:uacs", ['uacs' => $object_code])
-                        ->one();
-                    $c_id = null;
-                    if (!empty($chart_id)) {
-                        $c_id = $chart_id['id'];
+                    $po_transaction_id = Yii::$app->db->createCommand("SELECT id FROM po_transaction WHERE po_transaction.tracking_number =:tracking_number")
+                        ->bindValue(':tracking_number', $transaction_number)
+                        ->queryScalar();
+                    if (empty($po_transaction_id)) {
+                        $transaction->rollback();
+                        return "po transaction $key";
                     }
-                    // $payee_id = (new \yii\db\Query())
-                    //     ->select('id')
-                    //     ->from('payee')
-                    //     ->where("payee.account_name LIKE :account_name", ['account_name' => $payee])
-                    //     ->one();
-                    if (strtolower($is_cancel) === 'good') {
-                        $advances_entries_id = (new \yii\db\Query())
-                            ->select("id")
-                            ->from("advances_entries")
-                            ->where("advances_entries.fund_source LIKE :fund_source", ['fund_source' => "%$fund_source%"])
-                            ->one();
-                        if (empty($advances_entries_id)) {
-                            ob_clean();
-                            echo "<pre>";
-                            var_dump($key . " WALA NA KITA" . $fund_source);
-                            echo "</pre>";
-                            return ob_get_clean();
-                        }
-                    } else {
-                        $advances_entries_id['id'] = null;
+                    $po_transaction_id = Yii::$app->db->createCommand("SELECT id FROM po_transaction WHERE po_transaction.tracking_number =:tracking_number")
+                        ->bindValue(':tracking_number', $transaction_number)
+                        ->queryScalar();
+                    if (empty($po_transaction_id)) {
+                        $transaction->rollback();
+                        return "po transaction $key";
+                    }
+                    $check_range_id = Yii::$app->db->createCommand("SELECT id FROM check_range
+                    WHERE
+                   :check_number >= check_range.`from`
+                   AND :check_number  <=check_range.`to`")
+                        ->bindValue(':check_number', $check_number)
+                        ->queryScalar();
+                    if (empty($po_transaction_id)) {
+                        $transaction->rollback();
+                        return "Check Range $key";
+                    }
+                    $chart_of_account_id = Yii::$app->db->createCommand("SELECT id FROM chart_of_accounts WHERE uacs = :object_code")
+                        ->bindValue(':object_code', $object_code)
+                        ->queryScalar();
+                    if (empty($chart_of_account_id)) {
+                        $transaction->rollback();
+                        return "chart of account $key";
                     }
 
+                    $advances_entries_id = Yii::$app->db->createCommand("SELECT * FROM `advances_entries`
+                    WHERE
+                    advances_entries.fund_source = :fund_source")
+                        ->bindValue(':fund_source', $fund_source)
+                        ->queryScalar();
+                    if (empty($advances_entries_id)) {
+                        $transaction->rollBack();
+                        return "advances entries $key";
+                    }
                     $liq_id = (new \yii\db\Query())
                         ->select('id')
                         ->from('liquidation')
-                        ->where('liquidation.check_number =:check_number', ['check_number' => $check_number])
+                        ->where('liquidation.dv_number =:dv_number', ['dv_number' => $dv_number])
                         ->one();
 
 
-                    $liquidation_id = null;
+
                     if (empty($liq_id)) {
                         $liquidation = new Liquidation();
                         $liquidation->province = $province;
                         $liquidation->check_date = $check_date;
                         $liquidation->check_number = $check_number;
-                        $liquidation->particular = $particular;
-                        $liquidation->is_cancelled = strtolower($is_cancel) === 'good' ? 0 : 1;
-                        $liquidation->payee = $payee;
+                        $liquidation->po_transaction_id = $po_transaction_id;
                         $liquidation->dv_number = $dv_number;
                         $liquidation->reporting_period = $reporting_period;
-                        // $liquidation->advances_entries_id = $advances_entries_id['id'];
-                        // $liquidation->chart_of_account_id = $advances_entries_id['id'];
-                        // $liquidation->responsibility_center_id = $res_center;
+
                         if ($liquidation->save(false)) {
-                            $liquidation_id = $liquidation->id;
+                            $liq_id = $liquidation->id;
                         }
                     } else {
-                        $liquidation_id = $liq_id['id'];
+                        $liq_entries = new  LiquidationEntries();
+                        $liq_entries->liquidation_id = $liq_id;
+                        $liq_entries->chart_of_account_id = $chart_of_account_id;
+                        $liq_entries->withdrawals = $withdrawal;
+                        $liq_entries->vat_nonvat = $vat_nonvat;
+                        $liq_entries->expanded_tax = $expanded_tax;
+                        $liq_entries->reporting_period = $reporting_period;
+                        $liq_entries->advances_entries_id = $advances_entries_id;
+                        $liq_entries->liquidation_damage = $liquidation_damage;
                     }
-                    $data[] = [
-                        'liquidation_id' => $liquidation_id,
-                        'chart_of_account_id' => $c_id,
-                        'withdrawals' => $withdrawal,
-                        'vat_nonvat' => $vat,
-                        'expanded_tax' => $expanded,
-                        'reporting_period' => $reporting_period,
-                        'advances_entries_id' => $advances_entries_id['id']
-
-                    ];
                 }
             }
 
-            $column = [
-                'liquidation_id',
-                'chart_of_account_id',
-                'withdrawals',
-                'vat_nonvat',
-                'expanded_tax',
-                'reporting_period',
-                'advances_entries_id'
-            ];
-            $ja = Yii::$app->db->createCommand()->batchInsert('liquidation_entries', $column, $data)->execute();
+            // $column = [
+            //     'liquidation_id',
+            //     'chart_of_account_id',
+            //     'withdrawals',
+            //     'vat_nonvat',
+            //     'expanded_tax',
+            //     'reporting_period',
+            //     'advances_entries_id'
+            // ];
+            // $ja = Yii::$app->db->createCommand()->batchInsert('liquidation_entries', $column, $data)->execute();
 
             // return $this->redirect(['index']);
             // return json_encode(['isSuccess' => true]);
