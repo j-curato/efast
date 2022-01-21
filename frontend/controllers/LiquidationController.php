@@ -883,6 +883,11 @@ class LiquidationController extends Controller
                         $liq_entries->reporting_period = $reporting_period;
                         $liq_entries->advances_entries_id = $advances_entries_id;
                         $liq_entries->liquidation_damage = $liquidation_damage;
+                        if ($liq_entries->save()) {
+                        } else {
+                            $transaction->rollback();
+                            return "Error pag save sa entries $key";
+                        }
                     }
                 }
             }
