@@ -5,6 +5,7 @@ use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PoTransaction */
@@ -32,13 +33,26 @@ use yii\widgets\ActiveForm;
     ?>
     <?php $form = ActiveForm::begin(); ?>
 
+    <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
+
+        'pluginOptions' => [
+            'format'=>'yyyy-mm',
+            'autoclose' => true,
+            'minViewMode'=>'months',
+            'startView' => "months",
+        ],
+        'options'=>[
+            'readOnly'=>true,
+            'style'=>'background-color:white'
+        ]
+    ]);?>
     <?= $form->field($model, 'po_responsibility_center_id')->widget(Select2::class, [
         'data' => ArrayHelper::map($respons_center, 'id', 'name'),
         'options' => ['placeholder' => 'Select  Responsibility Center'],
         'pluginOptions' => [
             'allowClear' => true
         ],
-    ]); ?>
+    ]);?>
     <?= $form->field($model, 'payee')->textInput() ?>
 
 

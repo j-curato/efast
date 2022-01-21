@@ -95,7 +95,7 @@ class PoTransactionController extends Controller
         $model->province = Yii::$app->user->identity->province;
         // $model->po_responsibility_center_id = strtoupper(\Yii::$app->user->identity->province) .'-'. $model->po_responsibility_center_id ;
         if ($model->load(Yii::$app->request->post())) {
-            $model->tracking_number = $this->getTrackingNumber($model->po_responsibility_center_id);
+            $model->tracking_number = $this->getTrackingNumber($model->po_responsibility_center_id,$model->reporting_period);
             if ($model->save(false)) {
             }
             return $this->redirect(['view', 'id' => $model->id]);
@@ -165,23 +165,42 @@ class PoTransactionController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function getTrackingNumber($responsibility_center_id)
+    public function getTrackingNumber($responsibility_center_id,$reporting_period)
     {
-        $date = date("Y");
+        // $date = date("Y");
+        $reporting_period_year = DateTime::createFromFormat('Y-m',$reporting_period)->format('Y');
+        $date = $reporting_period_year;
         $responsibility_center = (new \yii\db\Query())
             ->select("name")
             ->from('po_responsibility_center')
             ->where("id =:id", ['id' => $responsibility_center_id])
             ->one();
         $province = Yii::$app->user->identity->province;
+        if($reporting_period_year<=2021){
+
         $latest_tracking_no = Yii::$app->db->createCommand(
             "SELECT CAST(substring_index(tracking_number,'-',-1)  AS UNSIGNED) as q
         FROM `po_transaction`
         WHERE tracking_number LIKE :province
+       
          ORDER BY q DESC LIMIT 1"
         )
             ->bindValue(':province', $province . '%')
+          
             ->queryScalar();
+        }else{
+            $latest_tracking_no = Yii::$app->db->createCommand(
+                "SELECT CAST(substring_index(tracking_number,'-',-1)  AS UNSIGNED) as q
+                FROM `po_transaction`
+                WHERE tracking_number LIKE :province
+                AND reporting_period LIKE :_year
+                 ORDER BY q DESC LIMIT 1"
+            )
+                ->bindValue(':province', $province . '%')
+                ->bindValue(':_year', $date . '%')
+                ->queryScalar();
+        }
+
         if (!empty($latest_tracking_no)) {
             $last_number = $latest_tracking_no + 1;
         } else {
