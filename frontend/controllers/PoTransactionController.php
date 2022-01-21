@@ -96,7 +96,7 @@ class PoTransactionController extends Controller
         $model->province = Yii::$app->user->identity->province;
         // $model->po_responsibility_center_id = strtoupper(\Yii::$app->user->identity->province) .'-'. $model->po_responsibility_center_id ;
         if ($model->load(Yii::$app->request->post())) {
-            $model->tracking_number = $this->getTrackingNumber($model->po_responsibility_center_id,$model->reporting_period);
+            $model->tracking_number = $this->getTrackingNumber($model->po_responsibility_center_id, $model->reporting_period);
             if ($model->save(false)) {
             }
             return $this->redirect(['view', 'id' => $model->id]);
@@ -166,10 +166,10 @@ class PoTransactionController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function getTrackingNumber($responsibility_center_id,$reporting_period)
+    public function getTrackingNumber($responsibility_center_id, $reporting_period)
     {
         // $date = date("Y");
-        $reporting_period_year = DateTime::createFromFormat('Y-m',$reporting_period)->format('Y');
+        $reporting_period_year = DateTime::createFromFormat('Y-m', $reporting_period)->format('Y');
         $date = $reporting_period_year;
         $responsibility_center = (new \yii\db\Query())
             ->select("name")
@@ -177,19 +177,19 @@ class PoTransactionController extends Controller
             ->where("id =:id", ['id' => $responsibility_center_id])
             ->one();
         $province = Yii::$app->user->identity->province;
-        if($reporting_period_year<=2021){
+        if ($reporting_period_year <= 2021) {
 
-        $latest_tracking_no = Yii::$app->db->createCommand(
-            "SELECT CAST(substring_index(tracking_number,'-',-1)  AS UNSIGNED) as q
+            $latest_tracking_no = Yii::$app->db->createCommand(
+                "SELECT CAST(substring_index(tracking_number,'-',-1)  AS UNSIGNED) as q
         FROM `po_transaction`
         WHERE tracking_number LIKE :province
        
          ORDER BY q DESC LIMIT 1"
-        )
-            ->bindValue(':province', $province . '%')
-          
-            ->queryScalar();
-        }else{
+            )
+                ->bindValue(':province', $province . '%')
+
+                ->queryScalar();
+        } else {
             $latest_tracking_no = Yii::$app->db->createCommand(
                 "SELECT CAST(substring_index(tracking_number,'-',-1)  AS UNSIGNED) as q
                 FROM `po_transaction`
@@ -211,17 +211,16 @@ class PoTransactionController extends Controller
         // for ($y = strlen($last_number); $y < 3; $y++) {
         //     $final_number .= 0;
         // }
-        if(strlen($last_number)<4){
+        if (strlen($last_number) < 4) {
 
             $final_number = substr(str_repeat(0, 3) . $last_number, -3);
-        }
-        else {
+        } else {
             $final_number = $last_number;
         }
-        
+
 
         // $final_number .= $last_number;
-        $tracking_number = strtoupper(\Yii::$app->user->identity->province) . '-' .trim( $responsibility_center['name']) . '-' . $date . '-' . $final_number;
+        $tracking_number = strtoupper(\Yii::$app->user->identity->province) . '-' . trim($responsibility_center['name']) . '-' . $date . '-' . $final_number;
         return  $tracking_number;
     }
     public function actionGetTransaction()
@@ -253,18 +252,114 @@ class PoTransactionController extends Controller
         $query = (new \yii\db\Query())
             ->select('*')
             ->from('po_transaction');
-            if (
-                $province === 'adn' ||
-                $province === 'ads' ||
-                $province === 'sds' ||
-                $province === 'sdn' ||
-                $province === 'pdi'
-            ) {
-                $query  ->where('po_transaction.tracking_number LIKE :tracking_number', ['tracking_number' => "$province%"]);
-
-            }
-        $q =    $query ->all();
+        if (
+            $province === 'adn' ||
+            $province === 'ads' ||
+            $province === 'sds' ||
+            $province === 'sdn' ||
+            $province === 'pdi'
+        ) {
+            $query->where('po_transaction.tracking_number LIKE :tracking_number', ['tracking_number' => "$province%"]);
+        }
+        $q =    $query->all();
 
         return json_encode($q);
+    }
+    public function actionImport()
+    {
+        if (!empty($_POST)) {
+            $name = $_FILES["file"]["name"];
+            $id = uniqid();
+            $file = "transaction/{$id}_{$name}";
+            if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
+            } else {
+                return "ERROR 2: MOVING FILES FAILED.";
+                die();
+            }
+            $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+            $excel = $reader->load($file);
+            $excel->setActiveSheetIndexByName('poTransaction');
+            $worksheet = $excel->getActiveSheet();
+
+            $data = [];
+
+
+            $transaction = Yii::$app->db->beginTransaction();
+            foreach ($worksheet->getRowIterator(3) as $key => $row) {
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                $cells = [];
+                $y = 0;
+                foreach ($cellIterator as $x => $cell) {
+                    // $q = '';
+                    // if ($y === 1) {
+                    //     $cells[] = $cell->getFormattedValue();
+                    // } else {
+                    $cells[] =   $cell->getValue();
+                    // }
+                    // $y++;
+                }
+                if (!empty($cells)) {
+
+                    $province = $cells[0];
+                    $res_center =  $cells[1];
+                    $transaction_number =  $cells[2];
+                    $payee =  $cells[3];
+                    $particular =  $cells[4];
+                    $amount =  $cells[5];
+                    $payroll_number = $cells[6];
+                    $reporting_period = '2021-12';
+
+
+                    $tran = new PoTransaction();
+                    $res_center_id = Yii::$app->db->createCommand("SELECT * FROM po_responsibility_center 
+                    WHERE po_responsibility_center.`name` = :res_center
+                    AND po_responsibility_center.province =:province")
+                        ->bindValue(':res_center', $res_center)
+                        ->bindValue(':province', $province)
+                        ->queryScalar();
+
+
+                    if (empty($res_center_id)) {
+                        $transaction->rollBack();
+                        return "res center $key";
+                    }
+                    $tran->payee = $payee;
+                    $tran->particular = $particular;
+                    $tran->amount = $amount;
+                    $tran->payroll_number = $payroll_number;
+                    $tran->tracking_number = $transaction_number;
+                    $tran->po_responsibility_center_id = $res_center_id;
+                    $tran->province = $province;
+                    $tran->reporting_period = $reporting_period;
+                    if ($tran->save(false)) {
+                    } else {
+                        $transaction->rollBack();
+                        return "res center $key";
+                    }
+                }
+            }
+
+            // $column = [
+            //     'liquidation_id',
+            //     'chart_of_account_id',
+            //     'withdrawals',
+            //     'vat_nonvat',
+            //     'expanded_tax',
+            //     'reporting_period',
+            //     'advances_entries_id'
+            // ];
+            // $ja = Yii::$app->db->createCommand()->batchInsert('liquidation_entries', $column, $data)->execute();
+
+            // // return $this->redirect(['index']);
+            // return json_encode(['isSuccess' => true]);
+            $transaction->commit();
+            ob_clean();
+            echo "<pre>";
+            var_dump('success');
+            echo "</pre>";
+            return ob_get_clean();
+        }
     }
 }
