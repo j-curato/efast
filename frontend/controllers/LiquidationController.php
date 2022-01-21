@@ -872,6 +872,20 @@ class LiquidationController extends Controller
 
                         if ($liquidation->save(false)) {
                             $liq_id = $liquidation->id;
+                            $liq_entries = new  LiquidationEntries();
+                            $liq_entries->liquidation_id = $liq_id;
+                            $liq_entries->chart_of_account_id = $chart_of_account_id;
+                            $liq_entries->withdrawals = $withdrawal;
+                            $liq_entries->vat_nonvat = $vat_nonvat;
+                            $liq_entries->expanded_tax = $expanded_tax;
+                            $liq_entries->reporting_period = $reporting_period;
+                            $liq_entries->advances_entries_id = $advances_entries_id;
+                            $liq_entries->liquidation_damage = $liquidation_damage;
+                            if ($liq_entries->save(false)) {
+                            } else {
+                                $transaction->rollback();
+                                return  $liq_entries->errors .  " Error pag save sa entries $key";
+                            }
                         }
                     } else {
                         $liq_entries = new  LiquidationEntries();
