@@ -784,7 +784,7 @@ class LiquidationController extends Controller
                 $y = 0;
                 foreach ($cellIterator as $x => $cell) {
                     $q = '';
-                    if ($y === 1) {
+                    if ($y === 4) {
                         $cells[] = $cell->getFormattedValue();
                     } else {
                         $cells[] =   $cell->getValue();
@@ -826,11 +826,15 @@ class LiquidationController extends Controller
                         $transaction->rollback();
                         return "po transaction $key";
                     }
-                    $check_range_id = Yii::$app->db->createCommand("SELECT id FROM check_range
+                    $check_range_id = Yii::$app->db->createCommand("SELECT
+                     id FROM check_range
                     WHERE
                    :check_number >= check_range.`from`
-                   AND :check_number  <=check_range.`to`")
+                   AND :check_number  <=check_range.`to`
+                   AND check_range.province = :province
+                   ")
                         ->bindValue(':check_number', $check_number)
+                        ->bindValue(':province', $province)
                         ->queryScalar();
                     if (empty($check_range_id)) {
                         $transaction->rollback();
@@ -893,35 +897,35 @@ class LiquidationController extends Controller
                             }
                         }
                     } else {
-                        $liquidation =  Liquidation::findOne($liq_id);
-                        $liquidation->province = $province;
-                        $liquidation->check_date = $check_date;
-                        $liquidation->check_number = $check_number;
-                        $liquidation->po_transaction_id = $po_transaction_id;
-                        $liquidation->dv_number = $dv_number;
-                        $liquidation->reporting_period = $reporting_period;
-                        $liquidation->check_range_id = $check_range_id;
+                        // $liquidation =  Liquidation::findOne($liq_id);
+                        // $liquidation->province = $province;
+                        // $liquidation->check_date = $check_date;
+                        // $liquidation->check_number = $check_number;
+                        // $liquidation->po_transaction_id = $po_transaction_id;
+                        // $liquidation->dv_number = $dv_number;
+                        // $liquidation->reporting_period = $reporting_period;
+                        // $liquidation->check_range_id = $check_range_id;
 
-                        if ($liquidation->save(false)) {
-                            $liquidation_id = $liquidation->id;
-                            $liq_entries = new  LiquidationEntries();
-                            $liq_entries->liquidation_id = $liquidation->id;
-                            $liq_entries->chart_of_account_id = $chart_of_account_id;
-                            $liq_entries->withdrawals = $withdrawal;
-                            $liq_entries->vat_nonvat = $vat_nonvat;
-                            $liq_entries->expanded_tax = $expanded_tax;
-                            $liq_entries->reporting_period = $reporting_period;
-                            $liq_entries->advances_entries_id = $advances_entries_id;
-                            $liq_entries->liquidation_damage = $liquidation_damage;
-                            if ($liq_entries->save(false)) {
-                            } else {
-                                $transaction->rollback();
-                                return  $liq_entries->errors .  " Error pag save sa entries $key";
-                            }
+                        // if ($liquidation->save(false)) {
+                        // $liquidation_id = $liquidation->id;
+                        $liq_entries = new  LiquidationEntries();
+                        $liq_entries->liquidation_id = $liq_id;
+                        $liq_entries->chart_of_account_id = $chart_of_account_id;
+                        $liq_entries->withdrawals = $withdrawal;
+                        $liq_entries->vat_nonvat = $vat_nonvat;
+                        $liq_entries->expanded_tax = $expanded_tax;
+                        $liq_entries->reporting_period = $reporting_period;
+                        $liq_entries->advances_entries_id = $advances_entries_id;
+                        $liq_entries->liquidation_damage = $liquidation_damage;
+                        if ($liq_entries->save(false)) {
                         } else {
                             $transaction->rollback();
-                            return  $liquidation->errors .  " Error pag update sa liquidation $key";
+                            return  $liq_entries->errors .  " Error pag save sa entries $key";
                         }
+                        // } else {
+                        //     $transaction->rollback();
+                        //     return  $liquidation->errors .  " Error pag update sa liquidation $key";
+                        // }
                     }
                 }
             }
