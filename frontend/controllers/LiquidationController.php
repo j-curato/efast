@@ -899,7 +899,7 @@ class LiquidationController extends Controller
                         $liq_entries->liquidation_damage = $liquidation_damage;
               
                         if ($liq_entries->save(false)) {
-                            return $liq_entries->id;
+                            echo $liq_entries->id;
                         } else {
                             $transaction->rollback();
                             return  json_encode([$liq_entries->errors, " Error pag save sa entries $key"]);
