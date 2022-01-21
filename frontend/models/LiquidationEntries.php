@@ -36,7 +36,8 @@ class LiquidationEntries extends \yii\db\ActiveRecord
     {
         return [
             [['liquidation_id', 'chart_of_account_id', 'advances_entries_id'], 'integer'],
-            [['withdrawals', 'vat_nonvat', 'expanded_tax','liquidation_damage'], 'number'],
+            [['withdrawals', 'vat_nonvat', 'expanded_tax', 'liquidation_damage'], 'number'],
+            [['reporting_period'], 'string'],
             [['advances_entries_id'], 'exist', 'skipOnError' => true, 'targetClass' => AdvancesEntries::class, 'targetAttribute' => ['advances_entries_id' => 'id']],
             [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
             [['liquidation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Liquidation::class, 'targetAttribute' => ['liquidation_id' => 'id']],
@@ -56,7 +57,8 @@ class LiquidationEntries extends \yii\db\ActiveRecord
             'withdrawals' => 'Withdrawals',
             'vat_nonvat' => 'Vat Nonvat',
             'expanded_tax' => 'Expanded Tax',
-            'expanded_tax' => 'Liquidation Damage ',
+            'liquidation_damage' => 'Liquidation Damage ',
+            'reporting_period' => 'Reporting Period'
         ];
     }
 
@@ -93,5 +95,4 @@ class LiquidationEntries extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Liquidation::class, ['id' => 'liquidation_id']);
     }
-
 }
