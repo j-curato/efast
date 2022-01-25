@@ -635,6 +635,11 @@ $script = <<< JS
                             if (y>0){
                                 add();
                             }
+     
+                        }
+                        
+                        for (var y=0; y<record_allotment_entries.length;y++){
+               
                             $("#amount-"+y).val(record_allotment_entries[y]['amount']);
                             // $("#credit-"+x).val(jev_accounting_entries[x]['credit'])
                            
