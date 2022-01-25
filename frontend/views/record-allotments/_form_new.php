@@ -258,7 +258,7 @@ use yii\helpers\ArrayHelper;
         var i = 1;
         var x = [0];
         var type_display = 'display:none;'
-        var type_required =''
+        var type_required = ''
 
         var update_id = undefined;
 
@@ -333,6 +333,7 @@ use yii\helpers\ArrayHelper;
         }
         var q = ['qwe', 'w', 'e']
         $(document).ready(function() {
+            i = 1
 
             $('.type').select2({
                 data: q,
@@ -455,22 +456,7 @@ use yii\helpers\ArrayHelper;
 
                 })
             // GET ALL CHART OF accounts
-            $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/get-general-ledger&id='+$('#update_id').val())
-                .then(function(data) {
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.id,
-                            text: val.object_code + ' ' + val.title
-                        })
-                    })
-                    accounts = array
-                    $('#chart-0').select2({
-                        data: accounts,
-                        placeholder: "Select Chart of Account",
 
-                    })
-                });
             // GET FINANCING SOURCE CODES
             $.getJSON('/afms/frontend/web/index.php?r=financing-source-code/get-financing-source-codes')
                 .then(function(data) {
@@ -594,6 +580,23 @@ $script = <<< JS
 
 
      $(document).ready(function() {
+         i=1
+        $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/get-general-ledger&id='+$('#update_id').val())
+                .then(function(data) {
+                    var array = []
+                    $.each(data, function(key, val) {
+                        array.push({
+                            id: val.id,
+                            text: val.object_code + ' ' + val.title
+                        })
+                    })
+                    accounts = array
+                    $('#chart-0').select2({
+                        data: accounts,
+                        placeholder: "Select Chart of Account",
+
+                    })
+                });
          $('#financing_source_code').change(function(){
          })
        
