@@ -521,6 +521,32 @@ use yii\helpers\ArrayHelper;
         // console.log(jev_accounting_entries)
         var x = 0
         for (x; x < jev_accounting_entries.length; x++) {
+            // console.log(jev_accounting_entries[x]['debit'])
+            // $("#debit-" + x).val(jev_accounting_entries[x]['debit'])
+            // $("#credit-" + x).val(jev_accounting_entries[x]['credit'])
+            // var chart = jev_accounting_entries[x]['object_code'] + "-" + jev_accounting_entries[x]['account_title']
+
+            // var cashflow = jev_accounting_entries[x]['cashflow_id'];
+            // var net_asset = jev_accounting_entries[x]['net_asset_equity_id'];
+            // // $("#chart-" + x).val(jev_accounting_entries[x]['object_code']).trigger('change');
+
+            // var chartSelect = $("#chart-" + x);
+            // // $("#chart-" + x).val(dv_entries[x]['object_code']).trigger('change');
+            // var option = new Option([chart], [jev_accounting_entries[x]['object_code']], true, true);
+            // chartSelect.append(option).trigger('change')
+
+
+            // $("#isEquity-" + x).val(jev_accounting_entries[x]['net_asset_equity_id']).trigger('change');
+            // $("#cashflow-" + x).val(cashflow).trigger('change');
+            // var jev_length = jev_accounting_entries.length - 1;
+
+            console.log(x)
+            if (x > 0) {
+                add()
+            }
+        }
+        for (x = 0; x < jev_accounting_entries.length; x++) {
+            // console.log(jev_accounting_entries[x]['debit'])
             $("#debit-" + x).val(jev_accounting_entries[x]['debit'])
             $("#credit-" + x).val(jev_accounting_entries[x]['credit'])
             var chart = jev_accounting_entries[x]['object_code'] + "-" + jev_accounting_entries[x]['account_title']
@@ -539,14 +565,11 @@ use yii\helpers\ArrayHelper;
             $("#cashflow-" + x).val(cashflow).trigger('change');
             var jev_length = jev_accounting_entries.length - 1;
 
-            console.log(x)
-            if (x < jev_length) {
-                console.log('jev_length')
-                add()
-            }
+
         }
     }
     $(document).ready(function() {
+        i = 1
         console.log(update_id)
         getResponsibilityCenters().then(function(data) {
             var array = []
