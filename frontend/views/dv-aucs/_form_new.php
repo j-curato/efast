@@ -11,6 +11,8 @@ use aryelds\sweetalert\SweetAlertAsset;
 use kartik\money\MaskMoney;
 use kartik\grid\GridView;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
+
 ?>
 <div class="test">
 
@@ -481,7 +483,7 @@ use yii\helpers\ArrayHelper;
 
 <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script> -->
 <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-<script src="/afms/frontend/web/js/scripts.js" type="text/javascript"></script>
+<script src="<?=Url::base()?>/frontend/web/js/scripts.js" type="text/javascript"></script>
 <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
 <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
@@ -949,11 +951,10 @@ $csrfToken = Yii::$app->request->csrfToken;
             },
             success: function(data) {
                 var res = JSON.parse(data)
-                if (res.transaction_type =='No Ors'){
+                if (res.transaction_type == 'No Ors') {
 
                     $("#transaction").val("Accounts Payable").trigger('change')
-                }
-                else{
+                } else {
 
                     $("#transaction").val(res.transaction_type).trigger('change')
                 }
@@ -967,6 +968,7 @@ $csrfToken = Yii::$app->request->csrfToken;
 
 
     $(document).ready(() => {
+        i = 1
         $("#tracking_sheet").change(function() {
             // console.log(this.value)
             onTrackingSheetChange(this.value)
@@ -1086,8 +1088,11 @@ $csrfToken = Yii::$app->request->csrfToken;
                     var x = 0
 
                     var dv_accounting_entries = res.dv_accounting_entries;
-                    console.log(dv_accounting_entries)
-                    for (x; x < res.dv_accounting_entries.length; x++) {
+                    for (x = 1; x < res.dv_accounting_entries.length; x++) {
+
+                        add()
+                    }
+                    for (x=0; x < res.dv_accounting_entries.length; x++) {
                         $("#debit-" + x).val(dv_accounting_entries[x]['debit'])
                         $("#credit-" + x).val(dv_accounting_entries[x]['credit'])
                         var chart = dv_accounting_entries[x]['object_code'] + "-" + dv_accounting_entries[x]['account_title']
@@ -1101,10 +1106,10 @@ $csrfToken = Yii::$app->request->csrfToken;
                         chartAccSelect.append(option).trigger('change')
                         $("#isEquity-" + x).val(dv_accounting_entries[x]['net_asset_equity_id']).trigger('change');
                         $("#cashflow-" + x).val(cashflow).trigger('change');
-                        if ($("#cashflow-" + x).length) {} else {}
-                        if (x < res.dv_accounting_entries.length - 1) {
-                            add()
-                        }
+                        // if ($("#cashflow-" + x).length) {} else {}
+                        // if (x < res.dv_accounting_entries.length - 1) {
+                        //     add()
+                        // }
                     }
                     getDebitCreditTotal()
 
