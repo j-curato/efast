@@ -27,8 +27,9 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
     <div class="row">
 
-        <div class="col-sm-3">
-
+        <div class="col-sm-5">
+            <input type="hidden" value="<?= $model->id ?>" name='id' id='model_id'>
+            <button type='button' id="export" class="btn btn-warning">Export</button>
             <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Add Link</button>
             <?php
             if (Yii::$app->user->can('create_cibr')) {
@@ -42,7 +43,16 @@ $this->params['breadcrumbs'][] = $this->title;
             }
             ?>
 
+
         </div>
+
+        <div class="col-sm-2">
+            <div>
+
+
+            </div>
+        </div>
+
     </div>
 
     <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -388,6 +398,25 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
                     })
                 }
             }
+        })
+    })
+    $(document).ready(function() {
+        $('#export').click(function(e) {
+            e.preventDefault();
+            $.ajax({
+
+                type: 'POST',
+                url: window.location.pathname + '?r=cibr/export',
+                data: {
+                    id: $('#model_id').val()
+                },
+                success: function(data) {
+                    console.log(data)
+                    var res = JSON.parse(data)
+                    window.open(res)
+                }
+
+            })
         })
     })
 </script>
