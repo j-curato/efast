@@ -208,7 +208,7 @@ class DvAucsController extends Controller
         $transaction_type = strtolower($_POST['transaction_type']);
         $selected_dv = $_POST['selection'];
         $dv_length = count($selected_dv);
-        // return json_encode(["isSuccess" => false, "error" => $_POST['amount_disbursed']]);
+        // return json_encode(["isSuccess" => false, "error" => $_POST['transaction_type']]);
         if ($transaction_type === 'single') {
 
             if (intval(count($selected_dv)) > 1) {
@@ -229,7 +229,9 @@ class DvAucsController extends Controller
 
             $query = (new \yii\db\Query())
                 ->select([
-                    "process_ors.id as ors_id", "process_ors.serial_number", "transaction.particular as transaction_particular",
+                    "process_ors.id as ors_id",
+                    "process_ors.serial_number",
+                    "transaction.particular as transaction_particular",
                     "payee.account_name as transaction_payee",
                     "process_ors.book_id",
                     "total_obligated.total", "payee.id as transaction_payee_id"
@@ -238,12 +240,18 @@ class DvAucsController extends Controller
                 ->join("LEFT JOIN", "transaction", "process_ors.transaction_id = transaction.id")
                 ->join("LEFT JOIN", "payee", "transaction.payee_id = payee.id")
 
-                ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount)as total,process_ors.id as ors_id
-                FROM process_ors,raouds,raoud_entries
-
-                where process_ors.id = raouds.process_ors_id
-                AND raouds.id=raoud_entries.raoud_id
-                GROUP BY process_ors.id) as total_obligated", "process_ors.id=total_obligated.ors_id")
+                ->join("LEFT JOIN", "(SELECT 
+                dv_aucs_entries.process_ors_id as ors_id,
+                SUM(dv_aucs_entries.amount_disbursed) as total
+                FROM dv_aucs_entries
+                INNER JOIN dv_aucs ON dv_aucs_entries.dv_aucs_id = dv_aucs.id
+                INNER JOIN cash_disbursement ON dv_aucs.id = cash_disbursement.dv_aucs_id
+                WHERE
+                dv_aucs.is_cancelled = 0
+                AND
+                cash_disbursement.is_cancelled=0
+                GROUP BY dv_aucs_entries.process_ors_id
+                ) as total_obligated", "process_ors.id=total_obligated.ors_id")
                 // ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
                 // ->join("LEFT JOIN", "record_allotments", "record_allotment_entries.record_allotment_id=record_allotments.id")
                 // ->join("LEFT JOIN", "chart_of_accounts", "record_allotment_entries.chart_of_account_id=chart_of_accounts.id")
@@ -287,7 +295,6 @@ class DvAucsController extends Controller
 
         if ($_POST) {
             $process_id = !empty($_POST['process_ors_id']) ? $_POST['process_ors_id'] : '';
-
             $nature_of_transaction_id = $_POST['nature_of_transaction'];
             $mrd_classification_id = $_POST['mrd_classification'];
             $reporting_period = $_POST['reporting_period'];
@@ -501,11 +508,11 @@ class DvAucsController extends Controller
     {
         $year = date('Y', strtotime($reporting_period));
         // $book_id=5;
-        $latest_dv = Yii::$app->db->createCommand("SELECT substring_index(dv_number, '-', -1) as q 
+        $latest_dv = Yii::$app->db->createCommand("SELECT CAST(substring_index(dv_number, '-', -1)AS UNSIGNED) as q 
         from dv_aucs
-        WHERE reporting_period LIKE :year
+        WHERE reporting_period LIKE :_year
         ORDER BY q DESC  LIMIT 1")
-            ->bindValue(':year', $year . '%')
+            ->bindValue(':_year', $year . '%')
             ->queryScalar();
         !empty($book_id) ? $book_id : $book_id = 5;
         // $latest_dv = (new \yii\db\Query())
@@ -613,8 +620,8 @@ class DvAucsController extends Controller
                accounting_codes.account_title
                FROM dv_accounting_entries 
                LEFT JOIN accounting_codes ON dv_accounting_entries.object_code = accounting_codes.object_code
-               WHERE dv_accounting_entries.dv_aucs_id = :dv_id")->bindValue(':dv_id',$model->id)
-               ->queryAll();
+               WHERE dv_accounting_entries.dv_aucs_id = :dv_id")->bindValue(':dv_id', $model->id)
+                    ->queryAll();
                 // foreach ($model->dvAccountingEntries as $val) {
 
                 //     if ($val->lvl === 2) {
@@ -1023,5 +1030,164 @@ class DvAucsController extends Controller
                 return json_encode(['isSuccess' => false, 'cancelled' => 'save failed']);
             }
         }
+    }
+    public function actionCreateTracking()
+    {
+
+        $searchModel = new ProcessOrsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $book_id = $_POST['book_id'];
+            $particular = $_POST['particular'];
+            $payee_id = $_POST['payee'];
+            $transaction_type = $_POST['transaction_type'];
+            $amount_disbursed = $_POST['amount_disbursed'];
+            $vat = $_POST['vat_nonvat'];
+            $ewt_goods_services = $_POST['ewt_goods_services'];
+            $compensation = $_POST['compensation'];
+            $liabilities = $_POST['other_trust_liabilities'];
+            $ors = $_POST['process_ors_id'];
+            $transaction = Yii::$app->db->beginTransaction();
+
+            try {
+                if ($flag = true) {
+
+
+                    $model = new DvAucs();
+                    $model->dv_number = $this->getDvNumber($reporting_period, $book_id);
+                    $model->reporting_period = $reporting_period;
+                    $model->book_id  = $book_id;
+                    $model->payee_id = $payee_id;
+                    $model->particular =  $particular;
+                    $model->transaction_type = $transaction_type;
+                    if ($model->save(false)) {
+                        $flag =  $this->insertDvEntries(
+                            $model->id,
+                            $ors,
+                            $amount_disbursed,
+                            $vat,
+                            $ewt_goods_services,
+                            $compensation,
+                            $liabilities
+                        );
+                    } else {
+                        $flag = false;
+                    }
+                }
+                if ($flag) {
+                    $transaction->commit();
+                    return $this->redirect(['tracking-view', 'id' => $model->id]);
+                } else {
+                    return json_encode("Error");
+                }
+            } catch (ErrorException $e) {
+                $transaction->rollback();
+                return json_encode($e->getMessage());
+            }
+        }
+        return $this->render('_tracking_form', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'update_id' => '',
+        ]);
+    }
+    public function actionTrackingView($id)
+    {
+        return $this->render('tracking_view', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+    public function insertDvEntries(
+        $model_id,
+        $ors,
+        $amount_disbursed,
+        $vat,
+        $ewt_goods_services,
+        $compensation,
+        $liabilities
+    ) {
+        foreach ($ors as $i => $val) {
+            $entry = new DvAucsEntries();
+            $entry->dv_aucs_id = $model_id;
+            $entry->process_ors_id  = $val;
+            $entry->amount_disbursed = $amount_disbursed[$i];
+            $entry->vat_nonvat = $vat[$i];
+            $entry->ewt_goods_services = $ewt_goods_services[$i];
+            $entry->compensation = $compensation[$i];
+            $entry->other_trust_liabilities = $liabilities[$i];
+            if ($entry->save(false)) {
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+    public function actionTrackingUpdate($id)
+    {
+        $model = $this->findModel($id);
+        $searchModel = new ProcessOrsSearch();
+
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        // echo $id;
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $book_id = $_POST['book_id'];
+            $particular = $_POST['particular'];
+            $payee_id = $_POST['payee'];
+            $transaction_type = $_POST['transaction_type'];
+            $amount_disbursed = $_POST['amount_disbursed'];
+            $vat = $_POST['vat_nonvat'];
+            $ewt_goods_services = $_POST['ewt_goods_services'];
+            $compensation = $_POST['compensation'];
+            $liabilities = $_POST['other_trust_liabilities'];
+            $ors = $_POST['process_ors_id'];
+            $transaction = Yii::$app->db->beginTransaction();
+
+
+            Yii::$app->db->createCommand("DELETE FROM dv_aucs_entries WHERE dv_aucs_entries.dv_aucs_id =:id")
+                ->bindValue(':id', $model->id)
+                ->query();
+            try {
+                if ($flag = true) {
+
+                    $model->reporting_period = $reporting_period;
+                    $model->book_id  = $book_id;
+                    $model->payee_id = $payee_id;
+                    $model->particular =  $particular;
+                    $model->transaction_type = $transaction_type;
+                    if ($model->save(false)) {
+                        $flag =  $this->insertDvEntries(
+                            $model->id,
+                            $ors,
+                            $amount_disbursed,
+                            $vat,
+                            $ewt_goods_services,
+                            $compensation,
+                            $liabilities
+                        );
+                    } else {
+                        $flag = false;
+                    }
+                }
+                if ($flag) {
+                    $transaction->commit();
+                    return $this->redirect(['tracking-view', 'id' => $model->id]);
+                } else {
+                    return json_encode("Error");
+                }
+            } catch (ErrorException $e) {
+                $transaction->rollback();
+                return json_encode($e->getMessage());
+            }
+        }
+
+        return $this->render('_tracking_form', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'update_id' => $id,
+            'model' => $model
+        ]);
     }
 }

@@ -496,7 +496,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
         $('.specs').on('change', function(event) {
             event.preventDefault();
             var source = $(this).closest('.form_fields_data > tr ');
-
             var new_val = source.children('td').eq(0).find('.unit_cost').val() + '|' + $(this).val()
             console.log(new_val)
         });
