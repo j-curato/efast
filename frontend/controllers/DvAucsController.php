@@ -11,6 +11,7 @@ use app\models\DvAucsSearch;
 use app\models\ProcessOrsSearch;
 
 use app\models\SubAccounts2;
+use app\models\TrackingSheetIndexSearch;
 use DateTime;
 use ErrorException;
 use yii\filters\AccessControl;
@@ -1188,6 +1189,16 @@ class DvAucsController extends Controller
             'dataProvider' => $dataProvider,
             'update_id' => $id,
             'model' => $model
+        ]);
+    }
+    public function actionTrackingIndex()
+    {
+        $searchModel = new TrackingSheetIndexSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('tracking_index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 }

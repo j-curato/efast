@@ -26,20 +26,12 @@ $this->params['breadcrumbs'][] = $this->title;
     $ors_time = '';
     $transaction_date = $date;
     $transaction_time = $time;
-    // if (strtolower($model->transaction_type) === 'single') {
-    //     $ors_date =  date('M d, Y', strtotime($model->processOrs->created_at));
-    //     // echo $model->processOrs->transaction->created_at;
 
-    //     $ors_time =  date('h:i A', strtotime($model->processOrs->created_at));
-    // }
-
-    // if (strtolower($model->transaction_type) === 'single') {
-    //     $transaction_date =  date('M d, Y', strtotime($model->processOrs->transaction->created_at));
-    //     $transaction_time =  date('h:i A', strtotime($model->processOrs->transaction->created_at));
-    // }
     $acc_2_date = '';
     $acc_2_in_time = '';
     $acc_2_out_time = '';
+    $cashTimeOut ='';
+    $cashTimeIn='';
     if (!empty($model->transaction_begin_time)) {
         $acc_2_date = date('F d, Y', strtotime($model->transaction_begin_time));
         $acc_2_in_time = date('h:i A', strtotime($model->transaction_begin_time));
@@ -259,12 +251,21 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         if (!empty($model->cashDisbursement->issuance_date)) {
                             // echo $model->cashDisbursement->issuance_date;
-                            $cash_date = date('F d, Y', strtotime($model->cashDisbursement->issuance_date));
-                            return $cash_date;
+                            $cashTimeIn = DateTime::createFromFormat('H:i:s', $model->cashDisbursement->begin_time)->format('h:i A');
+                            $cashTimeOut = DateTime::createFromFormat('H:i:s', $model->cashDisbursement->out_time)->format('h:i A');
+                            echo DateTime::createFromFormat('Y-m-d', $model->cashDisbursement->issuance_date)->format('F d, Y');
+                            // $cash_date = date('F d, Y', strtotime($model->cashDisbursement->issuance_date));
+                            // return $cash_date;
+                            // echo ($cashTimeOut);
                         }
                         ?></td>
-                    <td></td>
-                    <td></td>
+                    <td>
+                        <?= $cashTimeIn ?>
+
+                    </td>
+                
+
+                    <td>    <?=$cashTimeOut ?></td>
                     <td></td>
                 </tr>
                 <tr>

@@ -176,7 +176,7 @@ if (!empty($model->id)) {
 
 
                             echo "<tr>
-                                <td ><input value='{$val['process_ors_id']}' type='hidden' name='process_ors_id[$row]'/></td>
+                                <td style='display:none' ><input value='{$val['process_ors_id']}' type='hidden' name='process_ors_id[$row]'/></td>
                                 <td> {$val['serial_number']}</td>
                                 <td> 
                                 {$val['particular']}
@@ -198,7 +198,6 @@ if (!empty($model->id)) {
                     ?>
                 </tbody>
                 <tfoot>
-                    <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
@@ -623,7 +622,7 @@ $csrfToken = Yii::$app->request->csrfToken;
             var compensation = result[i]['compensation'] ? result[i]['compensation'] : 0;
             var other_trust_liabilities = result[i]['other_trust_liabilities'] ? result[i]['other_trust_liabilities'] : 0;
             var row = `<tr>
-                            <td > <input style='display:none' value='${result[i]['ors_id']}' type='text' name='process_ors_id[${row}]'/></td>
+                            <td style='display:none'> <input style='display:none' value='${result[i]['ors_id']}' type='text' name='process_ors_id[${row}]'/></td>
                             <td> ${result[i]['serial_number']}</td>
                             <td> 
                             ${result[i]['transaction_particular']}
@@ -657,7 +656,6 @@ $csrfToken = Yii::$app->request->csrfToken;
 
     $(document).ready(() => {
         row = "<?= $row ?>";
-
 
         // maskAmount()
         $('#payee').select2({
@@ -779,6 +777,9 @@ $script = <<< JS
 
 
 
+        $('.amount_disbursed').on('change keyup',function(){
+            console.log('qwe');
+        })
 
     
     $("#transaction").change(function(){
