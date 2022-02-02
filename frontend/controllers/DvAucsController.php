@@ -1229,7 +1229,7 @@ class DvAucsController extends Controller
                     $model->payee_id = $payee_id;
                     $model->particular =  $particular;
                     $model->transaction_type = $transaction_type;
-                    $model->recieved_at  = $recieved_at;
+                    $model->recieved_at  = date('Y-m-d H:i:s', strtotime($recieved_at));
                     if ($model->save(false)) {
                         $flag =  $this->insertDvEntries(
                             $model->id,
