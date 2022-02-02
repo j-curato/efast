@@ -72,9 +72,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Payee',
                 'attribute' => 'account_name'
             ],
+            [
+                'label' => 'Recive Date and Time',
+                'value' => function ($model) {
+                    return $model->recieved_at;
+                }
+            ],
 
 
-         
+
             [
                 'label' => 'Actions',
                 'format' => 'raw',

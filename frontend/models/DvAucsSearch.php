@@ -28,7 +28,8 @@ class DvAucsSearch extends DvAucs
                 'created_at',
                 'payee_id',
                 'mrd_classification_id',
-                'nature_of_transaction_id'
+                'nature_of_transaction_id',
+                'recieved_at'
             ], 'safe'],
             [['net_amount_paid'], 'number'],
         ];
@@ -88,6 +89,7 @@ class DvAucsSearch extends DvAucs
             ->andFilterWhere(['like', 'accept_timestamp', $this->accept_timestamp])
             ->andFilterWhere(['like', 'out_timestamp', $this->out_timestamp])
             ->andFilterWhere(['like', 'created_at', $this->created_at])
+            ->andFilterWhere(['like', 'recieved_at', $this->recieved_at])
             ->andFilterWhere(['like', 'mrd_classification.name', $this->mrd_classification_id])
             ->andFilterWhere(['like', 'nature_of_transaction.name', $this->nature_of_transaction_id])
             ->andFilterWhere(['like', 'other_trust_liability_withheld', $this->other_trust_liability_withheld]);

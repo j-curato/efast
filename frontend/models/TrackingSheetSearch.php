@@ -18,7 +18,7 @@ class TrackingSheetSearch extends TrackingSheet
     {
         return [
             [['id'], 'integer'],
-            [['tracking_number', 'particular', 'created_at', 'process_ors_id', 'payee_id'], 'safe'],
+            [['tracking_number', 'particular', 'created_at', 'process_ors_id', 'payee_id','recieved_at'], 'safe'],
         ];
     }
 

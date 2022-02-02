@@ -18,7 +18,7 @@ class TrackingSheetIndexSearch extends TrackingSheetIndex
     {
         return [
             [['id'], 'integer'],
-            [[ 'particular', 'dv_number' , 'account_name'], 'safe'],
+            [[ 'particular', 'dv_number' , 'account_name','recieved_at'], 'safe'],
         ];
     }
 
