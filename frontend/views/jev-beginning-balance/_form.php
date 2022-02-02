@@ -14,92 +14,169 @@ use yii\widgets\ActiveForm;
 
 <div class="jev-beginning-balance-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <div class="container">
 
-    <?= $form->field($model, 'year')->widget(DatePicker::class, [
-        'pluginOptions' => [
-            'format' => 'yyyy',
-            'autoclose' => true,
-            'minViewMode' => 'years'
-        ]
-    ]) ?>
+        <?php $form = ActiveForm::begin(); ?>
+
+        <div class="row">
+            <div class="col-sm-3">
+                <?= $form->field($model, 'year')->widget(DatePicker::class, [
+                    'pluginOptions' => [
+                        'format' => 'yyyy',
+                        'autoclose' => true,
+                        'minViewMode' => 'years'
+                    ]
+                ]) ?>
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'book_id')->widget(Select2::class, [
+                    'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Book'
+                    ]
+                ]) ?>
+            </div>
+        </div>
+
+        <table id="form_fields_data">
+            <tbody>
+
+                <?php
+                $i = 1;
+                if (!empty($entries)) {
+
+                    foreach ($entries as $val) {
+                        echo "<tr class='panel  panel-default' style='margin-top: 2rem;margin-bottom:2rem;'>
+                            <td style='max-width:100rem;'>
+                                <div class='row'>
+                                    <div class='col-sm-4'>
+                                        <label for='chart_of_account'>Chart of Accounts</label>
+                                        <select required name='object_code[$i]' class='chart-of-account form-control' required style='width: 100%'>
+                                            <option value='{$val['object_code']}'>" . $val['object_code'] . '-' . $val['account_title'] . "</option>
+                                        </select>
+                                    </div>
+                                    <div class='col-sm-4'>
+                                        <label for='debit_amount'>Debit</label>
+                                        <input type='text' class='debit_amount  form-control'  value='{$val['debit']}'>
+                                        <input type='hidden' name='debit[$i]' value='{$val['debit']}' class='debit'>
+                                    </div>
+                                    <div class='col-sm-4'>
+                                        <label for='credit_amount'>Credit</label>
+                                        <input type='text' class='credit_amount form-control' value='{$val['credit']}'>
+                                        <input type='hidden' name='credit[$i]' class='credit' value='{$val['credit']}'>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style='  text-align: center;'>
+                                <div class='pull-right'>
+                                    <button class='add_new_row btn btn-primary btn-xs'><i class='fa fa-plus fa-fw'></i> </button>
+                                    <a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                                </div>
+                            </td>
+        
+        
+                        </tr>
+                        <tr>
+                        <td colspan='2'>
+                            <hr>
+                        </td>
+                    </tr>
+                        ";
+                        $i++;
+                    }
+                } else {
+
+
+                ?>
+                    <tr class="panel  panel-default" style="margin-top: 2rem;margin-bottom:2rem;">
+                        <td style="max-width:100rem;">
+
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label for="chart_of_account">Chart of Accounts</label>
+                                    <select required name="object_code[0]" class="chart-of-account form-control" required style="width: 100%">
+                                        <option></option>
+                                    </select>
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <label for="debit_amount">Debit</label>
+                                    <input type="text" class="debit_amount form-control">
+                                    <input type="hidden" name="debit[0]" class="debit">
+                                </div>
+                                <div class="col-sm-4">
+                                    <label for="credit_amount">Credit</label>
+                                    <input type="text" class="credit_amount form-control">
+                                    <input type="hidden" name="credit[0]" class="credit">
+                                </div>
 
 
 
-    <?= $form->field($model, 'book_id')->widget(Select2::class, [
-        'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
-        'pluginOptions' => [
-            'placeholder' => 'Select Book'
-        ]
-    ]) ?>
-
-    <table id="form_fields_data">
-        <tbody>
-            <tr class="panel  panel-default" style="margin-top: 2rem;margin-bottom:2rem;">
-                <td style="max-width:100rem;">
-
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <label for="chart_of_account">Chart of Accounts</label>
-                            <select required name="object_code[]" class="chart_of_account form-control" style="width: 100%">
-                                <option></option>
-                            </select>
-                        </div>
+                            </div>
 
 
+                        </td>
+                        <td style='  text-align: center;'>
+                            <div class='pull-right'>
+                                <button class='add_new_row btn btn-primary btn-xs'><i class='fa fa-plus fa-fw'></i> </button>
+                                <a class='remove_this_row btn btn-danger btn-xs disabled' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                            </div>
+                        </td>
 
 
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <hr>
+                        </td>
+                    </tr>
+                  
+                <?php } ?>
+            </tbody>
+        </table>
 
-                        <div class="col-sm-4">
-                            <label for="amount">Unit Cost</label>
-                            <input type="text" class="amount form-control">
-                            <input type="hidden" name="unit_cost[0]" class="unit_cost">
-                        </div>
+        <div class="form-group">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        </div>
 
-                        <div class="col-sm-2">
-
-                            <label for="quantity">Quantity</label>
-                            <input type="number" name='quantity[0]' class="form-control quantity">
-
-                        </div>
-
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <label for="specs_view">Specification</label>
-                            <textarea rows="2" class="specs_view form-control" id="q"></textarea>
-                            <input name="specification[0]" rows="2" class="specs" type='hidden'>
-                        </div>
-                    </div>
-                </td>
-                <td style='  text-align: center;'>
-                    <div class='pull-right'>
-                        <button class='add_new_row btn btn-primary btn-xs'><i class='fa fa-plus fa-fw'></i> </button>
-                        <a class='remove_this_row btn btn-danger btn-xs disabled' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
-                    </div>
-                </td>
-
-
-            </tr>
-        </tbody>
-    </table>
-
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <?php ActiveForm::end(); ?>
     </div>
 
-    <?php ActiveForm::end(); ?>
-
 </div>
+<style>
+    .is-invalid .select2-container--default .select2-selection--single {
+        border-color: #dc3545;
+    }
+
+    .select2-hidden-accessible select {
+        display: block;
+        margin: 0px auto;
+        opacity: 0;
+    }
+
+    table {
+        width: 100%;
+    }
+
+    .container {
+        padding: 3rem;
+        background-color: white;
+    }
+
+
+    th,
+    td {
+        padding: 1rem;
+    }
+</style>
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 <script>
-    function stockSelect() {
-        $('.stocks').select2({
+    function chartOfAccountSelect() {
+        $('.chart-of-account').select2({
             ajax: {
-                url: window.location.pathname + '?r=pr-stock/search-stock',
+                url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code',
                 dataType: 'json',
                 data: function(params) {
 
@@ -118,16 +195,17 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
     }
 
     function maskAmount() {
-
-        $('.amount').maskMoney({
+        $('.debit_amount').maskMoney({
             allowNegative: true
         });
-
-
+        $('.credit_amount').maskMoney({
+            allowNegative: true
+        });
     }
     $(document).ready(function() {
-
-        var x = 1
+        chartOfAccountSelect()
+        maskAmount()
+        var x = <?= $i ?>;
         $('.remove_this_row').on('click', function(event) {
             event.preventDefault();
             $(this).closest('tr').next().remove();
@@ -135,25 +213,20 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
         });
         $('.add_new_row').on('click', function(event) {
             event.preventDefault();
-            $('.stocks').select2('destroy');
-            $('.unit_of_measure').select2('destroy');
-            $('.unit_cost').maskMoney('destroy');
+            $('.chart-of-account').select2('destroy');
             var source = $(this).closest('tr');
             var clone = source.clone(true);
-            clone.children('td').eq(0).find('.desc').text('')
-            clone.children('td').eq(0).find('.quantity').val(0)
-            clone.children('td').eq(0).find('.quantity').attr('name', 'unit_of_measure[' + x + ']')
 
-            clone.children('td').eq(0).find('.pr_item_id').val('')
-            clone.children('td').eq(0).find('.pr_item_id').attr('name', 'pr_item_id[' + x + ']')
-            clone.children('td').eq(0).find('.stocks').val('')
-            clone.children('td').eq(0).find('.stocks').attr('name', 'pr_stocks_id[' + x + ']')
-            clone.children('td').eq(0).find('.unit_cost').val(0)
-            clone.children('td').eq(0).find('.unit_cost').attr('name', 'unit_cost[' + x + ']')
+            clone.children('td').eq(0).find('.chart-of-account').val('')
+            clone.children('td').eq(0).find('.chart-of-account').attr('name', 'object_code[' + x + ']')
+            clone.children('td').eq(0).find('.debit').val(0)
+            clone.children('td').eq(0).find('.credit').val(0)
+            clone.children('td').eq(0).find('.debit').attr('name', 'debit[' + x + ']')
+            clone.children('td').eq(0).find('.credit').attr('name', 'credit[' + x + ']')
             clone.children('td').eq(0).find('.amount').val(0)
-            clone.children('td').eq(0).find('.specs').val(null)
-            clone.children('td').eq(0).find('.specs_view').val(null)
-            clone.children('td').eq(0).find('.specs').attr('name', 'specification[' + x + ']');
+            clone.children('td').eq(0).find('.credit_amount').val(0)
+            clone.children('td').eq(0).find('.debit_amount').val(0)
+
 
             // clone.children('td').eq(0).find('.specification').val('')
             $('#form_fields_data').append(clone);
@@ -164,13 +237,37 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
                     </tr>`
             $('#form_fields_data').append(spacer);
             clone.find('.remove_this_row').removeClass('disabled');
-            stockSelect()
+            chartOfAccountSelect()
             maskAmount()
-            unitOfMeasureSelect()
             x++
 
 
         });
+        $('.debit_amount').on('change keyup', function(e) {
+            e.preventDefault()
+            var amount = $(this).maskMoney('unmasked')[0];
+            var source = $(this).closest('tr');
+            source.children('td').eq(0).find('.debit').val(amount)
+
+        })
+        $('.credit_amount').on('change keyup', function(e) {
+            e.preventDefault()
+            var amount = $(this).maskMoney('unmasked')[0];
+            var source = $(this).closest('tr');
+            source.children('td').eq(0).find('.credit').val(amount)
+
+        })
+
+
 
     })
 </script>
+
+<?php
+$script = <<< JS
+    $(document).ready(function(){
+
+    })
+JS;
+$this->registerJs($script);
+?>

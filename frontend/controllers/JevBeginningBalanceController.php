@@ -4,7 +4,9 @@ namespace frontend\controllers;
 
 use Yii;
 use app\models\JevBeginningBalance;
+use app\models\JevBeginningBalanceItem;
 use app\models\JevBeginningBalanceSearch;
+use ErrorException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -21,7 +23,7 @@ class JevBeginningBalanceController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -62,16 +64,55 @@ class JevBeginningBalanceController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
+    public function insertEntries($model_id, $debits, $object_codes, $credits)
+    {
+        foreach ($object_codes as $i => $val) {
+            $item = new JevBeginningBalanceItem();
+            $item->jev_beginning_balance_id = $model_id;
+            $item->debit = $debits[$i];
+            $item->credit = $credits[$i];
+            $item->object_code = $object_codes[$i];
+            if ($item->save(false)) {
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
     public function actionCreate()
     {
         $model = new JevBeginningBalance();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+            $transaction = Yii::$app->db->beginTransaction();
+            $debits = !empty($_POST['debit']) ? $_POST['debit'] : [];
+            $credits = !empty($_POST['credit']) ? $_POST['credit'] : [];
+            $object_codes = !empty($_POST['object_code']) ? $_POST['object_code'] : [];
+
+            try {
+
+                if ($flag = true) {
+                    if ($model->save(false)) {
+                        $flag =   $this->insertEntries($model->id, $debits, $object_codes, $credits);
+                    }
+                }
+                if ($flag) {
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
+                } else {
+                    $transaction->rollBack();
+                    return 'Insert Fail';
+                }
+            } catch (ErrorException $e) {
+
+                $transaction->rollBack();
+                return json_encode($e->getMessage());
+            }
         }
 
         return $this->render('create', [
             'model' => $model,
+            'entries' => []
         ]);
     }
 
@@ -85,13 +126,55 @@ class JevBeginningBalanceController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $entries = Yii::$app->db->createCommand("SELECT 
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        jev_beginning_balance_item.object_code,
+        accounting_codes.account_title,
+        jev_beginning_balance_item.debit,
+        jev_beginning_balance_item.credit
+        FROM `jev_beginning_balance_item`
+        LEFT JOIN accounting_codes ON jev_beginning_balance_item.object_code = accounting_codes.object_code
+        WHERE jev_beginning_balance_item.jev_beginning_balance_id = :id
+        ;")
+            ->bindValue(':id', $id)
+            ->queryAll();
+
+        if ($model->load(Yii::$app->request->post())) {
+            $transaction = Yii::$app->db->beginTransaction();
+
+            Yii::$app->db->createCommand("DELETE FROM jev_beginning_balance_item WHERE jev_beginning_balance_id = :id")
+                ->bindValue(':id', $id)
+                ->query();
+            $debits = !empty($_POST['debit']) ? $_POST['debit'] : [];
+            $credits = !empty($_POST['credit']) ? $_POST['credit'] : [];
+            $object_codes = !empty($_POST['object_code']) ? $_POST['object_code'] : [];
+
+            try {
+
+                if ($flag = true) {
+                    if ($model->save(false)) {
+                        $flag =   $this->insertEntries($model->id, $debits, $object_codes, $credits);
+                    } else {
+                        $flag = false;
+                    }
+                }
+                if ($flag) {
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
+                } else {
+                    $transaction->rollBack();
+                    return 'Insert Fail';
+                }
+            } catch (ErrorException $e) {
+
+                $transaction->rollBack();
+                return json_encode($e->getMessage());
+            }
         }
 
         return $this->render('update', [
             'model' => $model,
+            'entries' => $entries
         ]);
     }
 

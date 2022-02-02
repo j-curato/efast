@@ -20,7 +20,7 @@ class m220121_025347_add_reporting_period_in_po_transaction_table extends Migrat
      */
     public function safeDown()
     {
-        $this->addColumn('po_transaction','reporting_period');
+        $this->dropColumn('po_transaction','reporting_period');
     }
 
     /*

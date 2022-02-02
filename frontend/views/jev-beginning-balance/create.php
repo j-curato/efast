@@ -11,10 +11,12 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-beginning-balance-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
+    <?php
+    ?>
     <?= $this->render('_form', [
         'model' => $model,
+        'entries'=>$entries
     ]) ?>
 
 </div>

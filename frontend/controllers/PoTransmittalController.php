@@ -10,6 +10,7 @@ use app\models\PoTransmittalEntries;
 use app\models\PoTransmittalSearch;
 use app\models\PoTransmittalsPendingSearch;
 use app\models\TransmittalEntries;
+use DateTime;
 use ErrorException;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
@@ -261,12 +262,15 @@ class PoTransmittalController extends Controller
     public function getTransmittalNumber($date)
     {
         $province = Yii::$app->user->identity->province;
-        $query = Yii::$app->db->createCommand("SELECT substring_index(transmittal_number,'-',-1 ) as id 
+        $year = DateTime::createFromFormat('Y-m-d',$date)->format('Y');
+        $query = Yii::$app->db->createCommand("SELECT CAST(substring_index(transmittal_number,'-',-1 ) AS UNSIGNED) as id 
         FROM po_transmittal
         WHERE po_transmittal.transmittal_number LIKE :province
+        AND po_transmittal.date = :_year
         ORDER BY id DESC LIMIT 1
         ")
             ->bindValue(':province', $province . '%')
+            ->bindValue(':_year',$year.'%')
             ->queryOne();
         $num = 1;
         if (!empty($query)) {

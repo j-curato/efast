@@ -5,22 +5,21 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "jev_beginning_balance".
+ * This is the model class for table "jev_beginning_balance_item".
  *
  * @property int $id
- * @property int|null $year
+ * @property int|null $jev_beginning_balance_id
  * @property string|null $object_code
  * @property float|null $amount
- * @property string|null $book_id
  */
-class JevBeginningBalance extends \yii\db\ActiveRecord
+class JevBeginningBalanceItem extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'jev_beginning_balance';
+        return 'jev_beginning_balance_item';
     }
 
     /**
@@ -29,7 +28,9 @@ class JevBeginningBalance extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['year', 'book_id'], 'integer'],
+            [['jev_beginning_balance_id'], 'integer'],
+            [['debit', 'credit'], 'number'],
+            [['object_code'], 'string', 'max' => 255],
         ];
     }
 
@@ -40,14 +41,10 @@ class JevBeginningBalance extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'year' => 'Year',
+            'jev_beginning_balance_id' => 'Jev Beginning Balance ID',
             'object_code' => 'Object Code',
-            'amount' => 'Amount',
-            'book_id' => 'Book ID',
+            'debit' => 'Debit',
+            'credit' => 'Credit',
         ];
-    }
-    public function getItems()
-    {
-        return $this->hasMany(JevBeginningBalanceItem::class, ['jev_beginning_balance_id' => 'id']);
     }
 }
