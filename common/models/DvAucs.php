@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use app\models\MrdClassification;
 use Yii;
 
 /**
@@ -53,10 +54,10 @@ class DvAucs extends \yii\db\ActiveRecord
             [['net_amount_paid'], 'number'],
             [['mrd_classification_id', 'nature_of_transaction_id', 'payee_id', 'book_id', 'is_cancelled', 'tracking_sheet_id'], 'integer'],
             [['particular', 'dv_link'], 'string'],
-            [['created_at', 'transaction_begin_time', 'return_timestamp', 'out_timestamp', 'accept_timestamp', 'in_timestamp'], 'safe'],
+            [['created_at', 'transaction_begin_time', 'return_timestamp', 'out_timestamp', 'accept_timestamp', 'in_timestamp','recieved_at'], 'safe'],
             [['dv_number', 'tax_withheld', 'other_trust_liability_withheld'], 'string', 'max' => 255],
             [['reporting_period', 'transaction_type'], 'string', 'max' => 50],
-            [['mrd_classification_id'], 'exist', 'skipOnError' => true, 'targetClass' => MrdClassification::className(), 'targetAttribute' => ['mrd_classification_id' => 'id']],
+            [['mrd_classification_id'], 'exist', 'skipOnError' => true, 'targetClass' => MrdClassification::class, 'targetAttribute' => ['mrd_classification_id' => 'id']],
         ];
     }
 
@@ -87,6 +88,7 @@ class DvAucs extends \yii\db\ActiveRecord
             'accept_timestamp' => 'Accept Timestamp',
             'tracking_sheet_id' => 'Tracking Sheet ID',
             'in_timestamp' => 'In Timestamp',
+            'recieved_at' => 'Recieve  Timestamp',
         ];
     }
 
@@ -97,7 +99,7 @@ class DvAucs extends \yii\db\ActiveRecord
      */
     public function getCashDisbursements()
     {
-        return $this->hasMany(CashDisbursement::className(), ['dv_aucs_id' => 'id']);
+        return $this->hasMany(CashDisbursement::class, ['dv_aucs_id' => 'id']);
     }
 
     /**
@@ -107,7 +109,7 @@ class DvAucs extends \yii\db\ActiveRecord
      */
     public function getDvAccountingEntries()
     {
-        return $this->hasMany(DvAccountingEntries::className(), ['dv_aucs_id' => 'id']);
+        return $this->hasMany(DvAccountingEntries::class, ['dv_aucs_id' => 'id']);
     }
 
     /**
@@ -117,7 +119,7 @@ class DvAucs extends \yii\db\ActiveRecord
      */
     public function getMrdClassification()
     {
-        return $this->hasOne(MrdClassification::className(), ['id' => 'mrd_classification_id']);
+        return $this->hasOne(MrdClassification::class, ['id' => 'mrd_classification_id']);
     }
 
     /**
@@ -127,7 +129,7 @@ class DvAucs extends \yii\db\ActiveRecord
      */
     public function getDvAucsEntries()
     {
-        return $this->hasMany(DvAucsEntries::className(), ['dv_aucs_id' => 'id']);
+        return $this->hasMany(DvAucsEntries::class, ['dv_aucs_id' => 'id']);
     }
 
     /**

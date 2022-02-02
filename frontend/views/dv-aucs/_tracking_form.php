@@ -8,9 +8,11 @@
 use app\models\Books;
 use kartik\date\DatePicker;
 use aryelds\sweetalert\SweetAlertAsset;
+use kartik\datetime\DateTimePicker;
 use kartik\money\MaskMoney;
 use kartik\grid\GridView;
 use kartik\select2\Select2;
+use kartik\time\TimePicker;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
@@ -24,6 +26,7 @@ $row = 1;
 $book_id = '';
 $update_create = '?r=dv-aucs/create-tracking';
 $transaction_type = '';
+$date_recieve = '';
 if (!empty($model->id)) {
     $book_id = $model->book_id;
     $reporting_period = $model->reporting_period;
@@ -31,6 +34,7 @@ if (!empty($model->id)) {
     $payee_id = $model->payee_id;
     $payee_name = $model->payee->account_name;
     $transaction_type = $model->transaction_type;
+    $date_recieve = $model->recieved_at;
     $update_create = '?r=dv-aucs/tracking-update&id=' . $model->id;
 }
 ?>
@@ -107,7 +111,7 @@ if (!empty($model->id)) {
                     echo Select2::widget([
                         'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
                         'name' => 'book_id',
-                        'value'=>$book_id,
+                        'value' => $book_id,
                         'pluginOptions' => [
                             'placeholder' => 'Select Book'
                         ]
@@ -120,7 +124,35 @@ if (!empty($model->id)) {
 
             </div>
             <div class="row">
-                <textarea name="particular" readonly id="particular" placeholder="PARTICULAR" required rows="3"><?= $particular ?></textarea>
+                <div class="col-sm-3">
+
+                    <?php
+
+
+                    echo "<label for='date' style='text-align:center'>Date Recieve</label>";
+                    echo DateTimePicker::widget([
+                        'name' => 'date_recieve',
+                        'id' => 'date_recieve',
+                        'value' => $date_recieve,
+                        'options' => [
+                            'style' => 'background-color:white'
+                        ],
+                        'pluginOptions' => [
+                            'format' => 'yyyy-mm-dd H:i',
+                            'autoclose' => true
+                        ]
+                    ]);
+
+
+                    ?>
+                </div>
+
+                <div class="col-sm-3"></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <textarea name="particular" readonly id="particular" placeholder="PARTICULAR" required rows="3"><?= $particular ?></textarea>
+                </div>
             </div>
 
             <table id="transaction_table" class="table table-striped">

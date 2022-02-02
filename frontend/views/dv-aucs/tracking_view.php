@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\TrackingSheet */
 
-$this->title = $model->id;
+$this->title = $model->dv_number;
 $this->params['breadcrumbs'][] = ['label' => 'Tracking Sheets', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -14,25 +14,52 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="tracking-sheet-view">
 
 
-    <p>
-        <?= Html::a('Update', ['tracking-update', 'id' => $model->id], ['class' => 'btn btn-primary', 'id' => 'update']) ?>
 
-    </p>
     <?php
     // $ors_number = !empty($model->process_ors_id) ? $model->processOrs->serial_number : '';
     $date = date('M d, Y', strtotime($model->created_at));
     $time = date('h:i A', strtotime($model->created_at));
     $ors_date = '';
     $ors_time = '';
-    $transaction_date = $date;
-    $transaction_time = $time;
+    $transaction_date = '';
+    $transaction_time = '';
 
+
+    if (!empty($model->recieved_at) &&  DateTime::createFromFormat('Y-m-d H:i:s', $model->recieved_at)->format('Y') >= 1) {
+        $recieve_timestamp = DateTime::createFromFormat('Y-m-d H:i:s', $model->recieved_at);
+
+        $transaction_date = $recieve_timestamp->format('F d, y');
+        $transaction_time = $recieve_timestamp->format('h:i A');
+    }
+
+
+    $budget_time_in  = '';
+    $budget_date = '';
+    $budget_remarks = '';
+
+
+    if ($model->transaction_type !== 'Single') {
+        $budget_remarks = 'Not Applicable ORS is ' . $model->transaction_type;
+    } else {
+        $ors_created_at = Yii::$app->db->createCommand("SELECT 
+        process_ors.created_at
+        FROM dv_aucs_entries
+        LEFT JOIN process_ors ON dv_aucs_entries.process_ors_id = process_ors.id
+        WHERE dv_aucs_entries.dv_aucs_id= :id
+        LIMIT 1")
+            ->bindValue(':id', $model->id)
+            ->queryScalar();
+
+        $budget = DateTime::createFromFormat('Y-m-d H:i:s', $ors_created_at);
+        $budget_date = $budget->format('F d,Y');
+        $budget_time_in =  $budget->format('h:i A');
+    }
     $gross_amount = Yii::$app->db->createCommand("SELECT 
-    SUM(dv_aucs_entries.amount_disbursed)+
-    SUM(dv_aucs_entries.vat_nonvat)+
-    SUM(dv_aucs_entries.ewt_goods_services)+
-    SUM(dv_aucs_entries.compensation)+
-    SUM(dv_aucs_entries.other_trust_liabilities)
+    IFNULL(SUM(dv_aucs_entries.amount_disbursed),0)+
+    IFNULL(SUM(dv_aucs_entries.vat_nonvat),0)+
+    IFNULL(SUM(dv_aucs_entries.ewt_goods_services),0)+
+    IFNULL(SUM(dv_aucs_entries.compensation),0)+
+    IFNULL(SUM(dv_aucs_entries.other_trust_liabilities),0)
      as gross_amount
     FROM dv_aucs_entries
     WHERE dv_aucs_entries.dv_aucs_id = :id")
@@ -69,7 +96,10 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
     <div class="container">
 
+        <p>
+            <?= Html::a('Update', ['tracking-update', 'id' => $model->id], ['class' => 'btn btn-primary', 'id' => 'update']) ?>
 
+        </p>
         <table id="page">
 
             <tbody>
@@ -210,12 +240,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
 
                     <td><?php
-                        echo $ors_date
+                        echo $budget_date
 
                         ?></td>
-                    <td><?php echo $ors_time ?></td>
+                    <td><?php echo $budget_time_in ?></td>
                     <td></td>
-                    <td></td>
+                    <td><?= $budget_remarks ?></td>
                 </tr>
                 <tr>
                     <td class="bold">Accountant II

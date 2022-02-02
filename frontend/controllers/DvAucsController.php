@@ -1045,6 +1045,7 @@ class DvAucsController extends Controller
             if (empty($_POST['reporting_period'])) {
                 return json_encode(['isSuccess' => false, 'error' => 'Reporting Period is Required']);
             }
+            $recieved_at = $_POST['date_recieve'];
             $reporting_period = $_POST['reporting_period'];
             $book_id = $_POST['book_id'];
             $particular = $_POST['particular'];
@@ -1066,6 +1067,7 @@ class DvAucsController extends Controller
                     $model->dv_number = $this->getDvNumber($reporting_period, $book_id);
                     $model->reporting_period = $reporting_period;
                     $model->book_id  = $book_id;
+                    $model->recieved_at  = $recieved_at;
                     $model->payee_id = $payee_id;
                     $model->particular =  $particular;
                     $model->transaction_type = $transaction_type;
@@ -1139,6 +1141,7 @@ class DvAucsController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         // echo $id;
         if ($_POST) {
+            $recieved_at =!empty( $_POST['date_recieve'])? $_POST['date_recieve']:null;
             $reporting_period = $_POST['reporting_period'];
             $book_id = $_POST['book_id'];
             $particular = $_POST['particular'];
@@ -1164,6 +1167,7 @@ class DvAucsController extends Controller
                     $model->payee_id = $payee_id;
                     $model->particular =  $particular;
                     $model->transaction_type = $transaction_type;
+                    $model->recieved_at  = $recieved_at;
                     if ($model->save(false)) {
                         $flag =  $this->insertDvEntries(
                             $model->id,

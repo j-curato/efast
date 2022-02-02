@@ -111,7 +111,7 @@ if (Yii::$app->controller->action->id === 'login') {
         $('#modalButtoncreate').click(function() {
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         });
-        $('a[title=Update]').click(function(e) {
+        $('.updateModal').click(function(e) {
             e.preventDefault();
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
         });
