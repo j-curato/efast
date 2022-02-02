@@ -12,7 +12,7 @@ use yii\helpers\Html;
 /* @var $searchModel app\models\DvAucsSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Dv Aucs';
+$this->title = 'Tracking Sheet';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="dv-aucs-index">
@@ -25,8 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <?php
-    $exportSearchModel = new TrackingSheetIndexSearch();
-    $exportDataProvider = $exportSearchModel->search(Yii::$app->request->queryParams);
+
 
     ?>
     <?= GridView::widget([

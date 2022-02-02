@@ -27,11 +27,29 @@ $this->params['breadcrumbs'][] = $this->title;
     $transaction_date = $date;
     $transaction_time = $time;
 
+    $gross_amount = Yii::$app->db->createCommand("SELECT 
+    SUM(dv_aucs_entries.amount_disbursed)+
+    SUM(dv_aucs_entries.vat_nonvat)+
+    SUM(dv_aucs_entries.ewt_goods_services)+
+    SUM(dv_aucs_entries.compensation)+
+    SUM(dv_aucs_entries.other_trust_liabilities)
+     as gross_amount
+    FROM dv_aucs_entries
+    WHERE dv_aucs_entries.dv_aucs_id = :id")
+    ->bindValue(':id',$model->id)
+->queryScalar();
+    $net_amount = Yii::$app->db->createCommand("SELECT 
+    SUM(dv_aucs_entries.amount_disbursed)
+     as net_amount
+    FROM dv_aucs_entries
+    WHERE dv_aucs_entries.dv_aucs_id = :id")
+    ->bindValue(':id',$model->id)
+->queryScalar();
     $acc_2_date = '';
     $acc_2_in_time = '';
     $acc_2_out_time = '';
-    $cashTimeOut ='';
-    $cashTimeIn='';
+    $cashTimeOut = '';
+    $cashTimeIn = '';
     if (!empty($model->transaction_begin_time)) {
         $acc_2_date = date('F d, Y', strtotime($model->transaction_begin_time));
         $acc_2_in_time = date('h:i A', strtotime($model->transaction_begin_time));
@@ -50,7 +68,233 @@ $this->params['breadcrumbs'][] = $this->title;
 
     ?>
     <div class="container">
+
+        <table id="check_list">
+
+
+            <tbody>
+                <tr>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>PR</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>RIC/ICS</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Payroll</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Summary of Exp.</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Canvas</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Delivery Reciept</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>DTR</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>OBR</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Abstract</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>SOA/Billing</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Letter/Memo</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Trip/Ticket</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>PO</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Pre/Post Repair Inspection</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Contract</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Request Slip</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>JO </span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Report of Wast Material</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>TO</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Remittance List</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>IAR</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Property Acknowledgement Reciept</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>IT</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Others</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>OR/RER</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Proposal</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>CTC</span>
+                    </td>
+                    <td>
+
+                        <span>__________________</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Charge Invoice</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Attendance</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>CA</span>
+                    </td>
+                    <td>
+                        <span>__________________</span>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Sales/Cash Invoice</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Terminal/Post-Activity Report/Minutes</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Ticket</span>
+                    </td>
+                    <td>
+
+                        <span>__________________</span>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>RCA</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Authorization</span>
+                    </td>
+                    <td>
+
+                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <span>Certification</span>
+                    </td>
+                    <td>
+
+                        <span>__________________</span>
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
         <table id="page">
+
             <tbody>
                 <tr>
                     <td colspan="5" class="header">
@@ -83,7 +327,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         </span>
                         <span><?php
-                                // echo number_format($model->gross_amount, 2) 
+                                echo number_format($gross_amount, 2) 
                                 ?></span>
 
                     </td>
@@ -95,10 +339,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             Net Amount:
                         </span>
                         <span>
+                            <?=number_format($net_amount,2)?>
+                        </span>
 
 
                     </td>
-                    </span>
                     <td class="header" style="padding-top: 10px;"><span>Particular</span></td>
                 </tr>
 
@@ -136,6 +381,21 @@ $this->params['breadcrumbs'][] = $this->title;
                         </span>
                         <span>
                             <?php
+                            $ors_numbers = Yii::$app->db->createCommand("SELECT 
+                            process_ors.serial_number
+                            FROM dv_aucs_entries
+                            LEFT JOIN process_ors ON dv_aucs_entries.process_ors_id = process_ors.id
+                            WHERE dv_aucs_entries.dv_aucs_id = :id")
+                                ->bindValue(':id', $model->id)
+                                ->queryAll();
+                            $ors_length = count($ors_numbers);
+                            foreach ($ors_numbers as $index => $val) {
+                                echo $val['serial_number'];
+                                if ($index + 1 != $ors_length) {
+                                    echo ',';
+                                }
+                            }
+
                             // echo $ors_number 
                             ?>
                         </span>
@@ -263,9 +523,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?= $cashTimeIn ?>
 
                     </td>
-                
 
-                    <td>    <?=$cashTimeOut ?></td>
+
+                    <td> <?= $cashTimeOut ?></td>
                     <td></td>
                 </tr>
                 <tr>
@@ -287,7 +547,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 <style>
-    #page tr {
+
+#page tr {
         padding: 0;
         margin: 0;
     }
@@ -326,9 +587,17 @@ $this->params['breadcrumbs'][] = $this->title;
         background-color: white;
         margin-bottom: 20px;
     }
-
+    #check_list  td{
+ padding:5px;
+ border:0
+}
+#check_list{
+    margin-bottom: 12px;
+}
     @media print {
-
+        .container{
+            margin:0;
+        }
         table,
         td,
         th {

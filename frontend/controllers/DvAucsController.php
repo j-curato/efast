@@ -1039,6 +1039,12 @@ class DvAucsController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         if ($_POST) {
+            if (empty($_POST['book_id'])) {
+                return json_encode(['isSuccess' => false, 'error' => 'Book is Required']);
+            }
+            if (empty($_POST['reporting_period'])) {
+                return json_encode(['isSuccess' => false, 'error' => 'Reporting Period is Required']);
+            }
             $reporting_period = $_POST['reporting_period'];
             $book_id = $_POST['book_id'];
             $particular = $_POST['particular'];
