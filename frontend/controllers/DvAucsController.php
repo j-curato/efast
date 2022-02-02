@@ -44,6 +44,17 @@ class DvAucsController extends Controller
                     'import',
                     'cancel',
                     'dv-form',
+                    'is-payable',
+                    'create-tracking',
+                    'tracking-view',
+                    'tracking-update',
+                    'tracking-index',
+                    'add-link',
+                    'turnarround-time',
+                    'return',
+                    'in',
+                    'out',
+                    'turnarround-view',
 
                 ],
                 'rules' => [
@@ -60,6 +71,17 @@ class DvAucsController extends Controller
                             'import',
                             'cancel',
                             'dv-form',
+                            'is-payable',
+                            'create-tracking',
+                            'tracking-view',
+                            'tracking-update',
+                            'tracking-index',
+                            'add-link',
+                            'turnarround-time',
+                            'return',
+                            'in',
+                            'out',
+                            'turnarround-view',
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
@@ -1045,6 +1067,7 @@ class DvAucsController extends Controller
             if (empty($_POST['reporting_period'])) {
                 return json_encode(['isSuccess' => false, 'error' => 'Reporting Period is Required']);
             }
+
             $recieved_at = $_POST['date_recieve'];
             $reporting_period = $_POST['reporting_period'];
             $book_id = $_POST['book_id'];
@@ -1057,7 +1080,25 @@ class DvAucsController extends Controller
             $compensation = $_POST['compensation'];
             $liabilities = $_POST['other_trust_liabilities'];
             $ors = $_POST['process_ors_id'];
+
             $transaction = Yii::$app->db->beginTransaction();
+            $q = DateTime::createFromFormat('Y-m-d', $recieved_at);
+            // return $recieved_at;
+            // return date('Y-m-d H:i:s',strtotime($recieved_at));
+            if ($transaction_type === 'Single' && !empty($recieved_at)) {
+                $min_key = min(array_keys($ors));
+
+                $ors_created_at = Yii::$app->db->createCommand("SELECT 
+                process_ors.created_at
+             FROM  process_ors
+                WHERE process_ors.id= :id
+                LIMIT 1")
+                    ->bindValue(':id', $ors[$min_key])
+                    ->queryScalar();
+                if (strtotime($recieved_at) < strtotime($ors_created_at)) {
+                    return json_encode(['isSuccess' => false, 'error' => 'Recieve Date must be Greater than  ORS date']);
+                }
+            }
 
             try {
                 if ($flag = true) {
@@ -1067,7 +1108,7 @@ class DvAucsController extends Controller
                     $model->dv_number = $this->getDvNumber($reporting_period, $book_id);
                     $model->reporting_period = $reporting_period;
                     $model->book_id  = $book_id;
-                    $model->recieved_at  = $recieved_at;
+                    $model->recieved_at  = date('Y-m-d H:i:s', strtotime($recieved_at));
                     $model->payee_id = $payee_id;
                     $model->particular =  $particular;
                     $model->transaction_type = $transaction_type;
@@ -1141,7 +1182,14 @@ class DvAucsController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         // echo $id;
         if ($_POST) {
-            $recieved_at =!empty( $_POST['date_recieve'])? $_POST['date_recieve']:null;
+            if (empty($_POST['book_id'])) {
+                return json_encode(['isSuccess' => false, 'error' => 'Book is Required']);
+            }
+            if (empty($_POST['reporting_period'])) {
+                return json_encode(['isSuccess' => false, 'error' => 'Reporting Period is Required']);
+            }
+
+            $recieved_at = !empty($_POST['date_recieve']) ? $_POST['date_recieve'] : null;
             $reporting_period = $_POST['reporting_period'];
             $book_id = $_POST['book_id'];
             $particular = $_POST['particular'];
@@ -1155,6 +1203,20 @@ class DvAucsController extends Controller
             $ors = $_POST['process_ors_id'];
             $transaction = Yii::$app->db->beginTransaction();
 
+            if ($transaction_type === 'Single' && !empty($recieved_at)) {
+                $min_key = min(array_keys($ors));
+
+                $ors_created_at = Yii::$app->db->createCommand("SELECT 
+                process_ors.created_at
+             FROM  process_ors
+                WHERE process_ors.id= :id
+                LIMIT 1")
+                    ->bindValue(':id', $ors[$min_key])
+                    ->queryScalar();
+                if (strtotime($recieved_at) < strtotime($ors_created_at)) {
+                    return json_encode(['isSuccess' => false, 'error' => 'Recieve Date must be Greater than  ORS date']);
+                }
+            }
 
             Yii::$app->db->createCommand("DELETE FROM dv_aucs_entries WHERE dv_aucs_entries.dv_aucs_id =:id")
                 ->bindValue(':id', $model->id)

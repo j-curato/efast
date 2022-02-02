@@ -138,7 +138,7 @@ if (!empty($model->id)) {
                             'style' => 'background-color:white'
                         ],
                         'pluginOptions' => [
-                            'format' => 'yyyy-mm-dd H:i',
+                            'format' => 'yyyy-mm-dd HH:ii P',
                             'autoclose' => true
                         ]
                     ]);
