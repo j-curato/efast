@@ -1009,7 +1009,6 @@ $csrfToken = Yii::$app->request->csrfToken;
                     };
                 }
             },
-            placeholder: 'Search for a Payee',
         });
 
         $('.chart-of-accounts').select2({
@@ -1073,7 +1072,10 @@ $csrfToken = Yii::$app->request->csrfToken;
                     if (res.result[0]['tracking_sheet_id'] == null) {
                         $('#transaction').val(type).trigger('change')
                         $("#particular").val(res.result[0]['particular'])
-                        $("#payee").val(res.result[0]['payee_id']).trigger('change');
+                        // $("#payee").val(res.result[0]['payee_id']).trigger('change');
+                        var payeeSelect = $('#payee');
+                        var option = new Option([res.result[0]['transaction_payee']], [res.result[0]['payee_id']], true, true);
+                        payeeSelect.append(option).trigger('change')
 
                     } else {
 

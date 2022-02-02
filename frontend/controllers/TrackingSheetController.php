@@ -2,6 +2,10 @@
 
 namespace frontend\controllers;
 
+use app\models\Books;
+use app\models\DvAucs;
+use app\models\DvAucsEntries;
+use app\models\ProcessOrsSearch;
 use Yii;
 use app\models\TrackingSheet;
 use app\models\TrackingSheetSearch;
@@ -235,7 +239,7 @@ class TrackingSheetController extends Controller
         ORDER BY q DESC limit 1
        
        ")
-       ->bindValue(':_year',$year.'%')
+            ->bindValue(':_year', $year . '%')
             ->queryScalar();
         $num = 1;
         if (!empty($query)) {
@@ -309,5 +313,105 @@ class TrackingSheetController extends Controller
                 ->queryOne();
             return json_encode($query);
         }
+    }
+    public function insertDvEntries(
+        $model_id,
+        $ors,
+        $amount_disbursed,
+        $vat,
+        $ewt_goods_services,
+        $compensation,
+        $liabilities
+    ) {
+        foreach ($ors as $i => $val) {
+            $entry = new DvAucsEntries();
+            $entry->dv_aucs_id = $model_id;
+            $entry->process_ors_id  = $val;
+            $entry->amount_disbursed = $amount_disbursed[$i];
+            $entry->vat_nonvat = $vat[$i];
+            $entry->ewt_goods_services = $ewt_goods_services[$i];
+            $entry->compensation = $compensation[$i];
+            $entry->other_trust_liabilities = $liabilities[$i];
+            if ($entry->save(false)) {
+            }
+        }
+    }
+    public function actionCreateNew()
+    {
+
+        $searchModel = new ProcessOrsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $book_id = $_POST['book_id'];
+            $particular = $_POST['particular'];
+            $payee_id = $_POST['payee'];
+            $transaction_type = $_POST['transaction_type'];
+            $amount_disbursed = $_POST['amount_disbursed'];
+            $vat = $_POST['vat_nonvat'];
+            $ewt_goods_services = $_POST['ewt_goods_services'];
+            $compensation = $_POST['compensation'];
+            $liabilities = $_POST['other_trust_liabilities'];
+            $ors = $_POST['process_ors_id'];
+            $model = new DvAucs();
+            $model->dv_number = $this->getDvNumber($reporting_period, $book_id);
+            $model->reporting_period = $reporting_period;
+            $model->book_id  = $book_id;
+            $model->payee_id = $payee_id;
+            $model->particular =  $particular;
+            $model->transaction_type = $transaction_type;
+            if ($model->save(false)) {
+                $this->insertDvEntries(
+                    $model->id,
+                    $ors,
+                    $amount_disbursed,
+                    $vat,
+                    $ewt_goods_services,
+                    $compensation,
+                    $liabilities
+                );
+                
+            }
+        }
+        return $this->render('_form_new', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'update_id' => '',
+        ]);
+    }
+    public function actionInsertNew()
+    {
+        if ($_POST) {
+        }
+    }
+
+    public function getDvNumber($reporting_period, $book_id)
+    {
+        $year = date('Y', strtotime($reporting_period));
+        $latest_dv = Yii::$app->db->createCommand("SELECT CAST(substring_index(dv_number, '-', -1)AS UNSIGNED) as q 
+        from dv_aucs
+        WHERE reporting_period LIKE :_year
+        ORDER BY q DESC  LIMIT 1")
+            ->bindValue(':_year', $year . '%')
+            ->queryScalar();
+        !empty($book_id) ? $book_id : $book_id = 5;
+
+        $book = Books::findOne($book_id);
+        $dv_number = $book->name . '-' . $reporting_period;
+
+        if (!empty($latest_dv)) {
+            $last_number = (int) $latest_dv + 1;
+        } else {
+            $last_number = 1;
+        }
+        $x = '';
+        for ($i = strlen($last_number); $i < 4; $i++) {
+            $x .= 0;
+        }
+        $dv_number .= '-' . $x . $last_number;
+
+
+        return $dv_number;
     }
 }

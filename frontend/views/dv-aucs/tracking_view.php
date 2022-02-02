@@ -15,34 +15,28 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary', 'id' => 'update']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
+        <?= Html::a('Update', ['tracking-update', 'id' => $model->id], ['class' => 'btn btn-primary', 'id' => 'update']) ?>
+
     </p>
     <?php
-    $ors_number = !empty($model->process_ors_id) ? $model->processOrs->serial_number : '';
+    // $ors_number = !empty($model->process_ors_id) ? $model->processOrs->serial_number : '';
     $date = date('M d, Y', strtotime($model->created_at));
     $time = date('h:i A', strtotime($model->created_at));
     $ors_date = '';
     $ors_time = '';
     $transaction_date = $date;
     $transaction_time = $time;
-    if (strtolower($model->transaction_type) === 'single') {
-        $ors_date =  date('M d, Y', strtotime($model->processOrs->created_at));
-        // echo $model->processOrs->transaction->created_at;
+    // if (strtolower($model->transaction_type) === 'single') {
+    //     $ors_date =  date('M d, Y', strtotime($model->processOrs->created_at));
+    //     // echo $model->processOrs->transaction->created_at;
 
-        $ors_time =  date('h:i A', strtotime($model->processOrs->created_at));
-    }
+    //     $ors_time =  date('h:i A', strtotime($model->processOrs->created_at));
+    // }
 
-    if (strtolower($model->transaction_type) === 'single') {
-        $transaction_date =  date('M d, Y', strtotime($model->processOrs->transaction->created_at));
-        $transaction_time =  date('h:i A', strtotime($model->processOrs->transaction->created_at));
-    }
+    // if (strtolower($model->transaction_type) === 'single') {
+    //     $transaction_date =  date('M d, Y', strtotime($model->processOrs->transaction->created_at));
+    //     $transaction_time =  date('h:i A', strtotime($model->processOrs->transaction->created_at));
+    // }
     $acc_2_date = '';
     $acc_2_in_time = '';
     $acc_2_out_time = '';
@@ -70,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan="5" class="header">
                         <span style="float:right;margin-right:5px">
                             <?php
-                            echo $model->tracking_number;
+                            echo $model->dv_number;
                             ?>
                         </span>
                     </td>
@@ -96,7 +90,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             Gross Amount:
 
                         </span>
-                        <span><?php echo number_format($model->gross_amount, 2) ?></span>
+                        <span><?php
+                                // echo number_format($model->gross_amount, 2) 
+                                ?></span>
 
                     </td>
                 </tr>
@@ -104,7 +100,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <td colspan="4" class="header">
                         <span>
-
                             Net Amount:
                         </span>
                         <span>
@@ -148,7 +143,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             ORS NO.:
                         </span>
                         <span>
-                            <?php echo $ors_number ?>
+                            <?php
+                            // echo $ors_number 
+                            ?>
                         </span>
                     </td>
                 </tr>
@@ -358,11 +355,11 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 $script = <<< JS
 
-        $('#update').click(function(e){
-            e.preventDefault();
+        // $('#update').click(function(e){
+        //     e.preventDefault();
             
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
-        });
+        //     $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
+        // });
 JS;
 $this->registerJs($script);
 ?>
