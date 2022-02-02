@@ -34,7 +34,7 @@ if (!empty($model->id)) {
     $payee_id = $model->payee_id;
     $payee_name = $model->payee->account_name;
     $transaction_type = $model->transaction_type;
-    $date_recieve = $model->recieved_at;
+    $date_recieve = DateTime::createFromFormat('Y-m-d H:i:s', $model->recieved_at)->format('Y-m-d h:i A');
     $update_create = '?r=dv-aucs/tracking-update&id=' . $model->id;
 }
 ?>
