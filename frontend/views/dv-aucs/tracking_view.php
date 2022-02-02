@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /* @var $model app\models\TrackingSheet */
 
 $this->title = $model->dv_number;
-$this->params['breadcrumbs'][] = ['label' => 'Tracking Sheets', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Tracking Sheets', 'url' => ['tracking-index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
