@@ -15,6 +15,11 @@ use yii\filters\VerbFilter;
 
 /**
  * AdvancesController implements the CRUD actions for Advances model.
+ * 
+ * 
+ * 
+ * advances entries is_deleted  9 is pending
+ * 1 delete ,10 disabled
  */
 class AdvancesController extends Controller
 {
@@ -371,7 +376,7 @@ class AdvancesController extends Controller
     public function getNftNumber()
     {
         // $q = Advances::find()->orderBy('id DESC')->one();
-        $q = Yii::$app->db->createCommand("SELECT substring_index(nft_number, '-', -1) as q 
+        $q = Yii::$app->db->createCommand("SELECT CAST(substring_index(nft_number, '-', -1)AS UNSIGNED) as q 
         from advances 
         WHERE 
         nft_number NOT LIKE 'S%'
