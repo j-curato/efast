@@ -29,7 +29,7 @@ class BankAccount extends \yii\db\ActiveRecord
     {
         return [
             [['account_number'], 'required'],
-            [['created_at'], 'safe'],
+            [['created_at', 'account_name'], 'safe'],
             [['account_number', 'province'], 'string', 'max' => 255],
         ];
     }
@@ -42,8 +42,10 @@ class BankAccount extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'account_number' => 'Account Number',
+            'account_name' => 'Account Name',
             'province' => 'Province',
             'created_at' => 'Created At',
+
         ];
     }
 }

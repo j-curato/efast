@@ -12,6 +12,7 @@ use yii\helpers\ArrayHelper;
 /* @var $this yii\web\View */
 /* @var $model app\models\Advances */
 /* @var $form yii\widgets\ActiveForm */
+$bank_account_id='';
 ?>
 <div id="dots5">
     <span></span>
@@ -93,7 +94,24 @@ use yii\helpers\ArrayHelper;
                 ])
                 ?>
             </div>
+            <div class="col-sm-3">
+                <label for="bank_account_id">Bank Account</label>
+                <?php
+                $bank_accounts_query = (new \yii\db\Query())
+                    ->select(['bank_account.id', 'bank_account.account_number'])
+                    ->from('bank_account');
+                $bank_accounts = $bank_accounts_query->all();
+                echo Select2::widget([
+                    'data' => ArrayHelper::map($bank_accounts, 'id', 'account_number'),
+                    'name' => 'bank_account_id',
+                    'value' => $bank_account_id,
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Bank Account'
+                    ]
 
+                ]);
+                ?>
+            </div>
         </div>
         <!-- <div class="row">
             <div class="col-sm-12">

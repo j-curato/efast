@@ -35,7 +35,8 @@ class CdrController extends Controller
                     'delete',
                     'cdr',
                     'cdr-final',
-                    'insert-cdr'
+                    'insert-cdr',
+                    'export',
                 ],
                 'rules' => [
                     [
@@ -54,6 +55,7 @@ class CdrController extends Controller
                             'view',
                             'cdr',
                             'create',
+                            'export',
 
                         ],
                         'allow' => true,

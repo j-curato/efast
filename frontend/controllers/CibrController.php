@@ -33,7 +33,10 @@ class CibrController extends Controller
                     'update',
                     'delete',
                     'insert-cibr',
-                    'final'
+                    'final',
+                    'get-cibr',
+                    'add-link',
+                    'export',
                 ],
                 'rules' => [
                     [
@@ -52,6 +55,9 @@ class CibrController extends Controller
                             'index',
                             'view',
                             'create',
+                            'get-cibr',
+                            'add-link',
+                            'export',
                         ],
                         'allow' => true,
                         'roles' => ['@']
@@ -408,9 +414,9 @@ class CibrController extends Controller
         if ($_POST) {
             $id  = $_POST['id'];
             // return $id;
-            $model=$this->findModel($id);
+            $model = $this->findModel($id);
             $province = $model->province;
-            $reporting_period =$model->reporting_period;
+            $reporting_period = $model->reporting_period;
             $query = $this->generateCibr($reporting_period, $province);
 
             $prov = Yii::$app->memem->cibrCdrHeader($province);
@@ -443,12 +449,12 @@ class CibrController extends Controller
 
             $sheet->setCellValue('A4', "Sub-Office/District/Division: Provincial Office");
             $sheet->mergeCells('A4:C4');
-            $sheet->setCellValue('J4', "Name of Disbursing Officer: ".$prov['officer']);
+            $sheet->setCellValue('J4', "Name of Disbursing Officer: " . $prov['officer']);
             $sheet->mergeCells('J4:L4');
 
-            $sheet->setCellValue('A5', "Municipality/City/Province: ".$prov['province']);
+            $sheet->setCellValue('A5', "Municipality/City/Province: " . $prov['province']);
             $sheet->mergeCells('A5:C5');
-            $sheet->setCellValue('J5', "Station: ".$prov['province']);
+            $sheet->setCellValue('J5', "Station: " . $prov['province']);
             $sheet->mergeCells('J5:L5');
 
             $sheet->setCellValue('A6', "Fund Cluster :");
@@ -456,7 +462,7 @@ class CibrController extends Controller
             $sheet->setCellValue('J6', "Bank: Landbank of the Philippines");
             $sheet->mergeCells('J6:L6');
 
-            $sheet->setCellValue('J7', "Location: ".$prov['location']);
+            $sheet->setCellValue('J7', "Location: " . $prov['location']);
             $sheet->mergeCells('J7:L7');
 
             $sheet->setCellValue('A8', "DATE");

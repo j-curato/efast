@@ -34,6 +34,7 @@ class PayeeController extends Controller
                     'view',
                     'get-payee',
                     'import',
+                    'search-payee',
                 ],
                 'rules' => [
                     [
@@ -45,6 +46,7 @@ class PayeeController extends Controller
                             'update',
                             'view',
                             'import',
+                            'search-payee',
                         ],
                         'allow' => true,
                         'roles' => ['accounting']

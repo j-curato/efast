@@ -35,6 +35,7 @@ class LiquidationController extends Controller
                 'class' => AccessControl::class,
                 'only' => [
                     'index',
+                    'view',
                     'create',
                     'update',
                     'delete',
@@ -44,7 +45,14 @@ class LiquidationController extends Controller
                     'update-liquidation',
                     'cancel',
                     'import',
-                    'view'
+                    'exclude-raaf',
+                    'drafts',
+                    'cancelled-check-index',
+                    'cancelled-check-update',
+                    'cancelled-form',
+                    'update-uacs',
+                    'export',
+                    'add-link',
                 ],
                 'rules' => [
                     [
@@ -70,6 +78,14 @@ class LiquidationController extends Controller
                     [
                         'actions' => [
                             'index',
+                            'exclude-raaf',
+                            'drafts',
+                            'cancelled-check-index',
+                            'cancelled-check-update',
+                            'cancelled-form',
+                            'update-uacs',
+                            'export',
+                            'add-link',
                         ],
                         'allow' => true,
                         'roles' => ['@']

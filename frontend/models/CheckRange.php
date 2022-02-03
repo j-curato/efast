@@ -27,7 +27,8 @@ class CheckRange extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['from', 'to','begin_balance'], 'integer'],
+            [['from', 'to', 'begin_balance'], 'integer'],
+            [['bank_account_id'], 'safe'],
             [['from', 'to', 'reporting_period'], 'required'],
             [['province', 'reporting_period'], 'string'],
         ];
@@ -43,8 +44,13 @@ class CheckRange extends \yii\db\ActiveRecord
             'from' => 'From',
             'to' => 'To',
             'province' => 'Province',
+            'bank_account_id' => 'Bank Account',
             'reporting_period' => 'Reporting Period',
             'begin_balance' => 'Begin Balance',
         ];
+    }
+    public function getBankAccount()
+    {
+        return $this->hasOne(BankAccount::class, ['id' => 'bank_account_id']);
     }
 }

@@ -75,6 +75,7 @@ class JevPreparationController extends Controller
                     'changes-netasset-equity',
                     'export-jev',
                     'cdr-jev',
+                    'dv-to-jev'
 
                 ],
                 'rules' => [
@@ -105,6 +106,7 @@ class JevPreparationController extends Controller
                             'changes-netasset-equity',
                             'export-jev',
                             'cdr-jev',
+                            'dv-to-jev'
                         ],
                         'allow' => true,
                         'roles' => ['@'],

@@ -36,6 +36,7 @@ class AdvancesController extends Controller
                     'insert-advances',
                     'get-all-advances',
                     'import',
+                    'disable',
                 ],
                 'rules' => [
                     [
@@ -49,6 +50,9 @@ class AdvancesController extends Controller
                             'insert-advances',
                             'get-all-advances',
                             'import',
+                            'disable',
+                            'update-advances'
+
                         ],
                         'allow' => true,
                         'roles' => ['super-user', 'create_advances']
@@ -561,7 +565,7 @@ class AdvancesController extends Controller
             $model = AdvancesEntries::findOne($id);
             $model->is_deleted = $model->is_deleted === 0 ? 10 : 0;
             if ($model->save(false)) {
-              return json_encode(['isSuccess'=>true]);
+                return json_encode(['isSuccess' => true]);
             }
         }
     }

@@ -29,6 +29,7 @@ class BacPositionController extends Controller
                     'create',
                     'update',
                     'delete',
+                    'get-position',
 
 
                 ],
@@ -40,6 +41,7 @@ class BacPositionController extends Controller
                             'create',
                             'update',
                             'delete',
+                            'get-position',
                         ],
                         'allow' => true,
                         'roles' => ['@']

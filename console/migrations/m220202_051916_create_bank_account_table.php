@@ -15,9 +15,11 @@ class m220202_051916_create_bank_account_table extends Migration
         $this->createTable('{{%bank_account}}', [
             'id' => $this->primaryKey(),
             'account_number' => $this->string()->notNull(),
+            'account_name' => $this->string()->notNull(),
             'province' => $this->string(),
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
+        $this->alterColumn('{{%bank_account}}', 'id', $this->bigInteger() . ' NOT NULL  default(uuid_short())');
     }
 
     /**

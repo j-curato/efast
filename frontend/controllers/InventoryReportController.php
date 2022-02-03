@@ -7,6 +7,7 @@ use app\models\InventoryReport;
 use app\models\InventoryReportEntries;
 use app\models\InventoryReportSearch;
 use ErrorException;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -22,8 +23,37 @@ class InventoryReportController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'create',
+                    'update',
+                    'view',
+                    'delete',
+                    'index',
+                    'insert'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'create',
+                            'update',
+                            'view',
+                            'delete',
+                            'index',
+                            'insert'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
+
+
+
+
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -135,7 +165,7 @@ class InventoryReportController extends Controller
 
             if (!empty($_POST['id'])) {
                 $model = InventoryReport::findOne($_POST['id']);
-                foreach($model->inventoryReportEntries as $val){
+                foreach ($model->inventoryReportEntries as $val) {
                     $val->delete();
                 }
             } else {
@@ -155,7 +185,6 @@ class InventoryReportController extends Controller
                 if ($flag) {
                     $transaction->commit();
                     return $this->redirect(['view', 'id' => $model->id]);
-
                 }
             } catch (ErrorException $e) {
                 return json_encode($e->getMessage());

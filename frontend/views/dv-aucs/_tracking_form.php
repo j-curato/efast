@@ -111,6 +111,7 @@ if (!empty($model->id)) {
                     echo Select2::widget([
                         'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
                         'name' => 'book_id',
+                        'id' => 'book_id',
                         'value' => $book_id,
                         'pluginOptions' => [
                             'placeholder' => 'Select Book'
@@ -882,6 +883,12 @@ $script = <<< JS
            if(_transaction_type !=''){
             $('#transaction').val(_transaction_type).trigger('change')
            }
+
+           $('#book_id').change(function(e){
+            e.preventDefault()
+            $('#processorssearch-book_id').val($(this).val()).trigger('change');
+
+         })
 
     })
  

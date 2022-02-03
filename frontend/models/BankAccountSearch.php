@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\BankAccount;
+use Yii;
 
 /**
  * BankAccountSearch represents the model behind the search form of `app\models\BankAccount`.
@@ -18,7 +19,7 @@ class BankAccountSearch extends BankAccount
     {
         return [
             [['id'], 'integer'],
-            [['account_number', 'province', 'created_at'], 'safe'],
+            [['account_number', 'account_name', 'province', 'created_at'], 'safe'],
         ];
     }
 
@@ -40,9 +41,21 @@ class BankAccountSearch extends BankAccount
      */
     public function search($params)
     {
+
+        $province = Yii::$app->user->identity->province;
         $query = BankAccount::find();
 
         // add conditions that should always apply here
+        if (
+            $province === 'adn' ||
+            $province === 'ads' ||
+            $province === 'pdi' ||
+            $province === 'sds' ||
+            $province === 'sds'
+
+        ) {
+            $query->where(['province' => $province]);
+        }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -63,6 +76,7 @@ class BankAccountSearch extends BankAccount
         ]);
 
         $query->andFilterWhere(['like', 'account_number', $this->account_number])
+            ->andFilterWhere(['like', 'account_name', $this->account_name])
             ->andFilterWhere(['like', 'province', $this->province]);
 
         return $dataProvider;

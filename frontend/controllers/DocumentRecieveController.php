@@ -30,7 +30,7 @@ class DocumentRecieveController extends Controller
                     'update',
                     'delete',
                     'get-document-recieves',
-                    'get-document-recieves',
+                    'find-document',
                 ],
                 'rules' => [
                     [
@@ -41,7 +41,7 @@ class DocumentRecieveController extends Controller
                             'update',
                             'delete',
                             'get-document-recieves',
-                            'get-document-recieves',
+                            'find-document',
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
