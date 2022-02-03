@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Class m220202_010755_create_tracking_sheet_index_view
  */
-class m220202_010755_create_tracking_sheet_index_view extends Migration
+class m220202_025530_create_tracking_sheet_index_view extends Migration
 {
     /**
      * {@inheritdoc}
