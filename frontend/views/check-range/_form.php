@@ -73,6 +73,7 @@ use yii\widgets\ActiveForm;
             <input type="number" class="form-control" name="begin_balance" value='<?php echo $begin_balance ?>' placeholder="Beginning Balance">
         </div>
         <div class="form-group">
+            <label for="bank_account"> Bank Account</label>
             <?php
             $bank_accounts_query = (new \yii\db\Query())
                 ->select(['bank_account.id', 'bank_account.account_number'])
@@ -100,7 +101,7 @@ use yii\widgets\ActiveForm;
             ?>
         </div>
         <div class="form-group">
-            <label for="exampleFormControlSelect1">Reporting Period</label>
+
             <?php
             if (
                 $province === 'adn' ||
@@ -110,6 +111,7 @@ use yii\widgets\ActiveForm;
                 $province === 'sds'
             ) {
             } else {
+                echo " <label for='province'>Province</label>";
                 echo Select2::widget([
                     'data' => [
                         'adn' => 'ADN',
@@ -129,7 +131,7 @@ use yii\widgets\ActiveForm;
             ?>
         </div>
         <div class="form-group">
-            <label for="exampleFormControlSelect1">Reporting Period</label>
+            <label for="reporting_period">Reporting Period</label>
             <?php
             echo DatePicker::widget([
                 'name' => 'reporting_period',
