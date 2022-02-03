@@ -16,23 +16,36 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'account_number')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'account_name')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'province')->widget(
-        Select2::class,
-        [
-            'data' => [
-                'adn' => 'ADN',
-                'ads' => 'ADS',
-                'pdi' => 'PDI',
-                'sdn' => 'SDN',
-                'sds' => 'SDS',
-            ],
-            'pluginOptions'=>[
-                'placeholder'=>'Select Province'
+
+    <?php
+    $province = Yii::$app->user->identity->province;
+    if (
+        $province === 'adn' ||
+        $province === 'ads' ||
+        $province === 'pdi' ||
+        $province === 'sdn' ||
+        $province === 'sds'
+    ) {
+    } else {
+
+    ?>
+        <?= $form->field($model, 'province')->widget(
+            Select2::class,
+            [
+                'data' => [
+                    'adn' => 'ADN',
+                    'ads' => 'ADS',
+                    'pdi' => 'PDI',
+                    'sdn' => 'SDN',
+                    'sds' => 'SDS',
+                ],
+                'pluginOptions' => [
+                    'placeholder' => 'Select Province'
+                ]
             ]
-        ]
 
-    ) ?>
-
+        ) ?>
+    <?php } ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

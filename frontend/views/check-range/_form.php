@@ -91,7 +91,7 @@ use yii\widgets\ActiveForm;
             echo Select2::widget([
                 'data' => ArrayHelper::map($bank_accounts, 'id', 'account_number'),
                 'name' => 'bank_account_id',
-                'value'=>$bank_account_id,
+                'value' => $bank_account_id,
                 'pluginOptions' => [
                     'placeholder' => 'Select Bank Account'
                 ]
@@ -103,12 +103,13 @@ use yii\widgets\ActiveForm;
             <label for="exampleFormControlSelect1">Reporting Period</label>
             <?php
             if (
-                $province !== 'adn' ||
-                $province !== 'ads' ||
-                $province !== 'pdi' ||
-                $province !== 'sdn' ||
-                $province !== 'sds'
+                $province === 'adn' ||
+                $province === 'ads' ||
+                $province === 'pdi' ||
+                $province === 'sdn' ||
+                $province === 'sds'
             ) {
+            } else {
                 echo Select2::widget([
                     'data' => [
                         'adn' => 'ADN',

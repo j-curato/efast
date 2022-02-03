@@ -100,6 +100,10 @@ class BankAccountController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+
+            if ($model->province !== 'ro_admin') {
+                $model->province = Yii::$app->user->identity->province;
+            }
             if ($model->save(false)) {
                 return $this->redirect(['view', 'id' => $model->id]);
             }
