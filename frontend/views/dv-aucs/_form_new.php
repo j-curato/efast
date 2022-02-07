@@ -257,10 +257,12 @@ $advances_entries_row = 1;
                                                    WHERE advances.dv_aucs_id = :dv_id")
                                         ->bindValue(":dv_id", $model->id)
                                         ->queryOne();
-                                    $advances_province = $advances_data['province'];
-                                    $advances_parent_reporting_period = $advances_data['reporting_period'];
-                                    $advances_id = $advances_data['id'];
-                                    $bank_account_id = $advances_data['bank_account_id'];
+                                    if (!empty($advances_data)) {
+                                        $advances_province = $advances_data['province'];
+                                        $advances_parent_reporting_period = $advances_data['reporting_period'];
+                                        $advances_id = $advances_data['id'];
+                                        $bank_account_id = $advances_data['bank_account_id'];
+                                    }
                                 }
 
                                 $province = [
