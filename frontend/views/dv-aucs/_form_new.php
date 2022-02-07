@@ -235,9 +235,19 @@ $advances_entries_row = 1;
             </div>
             <table id="advances_table" style="display: none; margin-top:3rem;">
                 <thead>
-                    <th colspan="4" style="text-align: center;">
-                        <h4 style="font-weight:bold;">ADVANCES</h4>
-                    </th>
+
+
+                    <tr>
+                        <th colspan="4">
+                            <hr>
+                        </th>
+                    </tr>
+                    <tr>
+
+                        <th colspan="4" style="text-align: center;">
+                            <h4 style="font-weight:bold;">ADVANCES</h4>
+                        </th>
+                    </tr>
                 </thead>
                 <tbody>
 

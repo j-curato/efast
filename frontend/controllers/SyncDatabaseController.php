@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use app\models\Advances;
 use app\models\AuthorizationCode;
+use app\models\BankAccount;
 use app\models\Books;
 use app\models\CashFlow;
 use app\models\Cdr;
@@ -1292,7 +1293,8 @@ class SyncDatabaseController extends \yii\web\Controller
         $cloud_fur = Yii::$app->cloud_db->createCommand("SELECT * FROM fur")->queryAll();
         $cloud_rod = Yii::$app->cloud_db->createCommand("SELECT * FROM rod")->queryAll();
         $cloud_rod_entries = Yii::$app->cloud_db->createCommand("SELECT * FROM rod_entries")->queryAll();
-
+        $cloud_bank_account = Yii::$app->cloud_db->createCommand("SELECT * FROM bank_account")->queryAll();
+        // return json_encode($cloud_bank_account);
 
         $lan_liquidation = Yii::$app->db->createCommand("SELECT * FROM liquidation")->queryAll();
         $lan_liquidation_entries = Yii::$app->db->createCommand("SELECT * FROM liquidation_entries")->queryAll();
@@ -1305,6 +1307,7 @@ class SyncDatabaseController extends \yii\web\Controller
         $lan_fur = Yii::$app->db->createCommand("SELECT * FROM fur")->queryAll();
         $lan_rod = Yii::$app->db->createCommand("SELECT * FROM rod")->queryAll();
         $lan_rod_entries = Yii::$app->db->createCommand("SELECT * FROM rod_entries")->queryAll();
+        $lan_bank_account = Yii::$app->db->createCommand("SELECT * FROM bank_account")->queryAll();
 
 
         $liquidation_difference = array_map(
@@ -1377,6 +1380,17 @@ class SyncDatabaseController extends \yii\web\Controller
         $rod_entries_to_delete = array_map(
             'unserialize',
             array_diff(array_map('serialize', $lan_rod_entries), array_map('serialize', $cloud_rod_entries))
+
+        );
+        $bank_account_difference = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $cloud_bank_account), array_map('serialize', $lan_bank_account))
+
+        );
+
+        $bank_account_to_delete = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $lan_bank_account), array_map('serialize', $cloud_bank_account))
 
         );
 
@@ -1588,6 +1602,7 @@ class SyncDatabaseController extends \yii\web\Controller
                             $update_check_range->province = $val['province'];
                             $update_check_range->reporting_period = $val['reporting_period'];
                             $update_check_range->begin_balance = $val['begin_balance'];
+                            $update_check_range->bank_account_id = $val['bank_account_id'];
 
                             if ($update_check_range->save(false)) {
                             } else {
@@ -1602,11 +1617,53 @@ class SyncDatabaseController extends \yii\web\Controller
                             $new_check_range->province = $val['province'];
                             $new_check_range->reporting_period = $val['reporting_period'];
                             $new_check_range->begin_balance = $val['begin_balance'];
-
+                            $new_check_range->bank_account_id = $val['bank_account_id'];
                             if ($new_check_range->save(false)) {
                             } else {
                                 $transaction->rollBack();
                                 return 'Save Fail in Check Range New';
+                            }
+                        }
+                    }
+                }
+
+                $transaction->commit();
+            } catch (ErrorException $e) {
+                return json_encode($e->getMessage());
+            }
+        }
+        if (!empty($bank_account_difference)) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($flag = true) {
+                    foreach ($bank_account_difference as $val) {
+                        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `bank_account` WHERE id = :id)")
+                            ->bindValue(':id', $val['id'])
+                            ->queryScalar();
+                        if (intval($query) === 1) {
+
+                            $update_bank_account = BankAccount::findOne($val['id']);
+                            $update_bank_account->id = $val['id'];
+                            $update_bank_account->account_number = $val['account_number'];
+                            $update_bank_account->account_name = $val['account_name'];
+                            $update_bank_account->province = $val['province'];
+                            $update_bank_account->created_at = $val['created_at'];
+                            if ($update_bank_account->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in Check Range Update';
+                            }
+                        } else {
+                            $new_bank_account = new BankAccount();
+                            $new_bank_account->id = $val['id'];
+                            $new_bank_account->account_number = $val['account_number'];
+                            $new_bank_account->account_name = $val['account_name'];
+                            $new_bank_account->province = $val['province'];
+                            $new_bank_account->created_at = $val['created_at'];
+                            if ($new_bank_account->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return 'Save Fail in Bank Account';
                             }
                         }
                     }
