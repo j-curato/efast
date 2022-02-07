@@ -288,4 +288,31 @@ class MyComponent extends Component
         ];
         return $q;
     }
+    public function generateAdvancesNumber()
+    {
+        $q = Yii::$app->db->createCommand("SELECT CAST(substring_index(nft_number, '-', -1)AS UNSIGNED) as q 
+            from advances 
+            WHERE 
+            nft_number NOT LIKE 'S%'
+            AND nft_number NOT LIKE 'a%'
+            AND nft_number NOT LIKE 'P%'
+            AND nft_number NOT LIKE 'R%'
+            ORDER BY q DESC
+            LIMIT 1")->queryScalar();
+
+        $num = 0;
+        if (!empty($q)) {
+            // $x = explode('-', $q->nft_number);
+            $num = (int) $q + 1;
+        } else {
+            $num = 1;
+        }
+
+        $y = '';
+        for ($i = strlen($num); $i < 4; $i++) {
+            $y .= 0;
+        }
+        $y .= $num;
+        return date('Y') . '-' . $y;
+    }
 }

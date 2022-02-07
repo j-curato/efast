@@ -595,4 +595,27 @@ class ChartOfAccountsController extends Controller
             return json_encode($query);
         }
     }
+    public function actionSearchSubAccount($q = null, $id = null, $province = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+
+            $query->select(["object_code as id, CONCAT (object_code ,'-',account_title) as text"])
+                ->from('sub_accounts_view')
+                ->where(['like', 'account_title', $q])
+                ->orWhere(['like', 'object_code', $q]);
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        //  elseif ($id > 0) {
+        //     $out['results'] = ['id' => $id, 'text' => AdvancesEntries::find($id)->fund_source];
+        // }
+        return $out;
+    }
 }

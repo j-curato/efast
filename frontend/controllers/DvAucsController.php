@@ -2,6 +2,8 @@
 
 namespace frontend\controllers;
 
+use app\models\Advances;
+use app\models\AdvancesEntries;
 use app\models\Books;
 use app\models\DvAccountingEntries;
 use Yii;
@@ -149,7 +151,7 @@ class DvAucsController extends Controller
      */
     public function actionCreate()
     {
-        // $model = new DvAucs();
+        $model = new DvAucs();
 
         // if ($model->load(Yii::$app->request->post()) && $model->save()) {
         //     return $this->redirect(['view', 'id' => $model->id]);
@@ -165,6 +167,7 @@ class DvAucsController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'update_id' => '',
+            'model' => $model
         ]);
     }
 
@@ -177,7 +180,7 @@ class DvAucsController extends Controller
      */
     public function actionUpdate($id)
     {
-        // $model = $this->findModel($id);
+        $model = $this->findModel($id);
 
         // if ($model->load(Yii::$app->request->post()) && $model->save()) {
         //     return $this->redirect(['view', 'id' => $model->id]);
@@ -193,7 +196,62 @@ class DvAucsController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'update_id' => $id,
+            'model' => $model
         ]);
+    }
+    public function insertAdvancesEntries(
+        $advances_id,
+        $object_codes,
+        $amounts,
+        $fund_source,
+        $fund_source_type,
+        $report_type,
+        $reporting_periods,
+        $advances_entries_id
+
+    ) {
+        foreach ($fund_source as $i => $val) {
+            if (empty($advances_entries_id[$i])) {
+
+                $ad_entry = new AdvancesEntries();
+            } else {
+                $ad_entry = AdvancesEntries::findOne($advances_entries_id[$i]);
+            }
+            $ad_entry->advances_id = $advances_id;
+            $ad_entry->fund_source_type = $fund_source_type[$i];
+            $ad_entry->object_code = $object_codes[$i];
+            $ad_entry->fund_source = trim($val, " \r\n\t");
+            $ad_entry->reporting_period = $reporting_periods[$i];
+            $ad_entry->amount = $amounts[$i];
+            $ad_entry->report_type = $report_type[$i];
+            $ad_entry->is_deleted = 9;
+            if ($ad_entry->save(false)) {
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+    public function insertAdvances($province, $reporting_period, $dv_aucs_id, $advances_update_id, $advances_bank_account_id)
+    {
+
+        if (empty($advances_update_id)) {
+
+            $advances = new Advances();
+        } else {
+            $advances = Advances::findOne($advances_update_id);
+        }
+        $advances->reporting_period = $reporting_period;
+        $advances->province = $province;
+        $advances->dv_aucs_id = $dv_aucs_id;
+        $advances->bank_account_id = $advances_bank_account_id;
+        $advances->nft_number = Yii::$app->memem->generateAdvancesNumber();
+        if ($advances->save(false)) {
+            return $advances->id;
+        } else {
+            echo "FAILED IN ADVANCES";
+            die();
+        }
     }
 
     /**
@@ -325,6 +383,32 @@ class DvAucsController extends Controller
             $payee_id = $_POST['payee'];
             $book_id = !empty($_POST['book']) ? $_POST['book'] : 5;
             $transaction_type = strtolower($_POST['transaction_type']);
+            $advances_reporting_period = !empty($_POST['advances_reporting_period']) ? $_POST['advances_reporting_period'] : [];
+            $advances_report_type = !empty($_POST['advances_report_type']) ? $_POST['advances_report_type'] : [];
+            $advances_fund_source_type = !empty($_POST['advances_fund_source_type']) ? $_POST['advances_fund_source_type'] : [];
+            $advances_fund_source = !empty($_POST['advances_fund_source']) ? $_POST['advances_fund_source'] : [];
+            $advances_object_code = !empty($_POST['advances_object_code']) ? $_POST['advances_object_code'] : [];
+            $advances_amount = !empty($_POST['advances_amount']) ? $_POST['advances_amount'] : [];
+            $advances_province = !empty($_POST['advances_province']) ? $_POST['advances_province'] : [];
+            // $advances_province = 'adn';
+            $advances_period = !empty($_POST['advances_parent_reporting_period']) ? $_POST['advances_parent_reporting_period'] : [];
+            // $advances_period = '2022-02';
+            $advances_entries_id = !empty($_POST['advances_entries_id']) ? $_POST['advances_entries_id'] : [];
+            $advances_update_id = !empty($_POST['advances_id']) ? $_POST['advances_id'] : '';
+            $advances_bank_account_id = !empty($_POST['advances_bank_account_id']) ? $_POST['advances_bank_account_id'] : '';
+            // return json_encode(
+            //     [
+
+            //         $advances_reporting_period,
+            //         $advances_report_type,
+            //         $advances_fund_source_type,
+            //         $advances_fund_source,
+            //         $advances_object_code,
+            //     ]
+
+            // );
+
+
 
             if (empty($_POST['transaction_timestamp'])) {
                 $now = new DateTime();
@@ -396,6 +480,7 @@ class DvAucsController extends Controller
 
 
             try {
+
                 if (!empty($_POST['update_id'])) {
                     $dv = DvAucs::findOne($_POST['update_id']);
                     foreach ($dv->dvAucsEntries as $val) {
@@ -512,6 +597,58 @@ class DvAucsController extends Controller
                 } else {
                     return json_encode(['isSuccess' => false, 'error' => $dv->errors]);
                 }
+
+                // if (!empty($advances_fund_source)) {
+
+                $check_advances = Yii::$app->db->createCommand("SELECT id FROM advances WHERE advances.dv_aucs_id = :id")
+                    ->bindValue(':id', $dv->id)
+                    ->queryOne();
+                if (empty($check_advances['id'])) {
+
+                    $advances_id = $this->insertAdvances($advances_province, $advances_period, $dv->id, $advances_update_id, $advances_bank_account_id);
+                } else {
+                    $advances_id = $check_advances['id'];
+                    $advances_id = $this->insertAdvances($advances_province, $advances_period, $dv->id, $advances_update_id, $advances_bank_account_id);
+
+                    $q = Yii::$app->db->createCommand("SELECT id FROM advances_entries WHERE advances_entries.advances_id = :advances_id")
+                        ->bindValue(':advances_id', $advances_id)
+                        ->queryAll();
+                    $source_fund_source_type_difference = array_map(
+                        'unserialize',
+                        array_diff(array_map('serialize', array_column($q, 'id')), array_map('serialize', $advances_entries_id))
+
+                    );
+                    $params = [];
+                    $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'advances_entries.id', $source_fund_source_type_difference], $params);
+                    // $qqq = Yii::$app->db->createCommand("UPDATE   advances_entries 
+
+                    // LEFT JOIN liquidation_entries ON advances_entries.id = liquidation_entries.id
+                    // SET is_deleted =101
+                    //  WHERE  $sql AND liquidation_id IS NULL ")
+                    //     ->query();
+                    if (!empty($source_fund_source_type_difference)) {
+                        $delete_advances_entries = Yii::$app->db->createCommand("UPDATE  advances_entries
+                    LEFT JOIN liquidation_entries ON advances_entries.id = liquidation_entries.advances_entries_id
+                    SET advances_entries.is_deleted = 1
+                   WHERE $sql AND liquidation_entries.id IS NULL", $params)
+                            // ->update("advances_entries ",
+                            //  ['advances_entries.is_deleted' => 101], "$sql", $params)
+                            ->execute();
+                    }
+
+                    // return json_encode($sql);
+                }
+                $this->insertAdvancesEntries(
+                    $advances_id,
+                    $advances_object_code,
+                    $advances_amount,
+                    $advances_fund_source,
+                    $advances_fund_source_type,
+                    $advances_report_type,
+                    $advances_reporting_period,
+                    $advances_entries_id
+                );
+                // }
                 if ($flag) {
 
                     $transaction->commit();

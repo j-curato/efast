@@ -126,6 +126,18 @@ class CashDisbursementController extends Controller
         $model = new CashDisbursement();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+            Yii::$app->db->createCommand("UPDATE advances_entries 
+             LEFT JOIN advances ON advances_entries.advances_id  = advances.id
+             SET advances_entries.is_deleted = 0,
+             advances_entries.cash_disbursement_id = :cash_id
+             WHERE 
+             advances.dv_aucs_id = :dv_id
+             AND advances_entries.is_deleted = 9
+             ")
+                ->bindValue(':dv_id', $model->dv_aucs_id)
+                ->bindValue(':cash_id', $model->id)
+                ->execute();
             return $this->redirect(['view', 'id' => $model->id]);
         }
 

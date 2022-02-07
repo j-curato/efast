@@ -13,7 +13,7 @@ class m210713_025940_create_advances_cash_disbursement_view extends Migration
     public function safeUp()
     {
         Yii::$app->db->createCommand("CREATE VIEW advances_cash_disbursement as
-        SELECT 
+       SELECT 
         cash_disbursement.id,
         books.`name` as book_name,
         cash_disbursement.mode_of_payment,
@@ -24,6 +24,7 @@ class m210713_025940_create_advances_cash_disbursement_view extends Migration
         payee.account_name as payee,
         dv_aucs.particular,
         q.total_amount_disbursed
+   
         
         
         FROM 
@@ -38,11 +39,14 @@ class m210713_025940_create_advances_cash_disbursement_view extends Migration
         INNER JOIN payee ON dv_aucs.payee_id = payee.id
         INNER JOIN  books ON cash_disbursement.book_id = books.id
         INNER JOIN nature_of_transaction ON dv_aucs.nature_of_transaction_id = nature_of_transaction.id
-        
+        LEFT JOIN advances_entries ON cash_disbursement.id = advances_entries.cash_disbursement_id
         WHERE 
-        cash_disbursement.id NOT IN (SELECT advances_entries.cash_disbursement_id FROM advances_entries )
-        AND cash_disbursement.is_cancelled=0
-        AND nature_of_transaction.`name` = 'CA to SDOs/OPEX' ")->query();
+        advances_entries.id IS NULL
+        AND
+        cash_disbursement.is_cancelled=0
+        AND nature_of_transaction.`name` = 'CA to SDOs/OPEX' 
+
+				ORDER BY cash_disbursement.id DESC")->query();
     }
 
     /**

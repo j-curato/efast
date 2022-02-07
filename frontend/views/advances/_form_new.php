@@ -388,7 +388,7 @@ $bank_account_id='';
             });
             $(`#report_type-${transaction_table_count}`).select2({
                 data: report_types,
-                placeholder: "Select Report Type Type",
+                placeholder: "Select Report Type ",
 
             });
             if ($("#update_id").val() > 0) {

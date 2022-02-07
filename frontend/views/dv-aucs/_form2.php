@@ -1,25 +1,13 @@
-<link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
-<!-- <link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre.min.css">
-<link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre-exp.min.css">
-<link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre-icons.min.css"> -->
-
 <?php
 
 use app\models\Books;
-use app\models\FundSourceType;
-use app\models\ReportType;
 use kartik\date\DatePicker;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\money\MaskMoney;
 use kartik\grid\GridView;
-use kartik\select2\Select2;
-use kartik\widgets\DatePicker as WidgetsDatePicker;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
-use yii\web\JsExpression;
 
-$row = 1;
-$advances_entries_row = 1;
 ?>
 <div class="test">
 
@@ -64,14 +52,6 @@ $advances_entries_row = 1;
                     ]);
                     ?>
                 </div>
-
-                <div class="col-sm-3">
-                    <label for="tracking_sheet">Tracking Sheet NO.</label>
-                    <select id="tracking_sheet" name="tracking_sheet" class="tracking_sheet select" style="width: 100%; margin-top:50px">
-                        <option></option>
-                    </select>
-                </div>
-
                 <div class="col-sm-3" style="height:60x">
                     <label for="nature_of_transaction">Nature of Transaction</label>
                     <select required id="nature_of_transaction" name="nature_of_transaction" class="nature_of_transaction select" style="width: 100%; margin-top:50px">
@@ -84,6 +64,12 @@ $advances_entries_row = 1;
                         <option></option>
                     </select>
                 </div>
+                <div class="col-sm-3" style="height:60x">
+                    <label for="transaction">Transaction Type</label>
+                    <select required id="transaction" name="transaction_type" class="transaction select" style="width: 100%; margin-top:50px">
+                        <option></option>
+                    </select>
+                </div>
             </div>
             <div class="row">
                 <div class="col-sm-3">
@@ -93,12 +79,7 @@ $advances_entries_row = 1;
                     </select>
                 </div>
 
-                <div class="col-sm-3" style="height:60x">
-                    <label for="transaction">Transaction Type</label>
-                    <select required id="transaction" name="transaction_type" class="transaction select" style="width: 100%; margin-top:50px">
-                        <option></option>
-                    </select>
-                </div>
+
                 <div class="col-sm-3" id='bok'>
                     <label for="book">Book</label>
                     <select id="book" name="book" class="book select" style="width: 100%; margin-top:50px">
@@ -158,65 +139,165 @@ $advances_entries_row = 1;
                 </tfoot>
             </table>
 
-            <div class="container">
-                <div id="form-0" class="accounting_entries" style="max-width: 100%;">
-                    <!-- chart of accounts -->
 
-                    <div class="row">
-                        <div>
-                            <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(0)"><i class="glyphicon glyphicon-minus"></i></button>
-                            <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="glyphicon glyphicon-plus"></i></button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <label for="isCurrent">Current/NonCurrent </label>
 
-                            <input type="text" name="isCurrent[]" placeholder="Current/NonCurrent" id="isCurrent-0" />
-                        </div>
-                        <div class="col-sm-3">
-                            <label for="cadadr_number">Cash Flow </label>
+            <table id="accounting_entry_table" style="width: 100%;">
 
-                            <select id="cashflow-0" name="cash_flow_id[]" style="width: 100% ;display:none">
-                                <option></option>
-                            </select>
-                        </div>
-                        <div class="col-sm-3">
-                            <label for="cadadr_number">Changes in Net Asset and Equity </label>
+                <tbody>
+                    <?php
+                    $row = 1;
 
-                            <select id="isEquity-0" name="isEquity[]" style="width: 100% ;display:none">
-                                <option></option>
-                            </select>
-                        </div>
-                    </div>
+                    if (!empty($model->id)) {
+                        $entries_query = Yii::$app->db->createCommand("SELECT 
+                            dv_accounting_entries.debit,
+                            dv_accounting_entries.credit,
+                            dv_accounting_entries.object_code,
+                            accounting_codes.account_title
+                            FROM dv_accounting_entries
+                            LEFT JOIN  accounting_codes ON dv_accounting_entries.object_code = accounting_codes.object_code
+                            WHERE dv_accounting_entries.dv_aucs_id = :id
+                        ")
+                            ->bindValue(':id', $model->id)
+                            ->queryAll();
+                        foreach ($entries_query as $val) {
+                            $object_code = $val['object_code'];
+                            $account_title = $val['account_title'];
+                            $debit = $val['debit'];
+                            $credit = $val['credit'];
 
-                    <div class="row gap-1">
+                            
+                            echo "<tr tr class='panel  panel-default' style='margin-top: 2rem;margin-bottom:2rem;'>
+                            <td style='max-width:100rem;'>
+    
+                                <div class='row'>
+                                    <div class='col-sm-4'>
+                                        <label for='isCurrent'>Current/NonCurrent </label>
+    
+                                        <input type='text' name='isCurrent[$row]' placeholder='Current/NonCurrent' />
+                                    </div>
+                                    <div class='col-sm-3'>
+                                        <label for='cadadr_number'>Cash Flow </label>
+    
+                                        <select name='cash_flow_id[$row]' style='width: 100% ;display:none'>
+                                            <option></option>
+                                        </select>
+                                    </div>
+                                    <div class='col-sm-3'>
+                                        <label for='cadadr_number'>Changes in Net Asset and Equity </label>
+                                        <select name='isEquity[$row]' style='width: 100% ;display:none'>
+                                            <option></option>
+                                        </select>
+                                    </div>
+                                </div>
+    
+                                <div class='row'>
+                                    <div class='col-sm-6'>
+                                        <label for='stocks'>Chart of Account</label>
+                                        <select name='chart_of_account_id[$row]' class='chart-of-accounts' style='width: 100%'>
+                                            <option value='$object_code'>$account_title</option>
+                                        </select>
+                                    </div>
+                                    <div class='col-sm-2'>
+                                        <label for='debit'></label>
+                                        <input type='text' class='debit_amount' placeholder='Debit' value='$debit'>
+                                        <input type='hidden' name='debit[$row]' class='debit' placeholder='Debit' value='$debit'>
+                                    </div>
+                                    <div class='col-sm-2'>
+                                        <label for='credit'></label>
+                                        <input type='text' class='credit_amount' placeholder='Credit' value='$credit'>
+                                        <input type='hidden' name='credit[$row]' class='credit' placeholder='Credit' value='$credit'>
+                                    </div>
+    
+                                </div>
+                            </td>
+                            <td style='  text-align: center;'>
+                                <div class='pull-right' style='padding: 12px;'>
+                                    <button class='add_new_row btn btn-primary btn-xs'><i class='fa fa-plus fa-fw'></i> </button>
+                                    <a class='remove_this_row btn btn-danger btn-xs disabled' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                                </div>
+                            </td>
+    
+    
+                        </tr>";
 
-                        <div class="col-sm-5 ">
+                            echo " <tr>
+                            <td colspan='2'>
+                                <hr>
+                            </td>
+                        </tr>";
+                        $row++;
+                        }
+                    } else {
 
-                            <div>
-                                <select id="chart-0" name="chart_of_account_id[]" class="chart-of-accounts" onchange=isCurrent(this,0) style="width: 100%">
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
 
-                        <div class="col-sm-3">
-                            <input type="text" id="debit-0" name="debit[]" class="debit" placeholder="Debit">
-                        </div>
-                        <div class="col-sm-3">
-                            <input type="text" id="credit-0" name="credit[]" class="credit" placeholder="Credit">
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    ?>
+                        <tr tr class="panel  panel-default" style="margin-top: 2rem;margin-bottom:2rem;">
+                            <td style="max-width:100rem;">
+
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <label for="isCurrent">Current/NonCurrent </label>
+
+                                        <input type="text" name="isCurrent[0]" placeholder="Current/NonCurrent" />
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <label for="cadadr_number">Cash Flow </label>
+
+                                        <select name="cash_flow_id[0]" style="width: 100% ;display:none">
+                                            <option></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <label for="cadadr_number">Changes in Net Asset and Equity </label>
+                                        <select name="isEquity[0]" style="width: 100% ;display:none">
+                                            <option></option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label for="stocks">Chart of Account</label>
+                                        <select name="chart_of_account_id[0]" class="chart-of-accounts" style="width: 100%">
+                                            <option></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <label for="debit"></label>
+                                        <input type="text" class="debit_amount" placeholder="Debit">
+                                        <input type="hidden" name="debit[0]" class="debit" placeholder="Debit">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <label for="credit"></label>
+                                        <input type="text" class="credit_amount" placeholder="Credit">
+                                        <input type="hidden" name="credit[0]" class="credit" placeholder="Credit">
+                                    </div>
+
+                                </div>
+                            </td>
+                            <td style='  text-align: center;'>
+                                <div class='pull-right' style="padding: 12px;">
+                                    <button class='add_new_row btn btn-primary btn-xs'><i class='fa fa-plus fa-fw'></i> </button>
+                                    <a class='remove_this_row btn btn-danger btn-xs disabled' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                                </div>
+                            </td>
+
+
+                        </tr>
+
+                        <tr>
+                            <td colspan="2">
+                                <hr>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+
             <div class="total row">
 
                 <div class="col-sm-3 col-md-offset-5">
-                    <!-- <div class="form-group">
-        <label for="exampleInputEmail1">TOTAL DEBIT</label>
-        <input disabled type="text" style="background-color:white" class="form-control" id="d_total"  aria-describedby="emailHelp" placeholder="Total Dedit">
-    </div> -->
+
                     <div>
                         <label for="d_total"> Total Debit</label>
                         <div id="d_total">
@@ -233,230 +314,7 @@ $advances_entries_row = 1;
                 </div>
 
             </div>
-            <table id="advances_table" style="display: none; margin-top:3rem;">
-                <thead>
-                    <th colspan="4" style="text-align: center;">
-                        <h4 style="font-weight:bold;">ADVANCES</h4>
-                    </th>
-                </thead>
-                <tbody>
 
-                    <tr>
-                        <td>
-                            <div class="row">
-                                <?php
-                                $advances_province = '';
-                                $advances_parent_reporting_period = '';
-                                $advances_id = '';
-                                $bank_account_id = '';
-
-                                if (!empty($model->id)) {
-                                    $advances_data = Yii::$app->db->createCommand("SELECT advances.province,advances.id,advances.reporting_period,
-                                    advances.bank_account_id
-                                                   FROM advances
-                                                   WHERE advances.dv_aucs_id = :dv_id")
-                                        ->bindValue(":dv_id", $model->id)
-                                        ->queryOne();
-                                    $advances_province = $advances_data['province'];
-                                    $advances_parent_reporting_period = $advances_data['reporting_period'];
-                                    $advances_id = $advances_data['id'];
-                                    $bank_account_id = $advances_data['bank_account_id'];
-                                }
-
-                                $province = [
-                                    'ADN' => 'ADN',
-                                    'ADS' => 'ADS',
-                                    'SDN' => 'SDN',
-                                    'SDS' => 'SDS',
-                                    'PDI' => 'PDI'
-                                ];
-                                ?>
-                                <input type="hidden" value='<?= $advances_id ?>' name="advances_id">
-
-                                <div class="col-sm-3">
-                                    <label for="report"> Province</label>
-                                    <?php
-
-                                    echo Select2::widget([
-                                        'data' => $province,
-                                        'name' => 'advances_province',
-                                        'id' => 'province',
-                                        'value' => $advances_province,
-                                        'pluginOptions' => [
-                                            'placeholder' => 'Select Province'
-                                        ],
-                                        'options' => []
-                                    ])
-                                    ?>
-                                </div>
-                                <div class="col-sm-3">
-                                    <label for="advances_parent_reporting_period">Reporting Period</label>
-                                    <?php
-                                    echo DatePicker::widget([
-                                        'name' => 'advances_parent_reporting_period',
-                                        'value' => $advances_parent_reporting_period,
-                                        'pluginOptions' => [
-                                            'startView' => 'months',
-                                            'minViewMode' => 'months',
-                                            'format' => 'yyyy-mm',
-                                            'autoclose' => true
-                                        ]
-                                    ])
-                                    ?>
-                                </div>
-                                <div class="col-sm-3">
-                                    <label for="advances_bank_account">Bank Account</label>
-                                    <?php
-                                    $bank_accounts_query = (new \yii\db\Query())
-                                        ->select(['bank_account.id', 'bank_account.account_number'])
-                                        ->from('bank_account');
-
-                                    $bank_accounts = $bank_accounts_query->all();
-                                    echo Select2::widget([
-                                        'data' => ArrayHelper::map($bank_accounts, 'id', 'account_number'),
-                                        'name' => 'advances_bank_account_id',
-                                        'value' => $bank_account_id,
-                                        'pluginOptions' => [
-                                            'placeholder' => 'Select Bank Account'
-                                        ]
-
-                                    ]);
-                                    ?>
-                                </div>
-                            </div>
-                        </td>
-
-                    </tr>
-                    <?php
-                    $advances_entries = [];
-                    if (!empty($model->id)) {
-                        $advances_entries = Yii::$app->db->createCommand("SELECT advances_entries.*,accounting_codes.account_title
-                        FROM advances
-                        LEFT JOIN advances_entries ON advances.id  = advances_entries.advances_id
-                        LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
-                        WHERE advances.dv_aucs_id = :dv_id
-                        AND advances_entries.is_deleted !=1
-                        ")
-                            ->bindValue(':dv_id', $model->id)
-                            ->queryAll();
-                    }
-                    if (!empty($model->id) && !empty($advances_entries)) {
-
-
-                        foreach ($advances_entries as $val) {
-                            $maskAmount = number_format($val['amount'], 2);
-                            $amount = $val['amount'];
-                            echo "<tr>
-                            <td>
-                                <input type='hidden' name='advances_entries_id[$advances_entries_row]' value='{$val['id']}' />
-                                <div class='row'>
-                                    <div class='col-sm-4'>
-                                        <label for='advances_reporting_period'>Reporting Period</label>
-                                        <input type='month' name='advances_reporting_period[$advances_entries_row]' value='{$val['reporting_period']}' class='advances_reporting_period'  />
-                                    </div>
-                                    <div class='col-sm-4'>
-                                        <label for='advances_report_type'>Report Type</label>
-    
-                                        <select name='advances_report_type[$advances_entries_row]' class='advances_report_type' style='width: 100%'>
-                                            <option value='{$val['report_type']}'>{$val['report_type']}</option>
-                                        </select>
-                                    </div>
-                                    <div class='col-sm-4'>
-                                        <label for='advances_fund_source_type'>Fund Source Type</label>
-    
-                                        <select name='advances_fund_source_type[$advances_entries_row]' class='advances_fund_source_type' style='width: 100%'>
-                                            <option value='{$val['fund_source_type']}'>{$val['fund_source_type']}</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class='row'>
-                                    <div class='col-sm-4'>
-                                        <label for='advances_fund_source'>Fund Source</label>
-                                        <textarea name='advances_fund_source[$advances_entries_row]' class='advances_fund_source' cols='10' rows='2'>{$val['fund_source']}</textarea>
-                                    </div>
-                                    <div class='col-sm-4'>
-                                        <label for='advances_object-code'>Sub Account</label>
-                                        <select name='advances_object_code[$advances_entries_row]' class='advances-account' style='width: 100%'>
-                                            <option value='{$val['object_code']}'>{$val['object_code']}-{$val['account_title']}</option>
-                                        </select>
-                                    </div>
-                                    <div class='col-sm-4'>
-                                        <label for='advances_amount'>Amount</label>
-                                        <input type='text' class='form-control advances_amount' value='{$maskAmount}'>
-                                        <input type='hidden' name='advances_amount[$advances_entries_row]' class='advances_unmask_amount' value='{$amount}'>
-                                    </div>
-                                </div>
-                            </td>
-                            <td style='  text-align: center;width:100px'>
-                                <div class='row pull-right'>
-                                    <button class='add_new_row btn btn-primary btn-xs'><i class='fa fa-plus fa-fw'></i> </button>
-                                    <a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
-                                </div>
-    
-                            </td>
-                        </tr>";
-                            $advances_entries_row++;
-                        }
-                    } else {
-
-                    ?>
-                        <tr>
-                            <td>
-                                <div class="row">
-                                    <div class="col-sm-4">
-                                        <label for="advances_reporting_period">Reporting Period</label>
-                                        <input type='month' name='advances_reporting_period[0]' class="advances_reporting_period" />
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <label for="advances_report_type">Report Type</label>
-
-                                        <select name="advances_report_type[0]" class="advances_report_type" style="width: 100%">
-                                            <option></option>
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <label for="advances_fund_source_type">Fund Source Type</label>
-
-                                        <select name="advances_fund_source_type[0]" class="advances_fund_source_type" style="width: 100%">
-                                            <option></option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-4">
-                                        <label for="advances_fund_source">Fund Source</label>
-                                        <textarea name="advances_fund_source[0]" class="advances_fund_source" cols="10" rows="2"></textarea>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <label for="advances_object-code">Sub Account</label>
-                                        <select name="advances_object_code[0]" class="advances-account" style="width: 100%">
-                                            <option></option>
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <label for="advances_amount">Amount</label>
-                                        <input type="text" class="form-control advances_amount">
-                                        <input type="hidden" name="advances_amount[0]" class="advances_unmask_amount">
-                                    </div>
-                                </div>
-                            </td>
-                            <td style='  text-align: center;width:100px'>
-                                <div class="row pull-right">
-                                    <button class='add_new_row btn btn-primary btn-xs'><i class='fa fa-plus fa-fw'></i> </button>
-                                    <a class='remove_this_row btn btn-danger btn-xs disabled' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
-                                </div>
-
-                            </td>
-                        </tr>
-                    <?php } ?>
-                    <tr>
-                        <td colspan="2">
-                            <hr>
-                        </td>
-                    </tr>
-                </tbody>
-
-            </table>
             <button type="submit" class="btn btn-success" style="width: 100%;" id="save" name="save"> SAVE</button>
         </form>
 
@@ -643,10 +501,6 @@ $advances_entries_row = 1;
                         ],
                     ]); ?>
             <button type="submit" class="btn btn-primary" name="submit" id="submit" style="width: 100%;"> ADD</button> -->
-
-
-
-
         </form>
 
 
@@ -659,14 +513,6 @@ $advances_entries_row = 1;
 </div>
 
 <style>
-    #advances_table td {
-        padding: 1rem;
-    }
-
-    #advances_table {
-        width: 100%;
-    }
-
     textarea {
         max-width: 100%;
         width: 100%;
@@ -723,16 +569,13 @@ $advances_entries_row = 1;
     }
 </style>
 
-<!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script> -->
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
 <script src="<?= Url::base() ?>/frontend/web/js/scripts.js" type="text/javascript"></script>
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-<!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
+
 <?php
 
 // $csrfTokenName = Yii::$app->request->csrfTokenName;
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+
 $csrfToken = Yii::$app->request->csrfToken;
 ?>
 
@@ -744,8 +587,6 @@ $csrfToken = Yii::$app->request->csrfToken;
     var update_id = undefined;
     var cashflow = [];
     var accounts = [];
-    var report_types = [];
-
 
     function enableDisable(checkbox) {
         var isDisable = true
@@ -826,101 +667,7 @@ $csrfToken = Yii::$app->request->csrfToken;
     }
 
 
-    function add() {
 
-        var latest = Math.max.apply(null, x)
-        $(`#form-${latest}`)
-            .after(`<div id="form-${i}" style="max-width:100%;border: 1px solid gray;width:100%; padding: 2rem; margin-top: 1rem;background-color:white;border-radius:5px" class="control-group input-group" class="accounting_entries">
-                <!-- chart of accounts -->
-                <div class="row"  >
-                    <div>
-                        <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(${i})"><i class="glyphicon glyphicon-minus"></i></button>
-                        <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="glyphicon glyphicon-plus"></i></button>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label for="isCurrent">Current/NonCurrent </label>
-                        <input type="text" name="isCurrent[]" id="isCurrent-${i}" placeholder="Current/NonCurrent"/>
-                    </div>
-                    <div class="col-sm-3" style="">
-                        <label for="isCurrent">Cash Flow </label>
-                        <select id="cashflow-${i}" name="cash_flow_id[]" style="width: 100% ;display:none" >
-                            <option ></option>
-                        </select>
-                    </div>
-                    <div class="col-sm-3" >
-                        <label for="isCurrent">Changes in Net Asset and Equity </label>
-                            <select id="isEquity-${i}" name="isEquity[]" style="width: 100% ;display:none" >
-                                <option ></option>
-                            </select>
-                    </div>
-                </div>
-        
-                <div class="row gap-1">
-                        <div class="col-sm-5 ">
-                            <select id="chart-${i}" name="chart_of_account_id[]"  class="chart-of-accounts" onchange=isCurrent(this,${i}) style="width: 100%">
-                            <option></option>
-                            </select>
-                    </div>
-
-                    <div class="col-sm-3">
-                        <div >  <input type="text" id="debit-${i}"  name="debit[]" class="debit"  placeholder="Debit"></div>
-                    </div>
-                    <div class="col-sm-3">
-                        <div >  <input type="text"   id="credit-${i}" name="credit[]" class="credit" placeholder="Credit"></div>
-                    </div>
-                </div>
-
-                    
-            </div>
-            `)
-        // $(`#chart-${i}`).select2({
-        //     data: accounts,
-        //     placeholder: "Select Chart of Account",
-
-        // });
-        $('.chart-0').select2('destroy');
-        $('.chart-of-accounts').select2({
-            ajax: {
-                url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code',
-                dataType: 'json',
-                data: function(params) {
-
-                    return {
-                        q: params.term,
-                    };
-                },
-                processResults: function(data) {
-                    // Transforms the top-level key of the response object from 'items' to 'results'
-                    return {
-                        results: data.results
-                    };
-                }
-            },
-            placeholder: 'Search Accounting Code'
-        });
-        $(`#cashflow-${i}`).select2({
-            data: cashflow,
-            placeholder: 'Select Cash Flow'
-        }).next().hide()
-        $(`#isEquity-${i}`).select2({
-            data: net_asset,
-            placeholder: 'Select Net Asset'
-
-        }).next().hide();
-        var deb = document.getElementsByName('debit[]');
-        // arr_form.splice(latest, 0, latest + 1)
-        // deb[1].value = 123
-        x.push(i)
-
-        i++
-
-    }
-    $('.add-btn').click(function() {
-        add()
-        getTotal()
-    })
 
     function getTotal() {
         var total_disbursed = 0;
@@ -1036,85 +783,13 @@ $csrfToken = Yii::$app->request->csrfToken;
     var tracking_sheet = []
     var sheet = []
     var net_asset = []
-    var fund_source_type = []
 
-    function maskAdvancesAmount() {
-        $('.advances_amount').maskMoney()
-    }
 
-    function advancesReportTypeSelect() {
-        $(`.advances_report_type`).select2({
-            data: report_types,
-            placeholder: "Select Report Type ",
-
-        });
-    }
-
-    function advancesFundSourceTypeSelect() {
-        $(`.advances_fund_source_type`).select2({
-            data: fund_source_type,
-            placeholder: "Select Fund Source Type",
-
-        });
-    }
     $(document).ready(function() {
-        var advances_table_counter = <?= $advances_entries_row ?>;
-        maskAdvancesAmount()
-        getFundSourceType().then((data) => {
-            var array = []
-            $.each(data, function(key, val) {
-                array.push({
-                    id: val.name,
-                    text: val.name
-                })
-            })
-            fund_source_type = array
-
-        })
-
-        $.getJSON(url + '?r=report-type/get-report-type')
-            .then(function(data) {
-                var array = []
-                $.each(data, function(key, val) {
-                    array.push({
-                        id: val.id,
-                        text: val.name
-                    })
-                })
-                report_types = array
-                advancesReportTypeSelect()
-            })
-        getFundSourceType().then((data) => {
-            var array = []
-            $.each(data, function(key, val) {
-                array.push({
-                    id: val.name,
-                    text: val.name
-                })
-            })
-            fund_source_type = array
-            advancesFundSourceTypeSelect()
-        })
-        $('.advances_amount').on('change keyup', function(e) {
-            e.preventDefault()
-            var amount = $(this).maskMoney('unmasked')[0];
-            var source = $(this).closest('tr');
-            source.children('td').eq(0).find('.advances_unmask_amount').val(amount)
-        })
-        $('#nature_of_transaction ').change(function() {
-            var nature_selected = $(this).children(':selected').text()
-
-
-            if (nature_selected == 'CA to SDOs/OPEX') {
-                $('#advances_table').show()
-            } else {
-                $('#advances_table').hide()
-            }
-        })
+        var entry_counter = <?=$row?>;
         // $("#payee ").select2({'readonly'});
         // $("#particular").prop({disabled:'readonly'});
         $("#bok").hide();
-
 
 
         $('.remove_this_row').on('click', function(event) {
@@ -1124,36 +799,29 @@ $csrfToken = Yii::$app->request->csrfToken;
         });
         $('.add_new_row').on('click', function(event) {
             event.preventDefault();
-            $('.advances-account').select2('destroy');
-            $('.advances_report_type').select2('destroy');
-            $('.advances_fund_source_type').select2('destroy');
-            $('.advances_amount').maskMoney('destroy');
+            $('.chart-of-accounts').select2('destroy');
+            // $('.unit_of_measure').select2('destroy');
+            $('.debit_amount').maskMoney('destroy');
+            $('.credit_amount').maskMoney('destroy');
             var source = $(this).closest('tr');
             var clone = source.clone(true);
-            clone.children('td').eq(0).find('.advances_unmask_amount').val(0)
-            clone.children('td').eq(0).find('.advances_amount').val(0)
-            clone.children('td').eq(0).find('.advances_unmask_amount').attr('name', 'advances_amount[' + advances_table_counter + ']')
-            clone.children('td').eq(0).find('.debit_amount').val(0)
-            clone.children('td').eq(0).find('.advances_reporting_period').val(0)
-            clone.children('td').eq(0).find('.advances_reporting_period').attr('name', 'advances_reporting_period[' + advances_table_counter + ']')
-            clone.children('td').eq(0).find('.advances_report_type').val(0)
-            clone.children('td').eq(0).find('.advances_report_type').attr('name', 'advances_report_type[' + advances_table_counter + ']')
-            clone.children('td').eq(0).find('.advances_fund_source_type').val('')
-            clone.children('td').eq(0).find('.advances_fund_source_type').attr('name', 'advances_fund_source_type[' + advances_table_counter + ']')
-            clone.children('td').eq(0).find('.advances_fund_source').val('')
-            clone.children('td').eq(0).find('.advances_fund_source').attr('name', 'advances_fund_source[' + advances_table_counter + ']')
-            clone.children('td').eq(0).find('.advances-account').val('')
-            clone.children('td').eq(0).find('.advances-account').attr('name', 'advances_object_code[' + advances_table_counter + ']')
-            $('#advances_table tbody').append(clone);
-            var spacer = `<tr><td colspan="2"><hr></td></tr>`;
-            $('#advances_table tbody').append(spacer);
-            clone.find('.remove_this_row').removeClass('disabled');
-            maskAdvancesAmount()
-            advancesAccountSelect()
-            advancesReportTypeSelect()
-            advancesFundSourceTypeSelect()
 
-            advances_table_counter++
+            clone.children('td').eq(0).find('.chart-of-accounts').val(0)
+            clone.children('td').eq(0).find('.chart-of-accounts').attr('name', 'chart_of_account_id[' + entry_counter + ']')
+            clone.children('td').eq(0).find('.debit').val(0)
+            clone.children('td').eq(0).find('.debit').attr('name', 'debit[' + entry_counter + ']')
+            clone.children('td').eq(0).find('.debit_amount').val(0)
+            clone.children('td').eq(0).find('.credit').val(0)
+            clone.children('td').eq(0).find('.credit').attr('name', 'credit[' + entry_counter + ']')
+            clone.children('td').eq(0).find('.credit_amount').val(0)
+            $('#accounting_entry_table tbody').append(clone);
+            var spacer = `<tr><td colspan="2"><hr></td></tr>`;
+            $('#accounting_entry_table tbody').append(spacer);
+            clone.find('.remove_this_row').removeClass('disabled');
+            maskDebitAmount()
+            maskCreditAmount()
+            chartOfAccountSelect()
+            entry_counter++
 
 
         });
@@ -1282,40 +950,24 @@ $csrfToken = Yii::$app->request->csrfToken;
 
     })
 
-    // $("#yearDropdown").live('change', function() {
-    //     alert('The option with value ' + $(this).val());
-    // });
+    function maskCreditAmount() {
 
-
-    /* DOM ready */
-    function onTrackingSheetChange(tracking_id) {
-        $.ajax({
-            type: 'POST',
-            url: window.location.pathname + '?r=tracking-sheet/get-tracking-sheet-data',
-            data: {
-                id: tracking_id
-            },
-            success: function(data) {
-                var res = JSON.parse(data)
-                if (res.transaction_type == 'No Ors') {
-
-                    $("#transaction").val("Accounts Payable").trigger('change')
-                } else {
-
-                    $("#transaction").val(res.transaction_type).trigger('change')
-                }
-                $("#particular").val(res.particular).trigger('change')
-                var payeeSelect = $('#payee');
-                var option = new Option([res.payee_name], [res.payee_id], true, true);
-                payeeSelect.append(option).trigger('change');
-            }
-        })
+        $('.credit_amount').maskMoney({
+            allowNegative: true
+        });
     }
 
-    function advancesAccountSelect() {
-        $('.advances-account').select2({
+    function maskDebitAmount() {
+
+        $('.debit_amount').maskMoney({
+            allowNegative: true
+        });
+    }
+
+    function chartOfAccountSelect() {
+        $('.chart-of-accounts').select2({
             ajax: {
-                url: window.location.pathname + '?r=chart-of-accounts/search-sub-account',
+                url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code',
                 dataType: 'json',
                 data: function(params) {
 
@@ -1334,31 +986,28 @@ $csrfToken = Yii::$app->request->csrfToken;
     }
 
     $(document).ready(() => {
-        i = 1
-        advancesAccountSelect()
-        $("#tracking_sheet").change(function() {
-            // console.log(this.value)
-            onTrackingSheetChange(this.value)
-        })
-        $('#tracking_sheet').select2({
-            ajax: {
-                url: window.location.pathname + '?r=tracking-sheet/search-tracking-sheet',
-                dataType: 'json',
-                data: function(params) {
 
-                    return {
-                        q: params.term,
-                    };
-                },
-                processResults: function(data) {
-                    // Transforms the top-level key of the response object from 'items' to 'results'
-                    return {
-                        results: data.results
-                    };
-                }
-            },
-            // placeholder: 'Search Tracking Sheet'
-        });
+        maskCreditAmount()
+        maskDebitAmount()
+        chartOfAccountSelect()
+        i = 1
+        $('.chart-of-accounts').on('change', function() {
+            console.log($(this).val())
+        })
+        $('.credit_amount').on('change keyup', function(e) {
+            console.log($(this).val())
+            e.preventDefault()
+            var amount = $(this).maskMoney('unmasked')[0];
+            var source = $(this).closest('tr');
+            source.children('td').eq(0).find('.credit').val(amount)
+        })
+        $('.debit_amount').on('change keyup', function(e) {
+            console.log($(this).val())
+            e.preventDefault()
+            var amount = $(this).maskMoney('unmasked')[0];
+            var source = $(this).closest('tr');
+            source.children('td').eq(0).find('.debit').val(amount)
+        })
         $('#payee').select2({
             ajax: {
                 url: window.location.pathname + '?r=payee/search-payee',
@@ -1378,25 +1027,7 @@ $csrfToken = Yii::$app->request->csrfToken;
             },
         });
 
-        $('.chart-of-accounts').select2({
-            ajax: {
-                url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code',
-                dataType: 'json',
-                data: function(params) {
 
-                    return {
-                        q: params.term,
-                    };
-                },
-                processResults: function(data) {
-                    // Transforms the top-level key of the response object from 'items' to 'results'
-                    return {
-                        results: data.results
-                    };
-                }
-            },
-            placeholder: 'Search Accounting Code'
-        });
         var update_id = $('#update_id').val()
         if (update_id > 0) {
             $.ajax({
@@ -1486,25 +1117,6 @@ $csrfToken = Yii::$app->request->csrfToken;
             })
         }
     })
-
-    // $.when(getChartOfAccounts()).done(function(chart) {
-    //     var array = []
-    //     // console.log(chart)
-    //     $.each(chart, function(key, val) {
-    //         array.push({
-    //             id: val.object_code,
-    //             text: val.object_code + ' ' + val.account_title
-    //         })
-
-    //     })
-    //     accounts = array
-    //     $("#chart-0").select2({
-    //         data: accounts,
-    //         placeholder: 'Select Account'
-    //     })
-    //     var update_id = $('#update_id').val()
-
-    // });
 </script>
 
 
