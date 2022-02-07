@@ -1210,7 +1210,6 @@ class DvAucsController extends Controller
             if (empty($_POST['reporting_period'])) {
                 return json_encode(['isSuccess' => false, 'error' => 'Reporting Period is Required']);
             }
-
             $recieved_at = $_POST['date_receive'];
             $reporting_period = $_POST['reporting_period'];
             $book_id = $_POST['book_id'];
@@ -1238,7 +1237,7 @@ class DvAucsController extends Controller
                 LIMIT 1")
                     ->bindValue(':id', $ors[$min_key])
                     ->queryScalar();
-                if (strtotime($recieved_at) < strtotime($ors_created_at)) {
+                if (strtotime($recieved_at) > strtotime($ors_created_at)) {
                     return json_encode(['isSuccess' => false, 'error' => 'Receive Date must be Greater than  ORS date']);
                 }
             }
@@ -1356,7 +1355,7 @@ class DvAucsController extends Controller
                 LIMIT 1")
                     ->bindValue(':id', $ors[$min_key])
                     ->queryScalar();
-                if (strtotime($recieved_at) < strtotime($ors_created_at)) {
+                if (strtotime($recieved_at) > strtotime($ors_created_at)) {
                     return json_encode(['isSuccess' => false, 'error' => 'Receive Date must be Greater than  ORS date']);
                 }
             }
