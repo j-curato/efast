@@ -2116,8 +2116,9 @@ class ReportController extends \yii\web\Controller
                     ->queryScalar();
             }
 
-
-            $begin_balance  += $adjustment_begin_balance;
+            // return json_encode([$begin_balance, $adjustment_begin_balance]);
+            // $begin_balance  += $adjustment_begin_balance;
+            $begin_balance = (float)$begin_balance - (float)$adjustment_begin_balance;
             $adjustment = Yii::$app->db->createCommand("SELECT * 
            FROM cash_adjustment
            LEFT JOIN books ON cash_adjustment.book_id = books.id
