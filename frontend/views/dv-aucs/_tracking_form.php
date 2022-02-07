@@ -26,7 +26,7 @@ $row = 1;
 $book_id = '';
 $update_create = '?r=dv-aucs/create-tracking';
 $transaction_type = '';
-$date_recieve = '';
+$date_receive = '';
 if (!empty($model->id)) {
     $book_id = $model->book_id;
     $reporting_period = $model->reporting_period;
@@ -34,7 +34,7 @@ if (!empty($model->id)) {
     $payee_id = $model->payee_id;
     $payee_name = $model->payee->account_name;
     $transaction_type = $model->transaction_type;
-    $date_recieve = DateTime::createFromFormat('Y-m-d H:i:s', $model->recieved_at)->format('Y-m-d h:i A');
+    $date_receive = DateTime::createFromFormat('Y-m-d H:i:s', $model->recieved_at)->format('Y-m-d h:i A');
     $update_create = '?r=dv-aucs/tracking-update&id=' . $model->id;
 }
 ?>
@@ -130,11 +130,11 @@ if (!empty($model->id)) {
                     <?php
 
 
-                    echo "<label for='date' style='text-align:center'>Date Recieve</label>";
+                    echo "<label for='date' style='text-align:center'>Date Receive</label>";
                     echo DateTimePicker::widget([
-                        'name' => 'date_recieve',
-                        'id' => 'date_recieve',
-                        'value' => $date_recieve,
+                        'name' => 'date_receive',
+                        'id' => 'date_receive',
+                        'value' => $date_receive,
                         'options' => [
                             'style' => 'background-color:white'
                         ],
