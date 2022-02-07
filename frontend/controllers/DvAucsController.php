@@ -207,9 +207,12 @@ class DvAucsController extends Controller
         $fund_source_type,
         $report_type,
         $reporting_periods,
-        $advances_entries_id
+        $advances_entries_id,
+        $book_id
 
     ) {
+        // var_dump($book_id);
+        // die();
         foreach ($fund_source as $i => $val) {
             if (empty($advances_entries_id[$i])) {
 
@@ -225,6 +228,7 @@ class DvAucsController extends Controller
             $ad_entry->amount = $amounts[$i];
             $ad_entry->report_type = $report_type[$i];
             $ad_entry->is_deleted = 9;
+            $ad_entry->book_id = intval($book_id);
             if ($ad_entry->save(false)) {
             } else {
                 return false;
@@ -599,14 +603,13 @@ class DvAucsController extends Controller
                 }
 
                 // if (!empty($advances_fund_source)) {
-
                 $check_advances = Yii::$app->db->createCommand("SELECT id FROM advances WHERE advances.dv_aucs_id = :id")
                     ->bindValue(':id', $dv->id)
                     ->queryOne();
-                if (empty($check_advances['id'])) {
+                if (empty($check_advances['id']) && !empty($advances_province)) {
 
                     $advances_id = $this->insertAdvances($advances_province, $advances_period, $dv->id, $advances_update_id, $advances_bank_account_id);
-                } else {
+                } else if (!empty($check_advances)) {
                     $advances_id = $check_advances['id'];
                     $advances_id = $this->insertAdvances($advances_province, $advances_period, $dv->id, $advances_update_id, $advances_bank_account_id);
 
@@ -635,19 +638,22 @@ class DvAucsController extends Controller
                             //  ['advances_entries.is_deleted' => 101], "$sql", $params)
                             ->execute();
                     }
-
-                    // return json_encode($sql);
                 }
-                $this->insertAdvancesEntries(
-                    $advances_id,
-                    $advances_object_code,
-                    $advances_amount,
-                    $advances_fund_source,
-                    $advances_fund_source_type,
-                    $advances_report_type,
-                    $advances_reporting_period,
-                    $advances_entries_id
-                );
+                if (!empty($advances_id)) {
+
+                    $this->insertAdvancesEntries(
+                        $advances_id,
+                        $advances_object_code,
+                        $advances_amount,
+                        $advances_fund_source,
+                        $advances_fund_source_type,
+                        $advances_report_type,
+                        $advances_reporting_period,
+                        $advances_entries_id,
+                        $dv->book_id
+                    );
+                }
+
                 // }
                 if ($flag) {
 
@@ -1205,7 +1211,7 @@ class DvAucsController extends Controller
                 return json_encode(['isSuccess' => false, 'error' => 'Reporting Period is Required']);
             }
 
-            $recieved_at = $_POST['date_recieve'];
+            $recieved_at = $_POST['date_receive'];
             $reporting_period = $_POST['reporting_period'];
             $book_id = $_POST['book_id'];
             $particular = $_POST['particular'];
@@ -1233,7 +1239,7 @@ class DvAucsController extends Controller
                     ->bindValue(':id', $ors[$min_key])
                     ->queryScalar();
                 if (strtotime($recieved_at) < strtotime($ors_created_at)) {
-                    return json_encode(['isSuccess' => false, 'error' => 'Recieve Date must be Greater than  ORS date']);
+                    return json_encode(['isSuccess' => false, 'error' => 'Receive Date must be Greater than  ORS date']);
                 }
             }
 
@@ -1326,7 +1332,7 @@ class DvAucsController extends Controller
                 return json_encode(['isSuccess' => false, 'error' => 'Reporting Period is Required']);
             }
 
-            $recieved_at = !empty($_POST['date_recieve']) ? $_POST['date_recieve'] : null;
+            $recieved_at = !empty($_POST['date_receive']) ? $_POST['date_receive'] : null;
             $reporting_period = $_POST['reporting_period'];
             $book_id = $_POST['book_id'];
             $particular = $_POST['particular'];
@@ -1351,7 +1357,7 @@ class DvAucsController extends Controller
                     ->bindValue(':id', $ors[$min_key])
                     ->queryScalar();
                 if (strtotime($recieved_at) < strtotime($ors_created_at)) {
-                    return json_encode(['isSuccess' => false, 'error' => 'Recieve Date must be Greater than  ORS date']);
+                    return json_encode(['isSuccess' => false, 'error' => 'Receive Date must be Greater than  ORS date']);
                 }
             }
 
