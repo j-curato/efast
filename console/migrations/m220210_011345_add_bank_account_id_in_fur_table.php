@@ -3,16 +3,16 @@
 use yii\db\Migration;
 
 /**
- * Class m211105_015649_rename_transfer_type_in_ptr_table
+ * Class m220210_011345_add_bank_account_id_in_fur_table
  */
-class m211105_015649_rename_transfer_type_in_ptr_table extends Migration
+class m220210_011345_add_bank_account_id_in_fur_table extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        // $this->renameColumn('ptr','transfer_type','transfer_type_id');
+        $this->addColumn('fur', 'bank_account_id', $this->bigInteger());
     }
 
     /**
@@ -20,7 +20,7 @@ class m211105_015649_rename_transfer_type_in_ptr_table extends Migration
      */
     public function safeDown()
     {
-        $this->renameColumn('ptr','transfer_type_id','transfer_type');
+        $this->dropColumn('fur', 'bank_account_id');
     }
 
     /*
@@ -32,7 +32,7 @@ class m211105_015649_rename_transfer_type_in_ptr_table extends Migration
 
     public function down()
     {
-        echo "m211105_015649_rename_transfer_type_in_ptr_table cannot be reverted.\n";
+        echo "m220210_011345_add_bank_account_id_in_fur_table cannot be reverted.\n";
 
         return false;
     }

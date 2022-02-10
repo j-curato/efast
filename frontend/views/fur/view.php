@@ -153,6 +153,7 @@ $script = <<< JS
             data:{id:$('#model_id').val()},
             success:function(data){
                 var res = JSON.parse(data)
+                console.log(res)
                 var reporting_period = new Date(res.reporting_period)
                 month = reporting_period.toLocaleString('default',{month:'long'})
                 year = reporting_period.getFullYear()
@@ -163,7 +164,8 @@ $script = <<< JS
                     url:window.location.pathname +'?r=fur/generate-fur',
                     data:{
                         reporting_period:res.reporting_period,
-                        province:res.province
+                        province:res.province,
+                        bank_account_id:res.bank_account_id
                     },
                     success:function(data){
                         var res = JSON.parse(data)

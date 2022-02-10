@@ -362,7 +362,7 @@ class ProcessOrsEntriesController extends Controller
                     $ors->transaction_id = $transaction_id;
                     $ors->book_id = $book_id;
                     $ors->date = $date;
-                    $ors->transaction_begin_time = $transaction_timestamp;
+                    // $ors->transaction_begin_time = $transaction_timestamp;
 
                     $ors->serial_number = $this->getOrsSerialNumber($reporting_period, $book_id);
                     if ($ors->validate()) {

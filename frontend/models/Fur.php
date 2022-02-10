@@ -28,7 +28,7 @@ class Fur extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['created_at'], 'safe'],
+            [['created_at', 'bank_account_id'], 'safe'],
             [['reporting_period'], 'string', 'max' => 50],
             [['province'], 'string', 'max' => 20],
         ];
@@ -44,6 +44,12 @@ class Fur extends \yii\db\ActiveRecord
             'reporting_period' => 'Reporting Period',
             'province' => 'Province',
             'created_at' => 'Created At',
+            'bank_account_id' => 'Bank Account',
+
         ];
+    }
+    public function getBankAccount()
+    {
+        return $this->hasOne(BankAccount::class, ['id' => 'bank_account_id']);
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use app\models\BankAccount;
 use app\models\Books;
 use app\models\DvAucs;
 use kartik\grid\GridView;
@@ -21,8 +22,21 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php
     $prov = [];
+    $reporting_period = '';
+    $province = '';
+    $bank_account_id  = '';
+    $cibr_id = '';
+
+    if (!empty($model->id)) {
+        $reporting_period = $model->reporting_period;
+        $province = $model->province;
+        $bank_account_id = $model->bank_account_id;
+        $cibr_id = $model->id;
+    }
     ?>
     <form id='filter'>
+
+        <input type="hidden" name="id" value="<?= $cibr_id ?>">
         <div class="row">
             <div class="col-sm-3">
                 <label for="reporting_period">Reporting Period</label>
@@ -31,6 +45,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 echo DatePicker::widget([
                     'id' => 'reporting_period',
                     'name' => 'reporting_period',
+                    'value' => $reporting_period,
                     'pluginOptions' => [
                         'autoclose' => true,
                         'startView' => 'months',
@@ -64,7 +79,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $q === 'sds' ||
                     $q === 'pdi'
                 ) {
-                    $val =   $q;
+                    $province =   $q;
                     $prov = [
                         $q => strtoupper($q)
                     ];
@@ -75,7 +90,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'name' => 'province',
                     'id' => 'province',
                     'data' => $prov,
-                    'value' => $val,
+                    'value' => $province,
                     'pluginOptions' => [
                         'autoclose' => true,
                         'placeholder' => 'Select Province'
@@ -85,17 +100,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
             </div>
             <div class="col-sm-3">
-                <!-- <label for="book">book</label> -->
+                <label for="bank_account">Bank Account</label>
                 <?php
-                // echo Select2::widget([
-                //     'name' => 'book',
-                //     'id' => 'book',
-                //     'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'name', 'name'),
-                //     'pluginOptions' => [
-                //         'autoclose' => true,
-                //         'placeholder' => 'Select book'
-                //     ]
-                // ])
+                $bank_accounts = Yii::$app->db->createCommand("SELECT id ,CONCAT(account_number,'-',account_name) as account FROM bank_account")->queryAll();
+                echo Select2::widget([
+                    'name' => 'bank_account_id',
+                    'data' => ArrayHelper::map($bank_accounts, 'id', 'account'),
+                    'value' => $bank_account_id,
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'placeholder' => 'Select Bank Account'
+                    ]
+                ])
 
                 ?>
             </div>
@@ -174,7 +190,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                             ?></span>
                     </th>
                     <th colspan="3" class="header">
-                        <span>Station: 
+                        <span>Station:
                             <?php
 
                             if (!empty($province)) {

@@ -35,12 +35,25 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'reporting_period',
             'province',
-            'created_at',
+            [
+                'label' => 'Bank Account',
+                'attribute' => 'bank_account_id',
+                'value' => function ($model) {
+                    $account = '';
+                    if (!empty($model->bank_account_id)) {
+
+                        $account = $model->bankAccount->account_number . '-' . $model->bankAccount->account_name;
+                    }
+                    return $account;
+                }
+            ],
+
+
 
             [
                 'class' => '\kartik\grid\ActionColumn',
                 'deleteOptions' => ['style' => 'display:none'],
-                'updateOptions' => ['style' => 'display:none']
+                // 'updateOptions' => ['style' => 'display:none']
             ]
         ],
     ]); ?>

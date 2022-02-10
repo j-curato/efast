@@ -38,18 +38,18 @@ class m210217_054830_create_record_allotments_table extends Migration
             'particulars' => $this->text()
         ]);
 
-        // creates index for column `document_recieved_id`
+        // creates index for column `document_recieve_id`
         $this->createIndex(
-            '{{%idx-record_allotments-document_recieved_id}}',
+            '{{%idx-record_allotments-document_recieve_id}}',
             '{{%record_allotments}}',
-            'document_recieved_id'
+            'document_recieve_id'
         );
 
         // add foreign key for table `{{%document_recieve}}`
         $this->addForeignKey(
-            '{{%fk-record_allotments-document_recieved_id}}',
+            '{{%fk-record_allotments-document_recieve_id}}',
             '{{%record_allotments}}',
-            'document_recieved_id',
+            'document_recieve_id',
             '{{%document_recieve}}',
             'id',
             'CASCADE'
@@ -150,13 +150,13 @@ class m210217_054830_create_record_allotments_table extends Migration
     {
         // drops foreign key for table `{{%document_recieve}}`
         $this->dropForeignKey(
-            '{{%fk-record_allotments-document_recieved_id}}',
+            '{{%fk-record_allotments-document_recieve_id}}',
             '{{%record_allotments}}'
         );
 
-        // drops index for column `document_recieved_id`
+        // drops index for column `document_recieve_id`
         $this->dropIndex(
-            '{{%idx-record_allotments-document_recieved_id}}',
+            '{{%idx-record_allotments-document_recieve_id}}',
             '{{%record_allotments}}'
         );
 

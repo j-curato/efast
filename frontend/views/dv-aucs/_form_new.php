@@ -26,7 +26,7 @@ $advances_entries_row = 1;
 
 
 
-    <div id="container" class="container">
+    <div id="container" style="background-color: white;width:90%;margin-left:auto;margin-right:auto">
         <div class="row">
             <div class="col-sm-12" style="color:red;text-align:center">
                 <h4 id="link">
@@ -320,7 +320,7 @@ $advances_entries_row = 1;
                                     <label for="advances_bank_account">Bank Account</label>
                                     <?php
                                     $bank_accounts_query = (new \yii\db\Query())
-                                        ->select(['bank_account.id', 'bank_account.account_number'])
+                                        ->select(['bank_account.id', "CONCAT(bank_account.account_number,'-',bank_account.province,'-','bank_account.account_name') as account_number"])
                                         ->from('bank_account');
 
                                     $bank_accounts = $bank_accounts_query->all();

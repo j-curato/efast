@@ -12,7 +12,7 @@ class m210709_082218_create_liquidation_view extends Migration
      */
     public function safeUp()
     {
-        Yii::$app->db->createCommand("CREATE VIEW liquidation_view as SELECT 
+        Yii::$app->db->createCommand("CREATE VIEW liquidation_view as  
       SELECT 
         liquidation.id,
         liquidation.check_date,

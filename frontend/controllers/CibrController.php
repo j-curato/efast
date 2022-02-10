@@ -217,8 +217,9 @@ class CibrController extends Controller
     {
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
-            // $book = $_POST['book'];
+            $bank_account_id = $_POST['bank_account_id'];
             $province = $_POST['province'];
+            $cibr_id = !empty($_POST['id']) ? $_POST['id'] : '';
 
 
             $q = (new \yii\db\Query())
@@ -226,14 +227,18 @@ class CibrController extends Controller
                 ->from('cibr')
                 ->where('province =:province', ['province' => $province])
                 ->andWhere('reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
-                // ->andWhere('book_name =:book_name', ['book_name' => $book])
+                ->andWhere('bank_account_id =:bank_account_id', ['bank_account_id' => $bank_account_id])
                 ->one();
             if (!empty($q)) {
                 return json_encode(['isSuccess' => false, 'error' => 'CIBR already Exist']);
             }
-            $cibr = new Cibr();
+            if (!empty($cibr_id)) {
+                $cibr = Cibr::findOne($cibr_id);
+            } else {
+                $cibr = new Cibr();
+            }
             $cibr->reporting_period = $reporting_period;
-            // $cibr->book_name = $book;
+            $cibr->bank_account_id = $bank_account_id;
             $cibr->province = $province;
             if ($cibr->validate()) {
                 if ($cibr->save(false)) {
@@ -274,7 +279,7 @@ class CibrController extends Controller
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
             $province = $_POST['province'];
-            // $book = $_POST['book'];
+            $bank_account_id = $_POST['bank_account_id'];
 
             if (
                 empty($reporting_period)
@@ -302,10 +307,14 @@ class CibrController extends Controller
             // ")->bindValue(':reporting_period', $reporting_period)
             //     ->bindValue(':province', $province)
             //     ->queryAll();
-            $dataProvider = Yii::$app->db->createCommand('CALL cibr_function(:province,:reporting_period)')
+            $dataProvider = Yii::$app->db->createCommand('CALL cibr_function(:province,:reporting_period,:bank_account_id)')
                 ->bindValue(':reporting_period', $reporting_period)
                 ->bindValue(':province', $province)
+                ->bindValue(':bank_account_id',   $bank_account_id)
                 ->queryAll();
+
+
+
 
             $q1 = Yii::$app->db->createCommand("SELECT 
                 SUM(total) as total
@@ -342,7 +351,7 @@ class CibrController extends Controller
             return $this->render('_form');
         }
     }
-    function generateCibr($reporting_period, $province)
+    function generateCibr($reporting_period, $province, $bank_account_id)
     {
         // $reporting_period = $_POST['reporting_period'];
         // $province = $_POST['province'];
@@ -357,9 +366,10 @@ class CibrController extends Controller
         }
 
 
-        $dataProvider = Yii::$app->db->createCommand('CALL cibr_function(:province,:reporting_period)')
+        $dataProvider = Yii::$app->db->createCommand('CALL cibr_function(:province,:reporting_period,:bank_account_id)')
             ->bindValue(':reporting_period', $reporting_period)
             ->bindValue(':province', $province)
+            ->bindValue(':bank_account_id', $bank_account_id)
             ->queryAll();
 
         $q1 = Yii::$app->db->createCommand("SELECT 
@@ -417,7 +427,8 @@ class CibrController extends Controller
             $model = $this->findModel($id);
             $province = $model->province;
             $reporting_period = $model->reporting_period;
-            $query = $this->generateCibr($reporting_period, $province);
+            $bank_account_id = $model->bank_account_id;
+            $query = $this->generateCibr($reporting_period, $province, $bank_account_id);
 
             $prov = Yii::$app->memem->cibrCdrHeader($province);
             // echo $prov['officer'];

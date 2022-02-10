@@ -2,6 +2,7 @@
 <?php
 
 use app\models\AdvancesEntries;
+use app\models\BankAccount;
 use app\models\Books;
 use app\models\DvAucs;
 use app\models\MajorAccounts;
@@ -21,10 +22,21 @@ use yii\helpers\ArrayHelper;
 
 $this->title = "FUR";
 $this->params['breadcrumbs'][] = $this->title;
+$reporting_period = '';
+$province = '';
+$bank_account_id = '';
+$fur_id = '';
+if (!empty($model->id)) {
+    $reporting_period = $model->reporting_period;
+    $province = $model->province;
+    $bank_account_id = $model->bank_account_id;
+    $fur_id = $model->id;
+}
 ?>
 <div class="jev-preparation-index " style="background-color: white;padding:20px">
 
     <form id="filter">
+        <input type="hidden" name="id" value="<?= $fur_id ?>">
         <div class="row">
             <div class="col-sm-3">
                 <label for="reporting_period">Reporting Peiod</label>
@@ -32,6 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 echo DatePicker::widget([
                     'name' => 'reporting_period',
                     'id' => 'reporting_period',
+                    'value' => $reporting_period,
                     'pluginOptions' => [
                         'minViewMode' => 'months',
                         'autoclose' => true,
@@ -46,11 +59,11 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-sm-2">
                 <label for="province">Province</label>
                 <?php
-                $province = [];
+                $provinces = [];
                 $user_province = Yii::$app->user->identity->province;
                 $val = '';
                 if (Yii::$app->user->can('create_fur')) {
-                    $province = [
+                    $provinces = [
                         'adn' => 'ADN',
                         'ads' => 'ADS',
                         'sdn' => 'SDN',
@@ -59,18 +72,34 @@ $this->params['breadcrumbs'][] = $this->title;
                     ];
                 } else {
                     $val = $user_province;
-                    $province = [
+                    $provinces = [
                         strtolower($user_province) => strtoupper($user_province)
                     ];
                 }
                 echo Select2::widget([
                     'name' => 'province',
                     'id' => 'province',
-                    'data' => $province,
-                    'value' => $val,
+                    'data' => $provinces,
+                    'value' => $province,
                     'pluginOptions' => [
                         'autoclose' => true,
                         'placeholder' => 'Select Province'
+                    ]
+                ])
+
+                ?>
+            </div>
+            <div class="col-sm-3">
+                <label for="bank_account">Bank Account</label>
+                <?php
+                $bank_accounts = Yii::$app->db->createCommand("SELECT id ,CONCAT(account_number,'-',province,'-',account_name) as account FROM bank_account")->queryAll();
+                echo Select2::widget([
+                    'name' => 'bank_account_id',
+                    'data' => ArrayHelper::map($bank_accounts, 'id', 'account'),
+                    'value' => $bank_account_id,
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'placeholder' => 'Select Bank Account'
                     ]
                 ])
 

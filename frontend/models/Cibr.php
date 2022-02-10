@@ -29,7 +29,8 @@ class Cibr extends \yii\db\ActiveRecord
     {
         return [
             [['reporting_period'], 'string', 'max' => 50],
-            [['province', 'book_name','serial_number'], 'string', 'max' => 255],
+            [['bank_account_id'], 'integer'],
+            [['province', 'book_name', 'serial_number'], 'string', 'max' => 255],
         ];
     }
 
@@ -44,6 +45,12 @@ class Cibr extends \yii\db\ActiveRecord
             'province' => 'Province',
             'serial_number' => 'Serial Number',
             'book_name' => 'Book Name',
+            'bank_account_id' => 'Bank Account'
         ];
+    }
+    public function getBankAccount()
+    {
+
+        return $this->hasOne(BankAccount::class, ['id' => 'bank_account_id']);
     }
 }

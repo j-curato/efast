@@ -174,7 +174,7 @@ class BankAccountController extends Controller
             // $out['results'] = ['id' => $id, 'text' => Payee::findOne($id)->account_name];
         } else if (!is_null($q)) {
             $query = new Query();
-            $query->select('bank_account.id, bank_account.account_number AS text')
+            $query->select('bank_account.id, CONCAT(bank_account.account_number,' - ',bank_account.province,' - ',bank_account.account_name)  AS text')
                 ->from('bank_account')
                 ->where(['like', 'bank_account.account_number', $q]);
 

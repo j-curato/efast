@@ -104,11 +104,18 @@ class FurController extends Controller
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
             $province = $_POST['province'];
-            $model = new Fur();
+            $bank_account_id = $_POST['bank_account_id'];
+            $fur_id = !empty($_POST['id']) ? $_POST['id'] : '';
+            if (!empty($fur_id)) {
+                $model = Fur::findOne($fur_id);
+            } else {
+                $model = new Fur();
+            }
 
-            $check  = Yii::$app->db->createCommand("SELECT EXISTS(SELECT * FROM fur WHERE reporting_period = :reporting_period AND province = :province)")
+            $check  = Yii::$app->db->createCommand("SELECT EXISTS(SELECT * FROM fur WHERE reporting_period = :reporting_period AND province = :province AND bank_account_id= :bank_account_id)")
                 ->bindValue(':reporting_period', $reporting_period)
                 ->bindValue(':province', $province)
+                ->bindValue(':bank_account_id', $bank_account_id)
                 ->queryScalar();
             // return json_encode(['isSuccess' => false, 'error' => intval($check)]);
             if (intval($check) === 1) {
@@ -116,6 +123,8 @@ class FurController extends Controller
             } else {
                 $model->reporting_period = $reporting_period;
                 $model->province = $province;
+                $model->bank_account_id = $bank_account_id;
+
                 if ($model->save()) {
                     return json_encode(['isSuccess' => true, 'error' => 'Save na']);
                 }
@@ -184,9 +193,13 @@ class FurController extends Controller
     public function actionFindFur()
     {
         if ($_POST) {
+            $query  = Yii::$app->db->createCommand('SELECT * FROM fur WHERE id = :id')
+                ->bindValue(
+                    ':id',
+                    $_POST['id']
+                )->queryOne();
 
-
-            return json_encode($this->findModel($_POST['id'])->toArray());
+            return json_encode($query);
         }
     }
     public function actionGenerateFur()
@@ -194,16 +207,19 @@ class FurController extends Controller
         if ($_POST) {
             $province = $_POST['province'];
             $reporting_period = $_POST['reporting_period'];
+            $bank_account_id = $_POST['bank_account_id'];
             $x = explode('-', $reporting_period);
             $x[1] =  '0' . ($x[1] - 1);
 
             $prev = implode('-', $x);
 
-            $query = Yii::$app->db->createCommand("CALL fur(:province,:reporting_period)")
+            $query = Yii::$app->db->createCommand("CALL fur(:province,:reporting_period,:bank_account_id)")
                 ->bindValue(':province', $province)
                 ->bindValue(':reporting_period', $reporting_period)
+                ->bindValue(':bank_account_id', $bank_account_id)
                 ->queryAll();
             $dataProvider = $query;
+            // return json_encode($dataProvider);
             // $conso_fur = YIi::$app->db->createCommand('CALL conso_fur(:province,:reporting_period,:prev_r_period)')
             //     ->bindValue(':province', $province)
             //     ->bindValue(':reporting_period', $reporting_period)

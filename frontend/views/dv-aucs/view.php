@@ -206,6 +206,71 @@ $this->params['breadcrumbs'][] = $this->title;
         </table>
 
     </div>
+    <?php
+    $advances = Yii::$app->db->createCommand("SELECT 
+            advances.province,
+          advances.nft_number,
+          advances_entries.report_type,
+          advances_entries.fund_source_type,
+          advances_entries.fund_source,
+          accounting_codes.object_code,
+          accounting_codes.account_title,
+          advances_entries.amount
+          
+          FROM advances
+          LEFT JOIN advances_entries ON advances.id = advances_entries.advances_id
+          LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
+          WHERE advances.dv_aucs_id = :dv_id
+           ")
+        ->bindValue(':dv_id', $model->id)
+        ->queryAll();
+    if (!empty($advances)) {
+
+    ?>
+        <div class=" container panel panel-default">
+
+            <table class="">
+                <thead>
+                    <th>Province</th>
+                    <th>NFT Number</th>
+                    <th>Report Type</th>
+                    <th>Fund Source Type</th>
+                    <th>Fund Source</th>
+                    <th>Object Code</th>
+                    <th>Account Title</th>
+                    <th>Amount</th>
+
+                </thead>
+                <tbody>
+                    <?php
+
+
+                    foreach ($advances as $i => $val) {
+                        $amount = number_format($val['amount'], 2);
+                        echo "<tr>
+                        <td>{$val['province']}</td>
+                        <td>{$val['nft_number']}</td>
+                        <td>{$val['report_type']}</td>
+                        <td>{$val['fund_source_type']}</td>
+                        <td>{$val['fund_source']}</td>
+                        <td>{$val['object_code']}</td>
+                        <td>{$val['account_title']}</td>
+                        <td style='text-align:right'>{$amount}</td>
+                    
+                    </tr>";
+                    }
+
+
+                    ?>
+
+                </tbody>
+
+
+
+            </table>
+
+        </div>
+    <?php } ?>
     <div class=" container panel panel-default">
 
         <table class="">
@@ -242,7 +307,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     // }
 
                     $account_title = Yii::$app->db->createCommand("SELECT account_title FROM accounting_codes
-                     where object_code =:object_code")
+             where object_code =:object_code")
                         ->bindValue(':object_code', $val->object_code)
                         ->queryOne();
 
@@ -257,18 +322,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         $is_even = '';
                     }
                     echo "<tr class='$is_even'>
-                        <td>{$val->object_code}</td>
-                        <td>{$account_title['account_title']}</td>
-                        <td  class='amount'>$debit</td>
-                        <td  class='amount'>$credit</td>
-                    </tr>";
+                <td>{$val->object_code}</td>
+                <td>{$account_title['account_title']}</td>
+                <td  class='amount'>$debit</td>
+                <td  class='amount'>$credit</td>
+            </tr>";
                 }
 
                 echo "<tr class='total'>
-                <td colspan='2' style='font-weight:bold'>Total</td>
-                <td style='text-align:right'>" . number_format($total_debit, 2) . "</td>
-                <td style='text-align:right'>" . number_format($total_credit, 2) . "</td>
-                </tr>";
+        <td colspan='2' style='font-weight:bold'>Total</td>
+        <td style='text-align:right'>" . number_format($total_debit, 2) . "</td>
+        <td style='text-align:right'>" . number_format($total_credit, 2) . "</td>
+        </tr>";
                 ?>
 
             </tbody>

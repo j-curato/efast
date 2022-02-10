@@ -47,6 +47,16 @@ $this->params['breadcrumbs'][] = $this->title;
             'reporting_period',
             'province',
             [
+                'label' => 'Bank Account',
+                'value' => function ($model) {
+                    $account = '';
+                    if (!empty($model->bank_account_id)) {
+                        $account = $model->bankAccount->account_number . '-' . $model->bankAccount->account_name;
+                    }
+                    return $account;
+                }
+            ],
+            [
                 'label' => 'Draft/Final',
                 'attribute' => 'is_final',
                 'value' => function ($model) {
