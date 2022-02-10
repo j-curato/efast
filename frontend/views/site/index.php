@@ -11,7 +11,9 @@ use yii\helpers\Url;
 $this->title = 'Dashboard';
 // echo Url::base(); 
 ?>
+
 <div class="site-index">
+
     <?php
     if (Yii::$app->user->can('super-user')) {
         echo " <button class='btn btn-success' id='update_cloud' style='margin-bottom:12px'>Update  Cloud</button>";
@@ -492,7 +494,7 @@ $this->title = 'Dashboard';
 
     </div>
 </div>
-<div id="dots5" style="display: none;">
+<div id="dots5">
     <span></span>
     <span></span>
     <span></span>

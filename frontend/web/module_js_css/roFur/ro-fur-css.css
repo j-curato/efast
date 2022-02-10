@@ -1,0 +1,44 @@
+table,
+th,
+td {
+  border: 1px solid black;
+  text-align: center;
+  padding: 12px;
+}
+
+#summary_table {
+  margin-top: 30px;
+}
+
+/* #con {
+        display: none;
+    } */
+
+.amount {
+  text-align: right;
+}
+
+@media print {
+  #summary_table {
+    margin-top: 0;
+  }
+
+  table,
+  th,
+  td {
+    padding: 5px;
+    font-size: 10px;
+  }
+
+  .row {
+    display: none;
+  }
+
+  .main-footer {
+    display: none;
+  }
+
+  .panel {
+    padding: 0;
+  }
+}
