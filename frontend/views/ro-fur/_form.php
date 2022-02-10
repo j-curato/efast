@@ -51,15 +51,20 @@ SELECT id,`name`FROM document_recieve
                 ]
             ]) ?>
         </div>
-        <div class="col-sm-2">
-            <?= $form->field($model, 'division')->widget(Select2::class, [
-                'name' => 'division',
-                'id' => 'division',
-                'data' => $divisions_data,
-                'options' => ['placeholder' => 'Select Division'],
-            ]) ?>
+        <?php
 
-        </div>
+        $user = Yii::$app->user->can('super-user');
+        if ($user) { ?>
+            <div class="col-sm-2">
+                <?= $form->field($model, 'division')->widget(Select2::class, [
+                    'name' => 'division',
+                    'id' => 'division',
+                    'data' => $divisions_data,
+                    'options' => ['placeholder' => 'Select Division'],
+                ]) ?>
+            </div>
+        <?php }; ?>
+
         <div class="col-sm-3">
             <?= $form->field($model, 'document_recieve_id')->widget(Select2::class, [
                 'name' => 'document_recieve',
@@ -71,12 +76,17 @@ SELECT id,`name`FROM document_recieve
         <div class="col-sm-2" style="margin-top: 2.5rem;">
             <div class="form-group">
                 <button class="btn btn-primary" id="generate" type="button">Generate</button>
-                <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+
+                <?php
+
+                if ($user) {
+                    Html::submitButton('Save', ['class' => 'btn btn-success']);
+                }
+                ?>
             </div>
         </div>
 
     </div>
-
 
 
     <?php ActiveForm::end(); ?>
