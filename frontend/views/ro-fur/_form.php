@@ -30,18 +30,8 @@ SELECT id,`name`FROM document_recieve
 
 
     <div class="row">
-        <div class="col-sm-2">
-            <?= $form->field($model, 'from_reporting_period')->widget(DatePicker::class, [
-                'name' => 'from_reporting_period',
-                'pluginOptions' => [
-                    'autoclose' => true,
-                    'format' => 'yyyy-mm',
-                    'minViewMode' => 'months'
-                ]
-            ]) ?>
-        </div>
-        <div class="col-sm-2">
 
+        <div class="col-sm-2">
             <?= $form->field($model, 'to_reporting_period')->widget(DatePicker::class, [
                 'name' => 'to_reporting_period',
                 'pluginOptions' => [
@@ -80,7 +70,7 @@ SELECT id,`name`FROM document_recieve
                 <?php
 
                 if ($user) {
-                    Html::submitButton('Save', ['class' => 'btn btn-success']);
+                  echo   Html::submitButton('Save', ['class' => 'btn btn-success']);
                 }
                 ?>
             </div>

@@ -28,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'header' => 'FUR'
         ],
         'columns' => [
-            'from_reporting_period',
+            // 'from_reporting_period',
             'to_reporting_period',
             'division',
             [
@@ -38,7 +38,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $model->documentReceive->name;
                 }
             ],
-            ['class' => 'kartik\grid\ActionColumn'],
+            [
+                'class' => 'kartik\grid\ActionColumn',
+                'deleteOptions' => ['style' => 'display:none'],
+                'updateOptions' => ['style' => 'display:none']
+
+            ],
         ],
     ]); ?>
 

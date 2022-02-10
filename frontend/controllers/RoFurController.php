@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\RoFur;
 use app\models\RoFurSearch;
+use DateTime;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -104,7 +105,13 @@ class RoFurController extends Controller
         $model = new RoFur();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+
+            $year = DateTime::createFromFormat('Y-m', $model->to_reporting_period)->format('Y');
+            $model->from_reporting_period = $year . '-01';
+            if ($model->save(false)) {
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->render('create', [
@@ -123,8 +130,13 @@ class RoFurController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+
+            $year = DateTime::createFromFormat('Y-m', $model->to_reporting_period)->format('Y');
+            $model->from_reporting_period = $year . '-01';
+            if ($model->save(false)) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->render('update', [
@@ -237,7 +249,6 @@ class RoFurController extends Controller
         document_recieve.`name` as document_name,
         major_accounts.`name` as major_name,
         major_accounts.`object_code` as major_object_code,
-
         IFNULL(current.total_allotment,0) + IFNULL(prev.total_allotment,0) as allotment,
           IFNULL(prev.total_ors ,0)as prev_total_ors,
         IFNULL(current.total_ors,0) as current_total_ors,
@@ -279,14 +290,15 @@ class RoFurController extends Controller
     public function actionDivisionFur()
     {
         if ($_POST) {
-
             $fur_filter = $_POST['RoFur'];
+
             // return json_encode($fur_filter);
-            $from_reporting_period = $fur_filter['from_reporting_period'];
+
             $to_reporting_period = $fur_filter['to_reporting_period'];
             $division = !empty($fur_filter['division']) ? $fur_filter['division'] : '';
             $document_recieve = $fur_filter['document_recieve_id'];
-
+            $year  = DateTime::createFromFormat('Y-m', $to_reporting_period)->format('Y');
+            $from_reporting_period = $year . '-01';
             if (!empty(Yii::$app->user->identity->division)) {
                 $division = Yii::$app->user->identity->division;
             }

@@ -43,9 +43,9 @@ class RoFur extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'from_reporting_period' => 'From Reporting Period',
-            'to_reporting_period' => 'To Reportin Period',
+            'to_reporting_period' => ' Reporting Period',
             'division' => 'Division',
-            'document_recieve_id' => 'Document Recieve ID',
+            'document_recieve_id' => 'Document Recieve ',
             'created_at' => 'Created At',
         ];
     }
