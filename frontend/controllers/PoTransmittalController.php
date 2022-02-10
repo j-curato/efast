@@ -266,7 +266,7 @@ class PoTransmittalController extends Controller
         $query = Yii::$app->db->createCommand("SELECT CAST(substring_index(transmittal_number,'-',-1 ) AS UNSIGNED) as id 
         FROM po_transmittal
         WHERE po_transmittal.transmittal_number LIKE :province
-        AND po_transmittal.date = :_year
+        AND po_transmittal.date LIKE :_year
         ORDER BY id DESC LIMIT 1
         ")
             ->bindValue(':province', $province . '%')
