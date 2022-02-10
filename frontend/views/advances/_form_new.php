@@ -98,7 +98,7 @@ $bank_account_id='';
                 <label for="bank_account_id">Bank Account</label>
                 <?php
                 $bank_accounts_query = (new \yii\db\Query())
-                    ->select(['bank_account.id', 'bank_account.account_number'])
+                    ->select(['bank_account.id', "CONCAT(bank_account.account_number,'-','bank_account.account_name') as account_number" ])
                     ->from('bank_account');
                 $bank_accounts = $bank_accounts_query->all();
                 echo Select2::widget([
