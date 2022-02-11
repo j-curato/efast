@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Rao;
+use DateTime;
 
 /**
  * RaoSearch represents the model behind the search form of `app\models\Rao`.
@@ -57,10 +58,14 @@ class RaoSearch extends Rao
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params, $to_reporting_period)
     {
         $query = Rao::find();
 
+        $from_reporting_period = DateTime::createFromFormat('Y-m', $to_reporting_period)->format('Y') . '-01';
+
+        $query->andWhere('reporting_period >= :from_reporting_period', ['from_reporting_period' => $from_reporting_period]);
+        $query->andWhere('reporting_period <= :to_reporting_period', ['to_reporting_period' => $to_reporting_period]);
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([

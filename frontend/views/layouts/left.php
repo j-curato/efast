@@ -259,7 +259,6 @@
                                         ['label' => 'Record Allotments', 'icon' => 'circle-o', 'url' => ['/record-allotments'],],
                                         ['label' => 'Process Ors', 'icon' => 'circle-o', 'url' => ['/process-ors-entries'],],
                                         ['label' => 'Process BURS', 'icon' => 'circle-o', 'url' => ['/process-burs'],],
-                                        ['label' => 'Raouds', 'icon' => 'circle-o', 'url' => ['/raouds'],],
 
                                     ],
                                 ],
@@ -270,7 +269,7 @@
                                     'items' => [
                                         Yii::$app->user->can('super-user') ?     ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/saob'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'FUR', 'icon' => 'circle-o', 'url' => ['/ro-fur'],] : [],
-                                        Yii::$app->user->can('super-user') ?     ['label' => 'RAO', 'icon' => 'circle-o', 'url' => ['/report/rao'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'RAO', 'icon' => 'circle-o', 'url' => ['/ro-rao'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'FUR per MFO/PAP', 'icon' => 'circle-o', 'url' => ['/report/fur-mfo'],] : [],
 
 
