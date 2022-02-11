@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\RoFur;
+use Yii;
 
 /**
  * RoFurSearch represents the model behind the search form of `app\models\RoFur`.
@@ -41,7 +42,11 @@ class RoFurSearch extends RoFur
     public function search($params)
     {
         $query = RoFur::find();
-
+        $user = Yii::$app->user->can('super-user');
+        $user_division = Yii::$app->user->identity->division;
+        if (!$user) {
+            $query->andWere('division = :division', ['division' => $user_division]);
+        }
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([

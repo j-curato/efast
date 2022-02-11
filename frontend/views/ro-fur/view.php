@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         $user = Yii::$app->user->can('super-user');
         if ($user) {
-           echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+            echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
         }
         ?>
         <table class="" id="fur_table" style="margin-top: 30px;">

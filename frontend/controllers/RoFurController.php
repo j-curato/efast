@@ -39,13 +39,19 @@ class RoFurController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'delete',
-                            'update',
                             'division-fur'
                         ],
                         'allow' => true,
                         'roles' => ['@']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                            'delete',
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

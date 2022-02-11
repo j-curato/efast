@@ -70,7 +70,7 @@ SELECT id,`name`FROM document_recieve
                 <?php
 
                 if ($user) {
-                  echo   Html::submitButton('Save', ['class' => 'btn btn-success']);
+                    echo   Html::submitButton('Save', ['class' => 'btn btn-success']);
                 }
                 ?>
             </div>
