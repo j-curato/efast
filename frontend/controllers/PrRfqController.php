@@ -9,6 +9,8 @@ use app\models\PrRfqSearch;
 
 use DateTime;
 use ErrorException;
+use yii\db\Query;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -27,6 +29,31 @@ class PrRfqController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'create',
+                    'update',
+                    'delete',
+                    'search-rfq',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'delete',
+                            'search-rfq',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -310,5 +337,25 @@ class PrRfqController extends Controller
             $zero .= 0;
         }
         return $province . '-' . $date . '-' . $zero . $num;
+    }
+    public function actionSearchRfq($q = null, $id = null, $province = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+
+            $query->select([" id, `rfq_number` as text"])
+                ->from('pr_rfq')
+                ->where(['like', 'rfq_number', $q]);
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+
+        return $out;
     }
 }

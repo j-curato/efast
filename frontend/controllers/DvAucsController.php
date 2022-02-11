@@ -623,19 +623,13 @@ class DvAucsController extends Controller
                     );
                     $params = [];
                     $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'advances_entries.id', $source_fund_source_type_difference], $params);
-                    // $qqq = Yii::$app->db->createCommand("UPDATE   advances_entries 
-
-                    // LEFT JOIN liquidation_entries ON advances_entries.id = liquidation_entries.id
-                    // SET is_deleted =101
-                    //  WHERE  $sql AND liquidation_id IS NULL ")
-                    //     ->query();
+               
                     if (!empty($source_fund_source_type_difference)) {
                         $delete_advances_entries = Yii::$app->db->createCommand("UPDATE  advances_entries
                     LEFT JOIN liquidation_entries ON advances_entries.id = liquidation_entries.advances_entries_id
                     SET advances_entries.is_deleted = 1
                    WHERE $sql AND liquidation_entries.id IS NULL", $params)
-                            // ->update("advances_entries ",
-                            //  ['advances_entries.is_deleted' => 101], "$sql", $params)
+              
                             ->execute();
                     }
                 }

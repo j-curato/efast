@@ -196,7 +196,7 @@ class PrPurchaseRequestController extends Controller
             $quantity = $_POST['quantity'];
             // return json_encode(
 
-            //     [
+            //     [`
             //         $pr_stocks_id,
             //         $pr_item_id
             //     ]
@@ -366,12 +366,10 @@ class PrPurchaseRequestController extends Controller
             pr_stock.bac_code,
            pr_stock.stock_title,
            unit_of_measure.unit_of_measure,
-           REPLACE( pr_purchase_request_item.specification, '[n]', '<br>') as specification,
+           IFNULL(REPLACE( pr_purchase_request_item.specification, '[n]', '<br>'),'') as specification,
            pr_purchase_request_item.unit_cost,
            pr_purchase_request_item.quantity,
            pr_purchase_request_item.unit_cost * pr_purchase_request_item.quantity as total_cost
-           
-           
            FROM pr_purchase_request_item 
            LEFT JOIN pr_stock  ON pr_purchase_request_item.pr_stock_id = pr_stock.id
            LEFT JOIN unit_of_measure ON pr_stock.unit_of_measure_id = unit_of_measure.id

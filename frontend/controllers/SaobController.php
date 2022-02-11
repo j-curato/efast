@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\Saob;
 use app\models\SaobSearch;
+use DateTime;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -245,7 +246,8 @@ class SaobController extends Controller
         ])
             ->from('saob_rao')
 
-            ->where(" saob_rao.reporting_period < :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
+            ->andWhere(" saob_rao.reporting_period < :to_reporting_period", ['to_reporting_period' => $to_reporting_period])
+            ->andWhere(" saob_rao.reporting_period LIKE '2022%'",)
             ->andWhere("saob_rao.book_id = :book_id", ['book_id' => $book_id]);
         if (strtolower($mfo_code) !== 'all') {
 
@@ -268,6 +270,7 @@ class SaobController extends Controller
 
         $sql_current_ors = $current_ors->createCommand()->getRawSql();
         $sql_prev_ors = $prev_ors->createCommand()->getRawSql();
+        // return json_encode($sql_prev_ors);
         $query = Yii::$app->db->createCommand("SELECT
         mfo_pap_code.`name` as mfo_name,
         document_recieve.`name` as document_name,

@@ -28,6 +28,7 @@ class RoRao extends \yii\db\ActiveRecord
     {
         return [
             [['created_at'], 'safe'],
+            [['is_final'], 'integer'],
             [['reporting_period'], 'string', 'max' => 20],
         ];
     }
@@ -40,6 +41,7 @@ class RoRao extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'reporting_period' => 'Reporting Period',
+            'is_final' => 'Final',
             'created_at' => 'Created At',
         ];
     }
