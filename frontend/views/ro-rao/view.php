@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <?php
-
+    date_default_timezone_set('Asia/Manila');
     $gridColumn =  [
         'reporting_period',
         'allotment_number',
@@ -72,7 +72,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ExportMenu::widget([
                     'dataProvider' => $dataProvider,
                     'columns' => $gridColumn,
-                    'filename' => 'Cash Disbursements',
+                    'filename' => 'RAO' . '-' . date('Y-m-d H:i A'),
                     'exportConfig' => [
                         ExportMenu::FORMAT_TEXT => false,
                         // ExportMenu::FORMAT_PDF => false,
