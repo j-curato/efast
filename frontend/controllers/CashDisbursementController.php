@@ -280,6 +280,18 @@ class CashDisbursementController extends Controller
 
             if ($cd->validate()) {
                 if ($cd->save()) {
+
+                    $q = Yii::$app->db->createCommand("UPDATE advances_entries 
+            LEFT JOIN advances ON advances_entries.advances_id  = advances.id
+            SET advances_entries.is_deleted = 0,
+            advances_entries.cash_disbursement_id = :cash_id
+            WHERE 
+            advances.dv_aucs_id = :dv_id
+            AND advances_entries.is_deleted = 9
+            ")
+                        ->bindValue(':dv_id', $cd->dv_aucs_id)
+                        ->bindValue(':cash_id', $cd->id)
+                        ->execute();
                     return json_encode(["isSuccess" => true, 'id' => $cd->id]);
                 }
             } else {
