@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
     $ledger = Yii::$app->db->createCommand("SELECT chart_of_accounts.id, CONCAT(chart_of_accounts.uacs,' - ',chart_of_accounts.general_ledger) as name FROM chart_of_accounts")->queryAll();
     $book = Yii::$app->db->createCommand("SELECT books.id,books.name FROM books")->queryAll();
     $t = yii::$app->request->baseUrl . '/index.php?r=jev-preparation/sample';
-    $sub1 = (new \yii\db\Query())->select('*')->from('sub_accounts1')->all();
+    $sub1 = (new \yii\db\Query())->select('*')->from('sub_accounts_view')->all();
 
     ?>
 
@@ -64,11 +64,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             <div class="col-sm-3">
-                <label for="sub_account">Sub Account 1</label>
+                <label for="sub_account">Sub Account</label>
                 <?php
                 echo Select2::widget([
                     'id' => 'sub_account',
-                    'data' => ArrayHelper::map($sub1, 'object_code', 'name'),
+                    'data' => ArrayHelper::map($sub1, 'object_code', 'account_title'),
                     'name' => 'sub_account',
                     'options' => ['placeholder' => 'Sub Account 1'],
                     'pluginOptions' => [

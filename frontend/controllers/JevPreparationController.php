@@ -1902,7 +1902,7 @@ class JevPreparationController extends Controller
                 // ->orderBy('jev_preparation.created_at ASC')
                 ->all();
             $book_name = Books::find()->where("id =:id", ['id' => $_POST['book_id']])->one()->name;
-            $sl_name = (new \yii\db\Query())->select(['name'])->from('sub_accounts1')
+            $sl_name = (new \yii\db\Query())->select(['account_title as name'])->from('sub_accounts_view')
                 ->where("object_code =:object_code", ['object_code' => $_POST['sub_account']])->one()['name'];
             $sl_final = [];
             $balance = 0;
