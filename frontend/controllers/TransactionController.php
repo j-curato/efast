@@ -167,13 +167,27 @@ class TransactionController extends Controller
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post())) {
             $old =  $this->findModel($id);
+            $old_responsibility_center = intval($old->responsibility_center_id);
+            $new_responsibility_center = intval($model->responsibility_center_id);
             $old_year = DateTime::createFromFormat('m-d-Y', $old->transaction_date)->format('Y');
             $new_year = DateTime::createFromFormat('m-d-Y', $model->transaction_date)->format('Y');
             if (intval($old_year) !== intval($new_year)) {
                 $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date);
             }
+            if ($old_responsibility_center !==  $new_responsibility_center) {
+                $old_tracking_number = explode('-', $old->tracking_number)[2];
+                $new_tracking_number = explode('-', $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date));
+                $new_tracking_number[2] = $old_tracking_number;
+
+                $model->tracking_number = implode('-', $new_tracking_number);
+                // var_dump($model->tracking_number);
+                // die();
+            }
 
 
+            // return json_encode(
+            //     $model->tracking_number
+            // );
             if ($model->save(false)) {
 
                 return $this->redirect(['view', 'id' => $model->id]);
@@ -473,12 +487,10 @@ class TransactionController extends Controller
         if (!is_null($q)) {
             $query = new Query();
 
-            $query->select(["id", "tracking_number as text","SUBSTRING_INDEX(`transaction`.tracking_number,'-',-2) as q"])
+            $query->select(["id", "tracking_number as text", "SUBSTRING_INDEX(`transaction`.tracking_number,'-',-2) as q"])
                 ->from('transaction')
                 ->where(['like', 'tracking_number', $q])
-                ->orderBy('q DESC')
-                
-                ;
+                ->orderBy('q DESC');
 
             $command = $query->createCommand();
             $data = $command->queryAll();
