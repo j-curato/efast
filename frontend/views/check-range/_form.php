@@ -76,7 +76,7 @@ use yii\widgets\ActiveForm;
             <label for="bank_account"> Bank Account</label>
             <?php
             $bank_accounts_query = (new \yii\db\Query())
-                ->select(['bank_account.id', 'bank_account.account_number'])
+                ->select(['bank_account.id', "CONCAT(bank_account.account_number,'-',UPPER(bank_account.province),'-',bank_account.account_name) as account_name"])
                 ->from('bank_account');
             $province = Yii::$app->user->identity->province;
             if (
@@ -90,7 +90,7 @@ use yii\widgets\ActiveForm;
             }
             $bank_accounts = $bank_accounts_query->all();
             echo Select2::widget([
-                'data' => ArrayHelper::map($bank_accounts, 'id', 'account_number'),
+                'data' => ArrayHelper::map($bank_accounts, 'id', 'account_name'),
                 'name' => 'bank_account_id',
                 'value' => $bank_account_id,
                 'pluginOptions' => [
