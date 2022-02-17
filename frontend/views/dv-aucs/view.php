@@ -215,11 +215,13 @@ $this->params['breadcrumbs'][] = $this->title;
           advances_entries.fund_source,
           accounting_codes.object_code,
           accounting_codes.account_title,
-          advances_entries.amount
+          advances_entries.amount,
+          CONCAT(bank_account.account_number,'-',bank_account.account_name) as bank_account
           
           FROM advances
           LEFT JOIN advances_entries ON advances.id = advances_entries.advances_id
           LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
+          LEFT JOIN bank_account ON advances.bank_account_id = bank_account.id
           WHERE advances.dv_aucs_id = :dv_id
            ")
         ->bindValue(':dv_id', $model->id)
@@ -233,6 +235,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <thead>
                     <th>Province</th>
                     <th>NFT Number</th>
+                    <th>Bank Account</th>
                     <th>Report Type</th>
                     <th>Fund Source Type</th>
                     <th>Fund Source</th>
@@ -250,6 +253,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         echo "<tr>
                         <td>{$val['province']}</td>
                         <td>{$val['nft_number']}</td>
+                        <td>{$val['bank_account']}</td>
                         <td>{$val['report_type']}</td>
                         <td>{$val['fund_source_type']}</td>
                         <td>{$val['fund_source']}</td>
