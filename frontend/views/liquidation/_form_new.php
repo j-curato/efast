@@ -10,6 +10,7 @@ use kartik\grid\GridView;
 use kartik\money\MaskMoney;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Liquidation */
@@ -232,18 +233,10 @@ use yii\helpers\ArrayHelper;
             ?>
             <button class="btn btn-success" id='save' type="submit">Save</button>
         </form>
-
         <form id="add_data">
 
             <?php
-            $searchModel = new AdvancesEntriesForLiquidationSearch();
-            if (\Yii::$app->user->identity->province !== 'ro_admin') {
-                $searchModel->province = \Yii::$app->user->identity->province;
-                // echo \Yii::$app->user->identity->province;
-            }
-            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-            $dataProvider->pagination = ['pageSize' => 10];
             $gridColumn = [
                 [
                     'hAlign' => 'center',
@@ -292,8 +285,9 @@ use yii\helpers\ArrayHelper;
                 'columns' => $gridColumn
             ]); ?>
 
-            <button class="btn btn-primary" id="add" type="submit">Add</button>
+            <button class="btn btn-primary" id="add" type="text">Add</button>
         </form>
+
 
     </div>
 
@@ -571,7 +565,7 @@ SweetAlertAsset::register($this);
     var transaction = [];
 
     function chart() {
-        return $.getJSON(window.location.pathname+'?r=chart-of-accounts/chart-of-accounts')
+        return $.getJSON(window.location.pathname + '?r=chart-of-accounts/chart-of-accounts')
             .then(function(data) {
                 var array = []
                 $.each(data, function(key, val) {
@@ -605,7 +599,24 @@ SweetAlertAsset::register($this);
 
             });
 
+
+
+        $("#check_range").on('change', function(e) {
+            e.preventDefault()
+            // console.log($(this).val())
+            console.log(window.location.href)
+            $.pjax({
+                container: "#w0-pjax",
+                url: window.location.href,
+                type: 'POST',
+                data: {
+                    check_range_id: $(this).val()
+                }
+            });
+        })
     })
+
+
 
     function enableDisable(checkbox) {
         var isDisable = true
@@ -670,7 +681,7 @@ $script = <<<JS
 
 
 //  ADD DATA TO TRANSACTION TABLE
-    $('#add_data').submit(function(e) {
+    $('#add').click(function(e) {
         e.preventDefault();
 
         $.ajax({

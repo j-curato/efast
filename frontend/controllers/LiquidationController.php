@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\models\AdvancesEntriesForLiquidationSearch;
 use app\models\CancelledChecksView;
 use app\models\CancelledChecksViewSearch;
 use Yii;
@@ -14,6 +15,7 @@ use DateTime;
 use ErrorException;
 use Exception;
 use Mpdf\Tag\Em;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -175,13 +177,33 @@ class LiquidationController extends Controller
      */
     public function actionCreate()
     {
+
         $model = new Liquidation();
         $session = Yii::$app->session;
         $session->set('form_token', md5(uniqid()));
+        $searchModel = new AdvancesEntriesForLiquidationSearch();
+        if (\Yii::$app->user->identity->province !== 'ro_admin') {
+            $searchModel->province = \Yii::$app->user->identity->province;
+            // echo \Yii::$app->user->identity->province;
+        }
+
+        $check_range_id = '';
+        if ($_POST) {
+            $check_range_id = $_POST['check_range_id'];
+            $bank_account_id = Yii::$app->db->createCommand("SELECT bank_account_id FROM check_range where id=:id")
+                ->bindValue(':id', $check_range_id)
+                ->queryScalar();
+            $searchModel->bank_account_id = $bank_account_id;
+        }
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        $dataProvider->pagination = ['pageSize' => 10];
 
         return $this->render('create', [
             'model' => $model,
-            'update_type' => 'create'
+            'update_type' => 'create',
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider
         ]);
     }
 
@@ -194,17 +216,30 @@ class LiquidationController extends Controller
      */
     public function actionUpdate($id)
     {
-
+        $check_range_id = 1;
+        if ($_POST) {
+            $check_range_id = $_POST['check_range_id'];
+        }
         $q  = LiquidationEntries::findOne($id);
         $model = $this->findModel($id);
 
         // if ($model->load(Yii::$app->request->post()) && $model->save()) {
         //     return $this->redirect(['view', 'id' => $model->id]);
         // }
+        $searchModel = new AdvancesEntriesForLiquidationSearch();
+        if (\Yii::$app->user->identity->province !== 'ro_admin') {
+            $searchModel->province = \Yii::$app->user->identity->province;
+            // echo \Yii::$app->user->identity->province;
+        }
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->pagination = ['pageSize' => $check_range_id];
+
 
         return $this->render('update', [
             'model' => $model,
-            'update_type' => 'update'
+            'update_type' => 'update',
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider
         ]);
     }
 
@@ -223,16 +258,35 @@ class LiquidationController extends Controller
     }
     public function actionReAlign($id)
     {
+        $check_range_id = '';
+
         $q  = LiquidationEntries::findOne($id);
         $model = $this->findModel($id);
 
         // if ($model->load(Yii::$app->request->post()) && $model->save()) {
         //     return $this->redirect(['view', 'id' => $model->id]);
         // }
+        $searchModel = new AdvancesEntriesForLiquidationSearch();
+        if (\Yii::$app->user->identity->province !== 'ro_admin') {
+            $searchModel->province = \Yii::$app->user->identity->province;
+            // echo \Yii::$app->user->identity->province;
+        }
+
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->pagination = ['pageSize' => $check_range_id];
+        if ($_POST) {
+            $check_range_id = $_POST['check_range_id'];
+            $bank_account_id = Yii::$app->db->createCommand("SELECT bank_account_id FROM check_range where id=:id")
+                ->bindValue(':id', $check_range_id)
+                ->queryScalar();
+            $dataProvider->bank_account_id = $bank_account_id;
+        }
 
         return $this->render('update', [
             'model' => $model,
-            'update_type' => 're-align'
+            'update_type' => 're-align',
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider
         ]);
     }
 
@@ -1337,5 +1391,30 @@ class LiquidationController extends Controller
             }
             return json_encode(['isSuccess' => true, 'cancelled' => $link]);
         }
+    }
+    public function advancesEntriesDataProvider($check_range_id)
+    {
+
+        if (empty($check_range)) return;
+
+        if (!empty($check_range_id)) {
+            $bank_account_id  = new Query();
+            $bank_account_id->select('bank_account_id')
+                ->from('check_range')
+                ->where('check_range.id = :id', ['id' => $check_range_id])
+                ->one();
+        }
+        $searchModel = new AdvancesEntriesForLiquidationSearch();
+        if (\Yii::$app->user->identity->province !== 'ro_admin') {
+            $searchModel->province = \Yii::$app->user->identity->province;
+            // echo \Yii::$app->user->identity->province;
+        }
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->pagination = ['pageSize' => $check_range_id];
+        return  [
+
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider
+        ];
     }
 }
