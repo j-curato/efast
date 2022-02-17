@@ -635,22 +635,15 @@ class LiquidationController extends Controller
 
     public function getDvNumber($reporting_period)
     {
-        // $reporting_period = '2021-02';
-        // $q = (new \yii\db\Query())
-        //     ->select('liquidation.dv_number')
-        //     ->from('liquidation')
-        //     ->orderBy("liquidation.id DESC")
-        //     ->one();
+
         $province = Yii::$app->user->identity->province;
-        $arr = [
-            'adn' => 904,
-            'ads' => 694,
-            'sdn' => 695,
-            'sds' => 1334,
-            'pdi' => 026
-        ];
+
         $year = DateTime::createFromFormat('Y-m', $reporting_period)->format('Y');
         $province = Yii::$app->user->identity->province;
+
+
+
+
         $q = Yii::$app->db->createCommand("SELECT CAST( substring_index(substring(dv_number, instr(dv_number, '-')+1), '-', -1) as UNSIGNED) as q 
         from liquidation
         WHERE liquidation.province = :province
@@ -662,17 +655,40 @@ class LiquidationController extends Controller
             ->queryScalar();
 
 
-        // return $q;
-        // die();
+
         $num = 0;
 
         if (!empty($q)) {
-            // $x = explode('-', $q['dv_number']);
             $num = $q + 1;
         } else {
-            // $num = 1;
-            $num = $arr[$province];
+            $num = 1;
         }
+        $liq = Yii::$app->db->createCommand(" SELECT CAST( substring_index(substring(dv_number, instr(dv_number, '-')+1), '-', -1) as UNSIGNED) as num
+        from liquidation
+        WHERE liquidation.province = :province
+        AND liquidation.reporting_period >= '2021-09'
+        AND liquidation.reporting_period LIKE :_year
+        ORDER BY num
+        ")
+            ->bindValue(':province', $province)
+            ->bindValue(':_year', $year . '%')
+            ->queryAll();
+        if (!empty($liq)) {
+            $number_sequnce = [];
+            foreach (range(1, max($liq)['num']) as $val) {
+                $number_sequnce[] = $val;
+            }
+
+            $diff = array_diff($number_sequnce, array_column($liq, 'num'));
+            if (!empty($diff)) {
+                $num = $diff[0];
+            }
+        }
+
+
+
+
+
         if (strlen($num) < 4) {
 
             $string = substr(str_repeat(0, 4) . $num, -4);
