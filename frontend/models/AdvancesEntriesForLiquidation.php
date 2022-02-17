@@ -30,8 +30,8 @@ class AdvancesEntriesForLiquidation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id'], 'integer'],
-            [['fund_source', 'particular'], 'string'],
+            [['id','bank_account_id'], 'integer'],
+            [['fund_source', 'particular','bank_account_name'], 'string'],
             [['amount', 'total_liquidation'], 'number'],
             [['province'], 'string', 'max' => 50],
         ];
@@ -49,6 +49,8 @@ class AdvancesEntriesForLiquidation extends \yii\db\ActiveRecord
             'amount' => 'Amount',
             'total_liquidation' => 'Total Liquidation',
             'particular' => 'Particular',
+            'bank_account_id' => 'Bank Account ID',
+            'bank_account_name' => 'Account Name',
         ];
     }
 }

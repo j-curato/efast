@@ -21,9 +21,11 @@ class AdvancesEntriesForLiquidationSearch extends AdvancesEntriesForLiquidation
             $province = '';
         }
         return [
-            [['id'], 'integer'],
+            [['id', 'bank_account_id'], 'integer'],
+
+
             [['amount', 'balance'], 'number'],
-            [[$province, 'fund_source', 'total_liquidation', 'reporting_period', 'particular'], 'safe'],
+            [[$province, 'fund_source', 'total_liquidation', 'reporting_period', 'particular', 'bank_account_name'], 'safe'],
         ];
     }
 
@@ -51,7 +53,7 @@ class AdvancesEntriesForLiquidationSearch extends AdvancesEntriesForLiquidation
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort'=> ['defaultOrder' => ['balance' => SORT_DESC]],
+            'sort' => ['defaultOrder' => ['balance' => SORT_DESC]],
         ]);
 
         $this->load($params);
@@ -73,6 +75,8 @@ class AdvancesEntriesForLiquidationSearch extends AdvancesEntriesForLiquidation
             ->andFilterWhere(['like', 'amount', $this->amount])
             ->andFilterWhere(['like', 'balance', $this->balance])
             ->andFilterWhere(['like', 'particular', $this->particular])
+            ->andFilterWhere(['like', 'bank_account_id', $this->bank_account_id])
+            ->andFilterWhere(['like', 'bank_account_name', $this->bank_account_name])
             ->andFilterWhere(['like', 'total_liquidation', $this->total_liquidation]);
 
         return $dataProvider;
