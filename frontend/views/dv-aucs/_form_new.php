@@ -1567,7 +1567,15 @@ $script = <<< JS
            
             // $("#bok").prop('required',true);
         }
-        if (transaction_type==='No Ors' || transaction_type ==='Accounts Payable' ){
+        if (transaction_type==='No Ors' || transaction_type ==='Accounts Payable' 
+        || transaction_type ==='Replacement to Stale Checks' 
+        || transaction_type ==='Replacement of Check Issued' 
+      
+        ){
+
+
+
+            
             $("#bok").show();
             $("#book").prop('required',true);
         }

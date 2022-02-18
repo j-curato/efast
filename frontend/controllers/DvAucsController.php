@@ -470,9 +470,11 @@ class DvAucsController extends Controller
                 return json_encode(['isSuccess' => false, 'error' => "bawal lain2 og book number"]);
             }
 
-            if ($transaction_type === 'no ors') {
+            if ($transaction_type !== 'single') {
                 $book_id = $_POST['book'];
-            } else {
+            } else if ($transaction_type !== 'multiple') {
+                $book_id = $_POST['book'];
+            } {
                 // $book_id = $y[0]['book_id'];
                 $book_id = $y[0];
                 // return json_encode(['isSuccess' => false, 'error' => $y[0]['book_id']]);
@@ -623,13 +625,13 @@ class DvAucsController extends Controller
                     );
                     $params = [];
                     $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'advances_entries.id', $source_fund_source_type_difference], $params);
-               
+
                     if (!empty($source_fund_source_type_difference)) {
                         $delete_advances_entries = Yii::$app->db->createCommand("UPDATE  advances_entries
                     LEFT JOIN liquidation_entries ON advances_entries.id = liquidation_entries.advances_entries_id
                     SET advances_entries.is_deleted = 1
                    WHERE $sql AND liquidation_entries.id IS NULL", $params)
-              
+
                             ->execute();
                     }
                 }
