@@ -199,6 +199,7 @@
                                         Yii::$app->user->can('super-user') ? ['label' => 'Tracking Sheet', 'icon' => 'circle-o', 'url' => ['/dv-aucs/tracking-index'],] : [],
                                         Yii::$app->user->can('super-user') ? ['label' => 'Turn Arround Time', 'icon' => 'circle-o', 'url' => ['/dv-aucs/turnarround-time'],] : [],
                                         Yii::$app->user->can('super-user') ? ['label' => 'Document Tracking', 'icon' => 'circle-o', 'url' => ['/document-tracker'],] : [],
+                                        Yii::$app->user->can('super-user') ? ['label' => 'JEV Beginning Balance', 'icon' => 'circle-o', 'url' => ['/jev-beginning-balance'],] : [],
 
                                     ],
                                 ] : [],
