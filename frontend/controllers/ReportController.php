@@ -182,13 +182,13 @@ class ReportController extends \yii\web\Controller
     }
     public function actionRao()
     {
-        $searchModel = new RaoSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        // $searchModel = new RaoSearch();
+        // $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('rao_index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        // return $this->render('rao_index', [
+        //     'searchModel' => $searchModel,
+        //     'dataProvider' => $dataProvider,
+        // ]);
     }
     // public function actionSaob()
     // {
@@ -2994,6 +2994,83 @@ class ReportController extends \yii\web\Controller
         // $final_number .= $last_number;
         $tracking_number = 'SDS' . '-' . trim($responsibility_center['name']) . '-' . $date . '-' . $final_number;
         return  $tracking_number;
+    }
+    public function actionGenLed()
+    {
+
+
+        return $this->render('general_ledger');
+    }
+    public function actionGenerateGeneralLedger()
+    {
+        if ($_POST) {
+
+
+            $to_reporting_period = $_POST['reporting_period'];
+            $reporting_period = DateTime::createFromFormat('Y-m', $to_reporting_period);
+            $from_reporting_period = $reporting_period->format('Y') . '-01';
+            $book_id = $_POST['book_id'];
+            $object_code = $_POST['object_code'];
+            $year = $reporting_period->format('Y');
+
+            $beginning_balance = Yii::$app->db->createCommand("SELECT
+            jev_beginning_balance_item.debit,
+            jev_beginning_balance_item.credit,
+            (CASE
+                WHEN chart_of_accounts.normal_balance ='Debit' THEN jev_beginning_balance_item.debit - jev_beginning_balance_item.credit
+            ELSE jev_beginning_balance_item.credit -  jev_beginning_balance_item.debit
+            END) as beginning_balance_total
+             
+             FROM jev_beginning_balance_item 
+            
+            LEFT JOIN jev_beginning_balance ON jev_beginning_balance_item.jev_beginning_balance_id =jev_beginning_balance.id
+            LEFT JOIN chart_of_accounts ON jev_beginning_balance_item.object_code = chart_of_accounts.uacs
+                WHERE jev_beginning_balance.`year` = :_year
+                AND jev_beginning_balance_item.object_code = :object_code
+                AND jev_beginning_balance.book_id  = :book_id")
+                ->bindValue(':_year', $year)
+                ->bindValue(':book_id', $book_id)
+                ->bindValue(':object_code', $object_code)
+                ->queryOne();
+            $query = Yii::$app->db->createCommand("SELECT
+        accounting_entries.*,
+        chart_of_accounts.normal_balance,
+        (CASE 
+        WHEN chart_of_accounts.normal_balance <= 'Debit' THEN accounting_entries.debit - accounting_entries.credit
+         ELSE accounting_entries.credit - accounting_entries.debit
+        END) as total
+        FROM(
+        SELECT  
+        jev_preparation.reporting_period,
+        jev_preparation.date,
+        jev_preparation.explaination as particular,
+        jev_preparation.jev_number,
+        jev_accounting_entries.debit,
+        jev_accounting_entries.credit,
+        SUBSTRING_INDEX(jev_accounting_entries.object_code,'_',1) as uacs
+        
+        
+        FROM jev_accounting_entries
+        LEFT JOIN jev_preparation ON jev_accounting_entries.jev_preparation_id = jev_preparation.id
+        LEFT JOIN books ON jev_preparation.book_id =  books.id
+        WHERE jev_accounting_entries.object_code LIKE :object_code
+        AND jev_preparation.reporting_period <= :to_reporting_period
+        AND jev_preparation.reporting_period >=:from_reporting_period
+        AND books.id = :book_id
+        ) as accounting_entries
+        INNER  JOIN chart_of_accounts ON accounting_entries.uacs = chart_of_accounts.uacs
+        ORDER BY accounting_entries.`date`
+        ")
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->bindValue(':to_reporting_period', $to_reporting_period)
+                ->bindValue(':book_id', $book_id)
+                ->bindValue(':object_code', $object_code . '%')
+                ->queryAll();
+            return json_encode([
+                'beginning_balance' => $beginning_balance,
+                'query' => $query,
+            ]);
+        }
     }
     // public function actionQ()
     // {
