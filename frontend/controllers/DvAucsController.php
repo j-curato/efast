@@ -470,9 +470,9 @@ class DvAucsController extends Controller
                 return json_encode(['isSuccess' => false, 'error' => "bawal lain2 og book number"]);
             }
 
-            if ($transaction_type !== 'single') {
+            if ($transaction_type === 'single') {
                 $book_id = $y[0];
-            } else if ($transaction_type !== 'multiple') {
+            } else if ($transaction_type === 'multiple') {
             } else {
                 // $book_id = $y[0]['book_id'];
                 $book_id = $_POST['book'];
