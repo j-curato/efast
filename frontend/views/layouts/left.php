@@ -216,6 +216,7 @@
                                         ['label' => 'CKDJ', 'icon' => 'circle-o', 'url' => ['/jev-preparation/ckdj'],],
                                         ['label' => 'Trial Balance', 'icon' => 'circle-o', 'url' => ['/jev-preparation/trial-balance'],],
                                         ['label' => 'New Trial Balance', 'icon' => 'circle-o', 'url' => ['/report/trial-balance'],],
+                                        ['label' => 'Sub Trial Balance', 'icon' => 'circle-o', 'url' => ['/jev-preparation/sub-trial-balance'],],
                                         ['label' => 'Subsidiary Ledger', 'icon' => 'circle-o', 'url' => ['/jev-preparation/get-subsidiary-ledger'],],
                                         ['label' => 'Detailed Financial Position', 'icon' => 'circle-o', 'url' => ['/jev-preparation/detailed-financial-position'],],
                                         ['label' => 'Consolidated Financial Position', 'icon' => 'circle-o', 'url' => ['/jev-preparation/consolidated-financial-position'],],

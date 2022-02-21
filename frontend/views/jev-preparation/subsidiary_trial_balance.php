@@ -311,7 +311,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_
     })
 
     function displayResultData(data) {
-        console.log(data)
         $("#data_table tbody").html('')
         let total_debit = 0;
         let total_credit = 0;
@@ -356,8 +355,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_
             </tr>`
             $("#data_table tbody").append(row)
         })
-        console.log(total_debit,
-            total_credit)
+
         var q = `<tr>
                 <td colspan='2'>Total</td>
                 <td class='amount'>${thousands_separators(total_debit.toFixed(2))}</td>
