@@ -87,10 +87,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             <div style="text-align:center;" class="headerItems">
                                 <h6>DEPARTMENT OF TRADE AND INDUSTRY</h6>
                                 <h6>CARAGA REGIONAL OFFICE</h6>
-                                <h6>TRIAL BALANCE
-                                    <?php if (!empty($fund_cluster_code)) {
-                                        echo strtoupper($fund_cluster_code);
-                                    } ?>
+                                <h6>TRIAL BALANCE <span class="book_name"></span>
+
                                 </h6>
                                 <h6>As of <span id="month"></span>
 
@@ -116,7 +114,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <span>
                             Fund Cluster:
                         </span>
-                        <span id="book_name"></span>
+                        <span class="book_name"></span>
                     </td>
 
 
@@ -304,7 +302,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_
                     // console.log(res)
                     displayResultData(res.result)
                     $('#month').text(res.month)
-                    $('#book_name').text(res.book_name)
+                    $('.book_name').text(res.book_name)
                 }
             })
         })
@@ -323,16 +321,29 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_
             // let total_debit_credit = val.total_debit_credit != null ? parseFloat(val.total_debit_credit) : 0;
             let total = val.total_debit_credit != null ? parseFloat(val.total_debit_credit) : 0;
             // let total = beginning_balance + total_debit_credit;
-
             if (val.normal_balance == null) {
                 debit = 'No Normal Balance'
                 credit = 'No Normal Balance'
             } else if (val.normal_balance.toLowerCase() == 'debit') {
-                debit = thousands_separators(total.toFixed(2))
-                total_debit += total
+
+                if (total < 0) {
+                    var total_value = Math.abs(total)
+                    credit = thousands_separators(total_value.toFixed(2))
+                    total_credit += total_value
+                } else {
+                    debit = thousands_separators(total.toFixed(2))
+                    total_debit += total
+                }
             } else if (val.normal_balance.toLowerCase() == 'credit') {
-                credit = thousands_separators(total.toFixed(2))
-                total_credit += total
+
+                if (total < 0) {
+                    var total_value = Math.abs(total)
+                    debit = thousands_separators(total_value.toFixed(2))
+                    total_debit += total_value
+                } else {
+                    credit = thousands_separators(total.toFixed(2))
+                    total_credit += total
+                }
             }
 
             var row = `<tr>
