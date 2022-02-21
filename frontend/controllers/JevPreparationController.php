@@ -1618,7 +1618,7 @@ class JevPreparationController extends Controller
 
                                 $jv = new JevAccountingEntries();
                                 $jv->jev_preparation_id = $jev_preparation_id;
-                                $jv->chart_of_account_id = intval($chart_id);
+                                // $jv->chart_of_account_id = intval($chart_id);
                                 $jv->debit = !empty($_POST['debit'][$i]) ? $_POST['debit'][$i] : 0;
                                 $jv->credit = !empty($_POST['credit'][$i]) ? $_POST['credit'][$i] : 0;
                                 // $jv->current_noncurrent=$jev_preparation->id;
@@ -2203,7 +2203,7 @@ class JevPreparationController extends Controller
                                jev_accounting_entries.debit,
                               jev_accounting_entries.credit,
                                jev_accounting_entries.net_asset_equity_id,
-                               jev_accounting_entries.object_code,
+                               accounting_codes.object_code,
                               jev_accounting_entries.cashflow_id,
        accounting_codes.account_title
        FROM jev_accounting_entries 
@@ -2466,6 +2466,7 @@ class JevPreparationController extends Controller
 
         if ($_POST) {
             $reporting_period = $_POST['year'];
+            $year =  $_POST['year'];
             $query = JevAccountingEntries::find()
                 ->joinWith('jevPreparation')
                 ->where('jev_preparation.reporting_period >=:reporting_period', ['reporting_period' => $reporting_period])
@@ -2476,26 +2477,28 @@ class JevPreparationController extends Controller
                     'SUM(jev_accounting_entries.credit) as total_credit',
                     'jev_accounting_entries.object_code',
                     'jev_accounting_entries.lvl',
+                    'books.name as book_name'
                 ])
                 ->from('jev_accounting_entries')
                 ->join('LEFT JOIN', 'jev_preparation', 'jev_accounting_entries.jev_preparation_id = jev_preparation.id')
+                ->join('LEFT JOIN', 'books', 'jev_preparation.book_id = books.id')
                 ->where("jev_preparation.reporting_period <:reporting_period", ['reporting_period' => $reporting_period])
                 ->groupBy("jev_accounting_entries.object_code")
                 ->all();
 
-            $sub1 = (new \yii\db\Query())
-                ->select('*')
-                ->from('sub_accounts1')
-                ->all();
+            // $sub1 = (new \yii\db\Query())
+            //     ->select('*')
+            //     ->from('sub_accounts1')
+            //     ->all();
 
-            $sub2 = (new \yii\db\Query())
-                ->select('*')
-                ->from('sub_accounts2')
-                ->all();
-            $chart = (new \yii\db\Query())
-                ->select('*')
-                ->from('chart_of_accounts')
-                ->all();
+            // $sub2 = (new \yii\db\Query())
+            //     ->select('*')
+            //     ->from('sub_accounts2')
+            //     ->all();
+            // $chart = (new \yii\db\Query())
+            //     ->select('*')
+            //     ->from('chart_of_accounts')
+            //     ->all();
             $accounting_codes = (new \yii\db\Query())
                 ->select('object_code,account_title,coa_object_code,coa_account_title')
                 ->from('accounting_codes')
@@ -2530,6 +2533,7 @@ class JevPreparationController extends Controller
             $sheet->setCellValue('L1', 'Debit');
             $sheet->setCellValue('M1', 'Credit');
             $sheet->setCellValue('N1', 'Reference');
+            $sheet->setCellValue('O1', 'BOOK');
 
             // BEGINNING BALANCE
             // $sheet->setCellValue('K2', 'Beginning Balance');
@@ -2544,28 +2548,27 @@ class JevPreparationController extends Controller
                     ),
                 ),
             );
-
+            $beginning_balances = Yii::$app->db->createCommand("SELECT 
+            books.`name` as book_name,
+            accounting_codes.object_code,
+            accounting_codes.account_title,
+            jev_beginning_balance_item.debit,
+            jev_beginning_balance_item.credit
+             FROM jev_beginning_balance_item 
+            LEFT JOIN jev_beginning_balance ON jev_beginning_balance_item.jev_beginning_balance_id =jev_beginning_balance.id
+            LEFT JOIN accounting_codes ON jev_beginning_balance_item.object_code = accounting_codes.object_code
+            LEFT JOIN books ON jev_beginning_balance.book_id = books.id
+            WHERE jev_beginning_balance.`year` = :_year
+            ")
+                ->bindValue(':_year', $year)
+                ->queryAll();
+            // return json_encode($beginning_balances);
 
             $row = 2;
-            foreach ($q1 as $x) {
-                $general_ledger = '';
-                $object_code = '';
-                if (intval($x['lvl']) === 1) {
-                    $index = array_search($x['object_code'], array_column($chart, 'uacs'));
-                    // $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $x['object_code']])->one();
-                    $general_ledger = $chart[$index]['general_ledger'];
-                    $object_code =  $chart[$index]['uacs'];
-                } else if (intval($x['lvl']) === 2) {
-                    $index = array_search($x['object_code'], array_column($sub1, 'object_code'));
-                    // $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $x['object_code']])->one();
-                    $general_ledger = $sub1[$index]['name'];
-                    $object_code =  $sub1[$index]['object_code'];
-                } else if (intval($x['lvl']) === 3) {
-                    $index = array_search($x['object_code'], array_column($sub2, 'object_code'));
-                    // $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $x['object_code']])->one();
-                    $general_ledger =  $sub2[$index]['name'];
-                    $object_code =  $sub2[$index]['object_code'];
-                }
+            foreach ($beginning_balances as $x) {
+                $account_title = $x['account_title'];
+                $object_code = $x['object_code'];
+
                 $sheet->setCellValueByColumnAndRow(
                     7,
                     $row,
@@ -2575,31 +2578,29 @@ class JevPreparationController extends Controller
                 $sheet->setCellValueByColumnAndRow(
                     8,
                     $row,
-                    $general_ledger
+                    $account_title
                 );
                 $sheet->setCellValueByColumnAndRow(
                     11,
                     $row,
                     'Beginning Balance'
                 );
-                //DEBIT
-                $debit = '';
-                $credit = '';
-                if ($x['total_debit'] >= $x['total_credit']) {
-                    $debit = $x['total_debit'] - $x['total_credit'];
-                } else {
-                    $credit = $x['total_credit'] - $x['total_debit'];
-                }
+
                 $sheet->setCellValueByColumnAndRow(
                     12,
                     $row,
-                    !empty($x['total_debit']) ? $x['total_debit'] : ''
+                    !empty($x['debit']) ? $x['debit'] : ''
                 );
                 //CREDIT
                 $sheet->setCellValueByColumnAndRow(
                     13,
                     $row,
-                    !empty($x['total_credit']) ? $x['total_credit'] : ''
+                    !empty($x['credit']) ? $x['credit'] : ''
+                );
+                $sheet->setCellValueByColumnAndRow(
+                    15,
+                    $row,
+                    !empty($x['book_name']) ? $x['book_name'] : ''
                 );
                 $row++;
             }
@@ -2690,6 +2691,11 @@ class JevPreparationController extends Controller
                     14,
                     $row,
                     !empty($val->jevPreparation->ref_number) ? $val->jevPreparation->ref_number : ''
+                );
+                $sheet->setCellValueByColumnAndRow(
+                    15,
+                    $row,
+                    !empty($val->jevPreparation->books->name) ? $val->jevPreparation->books->name : ''
                 );
 
                 $row++;
@@ -2836,5 +2842,74 @@ class JevPreparationController extends Controller
                 'query' => $query,
             ]);
         }
+    }
+    public function actionSubTrialBalance()
+    {
+        if ($_POST) {
+            $to_reporting_period = $_POST['reporting_period'];
+            $r_period_date = DateTime::createFromFormat('Y-m', $to_reporting_period);
+            $month  = $r_period_date->format('F Y');
+            $year = $r_period_date->format('Y');
+            $from_reporting_period = $year . '-01';
+            $book_id  = $_POST['book_id'];
+            $query = Yii::$app->db->createCommand("SELECT 
+            accounting_codes.object_code,
+            accounting_codes.account_title as account_title,
+            accounting_codes.normal_balance,
+            (CASE
+            WHEN accounting_codes.normal_balance = 'Debit' THEN accounting_entries.debit - accounting_entries.credit
+            ELSE accounting_entries.credit - accounting_entries.debit
+            END) as total_debit_credit,
+            beginning_balance.total_beginning_balance as begin_balance
+            
+            FROM (
+            SELECT
+            jev_accounting_entries.object_code
+            FROM jev_accounting_entries 
+            LEFT JOIN jev_preparation ON jev_accounting_entries.jev_preparation_id = jev_preparation.id
+            WHERE 
+             jev_preparation.book_id = :book_id
+            AND jev_preparation.reporting_period <= :to_reporting_period
+            GROUP BY jev_accounting_entries.object_code
+            ) as jev_object_codes
+            LEFT JOIN (SELECT
+            
+            SUM(jev_accounting_entries.debit) as debit,
+            SUM(jev_accounting_entries.credit) as credit,
+            jev_accounting_entries.object_code 
+            FROM jev_accounting_entries 
+            LEFT JOIN jev_preparation ON jev_accounting_entries.jev_preparation_id = jev_preparation.id
+            WHERE 
+             jev_preparation.book_id = :book_id
+            AND jev_preparation.reporting_period >= :from_reporting_period
+            AND jev_preparation.reporting_period <= :to_reporting_period
+            GROUP BY jev_accounting_entries.object_code) as accounting_entries ON jev_object_codes.object_code = accounting_entries.object_code
+            LEFT JOIN (SELECT 
+                accounting_codes.object_code,
+                (CASE
+                    WHEN accounting_codes.normal_balance = 'Debit' THEN jev_beginning_balance_item.debit  - jev_beginning_balance_item.credit
+                    ELSE jev_beginning_balance_item.credit - jev_beginning_balance_item.debit
+                END) as total_beginning_balance
+                FROM jev_beginning_balance_item 
+              LEFT JOIN jev_beginning_balance ON jev_beginning_balance_item.jev_beginning_balance_id =jev_beginning_balance.id
+              LEFT JOIN accounting_codes ON jev_beginning_balance_item.object_code = accounting_codes.object_code
+              LEFT JOIN books ON jev_beginning_balance.book_id = books.id
+              WHERE 
+                    jev_beginning_balance.`year` = :_year
+                AND jev_beginning_balance.book_id = :book_id) as beginning_balance ON jev_object_codes.object_code = beginning_balance.object_code
+            LEFT JOIN accounting_codes ON jev_object_codes.object_code = accounting_codes.object_code
+            
+            WHERE accounting_entries.debit IS NOT NULL
+            OR accounting_entries.credit IS NOT NULL
+            OR beginning_balance.total_beginning_balance IS NOT NULL")
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->bindValue(':to_reporting_period', $to_reporting_period)
+                ->bindValue(':book_id', $book_id)
+                ->bindValue(':_year', $year)
+                ->queryAll();
+            return json_encode($query);
+        }
+
+        return $this->render('subsidiary_trial_balance');
     }
 }
