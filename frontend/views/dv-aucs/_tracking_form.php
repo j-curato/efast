@@ -34,7 +34,7 @@ if (!empty($model->id)) {
     $payee_id = $model->payee_id;
     $payee_name = $model->payee->account_name;
     $transaction_type = $model->transaction_type;
-    $date_receive = DateTime::createFromFormat('Y-m-d H:i:s', $model->recieved_at)->format('Y-m-d h:i A');
+    $date_receive = !empty($model->recieved_at) ? DateTime::createFromFormat('Y-m-d H:i:s', $model->recieved_at)->format('Y-m-d h:i A') : '';
     $update_create = '?r=dv-aucs/tracking-update&id=' . $model->id;
 }
 ?>
@@ -98,9 +98,6 @@ if (!empty($model->id)) {
                     <label for="transaction">Transaction Type</label>
                     <select required id="transaction" name="transaction_type" class="transaction select" style="width: 100%; margin-top:50px">
                         <option></option>
-
-
-
                     </select>
                 </div>
 
@@ -834,7 +831,7 @@ $script = <<< JS
         ];
         var count=$('#transaction_table tbody tr').length
 
-        if (transaction_type !='Single'  && transaction_type !='Multiple'){
+        if (transaction_type !='Single'  && transaction_type !='Multiple' && count -1<0){
             addDvToTable(result,row)
         }
         if(transaction_type=='Multiple'){

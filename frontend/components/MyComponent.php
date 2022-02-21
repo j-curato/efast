@@ -89,7 +89,7 @@ class MyComponent extends Component
             ],
             'sdn' => [
                 'province' => 'Surigao Del Norte',
-                'officer' => 'Ferdinand R. Inres',
+                'officer' => 'Glenn Michael M. Goloran',
                 'location' => 'Surigao City'
             ],
 
