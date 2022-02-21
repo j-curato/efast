@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Assignatory */
 
-$this->title = 'Create Assignatory';
-$this->params['breadcrumbs'][] = ['label' => 'Assignatories', 'url' => ['index']];
+$this->title = 'Create Asignatory';
+$this->params['breadcrumbs'][] = ['label' => 'Asignatories', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="assignatory-create">
