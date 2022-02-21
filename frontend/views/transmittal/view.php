@@ -103,7 +103,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="head" style="font-weight:bold;right:10;" id="asig_1">
 
             </div>
-            <div class="head" id="oic">Regional Director</div>
+            <div class="head" id="oic">CESO IV</div>
         </div>
         <div class="row" style="margin-top:2rem">
             <div class="head" id="for_rd"></div>
@@ -397,7 +397,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depe
 <?php
 $script = <<< JS
     $("#assignatory").change(function(){
-      
         console.log("qwe")
     })
 

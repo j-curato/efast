@@ -16,7 +16,7 @@ use aryelds\sweetalert\SweetAlertAsset;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Trial Balance';
+$this->title = 'Sub Trial Balance';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index">
@@ -359,8 +359,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_
         console.log(total_debit,
             total_credit)
         var q = `<tr>
-                <td>Total</td>
-                <td></td>
+                <td colspan='2'>Total</td>
                 <td class='amount'>${thousands_separators(total_debit.toFixed(2))}</td>
                 <td class='amount'>${thousands_separators(total_credit.toFixed(2))}</td>
             </tr>`;
