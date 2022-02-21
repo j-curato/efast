@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $model app\models\Assignatory */
 
 $this->title = 'Update Asignatory: ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Assignatories', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Asignatories', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>
