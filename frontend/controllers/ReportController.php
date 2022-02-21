@@ -3012,11 +3012,9 @@ class ReportController extends \yii\web\Controller
             chart_of_accounts.uacs as object_code,
             chart_of_accounts.general_ledger as account_title,
             chart_of_accounts.normal_balance,
-    
-            
             (CASE
-            WHEN chart_of_accounts.normal_balance = 'Debit' THEN accounting_entries.debit - accounting_entries.credit
-            ELSE accounting_entries.credit - accounting_entries.debit
+            WHEN chart_of_accounts.normal_balance = 'Debit' THEN IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.debit,0) - IFNULL(accounting_entries.credit,0))
+            ELSE IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.credit,0) - IFNULL(accounting_entries.debit,0))
             END) as total_debit_credit,
             begin_balance.total_beginning_balance as begin_balance
             

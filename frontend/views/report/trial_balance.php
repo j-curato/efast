@@ -311,7 +311,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_
     })
 
     function displayResultData(data) {
-        console.log(data)
+
         $("#data_table tbody").html('')
         let total_debit = 0;
         let total_credit = 0;
@@ -320,8 +320,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_
             let debit = '';
             let credit = '';
             let beginning_balance = val.begin_balance != null ? parseFloat(val.begin_balance) : 0;
-            let total_debit_credit = val.total_debit_credit != null ? parseFloat(val.total_debit_credit) : 0;
-            let total = beginning_balance + total_debit_credit;
+            // let total_debit_credit = val.total_debit_credit != null ? parseFloat(val.total_debit_credit) : 0;
+            let total = val.total_debit_credit != null ? parseFloat(val.total_debit_credit) : 0;
+            // let total = beginning_balance + total_debit_credit;
 
             if (val.normal_balance == null) {
                 debit = 'No Normal Balance'
