@@ -327,11 +327,25 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_
                 debit = 'No Normal Balance'
                 credit = 'No Normal Balance'
             } else if (val.normal_balance.toLowerCase() == 'debit') {
-                debit = thousands_separators(total.toFixed(2))
-                total_debit += total
+
+                if (total < 0) {
+                    var total_value = Math.abs(total)
+                    credit = thousands_separators(total_value.toFixed(2))
+                    total_credit += total_value
+                } else {
+                    debit = thousands_separators(total.toFixed(2))
+                    total_debit += total
+                }
             } else if (val.normal_balance.toLowerCase() == 'credit') {
-                credit = thousands_separators(total.toFixed(2))
-                total_credit += total
+
+                if (total < 0) {
+                    var total_value = Math.abs(total)
+                    debit = thousands_separators(total_value.toFixed(2))
+                    total_debit += total_value
+                } else {
+                    credit = thousands_separators(total.toFixed(2))
+                    total_credit += total
+                }
             }
 
             var row = `<tr>
