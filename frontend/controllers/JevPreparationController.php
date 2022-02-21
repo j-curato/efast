@@ -2901,7 +2901,9 @@ class JevPreparationController extends Controller
             
             WHERE accounting_entries.debit IS NOT NULL
             OR accounting_entries.credit IS NOT NULL
-            OR beginning_balance.total_beginning_balance IS NOT NULL")
+            OR beginning_balance.total_beginning_balance IS NOT NULL
+            ORDER BY jev_object_codes.object_code
+            ")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->bindValue(':book_id', $book_id)
