@@ -7,7 +7,7 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\AssignatorySearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Assignatories';
+$this->title = 'Asignatories';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="assignatory-index">
@@ -15,10 +15,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Assignatory', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Asignatory', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

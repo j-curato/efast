@@ -103,7 +103,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="head" style="font-weight:bold;right:10;" id="asig_1">
 
             </div>
-            <div class="head" id="oic">CESO IV</div>
+            <div class="head" id="oic">Regional Director</div>
         </div>
         <div class="row" style="margin-top:2rem">
             <div class="head" id="for_rd"></div>
@@ -191,7 +191,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 allowClear: true,
                 closeOnSelect: true
             })
-            $.getJSON('/afms/frontend/web/index.php?r=assignatory/get-all-assignatory')
+            $.getJSON(window.location.pathname+'?r=assignatory/get-all-assignatory')
 
                 .then(function(data) {
 
@@ -397,6 +397,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depe
 <?php
 $script = <<< JS
     $("#assignatory").change(function(){
+      
         console.log("qwe")
     })
 

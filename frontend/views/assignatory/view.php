@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /* @var $model app\models\Assignatory */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Assignatories', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Asignatories', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
