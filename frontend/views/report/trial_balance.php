@@ -297,7 +297,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_
             e.preventDefault();
             $.ajax({
                 type: 'POST',
-                url: window.location.pathname + '?r=report/trial',
+                url: window.location.pathname + '?r=report/trial-balance',
                 data: $('#filter').serialize(),
                 success: function(data) {
                     var res = JSON.parse(data)

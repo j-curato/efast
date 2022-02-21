@@ -50,4 +50,9 @@ class JevBeginningBalance extends \yii\db\ActiveRecord
     {
         return $this->hasMany(JevBeginningBalanceItem::class, ['jev_beginning_balance_id' => 'id']);
     }
+    public function getBook()
+    {
+        
+        return $this->hasOne(Books::class,['id'=>'book_id']);
+    }
 }

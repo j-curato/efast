@@ -18,19 +18,20 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Create Jev Beginning Balance', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'year',
-            'object_code',
-            'amount',
-            'book_id',
+            [
+                'label' => 'Book',
+                'attribute' => 'book_id',
+                'value' => 'book.name'
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

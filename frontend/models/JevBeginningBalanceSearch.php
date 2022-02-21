@@ -17,7 +17,8 @@ class JevBeginningBalanceSearch extends JevBeginningBalance
     public function rules()
     {
         return [
-            [['id', 'year', 'book_id'], 'integer'],
+            [['id', 'year'], 'integer'],
+            [['book_id'], 'safe'],
         ];
     }
 
@@ -54,14 +55,14 @@ class JevBeginningBalanceSearch extends JevBeginningBalance
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->joinWith('book');
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
             'year' => $this->year,
         ]);
 
-        $query->andFilterWhere(['like', 'book_id', $this->book_id]);
+        $query->andFilterWhere(['like', 'books.name', $this->book_id]);
 
         return $dataProvider;
     }

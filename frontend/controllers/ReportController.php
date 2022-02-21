@@ -57,6 +57,7 @@ class ReportController extends \yii\web\Controller
                     'annex3',
                     'annex-A',
                     'raaf',
+                    'trial-balance'
 
                 ],
                 'rules' => [
@@ -74,6 +75,7 @@ class ReportController extends \yii\web\Controller
                             'temp-import',
                             'detailed-dv-aucs',
                             'conso-detailed-dv',
+                            'trial-balance'
 
 
                         ],
@@ -2996,7 +2998,7 @@ class ReportController extends \yii\web\Controller
         $tracking_number = 'SDS' . '-' . trim($responsibility_center['name']) . '-' . $date . '-' . $final_number;
         return  $tracking_number;
     }
-    public function actionTrial()
+    public function actionTrialBalance()
     {
         if ($_POST) {
             $to_reporting_period = $_POST['reporting_period'];
@@ -3080,74 +3082,74 @@ class ReportController extends \yii\web\Controller
 
         return $this->render('trial_balance');
     }
-    public function actionSubTrial()
-    {
-        if ($_POST) {
-            $to_reporting_period = $_POST['reporting_period'];
-            $r_period_date = DateTime::createFromFormat('Y-m', $to_reporting_period);
-            $month  = $r_period_date->format('F Y');
-            $year = $r_period_date->format('Y');
-            $from_reporting_period = $year . '-01';
-            $book_id  = $_POST['book_id'];
-            $query = Yii::$app->db->createCommand("SELECT 
-            accounting_codes.object_code,
-            accounting_codes.account_title as account_title,
-            accounting_codes.normal_balance,
-            (CASE
-            WHEN accounting_codes.normal_balance = 'Debit' THEN accounting_entries.debit - accounting_entries.credit
-            ELSE accounting_entries.credit - accounting_entries.debit
-            END) as total_debit_credit,
-            beginning_balance.total_beginning_balance as begin_balance
-            
-            FROM (
-            SELECT
-            jev_accounting_entries.object_code
-            FROM jev_accounting_entries 
-            LEFT JOIN jev_preparation ON jev_accounting_entries.jev_preparation_id = jev_preparation.id
-            WHERE 
-             jev_preparation.book_id = :book_id
-            AND jev_preparation.reporting_period <= :to_reporting_period
-            GROUP BY jev_accounting_entries.object_code
-            ) as jev_object_codes
-            LEFT JOIN (SELECT
-            
-            SUM(jev_accounting_entries.debit) as debit,
-            SUM(jev_accounting_entries.credit) as credit,
-            jev_accounting_entries.object_code 
-            FROM jev_accounting_entries 
-            LEFT JOIN jev_preparation ON jev_accounting_entries.jev_preparation_id = jev_preparation.id
-            WHERE 
-             jev_preparation.book_id = :book_id
-            AND jev_preparation.reporting_period >= :from_reporting_period
-            AND jev_preparation.reporting_period <= :to_reporting_period
-            GROUP BY jev_accounting_entries.object_code) as accounting_entries ON jev_object_codes.object_code = accounting_entries.object_code
-            LEFT JOIN (SELECT 
-                accounting_codes.object_code,
-                (CASE
-                    WHEN accounting_codes.normal_balance = 'Debit' THEN jev_beginning_balance_item.debit  - jev_beginning_balance_item.credit
-                    ELSE jev_beginning_balance_item.credit - jev_beginning_balance_item.debit
-                END) as total_beginning_balance
-                FROM jev_beginning_balance_item 
-              LEFT JOIN jev_beginning_balance ON jev_beginning_balance_item.jev_beginning_balance_id =jev_beginning_balance.id
-              LEFT JOIN accounting_codes ON jev_beginning_balance_item.object_code = accounting_codes.object_code
-              LEFT JOIN books ON jev_beginning_balance.book_id = books.id
-              WHERE 
-                    jev_beginning_balance.`year` = :_year
-                AND jev_beginning_balance.book_id = :book_id) as beginning_balance ON jev_object_codes.object_code = beginning_balance.object_code
-            LEFT JOIN accounting_codes ON jev_object_codes.object_code = accounting_codes.object_code
-            
-            WHERE accounting_entries.debit IS NOT NULL
-            OR accounting_entries.credit IS NOT NULL
-            OR beginning_balance.total_beginning_balance IS NOT NULL")
-                ->bindValue(':from_reporting_period', $from_reporting_period)
-                ->bindValue(':to_reporting_period', $to_reporting_period)
-                ->bindValue(':book_id', $book_id)
-                ->bindValue(':_year', $year)
-                ->queryAll();
-            return json_encode($query);
-        }
-        return $this->render('subsidiary_trial_balance');
-    }
+    // public function actionSubTrial()
+    // {
+    //     if ($_POST) {
+    //         $to_reporting_period = $_POST['reporting_period'];
+    //         $r_period_date = DateTime::createFromFormat('Y-m', $to_reporting_period);
+    //         $month  = $r_period_date->format('F Y');
+    //         $year = $r_period_date->format('Y');
+    //         $from_reporting_period = $year . '-01';
+    //         $book_id  = $_POST['book_id'];
+    //         $query = Yii::$app->db->createCommand("SELECT 
+    //         accounting_codes.object_code,
+    //         accounting_codes.account_title as account_title,
+    //         accounting_codes.normal_balance,
+    //         (CASE
+    //         WHEN accounting_codes.normal_balance = 'Debit' THEN accounting_entries.debit - accounting_entries.credit
+    //         ELSE accounting_entries.credit - accounting_entries.debit
+    //         END) as total_debit_credit,
+    //         beginning_balance.total_beginning_balance as begin_balance
+
+    //         FROM (
+    //         SELECT
+    //         jev_accounting_entries.object_code
+    //         FROM jev_accounting_entries 
+    //         LEFT JOIN jev_preparation ON jev_accounting_entries.jev_preparation_id = jev_preparation.id
+    //         WHERE 
+    //          jev_preparation.book_id = :book_id
+    //         AND jev_preparation.reporting_period <= :to_reporting_period
+    //         GROUP BY jev_accounting_entries.object_code
+    //         ) as jev_object_codes
+    //         LEFT JOIN (SELECT
+
+    //         SUM(jev_accounting_entries.debit) as debit,
+    //         SUM(jev_accounting_entries.credit) as credit,
+    //         jev_accounting_entries.object_code 
+    //         FROM jev_accounting_entries 
+    //         LEFT JOIN jev_preparation ON jev_accounting_entries.jev_preparation_id = jev_preparation.id
+    //         WHERE 
+    //          jev_preparation.book_id = :book_id
+    //         AND jev_preparation.reporting_period >= :from_reporting_period
+    //         AND jev_preparation.reporting_period <= :to_reporting_period
+    //         GROUP BY jev_accounting_entries.object_code) as accounting_entries ON jev_object_codes.object_code = accounting_entries.object_code
+    //         LEFT JOIN (SELECT 
+    //             accounting_codes.object_code,
+    //             (CASE
+    //                 WHEN accounting_codes.normal_balance = 'Debit' THEN jev_beginning_balance_item.debit  - jev_beginning_balance_item.credit
+    //                 ELSE jev_beginning_balance_item.credit - jev_beginning_balance_item.debit
+    //             END) as total_beginning_balance
+    //             FROM jev_beginning_balance_item 
+    //           LEFT JOIN jev_beginning_balance ON jev_beginning_balance_item.jev_beginning_balance_id =jev_beginning_balance.id
+    //           LEFT JOIN accounting_codes ON jev_beginning_balance_item.object_code = accounting_codes.object_code
+    //           LEFT JOIN books ON jev_beginning_balance.book_id = books.id
+    //           WHERE 
+    //                 jev_beginning_balance.`year` = :_year
+    //             AND jev_beginning_balance.book_id = :book_id) as beginning_balance ON jev_object_codes.object_code = beginning_balance.object_code
+    //         LEFT JOIN accounting_codes ON jev_object_codes.object_code = accounting_codes.object_code
+
+    //         WHERE accounting_entries.debit IS NOT NULL
+    //         OR accounting_entries.credit IS NOT NULL
+    //         OR beginning_balance.total_beginning_balance IS NOT NULL")
+    //             ->bindValue(':from_reporting_period', $from_reporting_period)
+    //             ->bindValue(':to_reporting_period', $to_reporting_period)
+    //             ->bindValue(':book_id', $book_id)
+    //             ->bindValue(':_year', $year)
+    //             ->queryAll();
+    //         return json_encode($query);
+    //     }
+    //     return $this->render('subsidiary_trial_balance');
+    // }
     // GENERAL LEDGER NI FINAL
     // public function actionGenLed()
     // {
