@@ -309,7 +309,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_
     })
 
     function displayResultData(data) {
-
+        console.log(data)
         $("#data_table tbody").html('')
         let total_debit = 0;
         let total_credit = 0;

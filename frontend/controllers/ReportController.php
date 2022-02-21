@@ -3064,10 +3064,10 @@ class ReportController extends \yii\web\Controller
             LEFT JOIN chart_of_accounts ON jev_object_codes.obj_code = chart_of_accounts.uacs
             
             WHERE 
-            accounting_entries.debit  IS NOT NULL
-            OR accounting_entries.credit IS NOT NULL 
-            OR
-            begin_balance.total_beginning_balance IS NOT NULL
+            (CASE
+            WHEN chart_of_accounts.normal_balance = 'Debit' THEN IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.debit,0) - IFNULL(accounting_entries.credit,0))
+            ELSE IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.credit,0) - IFNULL(accounting_entries.debit,0))
+            END) >0
             ")
                 ->bindValue(':_year', $year)
                 ->bindValue(':to_reporting_period', $to_reporting_period)
