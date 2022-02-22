@@ -2807,7 +2807,7 @@ class JevPreparationController extends Controller
         accounting_entries.*,
         chart_of_accounts.normal_balance,
         (CASE 
-        WHEN chart_of_accounts.normal_balance <= 'Debit' THEN accounting_entries.debit - accounting_entries.credit
+        WHEN chart_of_accounts.normal_balance = 'Debit' THEN accounting_entries.debit - accounting_entries.credit
          ELSE accounting_entries.credit - accounting_entries.debit
         END) as total
         FROM(
