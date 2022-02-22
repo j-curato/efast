@@ -405,9 +405,9 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
 
         console.log(beginning_balance)
 
-        let beginning_balance_debit = parseFloat(beginning_balance.debit)
-        let beginning_balance_credit = parseFloat(beginning_balance.credit)
-        let total_beginning_balance = parseFloat(beginning_balance.beginning_balance_total)
+        let beginning_balance_debit =beginning_balance.debit!=null? parseFloat(beginning_balance.debit):0
+        let beginning_balance_credit =beginning_balance.debit!=null? parseFloat(beginning_balance.credit):0
+        let total_beginning_balance = beginning_balance.debit!=null?parseFloat(beginning_balance.beginning_balance_total):0
         var row = `<tr>
                 <td></td>
                 <td></td>
