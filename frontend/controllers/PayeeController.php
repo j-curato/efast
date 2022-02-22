@@ -254,17 +254,17 @@ class PayeeController extends Controller
         $out = ['results' => ['id' => '', 'text' => '']];
         if ($id > 0) {
             $out['results'] = ['id' => $id, 'text' => Payee::findOne($id)->account_name];
-        }
-       else if (!is_null($q)) {
+        } else if (!is_null($q)) {
             $query = new Query();
             $query->select('payee.id, payee.account_name AS text')
                 ->from('payee')
-                ->where(['like', 'payee.account_name', $q]);
+                ->where(['like', 'payee.account_name', $q])
+                ->andWhere('payee.isEnable = 1');
 
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
-        } 
+        }
         return $out;
     }
 }

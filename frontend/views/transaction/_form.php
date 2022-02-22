@@ -16,21 +16,21 @@ use kartik\select2\Select2;
 
     <?php
     $r_center = (new \yii\db\Query())->select('*')
-    ->from('responsibility_center');
-    
-   
+        ->from('responsibility_center');
+
+
     $user = Yii::$app->user->identity->province;
     if (
-        strtolower($user)==='ro_idd'||
-        strtolower($user)==='ro_sdd'||
-        strtolower($user)==='ro_ord'||
-        strtolower($user)==='ro_cpd'
-    
-    ){
-        $r_center->where('name LIKE :name',['name'=>explode('_',$user)[1]]);
+        strtolower($user) === 'ro_idd' ||
+        strtolower($user) === 'ro_sdd' ||
+        strtolower($user) === 'ro_ord' ||
+        strtolower($user) === 'ro_cpd'
+
+    ) {
+        $r_center->where('name LIKE :name', ['name' => explode('_', $user)[1]]);
     }
-    $respons_center=$r_center->all();
-    $payee = (new \yii\db\Query())->select('*')->from('payee')->all();
+    $respons_center = $r_center->all();
+    $payee = (new \yii\db\Query())->select('*')->from('payee')->where('isEnable=1')->all();
     ?>
 
     <?php $form = ActiveForm::begin(); ?>
@@ -71,7 +71,7 @@ use kartik\select2\Select2;
 
     <div class="row">
         <div class="col-sm-4">
-            <?= $form->field($model, 'tracking_number')->textInput(['maxlength' => true,'readOnly'=>true]) ?>
+            <?= $form->field($model, 'tracking_number')->textInput(['maxlength' => true, 'readOnly' => true]) ?>
 
         </div>
         <div class="col-sm-4">
