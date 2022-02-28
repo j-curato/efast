@@ -13,13 +13,24 @@ $this->title = $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'RAO', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+$color = 'danger';
+if ($model->is_final === 1) {
+    $color = 'success';
+}
 ?>
 <div class="ro-rao-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Update', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=ro-rao/update&id=' . $model->id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Update', [
+            'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=ro-rao/update&id=' . $model->id),
+            'id' => 'modalButtoncreate', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
+        ]); ?>
+
+
+        <button class="final btn btn-<?= $color ?>" id="final">Final </button>
+
     </p>
 
     <?php
@@ -89,3 +100,25 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); ?>
 
 </div>
+
+<script>
+    $(document).ready(function() {
+
+
+        $('#final').click(function(e) {
+            e.preventDefault()
+            $.ajax({
+                type: 'POST',
+                url: window.location.pathname + '?r=ro-rao/final',
+                data: {
+                    id: <?= $model->id ?>
+                },
+                success: function(data) {
+                    location.reload(true)
+                 
+
+                }
+            })
+        })
+    })
+</script>
