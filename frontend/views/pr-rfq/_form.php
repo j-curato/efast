@@ -145,6 +145,70 @@ if (!empty($model->pr_purchase_request_id)) {
 
             </div>
             <?= $form->field($model, 'project_location')->textarea() ?>
+            <table id="pr_data" class="table" style="margin-top: 3rem;margin-bottom:3rem">
+                <tbody>
+                    <tr>
+                        <td>
+                            <span class='pr_data_header'>
+                                Date Propose:
+                            </span>
+                            <span id="date_propose"></span>
+                        </td>
+                        <td>
+                            <span class='pr_data_header'> PR Number:</span>
+                            <span id="pr_number"></span>
+                        </td>
+                        <td>
+                            <span class='pr_data_header'> Book:</span>
+                            <span id="book"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <span class='pr_data_header'>
+                                Project Title:
+                            </span>
+                            <span id="project_title"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <span class='pr_data_header'>
+                                Purpose:
+                            </span>
+                            <span id="purpose"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class='pr_data_header'>Office:</span>
+                            <span id="office"></span>
+                        </td>
+                        <td>
+                            <span class='pr_data_header'>Division:</span>
+                            <span id="division"></span>
+                        </td>
+                        <td>
+                            <span class='pr_data_header'>Unit:</span>
+                            <span id="unit"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class='pr_data_header'>Prepared By:</span>
+                            <span id="prepared_by"></span>
+                        </td>
+                        <td>
+                            <span class='pr_data_header'>Requested By:</span>
+                            <span id="requested_by"></span>
+                        </td>
+                        <td>
+                            <span class='pr_data_header'>Approved By:</span>
+                            <span id="approved_by"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             <table id="data-table" class="table table-striped">
                 <thead>
                     <th>Checkbox</th>
@@ -172,7 +236,9 @@ if (!empty($model->pr_purchase_request_id)) {
 </div>
 
 <style>
-
+    .pr_data_header {
+        font-weight: bold;
+    }
 </style>
 <script>
     var csrfToken = $('meta[name="csrf-token"]').attr("content");
@@ -191,33 +257,47 @@ if (!empty($model->pr_purchase_request_id)) {
             success: function(data) {
                 $('#data-table tbody').html('')
                 var res = JSON.parse(data)
-                for (var i = 0; i < res.length; i++) {
-                    var myStr = res[i]['specification']
+                console.log(res.pr_data)
+                $('#date_propose').text(res.pr_data['date_propose'])
+                $('#pr_number').text(res.pr_data['pr_number'])
+                $('#book').text(res.pr_data['book_name'])
+                $('#project_title').text(res.pr_data['project_title'])
+                $('#purpose').text(res.pr_data['purpose'])
+                $('#office').text(res.pr_data['office'])
+                $('#division').text(res.pr_data['division'])
+                $('#unit').text(res.pr_data['unit'])
+                $('#prepared_by').text(res.pr_data['prepared_by'])
+                $('#requested_by').text(res.pr_data['requested_by'])
+                $('#approved_by').text(res.pr_data['approved_by'])
+
+
+                for (var i = 0; i < res.pr_items_data.length; i++) {
+                    var myStr = res.pr_items_data[i]['specification']
                     var row = `
                         <tr>
                             <td>
-                                <input type='checkbox' class='form-check-input' value='${res[i]['pr_item_id']}' name='pr_purchase_request_item_id[]' data-value = '${res[i]['pr_item_id']}'>
+                                <input type='checkbox' class='form-check-input' value='${res.pr_items_data[i]['pr_item_id']}' name='pr_purchase_request_item_id[]' data-value = '${res.pr_items_data[i]['pr_item_id']}'>
                             </td>
                             <td>
-                                ${res[i]['bac_code']}
+                                ${res.pr_items_data[i]['bac_code']}
                             </td>
                             <td>
-                                ${res[i]['stock_title']}
+                                ${res.pr_items_data[i]['stock_title']}
                             </td>
                             <td>
-                                ${res[i]['unit_of_measure']}
+                                ${res.pr_items_data[i]['unit_of_measure']}
                             </td>
                             <td>
-                                ${res[i]['specification']}
+                                ${res.pr_items_data[i]['specification']}
                             </td>
                             <td>
-                                ${res[i]['unit_cost']}
+                                ${res.pr_items_data[i]['unit_cost']}
                             </td> 
                             <td>
-                                ${res[i]['quantity']}
+                                ${res.pr_items_data[i]['quantity']}
                             </td>
                             <td>
-                                ${res[i]['total_cost']}
+                                ${res.pr_items_data[i]['total_cost']}
                             </td>
                         </tr>
                         
@@ -225,6 +305,9 @@ if (!empty($model->pr_purchase_request_id)) {
                     $('#data-table tbody').append(row)
 
                 }
+
+
+
                 var itms = <?php echo $items ?>;
 
 
@@ -265,10 +348,6 @@ if (!empty($model->pr_purchase_request_id)) {
         //     prItems()
         // }
     })
-
-    function checkItems(pr_items) {
-
-    }
 </script>
 
 <?php
@@ -280,9 +359,7 @@ $script = <<<JS
             var pr_items = $items
             var item_id = ''
             if ( prItems()){
-                checkItems(pr_items)
                 var rowCount = $('#data-table tr').length
-            //   console.log(rowCount)
             }
 
         }

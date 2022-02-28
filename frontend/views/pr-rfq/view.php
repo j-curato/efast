@@ -141,7 +141,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         WHERE
                         bac_composition_member.bac_composition_id = :bac_composition_id
                         AND bac_position.position = 'chairperson'
-                         ")->bindValue(':bac_composition_id', $model->rbac_composition_id)
+                         ")->bindValue(':bac_composition_id', $model->bac_composition_id)
                             ->queryOne();
 
                         ?>

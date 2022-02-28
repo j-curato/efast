@@ -100,13 +100,21 @@ class PrRfqController extends Controller
     {
 
         foreach ($pr_purchase_request_item_id as $val) {
-            $rfq_item = new PrRfqItem();
-            $rfq_item->pr_rfq_id = $model_id;
-            $rfq_item->pr_purchase_request_item_id = $val;
-            if ($rfq_item->save(false)) {
-            } else {
-                var_dump($pr_purchase_request_item_id->error);
-                return false;
+            // CHECK IF THE PURCHASE REQUEST ID ALREADY EXISTS IN PR_RFQ_ITEM_TABLE WITH THE SAME RFQ_ID
+            $check = Yii::$app->db->createCommand("SELECT EXISTS(SELECT 1 FROM pr_rfq_item WHERE pr_rfq_id = :rfq_id AND pr_purchase_request_item_id  = :pr_item_id)")
+                ->bindValue(':rfq_id', $model_id)
+                ->bindValue(':pr_item_id', $val)
+                ->queryScalar();
+            if ($check != 1) {
+
+                $rfq_item = new PrRfqItem();
+                $rfq_item->pr_rfq_id = $model_id;
+                $rfq_item->pr_purchase_request_item_id = $val;
+                if ($rfq_item->save(false)) {
+                } else {
+                    var_dump($pr_purchase_request_item_id->error);
+                    return false;
+                }
             }
         }
         return true;
@@ -167,7 +175,7 @@ class PrRfqController extends Controller
 
                 ]);
             }
-            $model->rbac_composition_id = $rbac_id['id'];
+            $model->bac_composition_id = $rbac_id['id'];
 
             $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             $model->province = $province;
@@ -215,6 +223,7 @@ class PrRfqController extends Controller
             $transaction = Yii::$app->db->beginTransaction();
 
             $pr_purchase_request_item_id = [];
+            $rfq_items_id = !empty($_POST['rfq_items_id']) ? $_POST['rfq_items_id'] : [];
             if (!empty($_POST['pr_purchase_request_item_id'])) {
                 $pr_purchase_request_item_id = $_POST['pr_purchase_request_item_id'];
             }
@@ -256,14 +265,31 @@ class PrRfqController extends Controller
                     'error' => 'No RBAC Composition For Selected Date',
                 ]);
             }
-
-
-
-            Yii::$app->db->createCommand("DELETE 
-             FROM pr_rfq_item WHERE pr_rfq_id = :id")
+            // return json_encode(is_array($pr_purchase_request_item_id));
+            $params = [];
+            $and = '';
+            if (count($pr_purchase_request_item_id) > 1) {
+                $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'pr_rfq_item.pr_purchase_request_item_id', $pr_purchase_request_item_id], $params);
+                $and = 'AND';
+            } else if (count($pr_purchase_request_item_id) === 1) {
+                $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['!=', 'pr_rfq_item.pr_purchase_request_item_id', $pr_purchase_request_item_id[0]], $params);
+                $and = 'AND';
+            } else {
+                $sql = '';
+            }
+            $q = Yii::$app->db->createCommand("DELETE pr_rfq_item FROM pr_rfq_item 
+            LEFT JOIN pr_aoq_entries  ON pr_rfq_item.id = pr_aoq_entries.pr_rfq_item_id
+            WHERE pr_rfq_item.pr_rfq_id = :id AND pr_aoq_entries.id IS NULL $and $sql", $params)
                 ->bindValue(':id', $model->id)
-                ->query();
+                ->execute();
+            ;
 
+            // $q =  \Yii::$app
+            //     ->db
+            //     ->createCommand()
+            //     ->delete('pr_rfq_item', ['pr_rfq_id' => $model->id, 'pr_purchase_r  NOT IN' => $pr_purchase_request_item_id], $params);
+            // return json_encode($sql);
+            // return json_encode($q->getRawSql());
             try {
                 if ($flag = $model->save(false)) {
 
