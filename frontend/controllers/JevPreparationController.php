@@ -1463,6 +1463,7 @@ class JevPreparationController extends Controller
             $ref_number = !empty($_POST['reference']) ? $_POST['reference'] : '';
             $ada_number = !empty($_POST['ada_number']) ? $_POST['ada_number'] : '';
             $book_id = !empty($_POST['book']) ? $_POST['book'] : '';
+            $entry_type = !empty($_POST['entry_type']) ? $_POST['entry_type'] : '';
 
             $total_debit = round(array_sum($_POST['debit']), 2);
             $total_credit = round(array_sum($_POST['credit']), 2);
@@ -1567,6 +1568,7 @@ class JevPreparationController extends Controller
                 $jev_preparation->check_ada_number = $ada_number;
                 $jev_preparation->check_ada_date = $check_ada_date;
                 $jev_preparation->book_id = $book_id;
+                $jev_preparation->entry_type = $entry_type;
                 $jev_preparation->cash_disbursement_id = $_POST['dv'];
 
 
@@ -2196,6 +2198,7 @@ class JevPreparationController extends Controller
                 'check_ada_date' => $model->check_ada_date,
                 'book_id' => $model->book_id,
                 'cash_disbursement_id' => $model->cash_disbursement_id,
+                'entry_type' => $model->entry_type,
 
             ];
             $jev_ae =  Yii::$app->db->createCommand("SELECT 

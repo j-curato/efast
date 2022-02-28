@@ -17,7 +17,7 @@ class PrRfqSearch extends PrRfq
     public function rules()
     {
         return [
-            [['id', 'pr_purchase_request_id', 'rbac_composition_id'], 'integer'],
+            [['id', 'pr_purchase_request_id', 'bac_composition_id'], 'integer'],
             [['rfq_number', '_date', 'employee_id', 'created_at'], 'safe'],
         ];
     }
@@ -61,7 +61,7 @@ class PrRfqSearch extends PrRfq
             'id' => $this->id,
             'pr_purchase_request_id' => $this->pr_purchase_request_id,
             '_date' => $this->_date,
-            'rbac_composition_id' => $this->rbac_composition_id,
+            'bac_composition_id' => $this->bac_composition_id,
             'created_at' => $this->created_at,
         ]);
 

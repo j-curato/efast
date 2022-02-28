@@ -98,9 +98,10 @@ class CibrController extends Controller
 
     {
         $model = $this->findModel($id);
-        $dataProvider = Yii::$app->db->createCommand('CALL cibr_function(:province,:reporting_period)')
+        $dataProvider = Yii::$app->db->createCommand('CALL cibr_function(:province,:reporting_period,:bank_account_id)')
             ->bindValue(':reporting_period', $model->reporting_period)
             ->bindValue(':province', $model->province)
+            ->bindValue(':bank_account_id',   $model->bank_account_id)
             ->queryAll();
 
         $q1 = Yii::$app->db->createCommand("SELECT 

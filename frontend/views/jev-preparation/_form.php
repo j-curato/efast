@@ -69,6 +69,13 @@ use yii\helpers\ArrayHelper;
                 <label for="total_disbursed"> Total Disbursed</label>
                 <h4 id="total_disbursed"></h4>
             </div>
+            <div class="col-sm-3">
+                <label for="entry_type">Entry Type</label>
+                <select name="entry_type" id="entry_type" class="entry_type" required style="width: 100%;">
+
+                    <option></option>
+                </select>
+            </div>
 
         </div>
         <div class="row">
@@ -540,7 +547,6 @@ use yii\helpers\ArrayHelper;
             // $("#cashflow-" + x).val(cashflow).trigger('change');
             // var jev_length = jev_accounting_entries.length - 1;
 
-            console.log(x)
             if (x > 0) {
                 add()
             }
@@ -570,7 +576,14 @@ use yii\helpers\ArrayHelper;
     }
     $(document).ready(function() {
         i = 1
-        console.log(update_id)
+        let entry_types = [
+            'Closing',
+            'Non-Closing'
+        ]
+        $('#entry_type').select2({
+            data: entry_types,
+            placeholder: 'Select Entry Type'
+        })
         getResponsibilityCenters().then(function(data) {
             var array = []
             $.each(data, function(key, val) {
@@ -722,6 +735,7 @@ use yii\helpers\ArrayHelper;
                     var dvSelect = $("#dv")
                     if (jev['cash_disbursement_id'] == null) {
                         $('#reporting_period').val(jev['reporting_period'])
+                        $('#entry_type').val(jev['entry_type']).trigger('change')
                         $('#check_ada_date').val(jev['check_ada_date'])
                         $('#particular').val(jev['explaination'])
                         $('#date').val(jev['date'])
@@ -762,7 +776,6 @@ use yii\helpers\ArrayHelper;
         }
         // INSERT ACCOUNTING ENTRIES IF NAA SULOD ANG ENTRIES
         if (dv_entries.length > 0) {
-            console.log(dv_entries)
             for (var x = 0; x < dv_entries.length; x++) {
                 var chartSelect = $("#chart-" + x);
                 // $("#chart-" + x).val(dv_entries[x]['object_code']).trigger('change');
@@ -817,7 +830,6 @@ use yii\helpers\ArrayHelper;
                     // }
                     addAccountingEntries(res)
                     add()
-                    console.log(total_gross)
                     $("#credit-" + x).val(parseFloat(total_gross).toFixed(2))
                     $("#chart-" + x).val(d.account['object_code']).trigger('change');
                     x++
@@ -1010,7 +1022,6 @@ $script = <<< JS
 
                     var x=0
                     var dv_accounting_entries = res.dv_accounting_entries;
-                    console.log(dv_accounting_entries)
                     addAccountingEntries(dv_accounting_entries)
                             // for (x; x<dv_accounting_entries.length;x++){
                             //     $("#debit-"+x).val(dv_accounting_entries[x]['debit'])
@@ -1084,7 +1095,7 @@ $script = <<< JS
     //     // KUNG NAAY SULOD ANG UPDATE ID KUHAON ANG IYANG MGA DATA
    
 
-    // })
+    // })220436.96
 
      $(document).ready(function() { 
   

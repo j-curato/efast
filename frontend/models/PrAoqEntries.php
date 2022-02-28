@@ -30,7 +30,7 @@ class PrAoqEntries extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['pr_aoq_id', 'payee_id', 'is_lowest'], 'integer'],
+            [['pr_aoq_id', 'payee_id', 'is_lowest', 'pr_rfq_item_id'], 'integer'],
             [['amount'], 'number'],
             [['remark'], 'string'],
         ];
@@ -48,6 +48,16 @@ class PrAoqEntries extends \yii\db\ActiveRecord
             'amount' => 'Amount',
             'remark' => 'Remark',
             'is_lowest' => 'Is Lowest',
+            'pr_rfq_item_id' => 'RFQ Item',
         ];
+    }
+    public function getPayee()
+    {
+
+        return $this->hasOne(Payee::class, ['id' => 'payee_id']);
+    }
+    public function getPrRfqItem()
+    {
+        return $this->hasOne(PrRfqItem::class, ['id' => 'pr_rfq_item_id']);
     }
 }

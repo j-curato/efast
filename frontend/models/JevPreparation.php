@@ -41,7 +41,7 @@ class JevPreparation extends \yii\db\ActiveRecord
             [['book_id', 'reporting_period', 'date', 'jev_number', 'explaination', 'ref_number'], 'required'],
             [['responsibility_center_id', 'fund_cluster_code_id', 'cash_flow_id', 'payee_id', 'book_id'], 'integer'],
             [['date'], 'safe'],
-            [['reporting_period'], 'string', 'max' => 50],
+            [['reporting_period','entry_type'], 'string', 'max' => 50],
             [['jev_number', 'dv_number', 'lddap_number', 'ref_number'], 'string', 'max' => 100],
             [['explaination',], 'string', 'max' => 1000],
             [['jev_number',], 'unique'],

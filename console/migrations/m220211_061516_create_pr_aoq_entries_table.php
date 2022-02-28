@@ -18,7 +18,8 @@ class m220211_061516_create_pr_aoq_entries_table extends Migration
             'payee_id' => $this->integer(),
             'amount' => $this->decimal(10, 2),
             'remark' => $this->text(),
-            'is_lowest'=>$this->boolean()->defaultValue(0)
+            'is_lowest' => $this->boolean()->defaultValue(0),
+            'pr_rfq_item_id'=>$this->integer()
 
         ]);
     }

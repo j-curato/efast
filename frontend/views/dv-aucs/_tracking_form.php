@@ -133,7 +133,8 @@ if (!empty($model->id)) {
                         'id' => 'date_receive',
                         'value' => $date_receive,
                         'options' => [
-                            'style' => 'background-color:white'
+                            'style' => 'background-color:white',
+                            'required' => true
                         ],
                         'pluginOptions' => [
                             'format' => 'yyyy-mm-dd HH:ii P',
@@ -506,7 +507,7 @@ $csrfToken = Yii::$app->request->csrfToken;
     var update_id = undefined;
     var cashflow = [];
     var accounts = [];
-    var row = 1
+
 
     function enableDisable(checkbox) {
         var isDisable = true
@@ -791,6 +792,7 @@ $csrfToken = Yii::$app->request->csrfToken;
 
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/module_js_css/dvAucs/dv_aucs.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 SweetAlertAsset::register($this); ?>
 <?php
 
@@ -812,46 +814,6 @@ $script = <<< JS
         })
 
     
-    $("#transaction").change(function(){
-
-
-          
-        var transaction_type=$("#transaction").val()
-        $("#transaction_type").val(transaction_type)
-        // var result=[]
-        
-
-
-
-        var result = [
-            {"serial_number":"",
-            "transaction_particular":"",
-            "transaction_payee":"",
-            "total":""}
-        ];
-        var count=$('#transaction_table tbody tr').length
-
-        if (transaction_type !='Single'  && transaction_type !='Multiple' && count -1<0){
-            addDvToTable(result,row)
-        }
-        if(transaction_type=='Multiple'){
-            $('#particular').attr('readonly',false)
-        }
-        else{
-            // $('#particular').attr('readonly',true)
-            // $('#particular').val('')
-        }
-     
-        if (transaction_type==='No Ors' || transaction_type ==='Accounts Payable' ){
-            $("#bok").show();
-            $("#book").prop('required',true);
-        }   
-        else{
-            $("#bok").hide();
-            $("#book").prop('required',false);
-            
-        }
-    })
 
 
 
@@ -866,7 +828,7 @@ $script = <<< JS
                  "Multiple",
                 "Accounts Payable",
                 "Replacement to Stale Checks",
-                'Replacement of Check Issued'
+               'Replacement of Check Issued'
         ]
             $('#transaction').select2({
                 data: transaction,
@@ -877,7 +839,11 @@ $script = <<< JS
             // INSERT ANG DATA SA DATABASE
            
                 var _transaction_type = "{$transaction_type}";
+                if (_transaction_type=='Replacement of Check Issued'){
+            console.log('yawa')
+                }
            if(_transaction_type !=''){
+                console.log(_transaction_type)
             $('#transaction').val(_transaction_type).trigger('change')
            }
 

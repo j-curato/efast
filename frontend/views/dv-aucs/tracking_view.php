@@ -220,7 +220,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <td style="width: 230px;" class="bold">Accounting Staff <br>
                         <span class="note">
-                            (Date and Time for Acknowledgin Reciept of DV's with complete documents)
+                            (Date and Time for Acknowledgin Receipt of DV's with complete documents)
                         </span>
                     <td>
                         <?php
@@ -275,7 +275,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td></td>
                 </tr>
                 <tr>
-                    <td colspan="5" class="bold"><span>Note: Accounting Staff,then encodes to the web-based system the time-in and time-out from Accountants II and II, before Forwarding the DV's for RD's Signature. The "Process DV" module Shall be used for this.</span></td>
+                    <td colspan="5" class="bold"><span>Note: Accounting Staff,then encodes to the web-based system the time-in and time-out from Accountants II and III, before Forwarding the DV's for RD's Signature. The "Process DV" module Shall be used for this.</span></td>
 
                 </tr>
                 <tr>
@@ -289,7 +289,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             Cashier
                         </span>
                         <br>
-                        <span class="note">(Date and Time for Acknowledging Reciept of Approved DV from RD)</span>
+                        <span class="note">(Date and Time for Acknowledging Receipt of Approved DV from RD)</span>
                     </td>
                     <td><?php
 
@@ -383,7 +383,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>
 
                         <i class="glyphicon glyphicon-unchecked"></i>
-                        <span>Delivery Reciept</span>
+                        <span>Delivery Receipt</span>
                     </td>
                     <td>
 
@@ -471,7 +471,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>
 
                         <i class="glyphicon glyphicon-unchecked"></i>
-                        <span>Property Acknowledgement Reciept</span>
+                        <span>Property Acknowledgement Receipt</span>
                     </td>
                     <td>
 

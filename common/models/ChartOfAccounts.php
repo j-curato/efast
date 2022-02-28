@@ -2,6 +2,10 @@
 
 namespace common\models;
 
+use app\models\LiquidationEntries;
+use app\models\MajorAccounts;
+use app\models\RaoudEntries;
+use app\models\SubMajorAccounts;
 use Yii;
 
 /**
@@ -45,7 +49,7 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['uacs', 'general_ledger', 'major_account_id', 'sub_major_account', 'sub_major_account_2_id', 'account_group', 'current_noncurrent', 'enable_disable'], 'required'],
+            [['uacs', 'general_ledger', 'major_account_id', 'sub_major_account', 'sub_major_account_2_id', 'account_group', 'current_noncurrent', 'enable_disable','normal_balance'], 'required'],
             [['major_account_id', 'sub_major_account', 'sub_major_account_2_id', 'is_active'], 'integer'],
             [['uacs'], 'string', 'max' => 30],
             [['general_ledger', 'account_group', 'current_noncurrent', 'enable_disable'], 'string', 'max' => 255],

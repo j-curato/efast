@@ -403,7 +403,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
 
     function displayData(beginning_balance, general_ledger) {
 
-        console.log(beginning_balance)
+        console.log(general_ledger)
 
         let beginning_balance_debit =beginning_balance.debit!=null? parseFloat(beginning_balance.debit):0
         let beginning_balance_credit =beginning_balance.debit!=null? parseFloat(beginning_balance.credit):0

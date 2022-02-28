@@ -193,13 +193,13 @@ if (!empty($model->id)) {
 
                                             <input type='hidden' name='pr_item_id[$i]'  class = 'pr_item_id' value='{$val->id}'>
                                             <div class='row' >
-                                                <div class='col-sm-6'>
+                                                <div class='col-sm-4'>
                                                     <label for='stocks'>Stock</label>
                                                     <select required name='pr_stocks_id[$i]' class='stocks' style='width: 100%'>
                                                     <option value= '$val->pr_stock_id'>{$val->stock->stock_title}</option>
                                                     </select>
                                                 </div>
-                                                <div class='col-sm-4'>
+                                                <div class='col-sm-3'>
                                                 <label for='unit_of_measure'>Unit of Measure</label>
                                                 <select required name='unit_of_measure_id[$i]' class='unit_of_measure form-control' style='width: 100%'>
                                                 <option value= '$val->unit_of_measure_id'>{$val->unitOfMeasure->unit_of_measure}</option>
@@ -207,7 +207,7 @@ if (!empty($model->id)) {
                                                 </select>
                                             </div>
     
-                                                <div class='col-sm-4'>
+                                                <div class='col-sm-3'>
                                                     <label for='amount'>Unit Cost</label>
                                                     <input type='text' class='amount form-control' value='" . number_format($val->unit_cost, 2) . "'>
                                                     <input type='hidden' name='unit_cost[$i]' class='unit_cost' value='$val->unit_cost'>
@@ -242,7 +242,6 @@ if (!empty($model->id)) {
                                             <hr>
                                             </td>
                                         </tr>";
-
                                 $row_num++;
                             }
                         } else {
@@ -257,7 +256,7 @@ if (!empty($model->id)) {
                                                 <option></option>
                                             </select>
                                         </div>
-                                        <div class="col-sm-4">
+                                        <div class="col-sm-3">
                                             <label for="unit_of_measure">Unit of Measure</label>
                                             <select required name="unit_of_measure_id[0]" class="unit_of_measure form-control" style="width: 100%">
                                                 <option></option>
@@ -267,7 +266,7 @@ if (!empty($model->id)) {
 
 
 
-                                        <div class="col-sm-4">
+                                        <div class="col-sm-3">
                                             <label for="amount">Unit Cost</label>
                                             <input type="text" class="amount form-control">
                                             <input type="hidden" name="unit_cost[0]" class="unit_cost">
@@ -450,9 +449,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
             var clone = source.clone(true);
             clone.children('td').eq(0).find('.desc').text('')
             clone.children('td').eq(0).find('.quantity').val(0)
-            clone.children('td').eq(0).find('.quantity').attr('name', 'unit_of_measure[' + x + ']')
+            clone.children('td').eq(0).find('.quantity').attr('name', 'quantity[' + x + ']')
             clone.children('td').eq(0).find('.unit_of_measure').val('')
-            clone.children('td').eq(0).find('.unit_of_measure').attr('name', 'unit_of_measure[' + x + ']')
+            clone.children('td').eq(0).find('.unit_of_measure').attr('name', 'unit_of_measure_id[' + x + ']')
             clone.children('td').eq(0).find('.pr_item_id').val('')
             clone.children('td').eq(0).find('.pr_item_id').attr('name', 'pr_item_id[' + x + ']')
             clone.children('td').eq(0).find('.stocks').val('')

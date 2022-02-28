@@ -710,12 +710,10 @@ class LiquidationController extends Controller
 
 
 
-        $num = 0;
+        $num = 1;
 
         if (!empty($q)) {
             $num = $q + 1;
-        } else {
-            $num = 1;
         }
         $liq = Yii::$app->db->createCommand(" SELECT CAST( substring_index(substring(dv_number, instr(dv_number, '-')+1), '-', -1) as UNSIGNED) as num
         from liquidation
@@ -735,7 +733,7 @@ class LiquidationController extends Controller
 
             $diff = array_diff($number_sequnce, array_column($liq, 'num'));
             if (!empty($diff)) {
-                $num = $diff[0];
+                $num = $diff[min(array_keys($diff))];
             }
         }
 

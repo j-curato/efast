@@ -16,6 +16,7 @@ $this->params['breadcrumbs'][] = 'Update';
 
     <?= $this->render('_form', [
         'model' => $model,
+        'aoq_entries' => !empty($aoq_entries) ? $aoq_entries : []
     ]) ?>
 
 </div>

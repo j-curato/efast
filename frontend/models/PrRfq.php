@@ -11,7 +11,7 @@ use Yii;
  * @property string $rfq_number
  * @property int|null $pr_purchase_request_id
  * @property string|null $_date
- * @property int|null $rbac_composition_id
+ * @property int|null $bac_composition_id
  * @property string|null $employee_id
  * @property string $created_at
  */
@@ -36,7 +36,7 @@ class PrRfq extends \yii\db\ActiveRecord
                 '_date',
                 'deadline',
             ], 'required'],
-            [['id', 'pr_purchase_request_id', 'rbac_composition_id'], 'integer'],
+            [['id', 'pr_purchase_request_id', 'bac_composition_id'], 'integer'],
             [['_date', 'created_at', 'deadline', 'project_location'], 'safe'],
             [['rfq_number', 'employee_id', 'province'], 'string', 'max' => 255],
             [['rfq_number'], 'unique'],
@@ -54,7 +54,7 @@ class PrRfq extends \yii\db\ActiveRecord
             'rfq_number' => 'Rfq Number',
             'pr_purchase_request_id' => 'Pr Purchase Request ',
             '_date' => 'Date',
-            'rbac_composition_id' => 'Rbac Composition ',
+            'bac_composition_id' => 'Rbac Composition ',
             'employee_id' => 'Canvasser',
             'created_at' => 'Created At',
             'deadline' => 'Deadline',

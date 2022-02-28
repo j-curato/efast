@@ -33,6 +33,7 @@ class PrAoq extends \yii\db\ActiveRecord
             [['pr_date', 'created_at'], 'safe'],
             [['aoq_number'], 'string', 'max' => 255],
             [['aoq_number'], 'unique'],
+            [['pr_date', 'pr_rfq_id'], 'required'],
         ];
     }
 
@@ -44,9 +45,13 @@ class PrAoq extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'aoq_number' => 'Aoq Number',
-            'pr_rfq_id' => 'Pr Rfq ID',
-            'pr_date' => 'Pr Date',
+            'pr_rfq_id' => 'RFQ Number',
+            'pr_date' => 'Date',
             'created_at' => 'Created At',
         ];
+    }
+    public function getPrAoqEntries()
+    {
+        return $this->hasMany(PrAoqEntries::class, ['pr_aoq_id' => 'id']);
     }
 }

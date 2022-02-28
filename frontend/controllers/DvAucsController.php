@@ -16,6 +16,7 @@ use app\models\SubAccounts2;
 use app\models\TrackingSheetIndexSearch;
 use DateTime;
 use ErrorException;
+use phpDocumentor\Reflection\PseudoTypes\False_;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -386,7 +387,7 @@ class DvAucsController extends Controller
             $particular = $_POST['particular'];
             $payee_id = $_POST['payee'];
             $book_id = !empty($_POST['book']) ? $_POST['book'] : 5;
-            $transaction_type = strtolower($_POST['transaction_type']);
+            $transaction_type = $_POST['transaction_type'];
             $advances_reporting_period = !empty($_POST['advances_reporting_period']) ? $_POST['advances_reporting_period'] : [];
             $advances_report_type = !empty($_POST['advances_report_type']) ? $_POST['advances_report_type'] : [];
             $advances_fund_source_type = !empty($_POST['advances_fund_source_type']) ? $_POST['advances_fund_source_type'] : [];
@@ -433,7 +434,7 @@ class DvAucsController extends Controller
             }
             // return json_encode( $_POST['chart_of_account_id'] );
 
-            if ($transaction_type === 'single') {
+            if (strtolower($transaction_type) === 'single') {
                 if (count($process_id) > 1) {
                     return json_encode(["isSuccess" => false, "error" => "Cannot Insert Transaction Type is Single But has More Than 1 Entries"]);
                     die();
@@ -460,6 +461,8 @@ class DvAucsController extends Controller
                 ->where("$sql", $params)
                 ->distinct('book_id')
                 ->all();
+
+            // return json_encode($ors->createCommand()->getRawSql());
             $x = [];
             foreach ($ors as $o) {
                 $x[] = $o['book_id'];
@@ -470,9 +473,12 @@ class DvAucsController extends Controller
                 return json_encode(['isSuccess' => false, 'error' => "bawal lain2 og book number"]);
             }
 
-            if ($transaction_type === 'single') {
+            if (strtolower($transaction_type) === 'single') {
+                if (empty($y))   return json_encode(['isSuccess' => false, 'error' => 'no ors',]);
                 $book_id = $y[0];
-            } else if ($transaction_type === 'multiple') {
+            } else if (strtolower($transaction_type) === 'multiple') {
+                if (empty($y))   return json_encode(['isSuccess' => false, 'error' => 'no ors',]);
+                $book_id = $y[0];
             } else {
                 // $book_id = $y[0]['book_id'];
                 $book_id = $_POST['book'];
@@ -503,8 +509,8 @@ class DvAucsController extends Controller
                     $dv->dv_number = implode('-', $x);
                 } else {
                     $dv = new DvAucs();
-                    $dv->dv_number = $this->getDvNumber($reporting_period, $book_id);
                     $dv->transaction_begin_time = $transaction_timestamp;
+                    $dv->dv_number = $this->getDvNumber($reporting_period, $book_id);
                 }
                 // $dv->raoud_id = intval($raoud_id);
                 $dv->nature_of_transaction_id = $nature_of_transaction_id;
@@ -514,10 +520,10 @@ class DvAucsController extends Controller
                 $dv->payee_id = $payee_id;
                 $dv->book_id = $book_id;
                 $dv->tracking_sheet_id = $tracking_sheet;
-                $dv->transaction_type = ucwords($transaction_type);
+                $dv->transaction_type = $transaction_type;
                 if ($dv->validate()) {
                     if ($flag = $dv->save(false)) {
-                        if ($transaction_type != 'no ors') {
+                        if (strtolower($transaction_type) != 'no ors') {
 
                             foreach ($process_id as $key => $val) {
                                 $dv_entries = new DvAucsEntries();
@@ -714,7 +720,6 @@ class DvAucsController extends Controller
             $query = (new \yii\db\Query())
                 ->select([
                     "dv_aucs_entries.*",
-                    "raoud_entries.amount as obligated_amount",
                     "dv_aucs.reporting_period",
                     "dv_aucs.particular",
                     "dv_aucs.payee_id",
@@ -727,7 +732,7 @@ class DvAucsController extends Controller
                     'tracking_sheet.tracking_number',
                     "process_ors.serial_number",
                     "process_ors.id as ors_id",
-                    "FORMAT(total_obligated.total,'N','en-us') as total",
+                    "total_obligated.total",
                     "transaction.particular as transaction_particular",
                     "payee.account_name as transaction_payee"
                 ])
@@ -736,17 +741,13 @@ class DvAucsController extends Controller
                 ->join("LEFT JOIN", "raouds", "dv_aucs_entries.raoud_id = raouds.id")
                 ->join("LEFT JOIN", "process_ors", "dv_aucs_entries.process_ors_id = process_ors.id")
                 ->join("LEFT JOIN", "transaction", "process_ors.transaction_id = transaction.id")
-                ->join("LEFT JOIN", "payee", "transaction.payee_id = payee.id")
+                ->join("LEFT JOIN", "payee", "dv_aucs.payee_id = payee.id")
                 ->join("LEFT JOIN", "tracking_sheet", "dv_aucs.tracking_sheet_id = tracking_sheet.id")
-                ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount)as total,process_ors.id as ors_id
-                FROM process_ors,raouds,raoud_entries
-
-                where process_ors.id = raouds.process_ors_id
-                AND raouds.id=raoud_entries.raoud_id
+                ->join("LEFT JOIN", "(SELECT SUM(process_ors_entries.amount)as total,process_ors.id as ors_id
+                FROM process_ors
+                LEFT JOIN process_ors_entries ON process_ors.id = process_ors_entries.process_ors_id
                 GROUP BY process_ors.id) as total_obligated", "process_ors.id=total_obligated.ors_id")
 
-                ->join("LEFT JOIN", "raoud_entries", "raouds.id = raoud_entries.raoud_id")
-                ->join("LEFT JOIN", "chart_of_accounts", "raoud_entries.chart_of_account_id = chart_of_accounts.id")
                 ->where("dv_aucs_entries.dv_aucs_id =:dv_aucs_id", ["dv_aucs_id" => $dv_id])
                 ->all();
             if (empty($query)) {
@@ -1222,20 +1223,20 @@ class DvAucsController extends Controller
             $q = DateTime::createFromFormat('Y-m-d', $recieved_at);
             // return $recieved_at;
             // return date('Y-m-d H:i:s',strtotime($recieved_at));
-            if ($transaction_type === 'Single' && !empty($recieved_at)) {
-                $min_key = min(array_keys($ors));
+            // if ($transaction_type === 'Single' && !empty($recieved_at)) {
+            //     $min_key = min(array_keys($ors));
 
-                $ors_created_at = Yii::$app->db->createCommand("SELECT 
-                process_ors.created_at
-             FROM  process_ors
-                WHERE process_ors.id= :id
-                LIMIT 1")
-                    ->bindValue(':id', $ors[$min_key])
-                    ->queryScalar();
-                if (strtotime($recieved_at) > strtotime($ors_created_at)) {
-                    return json_encode(['isSuccess' => false, 'error' => 'Receive Date must be Greater than  ORS date']);
-                }
-            }
+            //     $ors_created_at = Yii::$app->db->createCommand("SELECT 
+            //     process_ors.created_at
+            //  FROM  process_ors
+            //     WHERE process_ors.id= :id
+            //     LIMIT 1")
+            //         ->bindValue(':id', $ors[$min_key])
+            //         ->queryScalar();
+            //     if (strtotime($recieved_at) > strtotime($ors_created_at)) {
+            //         return json_encode(['isSuccess' => false, 'error' => 'Receive Date must be Greater than  ORS date']);
+            //     }
+            // }
 
             try {
                 if ($flag = true) {
@@ -1345,7 +1346,7 @@ class DvAucsController extends Controller
 
                 $ors_created_at = Yii::$app->db->createCommand("SELECT 
                 process_ors.created_at
-             FROM  process_ors
+                 FROM  process_ors
                 WHERE process_ors.id= :id
                 LIMIT 1")
                     ->bindValue(':id', $ors[$min_key])
@@ -1358,6 +1359,7 @@ class DvAucsController extends Controller
             Yii::$app->db->createCommand("DELETE FROM dv_aucs_entries WHERE dv_aucs_entries.dv_aucs_id =:id")
                 ->bindValue(':id', $model->id)
                 ->query();
+            // return json_encode($ors);
             try {
                 if ($flag = true) {
 

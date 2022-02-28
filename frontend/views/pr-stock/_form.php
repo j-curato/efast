@@ -67,13 +67,13 @@ if (!empty($model->id)) {
     <?= $form->field($model, 'type')->widget(Select2::class, [
         'data' => [],
         'pluginOptions' => [
-            'placeholder' => 'Select Unit of Measure'
+            'placeholder' => 'Select Stock Type'
         ],
         'options' => [
             'style' => 'width:100%'
         ]
     ]) ?>
-    <?= $form->field($model, 'bac_code')->textInput() ?>
+    <?= $form->field($model, 'bac_code')->textInput(['placeholder'=>'BAC Code']) ?>
 
     <?= $form->field($model, 'unit_of_measure_id')->widget(Select2::class, [
         'data' => ArrayHelper::map(UnitOfMeasure::find()->asArray()->all(), 'id', 'unit_of_measure'),

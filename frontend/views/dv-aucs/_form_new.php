@@ -98,6 +98,7 @@ $advances_entries_row = 1;
                     <select required id="transaction" name="transaction_type" class="transaction select" style="width: 100%; margin-top:50px">
                         <option></option>
                     </select>
+
                 </div>
                 <div class="col-sm-3" id='bok'>
                     <label for="book">Book</label>
@@ -1420,36 +1421,39 @@ $csrfToken = Yii::$app->request->csrfToken;
                 },
                 success: function(data) {
                     var res = JSON.parse(data)
-                    console.log(res.result)
                     var transaction_type = res.result[0]['transaction_type']
                     var type = '';
-                    if (!transaction_type) {
-                        if (res.result.length > 1) {
-                            type = 'Multiple'
-                        } else if (res.result.length === 1) {
-                            type = 'Single'
-                        } else if (res.result.length === 0) {
-                            type = 'No Ors'
-                        }
-                    } else {
-                        type = transaction_type
-                    }
+                    // if (!transaction_type) {
+                    //     if (res.result.length > 1) {
+                    //         type = 'Multiple'
+                    //     } else if (res.result.length === 1) {
+                    //         type = 'Single'
+                    //     } else if (res.result.length === 0) {
+                    //         type = 'No Ors'
+                    //     }
+                    // } else {
+                    //     type = transaction_type
+                    // }
                     // if (type !='No Ors'){
 
                     addDvToTable(res.result)
                     // }
 
 
-                    // $("#particular").val(res.result[0]['particular'])
-                    // $("#payee").val(res.result[0]['payee_id']).trigger('change');
+
                     $("#mrd_classification").val(res.result[0]['mrd_classification_id']).trigger("change");
                     $("#nature_of_transaction").val(res.result[0]['nature_of_transaction_id']).trigger("change");
                     $("#reporting_period").val(res.result[0]['reporting_period'])
-                    // $('#transaction').val(type).trigger('change')
+                    // $('#transaction').val(res.result[0]['transaction_type'])
+                    // var tran_type = res.result[0]['transaction_type'];
+                    // $('#transaction option:contains("${tran_type}")').prop('selected',true);
                     $('#book').val(res.result[0]['book_id']).trigger('change')
+                    let t_type = res.result[0]['transaction_type']
+                    $('#transaction').val(t_type).trigger('change')
+
 
                     if (res.result[0]['tracking_sheet_id'] == null) {
-                        $('#transaction').val(type).trigger('change')
+
                         $("#particular").val(res.result[0]['particular'])
                         // $("#payee").val(res.result[0]['payee_id']).trigger('change');
                         var payeeSelect = $('#payee');
@@ -1522,6 +1526,7 @@ $csrfToken = Yii::$app->request->csrfToken;
 
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/module_js_css/dvAucs/dv_aucs.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 SweetAlertAsset::register($this); ?>
 <?php
 
@@ -1544,47 +1549,6 @@ $script = <<< JS
 
 
     
-    $("#transaction").change(function(){
-
-        const date = new Date().toLocaleString( { timeZone: 'Asia/Manila' });
-            // console.log(date);   
-        //    var transaction_id = $("#transaction_id").val()
-        //     var date = new Date()
-
-            // var x = date.getFullYear()+'-'+date.getMonth() + '-'+ date.getDate() + ' ' + date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()
-            // console.log(x)
-            $('#transaction_timestamp').val(date)
-          
-        var transaction_type=$("#transaction").val()
-
-        $("#transaction_type").val(transaction_type)
-        // if (transaction_type =='Single'){
-        var result=[1]
-        // }
-        var count=$('#transaction_table tbody tr').length
-        if (transaction_type ==='No Ors'|| transaction_type ==='Accounts Payable' && count-1 <0){
-            addDvToTable(result)
-           
-            // $("#bok").prop('required',true);
-        }
-        if (transaction_type==='No Ors' || transaction_type ==='Accounts Payable' 
-        || transaction_type ==='Replacement to Stale Checks' 
-        || transaction_type ==='Replacement of Check Issued' 
-      
-        ){
-
-
-
-            
-            $("#bok").show();
-            $("#book").prop('required',true);
-        }
-        else{
-            $("#bok").hide();
-            $("#book").prop('required',false);
-            
-        }
-    })
 
 
 
@@ -1594,7 +1558,9 @@ $script = <<< JS
 
 
             // TRANSACTION TYPE
-           var transaction = ["Single", "Multiple",
+            var transaction = [
+               "Single",
+                 "Multiple",
                 "Accounts Payable",
                 "Replacement to Stale Checks",
                 'Replacement of Check Issued'

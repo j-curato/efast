@@ -8,7 +8,7 @@ use yii\widgets\ActiveForm;
 /* @var $model app\models\BacComposition */
 /* @var $form yii\widgets\ActiveForm */
 
-$x = 1;
+$row_number = 0;
 ?>
 
 <div class="bac-composition-form">
@@ -75,6 +75,7 @@ $x = 1;
 
                 if (!empty($model->bacCompositionMembers)) {
                     foreach ($model->bacCompositionMembers as $i => $val) {
+                        $emp_name = "{$val->employee->f_name} {$val->employee->m_name[0]}. {$val->employee->l_name}";
 
                         echo "<tr class='panel  panel-default' style='margin-top: 2rem;margin-bottom:2rem;'>
                     <td style='max-width:100rem;'>
@@ -82,15 +83,15 @@ $x = 1;
                         <div class='row'>
                             <div class='col-sm-6'>
                                 <label for='employee'>Employee</label>
-                                <select required name='employee_id[0]' class='employee form-control' style='width: 100%'>
-                                <option value= '$val->employee_id'>{$val->employee->f_name}</option>
+                                <select required name='employee_id[$i]' class='employee form-control' style='width: 100%'>
+                                <option value= '$val->employee_id'>{$emp_name}</option>
 
                                 </select>
                             </div>
                    
                             <div class='col-sm-6'>
                                 <label for='employee'>Position</label>
-                                <select required name='position[0]' class='position form-control' style='width: 100%'>
+                                <select required name='position[$i]' class='position form-control' style='width: 100%'>
                                 <option value= '$val->bac_position_id'>{$val->bacPosition->position}</option>
                                 </select>
                             </div>
@@ -108,6 +109,7 @@ $x = 1;
                         <hr>
                     </td>
                 </tr>";
+                $row_number++;
                     }
                 } else {
                 ?>
@@ -200,14 +202,14 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/select2.min.css", ['d
     function positionSelect() {
         $('.position').select2({
             data: bac_positions,
-            placeholder: "Select Book",
+            placeholder: "Select Position",
 
         })
     }
 
     var bac_positions = []
     $(document).ready(function() {
-        var x = <?php echo $x ?>;
+        let row_number = <?php echo $row_number ?>;
         $.getJSON(window.location.pathname + '?r=bac-position/get-position')
             .then(function(data) {
                 var array = []
@@ -238,9 +240,9 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/select2.min.css", ['d
             var source = $(this).closest('tr');;
             var clone = source.clone(true);
             clone.children('td').eq(0).find('.employee').val('')
-            clone.children('td').eq(0).find('.employee').attr('name', 'employee_id[' + x + ']')
+            clone.children('td').eq(0).find('.employee').attr('name', 'employee_id[' +row_number + ']')
             clone.children('td').eq(0).find('.position').val('')
-            clone.children('td').eq(0).find('.position').attr('name', 'position[' + x + ']')
+            clone.children('td').eq(0).find('.position').attr('name', 'position[' +row_number + ']')
             $('#form_fields_data').append(clone);
             var spacer = `<tr>
                         <td colspan="2" >
@@ -252,7 +254,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/select2.min.css", ['d
             stockSelect()
             positionSelect()
             maskAmount()
-            x++
+            row_number++
         });
 
 

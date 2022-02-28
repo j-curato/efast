@@ -31,6 +31,7 @@ class BacComposition extends \yii\db\ActiveRecord
     {
         return [
             [['effectivity_date', 'expiration_date'], 'safe'],
+            [['effectivity_date', 'expiration_date'], 'required'],
             [['rso_number'], 'string', 'max' => 255],
         ];
     }
