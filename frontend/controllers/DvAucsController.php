@@ -1237,6 +1237,11 @@ class DvAucsController extends Controller
             //         return json_encode(['isSuccess' => false, 'error' => 'Receive Date must be Greater than  ORS date']);
             //     }
             // }
+            if ($transaction_type === 'Single') {
+
+                $book_id = Yii::$app->db->createCommand("SELECT book_id FROM process_ors WHERE id = :id")->bindValue(':id', $ors[min(array_keys($ors))])->queryScalar();
+                // return json_encode($book_id);
+            }
 
             try {
                 if ($flag = true) {
@@ -1340,7 +1345,11 @@ class DvAucsController extends Controller
             $liabilities = $_POST['other_trust_liabilities'];
             $ors = $_POST['process_ors_id'];
             $transaction = Yii::$app->db->beginTransaction();
+            if ($transaction_type === 'Single') {
 
+                $book_id = Yii::$app->db->createCommand("SELECT book_id FROM process_ors WHERE id = :id")->bindValue(':id', $ors[min(array_keys($ors))])->queryScalar();
+                // return json_encode($book_id);
+            }
             if ($transaction_type === 'Single' && !empty($recieved_at)) {
                 $min_key = min(array_keys($ors));
 
