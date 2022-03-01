@@ -3088,6 +3088,7 @@ class ReportController extends \yii\web\Controller
             WHEN chart_of_accounts.normal_balance = 'Debit' THEN IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.debit,0) - IFNULL(accounting_entries.credit,0))
             ELSE IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.credit,0) - IFNULL(accounting_entries.debit,0))
             END) !=0
+            ORDER BY chart_of_accounts.uacs  ASC
             ", $params)
                 ->bindValue(':_year', $year)
                 ->bindValue(':to_reporting_period', $to_reporting_period)
