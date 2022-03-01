@@ -3045,8 +3045,8 @@ class ReportController extends \yii\web\Controller
             LEFT JOIN jev_preparation ON jev_accounting_entries.jev_preparation_id = jev_preparation.id
             WHERE 
              jev_preparation.book_id = :book_id
+              AND jev_preparation.reporting_period >=:from_reporting_period
             AND jev_preparation.reporting_period <=:to_reporting_period
-            $and $sql
             GROUP BY obj_code
             ) as jev_object_codes
             
@@ -3062,6 +3062,7 @@ class ReportController extends \yii\web\Controller
              jev_preparation.book_id = :book_id
             AND jev_preparation.reporting_period >=:from_reporting_period
             AND jev_preparation.reporting_period <=:to_reporting_period
+            $and $sql
             GROUP BY chart)
              as accounting_entries ON jev_object_codes.obj_code = accounting_entries.chart
             LEFT JOIN (SELECT 
