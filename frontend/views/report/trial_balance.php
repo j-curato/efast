@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             <form id="filter">
-                <div class="col-sm-5">
+                <div class="col-sm-3">
                     <label for="reporting_period">Reporting Period</label>
                     <?php
                     echo DatePicker::widget([
@@ -51,7 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]);
                     ?>
                 </div>
-                <div class="col-sm-5">
+                <div class="col-sm-3">
                     <label for="book"> Books</label>
                     <?php
                     echo Select2::widget([
@@ -59,6 +59,20 @@ $this->params['breadcrumbs'][] = $this->title;
                         'id' => 'book',
                         'name' => 'book_id',
                         'options' => ['placeholder' => 'Select a Fund Cluster Code'],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ]);
+                    ?>
+                </div>
+                <div class="col-sm-3">
+                    <label for="entry_type"> Entry Type</label>
+                    <?php
+                    echo Select2::widget([
+                        'data' => ['Post-Closing'=>'Post-Closing', 'Pre-Closing'=>'Pre-Closing', 'Closing'=>'Closing'],
+                        'id' => 'entry_type',
+                        'name' => 'entry_type',
+                        'options' => ['placeholder' => 'Select Entry Type'],
                         'pluginOptions' => [
                             'allowClear' => true
                         ],
@@ -292,6 +306,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_
     $(document).ready(function() {
 
         $('#filter').submit(function(e) {
+            $("#data_table tbody").html('')
             e.preventDefault();
             $.ajax({
                 type: 'POST',
@@ -310,7 +325,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_
 
     function displayResultData(data) {
         console.log(data)
-        $("#data_table tbody").html('')
+      
         let total_debit = 0;
         let total_credit = 0;
         $.each(data, function(index, val) {

@@ -3007,7 +3007,25 @@ class ReportController extends \yii\web\Controller
             $year = $r_period_date->format('Y');
             $from_reporting_period = $year . '-01';
             $book_id  = $_POST['book_id'];
+            $entry_type = strtolower($_POST['entry_type']);
             $book_name = Books::findOne($book_id)->name;
+            $and = '';
+            $sql = '';
+            $type = '';
+            $params = [];
+            // return json_encode($entry_type);
+            if ($entry_type !== 'post-closing') {
+                $and = 'AND ';
+                if ($entry_type === 'pre-closing') {
+                    $type = 'Non-Closing';
+                } else if ($entry_type = 'closing') {
+                    $type = 'Closing';
+                }
+                $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['=', 'jev_preparation.entry_type', $type], $params);
+            }
+
+
+
             $query = Yii::$app->db->createCommand("SELECT 
             chart_of_accounts.uacs as object_code,
             chart_of_accounts.general_ledger as account_title,
@@ -3017,7 +3035,7 @@ class ReportController extends \yii\web\Controller
             ELSE IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.credit,0) - IFNULL(accounting_entries.debit,0))
             END) as total_debit_credit,
             begin_balance.total_beginning_balance as begin_balance
-            
+    
             
              FROM (
             
@@ -3028,6 +3046,7 @@ class ReportController extends \yii\web\Controller
             WHERE 
              jev_preparation.book_id = :book_id
             AND jev_preparation.reporting_period <=:to_reporting_period
+            $and $sql
             GROUP BY obj_code
             ) as jev_object_codes
             
@@ -3068,12 +3087,13 @@ class ReportController extends \yii\web\Controller
             WHEN chart_of_accounts.normal_balance = 'Debit' THEN IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.debit,0) - IFNULL(accounting_entries.credit,0))
             ELSE IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.credit,0) - IFNULL(accounting_entries.debit,0))
             END) !=0
-            ")
+            ", $params)
                 ->bindValue(':_year', $year)
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->bindValue(':book_id', $book_id)
-                ->queryAll();
+                ->queryAll();;
+            // return json_encode($query->getRawSql());
 
             return json_encode(['result' => $query, 'month' => $month, 'book_name' => $book_name]);
         }
@@ -3272,13 +3292,14 @@ class ReportController extends \yii\web\Controller
     //             ->bindValue(':book_id', $book_id)
     //             ->bindValue(':object_code', $object_code . '%')
     //             ->queryAll();
+
     //         return json_encode([
     //             'beginning_balance' => $beginning_balance,
     //             'query' => $query,
     //         ]);
     //     }
     // }
-  
+
 }
 
 // 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
