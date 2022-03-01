@@ -143,7 +143,7 @@ class ProcessOrsEntriesController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
         if ($_POST) {
             if (!empty($_POST['reporting_period'])) {
-                $d = Datetime::createFromFormat('Y-m',$_POST['reporting_period']);
+                $d = Datetime::createFromFormat('Y-m', $_POST['reporting_period']);
                 $year = $d->format('Y');
                 $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
             }
@@ -169,7 +169,7 @@ class ProcessOrsEntriesController extends Controller
     {
 
         $searchModel = new RecordAllotmentsViewSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors' );
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -342,9 +342,8 @@ class ProcessOrsEntriesController extends Controller
                 $ors_update->transaction_id = $transaction_id;
                 $ors_update->book_id = $book_id;
                 $ors_update->date = $date;
-
                 $x = explode('-', $ors_update->serial_number);
-                $serial = $book->name . '-' . $x[1] . '-' . $x[2] . '-' . $x[3];
+                $serial = $book->name . '-' . $reporting_period . '-' . $x[3];
                 $ors_update->serial_number = $serial;
                 if ($ors_update->save(false)) {
                     $transaction->commit();
