@@ -674,7 +674,7 @@ class JevPreparationController extends Controller
 
                         // $cells[] =   $cell->getValue()->getCalculatedValue();
                         $qwe = 0;
-                        if ($y == 4 || $y === 5) {
+                        if ($y === 5) {
                             $cells[] =   $cell->getFormattedValue();
                             // echo '<pre>';y
                             // var_dump('qwe');
@@ -758,14 +758,15 @@ class JevPreparationController extends Controller
                         }
                         $payee = '';
                         if (!empty($cells[14])) {
-                            $payee = Payee::find()->where("account_name =:account_name", [
-                                'account_name' => $cells[14]
-                            ])->one()->id;
+                            // $payee = Payee::find()->where("account_name =:account_name", [
+                            //     'account_name' => $cells[14]
+                            // ])->one()->id;
                         }
 
 
 
-                        $reporting_period = date("Y-m", strtotime($cells[4]));
+                        $reporting_period = $cells[4];
+                        // return $reporting_period;
                         $date = $cells[4] ? date("Y-m-d", strtotime($cells[5])) : '';
                         // echo '<pre>';
                         // var_dump($cells[4], $key);
