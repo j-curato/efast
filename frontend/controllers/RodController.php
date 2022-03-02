@@ -40,7 +40,6 @@ class RodController extends Controller
                     [
                         'actions' => [
                             'update',
-                            'delete',
                             'view',
                             'create',
                             'insert-rod',
@@ -49,6 +48,14 @@ class RodController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['@']
+                    ],
+                    [
+                        'actions' => [
+                            'delete',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['super-user']
                     ]
                 ]
 
@@ -137,7 +144,7 @@ class RodController extends Controller
      */
     public function actionDelete($id)
     {
-        // $this->findModel($id)->delete();
+        $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
     }

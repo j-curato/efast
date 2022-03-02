@@ -54,6 +54,11 @@ class RodEntries extends \yii\db\ActiveRecord
      */
     public function getRodNumber()
     {
-        return $this->hasOne(Rod::className(), ['rod_number' => 'rod_number']);
+        return $this->hasOne(Rod::class, ['rod_number' => 'rod_number']);
+    }
+    public function getAdvancesEntries()
+    {
+
+        return $this->hasOne(AdvancesEntries::class, ['id' => 'advances_entries_id']);
     }
 }

@@ -29,10 +29,22 @@ $this->params['breadcrumbs'][] = $this->title;
             'heading' => 'List of ROD'
         ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
             'rod_number',
             'province',
+            [
+                'label' => 'Fund Source',
+                'value' => function ($model) {
+                    $fund_sources = '';
+                    foreach ($model->rodEntries as $i => $val) {
+                        if ($i > 0) {
+                            $fund_sources .= ',';
+                        }
+                        $fund_sources .= $val->advancesEntries->fund_source;
+                    }
+                    return $fund_sources;
+                }
+            ],
 
             [
                 'class' => '\kartik\grid\ActionColumn',
