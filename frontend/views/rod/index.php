@@ -19,6 +19,10 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    $del = 'display:none;';
+    if (Yii::$app->user->can('super-user')){
+        $del='';
+    }
     ?>
 
     <?= GridView::widget([
@@ -48,7 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'class' => '\kartik\grid\ActionColumn',
-                'deleteOptions' => ['style' => 'display:none;'],
+                'deleteOptions' => ['style' => "$del"],
             ],
         ],
     ]); ?>
