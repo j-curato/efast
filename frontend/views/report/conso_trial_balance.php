@@ -54,11 +54,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="col-sm-3">
                     <label for="book"> Books</label>
                     <?php
+                    $book_type = Yii::$app->db->createCommand("SELECT `type` FROM books GROUP BY `type`")->queryAll();
+
                     echo Select2::widget([
-                        'data' => ArrayHelper::map($books, 'id', 'name'),
+                        'data' => ['mds' => 'MDS', 'lcca' => 'LCCA', 'all' => 'All'],
                         'id' => 'book',
                         'name' => 'book_id',
-                        'options' => ['placeholder' => 'Select a Book'],
+                        'options' => ['placeholder' => 'Select a Fund Cluster Code'],
                         'pluginOptions' => [
                             'allowClear' => true
                         ],
@@ -101,7 +103,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <div style="text-align:center;" class="headerItems">
                                 <h6>DEPARTMENT OF TRADE AND INDUSTRY</h6>
                                 <h6>CARAGA REGIONAL OFFICE</h6>
-                                <h6><span class="entry_type_heading"></span> <span>Trial Balance</span> <span class="book_name"></span>
+                                <h6> <span> Consolidated</span> <span class="entry_type_heading"></span> <span> Trial Balance</span> <span class="book_name"></span>
 
                                 </h6>
                                 <h6>As of <span id="month"></span>
@@ -311,12 +313,12 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_
             e.preventDefault();
             $.ajax({
                 type: 'POST',
-                url: window.location.pathname + '?r=report/trial-balance',
+                url: window.location.pathname + '?r=report/conso-trial-balance',
                 data: $('#filter').serialize(),
                 success: function(data) {
                     var res = JSON.parse(data)
                     // console.log(res)
-               
+
                     displayResultData(res.result)
                     $('#month').text(res.month)
                     $('.book_name').text(res.book_name)
