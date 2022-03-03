@@ -30,8 +30,8 @@ class Books extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name'], 'required'],
-            [['name', 'account_number'], 'string', 'max' => 255],
+            [['name','type'], 'required'],
+            [['name', 'account_number','type'], 'string', 'max' => 255],
         ];
     }
 
@@ -44,6 +44,7 @@ class Books extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Name',
             'account_number' => 'Account Number',
+            'type' => 'Book Type',
         ];
     }
 
