@@ -217,6 +217,7 @@
                                         ['label' => 'Trial Balance', 'icon' => 'circle-o', 'url' => ['/report/trial-balance'],],
                                         ['label' => 'ConsoTrial Balance', 'icon' => 'circle-o', 'url' => ['/report/conso-trial-balance'],],
                                         ['label' => 'Sub Trial Balance', 'icon' => 'circle-o', 'url' => ['/jev-preparation/sub-trial-balance'],],
+                                        ['label' => 'Conso Sub Trial Balance', 'icon' => 'circle-o', 'url' => ['/report/conso-sub-trial-balance'],],
                                         ['label' => 'Subsidiary Ledger', 'icon' => 'circle-o', 'url' => ['/jev-preparation/get-subsidiary-ledger'],],
                                         ['label' => 'Detailed Financial Position', 'icon' => 'circle-o', 'url' => ['/jev-preparation/detailed-financial-position'],],
                                         ['label' => 'Consolidated Financial Position', 'icon' => 'circle-o', 'url' => ['/jev-preparation/consolidated-financial-position'],],
