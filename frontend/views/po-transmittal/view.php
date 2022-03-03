@@ -82,7 +82,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             GAY A. TIDALGO,CESO IV
                         </span> <br>
                         <span style="font-size:12px">
-                            OIC Regional Director, DTI-CARAGA
+                            Regional Director, DTI-CARAGA
                         </span>
                     </td>
                 </tr>
