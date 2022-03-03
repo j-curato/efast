@@ -54,6 +54,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="col-sm-3">
                     <label for="book"> Books</label>
                     <?php
+                    $book_type = Yii::$app->db->createCommand("SELECT `type` FROM books GROUP BY `type`")->queryAll();
+                    
                     echo Select2::widget([
                         'data' => ['mds'=>'MDS','lcca'=>'LCCA','all'=>'All'],
                         'id' => 'book',
