@@ -55,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <label for="book"> Books</label>
                     <?php
                     echo Select2::widget([
-                        'data' => ArrayHelper::map($books, 'id', 'name'),
+                        'data' => ['mds'=>'MDS','lcca'=>'LCCA','all'=>'All'],
                         'id' => 'book',
                         'name' => 'book_id',
                         'options' => ['placeholder' => 'Select a Fund Cluster Code'],
@@ -69,7 +69,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <label for="entry_type"> Entry Type</label>
                     <?php
                     echo Select2::widget([
-                        'data' => ['Post-Closing'=>'Post-Closing', 'Pre-Closing'=>'Pre-Closing', 'Closing'=>'Closing'],
+                        'data' => ['Post-Closing' => 'Post-Closing', 'Pre-Closing' => 'Pre-Closing', 'Closing' => 'Closing'],
                         'id' => 'entry_type',
                         'name' => 'entry_type',
                         'options' => ['placeholder' => 'Select Entry Type'],
@@ -101,7 +101,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <div style="text-align:center;" class="headerItems">
                                 <h6>DEPARTMENT OF TRADE AND INDUSTRY</h6>
                                 <h6>CARAGA REGIONAL OFFICE</h6>
-                                <h6>TRIAL BALANCE <span class="book_name"></span>
+                                <h6><span class="entry_type_heading"></span> <span>Trial Balance</span> <span class="book_name"></span>
 
                                 </h6>
                                 <h6>As of <span id="month"></span>
@@ -307,6 +307,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_
 
         $('#filter').submit(function(e) {
             $("#data_table tbody").html('')
+            $('.entry_type_heading').text($('#entry_type').val())
             e.preventDefault();
             $.ajax({
                 type: 'POST',
@@ -315,6 +316,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_
                 success: function(data) {
                     var res = JSON.parse(data)
                     // console.log(res)
+               
                     displayResultData(res.result)
                     $('#month').text(res.month)
                     $('.book_name').text(res.book_name)
@@ -325,7 +327,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_
 
     function displayResultData(data) {
         console.log(data)
-      
+
         let total_debit = 0;
         let total_credit = 0;
         $.each(data, function(index, val) {

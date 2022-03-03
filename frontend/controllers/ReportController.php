@@ -3001,6 +3001,10 @@ class ReportController extends \yii\web\Controller
     public function actionTrialBalance()
     {
         if ($_POST) {
+            $params = [];
+            // return json_encode(Yii::$app->db->createCommand("SELECT * FROM jev_preparation WHERE $book_sql",$params)->getRawSql());
+
+
             $to_reporting_period = $_POST['reporting_period'];
             $r_period_date = DateTime::createFromFormat('Y-m', $to_reporting_period);
             $month  = $r_period_date->format('F Y');
@@ -3008,11 +3012,11 @@ class ReportController extends \yii\web\Controller
             $from_reporting_period = $year . '-01';
             $book_id  = $_POST['book_id'];
             $entry_type = strtolower($_POST['entry_type']);
-            $book_name = Books::findOne($book_id)->name;
+            $book_name = Books::findOne(5)->name;
             $and = '';
             $sql = '';
             $type = '';
-            $params = [];
+
             // return json_encode($entry_type);
             if ($entry_type !== 'post-closing') {
                 $and = 'AND ';
@@ -3023,8 +3027,18 @@ class ReportController extends \yii\web\Controller
                 }
                 $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['=', 'jev_preparation.entry_type', $type], $params);
             }
+            $book_and = '';
+            $book_sql1 = '';
+            $book_sql2 = '';
+            $book_sql3 = '';
+            $book_params = [];
+            if ($book_id !== 'all') {
+                $book_and = 'AND ';
+                $book_sql1 = Yii::$app->db->getQueryBuilder()->buildCondition("EXISTS (SELECT id FROM books WHERE books.`type` =:book_id AND jev_preparation.book_id = books.id)",$book_params);
+                $book_sql2 = Yii::$app->db->getQueryBuilder()->buildCondition("EXISTS (SELECT id FROM books WHERE books.`type` =:book_id AND jev_beginning_balance.book_id = books.id)",$book_params);
 
-
+                // EXISTS (SELECT id FROM books WHERE books.`name` IN ('Fund 01','Rapid LP') AND jev_beginning_balance.book_id = books.id)
+            }
 
             $query = Yii::$app->db->createCommand("SELECT 
             chart_of_accounts.uacs as object_code,
@@ -3035,41 +3049,37 @@ class ReportController extends \yii\web\Controller
             ELSE IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.credit,0) - IFNULL(accounting_entries.debit,0))
             END) as total_debit_credit,
             begin_balance.total_beginning_balance as begin_balance
-    
-            
              FROM (
-            
             SELECT
             SUBSTRING_INDEX(jev_accounting_entries.object_code,'_',1) as obj_code
             FROM jev_accounting_entries 
             LEFT JOIN jev_preparation ON jev_accounting_entries.jev_preparation_id = jev_preparation.id
             WHERE 
-             jev_preparation.book_id = :book_id
-
-            AND jev_preparation.reporting_period <=:to_reporting_period
+             jev_preparation.reporting_period <=:to_reporting_period
+             $book_and $book_sql1
             GROUP BY obj_code
             ) as jev_object_codes
             
             LEFT JOIN (
             SELECT
-            
+
             SUM(jev_accounting_entries.debit) as debit,
             SUM(jev_accounting_entries.credit) as credit,
             SUBSTRING_INDEX(jev_accounting_entries.object_code,'_',1) as chart
             FROM jev_accounting_entries 
             LEFT JOIN jev_preparation ON jev_accounting_entries.jev_preparation_id = jev_preparation.id
             WHERE 
-             jev_preparation.book_id = :book_id
-            AND jev_preparation.reporting_period >=:from_reporting_period
+             jev_preparation.reporting_period >=:from_reporting_period
             AND jev_preparation.reporting_period <=:to_reporting_period
+            $book_and $book_sql1
             $and $sql
-            GROUP BY chart)
-             as accounting_entries ON jev_object_codes.obj_code = accounting_entries.chart
+            GROUP BY chart) as accounting_entries ON jev_object_codes.obj_code = accounting_entries.chart
             LEFT JOIN (SELECT 
+
                 accounting_codes.object_code,
                 (CASE
-                    WHEN accounting_codes.normal_balance = 'Debit' THEN jev_beginning_balance_item.debit  - jev_beginning_balance_item.credit
-                    ELSE jev_beginning_balance_item.credit - jev_beginning_balance_item.debit
+                    WHEN accounting_codes.normal_balance = 'Debit' THEN SUM(jev_beginning_balance_item.debit)  - SUM(jev_beginning_balance_item.credit)
+                    ELSE SUM(jev_beginning_balance_item.credit) - SUM(jev_beginning_balance_item.debit)
                 END) as total_beginning_balance
                 FROM jev_beginning_balance_item 
               LEFT JOIN jev_beginning_balance ON jev_beginning_balance_item.jev_beginning_balance_id =jev_beginning_balance.id
@@ -3077,9 +3087,9 @@ class ReportController extends \yii\web\Controller
               LEFT JOIN books ON jev_beginning_balance.book_id = books.id
               WHERE 
                     jev_beginning_balance.`year` = :_year
-                AND jev_beginning_balance.book_id = :book_id
+                    $book_and $book_sql2
             
-            
+            GROUP BY accounting_codes.object_code
             ) as begin_balance  ON jev_object_codes.obj_code = begin_balance.object_code
             LEFT JOIN chart_of_accounts ON jev_object_codes.obj_code = chart_of_accounts.uacs
             
@@ -3094,7 +3104,8 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->bindValue(':book_id', $book_id)
-                ->queryAll();;
+                ->queryAll();
+                ;
             // return json_encode($query->getRawSql());
 
             return json_encode(['result' => $query, 'month' => $month, 'book_name' => $book_name]);

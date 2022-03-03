@@ -33,12 +33,12 @@ $this->params['breadcrumbs'][] = $this->title;
             'heading' => 'Bank Accounts'
         ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
+          
             'account_number',
+            'account_name',
             'province',
-            'created_at',
+            
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

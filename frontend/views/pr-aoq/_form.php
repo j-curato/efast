@@ -104,21 +104,18 @@ $row = 1;
                             <td> {$val['quantity']}</td>
              
                             <td style='width:25em'>
-                                <label for='payere'>Payee</label>
                                 <select required name='payee_id[$row]' class='payee form-control payee' style='width: 100%'>
                                     <option value='{$val['payee_id']}'>{$val['payee']}</option>
                                 </select>
                             </td>
                             <td style='width:15em'>
-                                <label for='amount'>Unit Cost</label>
                                 <input type='text' class='amount form-control' onkeyup='setUnitCostOnfAmountChangeFunction(this)' value='{$val['amount']}'>
                                 <input type='hidden' name='unit_cost[$row]' class='unit_cost' value='{$val['amount']}'>
                             </td>
                             <td style='width:15em'>
-                                <label for='amount'>Remark</label>
                                 <textarea row='2' name='remarks[$row]' class='remark'>{$val['remark']}</textarea>
                             </td>
-                            <td style='  text-align: center;'>
+                            <td style='text-align: center;width:80px'>
                                 <div class='pull-right'>
                                     <a class='copy_row btn btn-primary btn-xs'><i class='fa fa-copy fa-fw'></i> </a>
                                     <a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw' onClick='remove(this)'></i> </a>
@@ -241,18 +238,15 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
                                     </div>
                                 </td>`;
                 const payee_select = `<td style='width:25em;max-width:25em'>
-                         <label for="payere">Payee</label>
                         <select required name="payee_id[${transaction_row}]" class="payee form-control" style="width: 100%">
                             <option></option>
                         </select>
                 </td>`;
                 const amount = `<td style='width:15em'>
-                    <label for="amount">Unit Cost</label>
                     <input type="text" class="amount form-control" onkeyup='setUnitCostOnfAmountChangeFunction(this)'>
                     <input type="hidden" name="unit_cost[${transaction_row}]" class="unit_cost">
                 </td>`;
                 const remark = `<td style='width:15em'>
-                    <label for="amount">Remark</label>
                    <textarea row='2' name='remarks[${transaction_row}]' class='remark'></textarea>
                 </td>`;
                 clone.append(payee_select)

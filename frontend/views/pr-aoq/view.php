@@ -167,9 +167,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
 
                 <tr>
-                    <td colspan="<?= $header_count ?>">
+                    <td colspan="<?= $header_count ?>" class='no-border' style='padding-top:2em'>
 
-                        <div class="q">
+                        <div class="bac-members">
 
                             <?php
                             $i = 1;
@@ -178,8 +178,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 if ($val['position'] === 'member') {
 
                                     $member_name =  ucwords($val['employee_name']);
-                                    $member_position = $val['position'];
-                                    echo "<div>
+                                    $member_position = ucwords($val['position']);
+                                    echo "<div style='text-align:center'>
                                             <span style='text-decoration:underline'>$member_name</span>
                                             <br>
                                             <span >$member_position</span>
@@ -192,15 +192,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </tr>
                 <tr>
-                    <td colspan="<?= $header_count ?>">
-                        <div style="float: left;margin-left:20%">
+                    <td colspan="<?= $header_count ?>" class='no-border'>
+                        <div style="float: left;margin-left:20%;text-align:center;margin-top:2em">
                             <?php $vice_chairperson =   $bac_compositions[array_search('vice chairperson', array_column($bac_compositions, 'position'))];
                             echo  "<span style='text-decoration:underline'>{$vice_chairperson['employee_name']}</span>";
                             echo '<br>';
                             echo 'Vice-Chairperson';
                             ?>
                         </div>
-                        <div style="float: right;margin-right:20%">
+                        <div style="float: right;margin-right:20%;text-align:center;margin-top:2em">
                             <?php $chairperson =   $bac_compositions[array_search('chairperson', array_column($bac_compositions, 'position'))];
                             echo  "<span style='text-decoration:underline'>{$chairperson['employee_name']}</span>";
                             echo '<br>';
@@ -217,16 +217,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 <style>
-    ul {
-        display: table;
-        table-layout: fixed;
-        width: 100%;
-
+    .no-border {
+        border: 0;
     }
 
-    li {
-        text-align: center;
-        display: table-row;
+    .bac-members {
+        display: flex;
+        justify-content: space-evenly;
 
     }
 

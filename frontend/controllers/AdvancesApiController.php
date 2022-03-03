@@ -52,6 +52,8 @@ class AdvancesApiController extends \yii\rest\ActiveController
                             $update_advances->reporting_period = $val['reporting_period'];
                             $update_advances->book_id = $val['book_id'];
                             $update_advances->advances_type = $val['advances_type'];
+                            $update_advances->dv_aucs_id = $val['dv_aucs_id'];
+                            $update_advances->bank_account_id = $val['bank_account_id'];
 
 
                             if ($update_advances->save(false)) {
@@ -71,6 +73,8 @@ class AdvancesApiController extends \yii\rest\ActiveController
                             $new_advances->reporting_period = $val['reporting_period'];
                             $new_advances->book_id = $val['book_id'];
                             $new_advances->advances_type = $val['advances_type'];
+                            $new_advances->bank_account_id = $val['bank_account_id'];
+                            $new_advances->dv_aucs_id = $val['dv_aucs_id'];
                             if ($new_advances->save(false)) {
                             } else {
                                 $transaction->rollBack();

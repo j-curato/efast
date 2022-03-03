@@ -521,7 +521,7 @@ use yii\widgets\Pjax;
 
 
             // GET ALL BOOKS
-            $.getJSON('/afms/frontend/web/index.php?r=books/get-books')
+            $.getJSON(window.location.pathname+'?r=books/get-books')
                 .then(function(data) {
 
                     var array = []

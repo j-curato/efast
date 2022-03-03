@@ -35,8 +35,8 @@ class Advances extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['created_at'], 'safe'],
-            [['book_id'], 'integer'],
+            [['created_at','bank_account_id'], 'safe'],
+            [['book_id','dv_aucs_id'], 'integer'],
             [['province', 'report_type'], 'string', 'max' => 50],
             [['particular'], 'string', 'max' => 500],
             [['nft_number', 'advances_type'], 'string', 'max' => 255],
@@ -59,6 +59,8 @@ class Advances extends \yii\db\ActiveRecord
             'reporting_period' => 'Reporting Period',
             'book_id' => 'Book ID',
             'advances_type' => 'Advances Type',
+            'bank_account_id' => 'Bank Account',
+            'dv_aucs_id' => 'DV Aucs',
         ];
     }
 
