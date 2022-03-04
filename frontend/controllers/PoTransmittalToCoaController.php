@@ -37,16 +37,18 @@ class PoTransmittalToCoaController extends Controller
                     'insert-transmittal'
                 ],
                 'rules' => [
-                    ['actions' => [
-                        'index',
-                        'view',
-                        'create',
-                        'update',
-                        'delete',
-                        'insert-transmittal'
-                    ],
-                    'allow' => true,
-                    'roles' => ['po_transmittal_to_coa']]
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'delete',
+                            'insert-transmittal'
+                        ],
+                        'allow' => true,
+                        'roles' => ['po_transmittal_to_coa']
+                    ]
                 ]
             ],
             'verbs' => [
@@ -164,8 +166,16 @@ class PoTransmittalToCoaController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
+        $model =  $this->findModel($id);
+        Yii::$app->db->createCommand("UPDATE po_transmittal  SET po_transmittal.status ='at_ro'
+      WHERE EXISTS (
+      SELECT po_transmittal_to_coa_entries.po_transmittal_number FROM `po_transmittal_to_coa_entries` WHERE po_transmittal_to_coa_number = :po_transmittal_to_coa_number 
+      AND po_transmittal_to_coa_entries.po_transmittal_number = po_transmittal.transmittal_number
+          )
+        ")
+            ->bindValue(':po_transmittal_to_coa_number', $model->transmittal_number)
+            ->query();
+        $model->delete();
         return $this->redirect(['index']);
     }
 
