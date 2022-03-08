@@ -1,13 +1,14 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+use kartik\grid\GridView;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\PrContractTypeSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Pr Contract Types';
+$this->title = ' Contract Types';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="pr-contract-type-index">
@@ -15,14 +16,20 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Pr Contract Type', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=pr-contract-type/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel' => [
+            'type' => GridView::TYPE_PRIMARY,
+            'heading' => 'Contract Type'
+        ],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
@@ -35,3 +42,21 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
+
+<?php
+$script = <<<JS
+            var i=false;
+        $('#modalButtoncreate').click(function(){
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+        });
+        $('a[title=Update]').click(function(e){
+            e.preventDefault();
+            
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
+        });
+
+
+        
+JS;
+$this->registerJs($script);
+?>

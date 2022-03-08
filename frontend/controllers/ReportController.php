@@ -2205,6 +2205,7 @@ class ReportController extends \yii\web\Controller
                 AND reporting_period <= :to_reporting_period
                 AND book_name = :book
                 AND is_cancelled =1
+                AND QUARTER(CONCAT(cadadr.reporting_period,'-01')) = QUARTER(CONCAT(cadadr.cancelled_r_period,'-01')) AND SUBSTRING_INDEX(cadadr.reporting_period,'-',1) = SUBSTRING_INDEX(cadadr.cancelled_r_period,'-',1)
                 ORDER BY issuance_date
             ")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
@@ -2284,8 +2285,8 @@ class ReportController extends \yii\web\Controller
                 ->queryAll();
             $cancelled_checks = Yii::$app->db->createCommand("SELECT * FROM cadadr
                 WHERE 
-                cancelled_r_period >= :from_reporting_period
-                AND cancelled_r_period <= :to_reporting_period
+                reporting_period >= :from_reporting_period
+                AND reporting_period <= :to_reporting_period
                 AND book_name = :book
                 ORDER BY issuance_date
                 ")

@@ -45,9 +45,9 @@ $this->params['breadcrumbs'][] = $this->title;
             ->bindValue(':id', $model->id)
             ->queryAll();
         $result = ArrayHelper::index($aoq_items_query, null, 'rfq_item_id');
-        $qqq = ArrayHelper::index($aoq_items_query, null, [function ($element) {
+        $qqq = ArrayHelper::index($aoq_items_query, 'payee', [function ($element) {
             return $element['rfq_item_id'];
-        }, 'payee']);
+        }]);
         // var_dump($qqq[33]['PD, DTI-PDI']);
         $aoq_items_array  = ArrayHelper::index($aoq_items_query, 'payee');
         $header_count = count($aoq_items_array) + 5;
@@ -131,12 +131,23 @@ $this->params['breadcrumbs'][] = $this->title;
                         <span>$specification</span>
                         </td>
                         ";
+                    $min_amount   = min(array_column($val, 'amount'));
+                    $lowest = '';
+                    $comma_counter = 0;
                     foreach ($payee_position as $index => $payee) {
-                        $x = !empty($qqq[$i][$index][0]['amount']) ? $qqq[$i][$index][0]['amount'] : '';
+                        $x = !empty($qqq[$i][$index]['amount']) ? $qqq[$i][$index]['amount'] : '';
                         // var_dump( $qqq[$i]);
+                        if (floatval($x) === floatval($min_amount)) {
+                            if ($comma_counter > 0) {
+                                $lowest .= ',<br>';
+                            }
+                            $lowest .= $index . ' ';
+                            $comma_counter++;
+                        }
                         echo "<td>$x</td>";
                     }
-                    echo "<td style='text-align:center'></td>";
+
+                    echo "<td style='text-align:center'>$lowest</td>";
                     // foreach ($val as $q) {
                     //     $amount = $q['amount'];
                     //     $remark = $q['remark'];
@@ -188,15 +199,27 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <td colspan="<?= $header_count ?>" class='no-border'>
                         <div style="float: left;margin-left:20%;text-align:center;margin-top:2em">
-                            <?php $vice_chairperson =   $bac_compositions[array_search('vice chairperson', array_column($bac_compositions, 'position'))];
-                            echo  "<span style='text-decoration:underline'>{$vice_chairperson['employee_name']}</span>";
+                            <?php
+                            $search_vice =  array_search('vice-chairperson', array_column($bac_compositions, 'position'));
+                            $vice_chairperson = '';
+                            if (!empty($search_vice)) {
+                                $vice_chairperson =   $bac_compositions[$search_vice]['employee_name'];
+                            }
+
+                            echo  "<span style='text-decoration:underline'>{$vice_chairperson}</span>";
+
                             echo '<br>';
                             echo 'Vice-Chairperson';
                             ?>
                         </div>
                         <div style="float: right;margin-right:20%;text-align:center;margin-top:2em">
-                            <?php $chairperson =   $bac_compositions[array_search('chairperson', array_column($bac_compositions, 'position'))];
-                            echo  "<span style='text-decoration:underline'>{$chairperson['employee_name']}</span>";
+                            <?php
+                            $search_chairperson =  array_search('chairperson', array_column($bac_compositions, 'position'));
+                            $chairperson =  '';
+                            if (!empty($search_chairperson)) {
+                                $chairperson =   $bac_compositions[$search_chairperson]['employee_name'];
+                            }
+                            echo  "<span style='text-decoration:underline'>{$chairperson}</span>";
                             echo '<br>';
                             echo 'Chairperson';
                             ?>

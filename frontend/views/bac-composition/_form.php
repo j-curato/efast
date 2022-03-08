@@ -109,7 +109,7 @@ $row_number = 0;
                         <hr>
                     </td>
                 </tr>";
-                $row_number++;
+                        $row_number++;
                     }
                 } else {
                 ?>
@@ -240,9 +240,9 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/select2.min.css", ['d
             var source = $(this).closest('tr');;
             var clone = source.clone(true);
             clone.children('td').eq(0).find('.employee').val('')
-            clone.children('td').eq(0).find('.employee').attr('name', 'employee_id[' +row_number + ']')
+            clone.children('td').eq(0).find('.employee').attr('name', 'employee_id[' + row_number + ']')
             clone.children('td').eq(0).find('.position').val('')
-            clone.children('td').eq(0).find('.position').attr('name', 'position[' +row_number + ']')
+            clone.children('td').eq(0).find('.position').attr('name', 'position[' + row_number + ']')
             $('#form_fields_data').append(clone);
             var spacer = `<tr>
                         <td colspan="2" >
