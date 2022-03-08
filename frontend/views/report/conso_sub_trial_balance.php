@@ -302,7 +302,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_
                 success: function(data) {
                     var res = JSON.parse(data)
                     // console.log(res)
-                    displayResultData(res)
+                    displayResultData(res.query)
                     $('#month').text(res.month)
                     $('#book_name').text(res.book_name)
                 }

@@ -2058,7 +2058,44 @@ class ReportController extends \yii\web\Controller
             AND reporting_period <= :to_reporting_period
             AND book_name = :book
             AND is_cancelled =0
-            ORDER BY issuance_date
+
+            UNION
+            SELECT
+            cadadr.mode_of_payment,
+                cadadr.reporting_period,
+                cadadr.dv_number,
+                cadadr.dv_date,
+                cadadr.check_or_ada_no,
+                cadadr.ada_number,
+                cadadr.issuance_date,
+                cadadr.account_name,
+                cadadr.particular,
+                cadadr.book_name,
+                cadadr.nca_recieve,
+                (CASE
+                WHEN QUARTER(CONCAT(cadadr.reporting_period,'-01')) = QUARTER(CONCAT(cadadr.cancelled_r_period,'-01')) AND SUBSTRING_INDEX(cadadr.reporting_period,'-',1) = SUBSTRING_INDEX(cadadr.cancelled_r_period,'-',1)
+                THEN cadadr.check_issued 
+                ELSE
+                cadadr.check_issued * (-1)
+                END
+                ) as check_issued,
+                (CASE
+
+                WHEN QUARTER(CONCAT(cadadr.reporting_period,'-01')) = QUARTER(CONCAT(cadadr.cancelled_r_period,'-01')) AND SUBSTRING_INDEX(cadadr.reporting_period,'-',1) = SUBSTRING_INDEX(cadadr.cancelled_r_period,'-',1)
+                THEN cadadr.ada_issued 
+                ELSE
+                cadadr.ada_issued * (-1)
+                END
+                ) as ada_issued,
+                cadadr.is_cancelled,
+                cadadr.cancelled_r_period
+                FROM cadadr
+                WHERE 
+                reporting_period >= :from_reporting_period
+                AND reporting_period <= :to_reporting_period
+                AND book_name = :book
+                AND is_cancelled =1
+                ORDER BY issuance_date
             ")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->bindValue(':to_reporting_period', $to_reporting_period)
@@ -3197,7 +3234,7 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':book_id', $book_id)
                 ->bindValue(':_year', $year)
                 ->queryAll();
-            return json_encode($query);
+            return json_encode(['query' => $query, 'month' => $month]);
         }
 
         return $this->render('conso_sub_trial_balance');

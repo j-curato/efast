@@ -355,6 +355,8 @@
                             'url' => '#',
                             'items' => [
 
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Contract Type', 'icon' => 'circle-o', 'url' => ['/pr-contract-type'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Mode of Procurment', 'icon' => 'circle-o', 'url' => ['/pr-mode-of-procurement'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Office/Section', 'icon' => 'circle-o', 'url' => ['/pr-office'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Stock/Property', 'icon' => 'circle-o', 'url' => ['/pr-stock'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'BAC', 'icon' => 'circle-o', 'url' => ['/bac-composition'],] : [],
@@ -362,6 +364,8 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Activity/Project Procurement', 'icon' => 'circle-o', 'url' => ['/pr-project-procurement'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Purchase Request', 'icon' => 'circle-o', 'url' => ['/pr-purchase-request'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'RFQ', 'icon' => 'circle-o', 'url' => ['/pr-rfq'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'AOQ', 'icon' => 'circle-o', 'url' => ['/pr-aoq'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Purchase Order', 'icon' => 'circle-o', 'url' => ['/pr-purchase-order'],] : [],
 
                             ],
                         ] : [],
@@ -388,7 +392,7 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Pending Transmittal', 'icon' => 'circle-o', 'url' => ['/po-transmittal/pending-at-ro'],] : [],
                                 Yii::$app->user->can('po_transmittal') ? ['label' => 'Transmittal', 'icon' => 'circle-o', 'url' => ['/po-transmittal'],] : [],
                                 Yii::$app->user->can('po_transmittal') ? ['label' => 'Returned DV`s', 'icon' => 'circle-o', 'url' => ['/po-transmittal/returned-liquidation'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'PO Tranmittal to COA', 'icon' => 'circle-o', 'url' => ['/po-transmittal-to-coa'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'PO Transmittal to COA', 'icon' => 'circle-o', 'url' => ['/po-transmittal-to-coa'],] : [],
 
                             ],
                         ] : ['label' => ''],
