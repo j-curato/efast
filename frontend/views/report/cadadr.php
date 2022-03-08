@@ -158,7 +158,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <thead>
 
                     <tr>
-                        <th class='head' colspan="14">CANCELLED CHECKS</th>
+                        <th class='head' colspan="14" style="background-color: #ffff80;">CANCELLED CHECKS</th>
                     </tr>
 
                     <tr>
