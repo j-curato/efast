@@ -7,6 +7,7 @@ use app\models\PrAoq;
 use app\models\PrAoqEntries;
 use app\models\PrAoqSearch;
 use ErrorException;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -381,5 +382,26 @@ class PrAoqController extends Controller
 
             return $this->rfqItemData($id);
         }
+    }
+
+    public function actionSearchAoq($q = null, $id = null, $province = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+
+            $query->select([" id, `aoq_number` as text"])
+                ->from('pr_aoq')
+                ->where(['like', 'aoq_number', $q]);
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+
+        return $out;
     }
 }

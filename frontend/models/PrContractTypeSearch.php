@@ -4,13 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\CheckRange;
-use Yii;
+use app\models\PrContractType;
 
 /**
- * CheckRangeSearch represents the model behind the search form of `app\models\CheckRange`.
+ * PrContractTypeSearch represents the model behind the search form of `app\models\PrContractType`.
  */
-class CheckRangeSearch extends CheckRange
+class PrContractTypeSearch extends PrContractType
 {
     /**
      * {@inheritdoc}
@@ -18,9 +17,8 @@ class CheckRangeSearch extends CheckRange
     public function rules()
     {
         return [
-            [['id', 'from', 'to'], 'integer'],
-            [['province'], 'string'],
-            [['bank_account_id'], 'safe'],
+            [['id'], 'integer'],
+            [['contract_name'], 'safe'],
         ];
     }
 
@@ -42,26 +40,16 @@ class CheckRangeSearch extends CheckRange
      */
     public function search($params)
     {
-        $province = Yii::$app->user->identity->province;
-        $q = CheckRange::find();
-        if (
-            $province === 'adn' ||
-            $province === 'ads' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
-            $q->where('province = :province', ['province' => $province]);
-        }
-        $query = $q;
+        $query = PrContractType::find();
 
+        // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
 
         $this->load($params);
-        $query->joinWith('bankAccount');
+
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
@@ -71,11 +59,9 @@ class CheckRangeSearch extends CheckRange
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'from' => $this->from,
-            'to' => $this->to,
         ]);
-        $query->andFilterWhere(['like', 'province', $this->province])
-            ->andFilterWhere(['or', ['like', 'bank_account.account_number', $this->bank_account_id], ['like', 'bank_account.account_name', $this->bank_account_id]]);
+
+        $query->andFilterWhere(['like', 'contract_name', $this->contract_name]);
 
         return $dataProvider;
     }

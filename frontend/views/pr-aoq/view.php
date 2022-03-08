@@ -22,8 +22,9 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php
         // $aoq_items_array = [];
         $aoq_items_query = Yii::$app->db->createCommand("SELECT 
+        pr_rfq_item.id as rfq_item_id,
     pr_purchase_request_item.quantity,
-    pr_stock.stock_title,
+    pr_stock.stock_title as `description`,
     pr_purchase_request_item.specification,
     payee.account_name as payee,
     pr_aoq_entries.amount,
@@ -43,18 +44,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
             ->bindValue(':id', $model->id)
             ->queryAll();
-
+        $result = ArrayHelper::index($aoq_items_query, null, 'rfq_item_id');
+        $qqq = ArrayHelper::index($aoq_items_query, null, [function ($element) {
+            return $element['rfq_item_id'];
+        }, 'payee']);
+        // var_dump($qqq[33]['PD, DTI-PDI']);
         $aoq_items_array  = ArrayHelper::index($aoq_items_query, 'payee');
         $header_count = count($aoq_items_array) + 5;
         $bac_compositions = Yii::$app->db->createCommand("SELECT 
-    employee_search_view.employee_name,
-    bac_position.position
-    FROM bac_composition
-    LEFT JOIN bac_composition_member ON bac_composition.id  = bac_composition_member.bac_composition_id
-    LEFT JOIN bac_position ON bac_composition_member.bac_position_id = bac_position.id
-    LEFT JOIN employee_search_view ON bac_composition_member.employee_id = employee_search_view.employee_id
-    WHERE bac_composition.id = :bac_id
-    ")
+            employee_search_view.employee_name,
+            bac_position.position
+            FROM bac_composition
+            LEFT JOIN bac_composition_member ON bac_composition.id  = bac_composition_member.bac_composition_id
+            LEFT JOIN bac_position ON bac_composition_member.bac_position_id = bac_position.id
+            LEFT JOIN employee_search_view ON bac_composition_member.employee_id = employee_search_view.employee_id
+            WHERE bac_composition.id = :bac_id
+            ")
             ->bindValue(':bac_id', $aoq_items_query[0]['bac_composition_id'])
             ->queryAll();
 
@@ -95,69 +100,58 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
                     <?php
-                    foreach ($aoq_items_array as $i => $val) {
-                        $payee = $val['payee'];
-                        echo "<th>$payee</th>";
+                    $payee_position = [];
+                    $payee_count  = 1;
+                    foreach ($qqq as $i => $val) {
+
+                        foreach ($val as $x => $q) {
+                            $payee = $x;
+                            echo "<td style='text-align:center'>
+                                <span style='float:right'>$payee</span>
+                            </td>";
+                            $payee_position[$payee] = $payee_count;
+                            $payee_count++;
+                        }
                     }
                     ?>
 
                     </th>
-                    <th>Lowest
+                    <th>Lowest</th>
 
                 </tr>
-                <tr>
-                    <td></td>
-                    <td><?= $aoq_items_query[0]['quantity'] ?></td>
-                    <td><?= $aoq_items_query[0]['unit_of_measure'] ?></td>
-                    <td><?php
-                        $purpose = $aoq_items_query[0]['purpose'];
-                        echo "<span style='font-weight:bold'>{$aoq_items_query[0]['stock_title']}</span>";
-                        echo '<br>';
-                        $specs = preg_replace('#\[n\]#', "<br>", $aoq_items_query[0]['specification']);
-                        echo "<span> $specs</span>";
-                        echo "<br><br>";
-                        echo "$purpose";
-
-                        ?></td>
-                    <?php
-                    foreach ($aoq_items_array as $i => $val) {
-                        $amount = $aoq_items_array[$i]['amount'];
-                        $remark = $aoq_items_array[$i]['remark'];
-                        echo "<td style='text-align:center'>
-                        
-                        <span style='float:right'>$amount</span>
+                <?php foreach ($result as $i => $val) {
+                    $description = $val[0]['description'];
+                    $specification =  $specs = preg_replace('#\[n\]#', "<br>", $val[0]['specification']);
+                    $quantity = $val[0]['quantity'];
+                    $unit_of_measure = $val[0]['unit_of_measure'];
+                    echo " <tr><td></td><td> {$quantity}</td>
+                        <td> {$unit_of_measure}</td>
+                        <td><span>$description</span>
                         <br>
-                        <br>
-                        <br>
-                        <span >$remark</span>
-
-                    </td>";
+                        <span>$specification</span>
+                        </td>
+                        ";
+                    foreach ($payee_position as $index => $payee) {
+                        $x = !empty($qqq[$i][$index][0]['amount']) ? $qqq[$i][$index][0]['amount'] : '';
+                        // var_dump( $qqq[$i]);
+                        echo "<td>$x</td>";
                     }
+                    echo "<td style='text-align:center'></td>";
+                    // foreach ($val as $q) {
+                    //     $amount = $q['amount'];
+                    //     $remark = $q['remark'];
+                    //     echo "<td style='text-align:center'>
+                    //     <span style='float:right'>$amount</span>
+                    //     <br>
+                    //     <br>
+                    //     <br>
+                    //     <span >$remark</span>
 
-                    ?>
-                    <td><?php
+                    // </td>";
+                    // }
+                    echo "</tr>";
+                } ?>
 
-                        $lowest_payee = Yii::$app->db->createCommand(" SELECT 
-                    payee.account_name as payee
-                     FROM pr_aoq_entries 
-                    LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
-                    WHERE pr_aoq_entries.amount = (SELECT MIN(amount) FROM pr_aoq_entries WHERE pr_aoq_entries.pr_aoq_id = :aoq_id)
-                    AND pr_aoq_entries.pr_aoq_id = :aoq_id
-                    ")
-                            ->bindValue(':aoq_id', $model->id)
-                            ->queryAll();
-                        foreach ($lowest_payee as $i => $val) {
-                            if ($i > 0) {
-                                echo ',';
-                                echo "<br>";
-                            }
-                            echo "{$val['payee']}";
-                        }
-                        ?>
-
-                    </td>
-
-                </tr>
             </thead>
             <tbody>
                 <tr>

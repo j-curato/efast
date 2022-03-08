@@ -18,12 +18,62 @@ $this->title = "Detailed Dv";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index" style="background-color: white;">
+    <form id="filter">
+        <div class="row" style="padding: 2.5em;">
+            <div class="col-sm-3">
+                <label for="from_reporting_period">From Reporting Period</label>
+                <?php
+
+
+
+                echo DatePicker::widget([
+                    'name' => 'from_reporting_period',
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm',
+                        'autoclose' => true,
+                        'minViewMode' => 'months'
+                    ],
+                    'options' => []
+                ])
+                ?>
+
+            </div>
+            <div class="col-sm-3">
+                <label for="to_reporting_period">To Reporting Period</label>
+                <?php
+
+
+
+                echo DatePicker::widget([
+                    'name' => 'to_reporting_period',
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm',
+                        'autoclose' => true,
+                        'minViewMode' => 'months'
+                    ],
+                    'options' => []
+                ])
+                ?>
+
+            </div>
+            <div class="col-sm-3">
+                <button type="button" class="btn btn-success float-left" style="margin-top: 2.3rem;" id="generate">Generate</button>
+            </div>
+        </div>
+    </form>
+
     <?php
 
 
+    // if (!empty($dataProvider)) {
 
 
     $gridColumn = [
+        [
+            'label' => 'Year',
+            'attribute' => 'year'
+        ],
+
         'dv_number',
         'reporting_period',
         'obligation_number',
@@ -68,12 +118,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
     ];
 
-
     ?>
-    <?= GridView::widget([
+    <?php echo GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'panel' => [
+            'before' => '',
             'type' => GridView::TYPE_PRIMARY,
             'heading' => 'Detailed DV',
         ],
@@ -82,6 +132,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'position' => 'absolute',
         ],
         'pjax' => true,
+        'pjaxSettings' => [
+            'options' => [
+                'id' => 'detailed_dv_pjax'
+            ]
+        ],
         'toolbar' =>  [
             [
                 'content' =>
@@ -97,14 +152,17 @@ $this->params['breadcrumbs'][] = $this->title;
                         ExportMenu::FORMAT_HTML => false,
                     ]
 
-                ]), 
+                ]),
                 'options' => ['class' => 'btn-group mr-2', 'style' => 'margin-right:20px']
             ],
 
         ],
         'toggleDataContainer' => ['class' => 'btn-group mr-2'],
         'columns' => $gridColumn,
-    ]); ?>
+    ]);
+    // }
+
+    ?>
 
 </div>
 <style>
@@ -114,20 +172,33 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 0;
     }
 </style>
-<script src="/js/jquery.min.js" type="text/javascript"></script>
-<link href="/js/select2.min.js" />
-<link href="/css/select2.min.css" rel="stylesheet" />
-<link href="/js/jquery.dataTables.js" />
-<link href="/css/jquery.dataTables.css" rel="stylesheet" />
+
 
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/jquery.dataTables.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
+<script>
+
+</script>
 <?php
 SweetAlertAsset::register($this);
 $script = <<< JS
+    $(document).ready(function(){
+        $('#generate').click(function(e) {
+        e.preventDefault()
+        $.pjax({
+            container: "#detailed_dv_pjax",
+            url: window.location.pathname + '?r=report/detailed-dv-aucs',
+            type: 'POST',
+            data:$("#filter").serialize()
+        });
 
+       })
+       $('#q').click(function(){
+           console.log('qwe');
+       })
+    })
 JS;
 $this->registerJs($script);
 ?>

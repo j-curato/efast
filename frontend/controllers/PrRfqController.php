@@ -281,8 +281,7 @@ class PrRfqController extends Controller
             LEFT JOIN pr_aoq_entries  ON pr_rfq_item.id = pr_aoq_entries.pr_rfq_item_id
             WHERE pr_rfq_item.pr_rfq_id = :id AND pr_aoq_entries.id IS NULL $and $sql", $params)
                 ->bindValue(':id', $model->id)
-                ->execute();
-            ;
+                ->execute();;
 
             // $q =  \Yii::$app
             //     ->db

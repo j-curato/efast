@@ -113,10 +113,10 @@ class AdvancesEntries extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery|\common\models\query\LiquidationEntriesQuery
      */
-    public function getLiquidationEntries()
-    {
-        return $this->hasMany(LiquidationEntries::className(), ['advances_entries_id' => 'id']);
-    }
+    // public function getLiquidationEntries()
+    // {
+    //     return $this->hasMany(LiquidationEntries::className(), ['advances_entries_id' => 'id']);
+    // }
 
     /**
      * {@inheritdoc}

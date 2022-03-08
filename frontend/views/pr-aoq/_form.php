@@ -163,6 +163,7 @@ $row = 1;
     .con {
         background-color: white;
         padding: 2em;
+        border: 1px solid black;
     }
 </style>
 <?php

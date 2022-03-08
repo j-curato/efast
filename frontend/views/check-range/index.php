@@ -28,12 +28,21 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     $gridColumn = [
 
-        'id',
         'from',
         'to',
         'province',
-
-        ['class' => 'yii\grid\ActionColumn'],
+        [
+            'label' => 'Bank Account',
+            'attribute' => 'bank_account_id',
+            'value' => function ($model) {
+                $account = '';
+                if (!empty($model->bankAccount->id)) {
+                    $account  = $model->bankAccount->account_number . '-' . $model->bankAccount->account_name;
+                }
+                return $account;
+            }
+        ],
+        ['class' => 'kartik\grid\ActionColumn', 'deleteOptions' =>  ['style' => 'display:none'],],
     ];
     ?>
 

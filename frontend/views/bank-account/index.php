@@ -34,13 +34,16 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
 
-          
+        
             'account_number',
             'account_name',
             'province',
             
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'kartik\grid\ActionColumn',
+                'deleteOptions' =>  ['style'=>'display:none'],
+        ],
         ],
     ]); ?>
 

@@ -4,13 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\CheckRange;
-use Yii;
+use app\models\PrIar;
 
 /**
- * CheckRangeSearch represents the model behind the search form of `app\models\CheckRange`.
+ * PrIarSearch represents the model behind the search form of `app\models\PrIar`.
  */
-class CheckRangeSearch extends CheckRange
+class PrIarSearch extends PrIar
 {
     /**
      * {@inheritdoc}
@@ -18,9 +17,8 @@ class CheckRangeSearch extends CheckRange
     public function rules()
     {
         return [
-            [['id', 'from', 'to'], 'integer'],
-            [['province'], 'string'],
-            [['bank_account_id'], 'safe'],
+            [['id', 'fk_pr_purchase_order_id', 'fk_insepection_officer', 'fk_property_custodian'], 'integer'],
+            [['_date', 'reporting_period', 'invoice_number', 'invoice_date'], 'safe'],
         ];
     }
 
@@ -42,26 +40,16 @@ class CheckRangeSearch extends CheckRange
      */
     public function search($params)
     {
-        $province = Yii::$app->user->identity->province;
-        $q = CheckRange::find();
-        if (
-            $province === 'adn' ||
-            $province === 'ads' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
-            $q->where('province = :province', ['province' => $province]);
-        }
-        $query = $q;
+        $query = PrIar::find();
 
+        // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
 
         $this->load($params);
-        $query->joinWith('bankAccount');
+
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
@@ -71,11 +59,15 @@ class CheckRangeSearch extends CheckRange
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'from' => $this->from,
-            'to' => $this->to,
+            '_date' => $this->_date,
+            'invoice_date' => $this->invoice_date,
+            'fk_pr_purchase_order_id' => $this->fk_pr_purchase_order_id,
+            'fk_insepection_officer' => $this->fk_insepection_officer,
+            'fk_property_custodian' => $this->fk_property_custodian,
         ]);
-        $query->andFilterWhere(['like', 'province', $this->province])
-            ->andFilterWhere(['or', ['like', 'bank_account.account_number', $this->bank_account_id], ['like', 'bank_account.account_name', $this->bank_account_id]]);
+
+        $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
+            ->andFilterWhere(['like', 'invoice_number', $this->invoice_number]);
 
         return $dataProvider;
     }

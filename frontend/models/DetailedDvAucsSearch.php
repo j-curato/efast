@@ -13,14 +13,16 @@ class DetailedDvAucsSearch extends DetailedDvAucs
     /**
      * {@inheritdoc}
      */
+    public $year;
     public function rules()
     {
         return [
             [[], 'integer'],
-            [['dv_number', 'obligation_number', 'particular',
-             'transaction_tracking_number', 'reporting_period',
-             'payee','mfo_name','mfo_code',
-             'allotment_number','check_or_ada_no','ada_number'
+            [[
+                'dv_number', 'obligation_number', 'particular',
+                'transaction_tracking_number', 'reporting_period',
+                'payee', 'mfo_name', 'mfo_code',
+                'allotment_number', 'check_or_ada_no', 'ada_number', 'year'
             ], 'safe'],
         ];
     }

@@ -12,6 +12,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\ForbiddenHttpException;
 
 /**
  * EmployeeController implements the CRUD actions for Employee model.
@@ -203,5 +204,88 @@ class EmployeeController extends Controller
         //     $out['results'] = ['id' => $id, 'text' => ChartOfAccounts::find($id)->uacs];
         // }
         return $out;
+    }
+    public function actionImport()
+
+    {
+        if (Yii::$app->user->can('import-jev')) {
+
+            if (!empty($_POST)) {
+                $name = $_FILES["file"]["name"];
+
+
+                $id = uniqid();
+                $file = "jev/{$id}_{$name}";;
+                if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
+                } else {
+                    return "ERROR 2: MOVING FILES FAILED.";
+                    die();
+                }
+
+                $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+                $excel = $reader->load($file);
+                $excel->setActiveSheetIndexByName('Employee');
+                $worksheet = $excel->getActiveSheet();
+                $reader->setReadDataOnly(FALSE);
+                // print_r($excel->getSheetNames());
+                $rows = [];
+
+                $transaction = Yii::$app->db->beginTransaction();
+                foreach ($worksheet->getRowIterator(2) as $key => $row) {
+                    $cellIterator = $row->getCellIterator();
+                    $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                    $cells = [];
+                    $y = 0;
+                    // if ($key > 2) {
+                    foreach ($cellIterator as $x => $cell) {
+                        $cells[] = $cell->getValue();
+                    }
+
+                    $employee_number = $cells[0];
+                    $l_name = $cells[1];
+                    $f_name = $cells[2];
+                    $m_name = $cells[3];
+                    $suffix = $cells[4];
+                    $position = $cells[5];
+                    $status = $cells[6];
+                    $office = $cells[7];
+
+
+                    $employee = new Employee();
+                    $employee->employee_id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                    $employee->f_name = $f_name;
+                    $employee->l_name = $l_name;
+                    $employee->m_name = $m_name;
+                    $employee->status = $status;
+                    $employee->position = $position;
+                    $employee->office = $office;
+                    $employee->employee_number = $employee_number;
+                    $employee->suffix = $suffix;
+                    if ($employee->save(false)) {
+                    }
+                }
+
+
+                $transaction->commit();
+
+                // ob_clean();
+                echo '<pre>';
+                var_dump("Success");
+                echo '</pre>';
+                // return ob_get_clean();
+                // foreach ($jev_entries as $x => $val) {
+                //     if ($x > 420) {
+                //         echo '<pre>';
+                //         var_dump($val);
+                //         echo '</pre>';
+                //     }
+                // }
+                // unlink($file . '.xlsx');
+
+            }
+        } else {
+            throw new ForbiddenHttpException();
+        }
     }
 }

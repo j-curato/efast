@@ -32,7 +32,7 @@ class Employee extends \yii\db\ActiveRecord
     {
         return [
             [['property_custodian', 'employee_id'], 'integer'],
-            [['employee_number', 'f_name', 'l_name', 'm_name', 'status', 'position'], 'string', 'max' => 255],
+            [['employee_number', 'f_name', 'l_name', 'm_name', 'status', 'position','suffix'], 'string', 'max' => 255],
         ];
     }
 
@@ -50,6 +50,7 @@ class Employee extends \yii\db\ActiveRecord
             'property_custodian' => 'Property Custodian',
             'position' => 'Position',
             'employee_number' => 'Employee Number',
+            'suffix' => 'Suffix',
         ];
     }
 }
