@@ -13,7 +13,7 @@ class m220309_041355_update_advances_view extends Migration
     public function safeUp()
     {
         Yii::$app->db->createCommand("DROP VIEW IF EXISTS advances_view;
-        CREATE VIEW AS SELECT 
+        CREATE VIEW advances_view AS SELECT 
         advances_entries.id as entry_id,
         advances_entries.advances_id,
         advances.nft_number,
