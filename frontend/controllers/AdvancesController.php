@@ -355,6 +355,7 @@ class AdvancesController extends Controller
                     'advances_entries.report_type as entry_report_type',
                     'advances.reporting_period',
                     'advances.province',
+                    'advances.bank_account_id',
                     'advances_entries.amount',
                     'advances_entries.object_code',
                     'advances_entries.fund_source',

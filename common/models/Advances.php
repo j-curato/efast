@@ -35,8 +35,8 @@ class Advances extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['created_at','bank_account_id'], 'safe'],
-            [['book_id','dv_aucs_id'], 'integer'],
+            [['created_at', 'bank_account_id'], 'safe'],
+            [['book_id', 'dv_aucs_id'], 'integer'],
             [['province', 'report_type'], 'string', 'max' => 50],
             [['particular'], 'string', 'max' => 500],
             [['nft_number', 'advances_type'], 'string', 'max' => 255],

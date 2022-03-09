@@ -51,7 +51,7 @@ class CheckRangeSearch extends CheckRange
             $province === 'sdn' ||
             $province === 'pdi'
         ) {
-            $q->where('province = :province', ['province' => $province]);
+            $q->where('check_range.province = :province', ['province' => $province]);
         }
         $query = $q;
 

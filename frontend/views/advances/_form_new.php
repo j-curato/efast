@@ -105,7 +105,7 @@ $bank_account_id = '';
                 echo Select2::widget([
                     'data' => ArrayHelper::map($bank_accounts, 'id', 'account_name'),
                     'name' => 'bank_account_id',
-                    'value' => $bank_account_id,
+                    'id' => 'bank_account_id',
                     'pluginOptions' => [
                         'placeholder' => 'Select Bank Account'
                     ]
@@ -486,11 +486,11 @@ $script = <<<JS
                         },
                         success:function(data){
                             var res= JSON.parse(data)
-                            console.log(res)
 
                             $('#report').val(res[0]['report_type']).trigger('change');
                             $('#province').val(res[0]['province']).trigger('change');
                             $('#particular').val(res[0]['particular']).trigger('change');
+                            $('#bank_account_id').val(res[0]['bank_account_id']).trigger('change');
                             $('#reporting_period').val(res[0]['reporting_period'])
                             addToTransactionTable(res)
 
@@ -519,7 +519,6 @@ $script = <<<JS
             })
             fund_source_type = array
             
-            console.log(fund_source_type)
         })
         // $('#report').change(function(){
         //     addToTransactionTable()
