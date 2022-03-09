@@ -310,35 +310,31 @@ $this->params['breadcrumbs'][] = $this->title;
                     //     $account_title = $val->chartOfAccount->general_ledger;
                     // }
 
-                    $account_title = Yii::$app->db->createCommand("SELECT IFNULL(account_title,'') as account_title  FROM accounting_codes
+                    $find_account_title = Yii::$app->db->createCommand("SELECT IFNULL(account_title,'') as account_title  FROM accounting_codes
                         where object_code =:object_code")
                         ->bindValue(':object_code', $val->object_code)
                         ->queryOne();
                     $object_code = !empty($val->object_code) ? $val->object_code : '';
+                    $account_title = !empty($find_account_title['account_title']) ? $find_account_title['account_title'] : '';
 
-                    // ob_clean();
-                    // echo "<pre>";
-                    // var_dump($val->object_code);
-                    // echo "</pre>";
-                    // return ob_get_clean();
                     if ($i % 2 === 0) {
                         $is_even = 'even';
                     } else {
                         $is_even = '';
                     }
                     echo "<tr class='$is_even'>
-                <td>{$object_code}</td>
-                <td>{$account_title['account_title']}</td>
-                <td  class='amount'>$debit</td>
-                <td  class='amount'>$credit</td>
-            </tr>";
+                        <td>{$object_code}</td>
+                        <td>{$account_title}</td>
+                        <td  class='amount'>$debit</td>
+                        <td  class='amount'>$credit</td>
+                    </tr>";
                 }
 
                 echo "<tr class='total'>
-        <td colspan='2' style='font-weight:bold'>Total</td>
-        <td style='text-align:right'>" . number_format($total_debit, 2) . "</td>
-        <td style='text-align:right'>" . number_format($total_credit, 2) . "</td>
-        </tr>";
+                        <td colspan='2' style='font-weight:bold'>Total</td>
+                        <td style='text-align:right'>" . number_format($total_debit, 2) . "</td>
+                        <td style='text-align:right'>" . number_format($total_credit, 2) . "</td>
+                    </tr>";
                 ?>
 
             </tbody>
