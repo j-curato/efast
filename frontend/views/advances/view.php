@@ -41,7 +41,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 foreach ($model->advancesEntries as $i => $val) {
                     $payee = !empty($val->cashDisbursement->dvAucs->payee_id) ? $val->cashDisbursement->dvAucs->payee->account_name : '';
                     if ($val->is_deleted !== 1) {
-
+                        $dv_number = !empty($val->cashDisbursement->dvAucs) ? $val->cashDisbursement->dvAucs->dv_number : '';
+                        $check_or_ada_no = !empty($val->cashDisbursement->check_or_ada_no) ? $val->cashDisbursement->check_or_ada_no : '';
+                        $ada_number = !empty($val->cashDisbursement->ada_number) ? $val->cashDisbursement->ada_number : '';
+                        $issuance_date = !empty($val->cashDisbursement->issuance_date) ? $val->cashDisbursement->issuance_date : '';
                         echo "
                         <tr>
 
@@ -50,16 +53,16 @@ $this->params['breadcrumbs'][] = $this->title;
                         {$val->fund_source}
                         </td>
                         <td>
-                        {$val->cashDisbursement->dvAucs->dv_number}
+                        {$dv_number}
                         </td>
                         <td>
-                        {$val->cashDisbursement->check_or_ada_no}
+                        {$check_or_ada_no}
                         </td>
                         <td>
-                        {$val->cashDisbursement->ada_number}
+                        {$ada_number}
                         </td>
                         <td>
-                        {$val->cashDisbursement->issuance_date}
+                        {$issuance_date}
                         </td>
                         <td>
                         {$payee}
