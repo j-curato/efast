@@ -44,10 +44,11 @@ class AdvancesView extends \yii\db\ActiveRecord
             [['particular'], 'string'],
             [['amount'], 'number'],
             [['book_name'], 'required'],
-            [['nft_number', 'dv_number', 'payee', 'book_name', 'object_code'], 'string', 'max' => 255],
+            [['nft_number', 'dv_number', 'payee', 'book_name', 'object_code','bank_account'], 'string', 'max' => 255],
             [['mode_of_payment', 'issuance_date', 'province', 'report_type'], 'string', 'max' => 50],
             [['check_number'], 'string', 'max' => 100],
             [['reporting_period'], 'string', 'max' => 20],
+            
             [['fund_source', 'account_title'], 'string', 'max' => 500],
         ];
     }
@@ -74,6 +75,7 @@ class AdvancesView extends \yii\db\ActiveRecord
             'report_type' => 'Report Type',
             'object_code' => 'Object Code',
             'account_title' => 'Account Title',
+            'bank_account' => 'Bank Account',
         ];
     }
 }
