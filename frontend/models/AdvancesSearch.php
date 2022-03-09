@@ -18,7 +18,7 @@ class AdvancesSearch extends Advances
     {
         return [
             [['id'], 'integer'],
-            [['province', 'report_type', 'particular','nft_number'], 'safe'],
+            [['province', 'report_type', 'particular','nft_number','bank_account_id'], 'safe'],
         ];
     }
 
@@ -59,6 +59,7 @@ class AdvancesSearch extends Advances
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'bank_account_id' => $this->bank_account_id,
         ]);
 
         $query->andFilterWhere(['like', 'province', $this->province])

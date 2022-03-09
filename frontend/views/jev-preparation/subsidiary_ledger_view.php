@@ -549,9 +549,6 @@ $this->params['breadcrumbs'][] = $this->title;
         mywindow.document.write("<table class='table' cellspacing='0'><tbody>");
         mywindow.document.write("<thead>");
 
-
-
-
         mywindow.document.write("</thead>");
         $.each(data, function(key, val) {
             // console.log(val[1]['object_code'])

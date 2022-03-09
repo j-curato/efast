@@ -22,8 +22,8 @@ class m220303_070608_create_pr_purchase_order_table extends Migration
             'delivery_date' => $this->date(),
             'delivery_term' => $this->text(),
             'payment_term' => $this->string(),
-            'fk_auth_official' => $this->integer(),
-            'fk_accounting_unit' => $this->integer(),
+            'fk_auth_official' => $this->bigInteger(),
+            'fk_accounting_unit' => $this->bigInteger(),
             'created_at'=>$this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
 
 

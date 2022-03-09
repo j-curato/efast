@@ -105,23 +105,29 @@ class ParController extends Controller
     public function actionCreate()
     {
         $model = new Par();
-        $model->par_number = $this->getParNumber();
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $pc = new PropertyCard();
-            $pc->pc_number = $this->getPcNumber();
-            $pc->par_number = $model->par_number;
-            $this->generateQr($pc->pc_number);
-            if ($pc->save()) {
-                // $url = Url::to(['@propertycardView', 'id' => $pc->pc_number]);
-                // echo $url;
-                return Yii::$app->response->redirect(['property-card/view', 'id' => $pc->pc_number]);
-                // return $this->redirect($url);
-            }
+        if ($model->load(Yii::$app->request->post())) {
+            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+            $model->par_number = $this->getParNumber();
 
-            return $this->redirect(['view', 'id' => $model->par_number]);
+            if ($model->save(false)) {
+
+                $pc = new PropertyCard();
+                $pc->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $pc->pc_number = $this->getPcNumber();
+                $pc->par_number = $model->par_number;
+                $this->generateQr($pc->pc_number);
+                if ($pc->save()) {
+                    // $url = Url::to(['@propertycardView', 'id' => $pc->pc_number]);
+                    // echo $url;
+                    return Yii::$app->response->redirect(['property-card/view', 'id' => $pc->id]);
+                    // return $this->redirect($url);
+                }
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
-        return $this->render('create', [
+        return $this->renderAjax('create', [
             'model' => $model,
         ]);
     }
@@ -140,11 +146,11 @@ class ParController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             if ($model->save()) {
                 // return $model->agency_id;
-                return $this->redirect(['view', 'id' => $model->par_number]);
+                return $this->redirect(['view', 'id' => $model->id]);
             }
         }
 
-        return $this->render('update', [
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
     }
@@ -182,7 +188,7 @@ class ParController extends Controller
     {
 
         $query = Yii::$app->db->createCommand("SELECT
-        SUBSTRING_INDEX(par.par_number,'-',-1) as p_number
+        CAST(SUBSTRING_INDEX(par.par_number,'-',-1)AS UNSIGNED) as p_number
         FROM par
         ORDER BY  p_number DESC LIMIT 1")->queryScalar();
         $num = 1;
@@ -190,7 +196,7 @@ class ParController extends Controller
             $num = intval($query) + 1;
         }
         $new_num = substr(str_repeat(0, 5) . $num, -5);
-        $string = 'DTI XIII-' . $new_num;
+        $string = 'DTI-XIII-' . $new_num;
         return $string;
     }
     public function actionSearchPar($q = null, $id = null, $province = null)

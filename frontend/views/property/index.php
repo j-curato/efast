@@ -78,20 +78,50 @@ $this->params['breadcrumbs'][] = $this->title;
             'fontAwesome' => true
         ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
             'property_number',
-            'book_id',
-            'unit_of_measure_id',
-            'employee_id',
             'iar_number',
-            //'article',
-            //'model',
-            //'serial_number',
-            //'quantity',
-            //'acquisition_amount',
+            [
+                'label' => 'Unit of Measure',
+                'attribute' => 'unit_of_measure_id',
+                'value' => function ($model) {
+                    $unit_of_measure = '';
+                    if (!empty($model->unitOfMeasure->unit_of_measure)) {
 
-            ['class' => 'yii\grid\ActionColumn'],
+                        $unit_of_measure = $model->unitOfMeasure->unit_of_measure;
+                    }
+                    return $unit_of_measure;
+                }
+            ],
+            [
+                'label' => 'Book',
+                'attribute' => 'book_id',
+                'value' => function ($model) {
+                    $book = '';
+                    if (!empty($model->book->name)) {
+
+                        $book = $model->book->name;
+                    }
+                    return $book;
+                }
+            ],
+            [
+                'label' => 'Property Custodian',
+                'attribute' => 'employee_id',
+                'value' => function ($model) {
+                    $emp = '';
+                    if (!empty($model->employee->f_name)) {
+                        $f_name = !empty($model->employee->f_name) ? $model->employee->f_name : '';
+                        $m_name = !empty($model->employee->m_name[0]) ? $model->employee->m_name[0] : '';
+                        $l_name = !empty($model->employee->l_name) ? $model->employee->l_name : '';
+                        $emp =   $f_name . ' ' .  $m_name . '. ' .  $l_name;
+                    }
+                    return $emp;
+                }
+            ],
+
+
+            ['class' => 'kartik\grid\ActionColumn'],
         ],
     ]); ?>
 

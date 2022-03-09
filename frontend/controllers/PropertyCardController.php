@@ -97,12 +97,14 @@ class PropertyCardController extends Controller
     {
         $model = new PropertyCard();
         if ($model->load(Yii::$app->request->post())) {
+            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             $model->pc_number = $this->getPcNumber();
+
             $this->generateQr($model->pc_number);
             if ($model->save()) {
             }
 
-            return $this->redirect(['view', 'id' => $model->pc_number]);
+            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [
@@ -122,7 +124,7 @@ class PropertyCardController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->pc_number]);
+            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('update', [
@@ -162,7 +164,7 @@ class PropertyCardController extends Controller
     function getPcNumber()
     {
 
-        $query = Yii::$app->db->createCommand("SELECT substring_index(pc_number,'-',-1) as pc_number
+        $query = Yii::$app->db->createCommand("SELECT CAST(substring_index(pc_number,'-',-1)AS UNSIGNED) as pc_number
         FROM property_card
         
         ORDER BY pc_number DESC LIMIT 1

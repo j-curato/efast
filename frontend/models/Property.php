@@ -53,11 +53,11 @@ class Property extends \yii\db\ActiveRecord
     {
         return [
             'property_number' => 'Property Number',
-            'book_id' => 'Book ID',
-            'unit_of_measure_id' => 'Unit Of Measure Id',
-            'employee_id' => 'Employee ID',
-            'iar_number' => 'Iar Number',
-            'article' => 'Article',
+            'book_id' => 'Book ',
+            'unit_of_measure_id' => 'Unit Of Measure ',
+            'employee_id' => 'Property Custodian',
+            'iar_number' => 'IAR Number',
+            'article' => 'Description',
             'model' => 'Model',
             'serial_number' => 'Serial Number',
             'quantity' => 'Quantity',
@@ -83,11 +83,9 @@ class Property extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Employee::class, ['employee_id' => 'employee_id']);
     }
-    
+
     public function getUnitOfMeasure()
     {
         return $this->hasOne(UnitOfMeasure::class, ['id' => 'unit_of_measure_id']);
     }
-    
-    
 }

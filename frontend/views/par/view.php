@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -14,27 +15,21 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="par-view">
 
 
-    <p class=''>
-        <?= Html::a('Update', ['update', 'id' => $model->par_number], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->par_number], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-        <?php
-        if (!empty($model->propertyCard->pc_number)) {
-
-            $t = yii::$app->request->baseUrl . "/index.php?r=property-card/view&id={$model->propertyCard->pc_number}";
-            echo  Html::a('Property Card Link', $t, ['class' => 'btn btn-success ']);
-        }
-        ?>
-    </p>
 
 
-    <div class="con">
 
+    <div class="container">
+        <p class=''>
+            <?= Html::button('<i class="glyphicon glyphicon-pencil"></i> Update', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=par/update&id=' . $model->id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+
+            <?php
+            if (!empty($model->propertyCard->pc_number)) {
+
+                $t = yii::$app->request->baseUrl . "/index.php?r=property-card/view&id={$model->propertyCard->pc_number}";
+                echo  Html::a('Property Card Link', $t, ['class' => 'btn btn-link ']);
+            }
+            ?>
+        </p>
         <table>
             <thead>
                 <tr>
@@ -140,12 +135,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <th class='foot' colspan="3">
 
-                        <span>___________</span>
+                        <span>_______________</span>
                         <br>
                         <span>Date</span>
                     </th>
                     <th class='foot' colspan="3">
-                        <span>___________</span>
+                        <span>_______________</span>
                         <br>
                         <span>Date</span>
                     </th>
@@ -167,6 +162,7 @@ $this->params['breadcrumbs'][] = $this->title;
     table {
         margin-left: auto;
         margin-right: auto;
+        width: 100%;
     }
 
     .foot {
@@ -175,7 +171,7 @@ $this->params['breadcrumbs'][] = $this->title;
         border-top: 0;
     }
 
-    .con {
+    .container {
         background-color: white;
         padding: 20px;
     }
@@ -183,6 +179,23 @@ $this->params['breadcrumbs'][] = $this->title;
     @media print {
         .btn {
             display: none;
+        }
+
+        .container {
+            background-color: white;
+            padding: 0;
+            border: none;
+        }
+
+
+        th,
+        td {
+            padding: 1rem;
+            border: 1px solid black;
+        }
+
+        table {
+            padding: 0;
         }
 
         .main-footer {

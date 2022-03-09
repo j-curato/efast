@@ -19,7 +19,7 @@ use yii\widgets\ActiveForm;
 <div class="property-form">
 
 
-    <div class="panel panel-default">
+    <div class="panel panel-default container">
 
         <?php $form = ActiveForm::begin(); ?>
 
@@ -114,16 +114,25 @@ use yii\widgets\ActiveForm;
             ]
         ) ?>
 
-        <div class="form-group">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <div class="row">
+            <div class="col-sm-5"></div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <?= Html::submitButton('Save', ['class' => 'btn btn-success','style'=>'width:100%']) ?>
+                </div>
+            </div>
+
+            <div class="col-sm-5"></div>
+
         </div>
+
     </div>
 
     <?php ActiveForm::end(); ?>
 
 </div>
 <style>
-    .panel{
+    .panel {
         padding: 20px;
     }
 </style>

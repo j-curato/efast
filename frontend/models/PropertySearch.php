@@ -17,8 +17,8 @@ class PropertySearch extends Property
     public function rules()
     {
         return [
-            [['property_number', 'iar_number', 'article', 'model', 'serial_number'], 'safe'],
-            [['book_id', 'unit_of_measure_id', 'employee_id', 'quantity'], 'integer'],
+            [['book_id', 'unit_of_measure_id', 'employee_id', 'property_number', 'iar_number', 'article', 'model', 'serial_number'], 'safe'],
+            [['quantity'], 'integer'],
             [['acquisition_amount'], 'number'],
         ];
     }
@@ -56,12 +56,14 @@ class PropertySearch extends Property
             // $query->where('0=1');
             return $dataProvider;
         }
+        $query->joinWith('book');
+        $query->joinWith('employee');
+        $query->joinWith('unitOfMeasure');
+
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'book_id' => $this->book_id,
-            'unit_of_measure_id' => $this->unit_of_measure_id,
-            'employee_id' => $this->employee_id,
+
             'quantity' => $this->quantity,
             'acquisition_amount' => $this->acquisition_amount,
         ]);
@@ -70,7 +72,10 @@ class PropertySearch extends Property
             ->andFilterWhere(['like', 'iar_number', $this->iar_number])
             ->andFilterWhere(['like', 'article', $this->article])
             ->andFilterWhere(['like', 'model', $this->model])
-            ->andFilterWhere(['like', 'serial_number', $this->serial_number]);
+            ->andFilterWhere(['like', 'serial_number', $this->serial_number])
+            ->andFilterWhere(['like', 'books.name', $this->book_id])
+            ->andFilterWhere(['like', 'unit_of_emasure.unit_of_measure', $this->unit_of_measure_id])
+            ->andFilterWhere(['or',['like', 'employee.f_name', $this->employee_id],['like', 'employee.l_name', $this->employee_id]]);
 
         return $dataProvider;
     }

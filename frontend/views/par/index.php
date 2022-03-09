@@ -2,41 +2,51 @@
 
 use yii\helpers\Html;
 use kartik\grid\GridView;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\ParSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Pars';
+$this->title = 'PAR';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="par-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Par', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=par/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+
     </p>
-
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-        'panel'=>[
-            'type'=>Gridview::TYPE_PRIMARY,
-            'heading'=>'PAR'
+        'panel' => [
+            'type' => Gridview::TYPE_PRIMARY,
+            'heading' => 'PAR'
         ],
-        'export'=>[
-            'fontAwesome'=>true
+        'export' => [
+            'fontAwesome' => true
         ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
             'par_number',
             'property_number',
             'date',
-            'employee_id',
+            [
+                'label' => 'Recieved By',
+                'attribute' => 'employee_id',
+                'value' => function ($model) {
+                    $emp = '';
+                    if (!empty($model->employee->f_name)) {
+                        $f_name = !empty($model->employee->f_name) ? $model->employee->f_name : '';
+                        $m_name = !empty($model->employee->m_name[0]) ? $model->employee->m_name[0] : '';
+                        $l_name = !empty($model->employee->l_name) ? $model->employee->l_name : '';
+                        $emp =   $f_name . ' ' .  $m_name . '. ' .  $l_name;
+                    }
+                    return $emp;
+                }
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
@@ -44,3 +54,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
+
+<?php
+$script = <<<JS
+            var i=false;
+
+        $('a[title=Update]').click(function(e){
+            e.preventDefault();
+            
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
+        });
+        
+JS;
+$this->registerJs($script);
+?>
