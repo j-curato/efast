@@ -310,10 +310,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     //     $account_title = $val->chartOfAccount->general_ledger;
                     // }
 
-                    $account_title = Yii::$app->db->createCommand("SELECT account_title FROM accounting_codes
-             where object_code =:object_code")
+                    $account_title = Yii::$app->db->createCommand("SELECT IFNULL(account_title,'') as account_title  FROM accounting_codes
+                        where object_code =:object_code")
                         ->bindValue(':object_code', $val->object_code)
                         ->queryOne();
+                    $object_code = !empty($val->object_code) ? $val->object_code : '';
 
                     // ob_clean();
                     // echo "<pre>";
@@ -326,7 +327,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         $is_even = '';
                     }
                     echo "<tr class='$is_even'>
-                <td>{$val->object_code}</td>
+                <td>{$object_code}</td>
                 <td>{$account_title['account_title']}</td>
                 <td  class='amount'>$debit</td>
                 <td  class='amount'>$credit</td>
