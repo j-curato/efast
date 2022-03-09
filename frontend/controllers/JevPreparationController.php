@@ -2049,7 +2049,10 @@ class JevPreparationController extends Controller
             $from_reporting_period = $year . '-01';
             $query = $this->generateSubLedger($from_reporting_period, $to_reporting_period, $book_id, $year);
             $result = ArrayHelper::index($query, 'row_num', 'head');
-            return json_encode(['query' => $query, 'for_print' => $result]);
+            $book  = Yii::$app->db->createCommand("SELECT books.name FROM books WHERE id =:id")
+                ->bindValue(':id', $book_id)
+                ->queryScalar();
+            return json_encode(['query' => $query, 'for_print' => $result, 'year' => $year, 'book_name' => $book]);
         }
         return $this->render('subsidiary_ledger_view');
     }

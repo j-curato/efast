@@ -461,7 +461,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 success: function(data) {
                     console.log(JSON.parse(data))
                     let res = JSON.parse(data)
-                    printData(res.for_print)
+                    printData(res.for_print, res.year, res.book_name)
                 }
             })
         })
@@ -526,7 +526,7 @@ $this->params['breadcrumbs'][] = $this->title;
         return num_parts.join(".");
     }
 
-    function printData(data) {
+    function printData(data, year, book) {
 
 
         let fund_cluster_code = ''
@@ -550,42 +550,46 @@ $this->params['breadcrumbs'][] = $this->title;
         mywindow.document.write("<thead>");
 
 
-        mywindow.document.write("<tr class='header_logo' style='margin-bottom:5px;'>");
-        mywindow.document.write(" <th></th>");
-        mywindow.document.write(" <th colspan='2'> <div style='display:flex'><img src='/afms/frontend/web/dti.jpg' style='width:80px;height:80px;margin-left:auto;margin-right:10px''><div style='margin-top:10px; text-align:center;'><h4 style='margin-top:13px'>Department of Trade and Industry</h4><h4>General Ledger</h4><h4>2020</h4></div></div></th>");
-        // mywindow.document.write(" <th colspan='2'><h4>Department of Trade and Industry</h4><h4>General Ledger</h4><h4>2020</h4></th>");
-
-        mywindow.document.write(" <th colspan='2' style='text-align:center;'>" + '' + "</th>");
-        mywindow.document.write("</tr>");
-
-        mywindow.document.write("<tr class='document_header1'>");
-        mywindow.document.write(" <th colspan='1' style='text-align:center;white-space:nowrap'>Entity Name:</th>");
-        mywindow.document.write(" <th colspan='1' style='text-align:center;'>DEPARTMENT OF TRADE AND INDUSTRY</th>");
-        mywindow.document.write(" <th colspan='2' style='text-align:center;'>Fund Cluster:</th>");
-        mywindow.document.write(" <th colspan='2' style='text-align:center;'>" + 'fund_cluster_code' + "</th>");
-        mywindow.document.write("</tr>");
-
-
-        mywindow.document.write("<tr class='document_header1'>");
-        mywindow.document.write(" <th colspan='1' style='text-align:center; white-space:nowrap'>Account Title:</th>");
-        mywindow.document.write(" <th style='text-align:center;'>" + 'general_ledger' + "</th>");
-        mywindow.document.write(" <th colspan='2' style='text-align:center;'>UACS Object Code</th>");
-        mywindow.document.write(" <th colspan='2' style='text-align:center;'> q</th>");
-        mywindow.document.write("</tr>");
-        mywindow.document.write("<tr>");
-        // mywindow.document.write("<th>Reporting Period</th>");
-        mywindow.document.write("<th>Date</th>");
-        mywindow.document.write("<th>Particular:</th>");
-        mywindow.document.write("<th>Reference No</th>");
-        // mywindow.document.write("<th>Amount</th>");
-        mywindow.document.write("<th>Debit</th>");
-        mywindow.document.write("<th>Credit</th>");
-        mywindow.document.write("<th>Balance</th>");
-        mywindow.document.write("</tr>");
 
 
         mywindow.document.write("</thead>");
         $.each(data, function(key, val) {
+            // console.log(val[1]['object_code'])
+            let head_object_code = val[1]['object_code']
+            let head_account_title = val[1]['account_title']
+            mywindow.document.write("<tr class='header_logo' style='margin-bottom:5px;'>");
+            mywindow.document.write(" <th></th>");
+            mywindow.document.write(` <th colspan='2'> <div style='display:flex'><img src='/afms/frontend/web/dti.jpg' style='width:80px;height:80px;margin-left:auto;margin-right:10px''><div style='margin-top:10px; text-align:center;'><h4 style='margin-top:13px'>Department of Trade and Industry</h4><h4>Subsidiary Ledger</h4><h4>${year}</h4></div></div></th>`);
+            // mywindow.document.write(" <th colspan='2'><h4>Department of Trade and Industry</h4><h4>General Ledger</h4><h4>2020</h4></th>");
+
+            mywindow.document.write(" <th colspan='2' style='text-align:center;'>" + '' + "</th>");
+            mywindow.document.write("</tr>");
+
+            mywindow.document.write("<tr class='document_header1'>");
+            mywindow.document.write(" <th colspan='1' style='text-align:center;white-space:nowrap'>Entity Name:</th>");
+            mywindow.document.write(" <th colspan='1' style='text-align:center;'>DEPARTMENT OF TRADE AND INDUSTRY</th>");
+            mywindow.document.write(" <th colspan='2' style='text-align:center;'>Fund Cluster:</th>");
+            mywindow.document.write(" <th colspan='2' style='text-align:center;'>" + book + "</th>");
+            mywindow.document.write("</tr>");
+
+
+            mywindow.document.write("<tr class='document_header1'>");
+            mywindow.document.write(" <th colspan='1' style='text-align:center; white-space:nowrap'>Account Title:</th>");
+            mywindow.document.write(" <th style='text-align:center;'>" + head_account_title + "</th>");
+            mywindow.document.write(" <th colspan='2' style='text-align:center;'>UACS Object Code</th>");
+            mywindow.document.write(" <th colspan='2' style='text-align:center;'>" + head_object_code + "</th>");
+            mywindow.document.write("</tr>");
+            mywindow.document.write("<tr>");
+            // mywindow.document.write("<th>Reporting Period</th>");
+            mywindow.document.write("<th>Date</th>");
+            mywindow.document.write("<th>Particular:</th>");
+            mywindow.document.write("<th>Reference No</th>");
+            // mywindow.document.write("<th>Amount</th>");
+            mywindow.document.write("<th>Debit</th>");
+            mywindow.document.write("<th>Credit</th>");
+            mywindow.document.write("<th>Balance</th>");
+            mywindow.document.write("</tr>");
+
             mywindow.document.write("<tr> ");
             mywindow.document.write("<td style='text-align:center;background-color:yellow;' colspan='6'>" + key + "</td>");
             mywindow.document.write("</tr>");
