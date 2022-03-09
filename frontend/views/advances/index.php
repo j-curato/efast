@@ -109,6 +109,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'advances_type',
         'report_type',
         'object_code',
+        'bank_account',
 
         [
             'label' => 'action',
@@ -124,7 +125,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'class' => 'btn-xs fa fa-ban disable_button ' . $color,
                         'type' => 'button',
                         'data-val' => $model->entry_id,
-                        'data-disable'=>$model->is_deleted
+                        'data-disable' => $model->is_deleted
                     ]);
             }
         ],

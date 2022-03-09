@@ -37,6 +37,7 @@ class AdvancesViewSearch extends AdvancesView
                 'object_code',
                 'account_title',
                 'fund_source_type',
+                'bank_account'
 
             ], 'safe'],
             [['total_liquidation'], 'number'],
@@ -113,6 +114,7 @@ class AdvancesViewSearch extends AdvancesView
             ->andFilterWhere(['like', 'object_code', $this->object_code])
             ->andFilterWhere(['like', 'account_title', $this->account_title])
             ->andFilterWhere(['like', 'object_code', $this->object_code])
+            ->andFilterWhere(['like', 'bank_account', $this->bank_account])
             ->andFilterWhere(['like', 'check_date', $this->check_date]);
 
         return $dataProvider;
