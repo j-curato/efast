@@ -242,6 +242,7 @@ class AdvancesController extends Controller
             $fund_source = $_POST['fund_source'];
             $new_reporting_period = $_POST['new_reporting_period'];
             $fund_source_type = $_POST['fund_source_type'];
+            $bank_account_id = $_POST['bank_account_id'];
 
             $transaction = Yii::$app->db->beginTransaction();
             // return json_encode(['isSuccess' => false, 'error' => $fund_source_type]);
@@ -293,6 +294,7 @@ class AdvancesController extends Controller
             $advances->report_type = $advances_type;
             $advances->province = $province;
             $advances->reporting_period = $reporting_period;
+            $advances->bank_account_id = $bank_account_id;
             $sourceArray = [];
             if ($advances->validate()) {
                 if ($flag = $advances->save(false)) {
