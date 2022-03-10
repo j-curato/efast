@@ -130,7 +130,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <span>Property, Plant and Equipment :</span>
                 <span>
                     <?php
-                    echo $model->par->property->article;
+                $description = preg_replace('#\[n\]#', ",", $model->par->property->article);
+
+                    echo $description;
 
                     ?>
                 </span>

@@ -34,7 +34,14 @@ $this->params['breadcrumbs'][] = $this->title;
             'unit_of_measure_id',
             'user_id',
             'iar_number',
-            'article',
+            [
+                'label' => 'Description',
+                'value' => function ($model) {
+
+                    return     preg_replace('#\[n\]#', "\n", $model->article);
+                }
+            ],
+
             'model',
             'serial_number',
             'quantity',

@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php
             if (!empty($model->propertyCard->pc_number)) {
 
-                $t = yii::$app->request->baseUrl . "/index.php?r=property-card/view&id={$model->propertyCard->pc_number}";
+                $t = yii::$app->request->baseUrl . "/index.php?r=property-card/view&id={$model->propertyCard->id}";
                 echo  Html::a('Property Card Link', $t, ['class' => 'btn btn-link ']);
             }
             ?>
@@ -69,15 +69,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
                 $d = new DateTime($model->property->date);
                 $dateAquired = $d->format('F d, Y');
+                $description = preg_replace('#\[n\]#', "<br>", $model->property->article);
                 echo "<tr>
                         <td>{$model->property->quantity}</td>
                         <td>{$model->property->unitOfMeasure->unit_of_measure}</td>
-                        <td>{$model->property->article}</td>
+                        <td>{$description}</td>
                         <td>{$model->property_number}</td>
                         <td>{$dateAquired}</td>
-                        <td>{$model->property->acquisition_amount}</td>
+                        <td class='amount'>" . number_format($model->property->acquisition_amount, 2) . "</td>
                     </tr>";
-                for ($i = 0; $i < 10; $i++) {
+                for ($i = 0; $i < 4; $i++) {
                     echo "<tr>
                         <td></td>
                         <td></td>
@@ -157,6 +158,10 @@ $this->params['breadcrumbs'][] = $this->title;
     td {
         padding: 12px;
         border: 1px solid black;
+    }
+
+    .amount {
+        text-align: right;
     }
 
     table {

@@ -119,6 +119,34 @@ use yii\widgets\ActiveForm;
             ]) ?>
         </div>
     </div>
+    <div class="row">
+        <div class="col-sm-12">
+
+            <?= $form->field($model, 'actual_user')->widget(Select2::class, [
+                'data' => $rcv_by,
+                'name' => 'fund_source',
+                'options' => ['placeholder' => 'Search for a Fund Source ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
+
+            ]) ?>
+        </div>
+    </div>
     <table id="property_details">
         <tbody>
             <tr>
@@ -205,9 +233,16 @@ use yii\widgets\ActiveForm;
 
 
 
+    <div class="row">
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <div class="col-sm-5"></div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+            </div>
+
+        </div>
+        <div class="col-sm-5"></div>
     </div>
 
     <?php ActiveForm::end(); ?>

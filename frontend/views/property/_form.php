@@ -99,8 +99,14 @@ use yii\widgets\ActiveForm;
             </div>
 
         </div>
-
-        <?= $form->field($model, 'article')->textarea(['maxlength' => true]) ?>
+        <?php
+        $description = '';
+        if (!empty($model->property_number)) {
+            $description =  preg_replace('#\[n\]#', "\n", $model->article);
+        }
+        ?>
+        <?= $form->field($model, 'article')->textarea(['maxlength' => true,'style'=>'display:none']) ?>
+        <textarea id="article" cols="30" rows="5" style="max-width:100%;width:100%"><?php echo $description; ?></textarea>
         <?= $form->field($model, 'acquisition_amount')->widget(
             MaskMoney::class,
             [
@@ -118,7 +124,7 @@ use yii\widgets\ActiveForm;
             <div class="col-sm-5"></div>
             <div class="col-sm-2">
                 <div class="form-group">
-                    <?= Html::submitButton('Save', ['class' => 'btn btn-success','style'=>'width:100%']) ?>
+                    <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
                 </div>
             </div>
 
@@ -136,3 +142,21 @@ use yii\widgets\ActiveForm;
         padding: 20px;
     }
 </style>
+<script>
+    $(document).ready(function() {
+        $('#article').on('keyup change', function(e) {
+            e.preventDefault()
+            var specs = $(this).val()
+            specs = specs.replace(/\n/g, "[n]");
+            $('#property-article').val(specs)
+        })
+    })
+</script>
+
+<?php
+$script = <<< JS
+
+JS;
+
+$this->registerJs($script);
+?>
