@@ -545,6 +545,7 @@ $this->params['breadcrumbs'][] = $this->title;
         let running_balance = 0
         let total_debit = 0;
         let total_credit = 0;
+        $("#ledger-table tbody").html('')
         $.each(data, function(key, val) {
             let debit = Number(val.debit);
             let credit = Number(val.credit);
