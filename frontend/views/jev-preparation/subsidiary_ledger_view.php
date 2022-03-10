@@ -41,11 +41,21 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
 
-    <div class="container panel panel-default" style="margin-top:6em;padding:2em;padding-top:5em;">
+    <div class="container panel panel-default" style="margin-top:6em;padding:2em;padding-top:4em;">
 
 
 
         <form id="print_filter">
+            <div class="row">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-2">
+
+                    <h4>Print Filter</h4>
+
+
+                </div>
+                <div class="col-sm-5"></div>
+            </div>
             <div class="row " style="bottom: 20px;">
 
                 <div class="col-sm-3">
@@ -94,13 +104,23 @@ $this->params['breadcrumbs'][] = $this->title;
                     ?>
                 </div>
                 <div class="col-sm-3" style="margin-top:25px;">
-                    <button id="print_all" type='button' class="btn btn-warning">Print All</button>
+                    <button id="print_all" type='button' class="btn btn-warning">Print</button>
                 </div>
 
             </div>
         </form>
 
         <form id="generate_filter">
+            <div class="row">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-2">
+
+                    <h4>Generate Filter</h4>
+
+
+                </div>
+                <div class="col-sm-5"></div>
+            </div>
             <div class="row " style="bottom: 20px;">
 
 
