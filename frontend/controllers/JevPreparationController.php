@@ -1948,7 +1948,7 @@ class JevPreparationController extends Controller
 
     //     // return json_encode($sl);
     // }
-    public function generateSubLedger($from_reporting_period, $to_reporting_period, $book_id, $year, $object_code = '', $sql1 = '', $sql2 = '')
+    public function generateSubLedger($from_reporting_period, $to_reporting_period, $book_id, $year, $object_code = '', $sql1 = '', $sql2 = '', $uacs = '')
     {
         $and = !empty($sql1) ? 'AND' : '';
 
@@ -2016,6 +2016,7 @@ class JevPreparationController extends Controller
             ->bindValue(':book_id', $book_id)
             ->bindValue(':_year', $year)
             ->bindValue(':object_code', $object_code)
+            ->bindValue(':uacs', $uacs . '%')
             ->queryAll();
         return $query;
     }
@@ -2043,11 +2044,15 @@ class JevPreparationController extends Controller
     {
 
         if ($_POST) {
-            $to_reporting_period = $_POST['reporting_period'];
-            $book_id = $_POST['book_id'];
+            $to_reporting_period = $_POST['print_reporting_period'];
+            $book_id = $_POST['print_book_id'];
+            $uacs  = $_POST['print_uacs'];
             $year  = DateTime::createFromFormat('Y-m', $to_reporting_period)->format('Y');
             $from_reporting_period = $year . '-01';
-            $query = $this->generateSubLedger($from_reporting_period, $to_reporting_period, $book_id, $year);
+            $params = [];
+            $sql1 = Yii::$app->db->getQueryBuilder()->buildCondition('jev_accounting_entries.object_code LIKE :uacs', $params);
+            $sql2 = Yii::$app->db->getQueryBuilder()->buildCondition('jev_beginning_balance_item.object_code LIKE :uacs', $params);
+            $query = $this->generateSubLedger($from_reporting_period, $to_reporting_period, $book_id, $year, '', $sql1, $sql2, $uacs);
             $result = ArrayHelper::index($query, 'row_num', 'head');
             $book  = Yii::$app->db->createCommand("SELECT books.name FROM books WHERE id =:id")
                 ->bindValue(':id', $book_id)

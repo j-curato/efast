@@ -41,26 +41,67 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
 
-    <div class="container panel panel-default">
-
-        <div>
-            <?php
-            $q = 'qwe';
-
-            if (!empty($print)) {
-                $q = $print;
-            }
+    <div class="container panel panel-default" style="margin-top:6em;padding:2em;padding-top:5em;">
 
 
 
-            ?>
-            <button id="print" onclick="print()"><i class="glyphicon glyphicon-print"></i></button>
+        <form id="print_filter">
+            <div class="row " style="bottom: 20px;">
 
-        </div>
-        <br>
+                <div class="col-sm-3">
+                    <label for="uacs">General Ledger</label>
+                    <?php
+                    $coa = Yii::$app->db->createCommand("SELECT CONCAT(chart_of_accounts.uacs,'-',chart_of_accounts.general_ledger)as account_title,uacs FROM chart_of_accounts WHERE is_active=1")->queryAll();
+                    echo Select2::widget([
+                        'id' => 'uacs',
+                        'data' => ArrayHelper::map($coa, 'uacs', 'account_title'),
+                        'name' => 'print_uacs',
+                        'options' => ['placeholder' => 'Select General Ledger'],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ]);
+                    ?>
+                </div>
 
-        <form id="filter">
-            <div class="actions " style="bottom: 20px;">
+                <div class="col-sm-3">
+                    <label for="book"> Fund Cluster Code</label>
+                    <?php
+                    echo Select2::widget([
+                        'data' => ArrayHelper::map($book, 'id', 'name'),
+                        'name' => 'print_book_id',
+                        'options' => ['placeholder' => 'Select a Book '],
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                    ]);
+                    ?>
+                </div>
+                <div class="col-sm-3">
+                    <label for="reporting_period">Reporting Period</label>
+                    <?php
+                    echo DatePicker::widget([
+                        'id' => 'print_reporting_period',
+                        'name' => 'print_reporting_period',
+                        'readonly' => true,
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'format' => 'yyyy-mm',
+                            'minViewMode' => "months",
+
+                        ]
+                    ]);
+                    ?>
+                </div>
+                <div class="col-sm-3" style="margin-top:25px;">
+                    <button id="print_all" type='button' class="btn btn-warning">Print All</button>
+                </div>
+
+            </div>
+        </form>
+
+        <form id="generate_filter">
+            <div class="row " style="bottom: 20px;">
 
 
                 <div class="col-sm-3">
@@ -70,7 +111,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'id' => 'sub_account',
                         'data' => ArrayHelper::map($sub1, 'object_code', 'account_title'),
                         'name' => 'object_code',
-                        'options' => ['placeholder' => 'Sub Account 1'],
+                        'options' => ['placeholder' => 'Select Sub Account'],
                         'pluginOptions' => [
                             'allowClear' => true
                         ],
@@ -78,8 +119,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     ?>
                 </div>
 
+
                 <div class="col-sm-3">
-                    <label for="fund"> Fund Cluster Code</label>
+                    <label for="fund"> Book </label>
                     <?php
                     echo Select2::widget([
                         'data' => ArrayHelper::map($book, 'id', 'name'),
@@ -98,7 +140,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     echo DatePicker::widget([
                         'id' => 'reporting_period',
                         'name' => 'reporting_period',
-                        'type' => DatePicker::TYPE_INPUT,
                         'readonly' => true,
                         'pluginOptions' => [
                             'autoclose' => true,
@@ -111,7 +152,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
                 <div class="col-sm-3" style="margin-top:25px;">
                     <button id="generate" type="button" class="btn btn-success">Generate</button>
-                    <button id="print_all" type='button' class="btn btn-success">Print All</button>
 
                 </div>
 
@@ -457,7 +497,7 @@ $this->params['breadcrumbs'][] = $this->title;
             $.ajax({
                 type: 'POST',
                 url: window.location.pathname + '?r=jev-preparation/get-subsidiary-ledger',
-                data: $("#filter").serialize(),
+                data: $("#print_filter").serialize(),
                 success: function(data) {
                     console.log(JSON.parse(data))
                     let res = JSON.parse(data)
@@ -470,7 +510,7 @@ $this->params['breadcrumbs'][] = $this->title;
             $.ajax({
                 type: 'POST',
                 url: window.location.pathname + '?r=jev-preparation/generate-subsidiary-ledger',
-                data: $("#filter").serialize(),
+                data: $("#generate_filter").serialize(),
                 success: function(data) {
                     console.log(JSON.parse(data))
                     let res = JSON.parse(data)
