@@ -36,11 +36,11 @@ class Property extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['property_number'], 'required'],
+            [['property_number', 'date', 'book_id', 'unit_of_measure_id', 'quantity', 'acquisition_amount', 'employee_id', 'article'], 'required'],
             [['date'], 'string'],
             [['book_id', 'unit_of_measure_id', 'quantity'], 'integer'],
             [['acquisition_amount'], 'number'],
-            [['employee_id', 'article'], 'string'],
+            [['employee_id', 'article', 'description'], 'string'],
             [['property_number', 'iar_number', 'model', 'serial_number'], 'string', 'max' => 255],
             [['property_number'], 'unique'],
         ];
@@ -57,7 +57,8 @@ class Property extends \yii\db\ActiveRecord
             'unit_of_measure_id' => 'Unit Of Measure ',
             'employee_id' => 'Property Custodian',
             'iar_number' => 'IAR Number',
-            'article' => 'Description',
+            'article' => 'Article',
+            'description' => 'Description',
             'model' => 'Model',
             'serial_number' => 'Serial Number',
             'quantity' => 'Quantity',

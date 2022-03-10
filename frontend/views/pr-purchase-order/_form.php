@@ -347,7 +347,7 @@ $this->registerJs($script);
 
             let total_amount = parseFloat(val.unit_cost) * parseInt(val.quantity)
             let row = `<tr>
-                <td><input type='checkbox'value='${val.id}' class='checkBox' style='display:none' name='new_lowest'></td>
+                <td><input type='checkbox'value='${val.id}' class='checkBox' style='display:none' name='new_lowest[]'></td>
                 <td>${val.payee}</td>
                 <td>${val.bac_code}</td>
                 <td>${val.description}</td>

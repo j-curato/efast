@@ -209,7 +209,7 @@ class PropertyController extends Controller
             CONCAT(employee.f_name,' ',employee.l_name) as disbursing_officer,
            
             DATE_FORMAT( property.date, '%M %d, %Y')  as `date`,
-            property.article,
+            REPLACE(property.article,'[n]','\n') as article,
             property.iar_number,
             property.acquisition_amount,
             property.model,

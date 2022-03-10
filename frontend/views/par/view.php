@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php
             if (!empty($model->propertyCard->pc_number)) {
 
-                $t = yii::$app->request->baseUrl . "/index.php?r=property-card/view&id={$model->propertyCard->id}";
+                $t = Yii::$app->request->baseUrl . "/index.php?r=property-card/view&id={$model->propertyCard->id}";
                 echo  Html::a('Property Card Link', $t, ['class' => 'btn btn-link ']);
             }
             ?>
@@ -69,11 +69,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
                 $d = new DateTime($model->property->date);
                 $dateAquired = $d->format('F d, Y');
-                $description = preg_replace('#\[n\]#', "<br>", $model->property->article);
+                $description = preg_replace('#\[n\]#', "<br>", $model->property->description);
+                $article = $model->property->article;
                 echo "<tr>
                         <td>{$model->property->quantity}</td>
                         <td>{$model->property->unitOfMeasure->unit_of_measure}</td>
-                        <td>{$description}</td>
+                        <td>
+                        <span style='font-weight:bold;'>{$article}</span>
+                        <br>
+                        <span style='font-style:italic;'>$description</span>
+                        
+                        </td>
                         <td>{$model->property_number}</td>
                         <td>{$dateAquired}</td>
                         <td class='amount'>" . number_format($model->property->acquisition_amount, 2) . "</td>
@@ -90,8 +96,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
                 ?>
 
-            </tbody>
-            <tfoot>
                 <tr>
                     <th class='foot' colspan="3">Recieved By</th>
                     <th class='foot' colspan="3">Issued By</th>
@@ -147,7 +151,33 @@ $this->params['breadcrumbs'][] = $this->title;
                     </th>
 
                 </tr>
-            </tfoot>
+                <!-- ACTUAL USER -->
+                <?php
+
+                if (!empty($model->actual_user)) {
+                    $user_name = "{$model->actualUser->f_name} {$model->actualUser->m_name[0]}. {$model->actualUser->l_name} ";
+                    echo "        <tr>
+                    <th class='foot' colspan='3' style='text-align:center;padding-top:5rem'>
+                        <span style='text-decoration:underline'>
+                            <span>$user_name </span>
+                           
+                        </span>
+                        <br>
+                        <span> Signatue over Printed Name of Actual User</span>
+                    </th>
+                    <th class='foot' colspan='3' style='text-align:center;padding-top:5rem'>
+                
+                    </th>
+
+
+                </tr>";
+                }
+                ?>
+
+
+
+
+            </tbody>
         </table>
     </div>
 

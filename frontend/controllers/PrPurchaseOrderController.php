@@ -101,7 +101,7 @@ class PrPurchaseOrderController extends Controller
         WHERE pr_aoq_entries.pr_aoq_id = :id
         AND $query", $params)
             ->bindValue(':id', $fk_pr_aoq_id)
-            ->queryOne();
+            ->queryAll();
 
         return $aoq_lowest;
     }
@@ -114,11 +114,11 @@ class PrPurchaseOrderController extends Controller
         $sql = Yii::$app->db->getQueryBuilder()->buildCondition("pr_aoq_entries.is_lowest=1", $params);
         $aoq_lowest = $this->findLowest($model->fk_pr_aoq_id, $sql);
 
-        if (empty($aoq_lowest)) {
+        // if (empty($aoq_lowest)) {
 
-            $sql = Yii::$app->db->getQueryBuilder()->buildCondition("pr_aoq_entries.amount = (SELECT MIN(pr_aoq_entries.amount) FROM pr_aoq_entries WHERE pr_aoq_entries.pr_aoq_id = :id )", $params);
-            $aoq_lowest = $this->findLowest($model->fk_pr_aoq_id, $sql);
-        }
+        //     $sql = Yii::$app->db->getQueryBuilder()->buildCondition("pr_aoq_entries.amount = (SELECT MIN(pr_aoq_entries.amount) FROM pr_aoq_entries WHERE pr_aoq_entries.pr_aoq_id = :id )", $params);
+        //     $aoq_lowest = $this->findLowest($model->fk_pr_aoq_id, $sql);
+        // }
         return $this->render('view', [
             'model' => $model,
             'aoq_lowest' => $aoq_lowest
@@ -138,6 +138,9 @@ class PrPurchaseOrderController extends Controller
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             $model->po_number = $this->generatePoNumber($model->fk_contract_type_id);
             if ($model->save()) {
+                if (!empty($_POST['new_lowest'])) {
+                    $this->newLowest($_POST['new_lowest'], $model->id);
+                }
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         }
@@ -164,7 +167,7 @@ class PrPurchaseOrderController extends Controller
 
             // return json_decode($_POST['new_lowest']);
             if (!empty($_POST['new_lowest'])) {
-                $this->newLowest($_POST['new_lowest']);
+                $this->newLowest($_POST['new_lowest'], $model->id);
             }
 
             if ($model->save()) {
@@ -248,14 +251,19 @@ class PrPurchaseOrderController extends Controller
             ]);
         }
     }
-    public function newLowest($aoq_entry_id)
+    public function newLowest($aoq_entry_id = [], $aoq_id = '')
     {
-        $model = PrAoqEntries::findOne($aoq_entry_id);
-        Yii::$app->db->createCommand("UPDATE  pr_aoq_entries SET is_lowest=0 WHERE pr_aoq_id = :id")
-            ->bindValue(':id', $model->pr_aoq_id)
+        $params = [];
+        $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'pr_aoq_entries.id', $aoq_entry_id], $params);
+        Yii::$app->db->createCommand("UPDATE  pr_aoq_entries SET is_lowest=0 WHERE  $sql AND pr_aoq_id = :aoq_id", $params)
+            ->bindValue(':aoq_id', $aoq_id)
             ->query();
-        $model->is_lowest = 1;
-        if ($model->save(false)) {
+        foreach ($aoq_entry_id as $val) {
+            $model = PrAoqEntries::findOne($val);
+
+            $model->is_lowest = 1;
+            if ($model->save(false)) {
+            }
         }
     }
     public function generatePoNumber($contract_id)

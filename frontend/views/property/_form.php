@@ -102,11 +102,12 @@ use yii\widgets\ActiveForm;
         <?php
         $description = '';
         if (!empty($model->property_number)) {
-            $description =  preg_replace('#\[n\]#', "\n", $model->article);
+            $description = !empty($model->description) ? preg_replace('#\[n\]#', "\n", $model->description) : '';;
         }
         ?>
-        <?= $form->field($model, 'article')->textarea(['maxlength' => true,'style'=>'display:none']) ?>
-        <textarea id="article" cols="30" rows="5" style="max-width:100%;width:100%"><?php echo $description; ?></textarea>
+        <?= $form->field($model, 'article')->textarea(['maxlength' => true,]) ?>
+        <?= $form->field($model, 'description')->textarea(['maxlength' => true,'style'=>'display:none;']) ?>
+        <textarea id="description" cols="30" rows="5" style="max-width:100%;width:100%"><?php echo $description; ?></textarea>
         <?= $form->field($model, 'acquisition_amount')->widget(
             MaskMoney::class,
             [
@@ -144,11 +145,11 @@ use yii\widgets\ActiveForm;
 </style>
 <script>
     $(document).ready(function() {
-        $('#article').on('keyup change', function(e) {
+        $('#description').on('keyup change', function(e) {
             e.preventDefault()
             var specs = $(this).val()
             specs = specs.replace(/\n/g, "[n]");
-            $('#property-article').val(specs)
+            $('#property-description').val(specs)
         })
     })
 </script>

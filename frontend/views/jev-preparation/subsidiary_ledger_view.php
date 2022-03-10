@@ -556,7 +556,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 running_balance += debit - credit;
             } else {
                 running_balance += credit - debit
-
             }
 
             let row = `<tr>

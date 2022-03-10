@@ -97,7 +97,7 @@ use yii\widgets\ActiveForm;
             <?= $form->field($model, 'employee_id')->widget(Select2::class, [
                 'data' => $rcv_by,
                 'name' => 'fund_source',
-                'options' => ['placeholder' => 'Search for a Fund Source ...'],
+                'options' => ['placeholder' => 'Search Employee ...'],
                 'pluginOptions' => [
                     'allowClear' => true,
                     'minimumInputLength' => 1,
@@ -125,7 +125,7 @@ use yii\widgets\ActiveForm;
             <?= $form->field($model, 'actual_user')->widget(Select2::class, [
                 'data' => $rcv_by,
                 'name' => 'fund_source',
-                'options' => ['placeholder' => 'Search for a Fund Source ...'],
+                'options' => ['placeholder' => 'Search Employee ...'],
                 'pluginOptions' => [
                     'allowClear' => true,
                     'minimumInputLength' => 1,
@@ -236,7 +236,7 @@ use yii\widgets\ActiveForm;
     <div class="row">
 
         <div class="col-sm-5"></div>
-        <div class="col-sm-2">
+        <div class="col-sm-2" style="padding: 2rem;">
             <div class="form-group">
                 <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
             </div>
@@ -303,7 +303,7 @@ $js = <<<JS
                 $('#quantity').text(res.quantity)
                 $('#book').text(res.book)
                 $('#unit').text(res.unit_of_measure)
-                $('#description').text(res.article+'lorem')
+                $('#description').text(res.article)
                 $('#date').text(res.date)
                 $('#amount').text(res.acquisition_amount)
                 $('#serial_number').text(res.serial_number)

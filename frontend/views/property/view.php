@@ -25,28 +25,43 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
     </p>
+    <div class="container">
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'property_number',
-            'book_id',
-            'unit_of_measure_id',
-            'user_id',
-            'iar_number',
-            [
-                'label' => 'Description',
-                'value' => function ($model) {
+        <?= DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                'property_number',
 
-                    return     preg_replace('#\[n\]#', "\n", $model->article);
-                }
+                [
+                    'label' => 'Book',
+                    'attribute' => 'book.name'
+                ],
+                [
+                    'label' => 'Unit of Measure',
+                    'attribute' => 'unitOfMeasure.unit_of_measure'
+                ],
+
+                'iar_number',
+                'article',
+                [
+                    'label' => 'Description',
+                    'value' => function ($model) {
+                        return     preg_replace('#\[n\]#', "\n", $model->description);
+                    }
+                ],
+
+                'model',
+                'serial_number',
+                'quantity',
+                'acquisition_amount',
             ],
+        ]) ?>
+    </div>
 
-            'model',
-            'serial_number',
-            'quantity',
-            'acquisition_amount',
-        ],
-    ]) ?>
 
 </div>
+<style>
+    .container {
+        background-color: white;
+    }
+</style>
