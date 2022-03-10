@@ -40,8 +40,8 @@ class Property extends \yii\db\ActiveRecord
             [['date'], 'string'],
             [['book_id', 'unit_of_measure_id', 'quantity'], 'integer'],
             [['acquisition_amount'], 'number'],
-            [['employee_id'], 'string'],
-            [['property_number', 'iar_number', 'article', 'model', 'serial_number'], 'string', 'max' => 255],
+            [['employee_id', 'article'], 'string'],
+            [['property_number', 'iar_number', 'model', 'serial_number'], 'string', 'max' => 255],
             [['property_number'], 'unique'],
         ];
     }
