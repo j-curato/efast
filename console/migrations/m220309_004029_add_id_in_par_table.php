@@ -13,7 +13,7 @@ class m220309_004029_add_id_in_par_table extends Migration
     public function safeUp()
     {
 
-        $this->addColumn('par', 'id', $this->bigInteger());
+        $this->addColumn('par', 'id', $this->bigInteger()->notNull());
         $this->dropPrimaryKey('PRIMARY', 'par');
         $this->addPrimaryKey('pd-id', 'par', 'id');
     }
