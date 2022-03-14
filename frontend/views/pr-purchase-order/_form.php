@@ -165,73 +165,102 @@ if (!empty($model->id)) {
 
 
         <input type="button" id="change_lowest" class="btn btn-info" value='Change'>
-        <div class="row" id="change_bac">
+        <?php $bac_display = 'display:none;';
+        if (!empty($model->bac_date) || !empty($model->fk_bac_composition_id)) {
+            $bac_display = '';
+        }
+        ?>
+        <div class="row" id="change_bac" style="<?= $bac_display ?>">
             <div class="col-sm-3">
-                <label for="bac_date">RBAC Date</label>
-                <?php
-                echo DatePicker::widget([
-                    'name' => 'bac_date',
-                    'id' => 'bac_date',
+
+                <?= $form->field($model, 'bac_date')->widget(DatePicker::class, [
+
                     'options' => [
                         'readonly' => true,
                         'style' => 'background-color:white'
                     ],
                     'pluginOptions' =>
                     [
-                        'autoclose' => true
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd'
                     ]
-                ])
-                ?>
+                ]) ?>
+
             </div>
             <div class="col-sm-3">
-                <label for="bac_rso_number">RSO Number</label>
 
-                <?php
-                echo Select2::widget([
-                    'name' => 'bac_rso_number',
-                    'id' => 'bac_rso_number',
+
+                <?= $form->field($model, 'fk_bac_composition_id')->widget(Select2::class, [
+
                     'data' => ArrayHelper::map(BacComposition::find()->asArray()->all(), 'id', 'rso_number'),
                     'pluginOptions' => [
                         'placeholder' => 'Select RSO Number'
                     ]
-                ])
-                ?>
+                ]) ?>
+
             </div>
         </div>
-        <table id='lowest_table' class="table table striped">
-            <thead>
-                <tr>
-                    <th colspan="4">
-                        Lowest
-                    </th>
+        <div class="table-responsive">
 
-                </tr>
-                <tr>
-                    <th>Payee</th>
-                    <th>Payee Address</th>
-                    <th>Payee Tin</th>
-                    <th>Unit Cost</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <table id="aoq_items_table" class="table table-striped">
+            <table id='lowest_table' class="table table-hover table-striped">
+                <thead>
+                    <tr class="success">
+                        <th colspan="7">
+                            <h3>
+                                Lowest
 
-            <thead>
-                <th>Payee</th>
-                <th>BAC Code</th>
-                <th>Description</th>
-                <th>Specification</th>
-                <th>Remark</th>
-                <th>Quantity</th>
-                <th>Unit Cost</th>
-                <th>Amount</th>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <div class="form-group">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+                            </h3>
+                        </th>
+
+                    </tr>
+                    <tr class="success">
+                        <th>Payee</th>
+                        <th>BAC Code</th>
+                        <th>Description</th>
+                        <th>Specification</th>
+                        <th>Remark</th>
+                        <th>Unit Cost</th>
+                        <th></th>
+
+                    </tr>
+                </thead>
+                <tbody></tbody>
+
+            </table>
+            <table id="aoq_items_table" class="table table-hover ">
+
+                <thead>
+                    <tr>
+                        <th colspan="9" class="info">
+                            <h3>Abstract Items</h3>
+                        </th>
+                    </tr>
+
+                    <tr class="info">
+                        <th></th>
+                        <th>Payee</th>
+                        <th>BAC Code</th>
+                        <th>Description</th>
+                        <th>Specification</th>
+                        <th>Remark</th>
+                        <th>Quantity</th>
+                        <th>Unit Cost</th>
+                        <th>Amount</th>
+
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
+
+        <div class="row">
+            <div class="col-sm-5"></div>
+            <div class="form-group col-sm-2">
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
+            </div>
+            <div class="col-sm-5"></div>
+        </div>
+
 
         <?php ActiveForm::end(); ?>
 
@@ -239,6 +268,10 @@ if (!empty($model->id)) {
 </div>
 
 <style>
+    .add_new_row {
+        display: none;
+    }
+
     td,
     th {
         text-align: center;
@@ -248,9 +281,7 @@ if (!empty($model->id)) {
         text-align: right;
     }
 
-    #change_bac {
-        display: none;
-    }
+
 
     .con {
         background-color: white;
@@ -262,7 +293,6 @@ if (!empty($model->id)) {
 $script = <<<JS
     $(document).ready(function(){
         if ($("#model_id").val() != '') {
-            console.log('qweqwe')
             $('#prpurchaseorder-fk_pr_aoq_id').trigger('change')
         }
     })
@@ -277,7 +307,6 @@ $this->registerJs($script);
             changeLowest()
         })
         $('#prpurchaseorder-fk_pr_aoq_id').change(function() {
-            console.log('qweq')
             $.ajax({
                 type: 'POST',
                 url: window.location.pathname + '?r=pr-purchase-order/aoq-info',
@@ -293,31 +322,55 @@ $this->registerJs($script);
             })
         })
 
+        $('#lowest_table').on('click', '.remove_this_row', function(event) {
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            $(this).closest('tr').remove();
+        });
+        $('#aoq_items_table').on('click', '.add_new_row', function(event) {
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            var source = $(this).closest('tr');
+            var clone = source.clone(true);
+            clone.attr('class', 'success')
+            clone.children('td').find('.add_new_row').remove()
+            clone.children('td').find('.quantity').closest('td').remove()
+            clone.children('td').find('.quantity').remove()
+            clone.children('td').find('.total_amount').closest('td').remove()
+            clone.children('td').find('.total_amount').remove()
+            clone.children('td').find('.add_new_row').closest('td').remove()
+            const aoq_item_id = clone.children('td').find('.rfq_item_id').val()
+            clone.children('td').find('.qqq').attr('name', "aoq_id[" + aoq_item_id + "]")
+
+            clone.children('td').eq(0).remove()
+            clone.children('.total_amount').remove()
+            clone.children('.quantity').remove()
+            clone.append("<td><a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a></td>")
+            $('#lowest_table').append(clone);
+        });
+
     })
 
     function changeLowest() {
 
-        if ($('#change_bac').is(":visible")) {
+        if ($('#change_bac').is(":visible") && $("#prpurchaseorder-bac_date").val() == '') {
             $('#change_bac').hide()
             $('#change_lowest').val('Change')
             $('#change_lowest').prop('class', 'btn btn-info')
         } else {
-
-            $('#change_lowest').val('Hide')
-            $('#change_lowest').prop('class', 'btn btn-danger')
             $('#change_bac').show()
         }
-        if ($('.checkBox').is(":visible")) {
-            $('.checkBox').hide()
-            // $(":checkbox").attr("checked", true);
-            // $(":checkbox").attr("checked", false);
-            $(':checkbox').each(function() {
+        if ($('.add_new_row').is(":visible")) {
+            $('.add_new_row').hide()
+            // $(":add_new_row").attr("checked", true);
+            // $(":add_new_row").attr("checked", false);
+            // $(':add_new_row').each(function() {
 
-                this.checked = false;
-            });
+            //     this.checked = false;
+            // });
         } else {
 
-            $('.checkBox').show()
+            $('.add_new_row').show()
         }
 
 
@@ -327,35 +380,53 @@ $this->registerJs($script);
     }
 
     function displayLowest(data) {
+
         $('#lowest_table tbody').html('')
         $.each(data, function(key, val) {
-            let row = `<tr>
+            const pr_aoq_entries_id = val.aoq_entry_id
+            console.log(val.specification)
+
+            let row = `<tr class='success'>
+                <td style='display:none;'><input type='hidden' name='aoq_id[${val.rfq_item_id}]' value='${pr_aoq_entries_id}'></td>   
                 <td>${val.payee}</td>
-                <td>${val.address}</td>
-                <td>${val.tin_number}</td>
-                <td>${val.unit_cost}</td>
+                <td>${val.bac_code}</td>
+
+                <td>${val.description}</td>
+                <td>${val.specification}</td>
+                <td>${val.remark}</td>
+                <td class='amount'>${val.unit_cost}</td>
+                <td><a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a></td>
             </tr>`
 
             $('#lowest_table tbody').append(row)
         })
     }
 
+
+
     function displayAoqItems(data) {
         $("#aoq_items_table tbody").html('')
-        console.log(data)
         $.each(data, function(key, val) {
 
             let total_amount = parseFloat(val.unit_cost) * parseInt(val.quantity)
-            let row = `<tr>
-                <td><input type='checkbox'value='${val.id}' class='checkBox' style='display:none' name='new_lowest[]'></td>
+            let q = ''
+            if (parseInt(val.is_lowest) == 1) {
+                q = 'checked'
+            }
+            let row = `<tr class='info'>
+                <td><input type='button' class='add_new_row btn-xs btn-warning' value='+'></td>
+                <td style='display:none;'>
+                <input type='hidden' class='qqq' value='${val.id}' >
+                <input type='hidden' class='rfq_item_id' value='${val.rfq_item_id}' >
+                </td>
                 <td>${val.payee}</td>
                 <td>${val.bac_code}</td>
                 <td>${val.description}</td>
                 <td>${val.specification}</td>
                 <td>${val.remark}</td>
-                <td>${val.quantity}</td>
-                <td class='amount'>${val.unit_cost}</td>
-                <td class='amount'>${total_amount}</td>
+                <td class='quantity' ><span class='quantity'>${val.quantity}</span></td>
+                <td class='amount unit_cost'>${val.unit_cost}</td>
+                <td class='amount total_amount'><span class='total_amount'>${total_amount}</span></td>
             </tr>`
 
             $("#aoq_items_table tbody").append(row)

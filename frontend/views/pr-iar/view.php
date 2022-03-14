@@ -26,18 +26,58 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            '_date',
-            'reporting_period',
-            'invoice_number',
-            'invoice_date',
-            'fk_pr_purchase_order_id',
-            'fk_insepection_officer',
-            'fk_property_custodian',
-        ],
-    ]) ?>
+
+    <div class="container">
+        <table>
+
+            <tbody>
+                <tr>
+                    <th colspan="4"> INSPECTION AND ACCEPTANCE REPORT</th>
+                </tr>
+                <tr>
+                    <th colspan="2">
+                        <span>Entity Name:</span>
+                    </th>
+                    <th colspan="2">
+                        <span>Fund CLuster:</span>
+                    </th>
+                </tr>
+                <tr>
+                    <th colspan="2">
+                        <span>Supplier:</span>
+                        <br>
+                        <span>PO No./Date:</span>
+                        <br>
+                        <span> Requisitioning Office/Dept:</span>
+                        <br>
+                        <span> Requisitioning Office/Dept.:</span>
+                    </th>
+                    <th colspan="2">
+                        <span> IAR No.:</span>
+                        <br>
+                        <span> Date:</span>
+                        <br>
+                        <span> Invoice No.:</span>
+                        <br>
+                        <span> Date:</span>
+                    </th>
+                </tr>
+                <tr>
+                    <th>Stock/Property No.</th>
+                    <th>Description</th>
+                    <th>Unit</th>
+                    <th>Quantity</th>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
 
 </div>
+
+<style>
+    .container {
+        background-color: white;
+        padding: 3rem;
+    }
+</style>

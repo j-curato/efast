@@ -168,7 +168,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                                     </td>
                                     <td class="center">
-                                        <span class="center">__________________________________</span>
+                                        <span class="center"></span>
                                         <br>
                                         <span style="text-decoration:underline;font-weight: bold;">
                                             <?php
@@ -184,7 +184,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 ?></span>
                                     </td>
                                     <td class="center">
-                                        <span class="center">__________________________________</span>
+                                        <span class="center"></span>
                                         <br>
 
                                         <span style="text-decoration:underline;font-weight: bold;">

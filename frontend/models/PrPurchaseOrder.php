@@ -36,10 +36,14 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'po_number', 'fk_contract_type_id', 'fk_mode_of_procurement_id', 'fk_pr_aoq_id', 'delivery_term'], 'required'],
-            [['id', 'fk_contract_type_id', 'fk_mode_of_procurement_id', 'fk_pr_aoq_id', 'fk_auth_official', 'fk_accounting_unit'], 'integer'],
+            [[
+                'id', 'po_number', 'fk_contract_type_id', 'fk_mode_of_procurement_id', 'fk_pr_aoq_id', 'delivery_term',
+                'fk_auth_official',
+                'fk_accounting_unit'
+            ], 'required'],
+            [['id', 'fk_contract_type_id', 'fk_mode_of_procurement_id', 'fk_pr_aoq_id', 'fk_auth_official', 'fk_accounting_unit','fk_bac_composition_id'], 'integer'],
             [['place_of_delivery'], 'string'],
-            [['delivery_date'], 'safe'],
+            [['delivery_date','bac_date'], 'safe'],
             [['po_number', 'payment_term', 'delivery_term'], 'string', 'max' => 255],
             [['po_number'], 'unique'],
             [['id'], 'unique'],
@@ -54,15 +58,19 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'po_number' => 'Po Number',
-            'fk_contract_type_id' => 'Fk Contract Type ID',
-            'fk_mode_of_procurement_id' => 'Fk Mode Of Procurement ID',
-            'fk_pr_aoq_id' => 'Fk Pr Aoq ID',
+            'fk_contract_type_id' => ' Contract Type ',
+            'fk_mode_of_procurement_id' => ' Mode Of Procurement ',
+            'fk_pr_aoq_id' => ' Aoq ',
             'place_of_delivery' => 'Place Of Delivery',
             'delivery_date' => 'Delivery Date',
             'payment_term' => 'Payment Term',
             'delivery_term' => 'Delivery Term',
-            'fk_auth_official' => 'Fk Auth Official',
-            'fk_accounting_unit' => 'Fk Accounting Unit',
+            'fk_auth_official' => ' Auth Official',
+            'fk_accounting_unit' => ' Accounting Unit',
+            'fk_bac_composition_id' => 'BAC RSO Number',
+            'bac_date' => 'BAC Date',
+
+
         ];
     }
 
@@ -83,5 +91,9 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
     public function getAuthorizedOfficial()
     {
         return $this->hasOne(Employee::class, ['employee_id' => 'fk_auth_official']);
+    }
+    public function getAccountingUnit()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_accounting_unit']);
     }
 }

@@ -135,11 +135,13 @@ class PrPurchaseOrderController extends Controller
         $model = new PrPurchaseOrder();
 
         if ($model->load(Yii::$app->request->post())) {
+
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             $model->po_number = $this->generatePoNumber($model->fk_contract_type_id);
+
             if ($model->save()) {
-                if (!empty($_POST['new_lowest'])) {
-                    $this->newLowest($_POST['new_lowest'], $model->id);
+                if (!empty(array_unique($_POST['aoq_id']))) {
+                    $this->newLowest(array_unique($_POST['aoq_id']), $model->fk_pr_aoq_id);
                 }
                 return $this->redirect(['view', 'id' => $model->id]);
             }
@@ -165,9 +167,10 @@ class PrPurchaseOrderController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
 
-            // return json_decode($_POST['new_lowest']);
-            if (!empty($_POST['new_lowest'])) {
-                $this->newLowest($_POST['new_lowest'], $model->id);
+            // return json_encode($_POST['aoq_id']);
+
+            if (!empty(array_unique($_POST['aoq_id']))) {
+                $this->newLowest(array_unique($_POST['aoq_id']), $model->fk_pr_aoq_id);
             }
 
             if ($model->save()) {
@@ -214,28 +217,79 @@ class PrPurchaseOrderController extends Controller
         if ($_POST) {
             $id = $_POST['id'];
 
+            // $aoq_lowest = Yii::$app->db->createCommand("SELECT 
+            // payee.account_name as payee,
+            // IFNULL(payee.registered_address,'') as `address`,
+            // IFNULL(payee.tin_number,'') as tin_number,
+            // pr_aoq_entries.amount as unit_cost
+            // FROM pr_aoq_entries
+            // LEFT JOIN payee ON pr_aoq_entries.payee_id  = payee.id
+
+            // WHERE pr_aoq_entries.pr_aoq_id = :id 
+            // AND pr_aoq_entries.amount = (SELECT MIN(pr_aoq_entries.amount) FROM pr_aoq_entries WHERE pr_aoq_entries.pr_aoq_id = :id )")
+            //     ->bindValue(':id', $id)
+            //     ->queryAll();
+
             $aoq_lowest = Yii::$app->db->createCommand("SELECT 
-            payee.account_name as payee,
-            IFNULL(payee.registered_address,'') as `address`,
-            IFNULL(payee.tin_number,'') as tin_number,
-            pr_aoq_entries.amount as unit_cost
-            FROM pr_aoq_entries
-            LEFT JOIN payee ON pr_aoq_entries.payee_id  = payee.id
-            
-            WHERE pr_aoq_entries.pr_aoq_id = :id 
-            AND pr_aoq_entries.amount = (SELECT MIN(pr_aoq_entries.amount) FROM pr_aoq_entries WHERE pr_aoq_entries.pr_aoq_id = :id )")
+                pr_aoq_entries.id as aoq_entry_id,
+                pr_aoq_entries.pr_rfq_item_id as rfq_item_id,
+                payee.account_name as payee,
+                pr_aoq_entries.amount as unit_cost,
+                pr_aoq_entries.remark,
+                pr_purchase_request_item.quantity,
+                IFNULL(REPLACE( pr_purchase_request_item.specification, '[n]', '<br>'),'') as specification,
+                pr_stock.stock_title as `description`,
+                IFNULL(payee.registered_address,'') as `address`,
+                IFNULL(payee.tin_number,'') as tin_number,
+                pr_stock.bac_code
+                FROM pr_aoq_entries
+                LEFT JOIN payee ON pr_aoq_entries.payee_id  = payee.id
+                LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+                LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+                LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+                WHERE pr_aoq_entries.pr_aoq_id =:id
+                AND pr_aoq_entries.is_lowest = 1")
                 ->bindValue(':id', $id)
                 ->queryAll();
+            if (empty($aoq_lowest)) {
+                $aoq_lowest = Yii::$app->db->createCommand("SELECT 
+               pr_aoq_entries.id as aoq_entry_id,
+               pr_aoq_entries.pr_rfq_item_id as rfq_item_id,
+                payee.account_name as payee,
+                pr_aoq_entries.amount as unit_cost,
+                pr_aoq_entries.remark,
+                pr_purchase_request_item.quantity,
+                IFNULL(REPLACE( pr_purchase_request_item.specification, '[n]', '<br>'),'') as specification,
+                pr_stock.stock_title as `description`,
+                pr_stock.bac_code,
+                pr_aoq_entries.is_lowest
+                FROM pr_aoq_entries
+                LEFT JOIN payee ON pr_aoq_entries.payee_id  = payee.id
+                LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+                LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+                LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+                            INNER JOIN (SELECT MIN(pr_aoq_entries.amount) as amount, pr_aoq_entries.pr_rfq_item_id FROM pr_aoq_entries WHERE pr_aoq_entries.pr_aoq_id = :id  
+                            GROUP BY pr_aoq_entries.pr_rfq_item_id) as lowest_value ON pr_aoq_entries.pr_rfq_item_id = lowest_value.pr_rfq_item_id   AND   pr_aoq_entries.amount =lowest_value.amount 
+                WHERE pr_aoq_entries.pr_aoq_id =:id
+    
+                 ")
+                    ->bindValue(':id', $id)
+                    ->queryAll();
+            }
 
             $aoq_items = Yii::$app->db->createCommand("SELECT 
              pr_aoq_entries.id,
+             pr_aoq_entries.pr_rfq_item_id as rfq_item_id,
+             
             payee.account_name as payee,
             pr_aoq_entries.amount as unit_cost,
             pr_aoq_entries.remark,
             pr_purchase_request_item.quantity,
             IFNULL(REPLACE( pr_purchase_request_item.specification, '[n]', '<br>'),'') as specification,
             pr_stock.stock_title as `description`,
-            pr_stock.bac_code
+            pr_stock.bac_code,
+            pr_aoq_entries.is_lowest
+
             FROM pr_aoq_entries
             LEFT JOIN payee ON pr_aoq_entries.payee_id  = payee.id
             LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
@@ -255,12 +309,13 @@ class PrPurchaseOrderController extends Controller
     {
         $params = [];
         $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'pr_aoq_entries.id', $aoq_entry_id], $params);
-        Yii::$app->db->createCommand("UPDATE  pr_aoq_entries SET is_lowest=0 WHERE  $sql AND pr_aoq_id = :aoq_id", $params)
+        $q =  Yii::$app->db->createCommand("UPDATE  pr_aoq_entries SET is_lowest=0 WHERE  $sql AND pr_aoq_id = :aoq_id", $params)
             ->bindValue(':aoq_id', $aoq_id)
             ->query();
+        // echo $q->getRawSql();
+        // die();
         foreach ($aoq_entry_id as $val) {
             $model = PrAoqEntries::findOne($val);
-
             $model->is_lowest = 1;
             if ($model->save(false)) {
             }

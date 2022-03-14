@@ -1210,13 +1210,17 @@ class LiquidationController extends Controller
                     $chart_of_account_id = Yii::$app->db->createCommand("SELECT id FROM chart_of_accounts WHERE uacs = :uacs")
                         ->bindValue(':uacs', $new_object_code)
                         ->queryScalar();
-                    if (empty($chart_of_account_id)) {
+                    $check_object_code = Yii::$app->db->createCommand("SELECT object_code FROM accounting_codes WHERE object_code = :object_code")
+                        ->bindValue(':object_code', $new_object_code)
+                        ->queryScalar();
+                    if (empty($chart_of_account_id) && empty($check_object_code)) {
                         $new_object_code = $cells[1];
                         return json_encode(['isSuccess' => false, 'error' => "Object Code Does not Exist in Line $key $new_object_code"]);
                     }
 
                     $entry = LiquidationEntries::findOne($id);
-                    $entry->new_chart_of_account_id = $chart_of_account_id;
+                    $entry->new_chart_of_account_id = empty($chart_of_account_id)?null:$chart_of_account_id;
+                    $entry->new_object_code = $new_object_code;
                     if ($entry->save(false)) {
                     }
                 }

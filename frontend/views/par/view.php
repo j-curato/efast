@@ -70,6 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 $d = new DateTime($model->property->date);
                 $dateAquired = $d->format('F d, Y');
                 $description = preg_replace('#\[n\]#', "<br>", $model->property->description);
+                
                 $article = $model->property->article;
                 echo "<tr>
                         <td>{$model->property->quantity}</td>

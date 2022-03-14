@@ -233,6 +233,7 @@ class ParController extends Controller
             property.quantity,
             property.acquisition_amount,
             property.article,
+            REPLACE(property.description,'[n]','\n') as `description`,
             property.iar_number,
             property.model,
             property.serial_number,

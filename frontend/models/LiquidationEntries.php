@@ -58,7 +58,8 @@ class LiquidationEntries extends \yii\db\ActiveRecord
             'vat_nonvat' => 'Vat Nonvat',
             'expanded_tax' => 'Expanded Tax',
             'liquidation_damage' => 'Liquidation Damage ',
-            'reporting_period' => 'Reporting Period'
+            'reporting_period' => 'Reporting Period',
+            'new_object_code' => 'New Object Code'
         ];
     }
 

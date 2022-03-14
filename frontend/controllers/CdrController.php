@@ -222,8 +222,8 @@ class CdrController extends Controller
                         IFNULL(liq.vat_nonvat,0)as vat_nonvat,
                         IFNULL(liq.expanded_tax,0)as expanded_tax,
                         liq.reporting_period,
-                        chart_of_accounts.uacs as gl_object_code,
-                        chart_of_accounts.general_ledger as gl_account_title
+                        accounting_codes.object_code as gl_object_code,
+                        accounting_codes.account_title as gl_account_title
                         FROM (	
                             SELECT
                             liquidation.id,
@@ -231,10 +231,14 @@ class CdrController extends Controller
                             IFNULL(SUM(liquidation_entries.vat_nonvat),0)as vat_nonvat,
                             IFNULL(SUM(liquidation_entries.expanded_tax),0)as expanded_tax,
                             liquidation_entries.reporting_period,
-                            IFNULL(q.uacs,chart_of_accounts.uacs) as gl_object_code
+                            (CASE  
+                                WHEN liquidation_entries.new_object_code IS  NOT NULL THEN liquidation_entries.new_object_code
+                                WHEN  liquidation_entries.new_chart_of_account_id IS  NOT NULL THEN  new_chart.uacs
+                                ELSE orig_chart.uacs
+                                END) as  gl_object_code
                             FROM liquidation_entries
-                            LEFT JOIN chart_of_accounts ON liquidation_entries.chart_of_account_id= chart_of_accounts.id
-                            LEFT JOIN chart_of_accounts as q  ON liquidation_entries.new_chart_of_account_id= q.id
+                            LEFT JOIN chart_of_accounts as orig_chart ON liquidation_entries.chart_of_account_id = orig_chart.id
+LEFT JOIN chart_of_accounts as new_chart ON liquidation_entries.chart_of_account_id = new_chart.id
                             LEFT JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
                             LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id  = advances_entries.id
                             LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id =  cash_disbursement.id
@@ -245,11 +249,15 @@ class CdrController extends Controller
                             GROUP BY
                             liquidation_entries.reporting_period,
                             liquidation.id,
-                            IFNULL(q.uacs,chart_of_accounts.uacs)
+                            (CASE  
+                                WHEN liquidation_entries.new_object_code IS  NOT NULL THEN liquidation_entries.new_object_code
+                                WHEN  liquidation_entries.new_chart_of_account_id IS  NOT NULL THEN  new_chart.uacs
+                                ELSE orig_chart.uacs
+                                END)
                         ) as liq
                         LEFT JOIN liquidation ON liq.id = liquidation.id
                         LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
-                        LEFT JOIN chart_of_accounts ON liq.gl_object_code = chart_of_accounts.uacs
+                        LEFT JOIN accounting_codes ON liq.gl_object_code = accounting_codes.object_code
                     UNION ALL
                     SELECT 
                     cash_disbursement.issuance_date as check_date,

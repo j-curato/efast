@@ -112,7 +112,7 @@ use yii\widgets\ActiveForm;
                     ?>
                 </div>
             </div>
-            <table id="par_table">
+            <table id="par_table" style="width: 100%;">
                 <tr>
                     <th>Property Number</th>
                     <td id="property_number"></td>
@@ -143,6 +143,8 @@ use yii\widgets\ActiveForm;
                         <br>
                         <span>IAR Number:</span>
                         <span id="iar_number"></span>
+                        <br>
+                        <span id="description"></span>
                         <br>
 
                     </td>
@@ -561,6 +563,8 @@ $js = <<<JS
                 $('#iar_number').text(res.iar_number)
                 $('#amount').text(res.acquisition_amount)
                 $('#pc_number').text(res.pc_number)
+      
+                $('#description').text(res.description)
                 $('#par_table').show()
                 agency_name=res.agency_name
                 employee_name=res.rcv_by_employee_name

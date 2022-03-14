@@ -97,8 +97,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td>{$val['bac_code']}</td>
                         <td>{$val['unit_of_measure']}</td>
                         <td>
-                            {$val['description']}
+                          
+                            <span style='font-weight:bold'>  {$val['description']}</span>
+                            <br>
+                            <span style='font-style:italic'>
                             {$val['specification']}
+                            </span>
                         </td>
                         <td> {$val['quantity']}</td>
                         <td class='amount'> {$val['unit_cost']} </td>
@@ -159,7 +163,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             <br>
                             <br>
                             <br>
-                            <span>________________________________________</span>
+                            <span style="text-decoration:underline;"> <?php
+                                    echo strtoupper($model->accountingUnit->f_name . ' ' . $model->accountingUnit->m_name[0] . '. ' . $model->accountingUnit->l_name)
+                                    ?></span>
                             <br>
                             <span style="margin-left:auto;width:100%">Signature over Printed Name of Chief Accountant/Head of </span>
                             <br>
