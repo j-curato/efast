@@ -13,7 +13,6 @@ class m220309_005711_add_id_in_property_card_table extends Migration
     public function safeUp()
     {
         $this->addColumn('property_card', 'id', $this->bigInteger()->notNull());
-        $this->addColumn('property_card', 'created_at', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
         $this->dropPrimaryKey('PRIMARY', 'property_card');
         $this->addPrimaryKey('pd-id', 'property_card', 'id');
     }
@@ -26,7 +25,6 @@ class m220309_005711_add_id_in_property_card_table extends Migration
         $this->dropPrimaryKey('PRIMARY', 'property_card');
         $this->dropColumn('property_card', 'id',);
         $this->addPrimaryKey('pd-id', 'property_card', 'pc_number');
-        $this->dropColumn('property_card', 'created_at');
     }
 
     /*

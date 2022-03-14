@@ -70,11 +70,12 @@ class CheckRangeSearch extends CheckRange
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'from' => $this->from,
-            'to' => $this->to,
+            'check_range.id' => $this->id,
+      
         ]);
-        $query->andFilterWhere(['like', 'province', $this->province])
+        $query->andFilterWhere(['like', 'check_range.province', $this->province])
+        ->andFilterWhere(['like', 'check_range.from', $this->from])
+        ->andFilterWhere(['like', 'check_range.to', $this->to])
             ->andFilterWhere(['or', ['like', 'bank_account.account_number', $this->bank_account_id], ['like', 'bank_account.account_name', $this->bank_account_id]]);
 
         return $dataProvider;
