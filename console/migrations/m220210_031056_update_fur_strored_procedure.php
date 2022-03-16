@@ -22,12 +22,15 @@ class m220210_031056_update_fur_strored_procedure extends Migration
             advances_cash.amount as total_advances,
             liquidation_total.total_withdrawals,
             IFNULL(b_balance.begining_balance,0) as begining_balance,
-            dv_aucs.particular
+            dv_aucs.particular,
+            accounting_codes.object_code,
+            accounting_codes.account_title
             FROM advances_entries
             LEFT JOIN advances ON advances_entries.advances_id = advances.id
             LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id  = cash_disbursement.id
             LEFT JOIN dv_aucs  ON cash_disbursement.dv_aucs_id = dv_aucs.id
             LEFT JOIN books ON cash_disbursement.book_id = books.id
+            LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
             LEFT JOIN (
                 SELECT 
             liquidation_entries.advances_entries_id,

@@ -68,6 +68,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th>Unit</th>
                     <th>Quantity</th>
                 </tr>
+                <tr>
+                    <th>INSEPECTION</th>
+                    <th>ACCEPTANCE</th>
+                </tr>
+                <tr>
+                    
+                </tr>
             </tbody>
         </table>
 
@@ -79,5 +86,9 @@ $this->params['breadcrumbs'][] = $this->title;
     .container {
         background-color: white;
         padding: 3rem;
+    }
+    th,td{
+        border:1px solid black;
+        padding: 2rem;
     }
 </style>

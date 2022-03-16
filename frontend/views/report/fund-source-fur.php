@@ -103,8 +103,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 ) {
                     $data = FundSourceType::find()->all();
                 } else if (Yii::$app->user->can('department-offices')) {
-                    $data = FundSourceType::find()->where("division = :division", 
-                    ['division' => Yii::$app->user->identity->division])->all();
+                    $data = FundSourceType::find()->where(
+                        "division = :division",
+                        ['division' => Yii::$app->user->identity->division]
+                    )->all();
                 }
                 echo Select2::widget([
                     'name' => 'fund_source_type',
@@ -230,7 +232,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 var detailed = res.detailed
                 var conso = res.conso
                 console.log(conso)
-                addData(detailed)
+                displayDetailed(detailed)
                 addToSummaryTable(conso)
                 $('#con').show()
                 $('#dots5').hide()
@@ -239,82 +241,85 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         })
     })
 
-    function addData(res) {
+    function displayDetailed(data) {
         $("#fur_table tbody").html('');
-        var year_object = Object.keys(res)
-        // console.log(res[2021]['2021-03'].length)
-        for (var i = 0; i < year_object.length; i++) {
-            var year = year_object[i]
-            row = `<tr class='data_row'>
-                        <td colspan='8' style='text-align:left;font-weight:bold'>` + 'Budget Year ' + year + `</td>
+        const data_keys = Object.keys(data)
+        for (let i = data_keys.length-1; i >= 0; i--) {
+            let total_current_total_advances = 0;
+            let total_current_total_withdrawals = 0;
+            let total_begin_balance = 0;
+            let total_ending_balance = 0;
+            let key =data_keys[i];
+            const header_row = `<tr class='data_row'>
+                        <td colspan='8' style='text-align:left;font-weight:bold'>` + 'Budget Year ' + key + `</td>
                         </tr>`
-            $('#fur_table tbody').append(row)
-            var reporting_period_keys = Object.keys(res[year])
-            var total_witdrawal = 0
-            var total_cash_advances_for_the_period = 0
-            var total_balance = 0
-            var total_begin_balance = 0
-            for (var x = 0; x < reporting_period_keys.length; x++) {
-
-                // console.log(res[object[i]][year[x]])
-                var reporting_period = reporting_period_keys[x]
-
-                for (var y = 0; y < res[year][reporting_period].length; y++) {
-
-                    row = `<tr class='data_row'>
-                        <td>` + res[year][reporting_period][y]['reporting_period'] + `</td>
-                        <td>` + res[year][reporting_period][y]['province'] + `</td>
-                        <td>` + res[year][reporting_period][y]['fund_source'] + `</td>
-                        <td class='amount'>` + thousands_separators(parseFloat(res[year][reporting_period][y]['begin_balance'])) + `</td>
-                        <td class='amount'>` + thousands_separators(parseFloat(res[year][reporting_period][y]['cash_advances_for_the_period'])) + `</td>
-                        <td class='amount'>` + thousands_separators(parseFloat(res[year][reporting_period][y]['total_withdrawals'])) + `</td>
-                        <td class='amount'>` + thousands_separators(parseFloat(res[year][reporting_period][y]['balance'])) + `</td>
-                        <td>` + res[year][reporting_period][y]['particular'] + `</td>
+            $('#fur_table tbody').append(header_row)
+            $.each(data[key], function(key2, val2) {
+                const current_total_advances = parseFloat(val2['current_total_advances'])
+                const current_total_withdrawals = parseFloat(val2['current_total_withdrawals'])
+                const begin_balance = parseFloat(val2['begin_balance'])
+                const ending_balance = (begin_balance + current_total_advances) - current_total_withdrawals
+                let row = `<tr class='data_row'>
+                        <td>` + val2['reporting_period'] + `</td>
+                        <td>` + val2['province'] + `</td>
+                        <td>` + val2['fund_source'] + `</td>
+                        <td class='amount'>` + thousands_separators(begin_balance) + `</td>
+                        <td class='amount'>` + thousands_separators(current_total_advances) + `</td>
+                        <td class='amount'>` + thousands_separators(current_total_withdrawals) + `</td>
+                        <td class='amount'>` + thousands_separators(ending_balance) + `</td>
+                        <td>` + val2['particular'] + `</td>
                     </tr>`
-                    $('#fur_table tbody').append(row)
-                    total_witdrawal += parseFloat(res[year][reporting_period][y]['total_withdrawals'])
-                    total_cash_advances_for_the_period += parseFloat(res[year][reporting_period][y]['cash_advances_for_the_period'])
-                    total_balance += parseFloat(res[year][reporting_period][y]['balance'])
-                    total_begin_balance += parseFloat(res[year][reporting_period][y]['begin_balance'])
-                }
-            }
-            row = `<tr class='data_row'>
+                $('#fur_table tbody').append(row)
+
+                total_current_total_advances += +current_total_advances;
+                total_current_total_withdrawals += +current_total_withdrawals;
+                total_begin_balance += +begin_balance;
+                total_ending_balance += +ending_balance;
+
+            })
+            const total_row = `<tr class='data_row'>
                         <td colspan='3' style='font-weight:bold'>Total</td>
                         <td class='amount'>` + thousands_separators(parseFloat(total_begin_balance.toFixed(2))) + `</td>
-                        <td class='amount'>` + thousands_separators(parseFloat(total_cash_advances_for_the_period.toFixed(2))) + `</td>
-                        <td class='amount'>` + thousands_separators(parseFloat(total_witdrawal.toFixed(2))) + `</td>
-                        <td class='amount'>` + thousands_separators(parseFloat(total_balance.toFixed(2))) + `</td>
+                        <td class='amount'>` + thousands_separators(parseFloat(total_current_total_advances.toFixed(2))) + `</td>
+                        <td class='amount'>` + thousands_separators(parseFloat(total_current_total_withdrawals.toFixed(2))) + `</td>
+                        <td class='amount'>` + thousands_separators(parseFloat(total_ending_balance.toFixed(2))) + `</td>
                         <td ></td>
                         </tr>`
-            $('#fur_table tbody').append(row)
+            $('#fur_table tbody').append(total_row)
+
 
         }
-
     }
+
 
     function addToSummaryTable(conso) {
         $('#summary_table tbody').html('')
         var conso_object = Object.keys(conso)
-        var total_begin_balance = 0
-        var total_amount = 0
-        var total_withdrawals = 0
-        var total_balance = 0
+        let total_begin_balance = 0
+        let total_amount = 0
+        let total_withdrawals = 0
+        let total_balance = 0
         for (var i = 0; i < conso_object.length; i++) {
             var province = conso_object[i]
-            var row = `<tr>
+            let grand_total_begin_balance = parseFloat(conso[province]['grand_total_begin_balance']);
+            let grand_total_cash_advances_for_the_period = parseFloat(conso[province]['grand_total_cash_advances_for_the_period']);
+            let grand_total_withdrawals = parseFloat(conso[province]['grand_total_withdrawals']);
+            let ending_balance = (grand_total_begin_balance + grand_total_cash_advances_for_the_period) - grand_total_withdrawals;
+            let row = `<tr>
                 <td>` + province + `</td>
-                <td class='amount'>` + thousands_separators(conso[province]['grand_total_begin_balance']) + `</td>
-                <td class='amount'>` + thousands_separators(conso[province]['grand_total_cash_advances_for_the_period']) + `</td>
-                <td class='amount'>` + thousands_separators(conso[province]['grand_total_withdrawals']) + `</td>
-                <td class='amount'>` + thousands_separators(conso[province]['grand_total_balance']) + `</td>
+                <td class='amount'>` + thousands_separators(grand_total_begin_balance) + `</td>
+                <td class='amount'>` + thousands_separators(grand_total_cash_advances_for_the_period) + `</td>
+                <td class='amount'>` + thousands_separators(grand_total_withdrawals) + `</td>
+                <td class='amount'>` + thousands_separators(ending_balance) + `</td>
             </tr>`
             $('#summary_table tbody').append(row)
-            total_begin_balance += parseFloat(conso[province]['grand_total_begin_balance'])
-            total_amount += parseFloat(conso[province]['grand_total_cash_advances_for_the_period'])
-            total_withdrawals += parseFloat(conso[province]['grand_total_withdrawals'])
-            total_balance += parseFloat(conso[province]['grand_total_balance'])
+            total_begin_balance += grand_total_begin_balance
+            total_amount += grand_total_cash_advances_for_the_period
+            total_withdrawals += grand_total_withdrawals
+
         }
-        row = `<tr>
+        total_balance = (total_begin_balance + total_amount) - total_withdrawals;
+        let row = `<tr>
                 <td style='font-weight:bold'>Total</td>
                 <td class='amount'>` + thousands_separators(total_begin_balance.toFixed(2)) + `</td>
                 <td class='amount'>` + thousands_separators(total_amount.toFixed(2)) + `</td>
@@ -329,7 +334,7 @@ SweetAlertAsset::register($this);
 $script = <<< JS
     var month= ''
     var year=''
-    var province={
+    const province={
         'adn' : 'Agusan Del Norte',
         'ads' : 'Agusan Del Sur',
         'sdn' : 'Surigao Del Norte',

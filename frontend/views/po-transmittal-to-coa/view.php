@@ -1,6 +1,7 @@
 <?php
 
 use app\models\Assignatory;
+use app\models\EmployeePosition;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -85,7 +86,7 @@ $this->params['breadcrumbs'][] = $this->title;
          
            
                     </tr>";
-                    $total+=$val['total_withdrawals'];
+                    $total += $val['total_withdrawals'];
                 }
                 ?>
                 <tr>
@@ -105,10 +106,13 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <div class="row" style="margin-top:2rem">
             <div class="head" id="for_rd"></div>
+
         </div>
         <div class="row" style="margin-top: 2rem;">
             <div class="head" id='ass' style="font-weight: bold;"></div>
+            <div class="head" id="oic_position_text"></div>
         </div>
+
         <div class="row" style="margin-top: 20px;">
 
             <div class="col-sm-3 as">
@@ -117,7 +121,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <option value=""></option>
                 </select>
             </div>
-            <div class="col-sm-4 as">
+            <div class="col-sm-3 as">
                 <label for="qwe">OIC</label>
                 <!-- <select id="assignatory" onchange="sample(this)" name="assignatory" class=" select" style="width: 100%">
                     <option></option>
@@ -141,6 +145,22 @@ $this->params['breadcrumbs'][] = $this->title;
                     <option value=""></option>
                 </select>
             </div>
+            <div class="col-sm-3 as">
+                <label for="qwe">OIC Position</label>
+
+                <?php
+                echo Select2::widget([
+                    'data' => ArrayHelper::map(EmployeePosition::find()->asArray()->all(), 'position', 'position'),
+                    'name' => 'oic_position',
+                    'id' => 'oic_position',
+                    'options' => ['onChange' => 'oic_position(this)'],
+                    'pluginOptions' => [
+                        'placeholder' => 'select',
+                        'allowClear' => true,
+                    ],
+                ])
+                ?>
+            </div>
         </div>
     </div>
     <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
@@ -159,6 +179,11 @@ $this->params['breadcrumbs'][] = $this->title;
         // $("#assignatory").change(function() {
         //     console.log("qwe")
         // })
+        function oic_position(q) {
+            console.log($(q).val())
+            $('#oic_position_text').text($(q).val())
+
+        }
 
         function oicRd(x) {
             $("#oic").text(x.value)
@@ -189,7 +214,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 allowClear: true,
                 closeOnSelect: true
             })
-            $.getJSON('/afms/frontend/web/index.php?r=assignatory/get-all-assignatory')
+            $.getJSON(window.location.pathname + '/frontend/web/index.php?r=assignatory/get-all-assignatory')
 
                 .then(function(data) {
 
@@ -396,6 +421,10 @@ $script = <<< JS
     $("#assignatory").change(function(){
       
         console.log("qwe")
+    })
+
+    $("#oic_position").on('change',function(){
+        console.log('qwer')
     })
 
 JS;

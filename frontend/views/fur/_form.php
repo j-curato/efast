@@ -152,6 +152,8 @@ if (!empty($model->id)) {
                 <th class="amount">Ending Balance</th>
                 <th>Particulars</th>
                 <th>Report Type</th>
+                <th>Object Code</th>
+                <th>Account Title</th>
             </thead>
             <tbody>
 
@@ -354,6 +356,8 @@ $script = <<< JS
                         <td class='amount'> `+final_fur_ending_balance+`</td>
                         <td>`+fur[x]['particular']+`</td>
                         <td>`+fur[x]['report_type']+`</td>
+                        <td>`+fur[x]['object_code']+`</td>
+                        <td>`+fur[x]['account_title']+`</td>
                         </tr>`
 
                 $('#fur_table tbody').append(row)

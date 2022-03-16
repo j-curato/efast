@@ -73,13 +73,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Add Link</button>
 
                 <?php
-                $btn_clr ='btn-danger';
-                $text = 'Exclude ' ;
+                $btn_clr = 'btn-danger';
+                $text = 'Exclude ';
 
                 if ($model->exclude_in_raaf === 1) {
-                    $btn_clr ='btn-success';
+                    $btn_clr = 'btn-success';
                     $text = 'Include';
-                } 
+                }
 
 
                 $total_withdrawal = 0;
@@ -107,8 +107,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     echo Html::a('Soft Copy Link', $document_link, ['class' => 'btn btn-info ']);;
                 }
                 ?>
-                <?= Html::a($text.' in RAAF', ['exclude-raaf', 'id' => $model->id], [
-                    'class' => 'btn '.$btn_clr,
+                <?= Html::a($text . ' in RAAF', ['exclude-raaf', 'id' => $model->id], [
+                    'class' => 'btn ' . $btn_clr,
                     'data' => [
                         'confirm' => 'Are you sure you want to exclude this item?',
                         'method' => 'post',
@@ -203,7 +203,14 @@ $this->params['breadcrumbs'][] = $this->title;
                             $province = $val->advancesEntries->advances->province;
                             $fund_source =  $val->advancesEntries->fund_source;
                         }
-                        if (!empty($val->new_chart_of_account_id)) {
+                        if (!empty($val->new_object_code)) {
+
+                            $q = Yii::$app->db->createCommand("SELECT object_code,account_title FROM accounting_codes WHERE object_code = :object_code")
+                                ->bindValue(':object_code', $val->new_object_code)
+                                ->queryOne();
+                            $uacs = $q['object_code'];
+                            $general_ledger =  $q['account_title'];
+                        } else if (!empty($val->new_chart_of_account_id)) {
 
                             $uacs = $val->newChartOfAccount->uacs;
                             $general_ledger =  $val->newChartOfAccount->general_ledger;
@@ -211,8 +218,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             $uacs = $val->chartOfAccount->uacs;
                             $general_ledger =  $val->chartOfAccount->general_ledger;
                         }
-
-
 
                         echo "<tr>
                 

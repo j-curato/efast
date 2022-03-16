@@ -1194,117 +1194,162 @@ class ReportController extends \yii\web\Controller
             ) {
                 $province = $user_province;
             }
-            $query  = (new \yii\db\Query())->select(["
-                SUBSTRING_INDEX(advances_entries.reporting_period,'-',1) as budget_year,
-                advances.province,
-                advances_entries.reporting_period,
-                advances_entries.fund_source,
-                IFNULL(beginning_advances.amount,0) - IFNULL(beginning_balance.prev_withdrawals,0)  as begin_balance,
-                IFNULL(liquidation_total.total_withdrawals,0) as total_withdrawals,
-                (  IFNULL(beginning_advances.amount,0) +
-                IFNULL(current_advances.amount,0) )- 
-                 IFNULL(liquidation_total.total_withdrawals,0) as balance,
-                dv_aucs.particular,
-                IFNULL(current_advances.amount,0)   as cash_advances_for_the_period
-                "])
-                ->from('advances_entries')
-                ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
-                ->join('LEFT JOIN', 'cash_disbursement', 'advances_entries.cash_disbursement_id = cash_disbursement.id')
-                ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id = dv_aucs.id')
-                ->join(
-                    'LEFT JOIN',
-                    "(
-                        SELECT 
-                        liquidation_balance_per_advances.advances_entries_id,
-                        SUM(liquidation_balance_per_advances.total_withdrawals) as total_withdrawals
-                        FROM liquidation_balance_per_advances
-                        WHERE
-                        liquidation_balance_per_advances.reporting_period >= :from_reporting_period  
-                        AND
-                     liquidation_balance_per_advances.reporting_period <= :to_reporting_period
-                        GROUP BY liquidation_balance_per_advances.advances_entries_id
-                    ) as liquidation_total",
-                    'advances_entries.id = liquidation_total.advances_entries_id',
-                    [
-                        'from_reporting_period' => $from_reporting_period,
-                        'to_reporting_period' => $to_reporting_period,
-                    ]
-
-                )
-                ->join(
-                    'LEFT JOIN',
-                    "(
-                        SELECT 
-                        liquidation_balance_per_advances.advances_entries_id,
-                        SUM(liquidation_balance_per_advances.total_withdrawals) as prev_withdrawals
-                        FROM liquidation_balance_per_advances
-                        WHERE 
-                        liquidation_balance_per_advances.reporting_period < :from_reporting_period
-                        GROUP BY liquidation_balance_per_advances.advances_entries_id
-                    ) as beginning_balance",
-                    'advances_entries.id = beginning_balance.advances_entries_id',
-                    [
-                        'from_reporting_period' => $from_reporting_period,
-                    ]
-                )
-                ->join(
-                    "LEFT JOIN",
-                    "(SELECT advances_entries.id,advances_entries.amount
-                    FROM advances_entries
-                    WHERE
-                    advances_entries.reporting_period < :from_reporting_period
-                    ) as beginning_advances",
-                    "
-                    advances_entries.id = beginning_advances.id
-                    ",
-                    [
-                        'from_reporting_period' => $from_reporting_period
-                    ]
-                )
-                ->join(
-                    "LEFT JOIN",
-                    "(SELECT advances_entries.id,advances_entries.amount
-                        FROM advances_entries
-                        WHERE
-                        advances_entries.reporting_period >= :from_reporting_period
-                        AND
-                        advances_entries.reporting_period <= :to_reporting_period
-                        ) as current_advances",
-                    "
-                        advances_entries.id = current_advances.id
-                ",
-                    [
-                        'from_reporting_period' => $from_reporting_period,
-                        'to_reporting_period' => $to_reporting_period
-                    ]
-                )
-                ->where('advances_entries.fund_source_type=:fund_source_type', ['fund_source_type' => $fund_source_type])
-                ->andWhere('advances_entries.reporting_period <= :to_reporting_period', ['to_reporting_period' => $to_reporting_period])
-                ->andWhere('advances_entries.is_deleted !=1 ');
-            if (strtolower($province) !== 'all') {
-                $query->andWhere('advances.province = :province', ['province' => $province]);
+            $and = '';
+            $params = [];
+            $sql = '';
+            if ($province !== 'all') {
+                $and = 'AND ';
+                $sql = Yii::$app->db->getQueryBuilder()->buildCondition('advances.province = :province', $params);
             }
-            $final_query = $query->orderBy('advances_entries.reporting_period')
-                ->all();
-            $result = ArrayHelper::index($final_query, null, [function ($element) {
-                return $element['budget_year'];
-            }, 'reporting_period']);
-            $index_per_province = ArrayHelper::index($final_query, null, 'province');
+            $query = Yii::$app->db->createCommand("SELECT 
+            SUBSTRING_INDEX(advances_entries.reporting_period,'-',1)as budget_year,
+            advances_entries.reporting_period,
+            advances.province,
+            advances_entries.fund_source,
+            dv_aucs.particular,
+            IFNULL(current_advances.current_total_advances,0) as current_total_advances ,
+            IFNULL(current_liquidation.current_total_withdrawals,0) as current_total_withdrawals,
+            (
+            IFNULL(prev_advances.prev_total_advances,0)-IFNULL(prev_liquidation.prev_total_withdrawals,0)
+            ) as begin_balance
+            
+            FROM advances_entries
+            LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id  = cash_disbursement.id 
+            LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
+            LEFT JOIN advances ON advances_entries.advances_id = advances.id
+            LEFT  JOIN (SELECT liquidation_entries.advances_entries_id,SUM(liquidation_entries.withdrawals) as current_total_withdrawals
+            FROM liquidation_entries WHERE liquidation_entries.reporting_period >=:from_reporting_period AND liquidation_entries.reporting_period <=:to_reporting_period
+            GROUP BY liquidation_entries.advances_entries_id
+             )as current_liquidation ON advances_entries.id  = current_liquidation.advances_entries_id
+            LEFT  JOIN (SELECT liquidation_entries.advances_entries_id,SUM(liquidation_entries.withdrawals) as prev_total_withdrawals 
+            FROM liquidation_entries WHERE liquidation_entries.reporting_period <:from_reporting_period 
+            GROUP BY liquidation_entries.advances_entries_id
+             )as prev_liquidation ON advances_entries.id  = prev_liquidation.advances_entries_id
+            LEFT  JOIN (SELECT  advances_entries.amount as current_total_advances ,advances_entries.id
+             FROM advances_entries WHERE advances_entries.reporting_period >=:from_reporting_period AND advances_entries.reporting_period <=:to_reporting_period
+             )as current_advances ON advances_entries.id  = current_advances.id
+            LEFT  JOIN (SELECT  advances_entries.amount as prev_total_advances,advances_entries.id 
+            FROM advances_entries WHERE advances_entries.reporting_period <=:from_reporting_period
+             )as prev_advances ON advances_entries.id  = prev_advances.id
+            WHERE advances_entries.fund_source_type  = :fund_source_type
+            AND advances_entries.reporting_period <=:to_reporting_period
+            $and $sql
+            ORDER BY budget_year DESC")
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->bindValue(':to_reporting_period', $to_reporting_period)
+                ->bindValue(':fund_source_type', $fund_source_type)
+                ->bindValue(':province', $province)
+                ->queryAll();
+            // $query  = (new \yii\db\Query())->select(["
+            //     SUBSTRING_INDEX(advances_entries.reporting_period,'-',1) as budget_year,
+            //     advances.province,
+            //     advances_entries.reporting_period,
+            //     advances_entries.fund_source,
+            //     IFNULL(beginning_advances.amount,0) - IFNULL(beginning_balance.prev_withdrawals,0)  as begin_balance,
+            //     IFNULL(liquidation_total.total_withdrawals,0) as total_withdrawals,
+            //     (  IFNULL(beginning_advances.amount,0) +
+            //     IFNULL(current_advances.amount,0) )- 
+            //      IFNULL(liquidation_total.total_withdrawals,0) as balance,
+            //     dv_aucs.particular,
+            //     IFNULL(current_advances.amount,0)   as cash_advances_for_the_period
+            //     "])
+            //     ->from('advances_entries')
+            //     ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
+            //     ->join('LEFT JOIN', 'cash_disbursement', 'advances_entries.cash_disbursement_id = cash_disbursement.id')
+            //     ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id = dv_aucs.id')
+            //     ->join(
+            //         'LEFT JOIN',
+            //         "(
+            //             SELECT 
+            //             liquidation_balance_per_advances.advances_entries_id,
+            //             SUM(liquidation_balance_per_advances.total_withdrawals) as total_withdrawals
+            //             FROM liquidation_balance_per_advances
+            //             WHERE
+            //             liquidation_balance_per_advances.reporting_period >= :from_reporting_period  
+            //             AND
+            //          liquidation_balance_per_advances.reporting_period <= :to_reporting_period
+            //             GROUP BY liquidation_balance_per_advances.advances_entries_id
+            //         ) as liquidation_total",
+            //         'advances_entries.id = liquidation_total.advances_entries_id',
+            //         [
+            //             'from_reporting_period' => $from_reporting_period,
+            //             'to_reporting_period' => $to_reporting_period,
+            //         ]
+
+            //     )
+            //     ->join(
+            //         'LEFT JOIN',
+            //         "(
+            //             SELECT 
+            //             liquidation_balance_per_advances.advances_entries_id,
+            //             SUM(liquidation_balance_per_advances.total_withdrawals) as prev_withdrawals
+            //             FROM liquidation_balance_per_advances
+            //             WHERE 
+            //             liquidation_balance_per_advances.reporting_period < :from_reporting_period
+            //             GROUP BY liquidation_balance_per_advances.advances_entries_id
+            //         ) as beginning_balance",
+            //         'advances_entries.id = beginning_balance.advances_entries_id',
+            //         [
+            //             'from_reporting_period' => $from_reporting_period,
+            //         ]
+            //     )
+            //     ->join(
+            //         "LEFT JOIN",
+            //         "(SELECT advances_entries.id,advances_entries.amount
+            //         FROM advances_entries
+            //         WHERE
+            //         advances_entries.reporting_period < :from_reporting_period
+            //         ) as beginning_advances",
+            //         "
+            //         advances_entries.id = beginning_advances.id
+            //         ",
+            //         [
+            //             'from_reporting_period' => $from_reporting_period
+            //         ]
+            //     )
+            //     ->join(
+            //         "LEFT JOIN",
+            //         "(SELECT advances_entries.id,advances_entries.amount
+            //             FROM advances_entries
+            //             WHERE
+            //             advances_entries.reporting_period >= :from_reporting_period
+            //             AND
+            //             advances_entries.reporting_period <= :to_reporting_period
+            //             ) as current_advances",
+            //         "
+            //             advances_entries.id = current_advances.id
+            //     ",
+            //         [
+            //             'from_reporting_period' => $from_reporting_period,
+            //             'to_reporting_period' => $to_reporting_period
+            //         ]
+            //     )
+            //     ->where('advances_entries.fund_source_type=:fund_source_type', ['fund_source_type' => $fund_source_type])
+            //     ->andWhere('advances_entries.reporting_period <= :to_reporting_period', ['to_reporting_period' => $to_reporting_period])
+            //     ->andWhere('advances_entries.is_deleted !=1 ');
+            // if (strtolower($province) !== 'all') {
+            //     $query->andWhere('advances.province = :province', ['province' => $province]);
+            // }
+            // $final_query = $query->orderBy('advances_entries.reporting_period')
+            //     ->all();
+            $result = ArrayHelper::index($query, null, 'budget_year');
+            $index_per_province = ArrayHelper::index($query, null, 'province');
             // unset($result['2020']['2020-12']);
             $conso = array();
-            foreach (array_unique(array_column($final_query, 'province')) as $val) {
+            foreach (array_unique(array_column($query, 'province')) as $val) {
+
 
                 $conso[$val] = [
-                    'grand_total_withdrawals' => round(array_sum(array_column($index_per_province[$val], 'total_withdrawals')), 2),
+                    'grand_total_withdrawals' => round(array_sum(array_column($index_per_province[$val], 'current_total_withdrawals')), 2),
                     'grand_total_begin_balance' => round(array_sum(array_column($index_per_province[$val], 'begin_balance')), 2),
-                    'grand_total_cash_advances_for_the_period' => round(array_sum(array_column($index_per_province[$val], 'cash_advances_for_the_period')), 2),
-                    'grand_total_balance' => round(array_sum(array_column($index_per_province[$val], 'balance')), 2)
+                    'grand_total_cash_advances_for_the_period' => round(array_sum(array_column($index_per_province[$val], 'current_total_advances')), 2),
                 ];
             }
             // echo "<pre>";
             // var_dump($conso);
             // echo "</pre>";
-
+            // $reverse = array_reverse($result);
+            // var_dump($reverse);
             return json_encode(['detailed' => $result, 'conso' => $conso]);
         }
 
