@@ -104,6 +104,11 @@ class CibrController extends Controller
             ->bindValue(':bank_account_id',   $model->bank_account_id)
             ->queryAll();
 
+        $bank_account_data = Yii::$app->db->createCommand("SELECT * FROM bank_account WHERE id = :id")
+            ->bindValue(':id',  $model->bank_account_id)
+            ->queryOne();
+        $province =  $bank_account_data['province'];
+
         $q1 = Yii::$app->db->createCommand("SELECT 
                 SUM(total) as total
              from cibr_advances_balances
@@ -112,7 +117,7 @@ class CibrController extends Controller
             
               ")
             ->bindValue(':reporting_period',   $model->reporting_period)
-            ->bindValue(':province',   $model->province)
+            ->bindValue(':province',   $province)
             ->queryScalar();
 
         $q2 = Yii::$app->db->createCommand("SELECT 
@@ -122,7 +127,7 @@ class CibrController extends Controller
                 AND province LIKE :province
                  ")
             ->bindValue(':reporting_period',   $model->reporting_period)
-            ->bindValue(':province',   $model->province)
+            ->bindValue(':province',   $province)
             ->queryScalar();
         $balance = $q1 - $q2;
 
@@ -130,7 +135,7 @@ class CibrController extends Controller
 
         return $this->render('view', [
             'dataProvider' => $dataProvider,
-            'province' =>   $model->province,
+            'province' =>   $province,
             'reporting_period' =>   $model->reporting_period,
             'book' =>   $model->book_name,
             'model' => $model,
@@ -308,13 +313,16 @@ class CibrController extends Controller
             // ")->bindValue(':reporting_period', $reporting_period)
             //     ->bindValue(':province', $province)
             //     ->queryAll();
+            $bank_account_data = Yii::$app->db->createCommand("SELECT * FROM bank_account WHERE id = :id")
+                ->bindValue(':id', $bank_account_id)
+                ->queryOne();
             $dataProvider = Yii::$app->db->createCommand('CALL cibr_function(:province,:reporting_period,:bank_account_id)')
                 ->bindValue(':reporting_period', $reporting_period)
                 ->bindValue(':province', $province)
                 ->bindValue(':bank_account_id',   $bank_account_id)
                 ->queryAll();
 
-
+            $province =  $bank_account_data['province'];
 
 
             $q1 = Yii::$app->db->createCommand("SELECT 
