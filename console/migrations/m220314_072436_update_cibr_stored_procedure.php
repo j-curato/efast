@@ -53,7 +53,7 @@ class m220314_072436_update_cibr_stored_procedure extends Migration
         LEFT JOIN check_range ON liquidation.check_range_id = check_range.id
         
         WHERE
-        liquidation.province = province
+        check_range.bank_account_id = bank_account_id
         
             
         UNION ALL
@@ -72,7 +72,7 @@ class m220314_072436_update_cibr_stored_procedure extends Migration
         LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
         LEFT JOIN payee ON dv_aucs.payee_id = payee.id
         WHERE
-        advances.province = province
+        advances.bank_account_id = bank_account_id
         
         AND advances.bank_account_id = bank_account_id
         AND advances_entries.reporting_period = r_period
@@ -91,8 +91,9 @@ class m220314_072436_update_cibr_stored_procedure extends Migration
         '' as gl_account_title
         
         FROM liquidation
+        LEFT JOIN check_range ON liquidation.check_range_id = check_range.id
         WHERE
-        liquidation.province = province
+        check_range.bank_account_id = bank_account_id
         AND liquidation.reporting_period = r_period
         AND liquidation.payee LIKE 'cancelled%';
         END

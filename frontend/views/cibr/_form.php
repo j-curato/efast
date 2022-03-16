@@ -59,46 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ])
                 ?>
             </div>
-            <div class="col-sm-3">
-                <label for="province">Province</label>
-                <?php
-                $prov = [
-                    'adn' => 'ADN',
-                    'ads' => 'ADS',
-                    'pdi' => 'PDI',
-                    'sdn' => 'SDN',
-                    'sds' => 'SDS',
-                ];
-                $q = Yii::$app->user->identity->province;
-                $val = '';
-                if (
-
-                    $q === 'adn' ||
-                    $q === 'ads' ||
-                    $q === 'sdn' ||
-                    $q === 'sds' ||
-                    $q === 'pdi'
-                ) {
-                    $province =   $q;
-                    $prov = [
-                        $q => strtoupper($q)
-                    ];
-                }
-
-
-                echo Select2::widget([
-                    'name' => 'province',
-                    'id' => 'province',
-                    'data' => $prov,
-                    'value' => $province,
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'placeholder' => 'Select Province'
-                    ]
-                ])
-
-                ?>
-            </div>
+         
             <div class="col-sm-3">
                 <label for="bank_account">Bank Account</label>
                 <?php

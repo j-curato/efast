@@ -279,12 +279,12 @@ class CibrController extends Controller
     {
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
-            $province = $_POST['province'];
+            $province = '';
             $bank_account_id = $_POST['bank_account_id'];
 
             if (
                 empty($reporting_period)
-                || empty($province)
+                || empty($bank_account_id)
                 // || empty($book)
             ) {
                 return json_encode(['error' => true, 'message' => 'Reporting Period,Province and Book are Required']);
@@ -360,7 +360,7 @@ class CibrController extends Controller
 
         if (
             empty($reporting_period)
-            || empty($province)
+            || empty($bank_account_id)
             // || empty($book)
         ) {
             return json_encode(['error' => true, 'message' => 'Reporting Period,Province and Book are Required']);
