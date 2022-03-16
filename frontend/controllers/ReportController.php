@@ -517,8 +517,17 @@ class ReportController extends \yii\web\Controller
             $cdr  = Cdr::findOne($id);
 
             $q = Yii::$app->db->createCommand("SELECT
-            chart_of_accounts.uacs as object_code,
-            chart_of_accounts.general_ledger as account_title,
+
+            (CASE  
+                WHEN liquidation_entries.new_object_code IS  NOT NULL THEN liquidation_entries.new_object_code
+                WHEN  liquidation_entries.new_chart_of_account_id IS  NOT NULL THEN  new_chart.uacs
+                ELSE orig_chart.uacs
+            END) as  object_code,
+            (CASE  
+                WHEN liquidation_entries.new_object_code IS  NOT NULL THEN _new_object_code.account_title
+                WHEN  liquidation_entries.new_chart_of_account_id IS  NOT NULL THEN  new_chart.general_ledger
+                ELSE orig_chart.general_ledger
+            END) as  account_title,
             ROUND(IFNULL(SUM(withdrawals),0),2)+
             ROUND(IFNULL(SUM(vat_nonvat),0),2)+
             ROUND(IFNULL(SUM(expanded_tax),0),2)  as debit,
@@ -526,14 +535,16 @@ class ReportController extends \yii\web\Controller
             ROUND(SUM(vat_nonvat),2) as total_vat_nonvat,
             ROUND(SUM(expanded_tax),2) as total_expanded_tax
             FROM liquidation_entries
-            LEFT JOIN chart_of_accounts ON liquidation_entries.chart_of_account_id= chart_of_accounts.id
+            LEFT JOIN chart_of_accounts  as orig_chart ON liquidation_entries.chart_of_account_id= orig_chart.id
+            LEFT JOIN chart_of_accounts as new_chart ON liquidation_entries.new_chart_of_account_id= new_chart.id
+            LEFT JOIN accounting_codes as _new_object_code ON liquidation_entries.new_object_code= _new_object_code.object_code
             LEFT JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
             LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id  = advances_entries.id
             LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id =  cash_disbursement.id
             WHERE liquidation_entries.reporting_period = :reporting_period
             AND liquidation.province = :province
             AND advances_entries.report_type = :report_type
-            GROUP BY chart_of_accounts.uacs
+            GROUP BY object_code
             ")
                 ->bindValue(':reporting_period', $cdr->reporting_period)
                 ->bindValue(':province', $cdr->province)
@@ -1229,7 +1240,7 @@ class ReportController extends \yii\web\Controller
              FROM advances_entries WHERE advances_entries.reporting_period >=:from_reporting_period AND advances_entries.reporting_period <=:to_reporting_period
              )as current_advances ON advances_entries.id  = current_advances.id
             LEFT  JOIN (SELECT  advances_entries.amount as prev_total_advances,advances_entries.id 
-            FROM advances_entries WHERE advances_entries.reporting_period <=:from_reporting_period
+            FROM advances_entries WHERE advances_entries.reporting_period <:from_reporting_period
              )as prev_advances ON advances_entries.id  = prev_advances.id
             WHERE advances_entries.fund_source_type  = :fund_source_type
             AND advances_entries.reporting_period <=:to_reporting_period
