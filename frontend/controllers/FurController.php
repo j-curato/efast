@@ -227,7 +227,6 @@ class FurController extends Controller
             //     ->queryAll();
             $conso_fur = [];
             // $result = ArrayHelper::index($query, null, 'advances_type');
-            $result = ArrayHelper::index($query, null, 'report_type');
 
             $query  = Yii::$app->db->createCommand("SELECT 
             SUBSTRING_INDEX(advances_entries.reporting_period,'-',1)as budget_year,
@@ -274,6 +273,7 @@ class FurController extends Controller
                 ->bindValue(':province', $province)
                 ->bindValue(':bank_account_id', $bank_account_id)
                 ->queryAll();
+            $result = ArrayHelper::index($query, null, 'report_type');
 
 
             foreach ($result as $index => $val) {
