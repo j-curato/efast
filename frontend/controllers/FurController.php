@@ -213,12 +213,12 @@ class FurController extends Controller
 
             $prev = implode('-', $x);
 
-            $query = Yii::$app->db->createCommand("CALL fur(:province,:reporting_period,:bank_account_id)")
-                ->bindValue(':province', $province)
-                ->bindValue(':reporting_period', $reporting_period)
-                ->bindValue(':bank_account_id', $bank_account_id)
-                ->queryAll();
-            $dataProvider = $query;
+            // $query = Yii::$app->db->createCommand("CALL fur(:province,:reporting_period,:bank_account_id)")
+            //     ->bindValue(':province', $province)
+            //     ->bindValue(':reporting_period', $reporting_period)
+            //     ->bindValue(':bank_account_id', $bank_account_id)
+            //     ->queryAll();
+            // $dataProvider = $query;
             // return json_encode($dataProvider);
             // $conso_fur = YIi::$app->db->createCommand('CALL conso_fur(:province,:reporting_period,:prev_r_period)')
             //     ->bindValue(':province', $province)
@@ -229,7 +229,51 @@ class FurController extends Controller
             // $result = ArrayHelper::index($query, null, 'advances_type');
             $result = ArrayHelper::index($query, null, 'report_type');
 
+            $query  = Yii::$app->db->createCommand("SELECT 
+            SUBSTRING_INDEX(advances_entries.reporting_period,'-',1)as budget_year,
+            advances_entries.reporting_period,
+            advances.province,
+            advances_entries.fund_source,
+            dv_aucs.particular,
+            advances_entries.report_type,
+            accounting_codes.object_code,
+            accounting_codes.account_title,
+                
 
+            IFNULL(current_advances.current_total_advances,0) as total_advances ,
+            IFNULL(current_liquidation.current_total_withdrawals,0) as total_withdrawals,
+            (
+            IFNULL(prev_advances.prev_total_advances,0)-IFNULL(prev_liquidation.prev_total_withdrawals,0)
+            ) as begining_balance
+            
+            FROM advances_entries
+            LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id  = cash_disbursement.id 
+            LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
+            LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
+            LEFT JOIN advances ON advances_entries.advances_id = advances.id
+            LEFT  JOIN (SELECT liquidation_entries.advances_entries_id,SUM(liquidation_entries.withdrawals) as current_total_withdrawals
+            FROM liquidation_entries WHERE  liquidation_entries.reporting_period =:reporting_period
+            GROUP BY liquidation_entries.advances_entries_id
+             )as current_liquidation ON advances_entries.id  = current_liquidation.advances_entries_id
+            LEFT  JOIN (SELECT liquidation_entries.advances_entries_id,SUM(liquidation_entries.withdrawals) as prev_total_withdrawals 
+            FROM liquidation_entries WHERE liquidation_entries.reporting_period <:reporting_period 
+            GROUP BY liquidation_entries.advances_entries_id
+             )as prev_liquidation ON advances_entries.id  = prev_liquidation.advances_entries_id
+            LEFT  JOIN (SELECT  advances_entries.amount as current_total_advances ,advances_entries.id
+             FROM advances_entries WHERE  advances_entries.reporting_period =:reporting_period
+             )as current_advances ON advances_entries.id  = current_advances.id
+            LEFT  JOIN (SELECT  advances_entries.amount as prev_total_advances,advances_entries.id 
+            FROM advances_entries WHERE advances_entries.reporting_period <:reporting_period
+             )as prev_advances ON advances_entries.id  = prev_advances.id
+            WHERE advances_entries.reporting_period <=:reporting_period
+            AND advances.province =:province
+            AND advances.bank_account_id = :bank_account_id
+            AND advances_entries.is_deleted NOT IN (1,9) 
+            ")
+                ->bindValue(':reporting_period', $reporting_period)
+                ->bindValue(':province', $province)
+                ->bindValue(':bank_account_id', $bank_account_id)
+                ->queryAll();
 
 
             foreach ($result as $index => $val) {
@@ -265,7 +309,7 @@ class FurController extends Controller
             // return ob_get_clean();
 
             return json_encode([
-                'fur' => $dataProvider,
+                'fur' => $query,
                 'conso_fur' =>  $conso_fur,
             ]);
         }
