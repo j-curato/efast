@@ -674,7 +674,7 @@ class JevPreparationController extends Controller
 
                         // $cells[] =   $cell->getValue()->getCalculatedValue();
                         $qwe = 0;
-                        if ($y === 5) {
+                        if ($y === 5 || $y === 5) {
                             $cells[] =   $cell->getFormattedValue();
                             // echo '<pre>';y
                             // var_dump('qwe');

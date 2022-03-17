@@ -1244,6 +1244,7 @@ class ReportController extends \yii\web\Controller
              )as prev_advances ON advances_entries.id  = prev_advances.id
             WHERE advances_entries.fund_source_type  = :fund_source_type
             AND advances_entries.reporting_period <=:to_reporting_period
+            AND advances_entries.is_deleted NOT IN (1,9)
             $and $sql
             ORDER BY budget_year DESC")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
