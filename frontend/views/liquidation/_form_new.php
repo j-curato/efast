@@ -65,6 +65,8 @@ if (!empty($model->id)) {
 <div class="liquidation-form">
 
     <form id='liquidation_form'>
+        <input type="hidden" name="<?= Yii::$app->request->csrfParam; ?>" value="<?= Yii::$app->request->csrfToken; ?>" />
+
         <div class="row">
             <div class="col-sm-2">
                 <label for="reporting_period"> Reporting_period</label>
@@ -254,13 +256,12 @@ if (!empty($model->id)) {
                             </td>
                    
                             <td> 
-                                <input disabled type='text'  class='form-control  expanded_tax_mask amount mask-amount  vat_nonvat' value='{$val['expanded_tax']}'>
+                                <input disabled type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control  expanded_tax_mask amount mask-amount  expanded_tax' value='{$val['expanded_tax']}'>
                                 <input disabled type='hidden'  class='expanded_tax main_amount' name='expanded_tax[{$entries_row}]' value='{$val['expanded_tax']}'>
-        
+    
                             </td>
                             <td>
-                            <a class='add_new_row btn btn-primary btn-xs' onclick='copyRow(this)' type='button'><i class='fa fa-plus fa-fw'></i> </a>
-                            <a class='remove_this_row btn btn-danger btn-xs ' onclick='removeRow(this)' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                            <a class='add_new_row btn btn-primary btn-xs' onclick='copyRow(this)' type='button'><i class='fa fa-copy fa-fw'></i> </a>
                             </td>
                     </tr>";
                         $entries_row++;
@@ -288,7 +289,7 @@ if (!empty($model->id)) {
             </tfoot>
         </table>
 
-        <div class="row" >
+        <div class="row">
             <div class="col-sm-5"></div>
             <div class="col-sm-2">
                 <button type="submit" class="btn btn-success" style="width:100%">Save</button>
@@ -365,7 +366,8 @@ if (!empty($model->id)) {
     .error-block {
         color: red;
     }
-    #liquidation_form{
+
+    #liquidation_form {
         margin-bottom: 3rem;
     }
 
@@ -511,11 +513,11 @@ SweetAlertAsset::register($this);
            
                     <td> 
                         <input type='text'  onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control expanded_tax amount mask-amount' '>
-                        <input type='hidden'  class='expanded_tax main_amount' name='expanded[${entries_row}]'>
+                        <input type='hidden'  class='expanded_tax main_amount' name='expanded_tax[${entries_row}]'>
 
                     </td>
                     <td>
-                    <a class='add_new_row btn btn-primary btn-xs' onclick='copyRow(this)' type='button'><i class='fa fa-plus fa-fw'></i> </a>
+                    <a class='add_new_row btn btn-primary btn-xs' onclick='copyRow(this)' type='button'><i class='fa fa-copy fa-fw'></i> </a>
                     <a class='remove_this_row btn btn-danger btn-xs ' onclick='removeRow(this)' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
                     </td>
             </tr>`
@@ -545,12 +547,12 @@ SweetAlertAsset::register($this);
         const advances_etries_id = clone.find('.advances_etries_id')
         const withdrawal = clone.find('.withdrawal')
         const non_vat = clone.find('.vat_nonvat')
-        const expanded = clone.find('.expanded')
+        const expanded = clone.find('.expanded_tax')
         const new_reporting_period = clone.find('.new_reporting_period')
         const liq_damages_mask = clone.find('.liq_damages_mask')
         const withdrawal_mask = clone.find('.withdrawal_mask')
         const vat_nonvat_mask = clone.find('.vat_nonvat_mask')
-        const expanded_mask = clone.find('.expanded_mask')
+        const expanded_mask = clone.find('.expanded_tax')
         const advances_entries_id = clone.find('.advances_entries_id')
 
 
@@ -565,7 +567,7 @@ SweetAlertAsset::register($this);
         liq_damage.attr('name', `liq_damages[${entries_row}]`)
         withdrawal.attr('name', `withdrawal[${entries_row}]`)
         non_vat.attr('name', `vat_nonvat[${entries_row}]`)
-        expanded.attr('name', `expanded[${entries_row}]`)
+        expanded.attr('name', `expanded_tax[${entries_row}]`)
         new_reporting_period.attr('name', `new_reporting_period[${entries_row}]`)
         const object_code = chart_of_account.val();
         const account_title = chart_of_account.text();
@@ -630,6 +632,7 @@ SweetAlertAsset::register($this);
     $(document).ready(function() {
         if (update_type == 'create') {
             disable_reporting_period = 'disabled';
+            $("#po_transaction_id").trigger('change')
         }
 
         console.log(update_type)
@@ -690,16 +693,7 @@ SweetAlertAsset::register($this);
                 }
             })
         })
-        // swal( {
-        //                         icon: 'success',
-        //                         title: "Successfuly Added",
-        //                         type: "success",
-        //                         timer:3000,
-        //                         closeOnConfirm: false,
-        //                         closeOnCancel: false
-        //                     },function(){
-        //                         window.location.href = window.location.pathname + "?r=transaction"
-        //                     })
+
         $('#liquidation_form').on('submit', function(event) {
             event.stopPropagation()
             event.preventDefault()
@@ -733,7 +727,9 @@ SweetAlertAsset::register($this);
             })
         })
 
-
+        // if ($("#po_transaction_id").val() != '') {
+        //     $("#po_transaction_id").trigger('change')
+        // }
 
     })
 

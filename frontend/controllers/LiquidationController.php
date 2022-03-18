@@ -188,6 +188,9 @@ class LiquidationController extends Controller
         $vat_nonvat = [],
         $expanded_tax = []
     ) {
+
+ 
+
         $province = Yii::$app->user->identity->province;
         foreach ($advances_entries_id as $key => $val) {
 
@@ -222,6 +225,7 @@ class LiquidationController extends Controller
             $liquidation_entries->liquidation_damage = !empty($liq_damages[$key]) ? $liq_damages[$key] : 0;
             $liquidation_entries->new_object_code = $object_codes[$key];
             $liquidation_entries->chart_of_account_id = null;
+
             if ($liquidation_entries->save(false)) {
             } else {
                 return false;
@@ -411,6 +415,7 @@ class LiquidationController extends Controller
             $withdrawal = !empty($_POST['withdrawal']) ? $_POST['withdrawal'] : [];
             $vat_nonvat = !empty($_POST['vat_nonvat']) ? $_POST['vat_nonvat'] : [];
             $expanded_tax = !empty($_POST['expanded_tax']) ? $_POST['expanded_tax'] : [];
+     
             $reporting_period = $_POST['reporting_period'];
             $check_date = $_POST['check_date'];
             $check_range_id = $_POST['check_range_id'];
@@ -445,7 +450,6 @@ class LiquidationController extends Controller
                     }
 
 
-
                     if ($model->save(false)) {
 
                         $flag = $this->insertItems(
@@ -457,6 +461,7 @@ class LiquidationController extends Controller
                             $withdrawal,
                             $vat_nonvat,
                             $expanded_tax
+
                         );
                     }
                 } else {

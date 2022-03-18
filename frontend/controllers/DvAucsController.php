@@ -243,6 +243,7 @@ class DvAucsController extends Controller
         if (empty($advances_update_id)) {
 
             $advances = new Advances();
+            $advances->nft_number = Yii::$app->memem->generateAdvancesNumber();
         } else {
             $advances = Advances::findOne($advances_update_id);
         }
@@ -250,7 +251,6 @@ class DvAucsController extends Controller
         $advances->province = $province;
         $advances->dv_aucs_id = $dv_aucs_id;
         $advances->bank_account_id = $advances_bank_account_id;
-        $advances->nft_number = Yii::$app->memem->generateAdvancesNumber();
         if ($advances->save(false)) {
             return $advances->id;
         } else {
