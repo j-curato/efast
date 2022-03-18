@@ -17,6 +17,12 @@ use yii\helpers\ArrayHelper;
 
 $this->title = "CDR";
 $this->params['breadcrumbs'][] = $this->title;
+$bank_account_id  = '';
+$cibr_id = '';
+
+if (!empty($model->id)) {
+    $bank_account_id = $model->bank_account_id;
+}
 ?>
 <div class="jev-preparation-index" style="background-color: white;">
     <form id='filter' <?php if (!empty($model->id)) : ?> style="display:none" <?php endif; ?>>
@@ -38,39 +44,39 @@ $this->params['breadcrumbs'][] = $this->title;
                 ])
                 ?>
             </div>
-            <div class="col-sm-2">
-                <label for="province">Province</label>
+            <div class="col-sm-3">
+                <label for="bank_account">Bank Account</label>
                 <?php
-                $prov = [
-                    'adn' => 'ADN',
-                    'ads' => 'ADS',
-                    'pdi' => 'PDI',
-                    'sdn' => 'SDN',
-                    'sds' => 'SDS',
-                ];
-                $user = Yii::$app->user->identity->province;
+                $user_province = Yii::$app->user->identity->province;
                 $val = '';
+                $and = '';
+                $sql = '';
+                $params = [];
                 if (
-                    $user === 'adn' ||
-                    $user === 'ads' ||
-                    $user === 'sdn' ||
-                    $user === 'sds' ||
-                    $user === 'pdi'
+                    $user_province === 'adn' ||
+                    $user_province === 'ads' ||
+                    $user_province === 'sdn' ||
+                    $user_province === 'sds' ||
+                    $user_province === 'pdi'
                 ) {
-                    $prov = [
-                        $user => strtoupper($user)
-                    ];
-                    $val = $user;
+                    $and = 'WHERE';
+                    $sql = YIi::$app->db->getQueryBuilder()->buildCondition('province=:province', $params);
                 }
+                $bank_accounts = Yii::$app->db->createCommand("SELECT id ,CONCAT(account_number,'-',province,'-',account_name) as account FROM bank_account
+                $and $sql
+                ")
+                    ->bindValue(':province', $user_province)
+                    ->queryAll();
+
+
+
                 echo Select2::widget([
-                    'name' => 'province',
-                    'id' => 'province',
-                    'value' => $val,
-                    'data' => $prov,
+                    'name' => 'bank_account_id',
+                    'data' => ArrayHelper::map($bank_accounts, 'id', 'account'),
+                    'value' => $bank_account_id,
                     'pluginOptions' => [
                         'autoclose' => true,
-                        'placeholder' => 'Select Province'
-
+                        'placeholder' => 'Select Bank Account'
                     ]
                 ])
 
@@ -93,9 +99,9 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-sm-3">
                 <label for="report_type">Advance Type</label>
                 <?php
-                    $report_type  = Yii::$app->db->createCommand("SELECT `name`as id,`name` FROM report_type ")->queryAll();
+                $report_type  = Yii::$app->db->createCommand("SELECT `name`as id,`name` FROM report_type ")->queryAll();
                 echo Select2::widget([
-                    'data' =>ArrayHelper::map($report_type,'id','name'),
+                    'data' => ArrayHelper::map($report_type, 'id', 'name'),
                     'value' => !empty($model->report_type) ? $model->report_type : '',
                     'name' => 'report_type',
                     'id' => 'report_type',

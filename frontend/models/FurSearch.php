@@ -44,6 +44,7 @@ class FurSearch extends Fur
 
         $province = Yii::$app->user->identity->province;
         $q = Fur::find();
+        $q->joinWith('bankAccount');
         if (
             $province === 'adn' ||
             $province === 'ads' ||
@@ -51,7 +52,8 @@ class FurSearch extends Fur
             $province === 'sdn' ||
             $province === 'sds'
         ) {
-            $q->where('province = :province', ['province' => $province]);
+
+            $q->where('bank_account.province = :province', ['province' => $province]);
         }
         $query = $q;
 
@@ -75,8 +77,8 @@ class FurSearch extends Fur
             'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
-            ->andFilterWhere(['like', 'province', $this->province]);
+        $query->andFilterWhere(['like', 'fur.reporting_period', $this->reporting_period])
+            ->andFilterWhere(['like', 'bank_account.province', $this->province]);
 
         return $dataProvider;
     }

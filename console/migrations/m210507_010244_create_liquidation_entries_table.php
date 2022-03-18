@@ -41,7 +41,7 @@ class m210507_010244_create_liquidation_entries_table extends Migration
             'liquidation_id',
             '{{%liquidation}}',
             'id',
-            'CASCADE'
+            'NO ACTION'
         );
 
         // creates index for column `chart_of_account_id`
@@ -58,7 +58,7 @@ class m210507_010244_create_liquidation_entries_table extends Migration
             'chart_of_account_id',
             '{{%chart_of_accounts}}',
             'id',
-            'CASCADE'
+            'NO ACTION'
         );
 
         // creates index for column `advances_id`
@@ -75,7 +75,7 @@ class m210507_010244_create_liquidation_entries_table extends Migration
             'advances_id',
             '{{%advances}}',
             'id',
-            'CASCADE'
+            'NO ACTION'
         );
     }
 

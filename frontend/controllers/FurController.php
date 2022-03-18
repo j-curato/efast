@@ -103,7 +103,7 @@ class FurController extends Controller
 
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
-            $province = $_POST['province'];
+            // $province = $_POST['province'];
             $bank_account_id = $_POST['bank_account_id'];
             $fur_id = !empty($_POST['id']) ? $_POST['id'] : '';
             if (!empty($fur_id)) {
@@ -112,9 +112,8 @@ class FurController extends Controller
                 $model = new Fur();
             }
 
-            $check  = Yii::$app->db->createCommand("SELECT EXISTS(SELECT * FROM fur WHERE reporting_period = :reporting_period AND province = :province AND bank_account_id= :bank_account_id)")
+            $check  = Yii::$app->db->createCommand("SELECT EXISTS(SELECT * FROM fur WHERE reporting_period = :reporting_period AND bank_account_id= :bank_account_id)")
                 ->bindValue(':reporting_period', $reporting_period)
-                ->bindValue(':province', $province)
                 ->bindValue(':bank_account_id', $bank_account_id)
                 ->queryScalar();
             // return json_encode(['isSuccess' => false, 'error' => intval($check)]);
@@ -122,7 +121,6 @@ class FurController extends Controller
                 return json_encode(['isSuccess' => false, 'error' => 'Saved na']);
             } else {
                 $model->reporting_period = $reporting_period;
-                $model->province = $province;
                 $model->bank_account_id = $bank_account_id;
 
                 if ($model->save()) {
@@ -205,7 +203,7 @@ class FurController extends Controller
     public function actionGenerateFur()
     {
         if ($_POST) {
-            $province = $_POST['province'];
+            // $province = $_POST['province'];
             $reporting_period = $_POST['reporting_period'];
             $bank_account_id = $_POST['bank_account_id'];
             $x = explode('-', $reporting_period);
@@ -265,12 +263,10 @@ class FurController extends Controller
             FROM advances_entries WHERE advances_entries.reporting_period <:reporting_period
              )as prev_advances ON advances_entries.id  = prev_advances.id
             WHERE advances_entries.reporting_period <=:reporting_period
-            AND advances.province =:province
             AND advances.bank_account_id = :bank_account_id
             AND advances_entries.is_deleted NOT IN (1,9) 
             ")
                 ->bindValue(':reporting_period', $reporting_period)
-                ->bindValue(':province', $province)
                 ->bindValue(':bank_account_id', $bank_account_id)
                 ->queryAll();
             $result = ArrayHelper::index($query, null, 'report_type');

@@ -59,11 +59,33 @@ $this->params['breadcrumbs'][] = $this->title;
                 ])
                 ?>
             </div>
-         
+
             <div class="col-sm-3">
                 <label for="bank_account">Bank Account</label>
                 <?php
-                $bank_accounts = Yii::$app->db->createCommand("SELECT id ,CONCAT(account_number,'-',account_name) as account FROM bank_account")->queryAll();
+                $user_province = Yii::$app->user->identity->province;
+                $val = '';
+                $and = '';
+                $sql = '';
+                $params = [];
+                if (
+                    $user_province === 'adn' ||
+                    $user_province === 'ads' ||
+                    $user_province === 'sdn' ||
+                    $user_province === 'sds' ||
+                    $user_province === 'pdi'
+                ) {
+                    $and = 'WHERE';
+                    $sql = YIi::$app->db->getQueryBuilder()->buildCondition('province=:province', $params);
+                }
+                $bank_accounts = Yii::$app->db->createCommand("SELECT id ,CONCAT(account_number,'-',province,'-',account_name) as account FROM bank_account
+                $and $sql
+                ")
+                    ->bindValue(':province', $user_province)
+                    ->queryAll();
+
+
+
                 echo Select2::widget([
                     'name' => 'bank_account_id',
                     'data' => ArrayHelper::map($bank_accounts, 'id', 'account'),

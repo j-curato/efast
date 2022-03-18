@@ -2,297 +2,373 @@
 
 use app\models\AdvancesEntriesForLiquidationSearch;
 use app\models\AdvancesEntriesSearch;
+use app\models\CheckRange;
 use app\models\Payee;
 use app\models\PoTransaction;
+use aryelds\sweetalert\SweetAlert;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\grid\GridView;
 use kartik\money\MaskMoney;
 use kartik\select2\Select2;
+use Mpdf\Tag\Select;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
+use yii\web\JsExpression;
+use kartik\form\ActiveForm;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Liquidation */
 /* @var $form yii\widgets\ActiveForm */
-?>
 
+$transaction = [];
+$user_province = Yii::$app->user->identity->province;
+$entries_row = 0;
+$check_range_query = (new yii\db\Query())
+    ->select(['id', "CONCAT(check_range.`from`,' to ',check_range.`to`) as range"])
+    ->from('check_range');
+
+if (
+    $user_province === 'adn' ||
+    $user_province === 'ads' ||
+    $user_province === 'sdn' ||
+    $user_province === 'sds' ||
+    $user_province === 'pdi'
+
+) {
+    $check_range_query->andWhere('province = :province', ['province' => $user_province]);
+}
+$check_range = $check_range_query->all();
+
+$reporting_period = '';
+$check_date = '';
+$check_number = '';
+$check_range_id = '';
+$transaction_id = '';
+if (!empty($model->id)) {
+    $reporting_period = $model->reporting_period;
+    $check_date = $model->check_date;
+    $check_number = $model->check_number;
+    $check_range_id = $model->check_range_id;
+    $transaction_query = Yii::$app->db->createCommand("SELECT id,tracking_number FROM po_transaction WHERE id =:id")
+        ->bindValue(':id', $model->po_transaction_id)
+        ->queryAll();
+    $transaction = ArrayHelper::map($transaction_query, 'id', 'tracking_number');
+    $transaction_id =  [$model->po_transaction_id];
+}
+
+
+
+?>
 <div class="liquidation-form">
 
+    <form id='liquidation_form'>
+        <div class="row">
+            <div class="col-sm-2">
+                <label for="reporting_period"> Reporting_period</label>
+                <?= DatePicker::widget([
+                    'name' => 'reporting_period',
+                    'value' => $reporting_period,
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm',
+                        'autoclose' => true,
+                        'startView' => 'months',
+                        'minViewMode' => 'months'
+                    ],
+                    'options' => [
+                        'required' => true,
+                        'readOnly' => true,
+                        'style' => 'background-color:white'
+                    ]
+                ]) ?>
+                <div class="reporting_period_error error-block"></div>
 
-    <div class="">
-        <form id='save_data'>
-            <?php
-            !empty($model->id) ? $x = $model->id : $x = '';
-            !empty($update_type) ? $t = $update_type : $t = '';
-            echo "<input type='text' value='$x' name='update_id' id='update_id' style='display:none'/>";
-            echo "<input type='text' value='$t' name='update_type' id='update_type' style='display:none'/>";
-            $_SESSION['nonce'] = $nonce = md5('salt' . microtime());
-            echo "<input type='hidden' value='$nonce' name='save_form_token' />";
-            $particular = '';
-            $payee = '';
-            $check_date = '';
-            $check_number = '';
-            $reporting_period = '';
-            $check_range = '';
-            $transaction_id = '';
-            if (!empty($model)) {
+            </div>
+            <div class="col-sm-2">
+                <label for="date">Date</label>
+                <?= DatePicker::widget([
+                    'value' => $check_date,
+                    'name' => 'check_date',
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm-dd',
+                        'autoclose' => true
+                    ],
+                    'options' => [
+                        'required' => true, 'readOnly' => true,
+                        'style' => 'background-color:white'
+                    ]
+                ]) ?>
+                <div class="check_date_error error-block"></div>
+            </div>
+            <div class="col-sm-3">
+                <label for="check_range">Check Range</label>
+                <?= Select2::widget([
+                    'value' => $check_range_id,
+                    'name' => 'check_range_id',
 
-                $check_date = $model->check_date;
-                $check_number = $model->check_number;
-                $reporting_period = $model->reporting_period;
-                $check_range = $model->check_range_id;
-                $transaction_id = $model->po_transaction_id;
-                if (empty($model->po_transaction_id)) {
-                    $particular = $model->particular;
-                    $payee = $model->payee;
+                    'id' => 'check_range_id',
+                    'data' => ArrayHelper::map($check_range, 'id', 'range'),
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Check Range'
+                    ]
+                ]) ?>
+                <div class="check_range_id_error error-block"></div>
+
+            </div>
+            <div class="col-sm-2">
+                <label for="check_number">Check Number</label>
+                <input type="text" class="form-control" name="check_number" value='<?= $check_number ?>'>
+                <div class="check_number_error error-block"></div>
+
+            </div>
+            <div class="col-sm-3">
+                <label for="po_transaction">Transaction</label>
+                <?= Select2::widget([
+                    'data' => $transaction,
+                    'name' => 'po_transaction_id',
+                    'id' => 'po_transaction_id',
+                    'value' => $transaction_id,
+                    'options' => ['placeholder' => 'Search Transaction'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Yii::$app->request->baseUrl . '?r=po-transaction/search-po-transaction',
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
+
+                ]) ?>
+                <div class="po_transaction_id_error error-block"></div>
+            </div>
+        </div>
+
+
+        <table id="transaction_details" class="table">
+            <thead>
+
+                <th>Payee</th>
+                <th>Particular</th>
+                <th>Responsibility Center</th>
+                <th>Gross Amount</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="transaction_payee"></td>
+                    <td id="transaction_particular"></td>
+                    <td id="transaction_r_center"></td>
+                    <td id="transaction_amount"></td>
+
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-striped" id="entries_table">
+
+            <thead>
+                <th>Reporting Period</th>
+                <th>Province</th>
+                <th>Fund Source</th>
+                <th>Chart of Account</th>
+                <th>Miscellaneous Income</th>
+                <th style="padding-left:30px">Withdrawals (Net Amount)</th>
+                <th>Sales Tax(Vat/Non-Vat)</th>
+                <th>Income Tax (Expanded Tax)</th>
+            </thead>
+            <tbody>
+                <?php
+
+                if (!empty($model->liquidationEntries)) {
+                    $query = Yii::$app->db->createCommand("SELECT 
+                liquidation_entries.reporting_period,
+                IFNULL(liquidation_entries.withdrawals,0) as withdrawals,
+                IFNULL(liquidation_entries.expanded_tax,0) as expanded_tax,
+                IFNULL(liquidation_entries.vat_nonvat,0) as vat_nonvat,
+                IFNULL(liquidation_entries.liquidation_damage,0) as liquidation_damage,
+                advances_entries.fund_source,
+                advances_entries.id,
+                UPPER(liquidation.province) as province,
+                (CASE
+                WHEN liquidation_entries.new_object_code IS NOT NULL THEN CONCAT(accounting_codes.object_code,'-',accounting_codes.account_title)
+                WHEN liquidation_entries.new_chart_of_account_id IS NOT NULL THEN CONCAT(new_chart.uacs,'-',new_chart.general_ledger)
+                ELSE CONCAT(orig_chart.uacs,'-',orig_chart.general_ledger) 
+                END)as chart_of_account,
+                (CASE
+                WHEN liquidation_entries.new_object_code IS NOT NULL THEN accounting_codes.object_code
+                WHEN liquidation_entries.new_chart_of_account_id IS NOT NULL THEN new_chart.uacs
+                ELSE orig_chart.uacs 
+                END)as object_code
+                FROM liquidation_entries 
+                LEFT JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
+                LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id = advances_entries.id
+                LEFT JOIN chart_of_accounts as orig_chart ON liquidation_entries.chart_of_account_id = orig_chart.id
+                LEFT JOIN chart_of_accounts as new_chart ON liquidation_entries.new_chart_of_account_id = new_chart.id
+                LEFT JOIN accounting_codes ON liquidation_entries.new_object_code = accounting_codes.object_code
+                WHERE 
+                liquidation_entries.liquidation_id =:id
+                ORDER BY liquidation_entries.reporting_period")
+                        ->bindValue(':id', $model->id)
+                        ->queryAll();
+                    foreach ($query as $val) {
+
+                        echo "<tr>
+        
+                        <td style='display:none;'>
+                        <label for='advances_entries_id'></label>
+                        <input disabled value='{$val['id']}'  class='advances_entries_id' type='hidden' name='advances_entries_id[{$entries_row}]'/>
+                        </td>
+                        <td > <input disabled type='month'data-date=''  value='{$val['reporting_period']}' data-date-format='yyyy-mm' name='new_reporting_period[{$entries_row}]' required class='new_reporting_period'  /></td>
+                        <td > {$val['province']}</td>
+                        <td > {$val['fund_source']}</td>
+                        <td> 
+        
+                            <label for='chart-of-accounts'></label>
+                                <select disabled  name='object_codes[{$entries_row}]' required class='chart-of-accounts' style='width: 200px'>
+                                    <option value='{$val['object_code']}'>{$val['chart_of_account']} </option>
+                                </select>
+                            </td>
+        
+                            <td> 
+                                <input disabled type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control liq_damages_mask amount mask-amount' value='{$val['liquidation_damage']}'>
+                                <input disabled type='hidden'  class='liq_damages main_amount' name='liq_damages[{$entries_row}]' value='{$val['liquidation_damage']}'>
+                            </td>
+                            <td> 
+                                <input disabled type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)' class='form-control withdrawal_mask amount mask-amount'  value='{$val['withdrawals']}'>
+                                <input disabled type='hidden'  class='withdrawal main_amount' name='withdrawal[{$entries_row}]' value='{$val['withdrawals']}'>
+                            </td>
+                            <td> 
+        
+                                    <input disabled type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control vat_nonvat_mask amount mask-amount' value='{$val['vat_nonvat']}'>
+                                    <input disabled type='hidden'  class='vat_nonvat main_amount' name='vat_nonvat[{$entries_row}]' value='{$val['vat_nonvat']}'>
+        
+                            </td>
+                   
+                            <td> 
+                                <input disabled type='text'  class='form-control  expanded_tax_mask amount mask-amount  vat_nonvat' value='{$val['expanded_tax']}'>
+                                <input disabled type='hidden'  class='expanded_tax main_amount' name='expanded_tax[{$entries_row}]' value='{$val['expanded_tax']}'>
+        
+                            </td>
+                            <td>
+                            <a class='add_new_row btn btn-primary btn-xs' onclick='copyRow(this)' type='button'><i class='fa fa-plus fa-fw'></i> </a>
+                            <a class='remove_this_row btn btn-danger btn-xs ' onclick='removeRow(this)' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                            </td>
+                    </tr>";
+                        $entries_row++;
+                    }
                 }
-            }
 
-            ?>
-            <div class="row ">
-                <div class="col-sm-3">
-                    <label for="reporting_peirod">Reporting Period</label>
-                    <?php
-                    echo DatePicker::widget([
-                        'name' => 'reporting_period',
-                        'id' => 'reporting_period',
-                        'value' => $reporting_period,
-                        'pluginOptions' => [
-                            'format' => 'yyyy-mm',
-                            'autoclose' => true,
-                            'startView' => 'months',
-                            'minViewMode' => 'months'
-                        ],
-                        'options' => [
-                            'required' => true,
-                            'readOnly' => true,
-                            'style' => 'background-color:white'
-                        ]
-                    ])
-                    ?>
-                </div>
-                <div class="col-sm-3">
-                    <label for="check_date">Date</label>
-                    <?php
-                    echo DatePicker::widget([
+                ?>
+            </tbody>
+            <tfoot>
+                <tr>
 
-                        'name' => 'check_date',
-                        'id' => 'check_date',
-                        'value' => $check_date,
-                        'pluginOptions' => [
-                            'format' => 'yyyy-mm-dd',
-                            'autoclose' => true
-                        ],
-                        'options' => [
-                            'required' => true, 'readOnly' => true,
-                            'style' => 'background-color:white'
-                        ]
-                    ])
+                    <td class="total_row" colspan="4">Total</td>
+                    <td class="total_row" id="total_liquidation"></td>
+                    <td class="total_row" id="total_withdrawal"></td>
+                    <td class="total_row" id="total_vat"></td>
+                    <td class="total_row" id="total_expanded"></td>
 
-                    ?>
+                </tr>
+                <tr>
+                    <td class="total_row" colspan="4">Grand Total</td>
+                    <td class="total_row" id="grand_total"></td>
 
+                </tr>
 
-                </div>
-                <div class="col-sm-3">
-                    <label for="check_range">Check Range</label>
-                    <?php
-                    $province = strtolower(Yii::$app->user->identity->province);
-                    $q = PoTransaction::find();
-                    if (
-                        $province === 'adn' ||
-                        $province === 'ads' ||
-                        $province === 'sds' ||
-                        $province === 'sdn' ||
-                        $province === 'pdi'
-                    ) {
-                        $check = (new \yii\db\Query())
-                            ->select([
-                                'id',
-                                "CONCAT(check_range.from,' to ',check_range.to) as range"
-                            ])
-                            ->from('check_range')
-                            ->where('province =:province', ['province' => $province])
-                            ->all();
-                    } else {
-                        $check = (new \yii\db\Query())
-                            ->select([
-                                'id',
-                                "CONCAT(check_range.from,' to ',check_range.to) as range"
-                            ])
-                            ->from('check_range')
-                            ->all();
-                    }
+            </tfoot>
+        </table>
 
-                    echo Select2::widget([
-                        'data' => ArrayHelper::map($check, 'id', 'range'),
-                        'name' => 'check_range',
-                        'id' => 'check_range',
-                        'value' => $check_range,
-                        'pluginOptions' => [
-                            'placeholder' => 'Select Range'
-                        ],
-                        'options' => [
-                            // 'required' => true,
-                        ]
-                    ])
-                    ?>
-                </div>
-
-
+        <div class="row" >
+            <div class="col-sm-5"></div>
+            <div class="col-sm-2">
+                <button type="submit" class="btn btn-success" style="width:100%">Save</button>
 
             </div>
-            <div class="row">
+            <div class="col-sm-5"></div>
+        </div>
+    </form>
+    <form id="add_data">
+
+        <?php
+
+        $gridColumn = [
+            [
+                'hAlign' => 'center',
+                'class' => '\kartik\grid\CheckboxColumn',
+                'checkboxOptions' => function ($model, $key, $index, $column) {
+                    return [
+                        'value' => $model->id,
+                        'style' => 'width:20px;',
+                        'name' => 'check',
+                        'class' => 'checkbox', ''
+                    ];
+                }
+            ],
+            'province',
+            'fund_source',
+            [
+                'label' => 'Gross Amount',
+                'attribute' => 'amount',
+                'format' => ['decimal', 2]
+            ],
+            [
+                'attribute' => 'total_liquidation',
+                'format' => ['decimal', 2]
+            ],
+            [
+                'label' => 'Balance',
+                'attribute' => 'balance',
+                'format' => ['decimal', 2]
+            ],
+            'particular'
 
 
 
+        ];
+        ?>
+        <?= GridView::widget([
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchModel,
+            'panel' => [
+                'type' => Gridview::TYPE_PRIMARY,
+                'heading' => 'List of Advances'
+            ],
+            'pjax' => true,
+            'pjaxSettings' => [
+                'options' => [
+                    'id' => 'pjax_advances'
 
-                <div class="col-sm-3">
+                ]
+            ],
 
-                    <label for="dv_number">DV Number</label>
-                    <input type="text" name="dv_number" id='dv_number' required class="form-control">
-                </div>
-                <div class="col-sm-3" style="height:60x">
-                    <label for="transaction">Transactions</label>
-                    <select id="transaction" name="transaction" class="transaction select" style="width: 100%; margin-top:50px">
-                        <option></option>
-                    </select>
-                </div>
-                <div class="col-sm-3">
-                    <label for="check_number">Check Number</label>
+            'columns' => $gridColumn
+        ]); ?>
 
-                    <?php
-
-                    echo "<input type='number' class='form-control' id='check_number' required name='check_number' placeholder='Check Number' value='$check_number'/>
-                    ";
-                    ?>
-                </div>
-            </div>
-
-            <table id="transaction_details" class="table
-            ">
-                <thead>
-
-                    <th>Payee</th>
-                    <th>Particular</th>
-                    <th>Responsibility Center</th>
-                    <th>Gross Amount</th>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td id="transaction_payee"><?php echo $payee ?></td>
-                        <td id="transaction_particular"><?php echo $particular ?></td>
-                        <td id="transaction_r_center"><?php ?></td>
-                        <td id="transaction_amount"><?php ?></td>
-
-                    </tr>
-                </tbody>
-            </table>
+        <button class="btn btn-primary" id="add" type="text">Add</button>
+    </form>
 
 
-            <table class="" id="transaction_table">
-
-                <thead>
-                    <th>Reporting Period</th>
-
-                    <th>Province</th>
-                    <th>Fund Source</th>
-                    <th>Chart of Account</th>
-                    <th>Miscellaneous Income</th>
-                    <th style="padding-left:30px">Withdrawals (Net Amount)</th>
-                    <th>Sales Tax(Vat/Non-Vat)</th>
-                    <th>Income Tax (Expanded Tax)</th>
-                </thead>
-                <tbody>
-
-                </tbody>
-                <tfoot>
-                    <tr>
-
-                        <td class="total_row" colspan="4">Total</td>
-                        <td class="total_row" id="total_liquidation"></td>
-                        <td class="total_row" id="total_withdrawal"></td>
-                        <td class="total_row" id="total_vat"></td>
-                        <td class="total_row" id="total_expanded"></td>
-
-                    </tr>
-                    <tr>
-                        <td class="total_row" colspan="4">Grand Total</td>
-                        <td class="total_row" id="grand_total"></td>
-
-                    </tr>
-
-                </tfoot>
-            </table>
-            <?php
-            $session = Yii::$app->session;
-
-            // $form_token =$session['form_token'];
-
-            echo "<input type='hidden' style='width:100%' value='{$session->get('form_token')}' name='token' />"
-            ?>
-            <button class="btn btn-success" id='save' type="submit">Save</button>
-        </form>
-        <form id="add_data">
-
-            <?php
-
-            $gridColumn = [
-                [
-                    'hAlign' => 'center',
-                    'class' => '\kartik\grid\CheckboxColumn',
-                    'checkboxOptions' => function ($model, $key, $index, $column) {
-                        return [
-                            'value' => $model->id,
-                            'onchange' => 'enableDisable(this)',
-                            'style' => 'width:20px;',
-                            'name' => 'check',
-                            'class' => 'checkbox', ''
-                        ];
-                    }
-                ],
-                'province',
-                'fund_source',
-                [
-                    'label' => 'Gross Amount',
-                    'attribute' => 'amount',
-                    'format' => ['decimal', 2]
-                ],
-                [
-                    'attribute' => 'total_liquidation',
-                    'format' => ['decimal', 2]
-                ],
-                [
-                    'label' => 'Balance',
-                    'attribute' => 'balance',
-                    'format' => ['decimal', 2]
-                ],
-                'particular'
-
-
-
-            ];
-            ?>
-            <?= GridView::widget([
-                'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
-                'panel' => [
-                    'type' => Gridview::TYPE_PRIMARY,
-                    'heading' => 'List of Advances'
-                ],
-                'pjax' => true,
-
-                'columns' => $gridColumn
-            ]); ?>
-
-            <button class="btn btn-primary" id="add" type="text">Add</button>
-        </form>
-
-
-    </div>
 
 </div>
+
 <style>
+    .error-block {
+        color: red;
+    }
+    #liquidation_form{
+        margin-bottom: 3rem;
+    }
+
     table,
     tr {
         max-width: 100%;
@@ -346,40 +422,25 @@ use yii\widgets\Pjax;
 
 
     }
+
+    #w1-kvdate {
+        color: red;
+    }
 </style>
-<script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-<script src="/afms/js/maskMoney.js" type="text/javascript"></script>
-<link href="/afms/frontend/web/js/select2.min.js" />
-<link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
+
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 SweetAlertAsset::register($this);
 
 ?>
 
 <script>
-    var vacant = 0;
-    var i = 1;
-    var x = [0];
-    var update_id = undefined;
-    var accounts = [];
-    var dv_count = 0;
-    var transaction_table_count = 0
+    let entries_row = <?= $entries_row ?>;
+    const update_type = '<?php echo $update_type ?>';
+    let disable_reporting_period = '';
 
-    function thousands_separators(num) {
-
-        var number = Number(Math.round(num + 'e2') + 'e-2')
-        var num_parts = number.toString().split(".");
-        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        return num_parts.join(".");
-        console.log(num)
-    }
-
-    function remove(i) {
-        i.closest("tr").remove()
-
-    }
 
     function getTotalAmounts() {
         var total_liquidation = 0;
@@ -413,219 +474,271 @@ SweetAlertAsset::register($this);
 
     }
 
-    function copy(q) {
-        var qwer = $(q).closest('tr')
-        var id = qwer.find('.advances_id').val();
-        var nft_number = qwer.find('.nft_number').text();
-        var report_type = qwer.find('.report_type').text();
-        var province = qwer.find('.province').text();
-        var fund_source = qwer.find('.fund_source').text().trim();
-        var chart_of_account_id = qwer.find('.chart_of_account').val() != null ? qwer.find('.chart_of_account').val() : 0;
-        var withdrawal = qwer.find('.withdrawal').val();
-        var vat_nonvat = qwer.find('.vat_nonvat').val();
-        var expanded_tax = qwer.find('.expanded_tax').val();
-        var obj = JSON.parse(`{
-                "id":${id},
-                "nft_number":"${nft_number}",
-                "report_type": "${report_type}",
-                "province": "${province}",
-                "fund_source": "${fund_source}",
-                "chart_of_account_id":"${chart_of_account_id}" ,
-                "withdrawals":0,
-                "vat_nonvat":0,
-                "expanded_tax": 0
-     
-        }`);
+    function insertEntries(data) {
 
-        console.log([obj])
-        var qwe = '';
-        if ($('#update').val() != 'create') {
-            qwe = 'copy';
-        }
-        console.log(qwe)
-        addToTransactionTable([obj], qwe)
+        $.each(data, function(key, val) {
+            const row = `<tr>
+        
+                <td style='display:none;'>
+                <label for='advances_entries_id'></label>
+                <input value='${val.id}'  class='advances_entries_id' type='hidden' name='advances_entries_id[${entries_row}]'/>
+                </td>
+                <td > <input type='month'data-date='' ${disable_reporting_period} data-date-format='yyyy-mm' name='new_reporting_period[${entries_row}]' class='new_reporting_period' required /></td>
+                <td > ${val.province}</td>
+                <td > ${val.fund_source}</td>
+                <td> 
 
-    }
-
-
-    function addToTransactionTable(result, type) {
-
-
-        for (var i = 0; i < result.length; i++) {
-            var row = `<tr>
-                    <td style='display:none'> <input value='${result[i]['id']}' id='advances_${transaction_table_count}' class='advances_id' type='text' name='advances_id[]'/></td>
-                    <td > <input type='month'data-date='' data-date-format='yyyy-mm' id='date_${transaction_table_count}' name='new_reporting_period[]' required /></td>
-                    <td class='nft_number' style='display:none'> ${result[i]['nft_number']}</td>
-                    <td class='report_type' style='display:none'> ${result[i]['report_type']}</td>
-                    <td class=''province> ${result[i]['province']}</td>
-                    <td class='fund_source'> ${result[i]['fund_source']}</td>
-
-                    <td> 
-                        <select id="chart-${transaction_table_count}" name="chart_of_account_id[]" required class="chart_of_account" style="width: 200px">
+                    <label for='chart-of-accounts'></label>
+                        <select  name="object_codes[${entries_row}]" required class="chart-of-accounts" style="width: 200px">
                             <option></option>
                         </select>
                     </td>
-                    
+
                     <td> 
-                        <div class='form-group' style='width:150px'>
-                        <input type='text' id='liq_damages-${transaction_table_count}' class='form-control liq_damages amount' name='liq_damages[]'>
-                        </div>
+                        <input type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control liq_damages amount mask-amount' >
+                        <input type='hidden'  class='liq_damages main_amount' name='liq_damages[${entries_row}]'>
                     </td>
                     <td> 
-                        <div class='form-group' style='width:150px'>
-                        <input type='text' id='withdrawal-${transaction_table_count}' class='form-control withdrawal amount' name='withdrawal[]'>
-                        </div>
+                        <input type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)' class='form-control withdrawal amount mask-amount' >
+                        <input type='hidden'  class='withdrawal main_amount' name='withdrawal[${entries_row}]'>
                     </td>
                     <td> 
-                        <div class='form-group' style='width:150px'>
 
-                            <input type='text' id='vat_nonvat-${transaction_table_count}' class='form-control vat_nonvat amount' name='vat_nonvat[]'>
-                        </div>
+                            <input type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control amount mask-amount'>
+                            <input type='hidden'  class='vat_nonvat main_amount' name='vat_nonvat[${entries_row}]'>
 
                     </td>
+           
                     <td> 
-                         <div class='form-group' style='width:150px'>
-                            <input type='text' id='ewt-${transaction_table_count}' class='form-control expanded_tax amount' name='ewt[]'>
-                         </div>
+                        <input type='text'  onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control expanded_tax amount mask-amount' '>
+                        <input type='hidden'  class='expanded_tax main_amount' name='expanded[${entries_row}]'>
 
                     </td>
-                    <td><button id='copy_${transaction_table_count}' class='btn-xs btn-success ' type='button' onclick='copy(this)'><i class="fa fa-copy "></i></button></td>
-                  
-                    <td><button  class='btn-xs btn-danger ' id='remove_${transaction_table_count}'  onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
-                `
-            $("#transaction_table tbody").append(row)
-            $(`#liq_damages-${transaction_table_count}`).maskMoney({
-                allowNegative: true
-            });
-            $(`#withdrawal-${transaction_table_count}`).maskMoney({
-                allowNegative: true
-            });
-            $(`#vat_nonvat-${transaction_table_count}`).maskMoney({
-                allowNegative: true
-            });
-            $(`#ewt-${transaction_table_count}`).maskMoney({
-                allowNegative: true
-            });
-            $(`#chart-${transaction_table_count}`).select2({
-                data: accounts,
-                placeholder: "Select Chart of Account",
+                    <td>
+                    <a class='add_new_row btn btn-primary btn-xs' onclick='copyRow(this)' type='button'><i class='fa fa-plus fa-fw'></i> </a>
+                    <a class='remove_this_row btn btn-danger btn-xs ' onclick='removeRow(this)' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                    </td>
+            </tr>`
 
-            });
-            var x = result[i]['fund_source']
-            var y = x.split(' ').slice(0, 2).join(' ');
-            console.log(x.split(' ').slice(0, 2))
-            if (y.toLowerCase() == 'rapid lp') {
-                $(`#vat_nonvat-${transaction_table_count}`).maskMoney('destroy')
-                $(`#ewt-${transaction_table_count}`).maskMoney('destroy')
-                $(`#liq_damages-${transaction_table_count}`).maskMoney('destroy')
-                $(`#vat_nonvat-${transaction_table_count}`).prop('readonly', true)
-                $(`#ewt-${transaction_table_count}`).prop('readonly', true)
-                $(`#liq_damages-${transaction_table_count}`).prop('readonly', true)
+            $('#entries_table tbody').append(row);
+            entries_row++;
+            accountingCodesSelect()
+            maskAmount()
+        })
 
-            }
+    }
 
-            if ($('#update_id') != null) {
-                $(`#chart-${transaction_table_count}`).val(result[i]['chart_of_account_id']).trigger('change')
-                $(`#withdrawal-${transaction_table_count}`).val(result[i]['withdrawals'])
-                $(`#liq_damages-${transaction_table_count}`).val(result[i]['liquidation_damage'])
-                $(`#vat_nonvat-${transaction_table_count}`).val(result[i]['vat_nonvat'])
-                $(`#ewt-${transaction_table_count}`).val(result[i]['expanded_tax'])
-                $(`#date_${transaction_table_count}`).val(result[i]['reporting_period'])
-            }
-            if (type == 're-align') {
-                $(`#chart-${transaction_table_count}`).prop('disabled', true)
-                $(`#withdrawal-${transaction_table_count}`).prop('disabled', true)
-                $(`#vat_nonvat-${transaction_table_count}`).prop('disabled', true)
-                $(`#liq_damages-${transaction_table_count}`).prop('disabled', true)
-                $(`#ewt-${transaction_table_count}`).prop('disabled', true)
-                $(`#advances_${transaction_table_count}`).prop('disabled', true)
-                $(`#date_${transaction_table_count}`).prop('disabled', true)
-                $(`#remove_${transaction_table_count}`).hide()
+    function removeRow(row) {
+        $(row).closest('tr').remove();
 
-                // console.log("re-align")
+    }
 
-            }
-            if ($('#update_type').val() === 'create') {
-                $(`#date_${transaction_table_count}`).val('')
+    function copyRow(row) {
 
-                $(`#date_${transaction_table_count}`).prop('disabled', true)
+        $('.chart-of-accounts').select2('destroy');
+        //     $('.unit_of_measure').select2('destroy');
+        //     $('.unit_cost').maskMoney('destroy');
+        var source = $(row).closest('tr');
+        var clone = source.clone(true);
+        const chart_of_account = clone.find('.chart-of-accounts')
+        const liq_damage = clone.find('.liq_damages')
+        const advances_etries_id = clone.find('.advances_etries_id')
+        const withdrawal = clone.find('.withdrawal')
+        const non_vat = clone.find('.vat_nonvat')
+        const expanded = clone.find('.expanded')
+        const new_reporting_period = clone.find('.new_reporting_period')
+        const liq_damages_mask = clone.find('.liq_damages_mask')
+        const withdrawal_mask = clone.find('.withdrawal_mask')
+        const vat_nonvat_mask = clone.find('.vat_nonvat_mask')
+        const expanded_mask = clone.find('.expanded_mask')
+        const advances_entries_id = clone.find('.advances_entries_id')
 
-            }
-            if (type == 'copy') {
 
-                $(`#chart-${transaction_table_count} option:not(:selected)`).attr("disabled", true)
-            }
-            transaction_table_count++;
+        liq_damages_mask.prop('disabled', false)
+        withdrawal_mask.prop('disabled', false)
+        vat_nonvat_mask.prop('disabled', false)
+        expanded_mask.prop('disabled', false)
+
+
+        advances_entries_id.attr('name', `advances_entries_id[${entries_row}]`)
+        chart_of_account.attr('name', `object_codes[${entries_row}]`)
+        liq_damage.attr('name', `liq_damages[${entries_row}]`)
+        withdrawal.attr('name', `withdrawal[${entries_row}]`)
+        non_vat.attr('name', `vat_nonvat[${entries_row}]`)
+        expanded.attr('name', `expanded[${entries_row}]`)
+        new_reporting_period.attr('name', `new_reporting_period[${entries_row}]`)
+        const object_code = chart_of_account.val();
+        const account_title = chart_of_account.text();
+        // REMOVE DISABLE
+
+        chart_of_account.prop('disabled', false)
+        advances_entries_id.prop('disabled', false)
+        liq_damage.prop('disabled', false)
+        advances_etries_id.prop('disabled', false)
+        withdrawal.prop('disabled', false)
+        non_vat.prop('disabled', false)
+        expanded.prop('disabled', false)
+
+        if (update_type == 'update') {
+
+            new_reporting_period.prop('disabled', false)
         }
 
 
+        // chart_of_account.html('').select2({
+        //     data: [{
+        //         id: '',
+        //         text: ''
+        //     }]
+        // });;
+        // chart_of_account.val(null).trigger('change');
+        liq_damage.val('')
+        withdrawal.val('')
+        non_vat.val('')
+        expanded.val('')
+        new_reporting_period.val('')
+        liq_damages_mask.val('')
+        withdrawal_mask.val('')
+        vat_nonvat_mask.val('')
+        expanded_mask.val('')
 
+        $('#entries_table tbody').append(clone);
+        entries_row++;
+        console.log(chart_of_account.val())
+
+        // var option = new Option([account_title], [object_code], true, true);
+        // chart_of_account.append(option).trigger('change');
+
+        // chart_of_account.val(object_code).trigger('change')
+
+
+        // manually trigger the `select2:select` event
+
+        // chart_of_account.val().trigger('change');
+        accountingCodesSelect()
+        maskAmount()
     }
 
-    var transaction = [];
 
-    function chart() {
-        return $.getJSON(window.location.pathname + '?r=chart-of-accounts/chart-of-accounts')
-            .then(function(data) {
-                var array = []
-                $.each(data, function(key, val) {
-                    array.push({
-                        id: val.id,
-                        text: val.uacs + ' ' + val.general_ledger
-                    })
-                })
-                accounts = array
-            })
+    function unmaskAmount(amount) {
+
+        const unmaskAmount = $(amount).maskMoney('unmasked')[0]
+        $(amount).closest('td').find('.main_amount').val(unmaskAmount)
     }
+
+
     $(document).ready(function() {
+        if (update_type == 'create') {
+            disable_reporting_period = 'disabled';
+        }
 
-        chart()
-        $.getJSON(window.location.pathname + '?r=po-transaction/get-all-transaction')
-            .then(function(data) {
-
-                var array = []
-                $.each(data, function(key, val) {
-                    array.push({
-                        id: val.id,
-                        text: val.tracking_number
-                    })
-                })
-                transaction = array
-                $('#transaction').select2({
-                    data: transaction,
-                    placeholder: "Select Transaction",
-
-                })
-
-            });
+        console.log(update_type)
+        console.log(disable_reporting_period)
+        accountingCodesSelect()
+        maskAmount()
 
 
 
-        $("#check_range").on('change', function(e) {
+        $("#po_transaction_id").change(function(e) {
+            e.preventDefault();
+            console.log('qqqqq')
+            $.ajax({
+                type: "POST",
+                url: window.location.pathname + '?r=po-transaction/get-transaction',
+                data: {
+                    id: $(this).val()
+                },
+                success: function(data) {
+                    var res = JSON.parse(data)
+                    console.log(res)
+                    $("#transaction_payee").text(res.payee)
+                    $("#transaction_particular").text(res.particular)
+                    $("#transaction_amount").text(res.amount)
+                    $("#transaction_r_center").text(res.r_center_name)
+
+
+                }
+            })
+        })
+
+        $("#check_range_id").on('change', function(e) {
             e.preventDefault()
-            // console.log($(this).val())
+            console.log($(this).val())
             console.log(window.location.href)
             $.pjax({
-                container: "#w0-pjax",
+                container: "#pjax_advances",
                 url: window.location.href,
                 type: 'POST',
                 data: {
-                    check_range_id: $(this).val()
+                    check_range_id: $(this).val(),
+                    filter_advances: 1
                 }
             });
         })
+        $('#add').click(function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                type: 'POST',
+                url: window.location.pathname + '?r=liquidation/add-advances',
+                data: $('#add_data').serialize(),
+                success: function(data) {
+                    var res = JSON.parse(data)
+                    console.log(res)
+                    insertEntries(res)
+
+                }
+            })
+        })
+        // swal( {
+        //                         icon: 'success',
+        //                         title: "Successfuly Added",
+        //                         type: "success",
+        //                         timer:3000,
+        //                         closeOnConfirm: false,
+        //                         closeOnCancel: false
+        //                     },function(){
+        //                         window.location.href = window.location.pathname + "?r=transaction"
+        //                     })
+        $('#liquidation_form').on('submit', function(event) {
+            event.stopPropagation()
+            event.preventDefault()
+            $('.error-block').html('')
+            $.ajax({
+                type: 'POST',
+                url: window.location.href,
+                data: $('#liquidation_form').serialize(),
+                success: function(data) {
+                    var res = JSON.parse(data)
+                    console.log(jQuery.isEmptyObject(res.form_error))
+                    if (!jQuery.isEmptyObject(res.form_error)) {
+
+                        $.each(res.form_error, function(key, val) {
+                            $('.' + key + '_error').text(val[0])
+                            console.log('#' + key + '_error')
+                        })
+                    }
+                    if (!jQuery.isEmptyObject(res.check_error)) {
+                        swal({
+                            icon: 'error',
+                            title: res.check_error,
+                            type: "error",
+                            timer: 5000,
+                            closeOnConfirm: false,
+                            closeOnCancel: false
+                        })
+                    }
+
+                }
+            })
+        })
+
+
+
     })
 
 
 
-    function enableDisable(checkbox) {
-        var isDisable = true
-        if (checkbox.checked) {
-            isDisable = false
-        }
-        enableInput(isDisable, checkbox.value)
-
-    }
 
     function enableInput(isDisable, index) {
         $(`#amount_${index}-disp`).prop('disabled', isDisable);
@@ -650,136 +763,10 @@ SweetAlertAsset::register($this);
 
 <?php
 $script = <<<JS
-    // ON change transction dropdown
-    $("#transaction").change(function(e){
-        e.preventDefault();
-        
-          console.log('qwer')
-        $.ajax({
-            type:"POST",
-            url:window.location.pathname + '?r=po-transaction/get-transaction',
-            data:{id:$("#transaction").val()},
-            success:function(data){
-                var res = JSON.parse(data)
-                console.log(res)
-                $("#transaction_payee").text(res.payee)
-                $("#transaction_particular").text(res.particular)
-                $("#transaction_amount").text(res.amount)
-                $("#transaction_r_center").text(res.r_center_name)
-
-                
-            }
-        })
-    })
-
-    $('#transaction_table').on('change keyup',['.liq_damages',
-        '.withdrawal',
-        '.vat_nonvat',
-        '.expanded_tax'],()=>{
-           getTotalAmounts()
-        })
-
-
-//  ADD DATA TO TRANSACTION TABLE
-    $('#add').click(function(e) {
-        e.preventDefault();
-
-        $.ajax({
-            type: 'POST',
-            url: window.location.pathname + '?r=liquidation/add-advances',
-            data: $('#add_data').serialize(),
-            success: function(data) {
-                var res = JSON.parse(data)
-                console.log(res)
-                addToTransactionTable(res)
-
-            }
-        })
-    })
-    $('#reporting_period').change(function(){
-        if ($('#update_type').val()!='re-align'){
-            $('.new_reporting_period').each(function(){
-                this.val($('#reporting_period').val())
-            })
-        }
-    })
-    
-    // SAVE DATA TO DATABASE
-    $('#save_data').submit(function(e) {
-        e.preventDefault();
-        $('#save').attr('disabled',true)
-        $.ajax({
-            type: 'POST',
-            url: window.location.pathname + '?r=liquidation/insert-liquidation',
-            data: $('#save_data').serialize(),
-            success: function(data) {
-                console.log(data)
-                var res = JSON.parse(data)
-                console.log(res.id)
-                // addToTransactionTable(res)
-                if (res.isSuccess){
-                    swal({
-                        title:'Success',
-                        type:'success',
-                        button:false,
-
-                    }
-                   ,function(){
-                        window.location.href = window.location.pathname +"?r=liquidation/view&id=" +res.id
-                   }
-                    )
-                }
-                else{
-                    swal({
-                        title:res.error,
-                        type:'error',
-                        button:false,
-
-                    })
-                    $('#save').attr('disabled',false)
-                }
-
-            }
-        })
-    })
-    $('#reporting_period').change(function(){
-        var r_period =$('#reporting_period').val()
-        var d1 = new Date(r_period);
-        var d2 = new Date('2021-09');
-        var notSame = d1.getTime() >= d2.getTime();
-        console.log(notSame)
-
-
-
-        $('#dv_number').attr('disabled',notSame)
-
-    })
+ 
     $(document).ready(function(){
-        if ($("#update_id").val()>0){
-            $.when(chart() ).done((chart)=>{
-                $.ajax({
-                type:'POST',
-                url:window.location.pathname + "?r=liquidation/update-liquidation",
-                data:{
-                    update_id:$('#update_id').val()
-                },
-                success:function(data){
-                    var res=JSON.parse(data).entries
-                    var liq = JSON.parse(data).liquidation
-                    console.log(liq)
-                    $("#transaction").val(liq['po_transaction_id']).trigger('change')
-                    $("input[name='dv_number']").val(liq['dv_number'])
-                    addToTransactionTable(res,$("#update_type").val())
-                    getTotalAmounts()
-
-                }
-
-            })
-            })
-      
-        }
+   
     })
-            
 JS;
 $this->registerJs($script);
 ?>

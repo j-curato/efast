@@ -224,14 +224,12 @@ class CibrController extends Controller
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
             $bank_account_id = $_POST['bank_account_id'];
-            $province = $_POST['province'];
             $cibr_id = !empty($_POST['id']) ? $_POST['id'] : '';
 
 
             $q = (new \yii\db\Query())
                 ->select('id')
                 ->from('cibr')
-                ->where('province =:province', ['province' => $province])
                 ->andWhere('reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
                 ->andWhere('bank_account_id =:bank_account_id', ['bank_account_id' => $bank_account_id])
                 ->one();
@@ -245,7 +243,6 @@ class CibrController extends Controller
             }
             $cibr->reporting_period = $reporting_period;
             $cibr->bank_account_id = $bank_account_id;
-            $cibr->province = $province;
             if ($cibr->validate()) {
                 if ($cibr->save(false)) {
                     return json_encode(['isSuccess' => true, 'Successfully Save']);

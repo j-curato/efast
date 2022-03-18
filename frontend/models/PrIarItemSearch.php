@@ -4,13 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Cibr;
-use Yii;
+use app\models\PrIarItem;
 
 /**
- * CibrSearch represents the model behind the search form of `app\models\Cibr`.
+ * PrIarItemSearch represents the model behind the search form of `app\models\PrIarItem`.
  */
-class CibrSearch extends Cibr
+class PrIarItemSearch extends PrIarItem
 {
     /**
      * {@inheritdoc}
@@ -18,8 +17,7 @@ class CibrSearch extends Cibr
     public function rules()
     {
         return [
-            [['id'], 'integer'],
-            [['reporting_period', 'province', 'book_name', 'is_final'], 'safe'],
+            [['id', 'fk_pr_iar_id', 'quantity', 'fk_pr_aoq_entry_id'], 'integer'],
         ];
     }
 
@@ -41,20 +39,7 @@ class CibrSearch extends Cibr
      */
     public function search($params)
     {
-        $province = Yii::$app->user->identity->province;
-        $q = Cibr::find()->joinWith('bankAccount');
-
-        if (
-            $province === 'adn' ||
-            $province === 'ads' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
-            $q->where('bank_account.province LIKE :province', ['province' => $province]);
-        }
-        $query = $q;
-
+        $query = PrIarItem::find();
 
         // add conditions that should always apply here
 
@@ -66,19 +51,17 @@ class CibrSearch extends Cibr
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
-            $query->where('0=1');
+            // $query->where('0=1');
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'fk_pr_iar_id' => $this->fk_pr_iar_id,
+            'quantity' => $this->quantity,
+            'fk_pr_aoq_entry_id' => $this->fk_pr_aoq_entry_id,
         ]);
-
-        $query->andFilterWhere(['like', 'cibr.reporting_period', $this->reporting_period])
-            ->andFilterWhere(['like', 'bank_account.province', $this->province])
-            ->andFilterWhere(['like', 'is_final', $this->is_final])
-            ->andFilterWhere(['like', 'book_name', $this->book_name]);
 
         return $dataProvider;
     }

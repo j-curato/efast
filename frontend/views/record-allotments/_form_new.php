@@ -1,7 +1,7 @@
-<!-- <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" /> -->
-<!-- <link rel="stylesheet" href="/afms/frontend/web/spectre-0.5.9/dist/spectre.min.css">
-<link rel="stylesheet" href="/afms/frontend/web/spectre-0.5.9/dist/spectre-exp.min.css">
-<link rel="stylesheet" href="/afms/frontend/web/spectre-0.5.9/dist/spectre-icons.min.css"> -->
+<!-- <link href=window.location.pathname+"/frontend/web/css/select2.min.css" rel="stylesheet" /> -->
+<!-- <link rel="stylesheet" href=window.location.pathname+"/frontend/web/spectre-0.5.9/dist/spectre.min.css">
+<link rel="stylesheet" href=window.location.pathname+"/frontend/web/spectre-0.5.9/dist/spectre-exp.min.css">
+<link rel="stylesheet" href=window.location.pathname+"/frontend/web/spectre-0.5.9/dist/spectre-icons.min.css"> -->
 
 <?php
 
@@ -235,12 +235,12 @@ use yii\helpers\ArrayHelper;
         }
     </style>
 
-    <script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <link href="/afms/frontend/web/js/select2.min.js" />
-    <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
+    <script src=window.location.pathname+"/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+    <link href=window.location.pathname+"/frontend/web/js/select2.min.js" />
+    <link href=window.location.pathname+"/frontend/web/css/select2.min.css" rel="stylesheet" />
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
 
-    <!-- <script src="/afms/frontend/web/js/select2.min.js"></script> -->
+    <!-- <script src=window.location.pathname+"/frontend/web/js/select2.min.js"></script> -->
     <script>
         <?php SweetAlertAsset::register($this); ?>
         // global variable
@@ -342,7 +342,7 @@ use yii\helpers\ArrayHelper;
             });
 
             // GET ALL DOCUMENT RECIEVES
-            $.getJSON('/afms/frontend/web/index.php?r=document-recieve/get-document-recieves')
+            $.getJSON(window.location.pathname+'/frontend/web/index.php?r=document-recieve/get-document-recieves')
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {
@@ -359,7 +359,7 @@ use yii\helpers\ArrayHelper;
                     })
                 })
             // GET RESPONSIBILITY CENTER
-            $.getJSON('/afms/frontend/web/index.php?r=responsibility-center/get-responsibility-center')
+            $.getJSON(window.location.pathname+'/frontend/web/index.php?r=responsibility-center/get-responsibility-center')
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {
@@ -378,7 +378,7 @@ use yii\helpers\ArrayHelper;
 
 
             // GET ALL AUTHORIZATION CODES
-            $.getJSON('/afms/frontend/web/index.php?r=authorization-code/get-authorization-codes')
+            $.getJSON(window.location.pathname+'/frontend/web/index.php?r=authorization-code/get-authorization-codes')
                 .then(function(data) {
 
                     var array = []
@@ -397,7 +397,7 @@ use yii\helpers\ArrayHelper;
 
                 })
             // GET ALL FUND SOURCE
-            $.getJSON('/afms/frontend/web/index.php?r=fund-source/get-fund-sources')
+            $.getJSON(window.location.pathname+'/frontend/web/index.php?r=fund-source/get-fund-sources')
                 .then(function(data) {
 
                     var array = []
@@ -416,7 +416,7 @@ use yii\helpers\ArrayHelper;
 
                 })
             // GET ALL MFO/PAP CODES
-            $.getJSON('/afms/frontend/web/index.php?r=mfo-pap-code/get-mfo-pap-codes')
+            $.getJSON(window.location.pathname+'/frontend/web/index.php?r=mfo-pap-code/get-mfo-pap-codes')
                 .then(function(data) {
 
                     var array = []
@@ -435,7 +435,7 @@ use yii\helpers\ArrayHelper;
 
                 })
             // GET ALL FUND CLUSTER CODES
-            $.getJSON('/afms/frontend/web/index.php?r=fund-cluster-code/get-all-cluster')
+            $.getJSON(window.location.pathname+'/frontend/web/index.php?r=fund-cluster-code/get-all-cluster')
                 .then(function(data) {
 
                     var array = []
@@ -458,7 +458,7 @@ use yii\helpers\ArrayHelper;
             // GET ALL CHART OF accounts
 
             // GET FINANCING SOURCE CODES
-            $.getJSON('/afms/frontend/web/index.php?r=financing-source-code/get-financing-source-codes')
+            $.getJSON(window.location.pathname+'/frontend/web/index.php?r=financing-source-code/get-financing-source-codes')
                 .then(function(data) {
 
                     var array = []
@@ -478,7 +478,7 @@ use yii\helpers\ArrayHelper;
                 });
             // GET BOOKS
             var books = [];
-            $.getJSON('/afms/frontend/web/index.php?r=books/get-books')
+            $.getJSON(window.location.pathname+'/frontend/web/index.php?r=books/get-books')
                 .then(function(data) {
 
                     var array = []
@@ -581,7 +581,7 @@ $script = <<< JS
 
      $(document).ready(function() {
          i=1
-        $.getJSON('/afms/frontend/web/index.php?r=chart-of-accounts/get-general-ledger&id='+$('#update_id').val())
+        $.getJSON(window.location.pathname+'/frontend/web/index.php?r=chart-of-accounts/get-general-ledger&id='+$('#update_id').val())
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {

@@ -34,7 +34,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'id',
             'reporting_period',
-            'province',
+            [
+                'label' => 'Province',
+                'attribute' => 'province',
+                'value' => 'bankAccount.province'
+            ],
             [
                 'label' => 'Bank Account',
                 'attribute' => 'bank_account_id',

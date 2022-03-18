@@ -209,10 +209,13 @@ class CdrController extends Controller
     {
         if ($_POST) {
             $reporting_period = $_POST['reporting_period'];
-            // $book  = $_POST['book'];
-            $province = $_POST['province'];
+            $bank_account_id  = $_POST['bank_account_id'];
             $report_type = $_POST['report_type'];
 
+
+            $province = Yii::$app->db->createCommand("SELECT province FROM bank_account WHERE id = :id")
+            ->bindValue(':id',$bank_account_id)
+            ->queryScalar();
             $query = Yii::$app->db->createCommand("SELECT 
                         liquidation.check_date,
                         liquidation.check_number,
@@ -238,7 +241,7 @@ class CdrController extends Controller
                                 END) as  gl_object_code
                             FROM liquidation_entries
                             LEFT JOIN chart_of_accounts as orig_chart ON liquidation_entries.chart_of_account_id = orig_chart.id
-LEFT JOIN chart_of_accounts as new_chart ON liquidation_entries.chart_of_account_id = new_chart.id
+                            LEFT JOIN chart_of_accounts as new_chart ON liquidation_entries.chart_of_account_id = new_chart.id
                             LEFT JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
                             LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id  = advances_entries.id
                             LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id =  cash_disbursement.id
@@ -258,27 +261,27 @@ LEFT JOIN chart_of_accounts as new_chart ON liquidation_entries.chart_of_account
                         LEFT JOIN liquidation ON liq.id = liquidation.id
                         LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
                         LEFT JOIN accounting_codes ON liq.gl_object_code = accounting_codes.object_code
-                    UNION ALL
-                    SELECT 
-                    cash_disbursement.issuance_date as check_date,
-                    cash_disbursement.check_or_ada_no as check_number,
-                    dv_aucs.particular,
-                    advances_entries.amount ,
-                     0 as withdrawals,
-                    0 as vat_nonvat,
-                    0 as expanded_tax,
-                    advances_entries.reporting_period,
-                    '' as gl_object_code,
-                    '' as gl_account_title
-                    FROM 
-                    advances_entries
-                    LEFT JOIN advances ON advances_entries.advances_id = advances.id
-                    LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
-                    LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
-                    WHERE advances_entries.reporting_period = :reporting_period
-                    AND advances.province = :province
-                    AND advances_entries.report_type =:report_type 
-                    AND advances_entries.is_deleted !=1 
+                        UNION ALL
+                        SELECT 
+                        cash_disbursement.issuance_date as check_date,
+                        cash_disbursement.check_or_ada_no as check_number,
+                        dv_aucs.particular,
+                        advances_entries.amount ,
+                        0 as withdrawals,
+                        0 as vat_nonvat,
+                        0 as expanded_tax,
+                        advances_entries.reporting_period,
+                        '' as gl_object_code,
+                        '' as gl_account_title
+                        FROM 
+                        advances_entries
+                        LEFT JOIN advances ON advances_entries.advances_id = advances.id
+                        LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
+                        LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
+                        WHERE advances_entries.reporting_period = :reporting_period
+                        AND advances.province = :province
+                        AND advances_entries.report_type =:report_type 
+                        AND advances_entries.is_deleted !=1 
             
  
             ")->bindValue(':reporting_period',  $reporting_period)
@@ -588,7 +591,7 @@ LEFT JOIN chart_of_accounts as new_chart ON liquidation_entries.chart_of_account
 
             $file = $path . "\liquidation_$id.xlsx";
             $file2 = "transaction/liquidation_$id.xlsx";
-              $writer->save($file);
+            $writer->save($file);
             // return ob_get_clean();
             header('Content-Type: application/octet-stream');
             header("Content-Transfer-Encoding: Binary");
@@ -609,8 +612,7 @@ LEFT JOIN chart_of_accounts as new_chart ON liquidation_entries.chart_of_account
             // return json_encode(['res' => "transaction\ckdj_excel_$id.xlsx"]);
             // return json_encode($file);
             // exit;
-        }
-        else{
+        } else {
             return 'qweqweqw';
         }
     }

@@ -21,11 +21,11 @@ class AdvancesEntriesForLiquidationSearch extends AdvancesEntriesForLiquidation
             $province = '';
         }
         return [
-            [['id', 'bank_account_id'], 'integer'],
+            [['id'], 'integer'],
 
 
             [['amount', 'balance'], 'number'],
-            [[$province, 'fund_source', 'total_liquidation', 'reporting_period', 'particular', 'bank_account_name'], 'safe'],
+            [['fund_source', 'total_liquidation', 'reporting_period', 'particular', 'bank_account_name', 'bank_account_id'], 'safe'],
         ];
     }
 
@@ -60,7 +60,7 @@ class AdvancesEntriesForLiquidationSearch extends AdvancesEntriesForLiquidation
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            $query->where('0=1');
             return $dataProvider;
         }
 
@@ -78,7 +78,8 @@ class AdvancesEntriesForLiquidationSearch extends AdvancesEntriesForLiquidation
             ->andFilterWhere(['like', 'bank_account_id', $this->bank_account_id])
             ->andFilterWhere(['like', 'bank_account_name', $this->bank_account_name])
             ->andFilterWhere(['like', 'total_liquidation', $this->total_liquidation]);
-
+        // var_dump( $query->createCommand()->getRawSql());
+        // die();
         return $dataProvider;
     }
 }

@@ -17,7 +17,7 @@ class PrIarSearch extends PrIar
     public function rules()
     {
         return [
-            [['id', 'fk_pr_purchase_order_id', 'fk_insepection_officer', 'fk_property_custodian'], 'integer'],
+            [['id', 'fk_pr_purchase_order_id', 'fk_inspection_officer', 'fk_property_custodian'], 'integer'],
             [['_date', 'reporting_period', 'invoice_number', 'invoice_date'], 'safe'],
         ];
     }
@@ -62,7 +62,7 @@ class PrIarSearch extends PrIar
             '_date' => $this->_date,
             'invoice_date' => $this->invoice_date,
             'fk_pr_purchase_order_id' => $this->fk_pr_purchase_order_id,
-            'fk_insepection_officer' => $this->fk_insepection_officer,
+            'fk_inspection_officer' => $this->fk_inspection_officer,
             'fk_property_custodian' => $this->fk_property_custodian,
         ]);
 

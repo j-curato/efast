@@ -6,6 +6,7 @@ use Yii;
 use app\models\PoTransaction;
 use app\models\PoTransactionSearch;
 use DateTime;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -361,5 +362,33 @@ class PoTransactionController extends Controller
             echo "</pre>";
             return ob_get_clean();
         }
+    }
+    public function actionSearchPoTransaction($q = null, $id = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $user_province = strtolower(Yii::$app->user->identity->province);
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if ($id > 0) {
+        } else if (!is_null($q)) {
+            $query = new Query();
+            $query->select('po_transaction.id, po_transaction.tracking_number AS text')
+                ->from('po_transaction')
+                ->where(['like', 'po_transaction.tracking_number', $q]);
+            if (
+                $user_province === 'adn' ||
+                $user_province === 'ads' ||
+                $user_province === 'sdn' ||
+                $user_province === 'sds' ||
+                $user_province === 'pdi'
+            ) {
+                $query->andWhere('po_transaction.province = :province', ['province' => $user_province]);
+            }
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        return $out;
     }
 }

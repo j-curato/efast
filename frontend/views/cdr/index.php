@@ -49,13 +49,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'serial_number',
             'reporting_period',
             'province',
-            [
-                'label' => 'Book Name',
-                'attribute' => 'book_name',
-                'value' => 'book.name'
-            ],
-            //'report_type',
-            //'is_final',
 
             [
                 'class' => '\kartik\grid\ActionColumn',

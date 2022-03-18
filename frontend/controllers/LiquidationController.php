@@ -11,9 +11,11 @@ use app\models\LiquidataionSearch;
 use app\models\LiquidationEntries;
 use app\models\LiquidationEntriesSearch;
 use app\models\LiquidationEntriesViewSearch;
+use aryelds\sweetalert\SweetAlert;
 use DateTime;
 use ErrorException;
 use Exception;
+use kartik\form\ActiveForm;
 use Mpdf\Tag\Em;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -21,6 +23,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\web\Response;
 
 /**
  * LiquidationController implements the CRUD actions for Liquidation model.
@@ -175,12 +178,99 @@ class LiquidationController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
+    public function insertItems(
+        $liquidation_id = null,
+        $advances_entries_id = [],
+        $new_reporting_period = [],
+        $object_codes = [],
+        $liq_damages = [],
+        $withdrawal = [],
+        $vat_nonvat = [],
+        $expanded_tax = []
+    ) {
+        $province = Yii::$app->user->identity->province;
+        foreach ($advances_entries_id as $key => $val) {
+
+            $withdrawals =  !empty($withdrawal[$key]) ? $withdrawal[$key] : 0;
+            $reporting_period = gettype($new_reporting_period) === 'array' ? $new_reporting_period[$key] : $new_reporting_period;
+            $advances_entries_balance = Yii::$app->db->createCommand("SELECT 
+            advances_entries_for_liquidation.balance,
+            advances_entries_for_liquidation.fund_source
+
+             FROM advances_entries_for_liquidation
+            WHERE advances_entries_for_liquidation.id = :id")
+                ->bindValue(':id', $val)
+                ->queryOne();
+            $partial_balance = floatVal($advances_entries_balance['balance']) - floatval($withdrawals);
+
+            if ($partial_balance < 0) {
+                return "Cannot Insert. Advances {$advances_entries_balance['fund_source']} Balance is not enough";
+            }
+            if (!$this->validateReportingPeriod($reporting_period, $province)) {
+                return "Reporting is Disable in  Advances {$advances_entries_balance['fund_source']} line";
+            };
+
+
+
+            $liquidation_entries = new LiquidationEntries();
+            $liquidation_entries->liquidation_id = $liquidation_id;
+            $liquidation_entries->advances_entries_id = $val;
+            $liquidation_entries->withdrawals = $withdrawals;
+            $liquidation_entries->vat_nonvat = !empty($vat_nonvat[$key]) ? $vat_nonvat[$key] : 0;
+            $liquidation_entries->expanded_tax = !empty($expanded_tax[$key]) ? $expanded_tax[$key] : 0;
+            $liquidation_entries->reporting_period = $reporting_period;
+            $liquidation_entries->liquidation_damage = !empty($liq_damages[$key]) ? $liq_damages[$key] : 0;
+            $liquidation_entries->new_object_code = $object_codes[$key];
+            $liquidation_entries->chart_of_account_id = null;
+            if ($liquidation_entries->save(false)) {
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+    public function validateCheckNumber($check_number = '', $check_range_id = '')
+    {
+
+        if (empty($check_number) || empty($check_range_id)) {
+            return false;
+        }
+        $check = (new \yii\db\Query())
+            ->select([
+                'check_range.from',
+                'check_range.to',
+            ])
+            ->from('check_range')
+            ->where("check_range.id = :id", ['id' => $check_range_id])
+            ->one();
+        if ($check_number >= $check['from'] && $check_number <= $check['to']) {
+        } else {
+            return false;
+        }
+        return true;
+    }
+    public function validateReportingPeriod($reporting_period = '', $province = '')
+    {
+        if (empty($reporting_period) && empty($province)) {
+            return 'empty';
+        }
+        $query = (new \yii\db\Query())
+            ->select('*')
+            ->from('liquidation_reporting_period')
+            ->where('liquidation_reporting_period.reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+            ->andWhere('liquidation_reporting_period.province LIKE :province', ['province' => $province])
+            ->one();
+        if (!empty($query)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
     public function actionCreate()
     {
 
         $model = new Liquidation();
-        $session = Yii::$app->session;
-        $session->set('form_token', md5(uniqid()));
+
         $searchModel = new AdvancesEntriesForLiquidationSearch();
         if (\Yii::$app->user->identity->province !== 'ro_admin') {
             $searchModel->province = \Yii::$app->user->identity->province;
@@ -188,12 +278,90 @@ class LiquidationController extends Controller
         }
 
         $check_range_id = '';
-        if ($_POST) {
+        if (!empty($_POST['filter_advances']) && $_POST) {
+
             $check_range_id = $_POST['check_range_id'];
+            // echo $check_range_id;
             $bank_account_id = Yii::$app->db->createCommand("SELECT bank_account_id FROM check_range where id=:id")
                 ->bindValue(':id', $check_range_id)
                 ->queryScalar();
             $searchModel->bank_account_id = $bank_account_id;
+        } else if ($_POST) {
+            $transaction = Yii::$app->db->beginTransaction();
+            $advances_entries_id = !empty($_POST['advances_entries_id']) ? $_POST['advances_entries_id'] : [];
+            $new_reporting_period = !empty($_POST['new_reporting_period']) ? $_POST['new_reporting_period'] : [];
+            $object_codes = !empty($_POST['object_codes']) ? $_POST['object_codes'] : [];
+            $liq_damages = !empty($_POST['liq_damages']) ? $_POST['liq_damages'] : [];
+            $withdrawal = !empty($_POST['withdrawal']) ? $_POST['withdrawal'] : [];
+            $vat_nonvat = !empty($_POST['vat_nonvat']) ? $_POST['vat_nonvat'] : [];
+            $expanded_tax = !empty($_POST['expanded_tax']) ? $_POST['expanded_tax'] : [];
+            $reporting_period = $_POST['reporting_period'];
+            $check_date = $_POST['check_date'];
+            $check_range_id = $_POST['check_range_id'];
+            $check_number = $_POST['check_number'];
+            $po_transaction_id = $_POST['po_transaction_id'];
+            $province = Yii::$app->user->identity->province;
+
+
+
+            $model->dv_number = $this->getDvNumber($reporting_period);
+            $model->reporting_period = $reporting_period;
+            $model->province = $province;
+            $model->check_date = $check_date;
+            $model->check_range_id = $check_range_id;
+            $model->check_number = $check_number;
+            $model->po_transaction_id = $po_transaction_id;
+
+            try {
+                $flag = true;
+                if ($model->validate()) {
+                    if (!$this->validateCheckNumber($check_number, $check_range_id)) {
+                        $transaction->rollBack();
+                        return json_encode(['check_error' => 'Check Number Not in Range']);
+                    }
+                    if (empty($advances_entries_id)) {
+                        $transaction->rollBack();
+                        return json_encode(['check_error' => 'No Entry']);
+                    }
+
+                    $validateReportingPeriod = $this->validateReportingPeriod($reporting_period, $province);
+                    if ($validateReportingPeriod === false) {
+                        $transaction->rollBack();
+                        return json_encode(['check_error' => 'Reporting Period is Disabled']);
+                    } else if ($validateReportingPeriod === 'empty') {
+                        $transaction->rollBack();
+                        return json_encode(['check_error' => 'No Reporting Period']);
+                    }
+
+
+                    if ($model->save(false)) {
+
+                        $flag = $this->insertItems(
+                            $model->id,
+                            $advances_entries_id,
+                            $model->reporting_period,
+                            $object_codes,
+                            $liq_damages,
+                            $withdrawal,
+                            $vat_nonvat,
+                            $expanded_tax
+                        );
+                    }
+                } else {
+                    $transaction->rollBack();
+                    return json_encode(['form_error' => $model->errors]);
+                }
+                if ($flag) {
+                    // return 'sucess';
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
+                } else {
+                    $transaction->rollBack();
+                    return json_encode(['check_error' => $flag]);
+                }
+            } catch (ErrorException $e) {
+                return json_encode($e->getMessage());
+            }
         }
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -207,6 +375,7 @@ class LiquidationController extends Controller
         ]);
     }
 
+
     /**
      * Updates an existing Liquidation model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -216,24 +385,106 @@ class LiquidationController extends Controller
      */
     public function actionUpdate($id)
     {
-        $check_range_id = 1;
-        if ($_POST) {
-            $check_range_id = $_POST['check_range_id'];
-        }
-        $q  = LiquidationEntries::findOne($id);
+
         $model = $this->findModel($id);
 
-        // if ($model->load(Yii::$app->request->post()) && $model->save()) {
-        //     return $this->redirect(['view', 'id' => $model->id]);
-        // }
         $searchModel = new AdvancesEntriesForLiquidationSearch();
         if (\Yii::$app->user->identity->province !== 'ro_admin') {
             $searchModel->province = \Yii::$app->user->identity->province;
             // echo \Yii::$app->user->identity->province;
         }
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->pagination = ['pageSize' => $check_range_id];
 
+        $check_range_id = '';
+        if (!empty($_POST['filter_advances']) && $_POST) {
+            $check_range_id = $_POST['check_range_id'];
+            // echo $check_range_id;
+            $bank_account_id = Yii::$app->db->createCommand("SELECT bank_account_id FROM check_range where id=:id")
+                ->bindValue(':id', $check_range_id)
+                ->queryScalar();
+            $searchModel->bank_account_id = $bank_account_id;
+        } else if ($_POST) {
+            $transaction = Yii::$app->db->beginTransaction();
+            $advances_entries_id = !empty($_POST['advances_entries_id']) ? $_POST['advances_entries_id'] : [];
+            $new_reporting_period = !empty($_POST['new_reporting_period']) ? $_POST['new_reporting_period'] : [];
+            $object_codes = !empty($_POST['object_codes']) ? $_POST['object_codes'] : [];
+            $liq_damages = !empty($_POST['liq_damages']) ? $_POST['liq_damages'] : [];
+            $withdrawal = !empty($_POST['withdrawal']) ? $_POST['withdrawal'] : [];
+            $vat_nonvat = !empty($_POST['vat_nonvat']) ? $_POST['vat_nonvat'] : [];
+            $expanded_tax = !empty($_POST['expanded_tax']) ? $_POST['expanded_tax'] : [];
+            $reporting_period = $_POST['reporting_period'];
+            $check_date = $_POST['check_date'];
+            $check_range_id = $_POST['check_range_id'];
+            $check_number = $_POST['check_number'];
+            $po_transaction_id = $_POST['po_transaction_id'];
+            $province = Yii::$app->user->identity->province;
+
+            if ($model->reporting_period !== $reporting_period) {
+
+                $validateReportingPeriod = $this->validateReportingPeriod($reporting_period, $province);
+                if ($validateReportingPeriod === false) {
+                    $transaction->rollBack();
+                    return json_encode(['check_error' => 'Reporting Period is Disabled']);
+                } else if ($validateReportingPeriod === 'empty') {
+                    $transaction->rollBack();
+                    return json_encode(['check_error' => 'No Reporting Period']);
+                }
+            }
+            $model->reporting_period = $reporting_period;
+            $model->province = $province;
+            $model->check_date = $check_date;
+            $model->check_range_id = $check_range_id;
+            $model->check_number = $check_number;
+            $model->po_transaction_id = $po_transaction_id;
+
+            try {
+                $flag = true;
+                if ($model->validate()) {
+                    if (!$this->validateCheckNumber($check_number, $check_range_id)) {
+                        $transaction->rollBack();
+                        return json_encode(['check_error' => 'Check Number Not in Range']);
+                    }
+
+
+
+                    if ($model->save(false)) {
+
+                        $flag = $this->insertItems(
+                            $model->id,
+                            $advances_entries_id,
+                            $new_reporting_period,
+                            $object_codes,
+                            $liq_damages,
+                            $withdrawal,
+                            $vat_nonvat,
+                            $expanded_tax
+                        );
+                    }
+                } else {
+                    $transaction->rollBack();
+                    return json_encode(['form_error' => $model->errors]);
+                }
+
+                if ($flag === true) {
+                    // return 'sucess';
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
+                } else {
+                    $transaction->rollBack();
+                    return json_encode(['check_error' => $flag]);
+                }
+            } catch (ErrorException $e) {
+                return json_encode($e->getMessage());
+            }
+        }
+        // else{
+        //     return 'qqqq';
+        // }
+
+
+
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        $dataProvider->pagination = ['pageSize' => 10];
 
         return $this->render('update', [
             'model' => $model,
@@ -256,39 +507,39 @@ class LiquidationController extends Controller
 
         // return $this->redirect(['index']);
     }
-    public function actionReAlign($id)
-    {
-        $check_range_id = '';
+    // public function actionReAlign($id)
+    // {
+    //     $check_range_id = '';
 
-        $q  = LiquidationEntries::findOne($id);
-        $model = $this->findModel($id);
+    //     $q  = LiquidationEntries::findOne($id);
+    //     $model = $this->findModel($id);
 
-        // if ($model->load(Yii::$app->request->post()) && $model->save()) {
-        //     return $this->redirect(['view', 'id' => $model->id]);
-        // }
-        $searchModel = new AdvancesEntriesForLiquidationSearch();
-        if (\Yii::$app->user->identity->province !== 'ro_admin') {
-            $searchModel->province = \Yii::$app->user->identity->province;
-            // echo \Yii::$app->user->identity->province;
-        }
+    //     // if ($model->load(Yii::$app->request->post()) && $model->save()) {
+    //     //     return $this->redirect(['view', 'id' => $model->id]);
+    //     // }
+    //     $searchModel = new AdvancesEntriesForLiquidationSearch();
+    //     if (\Yii::$app->user->identity->province !== 'ro_admin') {
+    //         $searchModel->province = \Yii::$app->user->identity->province;
+    //         // echo \Yii::$app->user->identity->province;
+    //     }
 
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->pagination = ['pageSize' => $check_range_id];
-        if ($_POST) {
-            $check_range_id = $_POST['check_range_id'];
-            $bank_account_id = Yii::$app->db->createCommand("SELECT bank_account_id FROM check_range where id=:id")
-                ->bindValue(':id', $check_range_id)
-                ->queryScalar();
-            $dataProvider->bank_account_id = $bank_account_id;
-        }
+    //     $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+    //     $dataProvider->pagination = ['pageSize' => $check_range_id];
+    //     if ($_POST) {
+    //         $check_range_id = $_POST['check_range_id'];
+    //         $bank_account_id = Yii::$app->db->createCommand("SELECT bank_account_id FROM check_range where id=:id")
+    //             ->bindValue(':id', $check_range_id)
+    //             ->queryScalar();
+    //         $dataProvider->bank_account_id = $bank_account_id;
+    //     }
 
-        return $this->render('update', [
-            'model' => $model,
-            'update_type' => 're-align',
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider
-        ]);
-    }
+    //     return $this->render('update', [
+    //         'model' => $model,
+    //         'update_type' => 're-align',
+    //         'searchModel' => $searchModel,
+    //         'dataProvider' => $dataProvider
+    //     ]);
+    // }
 
     /**
      * Finds the Liquidation model based on its primary key value.
@@ -367,25 +618,6 @@ class LiquidationController extends Controller
             $province = Yii::$app->user->identity->province;
 
 
-            // if (date('m', strtotime($check_date)) >= 7) {
-            //     // return json_encode(['isSuccess' => false, 'error' => 'Check Number Not in Range']);
-            //     // die();
-            //     if (empty($check_range)) {
-            //         return json_encode(['isSuccess' => false, 'error' => 'Check Number Is Required']);
-            //     }
-            //     $check = (new \yii\db\Query())
-            //         ->select([
-            //             'check_range.from',
-            //             'check_range.to',
-            //         ])
-            //         ->from('check_range')
-            //         ->where("check_range.id = :id", ['id' => $check_range])
-            //         ->one();
-            //     if ($check_number >= $check['from'] && $check_number <= ['to']) {
-            //     } else {
-            //         return json_encode(['isSuccess' => false, 'error' => 'Check Number Not in Range']);
-            //     }
-            // }
 
             if (strtotime($check_date) > strtotime('2021-06-20')) {
                 if (empty($po_transaction_id)) {
@@ -687,9 +919,12 @@ class LiquidationController extends Controller
         }
     }
 
-    public function getDvNumber($reporting_period)
+    public function getDvNumber($reporting_period = '')
     {
 
+        if (empty($reporting_period)) {
+            return null;
+        }
         $province = Yii::$app->user->identity->province;
 
         $year = DateTime::createFromFormat('Y-m', $reporting_period)->format('Y');
@@ -1219,7 +1454,7 @@ class LiquidationController extends Controller
                     }
 
                     $entry = LiquidationEntries::findOne($id);
-                    $entry->new_chart_of_account_id = empty($chart_of_account_id)?null:$chart_of_account_id;
+                    $entry->new_chart_of_account_id = empty($chart_of_account_id) ? null : $chart_of_account_id;
                     $entry->new_object_code = $new_object_code;
                     if ($entry->save(false)) {
                     }

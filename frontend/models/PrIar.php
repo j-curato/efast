@@ -13,7 +13,7 @@ use Yii;
  * @property string $invoice_number
  * @property string $invoice_date
  * @property int $fk_pr_purchase_order_id
- * @property int $fk_insepection_officer
+ * @property int $fk_inspection_officer
  * @property int $fk_property_custodian
  */
 class PrIar extends \yii\db\ActiveRecord
@@ -32,9 +32,9 @@ class PrIar extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['_date', 'reporting_period', 'invoice_number', 'invoice_date', 'fk_pr_purchase_order_id', 'fk_insepection_officer', 'fk_property_custodian'], 'required'],
+            [['_date', 'reporting_period', 'invoice_number', 'invoice_date', 'fk_pr_purchase_order_id', 'fk_inspection_officer', 'fk_property_custodian'], 'required'],
             [['_date', 'invoice_date'], 'safe'],
-            [['fk_pr_purchase_order_id', 'fk_insepection_officer', 'fk_property_custodian'], 'integer'],
+            [['fk_pr_purchase_order_id', 'fk_inspection_officer', 'fk_property_custodian'], 'integer'],
             [['reporting_period'], 'string', 'max' => 20],
             [['invoice_number'], 'string', 'max' => 255],
         ];
@@ -51,9 +51,17 @@ class PrIar extends \yii\db\ActiveRecord
             'reporting_period' => 'Reporting Period',
             'invoice_number' => 'Invoice Number',
             'invoice_date' => 'Invoice Date',
-            'fk_pr_purchase_order_id' => 'Fk Pr Purchase Order ID',
-            'fk_insepection_officer' => 'Fk Insepection Officer',
-            'fk_property_custodian' => 'Fk Property Custodian',
+            'fk_pr_purchase_order_id' => 'Pr Purchase Order',
+            'fk_inspection_officer' => 'Insepection Officer',
+            'fk_property_custodian' => 'Property Custodian',
         ];
+    }
+    public function getInspectionOfficer()
+    {
+        return $this->hasOne(Employee::class, ['employee_id', 'fk_inspection_officer']);
+    }
+    public function getPropertCustodian()
+    {
+        return $this->hasOne(Employee::class, ['employee_id', 'fk_property_custodian']);
     }
 }

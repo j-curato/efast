@@ -45,7 +45,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'id',
             'reporting_period',
-            'province',
+            [
+                'label' => 'Province',
+                'attribute' => 'province',
+                'value'=>'bankAccount.province'
+            ],
             [
                 'label' => 'Bank Account',
                 'value' => function ($model) {
@@ -64,6 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $final;
                 }
             ],
+
 
             [
                 'class' => '\kartik\grid\ActionColumn',

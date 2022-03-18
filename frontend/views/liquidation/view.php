@@ -68,7 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?php if (\Yii::$app->user->can('create_liquidation')) { ?>
             <p>
-                <?= Html::a('Re-Align/Update', ['re-align', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+                <?= Html::a('Re-Align/Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
                 <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Add Link</button>
 
