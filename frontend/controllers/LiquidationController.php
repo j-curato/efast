@@ -189,7 +189,7 @@ class LiquidationController extends Controller
         $expanded_tax = []
     ) {
 
- 
+
 
         $province = Yii::$app->user->identity->province;
         foreach ($advances_entries_id as $key => $val) {
@@ -236,9 +236,13 @@ class LiquidationController extends Controller
     public function validateCheckNumber($check_number = '', $check_range_id = '')
     {
 
-        if (empty($check_number) || empty($check_range_id)) {
+
+        if ($check_number === '' || empty($check_range_id)) {
+
             return false;
         }
+
+
         $check = (new \yii\db\Query())
             ->select([
                 'check_range.from',
@@ -247,6 +251,7 @@ class LiquidationController extends Controller
             ->from('check_range')
             ->where("check_range.id = :id", ['id' => $check_range_id])
             ->one();
+
         if ($check_number >= $check['from'] && $check_number <= $check['to']) {
         } else {
             return false;
@@ -415,7 +420,7 @@ class LiquidationController extends Controller
             $withdrawal = !empty($_POST['withdrawal']) ? $_POST['withdrawal'] : [];
             $vat_nonvat = !empty($_POST['vat_nonvat']) ? $_POST['vat_nonvat'] : [];
             $expanded_tax = !empty($_POST['expanded_tax']) ? $_POST['expanded_tax'] : [];
-     
+
             $reporting_period = $_POST['reporting_period'];
             $check_date = $_POST['check_date'];
             $check_range_id = $_POST['check_range_id'];
