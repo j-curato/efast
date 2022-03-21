@@ -46,7 +46,12 @@ class m220314_072436_update_cibr_stored_procedure extends Migration
             liquidation_entries.reporting_period = r_period
             AND
             advances.bank_account_id = bank_account_id
-            GROUP BY liquidation_entries.id,IFNULL(liquidation_entries.new_chart_of_account_id,liquidation_entries.chart_of_account_id)
+            GROUP BY liquidation_entries.id,
+               (CASE  
+            WHEN liquidation_entries.new_object_code IS  NOT NULL THEN liquidation_entries.new_object_code
+            WHEN  liquidation_entries.new_chart_of_account_id IS  NOT NULL THEN  new_chart.uacs
+            ELSE orig_chart.uacs
+            END)
             ) as liq_entries ON liquidation.id=liq_entries.liquidation_id
         LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
         LEFT JOIN accounting_codes ON liq_entries.object_code = accounting_codes.object_code

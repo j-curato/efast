@@ -41,7 +41,6 @@ class Liquidation extends \yii\db\ActiveRecord
             [['reporting_period'], 'string', 'max' => 20],
             [[
                 'reporting_period',
-                'po_transaction_id',
                 'check_date',
                 'check_number',
                 'check_range_id',
