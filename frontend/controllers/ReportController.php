@@ -3463,6 +3463,7 @@ class ReportController extends \yii\web\Controller
                 FROM jev_beginning_balance
                 LEFT JOIN jev_beginning_balance_item ON jev_beginning_balance.id = jev_beginning_balance_item.jev_beginning_balance_id
             WHERE  jev_beginning_balance.book_id=:book_id
+            GROUP BY object_code
             ) as jev_object_codes
             
             LEFT JOIN (
@@ -3481,10 +3482,10 @@ class ReportController extends \yii\web\Controller
             GROUP BY chart)
              as accounting_entries ON jev_object_codes.obj_code = accounting_entries.chart
             LEFT JOIN (SELECT 
-                accounting_codes.object_code,
+                SUBSTRING_INDEX(accounting_codes.object_code,'_',1) as object_code,
                 (CASE
-                    WHEN accounting_codes.normal_balance = 'Debit' THEN jev_beginning_balance_item.debit  - jev_beginning_balance_item.credit
-                    ELSE jev_beginning_balance_item.credit - jev_beginning_balance_item.debit
+                    WHEN accounting_codes.normal_balance = 'Debit' THEN IFNULL(jev_beginning_balance_item.debit,0)  - IFNULL(jev_beginning_balance_item.credit,0)
+                    ELSE IFNULL(jev_beginning_balance_item.credit,0) - IFNULL(jev_beginning_balance_item.debit,0)
                 END) as total_beginning_balance
                 FROM jev_beginning_balance_item 
               LEFT JOIN jev_beginning_balance ON jev_beginning_balance_item.jev_beginning_balance_id =jev_beginning_balance.id
