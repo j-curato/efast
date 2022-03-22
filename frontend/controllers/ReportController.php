@@ -3444,7 +3444,7 @@ class ReportController extends \yii\web\Controller
             ELSE IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.credit,0) - IFNULL(accounting_entries.debit,0))
             END) as total_debit_credit,
             begin_balance.total_beginning_balance as begin_balance
-    
+
             
              FROM (
             
@@ -3457,6 +3457,12 @@ class ReportController extends \yii\web\Controller
 
             AND jev_preparation.reporting_period <=:to_reporting_period
             GROUP BY obj_code
+            UNION
+            SELECT 
+                SUBSTRING_INDEX(jev_beginning_balance_item.object_code,'_',1) as object_code
+                FROM jev_beginning_balance
+                LEFT JOIN jev_beginning_balance_item ON jev_beginning_balance.id = jev_beginning_balance_item.jev_beginning_balance_id
+            WHERE  jev_beginning_balance.book_id=:book_id
             ) as jev_object_codes
             
             LEFT JOIN (
