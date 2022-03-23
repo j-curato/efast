@@ -2991,7 +2991,7 @@ class JevPreparationController extends Controller
             GROUP BY jev_accounting_entries.object_code
             UNION
             SELECT 
-               jev_beginning_balance_item.object_code,
+               jev_beginning_balance_item.object_code
                 FROM jev_beginning_balance
                 LEFT JOIN jev_beginning_balance_item ON jev_beginning_balance.id = jev_beginning_balance_item.jev_beginning_balance_id
             WHERE  jev_beginning_balance.book_id=:book_id
