@@ -2979,7 +2979,6 @@ class JevPreparationController extends Controller
             ELSE accounting_entries.credit - accounting_entries.debit
             END) as total_debit_credit,
             beginning_balance.total_beginning_balance as begin_balance
-            
             FROM (
             SELECT
             jev_accounting_entries.object_code
@@ -2998,7 +2997,6 @@ class JevPreparationController extends Controller
             GROUP BY object_code
             ) as jev_object_codes
             LEFT JOIN (SELECT
-            
             SUM(jev_accounting_entries.debit) as debit,
             SUM(jev_accounting_entries.credit) as credit,
             jev_accounting_entries.object_code 
@@ -3024,10 +3022,10 @@ class JevPreparationController extends Controller
                 AND jev_beginning_balance.book_id = :book_id) as beginning_balance ON jev_object_codes.object_code = beginning_balance.object_code
             LEFT JOIN accounting_codes ON jev_object_codes.object_code = accounting_codes.object_code
             
-            WHERE accounting_entries.debit IS NOT NULL
-            OR accounting_entries.credit IS NOT NULL
-            OR beginning_balance.total_beginning_balance IS NOT NULL
-            ORDER BY jev_object_codes.object_code
+            WHERE    (CASE
+            WHEN accounting_codes.normal_balance = 'Debit' THEN accounting_entries.debit - accounting_entries.credit
+            ELSE accounting_entries.credit - accounting_entries.debit
+            END) !=0
             ")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->bindValue(':to_reporting_period', $to_reporting_period)
