@@ -21,7 +21,7 @@ $bank_account_id  = '';
 $cibr_id = '';
 
 if (!empty($model->id)) {
-    $bank_account_id = $model->bank_account_id;
+    $bank_account_id = $model->fk_bank_account_id;
 }
 ?>
 <div class="jev-preparation-index" style="background-color: white;">

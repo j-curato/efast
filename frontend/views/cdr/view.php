@@ -40,8 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?php
         echo "<input type='hidden' id='reporting_period' name='reporting_period' value='$model->reporting_period'>";
-        echo "<input type='hidden' id='province' name='province' value='$model->province'>";
-        echo "<input type='hidden' id='book' name='book' value='$model->book_name'>";
+        echo "<input type='hidden' id='province' name='bank_account_id' value='$model->fk_bank_account_id'>";
         echo "<input type='hidden' id='report_type' name='report_type' value='$model->report_type'>";
         echo "<input type='hidden' id='cdr_id' name='cdr_id' value='$model->id'>";
         ?>

@@ -71,7 +71,7 @@ class CdrSearch extends Cdr
         // grid filtering conditions
         $query->joinWith('book');
         $query->andFilterWhere([
-            'id' => $this->id,
+            'cdr.id' => $this->id,
             'is_final' => $this->is_final,
         ]);
 

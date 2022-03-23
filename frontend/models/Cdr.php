@@ -32,6 +32,7 @@ class Cdr extends \yii\db\ActiveRecord
     {
         return [
             [['is_final'], 'integer'],
+            [['fk_bank_account_id'], 'number'],
             [['serial_number'], 'string', 'max' => 100],
             [['reporting_period', 'province', 'book_name'], 'string', 'max' => 50],
             [['report_type'], 'string', 'max' => 255],
@@ -51,10 +52,15 @@ class Cdr extends \yii\db\ActiveRecord
             'book_name' => 'Book Name',
             'report_type' => 'Report Type',
             'is_final' => 'Is Final',
+            'fk_bank_account_id' => 'Bank Account ',
         ];
     }
     public function getBook()
     {
         return $this->hasOne(Books::class, ['id' => 'book_name']);
+    }
+    public function getBankAccount()
+    {
+        return $this->hasOne(BankAccount::class, ['id' => 'fk_bank_account_id']);
     }
 }
