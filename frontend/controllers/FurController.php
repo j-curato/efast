@@ -191,7 +191,14 @@ class FurController extends Controller
     public function actionFindFur()
     {
         if ($_POST) {
-            $query  = Yii::$app->db->createCommand('SELECT * FROM fur WHERE id = :id')
+            $query  = Yii::$app->db->createCommand('SELECT 
+            fur.reporting_period,
+            bank_account.province,
+            fur.bank_account_id
+            FROM fur
+            LEFT JOIN bank_account ON fur.bank_account_id = bank_account.id
+            
+             WHERE fur.id = :id')
                 ->bindValue(
                     ':id',
                     $_POST['id']
@@ -249,7 +256,8 @@ class FurController extends Controller
             LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
             LEFT JOIN advances ON advances_entries.advances_id = advances.id
             LEFT  JOIN (SELECT liquidation_entries.advances_entries_id,SUM(liquidation_entries.withdrawals) as current_total_withdrawals
-            FROM liquidation_entries WHERE  liquidation_entries.reporting_period =:reporting_period
+            FROM liquidation_entries
+             WHERE  liquidation_entries.reporting_period =:reporting_period
             GROUP BY liquidation_entries.advances_entries_id
              )as current_liquidation ON advances_entries.id  = current_liquidation.advances_entries_id
             LEFT  JOIN (SELECT liquidation_entries.advances_entries_id,SUM(liquidation_entries.withdrawals) as prev_total_withdrawals 
@@ -262,9 +270,17 @@ class FurController extends Controller
             LEFT  JOIN (SELECT  advances_entries.amount as prev_total_advances,advances_entries.id 
             FROM advances_entries WHERE advances_entries.reporting_period <:reporting_period
              )as prev_advances ON advances_entries.id  = prev_advances.id
-            WHERE advances_entries.reporting_period <=:reporting_period
-            AND advances.bank_account_id = :bank_account_id
+            WHERE advances.bank_account_id = :bank_account_id
             AND advances_entries.is_deleted NOT IN (1,9) 
+            AND (
+                IFNULL(current_advances.current_total_advances,0) !=0
+                OR
+            IFNULL(current_liquidation.current_total_withdrawals,0) !=0
+            OR
+            (
+            IFNULL(prev_advances.prev_total_advances,0)-IFNULL(prev_liquidation.prev_total_withdrawals,0)
+            ) !=0
+            )
             ")
                 ->bindValue(':reporting_period', $reporting_period)
                 ->bindValue(':bank_account_id', $bank_account_id)
