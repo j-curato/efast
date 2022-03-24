@@ -342,51 +342,38 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
         </table>
-        <table class='assig'>
+        <table class='assig' style="border: 0;">
             <thead>
-                <tr>
-                    <td colspan="2" class='q'>
+                <tr >
 
-                        <div>
+                    <td class='q' style="text-align: center;">
+
+                        <span>
                             <h6>
-                                Prepared By:
+                                Certified Correct:
                             </h6>
-                        </div>
-                        <div style="text-align: center;">
+                        </span>
+                        <br>
+                        <span style="margin-left: 25em; text-decoration:underline;font-weight:bold">
+                            CHARLIE C. DECHOS, CPA</h5>
+                        </span>
+                        <br>
+                        <span style="margin-left: 25em;">
+                            Accountant III, Designate
+                        </span>
+                        <!-- <div style="text-align: center;">
                             <div style="width: 70px;height:50px;margin-left:auto;margin-right:auto">
-                                <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/charles_sign.png', [
-                                    'alt' => 'some', 'class' => 'pull-left img-responsive',
-                                    'style' => 'width: 80px;height:50px;margin-left:auto'
-                                ]); ?>
+
                             </div>
+             
                             <h5>
                                 CHARLIE C. DECHOS, CPA
                             </h5>
 
                             <h6>
-                                Accountant II
+                                Accountant III, Designate
                             </h6>
-                        </div>
-                    </td>
-                    <td colspan="2" class='q'>
-
-                        <div>
-                            <h6>
-                                Certified Correct:
-                            </h6>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="width: 70px;height:50px;margin-left:auto;margin-right:auto">
-
-                            </div>
-                            <h5>
-                                JOHN VOLTAIRE S. ANCLA, CPA
-                            </h5>
-
-                            <h6>
-                                Accountant III
-                            </h6>
-                        </div>
+                        </div> -->
                     </td>
                 </tr>
             </thead>
@@ -395,6 +382,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <style>
         .head {
             font-weight: bold;
+        }
+
+        #asig>td,
+        th {
+            border: 0;
         }
 
         .total td {
@@ -474,6 +466,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 font-size: 10px;
             }
 
+     
+
             @page {
                 size: auto;
                 margin: 0;
@@ -503,10 +497,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 border: none;
             }
 
-            .q {
+            .assig td {
                 border: 0;
             }
-
+            
             .assig {
                 border: 0;
             }
