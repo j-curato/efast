@@ -273,6 +273,7 @@ class DvAucsController extends Controller
             $advances_amount = !empty($_POST['advances_amount']) ? $_POST['advances_amount'] : [];
             $advances_update_id = !empty($_POST['advances_id']) ? $_POST['advances_id'] : '';
 
+
             if (empty($mrd_classification)) {
                 return json_encode(['form_error' => [
                     'mrd_classification' => 'MRD Classification cannot be blank'
@@ -299,7 +300,7 @@ class DvAucsController extends Controller
                 $flag = true;
                 if ($model->validate()) {
                     if (!empty($debits) || !empty($credits)) {
-                        if (array_sum($debits) !== array_sum($credits)) {
+                        if (floatVal(array_sum($debits)) !== floatVal(array_sum($credits))) {
                             $transaction->rollBack();
                             return json_encode(['check_error' => 'Not Balance']);
                         }
