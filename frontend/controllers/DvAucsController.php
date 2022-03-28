@@ -300,9 +300,11 @@ class DvAucsController extends Controller
                 $flag = true;
                 if ($model->validate()) {
                     if (!empty($debits) || !empty($credits)) {
-                        if (floatVal(array_sum($debits)) !== floatVal(array_sum($credits))) {
+                        $sum_debits = number_format(floatVal(array_sum($debits)), 2);
+                        $sum_credits = number_format(floatVal(array_sum($credits)), 2);
+                        if ($sum_debits !==  $sum_credits) {
                             $transaction->rollBack();
-                            return json_encode(['check_error' => 'Not Balance']);
+                            return json_encode(['check_error' => "Not Balance $sum_debits :  $sum_credits"]);
                         }
                     }
                     $accounting_entry =   $this->insertAccountingEntries($model->id, $object_codes, $debits, $credits);
