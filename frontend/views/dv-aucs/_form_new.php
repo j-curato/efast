@@ -1190,7 +1190,7 @@ SweetAlertAsset::register($this);
         $('.due_to_bir').each(function(key, val) {
             total_amount += parseFloat($(this).val())
         })
-        if (total_amount > 0) {
+        if (total_amount != 0) {
             getObjectCodeForTheMonth()
         }
         getDebitCreditTotal()
@@ -1201,7 +1201,7 @@ SweetAlertAsset::register($this);
         $('.amount_disbursed').each(function(key, val) {
             total_amount += parseFloat($(this).val())
         })
-        if (total_amount > 0) {
+        if (total_amount != 0) {
 
             addEntryForAmountDisbursed(parseFloat(total_amount).toFixed(2))
         }
