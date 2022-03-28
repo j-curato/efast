@@ -106,7 +106,7 @@ use yii\widgets\ActiveForm;
         }
         ?>
         <?= $form->field($model, 'article')->textarea(['maxlength' => true,]) ?>
-        <?= $form->field($model, 'description')->textarea(['maxlength' => true,'style'=>'display:none;']) ?>
+        <?= $form->field($model, 'description')->textarea(['maxlength' => true, 'style' => 'display:none;']) ?>
         <textarea id="description" cols="30" rows="5" style="max-width:100%;width:100%"><?php echo $description; ?></textarea>
         <?= $form->field($model, 'acquisition_amount')->widget(
             MaskMoney::class,
@@ -121,7 +121,50 @@ use yii\widgets\ActiveForm;
             ]
         ) ?>
 
+
         <div class="row">
+            <div class="col-sm-3">
+                <?= $form->field($model, 'object_code')->widget(Select2::class, [
+                    'name' => 'object_code',
+                    'options' => ['placeholder' => 'Search Object Code ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Yii::$app->request->baseUrl . '?r=chart-of-accounts/search-accounting-code',
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
+
+                ])
+
+                ?>
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'salvage_value')->widget(MaskMoney::class, [
+                    'name' => 'salvage_value',
+                    'pluginOptions' => [
+                        'prefix' => '₱ ',
+                        'allowNegative' => false
+                    ]
+                ])
+                ?>
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'estimated_life')->textInput(['type' => 'number']) ?>
+            </div>
+
+        </div>
+        <div class="row" style="margin: 3rem;">
             <div class="col-sm-5"></div>
             <div class="col-sm-2">
                 <div class="form-group">

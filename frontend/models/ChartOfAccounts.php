@@ -36,9 +36,10 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['uacs', 'general_ledger', 'major_account_id', 'sub_major_account', 'account_group', 'current_noncurrent', 'enable_disable','normal_balance'], 'required'],
-            [['major_account_id', 'sub_major_account','is_active'], 'integer'],
-            [['uacs','normal_balance'], 'string', 'max' => 30],
+            [['uacs', 'general_ledger', 'major_account_id', 'sub_major_account', 'account_group', 'current_noncurrent', 'enable_disable', 'normal_balance'], 'required'],
+            [['major_account_id', 'sub_major_account', 'is_active'], 'integer'],
+            [['uacs', 'normal_balance'], 'string', 'max' => 30],
+            [['is_province_visible'], 'integer'],
             [['general_ledger', 'account_group', 'current_noncurrent', 'enable_disable'], 'string', 'max' => 255],
             [['major_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => MajorAccounts::class, 'targetAttribute' => ['major_account_id' => 'id']],
             [['sub_major_account'], 'exist', 'skipOnError' => true, 'targetClass' => SubMajorAccounts::class, 'targetAttribute' => ['sub_major_account' => 'id']],
@@ -60,6 +61,7 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
             'current_noncurrent' => 'Current Noncurrent',
             'enable_disable' => 'Enable Disable',
             'is_active' => 'Active',
+            'is_province_visible' => 'Select  Usable in Province',
         ];
     }
 

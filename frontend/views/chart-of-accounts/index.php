@@ -8,6 +8,7 @@ use yii\helpers\ArrayHelper;
 use kartik\widgets\FileInput;
 use kartik\widgets\ActiveForm;
 use aryelds\sweetalert\SweetAlertAsset;
+use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\ChartOfAccountsSearch */
@@ -183,17 +184,34 @@ $this->params['breadcrumbs'][] = $this->title;
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title">Modal Header</h4>
                 </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="account_title">Account Title:</label>
-                        <input type="account_title" class="form-control" id="account_title">
-                        <input type="text" class="form-control " id="chart_id">
-                    </div>
+                <form id='create_sub_account'>
 
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" id="save"> Submit</button>
-                </div>
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label for="account_title">Account Title:</label>
+                            <input type="text" class="form-control" id="account_title" name="account_title">
+
+                            <label for="reporting_period">Reporting Period</label>
+                            <?php
+                            echo DatePicker::widget([
+                                'name' => 'reporting_period',
+                                'pluginOptions' => [
+                                    'minViewMode' => 'months',
+                                    'format' => 'yyyy-mm',
+                                    'autoclose'=>true
+                                ]
+                            ])
+                            ?>
+                            <input type="hidden" class="form-control " id="chart_id" name="id">
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="save"> Submit</button>
+                    </div>
+                </form>
+
             </div>
 
         </div>
@@ -225,17 +243,15 @@ $script = <<<JS
             $('.add-sub').click(function(){
               id =  document.getElementById('chart_id').value=$(this).val()
             })
-            $('#save').click(function(){
+            $('#create_sub_account').submit(function(e){
+                e.preventDefault()
              at = document.getElementById('account_title').value
             //  id = document.getElementById('chart_id').value
             console.log (at)
             $.ajax({
                 type:'POST',
                 url:window.location.pathname + '?r=chart-of-accounts/create-sub-account' ,
-                data:{
-                    account_title:at,
-                    id:id,
-                },
+                data:$('#create_sub_account').serialize(),
                 success:function(data){
                     // var res = JSON.parse(data)
                     console.log(data)

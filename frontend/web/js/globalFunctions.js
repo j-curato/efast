@@ -1,11 +1,10 @@
 // AJAX chart/subaccounts Select2
 
+const base_url = window.location.pathname;
 function accountingCodesSelect() {
   $(".chart-of-accounts").select2({
     ajax: {
-      url:
-        window.location.pathname +
-        "?r=chart-of-accounts/search-accounting-code",
+      url: base_url + "?r=chart-of-accounts/search-accounting-code",
       dataType: "json",
       data: function (params) {
         return {
@@ -26,7 +25,7 @@ function accountingCodesSelect() {
 function payeeSelect() {
   $(".payee").select2({
     ajax: {
-      url: window.location.pathname + "?r=payee/search-payee",
+      url: base_url + "?r=payee/search-payee",
       dataType: "json",
       data: function (params) {
         return {
@@ -56,4 +55,27 @@ function thousands_separators(num) {
   num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return num_parts.join(".");
   console.log(num);
+}
+// GET ALL NATURE OF TRANSCTION
+function natureOfTransactionSelect() {
+  $.getJSON(
+    base_url + "?r=nature-of-transaction/get-nature-of-transaction"
+  ).then(function (data) {
+    var array = [];
+    $.each(data, function (key, val) {
+      array.push({
+        id: val.id,
+        text: val.name,
+      });
+    });
+    nature_of_transaction = array;
+    $(".nature-of-transaction").select2({
+      data: nature_of_transaction,
+      placeholder: "Select Nature of Transaction",
+    });
+  });
+}
+// GET FUND SOURCE TYPE
+function getFundSourceType() {
+  return $.getJSON(base_url + "?r=fund-source-type/all-fund-source-type");
 }

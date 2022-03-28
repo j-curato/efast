@@ -48,7 +48,6 @@ $this->params['breadcrumbs'][] = $this->title;
         $qqq = ArrayHelper::index($aoq_items_query, 'payee', [function ($element) {
             return $element['rfq_item_id'];
         }]);
-        // var_dump($qqq[33]['PD, DTI-PDI']);
         $aoq_items_array  = ArrayHelper::index($aoq_items_query, 'payee');
         $header_count = count($aoq_items_array) + 5;
         $bac_compositions = Yii::$app->db->createCommand("SELECT 
@@ -102,16 +101,23 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php
                     $payee_position = [];
                     $payee_count  = 1;
-                    foreach ($qqq as $i => $val) {
+                    $payee_head_query = Yii::$app->db->createCommand("SELECT payee.account_name as payee
+                    FROM `pr_aoq_entries`
+                    LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
+                    WHERE pr_aoq_entries.pr_aoq_id = :id
+                    GROUP BY payee.id
+                    ")
+                        ->bindValue(':id', $model->id)
+                        ->queryAll();
 
-                        foreach ($val as $x => $q) {
-                            $payee = $x;
-                            echo "<td style='text-align:center'>
+                    foreach ($payee_head_query as $i => $val) {
+
+                        $payee = $val['payee'];
+                        echo "<td style='text-align:center'>
                                 <span style='float:right'>$payee</span>
                             </td>";
-                            $payee_position[$payee] = $payee_count;
-                            $payee_count++;
-                        }
+                        $payee_position[$payee] = $payee_count;
+                        $payee_count++;
                     }
                     ?>
 

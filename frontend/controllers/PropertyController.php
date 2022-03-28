@@ -101,14 +101,13 @@ class PropertyController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $model->property_number = $this->getPropertyNumber();
-
+            $model->id = Yii::$app->db->createCommand('SELECT UUID_SHORT()')->queryScalar();
             if ($model->validate()) {
                 if ($model->save(false)) {
                 }
             } else {
                 return json_encode($model->errors);
             }
-
             return $this->redirect(['view', 'id' => $model->property_number]);
         }
 

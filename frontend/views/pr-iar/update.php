@@ -9,6 +9,8 @@ $this->title = 'Update Pr Iar: ' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Pr Iars', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';
+
+
 ?>
 <div class="pr-iar-update">
 
@@ -16,6 +18,7 @@ $this->params['breadcrumbs'][] = 'Update';
 
     <?= $this->render('_form', [
         'model' => $model,
+        'iar_items'=>!empty($iar_items)?$iar_items:[]
     ]) ?>
 
 </div>

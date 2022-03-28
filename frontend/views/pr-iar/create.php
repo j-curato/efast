@@ -15,6 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
+        'iar_items' => !empty($iar_items) ? $iar_items : []
     ]) ?>
 
 </div>

@@ -53,7 +53,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'model',
                 'serial_number',
                 'quantity',
-                'acquisition_amount',
+                'acquisition_amount'
             ],
         ]) ?>
     </div>

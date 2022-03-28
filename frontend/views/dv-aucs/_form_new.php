@@ -1,31 +1,22 @@
-<link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
-<!-- <link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre.min.css">
-<link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre-exp.min.css">
-<link rel="stylesheet" href="/dti-afms-2/frontend/web/spectre-0.5.9/dist/spectre-icons.min.css"> -->
-
 <?php
 
 use app\models\Books;
-use app\models\FundSourceType;
-use app\models\ReportType;
+use app\models\MrdClassification;
+use app\models\NatureOfTransaction;
 use kartik\date\DatePicker;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\money\MaskMoney;
 use kartik\grid\GridView;
 use kartik\select2\Select2;
-use kartik\widgets\DatePicker as WidgetsDatePicker;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Url;
 use yii\web\JsExpression;
 
 $row = 1;
 $advances_entries_row = 1;
+$accounting_entry_row  = 1;
+$dv_items_row = 1;
 ?>
 <div class="test">
-
-
-
-
     <div id="container" style="background-color: white;width:90%;margin-left:auto;margin-right:auto">
         <div class="row">
             <div class="col-sm-12" style="color:red;text-align:center">
@@ -35,16 +26,6 @@ $advances_entries_row = 1;
         </div>
         <form id='save_data' method='POST'>
 
-            <input type="text" name='transaction_timestamp' id="transaction_timestamp" style="display: none;">
-            <input type="text" name='book_id' id="book_id" style="display: none;">
-            <?php
-            $q = 0;
-            if (!empty($update_id)) {
-
-                $q = $update_id;
-            }
-            echo " <input type='text' id='update_id' name='update_id' value='$q' style='display:none' >";
-            ?>
             <div class="row">
 
                 <div class="col-sm-3">
@@ -53,7 +34,7 @@ $advances_entries_row = 1;
                     echo DatePicker::widget([
                         'name' => 'reporting_period',
                         'id' => 'reporting_period',
-                        // 'value' => '12/31/2010',
+                        'value' => $reporting_period,
                         'options' => ['required' => true],
                         'pluginOptions' => [
                             'autoclose' => true,
@@ -65,61 +46,115 @@ $advances_entries_row = 1;
                     ?>
                 </div>
 
-                <div class="col-sm-3">
-                    <label for="tracking_sheet">Tracking Sheet NO.</label>
-                    <select id="tracking_sheet" name="tracking_sheet" class="tracking_sheet select" style="width: 100%; margin-top:50px">
-                        <option></option>
-                    </select>
-                </div>
+
 
                 <div class="col-sm-3" style="height:60x">
                     <label for="nature_of_transaction">Nature of Transaction</label>
-                    <select required id="nature_of_transaction" name="nature_of_transaction" class="nature_of_transaction select" style="width: 100%; margin-top:50px">
-                        <option></option>
-                    </select>
+                    <?php
+                    echo Select2::widget([
+                        'id' => 'nature_of_transaction',
+                        'name' => 'nature_of_transaction',
+                        'data' => ArrayHelper::map(NatureOfTransaction::find()->asArray()->all(), 'id', 'name'),
+                        'value' => $nature_of_transaction,
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Nature of Transaction',
+
+                        ]
+                    ])
+
+                    ?>
+                    <span class="nature_of_transaction form-error"></span>
                 </div>
                 <div class="col-sm-3" style="height:60x">
                     <label for="mrd_classification">MRD Classification</label>
-                    <select required id="mrd_classification" name="mrd_classification" class="mrd_classification select" style="width: 100%; margin-top:50px">
-                        <option></option>
-                    </select>
+
+                    <?php
+                    echo Select2::widget([
+                        'name' => 'mrd_classification',
+                        'data' => ArrayHelper::map(MrdClassification::find()->asArray()->all(), 'id', 'name'),
+                        'value' => $mrd_classification,
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Nature of Transaction'
+                        ]
+                    ])
+
+                    ?>
+                    <span class="mrd_classification_error form-error"></span>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-3">
                     <label for="payee">Payee</label>
-                    <select required id="payee" name="payee" class="payee select" style="width: 100%; margin-top:50px">
-                        <option></option>
-                    </select>
-                </div>
+                    <?php
+                    echo Select2::widget([
+                        'name' => 'payee',
+                        'data' => $payee,
 
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                            'minimumInputLength' => 1,
+                            'language' => [
+                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                            ],
+                            'ajax' => [
+                                'url' => Yii::$app->request->baseUrl . '?r=payee/search-payee',
+                                'dataType' => 'json',
+                                'delay' => 250,
+                                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                                'cache' => true
+                            ],
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        ],
+
+                    ])
+
+                    ?>
+                    <span class="payee_id_error form-error"></span>
+                </div>
                 <div class="col-sm-3" style="height:60x">
                     <label for="transaction">Transaction Type</label>
-                    <select required id="transaction" name="transaction_type" class="transaction select" style="width: 100%; margin-top:50px">
-                        <option></option>
-                    </select>
-
+                    <?php
+                    echo Select2::widget([
+                        'id' => 'transaction_type',
+                        'name' => 'transaction_type',
+                        'data' => [
+                            "Single"  => "Single",
+                            "Multiple" => "Multiple",
+                            "Accounts Payable"  => "Accounts Payable",
+                            "Replacement to Stale Checks" =>  "Replacement to Stale Checks",
+                            'Replacement of Check Issued' =>  'Replacement of Check Issued',
+                        ],
+                        'value' => $transaction_type,
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Transaction Type'
+                        ]
+                    ])
+                    ?>
                 </div>
                 <div class="col-sm-3" id='bok'>
                     <label for="book">Book</label>
-                    <select id="book" name="book" class="book select" style="width: 100%; margin-top:50px">
-                        <option></option>
-                    </select>
+                    <?php
+                    echo Select2::widget([
+                        'name' => 'book',
+                        'id' => 'book',
+                        'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
+                        'value' => $book,
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Book'
+                        ]
+                    ])
+                    ?>
+
                 </div>
-                <!-- <div class="col-sm-3" id='bok'>
-                    <label for="payee_id">payee_id</label>
-                    <select id="payee_id" name="payee_id" class="payee_id select" style="width: 100%; margin-top:50px">
-                        <option></option>
-                    </select>
-                </div> -->
-
-
             </div>
             <div class="row">
-                <textarea name="particular" readonly id="particular" placeholder="PARTICULAR" required rows="3"></textarea>
+                <label for="particular">Particular</label>
+                <textarea name="particular" id="particular" placeholder="PARTICULAR" required rows="3"><?php echo $particular ?></textarea>
             </div>
 
-            <table id="transaction_table" class="table table-striped">
+            <table id="dv_items_table" class="table table-striped">
                 <thead>
                     <th>Ors ID</th>
                     <th>Serial Number</th>
@@ -133,6 +168,48 @@ $advances_entries_row = 1;
                     <th>Other Trust Liabilities</th>
                 </thead>
                 <tbody>
+
+                    <?php
+                    if (!empty($dv_items)) {
+
+                        foreach ($dv_items  as $val) {
+                            echo "<tr>
+                            <td > <input style='display:none' value='{$val['process_ors_id']}' type='text' name='process_ors_id[{$dv_items_row}]'/></td>
+ 
+                            <td> {$val['serial_number']}</td>
+                            <td> 
+                            {$val['particular']}
+                            </td>
+                            <td> {$val['payee']}</td>
+                            <td> </td>
+                            <td>
+                             <input value='{$val['amount_disbursed']}' type='text' class='mask-amount mask_amount_disbursed'/>
+                             <input value='{$val['amount_disbursed']}' type='text' name='amount_disbursed[{$dv_items_row}]' class='amount_disbursed'/>
+                            </td>
+                            <td>
+                            
+                            <input value='{$val['vat_nonvat']}' type='text'  class='mask-amount mask_vat'/>
+                            <input value='{$val['vat_nonvat']}' type='text' name='vat_nonvat[{$dv_items_row}]' class='vat due_to_bir'/>
+                            </td>
+                            <td> 
+                            <input value='{$val['ewt_goods_services']}' type='text' class='mask-amount mask_ewt'/>
+                            <input value='{$val['ewt_goods_services']}' type='text' name='ewt_goods_services[{$dv_items_row}]' class='ewt due_to_bir'/>
+                            </td>
+                            <td>
+                             <input value='{$val['compensation']}' type='text'  class='mask-amount mask_compensation'/>
+                             <input value='{$val['compensation']}' type='text' name='compensation[{$dv_items_row}]' class='compensation due_to_bir'/>
+                            </td>
+                            <td> 
+                            <input value='{$val['other_trust_liabilities']}' type='text'  class='mask-amount mask_liabilities'/>
+                            <input value='{$val['other_trust_liabilities']}' type='text' name='other_trust_liabilities[{$dv_items_row}]' class='liabilities due_to_bir'/>
+                            </td>
+                            <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class='glyphicon glyphicon-minus'></i></button></td>
+                            </tr>";
+                            $dv_items_row++;
+                        }
+                    }
+
+                    ?>
                 </tbody>
                 <tfoot>
                     <th></th>
@@ -158,83 +235,97 @@ $advances_entries_row = 1;
 
                 </tfoot>
             </table>
+            <hr>
+            <table id="accountng_entry_table">
 
-            <div class="container">
-                <div id="form-0" class="accounting_entries" style="max-width: 100%;">
-                    <!-- chart of accounts -->
+                <thead>
+                    <tr>
+                        <td colspan="4" style="padding: 3em;"><a class="btn btn-primary insert_entry" type="button" style="float: right;">Insert Entry</a></td>
+                    </tr>
 
-                    <div class="row">
-                        <div>
-                            <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(0)"><i class="glyphicon glyphicon-minus"></i></button>
-                            <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="glyphicon glyphicon-plus"></i></button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <label for="isCurrent">Current/NonCurrent </label>
+                </thead>
+                <tbody>
+                    <?php
+                    if (!empty($accounting_entries)) {
 
-                            <input type="text" name="isCurrent[]" placeholder="Current/NonCurrent" id="isCurrent-0" />
-                        </div>
-                        <div class="col-sm-3">
-                            <label for="cadadr_number">Cash Flow </label>
+                        foreach ($accounting_entries as $val) {
 
-                            <select id="cashflow-0" name="cash_flow_id[]" style="width: 100% ;display:none">
-                                <option></option>
-                            </select>
-                        </div>
-                        <div class="col-sm-3">
-                            <label for="cadadr_number">Changes in Net Asset and Equity </label>
+                            echo "<tr>
+                            <td>
+                                <div class='row'>
+                                    <div class='col-sm-12'>
+                                        <label for='isCurrent'>Current/NonCurrent </label>
+                                        <input type='text' name='isCurrent[{$accounting_entry_row}]' placeholder='Current/NonCurrent' />
+                                    </div>
+                                </div>
+                                <div class='row'>
+                                    <div class='col-sm-12'>
+                                        <label for='chart_of_account'> Chart of Account</label>
+                                        <select required name='object_code[{$accounting_entry_row}]' class='chart-of-accounts  accounting_entry_object_code' style='width: 100%'>
+                                            <option value='{$val['object_code']}'>{$val['account_title']}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <label for='debit'>Debit</label>
+                                <input type='text' class='mask-amount form-control mask-debit' placeholder='Debit' value='{$val['debit']}'>
+                                <input type='text' name='debit[{$accounting_entry_row}]' class='debit ' placeholder='Debit' value='{$val['debit']}'>
+                            </td>
+                            <td>
+                                <label for='credit'>Credit</label>
+                                <input type='text' class='mask-amount form-control mask-credit' placeholder='Credit' value='{$val['credit']}'>
+                                <input type='text' name='credit[{$accounting_entry_row}]' class='credit ' value='{$val['credit']}'>
+                            </td>
+                            <td style='float:right;' >
+                                <a class='add_accounting_entry_row btn btn-primary btn-xs' type='button' ><i class='fa fa-plus fa-fw'></i> </a>
+                                <a class='remove_this_accounting_entry_row btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                            </td>
+                        </tr>";
+                            $accounting_entry_row++;
+                        }
+                    }
+                    ?>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th style="text-align: center;">Total</th>
+                        <th>
+                            <span>Debit:</span>
+                            <br>
+                            <span id="d_total"></span>
 
-                            <select id="isEquity-0" name="isEquity[]" style="width: 100% ;display:none">
-                                <option></option>
-                            </select>
-                        </div>
-                    </div>
+                        </th>
+                        <th>
+                            <span>
+                                Credit:
+                            </span>
+                            <br>
+                            <span id="c_total"></span>
+                        </th>
+                    </tr>
+                </tfoot>
+            </table>
 
-                    <div class="row gap-1">
-
-                        <div class="col-sm-5 ">
-
-                            <div>
-                                <select id="chart-0" name="chart_of_account_id[]" class="chart-of-accounts" onchange=isCurrent(this,0) style="width: 100%">
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-3">
-                            <input type="text" id="debit-0" name="debit[]" class="debit" placeholder="Debit">
-                        </div>
-                        <div class="col-sm-3">
-                            <input type="text" id="credit-0" name="credit[]" class="credit" placeholder="Credit">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="total row">
-
-                <div class="col-sm-3 col-md-offset-5">
-                    <!-- <div class="form-group">
-        <label for="exampleInputEmail1">TOTAL DEBIT</label>
-        <input disabled type="text" style="background-color:white" class="form-control" id="d_total"  aria-describedby="emailHelp" placeholder="Total Dedit">
-    </div> -->
-                    <div>
-                        <label for="d_total"> Total Debit</label>
-                        <div id="d_total">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="form-group">
-
-                        <label for="c_total"> Total Credit</label>
-                        <div id="c_total">
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            <table id="advances_table" style="display: none; margin-top:3rem;">
+            <?php
+            $advances_entries = [];
+            if (!empty($model->id)) {
+                $advances_entries = Yii::$app->db->createCommand("SELECT advances_entries.*,accounting_codes.account_title
+                 FROM advances
+                 LEFT JOIN advances_entries ON advances.id  = advances_entries.advances_id
+                 LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
+                 WHERE advances.dv_aucs_id = :dv_id
+                 AND advances_entries.is_deleted !=1
+                 ")
+                    ->bindValue(':dv_id', $model->id)
+                    ->queryAll();
+            }
+            $advances_visible = 'display:none;';
+            if (!empty($advances_entries)) {
+                $advances_visible = '';
+            }
+            ?>
+            <table id="advances_table" style=" margin-top:3rem; <?= $advances_visible ?>">
                 <thead>
 
 
@@ -341,18 +432,7 @@ $advances_entries_row = 1;
 
                     </tr>
                     <?php
-                    $advances_entries = [];
-                    if (!empty($model->id)) {
-                        $advances_entries = Yii::$app->db->createCommand("SELECT advances_entries.*,accounting_codes.account_title
-                        FROM advances
-                        LEFT JOIN advances_entries ON advances.id  = advances_entries.advances_id
-                        LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
-                        WHERE advances.dv_aucs_id = :dv_id
-                        AND advances_entries.is_deleted !=1
-                        ")
-                            ->bindValue(':dv_id', $model->id)
-                            ->queryAll();
-                    }
+
                     if (!empty($model->id) && !empty($advances_entries)) {
 
 
@@ -389,20 +469,20 @@ $advances_entries_row = 1;
                                     </div>
                                     <div class='col-sm-4'>
                                         <label for='advances_object-code'>Sub Account</label>
-                                        <select name='advances_object_code[$advances_entries_row]' class='advances-account' style='width: 100%'>
+                                        <select name='advances_object_code[$advances_entries_row]' class='chart-of-accounts' style='width: 100%'>
                                             <option value='{$val['object_code']}'>{$val['object_code']}-{$val['account_title']}</option>
                                         </select>
                                     </div>
                                     <div class='col-sm-4'>
                                         <label for='advances_amount'>Amount</label>
-                                        <input type='text' class='form-control advances_amount' value='{$maskAmount}'>
+                                        <input type='text' class='form-control mask-amount advances_amount' value='{$maskAmount}'>
                                         <input type='hidden' name='advances_amount[$advances_entries_row]' class='advances_unmask_amount' value='{$amount}'>
                                     </div>
                                 </div>
                             </td>
                             <td style='  text-align: center;width:100px'>
                                 <div class='row pull-right'>
-                                    <button class='add_new_row btn btn-primary btn-xs'><i class='fa fa-plus fa-fw'></i> </button>
+                                    <a class='add_new_row btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
                                     <a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
                                 </div>
     
@@ -442,20 +522,20 @@ $advances_entries_row = 1;
                                     </div>
                                     <div class="col-sm-4">
                                         <label for="advances_object-code">Sub Account</label>
-                                        <select name="advances_object_code[0]" class="advances-account" style="width: 100%">
+                                        <select name="advances_object_code[0]" class="chart-of-accounts" style="width: 100%">
                                             <option></option>
                                         </select>
                                     </div>
                                     <div class="col-sm-4">
                                         <label for="advances_amount">Amount</label>
-                                        <input type="text" class="form-control advances_amount">
+                                        <input type="text" class="form-control mask-amount advances_amount">
                                         <input type="hidden" name="advances_amount[0]" class="advances_unmask_amount">
                                     </div>
                                 </div>
                             </td>
                             <td style='  text-align: center;width:100px'>
                                 <div class="row pull-right">
-                                    <button class='add_new_row btn btn-primary btn-xs'><i class='fa fa-plus fa-fw'></i> </button>
+                                    <a class='add_new_row btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
                                     <a class='remove_this_row btn btn-danger btn-xs disabled' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
                                 </div>
 
@@ -473,205 +553,28 @@ $advances_entries_row = 1;
             <button type="submit" class="btn btn-success" style="width: 100%;" id="save" name="save"> SAVE</button>
         </form>
 
-        <form name="add_data" id="add_data">
-
-            <div style="display: none;">
-                <input type="text" id="transaction_type" name="transaction_type">
-                <input type="text" id="dv_count" name="dv_count">
-            </div>
-
-            <!-- PROCESS ORS ANG MODEL -->
-            <!-- NAA SA CREATE CONTROLLER NAKO GE CHANGE -->
-            <?php
-            $dataProvider->pagination = ['pageSize' => 10];
-
-            ?>
-            <!-- <?= GridView::widget([
-                        'dataProvider' => $dataProvider,
-                        'filterModel' => $searchModel,
-                        'panel' => [
-                            // 'type' => GridView::TYPE_PRIMARY,
-                            'heading' => 'List of Areas',
-                        ],
-                        'floatHeaderOptions' => [
-                            'top' => 50,
-                            'position' => 'absolute',
-                        ],
-                        'export' => false,
-                        'pjax' => true,
-                        'showPageSummary' => true,
-                        'columns' => [
-
-                            'serial_number',
-                            'transaction.particular',
-                            'transaction.payee.account_name',
-                            [
-                                'label' => 'Book',
-                                'attribute' => 'book_id',
-                                'value' => 'book.name',
-                                'filterType' => GridView::FILTER_SELECT2,
-                                'filter' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
-                                'filterWidgetOptions' => [
-                                    'pluginOptions' => [
-                                        'allowClear' => true,
-                                        'placeholder' => 'Select Book'
-                                    ]
-                                ],
-                                'format' => 'raw'
-                            ],
-
-                            [
-                                'label' => 'Total Obligated',
-                                'value' => function ($model) {
-                                    $query = Yii::$app->db->createCommand("SELECT SUM(process_ors_entries.amount)as total
-                      
-                            FROM process_ors_entries
-                            where process_ors_entries.process_ors_id = :ors_id
-                           
-                         
-                          ")
-                                        ->bindValue(":ors_id", $model->id)
-                                        ->queryOne();
-                                    return $query['total'];
-                                },
-                                'format' => ['decimal', 2],
-                                'pageSummary' => true
-                            ],
-
-                            [
-                                'class' => '\kartik\grid\CheckboxColumn',
-                                'checkboxOptions' => function ($model, $key, $index, $column) {
-                                    return ['value' => $model->id, 'onchange' => 'enableDisable(this)', 'style' => 'width:20px;', 'class' => 'checkbox', ''];
-                                }
-                            ],
-                            [
-                                'label' => 'Amount Disbursed',
-                                'format' => 'raw',
-                                'value' => function ($model) {
-                                    return ' ' .  MaskMoney::widget([
-                                        'name' => "amount_disbursed[$model->id]",
-                                        'disabled' => true,
-                                        'id' => "amount_disbursed_$model->id",
-                                        'options' => [
-                                            'class' => 'amounts',
-                                        ],
-                                        'pluginOptions' => [
-                                            'prefix' => '₱ ',
-                                            'allowNegative' => true
-                                        ],
-                                    ]);
-                                }
-                            ],
-                            [
-                                'label' => '2306 (VAT/ Non-Vat)',
-                                'format' => 'raw',
-                                'value' => function ($model) {
-                                    return ' ' .  MaskMoney::widget([
-                                        'name' => "vat_nonvat[$model->id]",
-                                        'disabled' => true,
-                                        'id' => "vat_nonvat_$model->id",
-                                        'options' => [
-                                            'class' => 'amounts',
-                                        ],
-                                        'pluginOptions' => [
-                                            'prefix' => '₱ ',
-                                            'allowNegative' => true
-                                        ],
-                                    ]);
-                                }
-                            ],
-                            [
-                                'label' => '2307 (EWT Goods/Services)',
-                                'format' => 'raw',
-                                'value' => function ($model) {
-                                    return ' ' .  MaskMoney::widget([
-                                        'name' => "ewt_goods_services[$model->id]",
-                                        'disabled' => true,
-                                        'id' => "ewt_goods_services_$model->id",
-                                        'options' => [
-                                            'class' => 'amounts',
-                                        ],
-                                        'pluginOptions' => [
-                                            'prefix' => '₱ ',
-                                            'allowNegative' => true
-                                        ],
-                                    ]);
-                                }
-                            ],
-                            [
-                                'label' => '1601C (Compensation)',
-                                'format' => 'raw',
-                                'value' => function ($model) {
-                                    return ' ' .  MaskMoney::widget([
-                                        'name' => "compensation[$model->id]",
-                                        'disabled' => true,
-                                        'id' => "compensation_$model->id",
-                                        'options' => [
-                                            'class' => 'amounts',
-                                        ],
-                                        'pluginOptions' => [
-                                            'prefix' => '₱ ',
-                                            'allowNegative' => true
-                                        ],
-                                    ]);
-                                }
-                            ],
-                            [
-                                'label' => 'Other Trust Liabilities',
-                                'format' => 'raw',
-                                'value' => function ($model) {
-                                    return ' ' .  MaskMoney::widget([
-                                        'name' => "other_trust_liabilities[$model->id]",
-                                        'disabled' => true,
-                                        'id' => "other_trust_liabilities_$model->id",
-                                        'options' => [
-                                            'class' => 'amounts',
-                                        ],
-                                        'pluginOptions' => [
-                                            'prefix' => '₱ ',
-                                            'allowNegative' => true
-                                        ],
-                                    ]);
-                                }
-                            ],
-                            // [
-                            //     'label' => 'Actions',
-                            //     'format' => 'raw',
-                            //     'value' => function ($model) {
-                            //         return ' ' .  MaskMoney::widget([
-                            //             'name' => "amount[$model->id]",
-                            //             'disabled' => true,
-                            //             'id' => "amount_$model->id",
-                            //             'options' => [
-                            //                 'class' => 'amounts',
-                            //             ],
-                            //             'pluginOptions' => [
-                            //                 'prefix' => '₱ ',
-                            //                 'allowNegative' => true
-                            //             ],
-                            //         ]);
-                            //     }
-                            // ],
-
-                        ],
-                    ]); ?>
-            <button type="submit" class="btn btn-primary" name="submit" id="submit" style="width: 100%;"> ADD</button> -->
-
-
-
-
-        </form>
-
-
-
-
-
-
-
     </div>
 </div>
 
 <style>
+    .debit,
+    .credit,
+    .amount_disbursed,
+    .vat,
+    .ewt,
+    .compensation,
+    .liabilities {
+        display: none;
+    }
+
+    .form-error {
+        color: red;
+    }
+
+    #accountng_entry_table {
+        width: 100%;
+    }
+
     #advances_table td {
         padding: 1rem;
     }
@@ -736,205 +639,18 @@ $advances_entries_row = 1;
     }
 </style>
 
-<!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script> -->
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-<script src="<?= Url::base() ?>/frontend/web/js/scripts.js" type="text/javascript"></script>
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-<!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
+
 <?php
 
 // $csrfTokenName = Yii::$app->request->csrfTokenName;
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $csrfToken = Yii::$app->request->csrfToken;
+SweetAlertAsset::register($this);
 ?>
 
 <!-- <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script> -->
 <script>
-    var vacant = 0;
-    var i = 1;
-    var x = [0];
-    var update_id = undefined;
-    var cashflow = [];
-    var accounts = [];
-    var report_types = [];
-
-
-    function enableDisable(checkbox) {
-        var isDisable = true
-        if (checkbox.checked) {
-            isDisable = false
-        }
-        enableInput(isDisable, checkbox.value)
-
-    }
-
-    function removeItem(index) {
-        // $(`#form-${index}`).remove();
-        // arr_form.splice(index, 1);
-        // vacant = index
-        // $('#form' + index + '').remove();
-
-        document.getElementById(`form-${index}`).remove()
-        for (var y = 0; y < x.length; y++) {
-            if (x[y] === index) {
-                delete x[y]
-                x.splice(y, 1)
-            }
-        }
-        // console.log(x, Math.max.apply(null, x))
-        getTotal()
-
-
-    }
-
-    function isCurrent(index, i) {
-        // var chart_id = document.getElementById('chart-0').val()
-        $.ajax({
-            type: 'POST',
-            url: window.location.pathname + '?r=jev-preparation/is-current',
-            data: {
-                chart_id: index.value
-            },
-            dataType: 'json',
-            success: function(data) {
-
-                $('#isCurrent-' + i).val(data.current_noncurrent)
-                // console.log(data)
-                // data.isCashEquivalent ? : $('#cash_flow_id-' + i).hide()
-                data.isEquity ? $('#isEquity-' + i).show() : $('#isEquity-' + i).hide()
-                if (data.isCashEquivalent == true) {
-                    // $('#cashflow-' + i).select2({
-                    //     data: cashflow,
-                    //     placeholder: 'Select Cash Flow'
-                    // })
-                    // $('#cashflow-' + i).val(2).trigger('change');
-                    $('#cashflow-' + i).next().show()
-                } else {
-
-                    $('#cashflow-' + i).val(null).trigger('change');
-                    // document.getElementById('isEquity-' + i).value = 'null'
-                    $('#cashflow-' + i).select2().next().hide();
-
-
-                }
-                if (data.isEquity == true) {
-                    // $('#isEquity-' + i).select2({
-                    //     data: net_asset,
-                    //     placeholder: 'Select Net Asset'
-
-                    // })
-
-                    $('#isEquity-' + i).next().show()
-                } else {
-
-                    $('#isEquity-' + i).val(null).trigger('change');
-                    // document.getElementById('isEquity-' + i).value = 'null'
-                    $('#isEquity-' + i).select2().next().hide();
-
-
-                }
-            }
-        })
-    }
-
-
-    function add() {
-
-        var latest = Math.max.apply(null, x)
-        $(`#form-${latest}`)
-            .after(`<div id="form-${i}" style="max-width:100%;border: 1px solid gray;width:100%; padding: 2rem; margin-top: 1rem;background-color:white;border-radius:5px" class="control-group input-group" class="accounting_entries">
-                <!-- chart of accounts -->
-                <div class="row"  >
-                    <div>
-                        <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(${i})"><i class="glyphicon glyphicon-minus"></i></button>
-                        <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="glyphicon glyphicon-plus"></i></button>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label for="isCurrent">Current/NonCurrent </label>
-                        <input type="text" name="isCurrent[]" id="isCurrent-${i}" placeholder="Current/NonCurrent"/>
-                    </div>
-                    <div class="col-sm-3" style="">
-                        <label for="isCurrent">Cash Flow </label>
-                        <select id="cashflow-${i}" name="cash_flow_id[]" style="width: 100% ;display:none" >
-                            <option ></option>
-                        </select>
-                    </div>
-                    <div class="col-sm-3" >
-                        <label for="isCurrent">Changes in Net Asset and Equity </label>
-                            <select id="isEquity-${i}" name="isEquity[]" style="width: 100% ;display:none" >
-                                <option ></option>
-                            </select>
-                    </div>
-                </div>
-        
-                <div class="row gap-1">
-                        <div class="col-sm-5 ">
-                            <select id="chart-${i}" name="chart_of_account_id[]"  class="chart-of-accounts" onchange=isCurrent(this,${i}) style="width: 100%">
-                            <option></option>
-                            </select>
-                    </div>
-
-                    <div class="col-sm-3">
-                        <div >  <input type="text" id="debit-${i}"  name="debit[]" class="debit"  placeholder="Debit"></div>
-                    </div>
-                    <div class="col-sm-3">
-                        <div >  <input type="text"   id="credit-${i}" name="credit[]" class="credit" placeholder="Credit"></div>
-                    </div>
-                </div>
-
-                    
-            </div>
-            `)
-        // $(`#chart-${i}`).select2({
-        //     data: accounts,
-        //     placeholder: "Select Chart of Account",
-
-        // });
-        $('.chart-0').select2('destroy');
-        $('.chart-of-accounts').select2({
-            ajax: {
-                url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code',
-                dataType: 'json',
-                data: function(params) {
-
-                    return {
-                        q: params.term,
-                    };
-                },
-                processResults: function(data) {
-                    // Transforms the top-level key of the response object from 'items' to 'results'
-                    return {
-                        results: data.results
-                    };
-                }
-            },
-            placeholder: 'Search Accounting Code'
-        });
-        $(`#cashflow-${i}`).select2({
-            data: cashflow,
-            placeholder: 'Select Cash Flow'
-        }).next().hide()
-        $(`#isEquity-${i}`).select2({
-            data: net_asset,
-            placeholder: 'Select Net Asset'
-
-        }).next().hide();
-        var deb = document.getElementsByName('debit[]');
-        // arr_form.splice(latest, 0, latest + 1)
-        // deb[1].value = 123
-        x.push(i)
-
-        i++
-
-    }
-    $('.add-btn').click(function() {
-        add()
-        getTotal()
-    })
-
     function getTotal() {
         var total_disbursed = 0;
         var total_vat = 0;
@@ -961,31 +677,6 @@ $csrfToken = Yii::$app->request->csrfToken;
         $("#total_ewt").text(thousands_separators(total_ewt))
         $("#total_compensation").text(thousands_separators(total_compensation))
         $("#total_liabilities").text(thousands_separators(total_liabilities))
-
-    }
-
-    function thousands_separators(num) {
-
-        var number = Number(Math.round(num + 'e2') + 'e-2')
-        var num_parts = number.toString().split(".");
-        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        return num_parts.join(".");
-    }
-
-    function enableInput(isDisable, index) {
-        $(`#amount_${index}-disp`).prop('disabled', isDisable);
-        $(`#amount_${index}`).prop('disabled', isDisable);
-        $(`#amount_disbursed_${index}-disp`).prop('disabled', isDisable);
-        $(`#amount_disbursed_${index}`).prop('disabled', isDisable);
-        $(`#vat_nonvat_${index}-disp`).prop('disabled', isDisable);
-        $(`#vat_nonvat_${index}`).prop('disabled', isDisable);
-        $(`#ewt_goods_services_${index}-disp`).prop('disabled', isDisable);
-        $(`#ewt_goods_services_${index}`).prop('disabled', isDisable);
-        $(`#compensation_${index}-disp`).prop('disabled', isDisable);
-        $(`#compensation_${index}`).prop('disabled', isDisable);
-        $(`#other_trust_liabilities_${index}-disp`).prop('disabled', isDisable);
-        $(`#other_trust_liabilities_${index}`).prop('disabled', isDisable);
-        // button = document.querySelector('.amount_1').disabled=false;
 
     }
 
@@ -1041,19 +732,49 @@ $csrfToken = Yii::$app->request->csrfToken;
 
     }
 
-
-    var select_id = 0;
-
-    var transaction_type = $("#transaction").val();
-    var dv_count = 1;
-    var tracking_sheet = []
-    var sheet = []
-    var net_asset = []
-    var fund_source_type = []
-
-    function maskAdvancesAmount() {
-        $('.advances_amount').maskMoney()
+    function insertEntry(object_code = '', account_title = '', credit = 0, debit = 0, object_code_class = 'chart-of-accounts') {
+        const new_row = `<tr>
+                        <td>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <label for="isCurrent">Current/NonCurrent </label>
+                                    <input type="text" name="isCurrent[${accounting_entry_row}]" placeholder="Current/NonCurrent" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <label for="chart_of_account"> Chart of Account</label>
+                                    <select required name="object_code[${accounting_entry_row}]" class="${object_code_class} accounting_entry_object_code" style="width: 100%">
+                                        <option  selected="selected" value='${object_code}'>${account_title}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <label for="debit">Debit</label>
+                            <input type="text" class="mask-amount form-control mask-debit" placeholder="Debit" value='${debit}'>
+                            <input type="text" name="debit[${accounting_entry_row}]" class="debit" placeholder="Debit" value='${debit}'>
+                        </td>
+                        <td>
+                            <label for="credit">Credit</label>
+                            <input type="text" class="mask-amount form-control mask-credit" placeholder="Credit" value='${credit}'>
+                            <input type="text" name="credit[${accounting_entry_row}]" class="credit" value='${credit}'>
+                        </td>
+                        <td style='float:right;'>
+                            <a class='add_accounting_entry_row btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
+                            <a class='remove_this_accounting_entry_row btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                        </td>
+                    </tr>`;
+        $('#accountng_entry_table tbody').append(new_row)
+        maskAmount()
+        accountingCodesSelect()
+        $('.chart-of-accounts').trigger('change')
+        accounting_entry_row++;
     }
+
+
+
+
 
     function advancesReportTypeSelect() {
         $(`.advances_report_type`).select2({
@@ -1070,9 +791,213 @@ $csrfToken = Yii::$app->request->csrfToken;
 
         });
     }
+
+    function getAccountingCode(object_code) {
+        console.log(object_code)
+        let return_data = '';
+        $.ajax({
+            type: 'POST',
+            url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code&id=' + object_code,
+            data: {},
+            success: function(data) {
+                const res = JSON.parse(data)
+                return_data = data
+                // console.log(data)
+                return data
+            }
+        })
+        // console.log(return_data)
+        // return return_data
+    }
+
+
+    const transaction = [
+        "Single",
+        "Multiple",
+        "Accounts Payable",
+        "Replacement to Stale Checks",
+        'Replacement of Check Issued'
+    ]
+    let accounting_entry_row = 0
+    let advances_table_counter = 0
+
+    function checkObjectCode(object_code) {
+        let obj = ''
+        let name = ''
+        $('.accounting_entry_object_code').each(function() {
+
+            if ($(this).val() == object_code) {
+                name = $(this).attr('name')
+                obj = $(this).val()
+
+            }
+        })
+        return name
+    }
+
+    function checkCreditName(object_code = '', account_title = '', name = '') {
+        let total_amount = 0;
+        $('.due_to_bir').each(function(key, val) {
+            total_amount += parseFloat($(this).val())
+        })
+        if (name == '') {
+            insertEntry(object_code, account_title, total_amount, 0, 'form-control')
+        } else {
+            let index_number = parseInt(name.replace(/[^0-9.]/g, ""));
+            $(`[name='credit[${index_number}]']`).val(total_amount.toFixed(2))
+            $(`[name='credit[${index_number}]']`).parent().find('.mask-amount').val(total_amount.toFixed(2))
+        }
+    }
+
+    function getObjectCodeForTheMonth() {
+
+        $.ajax({
+            type: 'POST',
+            url: window.location.pathname + '?r=dv-aucs/get-object-code',
+            data: {
+                reporting_period: $('#reporting_period').val(),
+                '_csrf-frontend': '<?= $csrfToken ?>'
+            },
+            success: function(data) {
+                const res = JSON.parse(data)
+                if (jQuery.isEmptyObject(res)) {
+                    swal({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No Sub Account for the Reporting Period',
+                        type: "error",
+                        timer: 10000,
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    })
+                } else {
+                    let name = checkObjectCode(res.object_code)
+                    checkCreditName(res.object_code, res.account_title, name)
+                }
+
+            }
+        })
+    }
+
+    function addEntryForAmountDisbursed(amount_disbursed) {
+        let obj = '';
+        let name = '';
+        const book = $("#book :selected").text();
+        let base_uacs = '';
+
+        if (book == 'Fund 01' || book == 'RAPID GOP') {
+            base_uacs = 1010404000
+        } else if (
+            book == 'RAPID LP' ||
+            book == 'RAPID GPA'
+        ) {
+            base_uacs = 1010202024
+        } else if (book == 'Fund 07') {
+            base_uacs = 1010406000
+        }
+        $('.accounting_entry_object_code').each(function() {
+
+            if ($(this).val() == base_uacs) {
+                name = $(this).attr('name')
+                obj = $(this).val()
+                return;
+            }
+        })
+        let index_number = parseInt(name.replace(/[^0-9.]/g, ""));
+        if (obj != '') {
+            $(`[name='credit[${index_number}]']`).val(amount_disbursed)
+            $(`[name='credit[${index_number}]']`).parent().find('.mask-amount').val(amount_disbursed)
+        } else {
+            $.ajax({
+                type: 'POST',
+                url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code&id=' + base_uacs,
+                data: {
+                    '_csrf-frontend': '<?= $csrfToken ?>'
+                },
+                success: function(data) {
+                    const res = JSON.parse(data)
+                    insertEntry(res.object_code, res.account_title, amount_disbursed, )
+
+                }
+            })
+
+
+        }
+    }
     $(document).ready(function() {
-        var advances_table_counter = <?= $advances_entries_row ?>;
-        maskAdvancesAmount()
+        advances_table_counter = <?= $advances_entries_row ?>;
+        accounting_entry_row = <?= $accounting_entry_row ?>;
+        // $.ajax({
+        //     type: 'POST',
+        //     url: window.location.pathname + '?r=dv-aucs/q',
+        //     data: {
+        //         '_csrf-frontend': '<?= $csrfToken ?>'
+        //     },
+        //     success: function(data) {
+        //         console.log(data)
+        //     }
+        // })
+
+
+        $('#accountng_entry_table').on('keyup change', '.mask-credit', function() {
+            const debit = $(this)
+            const amount = debit.maskMoney('unmasked')[0]
+            debit.parent().find('.credit').val(amount)
+            getDebitCreditTotal()
+        })
+        $('#accountng_entry_table').on('keyup change', '.mask-debit', function() {
+            const debit = $(this)
+            const amount = debit.maskMoney('unmasked')[0]
+            debit.parent().find('.debit').val(amount)
+            getDebitCreditTotal()
+        })
+        $('#dv_items_table').trigger('keyup', '.mask_amount_disbursed')
+        // add accounting entry on keyup or change sa amount disbursed
+
+        $('#dv_items_table').on('keyup change', '.mask_amount_disbursed', function() {
+            const amount_disbursed = $(this).val()
+            addEntryForAmountDisbursed(amount_disbursed)
+
+        })
+        let obj_code = '';
+
+        // add accounting entry on keyup or change
+        $('#dv_items_table').on('keyup change', '.mask_vat, .mask_ewt, .mask_compensation, .mask_liabilities', function() {
+            getObjectCodeForTheMonth()
+
+        })
+
+
+        $('#dv_items_table').on('keyup change', '.mask_amount_disbursed', function() {
+            const debit = $(this)
+            const amount = debit.maskMoney('unmasked')[0]
+            debit.parent().find('.amount_disbursed').val(amount)
+        })
+        $('#dv_items_table').on('keyup change', '.mask_vat', function() {
+            const debit = $(this)
+            const amount = debit.maskMoney('unmasked')[0]
+            debit.parent().find('.vat').val(amount)
+        })
+        $('#dv_items_table').on('keyup change', '.mask_ewt', function() {
+            const debit = $(this)
+            const amount = debit.maskMoney('unmasked')[0]
+            debit.parent().find('.ewt').val(amount)
+        })
+
+        $('#dv_items_table').on('keyup change', '.mask_compensation', function() {
+            const debit = $(this)
+            const amount = debit.maskMoney('unmasked')[0]
+            debit.parent().find('.compensation').val(amount)
+        })
+
+        $('#dv_items_table').on('keyup change', '.mask_liabilities', function() {
+            const debit = $(this)
+            const amount = debit.maskMoney('unmasked')[0]
+            debit.parent().find('.liabilities').val(amount)
+        })
+        payeeSelect()
+        maskAmount()
+        accountingCodesSelect()
         getFundSourceType().then((data) => {
             var array = []
             $.each(data, function(key, val) {
@@ -1082,10 +1007,15 @@ $csrfToken = Yii::$app->request->csrfToken;
                 })
             })
             fund_source_type = array
-
+            advancesFundSourceTypeSelect()
         })
 
-        $.getJSON(url + '?r=report-type/get-report-type')
+        $('.insert_entry').on('click', function(e) {
+            e.preventDefault()
+
+            insertEntry()
+        })
+        $.getJSON(window.location.pathname + '?r=report-type/get-report-type')
             .then(function(data) {
                 var array = []
                 $.each(data, function(key, val) {
@@ -1097,180 +1027,159 @@ $csrfToken = Yii::$app->request->csrfToken;
                 report_types = array
                 advancesReportTypeSelect()
             })
-        getFundSourceType().then((data) => {
-            var array = []
-            $.each(data, function(key, val) {
-                array.push({
-                    id: val.name,
-                    text: val.name
-                })
-            })
-            fund_source_type = array
+
+
+
+
+        $('.remove_this_row').on('click', function(event) {
+            event.preventDefault();
+
+            $(this).closest('tr').remove();
+        });
+        $('#accountng_entry_table').on('click', '.remove_this_accounting_entry_row', function(event) {
+            event.preventDefault();
+            $(this).closest('tr').remove();
+        });
+
+
+        $('#accountng_entry_table').on('click', '.add_accounting_entry_row', function(event) {
+            event.preventDefault();
+            const source = $(this).closest('tr');
+            source.find('.chart-of-accounts').select2('destroy')
+            const clone = source.clone(true);
+            const debit = clone.find('.debit')
+            const credit = clone.find('.credit')
+            const chart_of_account = clone.find('.chart-of-accounts')
+            clone.find('.mask-debit').val('')
+            clone.find('.mask-credit').val('')
+            chart_of_account.attr('name', `object_code[${accounting_entry_row}]`)
+            debit.attr('name', `debit[${accounting_entry_row}]`)
+            credit.attr('name', `credit[${accounting_entry_row}]`)
+            chart_of_account.val('')
+            debit.val('')
+            credit.val('')
+            $('#accountng_entry_table tbody').append(clone)
+            maskAmount()
+            accountingCodesSelect()
+            accounting_entry_row++;
+        });
+        // add advances entries row
+        $('#advances_table').on('click', '.add_new_row', function(event) {
+
+            source = $(this).closest('tr');
+            source.find('.advances_fund_source_type').select2('destroy');
+            source.find('.advances_report_type').select2('destroy');
+            source.find('.chart-of-accounts').select2('destroy')
+            var clone = source.clone(true);
+            clone.find('.advances_unmask_amount').val(0)
+            clone.find('.advances_amount').val(0)
+            clone.find('.advances_unmask_amount').attr('name', `advances_amount[${advances_table_counter}]`)
+            clone.find('.debit_amount').val(0)
+            clone.find('.advances_reporting_period').val(0)
+            clone.find('.advances_reporting_period').attr('name', 'advances_reporting_period[' + advances_table_counter + ']')
+            clone.find('.advances_report_type').val(0)
+            clone.find('.advances_report_type').attr('name', 'advances_report_type[' + advances_table_counter + ']')
+            clone.find('.advances_fund_source_type').val('')
+            clone.find('.advances_fund_source_type').attr('name', 'advances_fund_source_type[' + advances_table_counter + ']')
+            clone.find('.advances_fund_source').val('')
+            clone.find('.advances_fund_source').attr('name', 'advances_fund_source[' + advances_table_counter + ']')
+            clone.find('.chart-of-accounts').val('')
+            clone.find('.chart-of-accounts').attr('name', 'advances_object_code[' + advances_table_counter + ']')
+            $('#advances_table tbody').append(clone);
+            var spacer = `<tr><td colspan="2"><hr></td></tr>`;
+            $('#advances_table tbody').append(spacer);
+            clone.find('.remove_this_row').removeClass('disabled');
+            advancesReportTypeSelect()
+            // advancesFundSourceTypeSelect()
+            maskAmount()
+            accountingCodesSelect()
             advancesFundSourceTypeSelect()
-        })
-        $('.advances_amount').on('change keyup', function(e) {
-            e.preventDefault()
-            var amount = $(this).maskMoney('unmasked')[0];
-            var source = $(this).closest('tr');
-            source.children('td').eq(0).find('.advances_unmask_amount').val(amount)
-        })
+            advances_table_counter++
+
+
+
+        });
+
+        $('#advances_table').on('change keyup', '.advances_amount', function(event) {
+            console.log($(this).maskMoney('unmasked')[0])
+            $(this).parent().find('.advances_unmask_amount').val($(this).maskMoney('unmasked')[0])
+        });
+
         $('#nature_of_transaction ').change(function() {
             var nature_selected = $(this).children(':selected').text()
-
-
             if (nature_selected == 'CA to SDOs/OPEX') {
                 $('#advances_table').show()
             } else {
                 $('#advances_table').hide()
             }
         })
-        // $("#payee ").select2({'readonly'});
-        // $("#particular").prop({disabled:'readonly'});
-        $("#bok").hide();
+        $('#nature_of_transaction').trigger('change')
+        // SAVE FORM
+        $('#save_data').submit(function(e) {
+            e.preventDefault()
+            $.ajax({
+                type: 'POST',
+                url: window.location.href,
+                data: $("#save_data").serialize(),
+                success: function(data) {
+                    console.log(JSON.parse(data))
+                    const res = JSON.parse(data)
 
+                    if (!jQuery.isEmptyObject(res.form_error)) {
 
+                        $.each(res.form_error, function(key, val) {
+                            $('.' + key + '_error').text(val)
+                            console.log('#' + key + '_error')
+                        })
+                    } else if (!jQuery.isEmptyObject(res.check_error)) {
+                        swal({
+                            icon: 'error',
+                            title: 'Error',
+                            text: res.check_error,
+                            type: "error",
+                            timer: 10000,
+                            closeOnConfirm: false,
+                            closeOnCancel: false
+                        })
+                    }
 
-        $('.remove_this_row').on('click', function(event) {
-            event.preventDefault();
-            $(this).closest('tr').next().remove();
-            $(this).closest('tr').remove();
-        });
-        $('.add_new_row').on('click', function(event) {
-            event.preventDefault();
-            $('.advances-account').select2('destroy');
-            $('.advances_report_type').select2('destroy');
-            $('.advances_fund_source_type').select2('destroy');
-            $('.advances_amount').maskMoney('destroy');
-            var source = $(this).closest('tr');
-            var clone = source.clone(true);
-            clone.children('td').eq(0).find('.advances_unmask_amount').val(0)
-            clone.children('td').eq(0).find('.advances_amount').val(0)
-            clone.children('td').eq(0).find('.advances_unmask_amount').attr('name', 'advances_amount[' + advances_table_counter + ']')
-            clone.children('td').eq(0).find('.debit_amount').val(0)
-            clone.children('td').eq(0).find('.advances_reporting_period').val(0)
-            clone.children('td').eq(0).find('.advances_reporting_period').attr('name', 'advances_reporting_period[' + advances_table_counter + ']')
-            clone.children('td').eq(0).find('.advances_report_type').val(0)
-            clone.children('td').eq(0).find('.advances_report_type').attr('name', 'advances_report_type[' + advances_table_counter + ']')
-            clone.children('td').eq(0).find('.advances_fund_source_type').val('')
-            clone.children('td').eq(0).find('.advances_fund_source_type').attr('name', 'advances_fund_source_type[' + advances_table_counter + ']')
-            clone.children('td').eq(0).find('.advances_fund_source').val('')
-            clone.children('td').eq(0).find('.advances_fund_source').attr('name', 'advances_fund_source[' + advances_table_counter + ']')
-            clone.children('td').eq(0).find('.advances-account').val('')
-            clone.children('td').eq(0).find('.advances-account').attr('name', 'advances_object_code[' + advances_table_counter + ']')
-            $('#advances_table tbody').append(clone);
-            var spacer = `<tr><td colspan="2"><hr></td></tr>`;
-            $('#advances_table tbody').append(spacer);
-            clone.find('.remove_this_row').removeClass('disabled');
-            maskAdvancesAmount()
-            advancesAccountSelect()
-            advancesReportTypeSelect()
-            advancesFundSourceTypeSelect()
-
-            advances_table_counter++
-
-
-        });
-        getNatureOfTransactions().then(function(data) {
-            var array = []
-            $.each(data, function(key, val) {
-                array.push({
-                    id: val.id,
-                    text: val.name
-                })
-            })
-            nature_of_transaction = array
-            $('#nature_of_transaction').select2({
-                data: nature_of_transaction,
-                placeholder: "Select Nature of Transaction"
-            })
-
-        })
-        getMrdClassification().then(function(data) {
-            var array = []
-            $.each(data, function(key, val) {
-                array.push({
-                    id: val.id,
-                    text: val.name
-                })
-            })
-            mrd_classification = array
-            $('#mrd_classification').select2({
-                data: mrd_classification,
-                placeholder: "Select MRD Classification"
-            })
-
-        })
-        getBooks().then(function(data) {
-            var array = []
-            $.each(data, function(key, val) {
-                array.push({
-                    id: val.id,
-                    text: val.name
-                })
-            })
-            books = array
-            $('#book').select2({
-                data: books,
-                placeholder: "Select Book"
-            })
-
-        })
-        getNetAssets().then(function(data) {
-            var array = []
-            $.each(data, function(key, val) {
-                array.push({
-                    id: val.id,
-                    text: val.specific_change
-                })
-            })
-            net_asset = array
-            $('#isEquity-0').select2({
-                data: net_asset,
-                placeholder: 'Select Net Asset'
-
-            }).next().hide();
-        })
-
-
-        // MAG ADD OG DATA NA BUHATAN OG DV
-
-    })
-    $('#submit').click(function(e) {
-        var date = new Date()
-
-        // var x = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
-        // if ($('#transaction_timestamp').val() == '') {
-        //     $('#transaction_timestamp').val(x)
-
-        // }
-        e.preventDefault();
-        $.ajax({
-            url: window.location.pathname + '?r=dv-aucs/get-dv',
-            method: "POST",
-            data: $('#add_data').serialize(),
-            success: function(data) {
-                var res = JSON.parse(data)
-                // console.log(res)
-                if (res.isSuccess) {
-
-                    addDvToTable(res.results)
-                } else {
-                    swal({
-                        title: "Error",
-                        text: res.error,
-                        type: "error",
-                        timer: 6000,
-                        button: false
-                        // confirmButtonText: "Yes, delete it!",
-                    });
                 }
+            })
+        })
 
-            }
-        });
-        $('.checkbox').prop('checked', false); // Checks it
-        $('.amounts').prop('disabled', true);
-        $('.amounts').val(null);
+
+        checkDueToBir()
+        $('#reporting_period').change(function() {
+            getObjectCodeForTheMonth()
+        })
+        checkAmountDisbursed()
+        getDebitCreditTotal()
+
     })
+
+    function checkDueToBir() {
+        let total_amount = 0;
+        $('.due_to_bir').each(function(key, val) {
+            total_amount += parseFloat($(this).val())
+        })
+        if (total_amount > 0) {
+            getObjectCodeForTheMonth()
+        }
+        getDebitCreditTotal()
+    }
+
+    function checkAmountDisbursed() {
+        let total_amount = 0;
+        $('.amount_disbursed').each(function(key, val) {
+            total_amount += parseFloat($(this).val())
+        })
+        if (total_amount > 0) {
+
+            addEntryForAmountDisbursed(total_amount)
+        }
+        getDebitCreditTotal()
+    }
+
 
     function getDebitCreditTotal() {
         var total_credit = 0.00;
@@ -1281,360 +1190,17 @@ $csrfToken = Yii::$app->request->csrfToken;
         $(".debit").each(function() {
             total_debit += Number($(this).val());
         })
-
-        document.getElementById("d_total").innerHTML = "<h4>" + thousands_separators(total_debit) + "</h4>";
-        document.getElementById("c_total").innerHTML = "<h4>" + thousands_separators(total_credit) + "</h4>";
-        //  $(".debit").change(function(){
-        //     $(this).val() =  thousands_separators(total_debit)
-        //  })
-        // $(this).val().replact
+        $("#d_total").text(thousands_separators(total_debit))
+        $("#c_total").text(thousands_separators(total_credit))
+        console.log(total_credit)
     }
-
-    $(document).on("keyup change", ".credit, .debit", function() {
-        getDebitCreditTotal()
-
-    })
-
-    // $("#yearDropdown").live('change', function() {
-    //     alert('The option with value ' + $(this).val());
-    // });
-
-
-    /* DOM ready */
-    function onTrackingSheetChange(tracking_id) {
-        $.ajax({
-            type: 'POST',
-            url: window.location.pathname + '?r=tracking-sheet/get-tracking-sheet-data',
-            data: {
-                id: tracking_id
-            },
-            success: function(data) {
-                var res = JSON.parse(data)
-                if (res.transaction_type == 'No Ors') {
-
-                    $("#transaction").val("Accounts Payable").trigger('change')
-                } else {
-
-                    $("#transaction").val(res.transaction_type).trigger('change')
-                }
-                $("#particular").val(res.particular).trigger('change')
-                var payeeSelect = $('#payee');
-                var option = new Option([res.payee_name], [res.payee_id], true, true);
-                payeeSelect.append(option).trigger('change');
-            }
-        })
-    }
-
-    function advancesAccountSelect() {
-        $('.advances-account').select2({
-            ajax: {
-                url: window.location.pathname + '?r=chart-of-accounts/search-sub-account',
-                dataType: 'json',
-                data: function(params) {
-
-                    return {
-                        q: params.term,
-                    };
-                },
-                processResults: function(data) {
-                    // Transforms the top-level key of the response object from 'items' to 'results'
-                    return {
-                        results: data.results
-                    };
-                }
-            },
-        });
-    }
-
-    $(document).ready(() => {
-        i = 1
-        advancesAccountSelect()
-        $("#tracking_sheet").change(function() {
-            // console.log(this.value)
-            onTrackingSheetChange(this.value)
-        })
-        $('#tracking_sheet').select2({
-            ajax: {
-                url: window.location.pathname + '?r=tracking-sheet/search-tracking-sheet',
-                dataType: 'json',
-                data: function(params) {
-
-                    return {
-                        q: params.term,
-                    };
-                },
-                processResults: function(data) {
-                    // Transforms the top-level key of the response object from 'items' to 'results'
-                    return {
-                        results: data.results
-                    };
-                }
-            },
-            // placeholder: 'Search Tracking Sheet'
-        });
-        $('#payee').select2({
-            ajax: {
-                url: window.location.pathname + '?r=payee/search-payee',
-                dataType: 'json',
-                data: function(params) {
-
-                    return {
-                        q: params.term,
-                    };
-                },
-                processResults: function(data) {
-                    // Transforms the top-level key of the response object from 'items' to 'results'
-                    return {
-                        results: data.results
-                    };
-                }
-            },
-        });
-
-        $('.chart-of-accounts').select2({
-            ajax: {
-                url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code',
-                dataType: 'json',
-                data: function(params) {
-
-                    return {
-                        q: params.term,
-                    };
-                },
-                processResults: function(data) {
-                    // Transforms the top-level key of the response object from 'items' to 'results'
-                    return {
-                        results: data.results
-                    };
-                }
-            },
-            placeholder: 'Search Accounting Code'
-        });
-        var update_id = $('#update_id').val()
-        if (update_id > 0) {
-            $.ajax({
-                url: window.location.pathname + "?r=dv-aucs/update-dv",
-                type: "POST",
-                data: {
-                    dv_id: update_id,
-                    _csrf: "<?php echo $csrfToken ?>"
-                },
-                success: function(data) {
-                    var res = JSON.parse(data)
-                    var transaction_type = res.result[0]['transaction_type']
-                    var type = '';
-                    // if (!transaction_type) {
-                    //     if (res.result.length > 1) {
-                    //         type = 'Multiple'
-                    //     } else if (res.result.length === 1) {
-                    //         type = 'Single'
-                    //     } else if (res.result.length === 0) {
-                    //         type = 'No Ors'
-                    //     }
-                    // } else {
-                    //     type = transaction_type
-                    // }
-                    // if (type !='No Ors'){
-
-                    addDvToTable(res.result)
-                    // }
-
-
-
-                    $("#mrd_classification").val(res.result[0]['mrd_classification_id']).trigger("change");
-                    $("#nature_of_transaction").val(res.result[0]['nature_of_transaction_id']).trigger("change");
-                    $("#reporting_period").val(res.result[0]['reporting_period'])
-                    // $('#transaction').val(res.result[0]['transaction_type'])
-                    // var tran_type = res.result[0]['transaction_type'];
-                    // $('#transaction option:contains("${tran_type}")').prop('selected',true);
-                    $('#book').val(res.result[0]['book_id']).trigger('change')
-                    let t_type = res.result[0]['transaction_type']
-                    $('#transaction').val(t_type).trigger('change')
-
-
-                    if (res.result[0]['tracking_sheet_id'] == null) {
-
-                        $("#particular").val(res.result[0]['particular'])
-                        // $("#payee").val(res.result[0]['payee_id']).trigger('change');
-                        var payeeSelect = $('#payee');
-                        var option = new Option([res.result[0]['transaction_payee']], [res.result[0]['payee_id']], true, true);
-                        payeeSelect.append(option).trigger('change')
-
-                    } else {
-
-                        var trackingSheetSelect = $('#tracking_sheet');
-                        var option = new Option([res.result[0]['tracking_number']], [res.result[0]['tracking_sheet_id']], true, true);
-                        trackingSheetSelect.append(option).trigger('change')
-                        onTrackingSheetChange(res.result[0]['tracking_sheet_id'])
-                        // $('#tracking_sheet').val(res.result[0]['tracking_sheet_id']).trigger('change')
-
-                    }
-
-                    var x = 0
-
-                    var dv_accounting_entries = res.dv_accounting_entries;
-                    for (x = 1; x < res.dv_accounting_entries.length; x++) {
-
-                        add()
-                    }
-                    for (x = 0; x < res.dv_accounting_entries.length; x++) {
-                        $("#debit-" + x).val(dv_accounting_entries[x]['debit'])
-                        $("#credit-" + x).val(dv_accounting_entries[x]['credit'])
-                        var chart = dv_accounting_entries[x]['object_code'] + "-" + dv_accounting_entries[x]['account_title']
-
-                        var cashflow = dv_accounting_entries[x]['cashflow_id'];
-                        var net_asset = dv_accounting_entries[x]['net_asset_equity_id'];
-                        // $("#chart-" + x).val(dv_accounting_entries[x]['object_code']).trigger('change');
-
-                        var chartAccSelect = $('#chart-' + x);
-                        var option = new Option([chart], [dv_accounting_entries[x]['object_code']], true, true);
-                        chartAccSelect.append(option).trigger('change')
-                        $("#isEquity-" + x).val(dv_accounting_entries[x]['net_asset_equity_id']).trigger('change');
-                        $("#cashflow-" + x).val(cashflow).trigger('change');
-                        // if ($("#cashflow-" + x).length) {} else {}
-                        // if (x < res.dv_accounting_entries.length - 1) {
-                        //     add()
-                        // }
-                    }
-                    getDebitCreditTotal()
-
-                }
-            })
-        }
-    })
-
-    // $.when(getChartOfAccounts()).done(function(chart) {
-    //     var array = []
-    //     // console.log(chart)
-    //     $.each(chart, function(key, val) {
-    //         array.push({
-    //             id: val.object_code,
-    //             text: val.object_code + ' ' + val.account_title
-    //         })
-
-    //     })
-    //     accounts = array
-    //     $("#chart-0").select2({
-    //         data: accounts,
-    //         placeholder: 'Select Account'
-    //     })
-    //     var update_id = $('#update_id').val()
-
-    // });
 </script>
 
 
 <?php
-$this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/module_js_css/dvAucs/dv_aucs.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+
 SweetAlertAsset::register($this); ?>
 <?php
 
-$script = <<< JS
-        var reporting_period = '';
-        var transactions=[];
-        var nature_of_transaction=[];
-        var reference=[];
-        var mrd_classification=[];
-        var books=[];
-        var bbb=undefined;
 
-       
-
-
-    $('#transaction_table').on('change keyup', ['.amount_disbursed','.ewt','.vat','.compensation','.liabilities'], function() {
-        getTotal()
-
-     });
-
-
-    
-
-
-
-
-    $(document).ready(function() {
-
-
-
-            // TRANSACTION TYPE
-            var transaction = [
-               "Single",
-                 "Multiple",
-                "Accounts Payable",
-                "Replacement to Stale Checks",
-                'Replacement of Check Issued'
-        ]
-            $('#transaction').select2({
-                data: transaction,
-                placeholder: "Select transaction",
-
-            })  
-            // $("#transaction option:not(:selected)").attr('disabled',true)    
-            // INSERT ANG DATA SA DATABASE
-           
-
-
-    })
-    $('#save_data').submit(function(e) {
-  
-
-         e.preventDefault();
-
-
-         $.ajax({
-            url: window.location.pathname + '?r=dv-aucs/insert-dv',
-            method: "POST",
-            data: $('#save_data').serialize(),
-            success: function(data) {
-                var res=JSON.parse(data)
-                if (res.isSuccess==true) {
-                    swal({
-                        title: "Success",
-                        // text: "You will not be able to undo this action!",
-                        type: "success",
-                        timer: 3000,
-                        button: false
-                        // confirmButtonText: "Yes, delete it!",
-                    }, function() {
-                        window.location.href = window.location.pathname + '?r=dv-aucs/view&id='+res.id
-                    });
-                    $('#save_data')[0].reset();
-                }
-                else if(res.isSuccess==false){
-
-                    swal({
-                        title: "Error",
-                        text: res.error,
-                        type: "error",
-                        timer: 6000,
-                        button: false
-                        // confirmButtonText: "Yes, delete it!",
-                    });
-                }
-                else if(res.isSuccess=='exist'){
-                    var dv_link = window.location.pathname + "?r=dv-aucs/view&id=" +res.id
-                    $('#link').text('NAA NAY DV ANG ORS ')
-            bbb = $(`<a type="button" href='`+ dv_link+`' >link here</a>`);
-                        bbb.appendTo($("#link"));
-                    swal({
-                        title: "Error",
-                        text: "Naa Nay DV",
-                        type: "error",
-                        timer: 6000,
-                        button: false
-                        // confirmButtonText: "Yes, delete it!",
-                    });
-                }
-            }
-        });
-
-})
-
-     
-
-
-
-JS;
-$this->registerJs($script);
 ?>

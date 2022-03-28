@@ -255,7 +255,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             $query = Yii::$app->db->createCommand("SELECT UPPER(employee_name)  as employee_name FROM employee_search_view WHERE employee_id = :id ")
                                 ->bindValue(':id', $model->employee_id)
                                 ->queryOne();
-                            echo "<span style='margin-top:3rem;text-decoration:underline'>" . $query['employee_name'] . "</span>";
+                            $employee  = !empty($query['employee_name'])?$query['employee_name']:'';
+                            echo "<span style='margin-top:3rem;text-decoration:underline'>" . $employee . "</span>";
                         } else {
 
                             echo "  <span style='margin-top:3rem'>" . '______________________________  </span>';

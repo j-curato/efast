@@ -47,7 +47,9 @@ $check_date = '';
 $check_number = '';
 $check_range_id = '';
 $transaction_id = '';
+$id = '';
 if (!empty($model->id)) {
+    $id = $model->id;
     $reporting_period = $model->reporting_period;
     $check_date = $model->check_date;
     $check_number = $model->check_number;
@@ -65,7 +67,7 @@ if (!empty($model->id)) {
 <div class="liquidation-form">
 
     <form id='liquidation_form'>
-        <input type="hidden" name="<?= Yii::$app->request->csrfParam; ?>" value="<?= Yii::$app->request->csrfToken; ?>" />
+        <input type="hidden" id="model_id" value='<?= $id ?>' />
 
         <div class="row">
             <div class="col-sm-2">
@@ -440,7 +442,6 @@ SweetAlertAsset::register($this);
 
 <script>
     let entries_row = <?= $entries_row ?>;
-    const update_type = '<?php echo $update_type ?>';
     let disable_reporting_period = '';
 
 
@@ -450,6 +451,9 @@ SweetAlertAsset::register($this);
         var total_vat = 0;
         var total_expanded = 0;
         var grand_total = 0;
+
+
+
 
         $('.liq_damages').maskMoney('unmasked');
 
@@ -554,16 +558,19 @@ SweetAlertAsset::register($this);
         const vat_nonvat_mask = clone.find('.vat_nonvat_mask')
         const expanded_mask = clone.find('.expanded_tax')
         const advances_entries_id = clone.find('.advances_entries_id')
-
+        clone.find('.add_new_row').parent().append("<a class='remove_this_row btn btn-danger btn-xs ' onclick='removeRow(this)' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>")
 
         liq_damages_mask.prop('disabled', false)
         withdrawal_mask.prop('disabled', false)
         vat_nonvat_mask.prop('disabled', false)
         expanded_mask.prop('disabled', false)
+        chart_of_account.attr('class', `form-control`)
+        chart_of_account.css('height:12px')
 
 
         advances_entries_id.attr('name', `advances_entries_id[${entries_row}]`)
         chart_of_account.attr('name', `object_codes[${entries_row}]`)
+
         liq_damage.attr('name', `liq_damages[${entries_row}]`)
         withdrawal.attr('name', `withdrawal[${entries_row}]`)
         non_vat.attr('name', `vat_nonvat[${entries_row}]`)
@@ -619,6 +626,7 @@ SweetAlertAsset::register($this);
         // chart_of_account.val().trigger('change');
         accountingCodesSelect()
         maskAmount()
+
     }
 
 
@@ -626,6 +634,7 @@ SweetAlertAsset::register($this);
 
         const unmaskAmount = $(amount).maskMoney('unmasked')[0]
         $(amount).closest('td').find('.main_amount').val(unmaskAmount)
+        getTotalAmounts()
     }
 
 
@@ -639,6 +648,7 @@ SweetAlertAsset::register($this);
         console.log(disable_reporting_period)
         accountingCodesSelect()
         maskAmount()
+        getTotalAmounts()
 
 
 
@@ -687,7 +697,6 @@ SweetAlertAsset::register($this);
                 data: $('#add_data').serialize(),
                 success: function(data) {
                     var res = JSON.parse(data)
-                    console.log(res)
                     insertEntries(res)
 
                 }
@@ -727,9 +736,6 @@ SweetAlertAsset::register($this);
             })
         })
 
-        // if ($("#po_transaction_id").val() != '') {
-        //     $("#po_transaction_id").trigger('change')
-        // }
 
     })
 

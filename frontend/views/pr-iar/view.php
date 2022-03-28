@@ -10,6 +10,25 @@ $this->title = $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Pr Iars', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+
+
+$items = Yii::$app->db->createCommand("SELECT 
+
+pr_stock.bac_code,
+pr_stock.stock_title as `description`,
+REPLACE(pr_purchase_request_item.specification,'[n]','<br>') as specification,
+unit_of_measure.unit_of_measure,
+pr_iar_item.quantity
+FROM `pr_iar_item`
+LEFT JOIN pr_aoq_entries ON pr_iar_item.fk_pr_aoq_entry_id = pr_aoq_entries.id
+LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
+WHERE pr_iar_item.fk_pr_iar_id = :id
+")
+    ->bindValue(':id', $model->id)
+    ->queryAll();
 ?>
 <div class="pr-iar-view">
 
@@ -17,13 +36,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
     </p>
 
 
@@ -76,6 +88,30 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th>Unit</th>
                     <th>Quantity</th>
                 </tr>
+
+                <?php
+
+                foreach ($items as $val) {
+                    $description = $val['description'];
+                    $specification = $val['specification'];
+                    $bac_code = $val['bac_code'];
+                    $quantity = $val['quantity'];
+                    $unit_of_measure = $val['unit_of_measure'];
+
+                    echo "<tr>
+                    
+                    <td>$bac_code</td>
+                    <td>
+                    <span style='font-weight:bold'>$description</span>
+                    <br>
+                    <span style='font-style:italic'>$specification</span>
+                    </td>
+                    <td>$unit_of_measure</td>
+                    <td>$quantity</td>
+                    </tr>";
+                }
+                ?>
+                
                 <tr>
                     <th style="text-align: center;" colspan="2">INSEPECTION</th>
                     <th style="text-align: center;" colspan="2">ACCEPTANCE</th>
@@ -88,7 +124,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <br>
                         <br>
                         <div style="border:1px solid black;width:2.5rem;height:2.5rem;float:left;margin-right:1rem;"> </div>
-                        <span>
+                        <span style="text-align: left;">
                             Inspected, verified and found in order as to quantity and specifications
                         </span>
                         <br>
@@ -107,7 +143,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                     <td style="text-align: center;" colspan="2">
                         <span style="float: left;">Date Recieved:</span>
-                        <span style="float: left;">___________________</span>
+                        <span style="float: left;">__________________</span>
                         <br>
                         <br>
                         <br>
@@ -150,6 +186,10 @@ $this->params['breadcrumbs'][] = $this->title;
     td {
         border: 1px solid black;
         padding: 2rem;
+    }
+
+    table {
+        width: 100%;
     }
 
     @media print {

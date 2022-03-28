@@ -382,24 +382,23 @@ class ChartOfAccountsController extends Controller
             $model = new SubAccounts1();
             $account_title = $_POST['account_title'];
             $id = $_POST['id'];
-
+            $reporting_period = !empty($_POST['reporting_period']) ? $_POST['reporting_period'] : null;
             $chart_uacs = ChartOfAccounts::find()
                 ->where("id = :id", ['id' => $id])->one()->uacs;
             $last_id = SubAccounts1::find()->orderBy('id DESC')->one()->id + 1;
-
             $uacs = $chart_uacs . '_';
             for ($i = strlen($last_id); $i <= 4; $i++) {
                 $uacs .= 0;
             }
-            // if ($account_title) {
 
 
             $model->chart_of_account_id = $id;
             $model->object_code = $uacs . $last_id;
             $model->name = $account_title;
+            $model->reporting_period = $reporting_period;
             if ($model->validate()) {
                 if ($model->save()) {
-                    return 'success';
+                    return $this->redirect('?r=sub-accounts1/view&id=' . $model->id);
                 }
             } else {
                 // validation failed: $errors is an array containing error messages
@@ -579,10 +578,15 @@ class ChartOfAccountsController extends Controller
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
+        } elseif (!empty($id)) {
+
+            $query = Yii::$app->db->createCommand("SELECT object_code , CONCAT (object_code ,'-',account_title) as account_title 
+            FROM accounting_codes WHERE object_code  = :object_code")
+                ->bindValue(':object_code', $id)
+                ->queryOne();
+
+            return json_encode($query);
         }
-        //  elseif ($id > 0) {
-        //     $out['results'] = ['id' => $id, 'text' => AdvancesEntries::find($id)->fund_source];
-        // }
         return $out;
     }
     public function actionGetChartInfo()

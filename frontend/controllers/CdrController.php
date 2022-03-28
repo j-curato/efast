@@ -241,7 +241,7 @@ class CdrController extends Controller
                                 END) as  gl_object_code
                             FROM liquidation_entries
                             LEFT JOIN chart_of_accounts as orig_chart ON liquidation_entries.chart_of_account_id = orig_chart.id
-                            LEFT JOIN chart_of_accounts as new_chart ON liquidation_entries.chart_of_account_id = new_chart.id
+                            LEFT JOIN chart_of_accounts as new_chart ON liquidation_entries.new_chart_of_account_id = new_chart.id
                             LEFT JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
                             LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id  = advances_entries.id
                             LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id =  cash_disbursement.id
