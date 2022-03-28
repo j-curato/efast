@@ -901,17 +901,17 @@ SweetAlertAsset::register($this);
     function addEntryForAmountDisbursed(amount_disbursed) {
         let obj = '';
         let name = '';
-        const book = $("#book :selected").text();
+        const book = $("#book :selected").text().toLowerCase();
         let base_uacs = '';
 
-        if (book == 'Fund 01' || book == 'RAPID GOP') {
+        if (book == 'fund 01' || book == 'rapid gop') {
             base_uacs = 1010404000
         } else if (
-            book == 'RAPID LP' ||
-            book == 'RAPID GPA'
+            book == 'rapid lp' ||
+            book == 'rapid gpa'
         ) {
             base_uacs = 1010202024
-        } else if (book == 'Fund 07') {
+        } else if (book == 'fund 07') {
             base_uacs = 1010406000
         }
         $('.accounting_entry_object_code').each(function() {
@@ -927,18 +927,22 @@ SweetAlertAsset::register($this);
             $(`[name='credit[${index_number}]']`).val(amount_disbursed.toFixed(2))
             $(`[name='credit[${index_number}]']`).parent().find('.mask-amount').val(amount_disbursed.toFixed(2))
         } else {
-            $.ajax({
-                type: 'POST',
-                url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code&id=' + base_uacs,
-                data: {
-                    '_csrf-frontend': '<?= $csrfToken ?>'
-                },
-                success: function(data) {
-                    const res = JSON.parse(data)
-                    insertEntry(res.object_code, res.account_title, amount_disbursed.toFixed(2), )
+            if (base_uacs != '') {
 
-                }
-            })
+                $.ajax({
+                    type: 'POST',
+                    url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code&id=' + base_uacs,
+                    data: {
+                        '_csrf-frontend': '<?= $csrfToken ?>'
+                    },
+                    success: function(data) {
+                        const res = JSON.parse(data)
+                        insertEntry(res.object_code, res.account_title, amount_disbursed.toFixed(2), )
+
+                    }
+                })
+            }
+
 
 
         }
@@ -1173,7 +1177,7 @@ SweetAlertAsset::register($this);
             checkAmountDisbursed()
         })
         $('#book').change(function() {
-            checkDueToBir()
+            // checkDueToBir()
             checkAmountDisbursed()
         })
         checkAmountDisbursed()
@@ -1216,7 +1220,6 @@ SweetAlertAsset::register($this);
         })
         $("#d_total").text(thousands_separators(total_debit))
         $("#c_total").text(thousands_separators(total_credit))
-        console.log(total_credit)
     }
 </script>
 
