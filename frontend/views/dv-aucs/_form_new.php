@@ -1177,7 +1177,7 @@ SweetAlertAsset::register($this);
             checkAmountDisbursed()
         })
         $('#book').change(function() {
-            // checkDueToBir()
+            checkDueToBir()
             checkAmountDisbursed()
         })
         checkAmountDisbursed()
