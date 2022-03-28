@@ -924,8 +924,8 @@ SweetAlertAsset::register($this);
         })
         let index_number = parseInt(name.replace(/[^0-9.]/g, ""));
         if (obj != '') {
-            $(`[name='credit[${index_number}]']`).val(amount_disbursed.toFixed(2))
-            $(`[name='credit[${index_number}]']`).parent().find('.mask-amount').val(amount_disbursed.toFixed(2))
+            $(`[name='credit[${index_number}]']`).val(amount_disbursed)
+            $(`[name='credit[${index_number}]']`).parent().find('.mask-amount').val(amount_disbursed)
         } else {
             if (base_uacs != '') {
 
@@ -937,7 +937,7 @@ SweetAlertAsset::register($this);
                     },
                     success: function(data) {
                         const res = JSON.parse(data)
-                        insertEntry(res.object_code, res.account_title, amount_disbursed.toFixed(2), )
+                        insertEntry(res.object_code, res.account_title, amount_disbursed, )
 
                     }
                 })
@@ -979,7 +979,7 @@ SweetAlertAsset::register($this);
 
         $('#dv_items_table').on('keyup change', '.mask_amount_disbursed', function() {
             const amount_disbursed = $(this).val()
-            addEntryForAmountDisbursed(amount_disbursed)
+            addEntryForAmountDisbursed(parseFloat(amount_disbursed).toFixed(2))
 
         })
         let obj_code = '';
@@ -1203,7 +1203,7 @@ SweetAlertAsset::register($this);
         })
         if (total_amount > 0) {
 
-            addEntryForAmountDisbursed(total_amount)
+            addEntryForAmountDisbursed(parseFloat(total_amount).toFixed(2))
         }
         getDebitCreditTotal()
     }
