@@ -170,6 +170,11 @@ $dv_items_row = 1;
                 <tbody>
 
                     <?php
+                    $total_disbursed = 0;
+                    $total_vat = 0;
+                    $total_ewt = 0;
+                    $total_compensation = 0;
+                    $total_liabilities = 0;
                     if (!empty($dv_items)) {
 
                         foreach ($dv_items  as $val) {
@@ -206,6 +211,11 @@ $dv_items_row = 1;
                             <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class='glyphicon glyphicon-minus'></i></button></td>
                             </tr>";
                             $dv_items_row++;
+                            $total_disbursed += floatval($val['amount_disbursed']);
+                            $total_vat += floatval($val['vat_nonvat']);
+                            $total_ewt = floatval($val['ewt_goods_services']);
+                            $total_compensation += floatval($val['compensation']);
+                            $total_liabilities += floatval($val['other_trust_liabilities']);
                         }
                     }
 
@@ -218,19 +228,30 @@ $dv_items_row = 1;
                     <th></th>
                     <th>Total</th>
                     <th>
-                        <div id="total_disbursed"></div>
+                        <div id="total_disbursed">
+                            <?php echo  number_format($total_disbursed, 2) ?>
+                        </div>
+
                     </th>
                     <th>
-                        <div id="total_vat"></div>
+                        <div id="total_vat">
+                            <?php echo  number_format($total_vat, 2) ?>
+                        </div>
                     </th>
                     <th>
-                        <div id="total_ewt"></div>
+                        <div id="total_ewt">
+                            <?php echo  number_format($total_ewt, 2) ?>
+                        </div>
                     </th>
                     <th>
-                        <div id="total_compensation"></div>
+                        <div id="total_compensation">
+                            <?php echo number_format($total_compensation, 2) ?>
+                        </div>
                     </th>
                     <th>
-                        <div id="total_liabilities"></div>
+                        <div id="total_liabilities">
+                            <?php echo number_format($total_liabilities, 2) ?>
+                        </div>
                     </th>
 
                 </tfoot>
@@ -289,12 +310,11 @@ $dv_items_row = 1;
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th style="text-align: center;">Total</th>
+                        <th style="text-align: center;padding:3rem">Total</th>
                         <th>
                             <span>Debit:</span>
                             <br>
                             <span id="d_total"></span>
-
                         </th>
                         <th>
                             <span>
@@ -306,7 +326,6 @@ $dv_items_row = 1;
                     </tr>
                 </tfoot>
             </table>
-
             <?php
             $advances_entries = [];
             if (!empty($model->id)) {
@@ -905,8 +924,8 @@ SweetAlertAsset::register($this);
         })
         let index_number = parseInt(name.replace(/[^0-9.]/g, ""));
         if (obj != '') {
-            $(`[name='credit[${index_number}]']`).val(amount_disbursed)
-            $(`[name='credit[${index_number}]']`).parent().find('.mask-amount').val(amount_disbursed)
+            $(`[name='credit[${index_number}]']`).val(amount_disbursed.toFixed(2))
+            $(`[name='credit[${index_number}]']`).parent().find('.mask-amount').val(amount_disbursed.toFixed(2))
         } else {
             $.ajax({
                 type: 'POST',
@@ -916,7 +935,7 @@ SweetAlertAsset::register($this);
                 },
                 success: function(data) {
                     const res = JSON.parse(data)
-                    insertEntry(res.object_code, res.account_title, amount_disbursed, )
+                    insertEntry(res.object_code, res.account_title, amount_disbursed.toFixed(2), )
 
                 }
             })
@@ -1150,7 +1169,12 @@ SweetAlertAsset::register($this);
 
         checkDueToBir()
         $('#reporting_period').change(function() {
-            getObjectCodeForTheMonth()
+            checkDueToBir()
+            checkAmountDisbursed()
+        })
+        $('#book').change(function() {
+            checkDueToBir()
+            checkAmountDisbursed()
         })
         checkAmountDisbursed()
         getDebitCreditTotal()
