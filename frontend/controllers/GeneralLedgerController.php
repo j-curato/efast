@@ -90,8 +90,23 @@ class GeneralLedgerController extends Controller
     {
         $model = new GeneralLedger();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+
+            $query = Yii::$app->db->createCommand("SELECT id FROM general_ledger 
+            WHERE object_code = :object_code
+            AND reporting_period = :reporting_period
+            AND book_id = :book_id")
+                ->bindValue(':object_code', $model->object_code)
+                ->bindValue(':reporting_period', $model->reporting_period)
+                ->bindValue(':book_id', $model->book_id)
+                ->queryScalar();
+            if (!empty($query)) {
+                return $this->redirect(['view', 'id' => $query]);
+            } else {
+                if ($model->save(false)) {
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
+            }
         }
 
         return $this->render('create', [
