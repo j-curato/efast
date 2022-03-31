@@ -449,9 +449,11 @@ class LiquidationController extends Controller
             try {
                 $flag = true;
                 if ($model->validate()) {
-                    if (!$this->validateCheckNumber($check_number, $check_range_id)) {
-                        $transaction->rollBack();
-                        return json_encode(['check_error' => 'Check Number Not in Range']);
+                    if (strtotime($model->reporting_period) >= strtotime('2021-10')) {
+                        if (!$this->validateCheckNumber($check_number, $check_range_id)) {
+                            $transaction->rollBack();
+                            return json_encode(['check_error' => 'Check Number Not in Range']);
+                        }
                     }
 
 

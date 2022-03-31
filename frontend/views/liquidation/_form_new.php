@@ -54,11 +54,14 @@ if (!empty($model->id)) {
     $check_date = $model->check_date;
     $check_number = $model->check_number;
     $check_range_id = $model->check_range_id;
-    $transaction_query = Yii::$app->db->createCommand("SELECT id,tracking_number FROM po_transaction WHERE id =:id")
-        ->bindValue(':id', $model->po_transaction_id)
-        ->queryAll();
-    $transaction = ArrayHelper::map($transaction_query, 'id', 'tracking_number');
-    $transaction_id =  [$model->po_transaction_id];
+
+    if (!empty($model->po_transaction_id)) {
+        $transaction_query = Yii::$app->db->createCommand("SELECT id,tracking_number FROM po_transaction WHERE id =:id")
+            ->bindValue(':id', $model->po_transaction_id)
+            ->queryAll();
+        $transaction = ArrayHelper::map($transaction_query, 'id', 'tracking_number');
+        $transaction_id =  [$model->po_transaction_id];
+    }
 }
 
 

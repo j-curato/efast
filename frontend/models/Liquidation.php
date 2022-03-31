@@ -35,7 +35,7 @@ class Liquidation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['payee_id', 'responsibility_center_id', 'po_transaction_id','check_range_id'], 'integer'],
+            [['payee_id', 'responsibility_center_id', 'po_transaction_id', 'check_range_id'], 'integer'],
             [['particular'], 'string'],
             [['check_date', 'check_number', 'province', 'cancel_reporting_period'], 'string', 'max' => 50],
             [['reporting_period'], 'string', 'max' => 20],
@@ -43,11 +43,11 @@ class Liquidation extends \yii\db\ActiveRecord
                 'reporting_period',
                 'check_date',
                 'check_number',
-                'check_range_id',
             ], 'required'],
-
-
-            [['dv_number', ], 'string', 'max' => 100],
+            [['check_range_id',], 'required', 'when' => function ($model) {
+                return strtotime($model->reporting_period) > strtotime('2021-10');
+            }],
+            [['dv_number',], 'string', 'max' => 100],
             [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::class, 'targetAttribute' => ['payee_id' => 'id']],
             [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
             [['po_transaction_id'], 'exist', 'skipOnError' => true, 'targetClass' => PoTransaction::class, 'targetAttribute' => ['po_transaction_id' => 'id']],
