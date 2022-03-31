@@ -32,7 +32,9 @@ $this->params['breadcrumbs'][] = $this->title;
         </p>
         <table>
             <thead>
+                <th colspan="6" style="border-bottom: none;">
 
+                </th>
             </thead>
             <tbody>
                 <tr>
