@@ -210,7 +210,7 @@
                                     'url' => '#',
                                     'items' => [
 
-                                        ['label' => 'General Ledger', 'icon' => 'circle-o', 'url' => ['/jev-preparation/general-ledger'],],
+                                        ['label' => 'General Ledger', 'icon' => 'circle-o', 'url' => ['/general-ledger'],],
                                         ['label' => 'General Journal', 'icon' => 'circle-o', 'url' => ['/jev-preparation/general-journal'],],
                                         ['label' => 'ADADJ', 'icon' => 'circle-o', 'url' => ['/jev-preparation/adadj'],],
                                         ['label' => 'CKDJ', 'icon' => 'circle-o', 'url' => ['/jev-preparation/ckdj'],],

@@ -247,22 +247,22 @@ if (!empty($model->id)) {
         
                             <td> 
                                 <input disabled type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control liq_damages_mask amount mask-amount' value='{$val['liquidation_damage']}'>
-                                <input disabled type='hidden'  class='liq_damages main_amount' name='liq_damages[{$entries_row}]' value='{$val['liquidation_damage']}'>
+                                <input disabled type='hidden'  class='liq_damages_main main_amount' name='liq_damages[{$entries_row}]' value='{$val['liquidation_damage']}'>
                             </td>
                             <td> 
                                 <input disabled type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)' class='form-control withdrawal_mask amount mask-amount'  value='{$val['withdrawals']}'>
-                                <input disabled type='hidden'  class='withdrawal main_amount' name='withdrawal[{$entries_row}]' value='{$val['withdrawals']}'>
+                                <input disabled type='hidden'  class='withdrawal_main main_amount' name='withdrawal[{$entries_row}]' value='{$val['withdrawals']}'>
                             </td>
                             <td> 
         
                                     <input disabled type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control vat_nonvat_mask amount mask-amount' value='{$val['vat_nonvat']}'>
-                                    <input disabled type='hidden'  class='vat_nonvat main_amount' name='vat_nonvat[{$entries_row}]' value='{$val['vat_nonvat']}'>
+                                    <input disabled type='hidden'  class='vat_nonvat_main main_amount' name='vat_nonvat[{$entries_row}]' value='{$val['vat_nonvat']}'>
         
                             </td>
                    
                             <td> 
                                 <input disabled type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control  expanded_tax_mask amount mask-amount  expanded_tax' value='{$val['expanded_tax']}'>
-                                <input disabled type='hidden'  class='expanded_tax main_amount' name='expanded_tax[{$entries_row}]' value='{$val['expanded_tax']}'>
+                                <input disabled type='hidden'  class='expanded_tax_main main_amount' name='expanded_tax[{$entries_row}]' value='{$val['expanded_tax']}'>
     
                             </td>
                             <td>
@@ -461,17 +461,17 @@ SweetAlertAsset::register($this);
 
         $('.liq_damages').maskMoney('unmasked');
 
-        $(".liq_damages").each(function() {
+        $(".liq_damages_main").each(function() {
             // console.log($(this).val().split(",").join(""))
             total_liquidation += parseFloat($(this).val().split(",").join("")) || 0;
         });
-        $(".withdrawal").each(function() {
+        $(".withdrawal_main").each(function() {
             total_withdrawal += parseFloat($(this).val().split(",").join("")) || 0;
         });
-        $(".vat_nonvat").each(function() {
+        $(".vat_nonvat_main").each(function() {
             total_vat += parseFloat($(this).val().split(",").join("")) || 0;
         });
-        $(".expanded_tax").each(function() {
+        $(".expanded_tax_main").each(function() {
             total_expanded += parseFloat($(this).val().split(",").join("")) || 0;
         });
 
@@ -506,22 +506,22 @@ SweetAlertAsset::register($this);
 
                     <td> 
                         <input type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control liq_damages amount mask-amount' >
-                        <input type='hidden'  class='liq_damages main_amount' name='liq_damages[${entries_row}]'>
+                        <input type='hidden'  class='liq_damages_main main_amount' name='liq_damages[${entries_row}]'>
                     </td>
                     <td> 
                         <input type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)' class='form-control withdrawal amount mask-amount' >
-                        <input type='hidden'  class='withdrawal main_amount' name='withdrawal[${entries_row}]'>
+                        <input type='hidden'  class='withdrawal_main main_amount' name='withdrawal[${entries_row}]'>
                     </td>
                     <td> 
 
                             <input type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control amount mask-amount'>
-                            <input type='hidden'  class='vat_nonvat main_amount' name='vat_nonvat[${entries_row}]'>
+                            <input type='hidden'  class='vat_nonvat_main main_amount' name='vat_nonvat[${entries_row}]'>
 
                     </td>
            
                     <td> 
                         <input type='text'  onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control expanded_tax amount mask-amount' '>
-                        <input type='hidden'  class='expanded_tax main_amount' name='expanded_tax[${entries_row}]'>
+                        <input type='hidden'  class='expanded_tax_main main_amount' name='expanded_tax[${entries_row}]'>
 
                     </td>
                     <td>
