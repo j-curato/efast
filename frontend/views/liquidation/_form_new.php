@@ -236,8 +236,8 @@ if (!empty($model->id)) {
                         <td > {$val['fund_source']}</td>
                         <td> 
         
-                            <label for='chart-of-accounts'></label>
-                                <select disabled  name='object_codes[{$entries_row}]' required class='chart-of-accounts' style='width: 200px'>
+                            <label for='liquidation-chart-of-accounts'></label>
+                                <select disabled  name='object_codes[{$entries_row}]' required class='liquidation-chart-of-accounts' style='width: 200px'>
                                     <option value='{$val['object_code']}'>{$val['chart_of_account']} </option>
                                 </select>
                             </td>
@@ -442,6 +442,7 @@ SweetAlertAsset::register($this);
 
 <script>
     let entries_row = <?= $entries_row ?>;
+    const update_type = '<?php echo $update_type ?>';
     let disable_reporting_period = '';
 
 
@@ -494,8 +495,8 @@ SweetAlertAsset::register($this);
                 <td > ${val.fund_source}</td>
                 <td> 
 
-                    <label for='chart-of-accounts'></label>
-                        <select  name="object_codes[${entries_row}]" required class="chart-of-accounts" style="width: 200px">
+                    <label for='liquidation-chart-of-accounts'></label>
+                        <select  name="object_codes[${entries_row}]" required class="liquidation-chart-of-accounts" style="width: 200px">
                             <option></option>
                         </select>
                     </td>
@@ -528,7 +529,7 @@ SweetAlertAsset::register($this);
 
             $('#entries_table tbody').append(row);
             entries_row++;
-            accountingCodesSelect()
+            liquidationAccountingCodesSelect()
             maskAmount()
         })
 
@@ -541,12 +542,12 @@ SweetAlertAsset::register($this);
 
     function copyRow(row) {
 
-        $('.chart-of-accounts').select2('destroy');
+        $('.liquidation-chart-of-accounts').select2('destroy');
         //     $('.unit_of_measure').select2('destroy');
         //     $('.unit_cost').maskMoney('destroy');
         var source = $(row).closest('tr');
         var clone = source.clone(true);
-        const chart_of_account = clone.find('.chart-of-accounts')
+        const chart_of_account = clone.find('.liquidation-chart-of-accounts')
         const liq_damage = clone.find('.liq_damages')
         const advances_etries_id = clone.find('.advances_etries_id')
         const withdrawal = clone.find('.withdrawal')
@@ -558,6 +559,8 @@ SweetAlertAsset::register($this);
         const vat_nonvat_mask = clone.find('.vat_nonvat_mask')
         const expanded_mask = clone.find('.expanded_tax')
         const advances_entries_id = clone.find('.advances_entries_id')
+
+        clone.find('.remove_this_row').remove()
         clone.find('.add_new_row').parent().append("<a class='remove_this_row btn btn-danger btn-xs ' onclick='removeRow(this)' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>")
 
         liq_damages_mask.prop('disabled', false)
@@ -624,7 +627,7 @@ SweetAlertAsset::register($this);
         // manually trigger the `select2:select` event
 
         // chart_of_account.val().trigger('change');
-        accountingCodesSelect()
+        liquidationAccountingCodesSelect()
         maskAmount()
 
     }
@@ -646,7 +649,7 @@ SweetAlertAsset::register($this);
 
         console.log(update_type)
         console.log(disable_reporting_period)
-        accountingCodesSelect()
+        liquidationAccountingCodesSelect()
         maskAmount()
         getTotalAmounts()
 

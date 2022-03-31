@@ -214,6 +214,11 @@ if (!empty($model->id)) {
         background-color: white;
     }
 </style>
+<?php
+
+$csrfToken  = Yii::$app->request->csrfToken;
+$csrf = Yii::$app->request->csrfParam;
+?>
 <script>
     let row_number = 0;
     $(document).ready(function() {
@@ -223,7 +228,8 @@ if (!empty($model->id)) {
                 type: 'POST',
                 url: window.location.pathname + '?r=pr-iar/get-po-items',
                 data: {
-                    id: $(this).val()
+                    id: $(this).val(),
+                    '<?= $csrf ?>': '<?= $csrfToken ?>'
                 },
                 success: function(data) {
                     displayPoItems(JSON.parse(data))
@@ -257,6 +263,7 @@ if (!empty($model->id)) {
             // accountingCodesSelect()
             row_number++;
         });
+        $("#priar-fk_pr_purchase_order_id").trigger('change')
     })
 
     function displayPoItems(data) {

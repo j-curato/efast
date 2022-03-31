@@ -206,7 +206,7 @@ $dv_items_row = 1;
                             </td>
                             <td> 
                             <input value='{$val['other_trust_liabilities']}' type='text'  class='mask-amount mask_liabilities'/>
-                            <input value='{$val['other_trust_liabilities']}' type='text' name='other_trust_liabilities[{$dv_items_row}]' class='liabilities due_to_bir'/>
+                            <input value='{$val['other_trust_liabilities']}' type='text' name='other_trust_liabilities[{$dv_items_row}]' class='liabilities '/>
                             </td>
                             <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class='glyphicon glyphicon-minus'></i></button></td>
                             </tr>";
@@ -764,7 +764,7 @@ SweetAlertAsset::register($this);
                                 <div class="col-sm-12">
                                     <label for="chart_of_account"> Chart of Account</label>
                                     <select required name="object_code[${accounting_entry_row}]" class="${object_code_class} accounting_entry_object_code" style="width: 100%">
-                                        <option  selected="selected" value='${object_code}'>${account_title}</option>
+                                        <option  selected="selected" value='${object_code}'>${object_code} - ${account_title}</option>
                                     </select>
                                 </div>
                             </div>
@@ -985,7 +985,7 @@ SweetAlertAsset::register($this);
         let obj_code = '';
 
         // add accounting entry on keyup or change
-        $('#dv_items_table').on('keyup change', '.mask_vat, .mask_ewt, .mask_compensation, .mask_liabilities', function() {
+        $('#dv_items_table').on('keyup change', '.mask_vat, .mask_ewt, .mask_compensation', function() {
             getObjectCodeForTheMonth()
 
         })

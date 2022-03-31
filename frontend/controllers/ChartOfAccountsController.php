@@ -556,6 +556,34 @@ class ChartOfAccountsController extends Controller
         // }
         return $out;
     }
+    public function actionSearchLiquidationAccountingCode($q = null, $id = null, $province = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+
+            $query->select(["object_code as id, CONCAT (object_code ,'-',account_title) as text"])
+                ->from('accounting_codes')
+                ->where(['or', ['like', 'account_title', $q], ['like', 'object_code', $q]])
+                ->andWhere('is_active =1 AND coa_is_active = 1 AND sub_account_is_active = 1 AND is_province_visible = 1');
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        } elseif (!empty($id)) {
+
+            $query = Yii::$app->db->createCommand("SELECT object_code , CONCAT (object_code ,'-',account_title) as account_title 
+            FROM accounting_codes WHERE object_code  = :object_code")
+                ->bindValue(':object_code', $id)
+                ->queryOne();
+
+            return json_encode($query);
+        }
+        return $out;
+    }
     public function actionSearchAccountingCode($q = null, $id = null, $province = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;

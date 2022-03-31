@@ -20,6 +20,25 @@ function accountingCodesSelect() {
     },
   });
 }
+function liquidationAccountingCodesSelect() {
+  $(".liquidation-chart-of-accounts").select2({
+    ajax: {
+      url: base_url + "?r=chart-of-accounts/search-liquidation-accounting-code",
+      dataType: "json",
+      data: function (params) {
+        return {
+          q: params.term,
+        };
+      },
+      processResults: function (data) {
+        // Transforms the top-level key of the response object from 'items' to 'results'
+        return {
+          results: data.results,
+        };
+      },
+    },
+  });
+}
 
 // PAYEE SELECT2
 function payeeSelect() {
