@@ -3411,8 +3411,9 @@ class ReportController extends \yii\web\Controller
     {
         if ($_POST) {
             $to_reporting_period = $_POST['reporting_period'];
+
             $r_period_date = DateTime::createFromFormat('Y-m', $to_reporting_period);
-            $month  = $r_period_date->format('F Y');
+            $month  = date('F Y', strtotime($to_reporting_period));
             $year = $r_period_date->format('Y');
             $from_reporting_period = $year . '-01';
             $book_id  = $_POST['book_id'];
