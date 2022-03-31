@@ -31,9 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ?>
         </p>
         <table>
-            <thead>
-
-            </thead>
+         
             <tbody>
                 <tr>
                     <th colspan="6" style="text-align: center;">PROPERTY ACKNOWLEDGEMENT RECIEPT</th>
