@@ -214,7 +214,7 @@
                                         ['label' => 'General Journal', 'icon' => 'circle-o', 'url' => ['/jev-preparation/general-journal'],],
                                         ['label' => 'ADADJ', 'icon' => 'circle-o', 'url' => ['/jev-preparation/adadj'],],
                                         ['label' => 'CKDJ', 'icon' => 'circle-o', 'url' => ['/jev-preparation/ckdj'],],
-                                        ['label' => 'Trial Balance', 'icon' => 'circle-o', 'url' => ['/report/trial-balance'],],
+                                        ['label' => 'Trial Balance', 'icon' => 'circle-o', 'url' => ['/trial-balance'],],
                                         ['label' => 'ConsoTrial Balance', 'icon' => 'circle-o', 'url' => ['/report/conso-trial-balance'],],
                                         ['label' => 'Sub Trial Balance', 'icon' => 'circle-o', 'url' => ['/jev-preparation/sub-trial-balance'],],
                                         ['label' => 'Conso Sub Trial Balance', 'icon' => 'circle-o', 'url' => ['/report/conso-sub-trial-balance'],],
