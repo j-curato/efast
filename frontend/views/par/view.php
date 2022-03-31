@@ -32,6 +32,9 @@ $this->params['breadcrumbs'][] = $this->title;
         </p>
         <table>
             <thead>
+
+            </thead>
+            <tbody>
                 <tr>
                     <th colspan="6" style="text-align: center;">PROPERTY ACKNOWLEDGEMENT RECIEPT</th>
                 </tr>
@@ -48,7 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <th colspan="3">
                         <span>Fund Cluster:</span>
-                        <span><?php echo $model->property->book->name; ?></span>
+                        <span><?php echo !empty($model->property->book->name) ? $model->property->book->name : ''; ?></span>
                     </th>
                     <th colspan="3">
                         <span>PAR No:</span>
@@ -63,14 +66,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th>Date Acquired</th>
                     <th>Amount</th>
                 </tr>
-            </thead>
-            <tbody>
-
                 <?php
                 $d = new DateTime($model->property->date);
                 $dateAquired = $d->format('F d, Y');
                 $description = preg_replace('#\[n\]#', "<br>", $model->property->description);
-                
+
                 $article = $model->property->article;
                 echo "<tr>
                         <td>{$model->property->quantity}</td>

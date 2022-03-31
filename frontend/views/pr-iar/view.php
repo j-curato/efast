@@ -111,7 +111,7 @@ WHERE pr_iar_item.fk_pr_iar_id = :id
                     </tr>";
                 }
                 ?>
-                
+
                 <tr>
                     <th style="text-align: center;" colspan="2">INSEPECTION</th>
                     <th style="text-align: center;" colspan="2">ACCEPTANCE</th>
@@ -131,7 +131,7 @@ WHERE pr_iar_item.fk_pr_iar_id = :id
                         <br>
                         <br>
                         <br>
-                        <span>
+                        <span class='employee'>
                             <?php
                             echo Yii::$app->db->createCommand("SELECT employee_name FROM employee_search_view WHERE employee_id = :id")
                                 ->bindValue(':id', $model->fk_inspection_officer)
@@ -160,11 +160,11 @@ WHERE pr_iar_item.fk_pr_iar_id = :id
                         <br>
                         <br>
                         <br>
-                        <span><?php
-                                echo Yii::$app->db->createCommand("SELECT employee_name FROM employee_search_view WHERE employee_id = :id")
-                                    ->bindValue(':id', $model->fk_property_custodian)
-                                    ->queryScalar()
-                                ?></span>
+                        <span class='employee'><?php
+                                                echo Yii::$app->db->createCommand("SELECT employee_name FROM employee_search_view WHERE employee_id = :id")
+                                                    ->bindValue(':id', $model->fk_property_custodian)
+                                                    ->queryScalar()
+                                                ?></span>
                         <br>
                         <span style="float:center">Supply and/or Property Custodian</span>
                     </td>
@@ -180,6 +180,10 @@ WHERE pr_iar_item.fk_pr_iar_id = :id
     .container {
         background-color: white;
         padding: 3rem;
+    }
+
+    .employee {
+        text-decoration: underline;
     }
 
     th,

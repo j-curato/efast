@@ -327,7 +327,6 @@ class DvAucsController extends Controller
                         );
 
                         if (!empty($advances_province) && !empty($advances_period) && !empty($advances_bank_account_id)) {
-
                             $advances_id = $this->insertAdvances($advances_province, $advances_period, $model->id, $advances_update_id, $advances_bank_account_id);
                             $this->insertAdvancesEntries(
                                 $advances_id,

@@ -25,10 +25,25 @@ class PrIarController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['index', 'create', 'delete', 'view', 'update'],
+                'only' => [
+                    'index',
+                    'create',
+                    'delete',
+                    'view',
+                    'update',
+                    'get-po-items'
+                ],
+
                 'rules' => [
                     [
-                        'actions' => ['index', 'create', 'delete', 'view', 'update'],
+                        'actions' => [
+                            'index',
+                            'create',
+                            'delete',
+                            'view',
+                            'update',
+                            'get-po-items'
+                        ],
                         'allow' => true,
                         'roles' => ['@']
                     ]
@@ -135,7 +150,6 @@ class PrIarController extends Controller
                 }
             } catch (ErrorException $e) {
             }
-  
         }
         $query = Yii::$app->db->createCommand("SELECT 
         pr_aoq_entries.id as aoq_entry_id,
