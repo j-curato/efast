@@ -326,18 +326,21 @@ class DvAucsController extends Controller
                             $other_trust_liabilities
                         );
 
-                        $advances_id = $this->insertAdvances($advances_province, $advances_period, $model->id, $advances_update_id, $advances_bank_account_id);
-                        $this->insertAdvancesEntries(
-                            $advances_id,
-                            $advances_object_code,
-                            $advances_amount,
-                            $advances_fund_source,
-                            $advances_fund_source_type,
-                            $advances_report_type,
-                            $advances_reporting_period,
-                            $advances_entries_id,
-                            $model->book_id
-                        );
+                        if (!empty($advances_province) && !empty($advances_period) && !empty($advances_bank_account_id)) {
+
+                            $advances_id = $this->insertAdvances($advances_province, $advances_period, $model->id, $advances_update_id, $advances_bank_account_id);
+                            $this->insertAdvancesEntries(
+                                $advances_id,
+                                $advances_object_code,
+                                $advances_amount,
+                                $advances_fund_source,
+                                $advances_fund_source_type,
+                                $advances_report_type,
+                                $advances_reporting_period,
+                                $advances_entries_id,
+                                $model->book_id
+                            );
+                        }
                     }
                 } else {
                     $transaction->rollBack();
