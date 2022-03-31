@@ -32,6 +32,9 @@ $this->params['breadcrumbs'][] = $this->title;
         </p>
         <table>
             <thead>
+
+            </thead>
+            <tbody>
                 <tr>
                     <th colspan="6" style="text-align: center;">PROPERTY ACKNOWLEDGEMENT RECIEPT</th>
                 </tr>
@@ -63,9 +66,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th>Date Acquired</th>
                     <th>Amount</th>
                 </tr>
-            </thead>
-            <tbody>
-
                 <?php
                 $d = new DateTime($model->property->date);
                 $dateAquired = $d->format('F d, Y');
