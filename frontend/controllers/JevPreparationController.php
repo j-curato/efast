@@ -2651,6 +2651,7 @@ class JevPreparationController extends Controller
             $sheet->setCellValue('M1', 'Credit');
             $sheet->setCellValue('N1', 'Reference');
             $sheet->setCellValue('O1', 'BOOK');
+            $sheet->setCellValue('P1', 'Closing/ Non-Closing');
 
             // BEGINNING BALANCE
             // $sheet->setCellValue('K2', 'Beginning Balance');
@@ -2813,6 +2814,11 @@ class JevPreparationController extends Controller
                     15,
                     $row,
                     !empty($val->jevPreparation->books->name) ? $val->jevPreparation->books->name : ''
+                );
+                $sheet->setCellValueByColumnAndRow(
+                    16,
+                    $row,
+                    !empty($val->jevPreparation->entry_type) ? $val->jevPreparation->entry_type : ''
                 );
 
                 $row++;
