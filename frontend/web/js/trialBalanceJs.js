@@ -6,7 +6,7 @@ function query(
 ) {
   $.ajax({
     type: "POST",
-    url: window.location.pathname + "?r=report/trial-balance",
+    url: window.location.pathname + "?r=trial-balance/generate-trial-balance",
     data: {
       reporting_period: reporting_period,
       book_id: book_id,
@@ -20,6 +20,8 @@ function query(
       displayResultData(res.result);
       $("#month").text(res.month);
       $(".book_name").text(res.book_name);
+      $(".container").show();
+      $("#dots5").hide();
     },
   });
 }

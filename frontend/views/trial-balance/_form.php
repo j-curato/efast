@@ -302,6 +302,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_separator.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/trialBalanceJs.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css");
 ?>
 <script>
     $(document).ready(function() {
@@ -314,7 +315,12 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/trialBalan
             entry_type != '' &&
             book_id != ''
         ) {
-            query('<?= Yii::$app->request->csrfToken ?>', reporting_period, book_id, entry_type)
+            
+            $('.container').hide()
+            $('#dots5').show()
+            setTimeout(() => {
+                query('<?= Yii::$app->request->csrfToken ?>', reporting_period, book_id, entry_type)
+            },1300)
         }
         $("#generate").click(function(e) {
             e.preventDefault()
@@ -322,7 +328,11 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/trialBalan
             reporting_period = $("#trialbalance-reporting_period").val()
             book_id = $("#trialbalance-book_id").val()
             entry_type = $("#trialbalance-entry_type").val()
-            query('<?= Yii::$app->request->csrfToken ?>', reporting_period, book_id, entry_type)
+            $('.container').hide()
+            $('#dots5').show()
+            setTimeout(() => {
+                query('<?= Yii::$app->request->csrfToken ?>', reporting_period, book_id, entry_type)
+            },1300)
         })
     })
 </script>

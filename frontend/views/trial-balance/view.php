@@ -103,7 +103,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     </div>
-    <div id="dots5" style="display: none;">
+    <div id="dots5">
         <span></span>
         <span></span>
         <span></span>
@@ -113,6 +113,10 @@ $this->params['breadcrumbs'][] = $this->title;
         #reporting_period {
             background-color: white;
             border-radius: 3px;
+        }
+
+        .container {
+            display: none;
         }
 
         .headerItems>h6 {
@@ -246,14 +250,16 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/thousands_separator.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/trialBalanceJs.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css");
 ?>
 <script>
     $(document).ready(function() {
         const reporting_period = '<?= $model->reporting_period ?>';
         const entry_type = '<?= $model->entry_type ?>';
         const book_id = '<?= $model->book_id ?>';
-        query('<?= Yii::$app->request->csrfToken ?>', reporting_period, book_id, entry_type)
+        setTimeout(() => {
+
+            query('<?= Yii::$app->request->csrfToken ?>', reporting_period, book_id, entry_type)
+        }, 1500)
     })
-
-
 </script>
