@@ -3022,9 +3022,9 @@ class JevPreparationController extends Controller
                 AND jev_beginning_balance.book_id = :book_id) as beginning_balance ON jev_object_codes.object_code = beginning_balance.object_code
             LEFT JOIN accounting_codes ON jev_object_codes.object_code = accounting_codes.object_code
             
-            WHERE    (CASE
-            WHEN accounting_codes.normal_balance = 'Debit' THEN accounting_entries.debit - accounting_entries.credit
-            ELSE accounting_entries.credit - accounting_entries.debit
+            WHERE   (CASE
+            WHEN accounting_codes.normal_balance = 'Debit' THEN IFNULL(beginning_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.debit,0) - IFNULL(accounting_entries.credit,0))
+            ELSE IFNULL(beginning_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.credit,0) - IFNULL(accounting_entries.debit,0))
             END) !=0
             ")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
