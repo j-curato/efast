@@ -121,7 +121,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <option value=""></option>
                 </select>
             </div>
-            <div class="col-sm-4 as">
+            <div class="col-sm-3 as">
                 <label for="qwe">OIC</label>
                 <!-- <select id="assignatory" onchange="sample(this)" name="assignatory" class=" select" style="width: 100%">
                     <option></option>

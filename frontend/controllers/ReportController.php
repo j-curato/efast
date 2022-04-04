@@ -57,7 +57,8 @@ class ReportController extends \yii\web\Controller
                     'annex3',
                     'annex-A',
                     'raaf',
-                    'trial-balance'
+                    'trial-balance',
+                    'detailed-financial-position'
 
                 ],
                 'rules' => [
@@ -75,7 +76,8 @@ class ReportController extends \yii\web\Controller
                             'temp-import',
                             'detailed-dv-aucs',
                             'conso-detailed-dv',
-                            'trial-balance'
+                            'trial-balance',
+                            'detailed-financial-position'
 
 
                         ],
@@ -3577,6 +3579,111 @@ class ReportController extends \yii\web\Controller
             }
         }
         return $num;
+    }
+    public function actionDetailedFinancialPosition()
+    {
+        if ($_POST) {
+
+            $to_reporting_period = $_POST['reporting_period'];
+            $period = DateTime::createFromFormat('Y-m', $to_reporting_period);
+            $from_reporting_period  = $period->format('Y') . '-01';
+            $last_year_from = $period->format('Y') - 1 . '-01';
+            $last_year_to = $period->format('Y') - 1 . '-12';
+            $book_id = $_POST['book_id'];
+
+            $query = Yii::$app->db->createCommand("SELECT 
+            chart_of_accounts.account_group,
+            major_accounts.`name` as major_name,
+            chart_of_accounts.general_ledger,
+            IFNULL(current.balance,0) as current_balance,
+            IFNULL(last_year.balance,0)as last_year_balance
+            FROM 
+
+            (SELECT chart_of_accounts.id
+            FROM jev_accounting_entries
+            INNER JOIN chart_of_accounts ON SUBSTRING_INDEX(jev_accounting_entries.object_code,'_',1) = chart_of_accounts.uacs
+            GROUP BY chart_of_accounts.id
+            ) as jev_chart_of_accounts
+            LEFT JOIN 
+            (
+            SELECT 
+             chart_of_accounts.id,
+            (
+            CASE
+            WHEN chart_of_accounts.normal_balance = 'Debit' THEN SUM(jev_accounting_entries.debit)-SUM(jev_accounting_entries.credit)
+            ELSE SUM(jev_accounting_entries.credit)-SUM(jev_accounting_entries.debit)
+            END
+            ) as balance
+            FROM 
+            jev_preparation
+            
+            INNER JOIN jev_accounting_entries ON jev_preparation.id = jev_accounting_entries.jev_preparation_id
+            INNER JOIN chart_of_accounts ON SUBSTRING_INDEX(jev_accounting_entries.object_code,'_',1)  = chart_of_accounts.uacs
+            
+            
+            WHERE 
+            jev_preparation.reporting_period >=:from_reporting_period
+            AND jev_preparation.book_id = :book_id
+            AND jev_preparation.reporting_period <=:to_reporting_period
+            AND chart_of_accounts.account_group IN ('Assets','Liabilities','Equity')
+            GROUP BY  chart_of_accounts.id
+            
+            ) as current ON jev_chart_of_accounts.id = current.id
+            LEFT JOIN (
+            SELECT 
+             chart_of_accounts.id,
+            (
+            CASE
+            WHEN chart_of_accounts.normal_balance = 'Debit' THEN SUM(jev_accounting_entries.debit)-SUM(jev_accounting_entries.credit)
+            ELSE SUM(jev_accounting_entries.credit)-SUM(jev_accounting_entries.debit)
+            END
+            ) as balance
+            FROM 
+            jev_preparation
+            
+            INNER JOIN jev_accounting_entries ON jev_preparation.id = jev_accounting_entries.jev_preparation_id
+            INNER JOIN chart_of_accounts ON SUBSTRING_INDEX(jev_accounting_entries.object_code,'_',1)  = chart_of_accounts.uacs
+            
+            
+            WHERE 
+            jev_preparation.reporting_period >=:last_year_from
+            AND jev_preparation.reporting_period <=:last_year_to
+            AND jev_preparation.book_id = :book_id
+            AND chart_of_accounts.account_group IN ('Assets','Liabilities','Equity')
+            GROUP BY  chart_of_accounts.id
+            
+            ) as last_year ON current.id = last_year.id
+            INNER JOIN chart_of_accounts ON jev_chart_of_accounts.id = chart_of_accounts.id
+            INNER JOIN major_accounts ON chart_of_accounts.major_account_id = major_accounts.id
+            WHERE
+
+            IFNULL(current.balance,0)!=0
+            OR
+            IFNULL(last_year.balance,0)!=0
+            ORDER BY chart_of_accounts.account_group,
+            major_accounts.`name`")
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->bindValue(':to_reporting_period', $to_reporting_period)
+                ->bindValue(':last_year_from', $last_year_from)
+                ->bindValue(':last_year_to', $last_year_to)
+                ->bindValue(':book_id', $book_id)
+                ->queryAll();
+
+
+            $result = ArrayHelper::index($query, null, [function ($element) {
+                return $element['account_group'];
+            }, 'major_name']);
+            return json_encode(
+                [
+                    'result' => $result,
+                    'reporting_period' => $period->format('F Y'),
+                    'current_year' => $period->format('Y'),
+                    'last_year' => $period->format('Y') - 1
+
+                ]
+            );
+        }
+        return $this->render('detailed_financial_position');
     }
 
     // public function actionSubTrial()

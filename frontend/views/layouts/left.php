@@ -209,24 +209,22 @@
                                     'icon' => 'circle-o',
                                     'url' => '#',
                                     'items' => [
-
                                         ['label' => 'General Ledger', 'icon' => 'circle-o', 'url' => ['/general-ledger'],],
                                         ['label' => 'General Journal', 'icon' => 'circle-o', 'url' => ['/jev-preparation/general-journal'],],
                                         ['label' => 'ADADJ', 'icon' => 'circle-o', 'url' => ['/jev-preparation/adadj'],],
                                         ['label' => 'CKDJ', 'icon' => 'circle-o', 'url' => ['/jev-preparation/ckdj'],],
                                         ['label' => 'Trial Balance', 'icon' => 'circle-o', 'url' => ['/trial-balance'],],
-                                        ['label' => 'ConsoTrial Balance', 'icon' => 'circle-o', 'url' => ['/report/conso-trial-balance'],],
-                                        ['label' => 'Sub Trial Balance', 'icon' => 'circle-o', 'url' => ['/jev-preparation/sub-trial-balance'],],
-                                        ['label' => 'Conso Sub Trial Balance', 'icon' => 'circle-o', 'url' => ['/report/conso-sub-trial-balance'],],
+                                        ['label' => 'ConsoTrial Balance', 'icon' => 'circle-o', 'url' => ['/conso-trial-balance'],],
+                                        ['label' => 'Sub Trial Balance', 'icon' => 'circle-o', 'url' => ['/sub-trial-balance'],],
+                                        ['label' => 'Conso Sub Trial Balance', 'icon' => 'circle-o', 'url' => ['/conso-sub-trial-balance'],],
                                         ['label' => 'Subsidiary Ledger', 'icon' => 'circle-o', 'url' => ['/jev-preparation/get-subsidiary-ledger'],],
-                                        ['label' => 'Detailed Financial Position', 'icon' => 'circle-o', 'url' => ['/jev-preparation/detailed-financial-position'],],
+                                        ['label' => 'Detailed Financial Position', 'icon' => 'circle-o', 'url' => ['/report/detailed-financial-position'],],
                                         ['label' => 'Consolidated Financial Position', 'icon' => 'circle-o', 'url' => ['/jev-preparation/consolidated-financial-position'],],
                                         ['label' => 'Detailed F Performance', 'icon' => 'circle-o', 'url' => ['/jev-preparation/detailed-financial-performance'],],
                                         ['label' => 'Consolidated F Performance', 'icon' => 'circle-o', 'url' => ['/jev-preparation/consolidated-financial-performance'],],
                                         ['label' => 'Detailed Cashflow', 'icon' => 'circle-o', 'url' => ['/jev-preparation/detailed-cashflow'],],
                                         ['label' => 'Consolidated Cashflow', 'icon' => 'circle-o', 'url' => ['/jev-preparation/consolidated-cashflow'],],
                                         ['label' => 'Net Asset Changes', 'icon' => 'circle-o', 'url' => ['/jev-preparation/changes-netasset-equity'],],
-
                                         Yii::$app->user->can('super-user') ?     ['label' => 'Transaction Archive', 'icon' => 'circle-o', 'url' => ['/report/transaction-archive'],] : [],
 
                                     ],

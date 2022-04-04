@@ -171,19 +171,27 @@ use yii\widgets\ActiveForm;
 
         for (var i = 0; i < result.length; i++) {
 
+            const dv_num = result[i]['dv_number'] != null ? result[i]['dv_number'] : '';
+            const parti = result[i]['particular'] != null ? result[i]['particular'] : '';
+            const total_withdrawal = result[i]['total_withdrawal'] != null ? result[i]['total_withdrawal'] : '';
+            const total_vat = result[i]['total_vat'] != null ? result[i]['total_vat'] : '';
+            const total_expanded = result[i]['total_expanded'] != null ? result[i]['total_expanded'] : '';
+            const total_liquidation_damage = result[i]['total_liquidation_damage'] != null ? result[i]['total_liquidation_damage'] : '';
+
+
             var row = `<tr>
                         <td style='display:none'><input  value='${result[i]['id']}' type='text' name='liquidation_id[]'/></td>
                         <td>${result[i]['province']}</td>
                         <td>${result[i]['check_date']}</td>
                         <td>${result[i]['check_number']}</td>
-                        <td>${result[i]['dv_number']}</td>
+                        <td>${dv_num}</td>
                         <td>${result[i]['reporting_period']}</td>
                         <td>${result[i]['payee']}</td>
-                        <td>${result[i]['particular']}</td>
-                        <td>${result[i]['total_withdrawal']}</td>
-                        <td>${result[i]['total_vat']}</td>
-                        <td>${result[i]['total_expanded']}</td>
-                        <td>${result[i]['total_liquidation_damage']}</td>
+                        <td>${parti}</td>
+                        <td>${total_withdrawal}</td>
+                        <td>${total_vat}</td>
+                        <td>${total_expanded}</td>
+                        <td>${total_liquidation_damage}</td>
                         <td>${result[i]['gross_payment']}</td>
                         <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
                     </tr>

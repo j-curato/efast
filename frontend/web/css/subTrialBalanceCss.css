@@ -1,0 +1,132 @@
+.container {
+    display: none;
+}
+
+
+.headerItems>h6 {
+    font-weight: bold;
+}
+
+.amount {
+    text-align: right;
+}
+
+
+.table {
+    position: relative;
+    margin-top: 20px;
+}
+
+table,
+th,
+td {
+    border: 1px solid black;
+    padding: 12px;
+    background-color: white;
+}
+
+
+table {
+    border: 1px solid black;
+    width: 100%;
+}
+
+.container {
+    margin-top: 5px;
+    position: relative;
+    padding: 10px;
+
+}
+
+thead>tr>td {
+    border: 1px solid black;
+    padding: 10px;
+    font-weight: bold;
+}
+
+#fund {
+    display: none;
+}
+
+.actions {
+    padding: 20px;
+    position: relative;
+}
+
+@media print {
+    .actions {
+        display: none;
+    }
+
+    table,
+    th,
+    td {
+        border: 1px solid black;
+        padding: 5px;
+        font-size: 10px;
+    }
+
+    @page {
+        size: auto;
+        margin: 0;
+        margin-top: 0.5cm;
+    }
+
+
+
+    .container {
+        margin: 0;
+        top: 0;
+    }
+
+    .entity_name {
+        font-size: 5pt;
+    }
+
+    table,
+    th,
+    td {
+        border: 1px solid black;
+        padding: 5px;
+        background-color: white;
+    }
+
+    .container {
+
+        border: none;
+    }
+
+
+    table {
+        page-break-after: auto
+    }
+
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto
+    }
+
+    td {
+        page-break-inside: avoid;
+        page-break-after: auto
+    }
+
+    /* thead {
+        display: table-header-group
+    } */
+
+    .main-footer {
+        display: none;
+    }
+    .btn{
+        display: none;
+    }
+}
+
+#bars1 {
+    display: none;
+}
+
+.table {
+    display: none;
+}

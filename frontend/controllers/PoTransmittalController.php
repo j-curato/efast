@@ -133,7 +133,7 @@ class PoTransmittalController extends Controller
         if ($_POST) {
             $date = $_POST['date'];
             $transmittal_update_id = $_POST['transmittal_update_id'];
-            $liquidation_id = !empty($_POST['liquidation_id']) ? $_POST['liquidation_id'] : [];
+            $liquidation_id = !empty($_POST['liquidation_id']) ? array_unique($_POST['liquidation_id']) : [];
             $transaction = Yii::$app->db->beginTransaction();
 
             if (!empty($transmittal_update_id)) {
@@ -262,7 +262,7 @@ class PoTransmittalController extends Controller
     public function getTransmittalNumber($date)
     {
         $province = Yii::$app->user->identity->province;
-        $year = DateTime::createFromFormat('Y-m-d',$date)->format('Y');
+        $year = DateTime::createFromFormat('Y-m-d', $date)->format('Y');
         $query = Yii::$app->db->createCommand("SELECT CAST(substring_index(transmittal_number,'-',-1 ) AS UNSIGNED) as id 
         FROM po_transmittal
         WHERE po_transmittal.transmittal_number LIKE :province
@@ -270,7 +270,7 @@ class PoTransmittalController extends Controller
         ORDER BY id DESC LIMIT 1
         ")
             ->bindValue(':province', $province . '%')
-            ->bindValue(':_year',$year.'%')
+            ->bindValue(':_year', $year . '%')
             ->queryOne();
         $num = 1;
         if (!empty($query)) {

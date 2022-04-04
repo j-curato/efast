@@ -51,13 +51,12 @@ function displayData(beginning_balance, general_ledger) {
 function query(csrfParam, csrfToken, object_code, reporting_period, book_id) {
   $.ajax({
     type: "POST",
-    url:
-      window.location.pathname + "?r=jev-preparation/generate-general-ledger",
+    url: window.location.pathname + "?r=general-ledger/generate-general-ledger",
     data: {
       object_code: object_code,
       book_id: book_id,
       reporting_period: reporting_period,
-      '_csrf-frontend': csrfToken,
+      "_csrf-frontend": csrfToken,
     },
     success: function (data) {
       const res = JSON.parse(data);
