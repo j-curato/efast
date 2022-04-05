@@ -217,18 +217,25 @@ class ConsoTrialBalanceController extends Controller
         $and $sql
         GROUP BY chart) as accounting_entries ON jev_object_codes.obj_code = accounting_entries.chart
         LEFT JOIN (SELECT 
-            accounting_codes.object_code,
-            (CASE
-                WHEN accounting_codes.normal_balance = 'Debit' THEN SUM(jev_beginning_balance_item.debit)  - SUM(jev_beginning_balance_item.credit)
-                ELSE SUM(jev_beginning_balance_item.credit) - SUM(jev_beginning_balance_item.debit)
-            END) as total_beginning_balance
-            FROM jev_beginning_balance_item 
-          LEFT JOIN jev_beginning_balance ON jev_beginning_balance_item.jev_beginning_balance_id =jev_beginning_balance.id
-          LEFT JOIN accounting_codes ON jev_beginning_balance_item.object_code = accounting_codes.object_code
-          LEFT JOIN books ON jev_beginning_balance.book_id = books.id
-          WHERE 
+                b_balance.object_code,
+                SUM(b_balance.total_beginning_balance) as total_beginning_balance
+                FROM (
+                SELECT 
+                SUBSTRING_INDEX(accounting_codes.object_code,'_',1) as object_code,
+                (CASE
+                WHEN accounting_codes.normal_balance = 'Debit' THEN IFNULL(jev_beginning_balance_item.debit,0)  - IFNULL(jev_beginning_balance_item.credit,0)
+                ELSE IFNULL(jev_beginning_balance_item.credit,0) - IFNULL(jev_beginning_balance_item.debit,0)
+                END) as total_beginning_balance
+                FROM jev_beginning_balance_item 
+                LEFT JOIN jev_beginning_balance ON jev_beginning_balance_item.jev_beginning_balance_id =jev_beginning_balance.id
+                LEFT JOIN accounting_codes ON jev_beginning_balance_item.object_code = accounting_codes.object_code
+                LEFT JOIN books ON jev_beginning_balance.book_id = books.id
+                WHERE 
                 jev_beginning_balance.`year` = :_year
                 $book_and $book_sql2
+                ) b_balance
+                GROUP BY b_balance.object_code
+               
         ) as begin_balance  ON jev_object_codes.obj_code = begin_balance.object_code
         LEFT JOIN chart_of_accounts ON jev_object_codes.obj_code = chart_of_accounts.uacs
         WHERE 

@@ -182,10 +182,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 padding: 10px;
                 /* overflow: scroll; */
 
-                overflow-y: hidden;
-                overflow-x: auto;
-
-
             }
 
             .head>th {

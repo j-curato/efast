@@ -3685,11 +3685,7 @@ class ReportController extends \yii\web\Controller
         }
         return $this->render('detailed_financial_position');
     }
-    public function actionExportDetailedDv()
-    {
-        if ($_POST) {
-        }
-    }
+
     // public function actionSubTrial()
     // {
     //     if ($_POST) {
