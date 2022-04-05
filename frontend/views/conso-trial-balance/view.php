@@ -16,7 +16,6 @@ $this->params['breadcrumbs'][] = ['label' => 'Sub Trial Balances', 'url' => ['in
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 ?>
 <div class="jev-preparation-index">
-
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
@@ -26,13 +25,14 @@ $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' 
                 'method' => 'post',
             ],
         ]) ?>
+        <button id="export" type='button' class="btn-xs btn-success" style="margin:1rem;"><i class="glyphicon glyphicon-export"></i></button>
+
     </p>
 
     <?php
     $fund = Yii::$app->db->createCommand("SELECT fund_cluster_code.id,fund_cluster_code.name FROM fund_cluster_code")->queryAll();
     $books = Yii::$app->db->createCommand("SELECT books.id,books.name FROM books")->queryAll();
     ?>
-
     <div class="container panel panel-default">
 
         <table id="data_table">
@@ -267,5 +267,23 @@ $csrfToken = Yii::$app->request->csrfToken;
 
             query('<?= $csrfToken ?>', reporting_period, book_type, entry_type)
         }, 2000)
+        $('#export').click(function(e) {
+            e.preventDefault();
+            $.ajax({
+                container: "#employee",
+                type: 'POST',
+                url: window.location.pathname + '?r=conso-trial-balance/export',
+                data: {
+                    reporting_period: reporting_period,
+                    entry_type: entry_type,
+                    book_type: book_type
+                },
+                success: function(data) {
+                    var res = JSON.parse(data)
+                    window.open(res)
+                }
+
+            })
+        })
     })
 </script>

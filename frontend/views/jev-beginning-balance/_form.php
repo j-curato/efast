@@ -16,11 +16,13 @@ use yii\widgets\ActiveForm;
 
     <div class="container">
 
-        <?php $form = ActiveForm::begin(); ?>
+
 
         <div class="row">
             <div class="col-sm-3">
-                <?= $form->field($model, 'year')->widget(DatePicker::class, [
+                <?= DatePicker::widget([
+                    'name' => 'year',
+                    'value' => $model->year,
                     'pluginOptions' => [
                         'format' => 'yyyy',
                         'autoclose' => true,
@@ -29,7 +31,10 @@ use yii\widgets\ActiveForm;
                 ]) ?>
             </div>
             <div class="col-sm-3">
-                <?= $form->field($model, 'book_id')->widget(Select2::class, [
+                <?= Select2::widget([
+                    'id' => 'book_id',
+                    'name' => 'book_id',
+                    'value' => $model->book_id,
                     'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
                     'pluginOptions' => [
                         'placeholder' => 'Select Book'
@@ -51,7 +56,7 @@ use yii\widgets\ActiveForm;
                                 <div class='row'>
                                     <div class='col-sm-4'>
                                         <label for='chart_of_account'>Chart of Accounts</label>
-                                        <select required name='object_code[$i]' class='chart-of-account form-control' required style='width: 100%'>
+                                        <select required name='object_code[$i]' class='chart-of-account object_code form-control' required style='width: 100%'>
                                             <option value='{$val['object_code']}'>" . $val['object_code'] . '-' . $val['account_title'] . "</option>
                                         </select>
                                     </div>
@@ -94,7 +99,7 @@ use yii\widgets\ActiveForm;
                             <div class="row">
                                 <div class="col-sm-4">
                                     <label for="chart_of_account">Chart of Accounts</label>
-                                    <select required name="object_code[0]" class="chart-of-account form-control" required style="width: 100%">
+                                    <select required name="object_code[0]" class="chart-of-account object_code form-control" required style="width: 100%">
                                         <option></option>
                                     </select>
                                 </div>
@@ -130,16 +135,16 @@ use yii\widgets\ActiveForm;
                             <hr>
                         </td>
                     </tr>
-                  
+
                 <?php } ?>
             </tbody>
         </table>
 
         <div class="form-group">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+            <button class="btn btn-success" type="button" id="save">Save</button>
         </div>
 
-        <?php ActiveForm::end(); ?>
+
     </div>
 
 </div>
@@ -258,7 +263,40 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
 
         })
 
+        $('#save').click(function(e) {
+            const debit = []
+            $(".debit").map(function() {
+                let index_number = parseInt(this.name.replace(/[^0-9.]/g, ""));
+                debit[index_number] = this.value
+            }).get();
+            let credit = []
+            $(".credit").map(function() {
+                let index_number = parseInt(this.name.replace(/[^0-9.]/g, ""));
+                credit[index_number] = this.value
 
+            }).get()
+            const object_codes = []
+            $('.object_code').map(function() {
+                let index_number = parseInt(this.name.replace(/[^0-9.]/g, ""));
+                object_codes[index_number] = this.value
+
+            }).get()
+
+            $.ajax({
+                type: 'POST',
+                url: window.location.href,
+                data: {
+                    year: $("input[name='year']").val(),
+                    book_id: $("#book_id").val(),
+                    object_code: JSON.stringify(Object.assign({}, object_codes)),
+                    debit: JSON.stringify(Object.assign({}, debit)),
+                    credit: JSON.stringify(Object.assign({}, credit))
+                },
+                success: function(data) {
+                    console.log(data)
+                }
+            })
+        })
 
     })
 </script>

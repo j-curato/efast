@@ -11,7 +11,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="jev-preparation-index">
-
+<button id="export" type='button' class="btn-xs btn-success" style="margin:1rem;"><i class="glyphicon glyphicon-export" ></i></button>
 
 
     <?php
@@ -263,6 +263,25 @@ $csrfParam = Yii::$app->request->csrfParam;
 
         })
         query('<?php echo $csrfParam ?>', '<?php echo $csrfToken ?>', object_code, reporting_period, book_id)
+        $('#export').click(function(e) {
+            e.preventDefault();
+            $.ajax({
+                container: "#employee",
+                type: 'POST',
+                url: window.location.pathname + '?r=general-ledger/export',
+                data: {
+                    reporting_period: reporting_period,
+                    object_code: object_code,
+                    book_id: book_id
+                },
+                success: function(data) {
+                    var res = JSON.parse(data)
+                    console.log(res)
+                    window.open(res)
+                }
+
+            })
+        })
     })
 
 

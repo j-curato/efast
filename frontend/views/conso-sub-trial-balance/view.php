@@ -34,6 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
+        <button id="export" type='button' class="btn-xs btn-success" style="margin:1rem;"><i class="glyphicon glyphicon-export"></i></button>
     </p>
     <div class="container panel panel-default">
 
@@ -268,5 +269,21 @@ $csrfToken = Yii::$app->request->csrfToken;
         setTimeout(() => {
             query('<?= $csrfToken ?>', reporting_period, book_type)
         }, 500);
+        $('#export').click(function(e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: window.location.pathname + '?r=conso-sub-trial-balance/export',
+                data: {
+                    reporting_period: reporting_period,
+                    book_type: book_type
+                },
+                success: function(data) {
+                    var res = JSON.parse(data)
+                    window.open(res)
+                }
+
+            })
+        })
     })
 </script>

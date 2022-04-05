@@ -107,11 +107,18 @@ class JevBeginningBalanceController extends Controller
     {
         $model = new JevBeginningBalance();
 
-        if ($model->load(Yii::$app->request->post())) {
+        if ($_POST) {
+            $year = $_POST['year'];
+            $book_id = $_POST['book_id'];
             $transaction = Yii::$app->db->beginTransaction();
-            $debits = !empty($_POST['debit']) ? $_POST['debit'] : [];
-            $credits = !empty($_POST['credit']) ? $_POST['credit'] : [];
-            $object_codes = !empty($_POST['object_code']) ? $_POST['object_code'] : [];
+            $debits = !empty($_POST['debit']) ? (array)json_decode($_POST['debit']) : [];
+            $credits = !empty($_POST['credit']) ? (array)json_decode($_POST['credit']) : [];
+            $object_codes = !empty($_POST['object_code']) ? (array)json_decode($_POST['object_code']) : [];
+            $model->book_id = $book_id;
+            $model->year = $year;
+            // var_dump((array)$object_codes);
+            // echo "<br>";
+            // return var_dump((array)$debits);
 
             try {
 
@@ -163,16 +170,19 @@ class JevBeginningBalanceController extends Controller
             ->bindValue(':id', $id)
             ->queryAll();
 
-        if ($model->load(Yii::$app->request->post())) {
+        if ($_POST) {
             $transaction = Yii::$app->db->beginTransaction();
 
             Yii::$app->db->createCommand("DELETE FROM jev_beginning_balance_item WHERE jev_beginning_balance_id = :id")
                 ->bindValue(':id', $id)
                 ->query();
-            $debits = !empty($_POST['debit']) ? $_POST['debit'] : [];
-            $credits = !empty($_POST['credit']) ? $_POST['credit'] : [];
-            $object_codes = !empty($_POST['object_code']) ? $_POST['object_code'] : [];
-
+            $year = $_POST['year'];
+            $book_id = $_POST['book_id'];
+            $debits = !empty($_POST['debit']) ? (array)json_decode($_POST['debit']) : [];
+            $credits = !empty($_POST['credit']) ? (array)json_decode($_POST['credit']) : [];
+            $object_codes = !empty($_POST['object_code']) ? (array)json_decode($_POST['object_code']) : [];
+            $model->book_id = $book_id;
+            $model->year = $year;
             try {
 
                 if ($flag = true) {

@@ -166,6 +166,76 @@ class GeneralLedgerController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+    public function beginningBalance(
+        $year,
+        $book_id,
+        $object_code
+    ) {
+        $beginning_balance = Yii::$app->db->createCommand("SELECT
+        jev_beginning_balance_item.debit,
+        jev_beginning_balance_item.credit,
+        (CASE
+            WHEN chart_of_accounts.normal_balance ='Debit' THEN jev_beginning_balance_item.debit - jev_beginning_balance_item.credit
+        ELSE jev_beginning_balance_item.credit -  jev_beginning_balance_item.debit
+        END) as beginning_balance_total
+        
+        FROM jev_beginning_balance_item 
+        
+        LEFT JOIN jev_beginning_balance ON jev_beginning_balance_item.jev_beginning_balance_id =jev_beginning_balance.id
+        LEFT JOIN chart_of_accounts ON jev_beginning_balance_item.object_code = chart_of_accounts.uacs
+            WHERE jev_beginning_balance.`year` = :_year
+            AND jev_beginning_balance_item.object_code = :object_code
+            AND jev_beginning_balance.book_id  = :book_id
+        
+        ")
+            ->bindValue(':_year', $year)
+            ->bindValue(':book_id', $book_id)
+            ->bindValue(':object_code', $object_code)
+            ->queryOne();
+        return $beginning_balance;
+    }
+    public function query(
+        $from_reporting_period,
+        $to_reporting_period,
+        $book_id,
+        $object_code
+    ) {
+        $query = Yii::$app->db->createCommand("SELECT
+                accounting_entries.*,
+                chart_of_accounts.normal_balance,
+                (CASE 
+                WHEN chart_of_accounts.normal_balance = 'Debit' THEN accounting_entries.debit - accounting_entries.credit
+                ELSE accounting_entries.credit - accounting_entries.debit
+                END) as total
+                FROM(
+                SELECT  
+                jev_preparation.reporting_period,
+                jev_preparation.date,
+                jev_preparation.explaination as particular,
+                jev_preparation.jev_number,
+                jev_accounting_entries.debit,
+                jev_accounting_entries.credit,
+                SUBSTRING_INDEX(jev_accounting_entries.object_code,'_',1) as uacs
+                
+                
+                FROM jev_accounting_entries
+                LEFT JOIN jev_preparation ON jev_accounting_entries.jev_preparation_id = jev_preparation.id
+                LEFT JOIN books ON jev_preparation.book_id =  books.id
+                WHERE jev_accounting_entries.object_code LIKE :object_code
+                AND jev_preparation.reporting_period <= :to_reporting_period
+                AND jev_preparation.reporting_period >=:from_reporting_period
+                AND books.id = :book_id
+                ) as accounting_entries
+                INNER  JOIN chart_of_accounts ON accounting_entries.uacs = chart_of_accounts.uacs
+                ORDER BY accounting_entries.`date`
+              ")
+            ->bindValue(':from_reporting_period', $from_reporting_period)
+            ->bindValue(':to_reporting_period', $to_reporting_period)
+            ->bindValue(':book_id', $book_id)
+            ->bindValue(':object_code', $object_code . '%')
+            ->queryAll();
+        return $query;
+    }
     public function actionGenerateGeneralLedger()
     {
         if ($_POST) {
@@ -177,65 +247,102 @@ class GeneralLedgerController extends Controller
             $object_code = $_POST['object_code'];
             $year = $reporting_period->format('Y');
 
-            $beginning_balance = Yii::$app->db->createCommand("SELECT
-                jev_beginning_balance_item.debit,
-                jev_beginning_balance_item.credit,
-                (CASE
-                    WHEN chart_of_accounts.normal_balance ='Debit' THEN jev_beginning_balance_item.debit - jev_beginning_balance_item.credit
-                ELSE jev_beginning_balance_item.credit -  jev_beginning_balance_item.debit
-                END) as beginning_balance_total
-                
-                FROM jev_beginning_balance_item 
-                
-                LEFT JOIN jev_beginning_balance ON jev_beginning_balance_item.jev_beginning_balance_id =jev_beginning_balance.id
-                LEFT JOIN chart_of_accounts ON jev_beginning_balance_item.object_code = chart_of_accounts.uacs
-                    WHERE jev_beginning_balance.`year` = :_year
-                    AND jev_beginning_balance_item.object_code = :object_code
-                    AND jev_beginning_balance.book_id  = :book_id
-                
-                ")
-                ->bindValue(':_year', $year)
-                ->bindValue(':book_id', $book_id)
-                ->bindValue(':object_code', $object_code)
-                ->queryOne();
-            $query = Yii::$app->db->createCommand("SELECT
-                        accounting_entries.*,
-                        chart_of_accounts.normal_balance,
-                        (CASE 
-                        WHEN chart_of_accounts.normal_balance = 'Debit' THEN accounting_entries.debit - accounting_entries.credit
-                        ELSE accounting_entries.credit - accounting_entries.debit
-                        END) as total
-                        FROM(
-                        SELECT  
-                        jev_preparation.reporting_period,
-                        jev_preparation.date,
-                        jev_preparation.explaination as particular,
-                        jev_preparation.jev_number,
-                        jev_accounting_entries.debit,
-                        jev_accounting_entries.credit,
-                        SUBSTRING_INDEX(jev_accounting_entries.object_code,'_',1) as uacs
-                        
-                        
-                        FROM jev_accounting_entries
-                        LEFT JOIN jev_preparation ON jev_accounting_entries.jev_preparation_id = jev_preparation.id
-                        LEFT JOIN books ON jev_preparation.book_id =  books.id
-                        WHERE jev_accounting_entries.object_code LIKE :object_code
-                        AND jev_preparation.reporting_period <= :to_reporting_period
-                        AND jev_preparation.reporting_period >=:from_reporting_period
-                        AND books.id = :book_id
-                        ) as accounting_entries
-                        INNER  JOIN chart_of_accounts ON accounting_entries.uacs = chart_of_accounts.uacs
-                        ORDER BY accounting_entries.`date`
-                ")
-                ->bindValue(':from_reporting_period', $from_reporting_period)
-                ->bindValue(':to_reporting_period', $to_reporting_period)
-                ->bindValue(':book_id', $book_id)
-                ->bindValue(':object_code', $object_code . '%')
-                ->queryAll();
+            $beginning_balance = $this->beginningBalance(
+                $year,
+                $book_id,
+                $object_code
+            );
+            $query = $this->query(
+                $from_reporting_period,
+                $to_reporting_period,
+                $book_id,
+                $object_code
+            );
             return json_encode([
                 'beginning_balance' => $beginning_balance,
                 'query' => $query,
             ]);
+        }
+    }
+    public function actionExport()
+    {
+
+        if ($_POST) {
+            $to_reporting_period = $_POST['reporting_period'];
+            $reporting_period = DateTime::createFromFormat('Y-m', $to_reporting_period);
+            $from_reporting_period = $reporting_period->format('Y') . '-01';
+            $book_id = $_POST['book_id'];
+            $object_code = $_POST['object_code'];
+            $year = $reporting_period->format('Y');
+
+            $beginning_balance_query = $this->beginningBalance(
+                $year,
+                $book_id,
+                $object_code
+            );
+            $query = $this->query(
+                $from_reporting_period,
+                $to_reporting_period,
+                $book_id,
+                $object_code
+            );
+
+            $beginning_balance = floatval(!empty($beginning_balance_query['beginning_balance_total']) ? $beginning_balance_query['beginning_balance_total'] : 0);
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            // header
+            $sheet->mergeCells('A1:D1');
+            $sheet->setCellValue('A1', "DEPARTMENT OF TRADE AND INDUSTRY ");
+            $sheet->setCellValue('A2', "Reporting Period");
+            $sheet->setCellValue('B2', "Date");
+            $sheet->setCellValue('C2', "Particulars");
+            $sheet->setCellValue('D2', "Reference No.");
+            $sheet->setCellValue('E2', "Debit");
+            $sheet->setCellValue('F2', "Credit");
+            $sheet->setCellValue('G2', "Balance");
+
+            $sheet->setCellValueByColumnAndRow(3, 3, 'Beginning Balance');
+            $sheet->setCellValueByColumnAndRow(5, 3, number_format($beginning_balance_query['debit']));
+            $sheet->setCellValueByColumnAndRow(6, 3, number_format($beginning_balance_query['credit']));
+            $x = 7;
+            $styleArray = array(
+                'borders' => array(
+                    'allBorders' => array(
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                        'color' => array('argb' => 'FFFF0000'),
+                    ),
+                ),
+            );
+            $row = 4;
+            $total_debit = 0;
+            $total_credit = 0;
+            foreach ($query  as  $val) {
+                $total = floatval($val['total']);
+                $beginning_balance += $total;
+                $debit = $val['debit'];
+                $credit = $val['credit'];
+                $sheet->setCellValueByColumnAndRow(1, $row,  $val['reporting_period']);
+                $sheet->setCellValueByColumnAndRow(2, $row,  $val['date']);
+                $sheet->setCellValueByColumnAndRow(3, $row,  $val['particular']);
+                $sheet->setCellValueByColumnAndRow(4, $row,  $val['jev_number']);
+                $sheet->setCellValueByColumnAndRow(5, $row, $debit);
+                $sheet->setCellValueByColumnAndRow(6, $row, $credit);
+                $sheet->setCellValueByColumnAndRow(7, $row, $beginning_balance);
+                $row++;
+            }
+            date_default_timezone_set('Asia/Manila');
+            $id = 'general_ledger' . $to_reporting_period . '_' . uniqid();
+            $file_name = "$id.xlsx";
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+            $path = Yii::getAlias('@webroot') . '/transaction';
+            $file = $path . "/$id.xlsx";
+            $file2 = "transaction/$id.xlsx";
+            $writer->save($file);
+            header('Content-Type: application/octet-stream');
+            header("Content-Transfer-Encoding: Binary");
+            header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
+            return json_encode($file2);
+            exit();
         }
     }
 }

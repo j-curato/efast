@@ -153,121 +153,223 @@ class TrialBalanceController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+    public function query($to_reporting_period, $book_id, $entry_type)
+    {
+        $r_period_date = DateTime::createFromFormat('Y-m', $to_reporting_period);
+
+        $year = $r_period_date->format('Y');
+        $from_reporting_period = $year . '-01';
+
+        $and = '';
+        $sql = '';
+        $type = '';
+        $params = [];
+        // return json_encode($entry_type);
+        if ($entry_type !== 'post-closing') {
+            $and = 'AND ';
+            if ($entry_type === 'pre-closing') {
+                $type = 'Non-Closing';
+            } else if ($entry_type = 'closing') {
+                $type = 'Closing';
+            }
+            $sql = Yii::$app->db->getQueryBuilder()->buildCondition('jev_preparation.entry_type = :entry_type', $params);
+        }
+
+
+
+        $query = Yii::$app->db->createCommand("SELECT 
+        chart_of_accounts.uacs as object_code,
+        chart_of_accounts.general_ledger as account_title,
+        chart_of_accounts.normal_balance,
+        (CASE
+        WHEN chart_of_accounts.normal_balance = 'Debit' THEN IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.debit,0) - IFNULL(accounting_entries.credit,0))
+        ELSE IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.credit,0) - IFNULL(accounting_entries.debit,0))
+        END) as total_debit_credit,
+        begin_balance.total_beginning_balance as begin_balance
+
+        
+         FROM (
+        
+        SELECT
+        SUBSTRING_INDEX(jev_accounting_entries.object_code,'_',1) as obj_code
+        FROM jev_accounting_entries 
+        LEFT JOIN jev_preparation ON jev_accounting_entries.jev_preparation_id = jev_preparation.id
+        WHERE 
+         jev_preparation.book_id = :book_id
+
+        AND jev_preparation.reporting_period <=:to_reporting_period
+        GROUP BY obj_code
+        UNION
+        SELECT 
+            SUBSTRING_INDEX(jev_beginning_balance_item.object_code,'_',1) as object_code
+            FROM jev_beginning_balance
+            LEFT JOIN jev_beginning_balance_item ON jev_beginning_balance.id = jev_beginning_balance_item.jev_beginning_balance_id
+        WHERE  jev_beginning_balance.book_id=:book_id
+        GROUP BY object_code
+        ) as jev_object_codes
+        
+        LEFT JOIN (
+        SELECT
+        
+        SUM(jev_accounting_entries.debit) as debit,
+        SUM(jev_accounting_entries.credit) as credit,
+        SUBSTRING_INDEX(jev_accounting_entries.object_code,'_',1) as chart
+        FROM jev_accounting_entries 
+        LEFT JOIN jev_preparation ON jev_accounting_entries.jev_preparation_id = jev_preparation.id
+        WHERE 
+         jev_preparation.book_id = :book_id
+        AND jev_preparation.reporting_period >=:from_reporting_period
+        AND jev_preparation.reporting_period <=:to_reporting_period
+        $and $sql
+        GROUP BY chart)
+         as accounting_entries ON jev_object_codes.obj_code = accounting_entries.chart
+        LEFT JOIN (SELECT 
+                b_balance.object_code,
+                SUM(b_balance.total_beginning_balance) as total_beginning_balance
+                FROM (
+                SELECT 
+                SUBSTRING_INDEX(accounting_codes.object_code,'_',1) as object_code,
+                (CASE
+                WHEN accounting_codes.normal_balance = 'Debit' THEN IFNULL(jev_beginning_balance_item.debit,0)  - IFNULL(jev_beginning_balance_item.credit,0)
+                ELSE IFNULL(jev_beginning_balance_item.credit,0) - IFNULL(jev_beginning_balance_item.debit,0)
+                END) as total_beginning_balance
+                FROM jev_beginning_balance_item 
+                LEFT JOIN jev_beginning_balance ON jev_beginning_balance_item.jev_beginning_balance_id =jev_beginning_balance.id
+                LEFT JOIN accounting_codes ON jev_beginning_balance_item.object_code = accounting_codes.object_code
+                LEFT JOIN books ON jev_beginning_balance.book_id = books.id
+                WHERE 
+                jev_beginning_balance.`year` = :_year
+                AND jev_beginning_balance.book_id = :book_id
+                ) b_balance
+                GROUP BY b_balance.object_code
+
+        
+        
+        ) as begin_balance  ON jev_object_codes.obj_code = begin_balance.object_code
+        LEFT JOIN chart_of_accounts ON jev_object_codes.obj_code = chart_of_accounts.uacs
+        
+        WHERE 
+        (CASE
+        WHEN chart_of_accounts.normal_balance = 'Debit' THEN IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.debit,0) - IFNULL(accounting_entries.credit,0))
+        ELSE IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.credit,0) - IFNULL(accounting_entries.debit,0))
+        END) !=0
+        ORDER BY chart_of_accounts.uacs  ASC
+        ", $params)
+            ->bindValue(':_year', $year)
+            ->bindValue(':to_reporting_period', $to_reporting_period)
+            ->bindValue(':from_reporting_period', $from_reporting_period)
+            ->bindValue(':book_id', $book_id)
+            ->bindValue(':entry_type', $type)
+            ->queryAll();
+        return $query;
+    }
     public function actionGenerateTrialBalance()
     {
         if ($_POST) {
             $to_reporting_period = $_POST['reporting_period'];
-            $r_period_date = DateTime::createFromFormat('Y-m', $to_reporting_period);
+            $book_id  = $_POST['book_id'];
+            $entry_type = strtolower($_POST['entry_type']);
+
             $month  = date('F Y', strtotime($to_reporting_period));
-            $year = $r_period_date->format('Y');
-            $from_reporting_period = $year . '-01';
+            $book_name = Books::findOne($book_id)->name;
+            $query  = $this->query($to_reporting_period, $book_id, $entry_type);
+            return json_encode(['result' => $query, 'month' => $month, 'book_name' => $book_name]);
+        }
+    }
+    public function actionExport()
+    {
+
+        if ($_POST) {
+            $to_reporting_period = $_POST['reporting_period'];
             $book_id  = $_POST['book_id'];
             $entry_type = strtolower($_POST['entry_type']);
             $book_name = Books::findOne($book_id)->name;
-            $and = '';
-            $sql = '';
-            $type = '';
-            $params = [];
-            // return json_encode($entry_type);
-            if ($entry_type !== 'post-closing') {
-                $and = 'AND ';
-                if ($entry_type === 'pre-closing') {
-                    $type = 'Non-Closing';
-                } else if ($entry_type = 'closing') {
-                    $type = 'Closing';
+            $query  = $this->query($to_reporting_period, $book_id, $entry_type);
+
+
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            // header
+            $sheet->mergeCells('A1:D1');
+            $sheet->setCellValue('A1', "DEPARTMENT OF TRADE AND INDUSTRY ");
+            $sheet->setCellValue('A2', "Account Name");
+            $sheet->setCellValue('B2', "Object Code");
+            $sheet->setCellValue('C2', "Debit");
+            $sheet->setCellValue('D2', "Credit");
+
+
+
+            $x = 7;
+            $styleArray = array(
+                'borders' => array(
+                    'allBorders' => array(
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                        'color' => array('argb' => 'FFFF0000'),
+                    ),
+                ),
+            );
+
+
+            $row = 3;
+            $total_debit = 0;
+            $total_credit = 0;
+            foreach ($query  as  $val) {
+
+                $total = $val['total_debit_credit'];
+                $normal_balance = $val['normal_balance'];
+                $debit = '';
+                $credit = '';
+                if (strtolower($normal_balance) == null) {
+                    $debit = "No Normal Balance";
+                    $credit = "No Normal Balance";
+                } else if (strtolower($normal_balance) == "debit") {
+                    if ($total < 0) {
+
+                        $credit = number_format($total * -1, 2);
+                        $total_credit += $total * -1;
+                    } else {
+                        $debit = number_format($total, 2);
+                        $total_debit += $total;
+                    }
+                } else if (strtolower($normal_balance) == "credit") {
+                    if ($total < 0) {
+
+                        $debit = number_format($total * -1, 2);
+                        $total_debit += $total * -1;
+                    } else {
+                        $credit = number_format($total, 2);
+                        $total_credit += $total;
+                    }
                 }
-                $sql = Yii::$app->db->getQueryBuilder()->buildCondition('jev_preparation.entry_type = :entry_type', $params);
+
+                $sheet->setCellValueByColumnAndRow(1, $row,  $val['account_title']);
+                $sheet->setCellValueByColumnAndRow(2, $row,  $val['object_code']);
+                $sheet->setCellValueByColumnAndRow(3, $row, $debit);
+                $sheet->setCellValueByColumnAndRow(4, $row, $credit);
+                $row++;
             }
+            $sheet->mergeCellsByColumnAndRow(1, $row, 2, $row);
+            $sheet->setCellValueByColumnAndRow(1, $row, 'Total');
+            $sheet->setCellValueByColumnAndRow(3, $row, number_format($total_debit));
+            $sheet->setCellValueByColumnAndRow(4, $row, number_format($total_credit));
+            date_default_timezone_set('Asia/Manila');
+            $id = 'trial_balance_' . $book_name . '_' . $to_reporting_period . '_' . uniqid();
+            $file_name = "$id.xlsx";
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+
+            $path = Yii::getAlias('@webroot') . '/transaction';
+
+            $file = $path . "/$id.xlsx";
+            $file2 = "transaction/$id.xlsx";
+            $writer->save($file);
+            header('Content-Type: application/octet-stream');
+            header("Content-Transfer-Encoding: Binary");
+            header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
+
+            return json_encode($file2);
 
 
-
-            $query = Yii::$app->db->createCommand("SELECT 
-            chart_of_accounts.uacs as object_code,
-            chart_of_accounts.general_ledger as account_title,
-            chart_of_accounts.normal_balance,
-            (CASE
-            WHEN chart_of_accounts.normal_balance = 'Debit' THEN IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.debit,0) - IFNULL(accounting_entries.credit,0))
-            ELSE IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.credit,0) - IFNULL(accounting_entries.debit,0))
-            END) as total_debit_credit,
-            begin_balance.total_beginning_balance as begin_balance
-
-            
-             FROM (
-            
-            SELECT
-            SUBSTRING_INDEX(jev_accounting_entries.object_code,'_',1) as obj_code
-            FROM jev_accounting_entries 
-            LEFT JOIN jev_preparation ON jev_accounting_entries.jev_preparation_id = jev_preparation.id
-            WHERE 
-             jev_preparation.book_id = :book_id
-
-            AND jev_preparation.reporting_period <=:to_reporting_period
-            GROUP BY obj_code
-            UNION
-            SELECT 
-                SUBSTRING_INDEX(jev_beginning_balance_item.object_code,'_',1) as object_code
-                FROM jev_beginning_balance
-                LEFT JOIN jev_beginning_balance_item ON jev_beginning_balance.id = jev_beginning_balance_item.jev_beginning_balance_id
-            WHERE  jev_beginning_balance.book_id=:book_id
-            GROUP BY object_code
-            ) as jev_object_codes
-            
-            LEFT JOIN (
-            SELECT
-            
-            SUM(jev_accounting_entries.debit) as debit,
-            SUM(jev_accounting_entries.credit) as credit,
-            SUBSTRING_INDEX(jev_accounting_entries.object_code,'_',1) as chart
-            FROM jev_accounting_entries 
-            LEFT JOIN jev_preparation ON jev_accounting_entries.jev_preparation_id = jev_preparation.id
-            WHERE 
-             jev_preparation.book_id = :book_id
-            AND jev_preparation.reporting_period >=:from_reporting_period
-            AND jev_preparation.reporting_period <=:to_reporting_period
-            $and $sql
-            GROUP BY chart)
-             as accounting_entries ON jev_object_codes.obj_code = accounting_entries.chart
-            LEFT JOIN (SELECT 
-                    b_balance.object_code,
-                    SUM(b_balance.total_beginning_balance) as total_beginning_balance
-                    FROM (
-                    SELECT 
-                    SUBSTRING_INDEX(accounting_codes.object_code,'_',1) as object_code,
-                    (CASE
-                    WHEN accounting_codes.normal_balance = 'Debit' THEN IFNULL(jev_beginning_balance_item.debit,0)  - IFNULL(jev_beginning_balance_item.credit,0)
-                    ELSE IFNULL(jev_beginning_balance_item.credit,0) - IFNULL(jev_beginning_balance_item.debit,0)
-                    END) as total_beginning_balance
-                    FROM jev_beginning_balance_item 
-                    LEFT JOIN jev_beginning_balance ON jev_beginning_balance_item.jev_beginning_balance_id =jev_beginning_balance.id
-                    LEFT JOIN accounting_codes ON jev_beginning_balance_item.object_code = accounting_codes.object_code
-                    LEFT JOIN books ON jev_beginning_balance.book_id = books.id
-                    WHERE 
-                    jev_beginning_balance.`year` = :_year
-                    AND jev_beginning_balance.book_id = :book_id
-                    ) b_balance
-                    GROUP BY b_balance.object_code
-
-            
-            
-            ) as begin_balance  ON jev_object_codes.obj_code = begin_balance.object_code
-            LEFT JOIN chart_of_accounts ON jev_object_codes.obj_code = chart_of_accounts.uacs
-            
-            WHERE 
-            (CASE
-            WHEN chart_of_accounts.normal_balance = 'Debit' THEN IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.debit,0) - IFNULL(accounting_entries.credit,0))
-            ELSE IFNULL(begin_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.credit,0) - IFNULL(accounting_entries.debit,0))
-            END) !=0
-            ORDER BY chart_of_accounts.uacs  ASC
-            ", $params)
-                ->bindValue(':_year', $year)
-                ->bindValue(':to_reporting_period', $to_reporting_period)
-                ->bindValue(':from_reporting_period', $from_reporting_period)
-                ->bindValue(':book_id', $book_id)
-                ->bindValue(':entry_type', $type)
-                ->queryAll();;
-            // return json_encode($query->getRawSql());
-
-            return json_encode(['result' => $query, 'month' => $month, 'book_name' => $book_name]);
+            exit();
         }
     }
 }

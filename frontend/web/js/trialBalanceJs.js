@@ -70,7 +70,6 @@ function displayResultData(data) {
         </tr>`;
     $("#data_table tbody").append(row);
   });
-  console.log(total_debit, total_credit);
   var q = `<tr>
             <td>Total</td>
             <td></td>

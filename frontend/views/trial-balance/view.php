@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
     <div class="container panel panel-default">
-
+        <button id="export" type='button' class="btn-xs btn-success" style="margin:1rem;"><i class="glyphicon glyphicon-export" ></i></button>
         <table id="data_table">
             <thead>
                 <tr class="header" style="border: none;">
@@ -261,5 +261,24 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
 
             query('<?= Yii::$app->request->csrfToken ?>', reporting_period, book_id, entry_type)
         }, 1500)
+        $('#export').click(function(e) {
+            e.preventDefault();
+            $.ajax({
+                container: "#employee",
+                type: 'POST',
+                url: window.location.pathname + '?r=trial-balance/export',
+                data: {
+                    reporting_period: reporting_period,
+                    entry_type: entry_type,
+                    book_id: book_id
+                },
+                success: function(data) {
+                    var res = JSON.parse(data)
+                    console.log(res)
+                    window.open(res)
+                }
+
+            })
+        })
     })
 </script>

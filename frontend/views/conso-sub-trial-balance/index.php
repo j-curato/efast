@@ -28,10 +28,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'heading' => $this->title
         ],
         'columns' => [
-
             'reporting_period',
-            'book_id',
-
+            'book_type',
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
