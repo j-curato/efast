@@ -334,8 +334,8 @@ class ConsoSubTrialBalanceController extends Controller
             }
             $sheet->mergeCellsByColumnAndRow(1, $row, 2, $row);
             $sheet->setCellValueByColumnAndRow(1, $row, 'Total');
-            $sheet->setCellValueByColumnAndRow(3, $row, number_format($total_debit));
-            $sheet->setCellValueByColumnAndRow(4, $row, number_format($total_credit));
+            $sheet->setCellValueByColumnAndRow(3, $row, number_format($total_debit,2));
+            $sheet->setCellValueByColumnAndRow(4, $row, number_format($total_credit,2));
             date_default_timezone_set('Asia/Manila');
             $id = 'conso_sub_trial_balance_' . '_' . $to_reporting_period . '_' . uniqid();
             $file_name = "$id.xlsx";
