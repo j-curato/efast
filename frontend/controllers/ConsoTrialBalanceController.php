@@ -157,15 +157,7 @@ class ConsoTrialBalanceController extends Controller
         $book_type
     ) {
 
-        if ($entry_type !== 'post-closing') {
-            $and = 'AND ';
-            if ($entry_type === 'pre-closing') {
-                $type = 'Non-Closing';
-            } else if ($entry_type = 'closing') {
-                $type = 'Closing';
-            }
-            $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['=', 'jev_preparation.entry_type', $type], $params);
-        }
+
         $and = '';
         $sql = '';
         $type = '';
@@ -181,6 +173,15 @@ class ConsoTrialBalanceController extends Controller
             $book_sql2 = Yii::$app->db->getQueryBuilder()->buildCondition("EXISTS (SELECT id FROM books WHERE books.`type` =:book_type AND jev_beginning_balance.book_id = books.id)", $book_params);
 
             // EXISTS (SELECT id FROM books WHERE books.`name` IN ('Fund 01','Rapid LP') AND jev_beginning_balance.book_id = books.id)
+        }
+        if ($entry_type !== 'post-closing') {
+            $and = 'AND ';
+            if ($entry_type === 'pre-closing') {
+                $type = 'Non-Closing';
+            } else if ($entry_type = 'closing') {
+                $type = 'Closing';
+            }
+            $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['=', 'jev_preparation.entry_type', $type], $params);
         }
         $query = Yii::$app->db->createCommand("SELECT 
         chart_of_accounts.uacs as object_code,
@@ -367,8 +368,8 @@ class ConsoTrialBalanceController extends Controller
             }
             $sheet->mergeCellsByColumnAndRow(1, $row, 2, $row);
             $sheet->setCellValueByColumnAndRow(1, $row, 'Total');
-            $sheet->setCellValueByColumnAndRow(3, $row, number_format($total_debit,2));
-            $sheet->setCellValueByColumnAndRow(4, $row, number_format($total_credit,2));
+            $sheet->setCellValueByColumnAndRow(3, $row, number_format($total_debit, 2));
+            $sheet->setCellValueByColumnAndRow(4, $row, number_format($total_credit, 2));
             date_default_timezone_set('Asia/Manila');
             $id = 'trial_balance_' . $book_name . '_' . $to_reporting_period . '_' . uniqid();
             $file_name = "$id.xlsx";
