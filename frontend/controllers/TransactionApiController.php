@@ -17,7 +17,7 @@ class TransactionApiController extends \yii\rest\ActiveController
     {
         $behaviors = parent::behaviors();
         $behaviors['authenticator']['only'] = ['create', 'delete', 'update'];
-        $behavios['authenticator']['authMethods'] = [
+        $behaviors['authenticator']['authMethods'] = [
             HttpBearerAuth::class
         ];
         return array_merge([
@@ -72,7 +72,6 @@ class TransactionApiController extends \yii\rest\ActiveController
                             } else {
                                 $transaction->rollBack();
                                 return false;
-
                             }
                         } else {
                             $new_transaction = new transaction();

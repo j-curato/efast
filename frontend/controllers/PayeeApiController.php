@@ -15,13 +15,11 @@ class PayeeApiController extends \yii\rest\ActiveController
     public function behaviors()
     {
         $behaviors = parent::behaviors();
-        $behaviors['authenticator']['only'] = ['create', 'delete', 'update'];
+        $behaviors['authenticator']['only'] = ['create', 'delete', 'view', 'index', 'update'];
         $behaviors['authenticator']['authMethods'] = [
             HttpBearerAuth::class
         ];
-          return array_merge([
-            'corsFilter' => Cors::class,
-        ], $behaviors);
+        return array_merge(['corsFilter' => Cors::class], $behaviors);
     }
 
     public function actions()
