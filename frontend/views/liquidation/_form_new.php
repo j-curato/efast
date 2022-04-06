@@ -551,11 +551,11 @@ SweetAlertAsset::register($this);
         var source = $(row).closest('tr');
         var clone = source.clone(true);
         const chart_of_account = clone.find('.liquidation-chart-of-accounts')
-        const liq_damage = clone.find('.liq_damages')
+        const liq_damage = clone.find('.liq_damages_main')
         const advances_etries_id = clone.find('.advances_etries_id')
-        const withdrawal = clone.find('.withdrawal')
-        const non_vat = clone.find('.vat_nonvat')
-        const expanded = clone.find('.expanded_tax')
+        const withdrawal = clone.find('.withdrawal_main')
+        const non_vat = clone.find('.vat_nonvat_main')
+        const expanded = clone.find('.expanded_tax_main')
         const new_reporting_period = clone.find('.new_reporting_period')
         const liq_damages_mask = clone.find('.liq_damages_mask')
         const withdrawal_mask = clone.find('.withdrawal_mask')
@@ -619,7 +619,7 @@ SweetAlertAsset::register($this);
 
         $('#entries_table tbody').append(clone);
         entries_row++;
-        console.log(chart_of_account.val())
+
 
         // var option = new Option([account_title], [object_code], true, true);
         // chart_of_account.append(option).trigger('change');
@@ -645,6 +645,7 @@ SweetAlertAsset::register($this);
 
 
     $(document).ready(function() {
+        console.log(entries_row)
         if (update_type == 'create') {
             disable_reporting_period = 'disabled';
             $("#po_transaction_id").trigger('change')
