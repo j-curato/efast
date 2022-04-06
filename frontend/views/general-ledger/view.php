@@ -5,20 +5,31 @@
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
+use yii\helpers\Html;
+
 $this->title = 'General Ledger';
 $this->params['breadcrumbs'][] = ['label' => 'General Ledgers', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
+
 ?>
 <div class="jev-preparation-index">
-<button id="export" type='button' class="btn-xs btn-success" style="margin:1rem;"><i class="glyphicon glyphicon-export" ></i></button>
 
 
+    <p>
+        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
+            'class' => 'btn btn-danger',
+            'data' => [
+                'confirm' => 'Are you sure you want to delete this item?',
+                'method' => 'post',
+            ],
+        ]) ?>
+    <button id="export" type='button' class="btn-xs btn-success" style="margin:1rem;"><i class="glyphicon glyphicon-export"></i></button>
+
+    </p>
     <?php
 
-    $ledger = Yii::$app->db->createCommand("SELECT chart_of_accounts.uacs as object_code, CONCAT(chart_of_accounts.uacs,' - ',chart_of_accounts.general_ledger) as `name` FROM chart_of_accounts")->queryAll();
-    $fund = Yii::$app->db->createCommand("SELECT fund_cluster_code.id,fund_cluster_code.name FROM fund_cluster_code")->queryAll();
-    $books = Yii::$app->db->createCommand("SELECT books.id,books.name FROM books")->queryAll();
     $generalLedger = Yii::$app->db->createCommand("SELECT object_code,account_title FROM accounting_codes WHERE object_code  = :object_code")
         ->bindValue(':object_code', $model->object_code)
         ->queryOne();
@@ -47,9 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </th>
                         <th colspan="2">
                             <?php
-                            if (!empty($fund_cluster_code)) {
-                                echo $fund_cluster_code;
-                            }
+                            echo $model->book->name;
                             ?>
                         </th>
                     </tr>
@@ -248,6 +257,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/generalLedgerJs.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $csrfToken = Yii::$app->request->csrfToken;
 $csrfParam = Yii::$app->request->csrfParam;
 ?>
@@ -286,11 +296,5 @@ $csrfParam = Yii::$app->request->csrfParam;
 
 
 
-    function thousands_separators(num) {
-
-        var number = Number(Math.round(num + 'e2') + 'e-2')
-        var num_parts = number.toString().split(".");
-        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        return num_parts.join(".");
-    }
+  
 </script>

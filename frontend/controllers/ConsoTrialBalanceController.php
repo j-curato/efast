@@ -317,10 +317,24 @@ class ConsoTrialBalanceController extends Controller
             // header
             $sheet->mergeCells('A1:D1');
             $sheet->setCellValue('A1', "DEPARTMENT OF TRADE AND INDUSTRY ");
-            $sheet->setCellValue('A2', "Account Name");
-            $sheet->setCellValue('B2', "Object Code");
-            $sheet->setCellValue('C2', "Debit");
-            $sheet->setCellValue('D2', "Credit");
+            $sheet->getStyle('A1:D1')->getAlignment()->setHorizontal('center');
+
+            $sheet->mergeCells('A2:D2');
+            $sheet->setCellValue('A2', 'CARAGA REGIONAL DIRECTOR');
+            $sheet->getStyle('A2:D2')->getAlignment()->setHorizontal('center');
+
+            $sheet->mergeCells('A3:D3');
+            $sheet->setCellValue('A3', 'Consolidated Trial Balance');
+            $sheet->getStyle('A3:D3')->getAlignment()->setHorizontal('center');
+
+            $sheet->mergeCells('A4:D4');
+            $sheet->setCellValue('A4', "As of $month");
+            $sheet->getStyle('A4:D4')->getAlignment()->setHorizontal('center');
+
+            $sheet->setCellValue('A5', "Account Name");
+            $sheet->setCellValue('B5', "Object Code");
+            $sheet->setCellValue('C5', "Debit");
+            $sheet->setCellValue('D5', "Credit");
 
 
 
@@ -335,7 +349,7 @@ class ConsoTrialBalanceController extends Controller
             );
 
 
-            $row = 3;
+            $row = 6;
             $total_debit = 0;
             $total_credit = 0;
             foreach ($query  as  $val) {
@@ -377,6 +391,9 @@ class ConsoTrialBalanceController extends Controller
             $sheet->setCellValueByColumnAndRow(1, $row, 'Total');
             $sheet->setCellValueByColumnAndRow(3, $row, number_format($total_debit, 2));
             $sheet->setCellValueByColumnAndRow(4, $row, number_format($total_credit, 2));
+            foreach (range('A', 'D') as $colId) {
+                $sheet->getColumnDimension($colId)->setAutoSize(true);
+            }
             date_default_timezone_set('Asia/Manila');
             $id = 'trial_balance_' . $book_name . '_' . $to_reporting_period . '_' . uniqid();
             $file_name = "$id.xlsx";
@@ -390,10 +407,7 @@ class ConsoTrialBalanceController extends Controller
             header('Content-Type: application/octet-stream');
             header("Content-Transfer-Encoding: Binary");
             header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
-
             return json_encode($file2);
-
-
             exit();
         }
     }

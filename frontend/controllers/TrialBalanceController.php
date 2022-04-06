@@ -7,6 +7,7 @@ use Yii;
 use app\models\TrialBalance;
 use app\models\TrialBalanceSearch;
 use DateTime;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat\DateFormatter;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -285,6 +286,7 @@ class TrialBalanceController extends Controller
             $entry_type = strtolower($_POST['entry_type']);
             $book_name = Books::findOne($book_id)->name;
             $query  = $this->query($to_reporting_period, $book_id, $entry_type);
+            $month = DateTime::createFromFormat('Y-m', $to_reporting_period)->format('F Y');
 
 
             $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
@@ -292,25 +294,24 @@ class TrialBalanceController extends Controller
             // header
             $sheet->mergeCells('A1:D1');
             $sheet->setCellValue('A1', "DEPARTMENT OF TRADE AND INDUSTRY ");
-            $sheet->setCellValue('A2', "Account Name");
-            $sheet->setCellValue('B2', "Object Code");
-            $sheet->setCellValue('C2', "Debit");
-            $sheet->setCellValue('D2', "Credit");
+            $sheet->getStyle('A1:D1')->getAlignment()->setHorizontal('center');
+            $sheet->mergeCells('A2:D2');
+            $sheet->setCellValue('A2', "CARAGA REGIONAL OFFICE");
+            $sheet->getStyle('A2:D2')->getAlignment()->setHorizontal('center');
+            $sheet->mergeCells('A3:D3');
+            $sheet->setCellValue('A3', "Trial Balance $book_name");
+            $sheet->getStyle('A3:D3')->getAlignment()->setHorizontal('center');
+            $sheet->mergeCells('A4:D4');
+            $sheet->setCellValue('A4', "As of $month");
+            $sheet->getStyle('A4:D4')->getAlignment()->setHorizontal('center');
+            $sheet->setCellValue('A5', "Acount Name");
+            $sheet->setCellValue('B5', "Object COde");
+            $sheet->setCellValue('C5', "Debit");
+            $sheet->setCellValue('D5', "Credit");
 
 
 
-            $x = 7;
-            $styleArray = array(
-                'borders' => array(
-                    'allBorders' => array(
-                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
-                        'color' => array('argb' => 'FFFF0000'),
-                    ),
-                ),
-            );
-
-
-            $row = 3;
+            $row = 6;
             $total_debit = 0;
             $total_credit = 0;
             foreach ($query  as  $val) {
@@ -350,8 +351,12 @@ class TrialBalanceController extends Controller
             }
             $sheet->mergeCellsByColumnAndRow(1, $row, 2, $row);
             $sheet->setCellValueByColumnAndRow(1, $row, 'Total');
-            $sheet->setCellValueByColumnAndRow(3, $row, number_format($total_debit,2));
-            $sheet->setCellValueByColumnAndRow(4, $row, number_format($total_credit,2));
+            $sheet->setCellValueByColumnAndRow(3, $row, number_format($total_debit, 2));
+            $sheet->setCellValueByColumnAndRow(4, $row, number_format($total_credit, 2));
+            foreach (range('A', $sheet->getHighestColumn()) as $columnID) {
+                $sheet->getColumnDimension($columnID)
+                    ->setAutoSize(true);
+            }
             date_default_timezone_set('Asia/Manila');
             $id = 'trial_balance_' . $book_name . '_' . $to_reporting_period . '_' . uniqid();
             $file_name = "$id.xlsx";

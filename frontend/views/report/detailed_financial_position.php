@@ -341,6 +341,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $.each(val2, function(key, val3) {
                         const current_balance = val3.current_balance
                         const prev_balance = val3.last_year_balance
+                        console.log(val3.last_year_balance)
                         const data_row = `<tr>
                                             <td></td>
                                             <td></td>

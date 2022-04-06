@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\models\Books;
 use Yii;
 use app\models\GeneralLedger;
 use app\models\GeneralLedgerSearch;
@@ -274,7 +275,10 @@ class GeneralLedgerController extends Controller
             $book_id = $_POST['book_id'];
             $object_code = $_POST['object_code'];
             $year = $reporting_period->format('Y');
-
+            $book_name = Books::findOne($book_id)->name;
+            $general_ledger_account = Yii::$app->db->createCommand("SELECT uacs,general_ledger FROM chart_of_accounts WHERE uacs = :uacs")
+                ->bindValue(':uacs', $object_code)
+                ->queryOne();
             $beginning_balance_query = $this->beginningBalance(
                 $year,
                 $book_id,
@@ -293,29 +297,30 @@ class GeneralLedgerController extends Controller
             // header
             $sheet->mergeCells('A1:D1');
             $sheet->setCellValue('A1', "DEPARTMENT OF TRADE AND INDUSTRY ");
-            $sheet->setCellValue('A2', "Reporting Period");
-            $sheet->setCellValue('B2', "Date");
-            $sheet->setCellValue('C2', "Particulars");
-            $sheet->setCellValue('D2', "Reference No.");
-            $sheet->setCellValue('E2', "Debit");
-            $sheet->setCellValue('F2', "Credit");
-            $sheet->setCellValue('G2', "Balance");
+            $sheet->setCellValue('E1', 'Fund Cluster Code');
+            $sheet->mergeCells('F1:G1');
+            $sheet->setCellValue('F1', $book_name);
+            $sheet->setCellValue('A2', 'Account Title');
+            $sheet->mergeCells('B2:D2');
+            $sheet->setCellValue('B2', $general_ledger_account['general_ledger']);
+            $sheet->getStyle('B2:D2')->getAlignment()->setHorizontal('center');
+            $sheet->setCellValue('E2', 'UACS Object Code');
+            $sheet->mergeCells('F2:G2');
+            $sheet->setCellValue('F2', $general_ledger_account['uacs']);
+            $sheet->getStyle('F2:G2')->getAlignment()->setHorizontal('center');
 
-            $sheet->setCellValueByColumnAndRow(3, 3, 'Beginning Balance');
-            $sheet->setCellValueByColumnAndRow(5, 3, number_format($beginning_balance_query['debit']));
-            $sheet->setCellValueByColumnAndRow(6, 3, number_format($beginning_balance_query['credit']));
-            $x = 7;
-            $styleArray = array(
-                'borders' => array(
-                    'allBorders' => array(
-                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
-                        'color' => array('argb' => 'FFFF0000'),
-                    ),
-                ),
-            );
-            $row = 4;
-            $total_debit = 0;
-            $total_credit = 0;
+            $sheet->setCellValue('A3', "Reporting Period");
+            $sheet->setCellValue('B3', "Date");
+            $sheet->setCellValue('C3', "Particulars");
+            $sheet->setCellValue('D3', "Reference No.");
+            $sheet->setCellValue('E3', "Debit");
+            $sheet->setCellValue('F3', "Credit");
+            $sheet->setCellValue('G3', "Balance");
+
+            $sheet->setCellValueByColumnAndRow(3, 4, 'Beginning Balance');
+            $sheet->setCellValueByColumnAndRow(5, 4, number_format($beginning_balance_query['debit']));
+            $sheet->setCellValueByColumnAndRow(6, 4, number_format($beginning_balance_query['credit']));
+            $row = 5;
             foreach ($query  as  $val) {
                 $total = floatval($val['total']);
                 $beginning_balance += $total;
@@ -329,6 +334,9 @@ class GeneralLedgerController extends Controller
                 $sheet->setCellValueByColumnAndRow(6, $row, $credit);
                 $sheet->setCellValueByColumnAndRow(7, $row, $beginning_balance);
                 $row++;
+            }
+            foreach (range('A', $sheet->getHighestColumn()) as  $colId) {
+                $sheet->getColumnDimension($colId)->setAutoSize(true);
             }
             date_default_timezone_set('Asia/Manila');
             $id = 'general_ledger' . $to_reporting_period . '_' . uniqid();
