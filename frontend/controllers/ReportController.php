@@ -3705,7 +3705,6 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':book_id', $book_id)
                 ->bindValue(':current_year', $current_year)
                 ->bindValue(':last_year', $last_year)
-
                 ->queryAll();
 
 
