@@ -316,7 +316,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             var check_or_ada_no = data['check_or_ada_no']
             var issuance_date = data['issuance_date']
             var particular = data['particular']
-            var reporting_period = data['cancelled_r_period']
+            var reporting_period = data['reporting_period']
             var nca_recieve = parseFloat(data['nca_recieve'])
 
             row = `<tr class='data_row'>

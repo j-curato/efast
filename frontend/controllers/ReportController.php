@@ -2264,7 +2264,6 @@ class ReportController extends \yii\web\Controller
                 AND reporting_period <= :to_reporting_period
                 AND book_name = :book
                 AND is_cancelled =1
-                AND QUARTER(CONCAT(cadadr.reporting_period,'-01')) = QUARTER(CONCAT(cadadr.cancelled_r_period,'-01')) AND SUBSTRING_INDEX(cadadr.reporting_period,'-',1) = SUBSTRING_INDEX(cadadr.cancelled_r_period,'-',1)
                 ORDER BY issuance_date
             ")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
@@ -2354,14 +2353,6 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->bindValue(':book', $book)
                 ->queryAll();
-            // $result2 = ArrayHelper::index($query, null, [function ($element) {
-            //     return $element['division'];
-            // }, 'mfo_name', 'major_name', 'sub_major_name',]);
-
-            // echo "<pre>";
-            // var_dump($month);
-            // echo "</pre>";
-            // die();
 
             return json_encode([
                 'results' => $query,
