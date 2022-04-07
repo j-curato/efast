@@ -2228,7 +2228,7 @@ class ReportController extends \yii\web\Controller
             AND book_name = :book
             AND is_cancelled =0
 
-            UNION
+            UNION ALL
             SELECT
             cadadr.mode_of_payment,
                 cadadr.reporting_period,
