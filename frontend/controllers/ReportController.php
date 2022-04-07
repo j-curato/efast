@@ -2347,6 +2347,7 @@ class ReportController extends \yii\web\Controller
                 reporting_period >= :from_reporting_period
                 AND reporting_period <= :to_reporting_period
                 AND book_name = :book
+                AND is_cancelled = 1
                 ORDER BY issuance_date
                 ")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
@@ -3590,7 +3591,7 @@ class ReportController extends \yii\web\Controller
             $from_reporting_period  = $period->format('Y') . '-01';
             $last_year_from = $period->format('Y') - 1 . '-01';
             $last_year_to = $period->format('Y') - 1 . '-12';
-            $last_year =$period->format('Y') - 1  ;
+            $last_year = $period->format('Y') - 1;
             $book_id = $_POST['book_id'];
 
 
@@ -3598,6 +3599,8 @@ class ReportController extends \yii\web\Controller
             chart_of_accounts.account_group,
             major_accounts.`name` as major_name,
             chart_of_accounts.general_ledger,
+            chart_of_accounts.current_noncurrent,
+            sub_major_accounts.name as sub_major_name,
             IFNULL(current.balance,0) as current_balance,
             IFNULL(last_year.balance,0)as last_year_balance
             FROM 
@@ -3683,6 +3686,7 @@ class ReportController extends \yii\web\Controller
                 jev_beginning_balance.`year` = :last_year
                 AND jev_beginning_balance.book_id = :book_id
                 ) b_balance
+
                 GROUP BY b_balance.object_code
         
         ) as begin_balance  ON SUBSTRING_INDEX(jev_accounting_entries.object_code,'_',1) = begin_balance.object_code
@@ -3696,6 +3700,13 @@ class ReportController extends \yii\web\Controller
             ) as last_year ON jev_chart_of_accounts.id = last_year.id
             INNER JOIN chart_of_accounts ON jev_chart_of_accounts.id = chart_of_accounts.id
             INNER JOIN major_accounts ON chart_of_accounts.major_account_id = major_accounts.id
+            INNER JOIN sub_major_accounts ON chart_of_accounts.sub_major_account = sub_major_accounts.id
+            WHERE 
+            chart_of_accounts.account_group IN ('Assets','Liabilities','Equity')
+            AND (
+                IFNULL(current.balance,0) !=0
+                OR
+                   IFNULL(last_year.balance,0)!=0)
             ORDER BY chart_of_accounts.account_group,
             major_accounts.`name`")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
@@ -3710,7 +3721,7 @@ class ReportController extends \yii\web\Controller
 
             $result = ArrayHelper::index($query, null, [function ($element) {
                 return $element['account_group'];
-            }, 'major_name']);
+            }, 'current_noncurrent', 'major_name','sub_major_name']);
             return json_encode(
                 [
                     'result' => $result,
