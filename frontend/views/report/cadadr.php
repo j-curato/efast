@@ -378,7 +378,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             var particular = data['particular']
             var reporting_period = data['reporting_period']
             var nca_recieve = parseFloat(data['nca_recieve'])
-            balance += nca_recieve - (Math.abs(ada_issued + check_issued))
+            balance += nca_recieve - (ada_issued + check_issued)
             // if (jQuery.inArray(dv_number, arr) == -1) {
             //     arr.push(dv_number)
             // } else {
