@@ -207,7 +207,6 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 <style>
-
     table,
     th,
     td {
@@ -236,8 +235,9 @@ $this->params['breadcrumbs'][] = $this->title;
     .amount {
         text-align: right;
     }
-    #cancelled_checks_table > th {
-        padding:0 ;
+
+    #cancelled_checks_table>th {
+        padding: 0;
         font-size: 10px;
     }
 
@@ -292,7 +292,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 displayData(res.results, res.begin_balance, res.adjustment)
                 // addToSummaryTable(res.conso_saob)
                 displayCancelledChecks(res.cancelled_checks)
-
                 setTimeout(() => {
                     $('#con').show()
                     $('#dots5').hide()
@@ -317,9 +316,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             var check_or_ada_no = data['check_or_ada_no']
             var issuance_date = data['issuance_date']
             var particular = data['particular']
-            var reporting_period = data['reporting_period'] 
+            var reporting_period = data['cancelled_r_period']
             var nca_recieve = parseFloat(data['nca_recieve'])
-            
+
             row = `<tr class='data_row'>
                 <td colspan='' >` + dv_number + `</td>
                 <td colspan='' >` + dv_date + `</td>
@@ -336,7 +335,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 <td  class='amount'>` + thousands_separators(ada_issued) + `</td>
                 </tr>`
             $('#cancelled_checks_table tbody').append(row)
-      
+
 
         }
 
@@ -379,7 +378,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             var particular = data['particular']
             var reporting_period = data['reporting_period']
             var nca_recieve = parseFloat(data['nca_recieve'])
-            balance += nca_recieve - (ada_issued + check_issued)
+            balance += nca_recieve - (Math.abs(ada_issued + check_issued))
             // if (jQuery.inArray(dv_number, arr) == -1) {
             //     arr.push(dv_number)
             // } else {
