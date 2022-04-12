@@ -108,7 +108,7 @@ $("#payroll_number").change(function () {
       if (res.type == "2307") {
         ewt_goods_services = res.total_due_to_bir;
       } else if ((res.type == "1601c")) {
-        compensation = res.compensation;
+        compensation = res.total_due_to_bir;
       }
       var row = `<tr>
       <td style='display:none'> <input style='display:none' value='n' type='text' name='process_ors_id[${row}]'/></td>
