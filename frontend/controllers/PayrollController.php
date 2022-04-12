@@ -286,8 +286,8 @@ class PayrollController extends Controller
             payroll.payroll_number,
             payroll.type,
             payroll.amount as amount_disbursed,
-            due_to_bir.total_due_to_bir,
-            trust_liab.total_trust_liab
+            IFNULL(due_to_bir.total_due_to_bir,0) as total_due_to_bir,
+            IFNULL(trust_liab.total_trust_liab,0) as total_trust_liab
             
              FROM payroll
             LEFT JOIN (SELECT SUM(payroll_items.amount)as total_due_to_bir,payroll_items.payroll_id 
