@@ -57,7 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr class="info">
                     <th>Payee</th>
                     <th colspan="3">Account Title</th>
-                    <th>Amount</th>
+                    <th style='text-align:right;'>Amount</th>
                 </tr>
                 <?php
                 $total_obligation = 0;
@@ -84,7 +84,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     echo "<tr>
                         <td>{$val['payee']}</td>
                         <td colspan='3'>{$val['object_code']} - {$val['account_title']}</td>
-                        <td>{$val['amount']}</td>
+                        <td style='text-align:right;'>".number_format($val['amount'],2)."</td>
                 </tr>";
 
                     if ($val['parent_object_code'] === '2020101000') {
