@@ -114,6 +114,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             }
         ],
+        [
+            'label' => 'Cash Disbursement Good/Cancelled',
+            'value' => function ($model) {
+                if ($model->cash_disursement_is_cancelled) {
+                    return 'Cancelled';
+                } else {
+                    return 'Good';
+                }
+            }
+        ],
         'jev_number',
 
     ];

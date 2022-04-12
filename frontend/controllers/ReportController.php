@@ -752,7 +752,8 @@ class ReportController extends \yii\web\Controller
             jev_preparation.jev_number,
             record_allotment_entries.amount as allotment_recieved,
             record_allotments.id as record_allotment_id,
-            books.`name`as book
+            books.`name`as book,
+            cash_disbursement.is_cancelled as cash_disursement_is_cancelled
             FROM dv_aucs
             LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
             LEFT JOIN process_ors ON dv_aucs_entries.process_ors_id = process_ors.id
@@ -3712,7 +3713,7 @@ class ReportController extends \yii\web\Controller
 
             $result = ArrayHelper::index($query, null, [function ($element) {
                 return $element['account_group'];
-            }, 'current_noncurrent', 'major_name','sub_major_name']);
+            }, 'current_noncurrent', 'major_name', 'sub_major_name']);
             return json_encode(
                 [
                     'result' => $result,
