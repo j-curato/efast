@@ -1617,11 +1617,16 @@ class DvAucsController extends Controller
                     $model->payroll_id = $payroll_id;
 
                     if ($model->save(false)) {
-
-                        // if (!empty($model->payroll_id)) {
-
-                        //     $this->insertDvAccountingEntriesFromPayroll($model->id, $model->payroll_id);
-                        // }
+                        if (strtolower($model->transaction_type) == 'payroll') {
+                            if (empty($model->payroll_id)) {
+                                return json_encode('Payroll number is required');
+                            } else if (!empty($model->payroll_id)) {
+                                Yii::$app->db->createCommand("DELETE FROM dv_accounting_entries WHERE dv_aucs_id = :dv_id")
+                                    ->bindValue(':dv_id', $model->id)
+                                    ->query();
+                                $this->insertDvAccountingEntriesFromPayroll($model->id, $model->payroll_id);
+                            }
+                        }
                         $flag =  $this->insertDvEntries(
                             $model->id,
                             $ors,
