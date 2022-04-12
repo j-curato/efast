@@ -280,13 +280,13 @@ class PayrollController extends Controller
     }
     public function actionPayrollData()
     {
-        if($_POST){
+        if ($_POST) {
             $id = $_POST['id'];
-            $query=Yii::$app->db->createCommand("SELECT
+            $query = Yii::$app->db->createCommand("SELECT
             payroll.payroll_number,
             payroll.type,
             payroll.amount as amount_disbursed,
-            IFNULL(due_to_bir.total_due_to_bir,0) as total_due_to_bir,
+            IFNULL(due_to_bir.total_due_to_bir,0) + IFNULL(payroll.due_to_bir_amount,0) as total_due_to_bir,
             IFNULL(trust_liab.total_trust_liab,0) as total_trust_liab
             
              FROM payroll
@@ -297,9 +297,9 @@ class PayrollController extends Controller
             ON payroll.id = trust_liab.payroll_id
             WHERE payroll.id = :id
             ")
-           
-           ->bindValue(':id',$id)
-            ->queryOne();
+
+                ->bindValue(':id', $id)
+                ->queryOne();
             return json_encode($query);
         }
     }

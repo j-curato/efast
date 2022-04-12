@@ -148,7 +148,8 @@ if (!empty($model->id)) {
                     </td>
                     <td>
                     <label for='payee_amount'>Amount</label>
-                    <input type='text' name='payee_amount[$row_number]' class='mask-amount form-control payee_amount' value='{$val['amount']}'>
+                    <input type='text' class='mask-amount form-control payee_amount' value='{$val['amount']}'>
+                    <input type='hidden' name='payee_amount[${row_number}]' class='main_payee_amount'  value='{$val['amount']}'>
                     </td>
                     <td>   <a class='remove_this_row btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a></td>
                 </tr>";
@@ -235,7 +236,8 @@ $csrfToken = Yii::$app->request->csrfToken;
                         </td>
                         <td >
                         <label for='payee_amount'>Amount</label>
-                        <input type='text' name='payee_amount[${row_number}]' class='mask-amount form-control payee_amount' >
+                        <input type='text'  class='mask-amount form-control payee_amount' >
+                        <input type='hidden' name='payee_amount[${row_number}]' class='main_payee_amount' >
                         </td>
                         <td><a class='remove_this_row btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i></a></td>
                     </tr>`
@@ -287,6 +289,9 @@ $csrfToken = Yii::$app->request->csrfToken;
 
 
         })
+        const due_to_bir_amount = $('#payroll-due_to_bir_amount').val()!=''?$('#payroll-due_to_bir_amount').val():0
+        total_due_to_bir += parseFloat(due_to_bir_amount)
+        console.log(total_due_to_bir)
         const payroll_type = $('#payroll-type').val()
         $("#2307_ewt").text('')
         $("#1601c_compensation").text('')
@@ -327,10 +332,20 @@ $csrfToken = Yii::$app->request->csrfToken;
         $('#payroll-type').change(function() {
             getTotal()
         })
+        // $('#payroll-due_to_bir_amount-disp').on('keyup change',function() {
+        //     getTotal()
+        // })
+
         $('#items-table').on('select2:select', '.remittance-payee', function(e) {
             const data = e.params.data;
             $(this).attr('data-object-code', data.object_code)
         });
+        $("#items-table").on('keyup change', '.payee_amount', function() {
 
+            $(this).parent().find('.main_payee_amount').val($(this).maskMoney('unmasked')[0])
+        })
+        $("#payroll-due_to_bir_amount").on('keyup change', function() {
+            getTotal()
+        })
     })
 </script>

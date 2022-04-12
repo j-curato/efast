@@ -62,7 +62,7 @@ if (!empty($model->id)) {
                 'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
             ],
             'ajax' => [
-                'url' => Yii::$app->request->baseUrl . '?r=chart-of-accounts/search-accounting-code',
+                'url' => Yii::$app->request->baseUrl . '?r=chart-of-accounts/search-general-ledger',
                 'dataType' => 'json',
                 'delay' => 250,
                 'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),

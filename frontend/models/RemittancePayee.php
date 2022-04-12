@@ -44,4 +44,13 @@ class RemittancePayee extends \yii\db\ActiveRecord
             'object_code' => 'Object Code',
         ];
     }
+    public function getPayee()
+    {
+        return $this->hasOne(Payee::class, ['id' => 'payee_id']);
+    }
+    public function getGeneralLedger()
+    {
+
+        return $this->hasOne(ChartOfAccounts::class, ['uacs'=> 'object_code']);
+    }
 }

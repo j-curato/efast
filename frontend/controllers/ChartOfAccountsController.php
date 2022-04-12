@@ -556,6 +556,29 @@ class ChartOfAccountsController extends Controller
         // }
         return $out;
     }
+    public function actionSearchGeneralLedger($q = null, $id = null, $province = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+            $query->select(["uacs as id, CONCAT (uacs ,'-',general_ledger) as text"])
+                ->from('chart_of_accounts')
+                ->where(['like', 'general_ledger', $q])
+                ->orWhere(['like', 'uacs', $q])
+                ->andWhere('is_active = 1');
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        //  elseif ($id > 0) {
+        //     $out['results'] = ['id' => $id, 'text' => AdvancesEntries::find($id)->fund_source];
+        // }
+        return $out;
+    }
     public function actionSearchLiquidationAccountingCode($q = null, $id = null, $province = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;

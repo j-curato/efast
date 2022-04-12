@@ -51,7 +51,7 @@ class Payroll extends \yii\db\ActiveRecord
             'reporting_period' => 'Reporting Period',
             'process_ors_id' => 'Process Ors ID',
             'type' => 'Type',
-            'amount' => 'Amount',
+            'amount' => 'Amount Disbursed',
             'due_to_bir_amount' => 'Due to BIR Amount',
             'created_at' => 'Created At',
         ];

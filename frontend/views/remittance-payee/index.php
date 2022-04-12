@@ -15,24 +15,37 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-     
+
         <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=remittance-payee/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
 
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-        'panel'=>[
-            'type'=>'primary',
-            'heading'=>'Remittance Payees'
+        'panel' => [
+            'type' => 'primary',
+            'heading' => 'Remittance Payees'
         ],
         'columns' => [
 
-            'payee_id',
-            'object_code',
+
+            [
+                'label' => 'Payee',
+                'attribute' => 'payee_id',
+                'value' => 'payee.account_name'
+            ],
+            [
+                'label' => 'General Ledger',
+                'attribute' => 'object_code',
+                'value' => function ($model) {
+
+                    return $model->generalLedger->uacs . '-' . $model->generalLedger->general_ledger;
+                }
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
