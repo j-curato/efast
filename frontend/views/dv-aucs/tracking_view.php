@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
     $budget_remarks = '';
 
 
-    if ($model->transaction_type !== 'Single') {
+    if ($model->transaction_type !== 'Single' && $model->transaction_type !== 'Payroll') {
         $budget_remarks = 'Not Applicable ORS is ' . $model->transaction_type;
     } else {
         $ors_created_at = Yii::$app->db->createCommand("SELECT 

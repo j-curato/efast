@@ -83,9 +83,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'unit_of_measure_id',
                 'value' => 'unitOfMeasure.unit_of_measure'
             ],
-            'amount',
-            //'chart_of_account_id',
-            //'created_at',
+
+            [
+                'attribute' => 'amount',
+                'hAlign' => 'right',
+                'format' => ['decimal', 2]
+            ],
 
             [
                 'class' => 'kartik\grid\ActionColumn',

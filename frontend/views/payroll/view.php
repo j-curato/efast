@@ -13,7 +13,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="payroll-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -43,9 +42,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <th>Amount Disbursed:
-                        <span><?= $model->amount ?></span>
+                        <span><?= number_format($model->amount,2) ?></span>
                     </th>
-                    <th>Due to BIR: <span> <?= $model->due_to_bir_amount ?></span></th>
+                    <th>Due to BIR: <span> <?= number_format($model->due_to_bir_amount,2) ?></span></th>
                 </tr>
                 <tr>
                     <th>
@@ -84,7 +83,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     echo "<tr>
                         <td>{$val['payee']}</td>
                         <td colspan='3'>{$val['object_code']} - {$val['account_title']}</td>
-                        <td style='text-align:right;'>".number_format($val['amount'],2)."</td>
+                        <td style='text-align:right;'>" . number_format($val['amount'], 2) . "</td>
                 </tr>";
 
                     if ($val['parent_object_code'] === '2020101000') {
@@ -128,5 +127,13 @@ $this->params['breadcrumbs'][] = $this->title;
     .container {
         background-color: white;
         padding: 3rem;
+    }
+
+    @media print {
+
+        .main-footer,
+        .btn {
+            display: none;
+        }
     }
 </style>

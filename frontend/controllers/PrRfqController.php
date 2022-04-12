@@ -348,7 +348,7 @@ class PrRfqController extends Controller
     {
         // RO-2022-01-29-001 
         // $date = '2022-01-05';
-        $province = 'ADN';
+        $province = 'RO';
         $d  = DateTime::createFromFormat('Y-m-d', $date);
         $num  = 1;
         $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_rfq.rfq_number,'-',-1) AS UNSIGNED)  as last_num FROM pr_rfq WHERE _date=:_date")
