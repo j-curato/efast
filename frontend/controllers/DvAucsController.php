@@ -1443,7 +1443,7 @@ class DvAucsController extends Controller
             $compensation = $_POST['compensation'];
             $liabilities = $_POST['other_trust_liabilities'];
             $ors = $_POST['process_ors_id'];
-            $payroll_id = $_POST['payroll_id'];
+            $payroll_id = !empty($_POST['payroll_id']) ? $_POST['payroll_id'] : null;
 
             $transaction = Yii::$app->db->beginTransaction();
             $q = DateTime::createFromFormat('Y-m-d', $recieved_at);
