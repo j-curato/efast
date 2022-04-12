@@ -12,6 +12,7 @@ use app\models\Raouds;
 use app\models\Raouds2Search;
 use app\models\RaoudsSearch;
 use yii\db\ForeignKeyConstraint;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -39,6 +40,7 @@ class ProcessOrsController extends Controller
                     'sample',
                     'insert-process-ors',
                     'qwe',
+                    'search-ors'
                 ],
                 'rules' => [
                     [
@@ -51,6 +53,8 @@ class ProcessOrsController extends Controller
                             'sample',
                             'insert-process-ors',
                             'qwe',
+                            'search-ors'
+
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
@@ -271,5 +275,25 @@ class ProcessOrsController extends Controller
             ->where("id= :id", ['id' => 44])
             ->one();
         return $query['id'];
+    }
+    public function actionSearchOrs($q = null, $id = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if ($id > 0) {
+            $out['results'] = ['id' => $id, 'text' => ProcessOrs::findOne($id)->serial_number];
+        } else if (!is_null($q)) {
+            $query = new Query();
+            $query->select('process_ors.id, process_ors.serial_number AS text')
+                ->from('process_ors')
+                ->where(['like', 'process_ors.serial_number', $q])
+                ->andWhere('process_ors.is_cancelled != 1');
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        return $out;
     }
 }

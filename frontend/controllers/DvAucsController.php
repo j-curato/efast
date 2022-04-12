@@ -1391,6 +1391,33 @@ class DvAucsController extends Controller
             }
         }
     }
+    public function insertDvAccountingEntriesFromPayroll($dv_id, $payroll_id)
+    {
+        $query = Yii::$app->db->createCommand("SELECT
+        :dv_id as dv_aucs_id,
+         payroll_items.object_code,
+        IF(chart_of_accounts.normal_balance ='Debit',payroll_items.amount,0) as debit,
+        IF(chart_of_accounts.normal_balance ='Credit',payroll_items.amount,0) as credit
+        FROM `payroll_items`
+        LEFT JOIN chart_of_accounts ON SUBSTRING_INDEX(payroll_items.object_code,'_',1) = chart_of_accounts.uacs
+        WHERE payroll_items.payroll_id = :payroll_id
+        ")
+            ->bindValue(':dv_id', $dv_id)
+            ->bindValue(':payroll_id', $payroll_id)
+            ->queryAll();
+        foreach ($query as $val) {
+
+            $dv = new DvAccountingEntries();
+            $dv->dv_aucs_id = $dv_id;
+            $dv->object_code = $val['object_code'];
+            $dv->debit = !empty($val['debit']) ? $val['debit'] : 0;
+            $dv->credit = !empty($val['credit']) ? $val['credit'] : 0;
+            if ($dv->save(false)) {
+            } else {
+                return false;
+            }
+        }
+    }
     public function actionCreateTracking()
     {
 
@@ -1416,6 +1443,7 @@ class DvAucsController extends Controller
             $compensation = $_POST['compensation'];
             $liabilities = $_POST['other_trust_liabilities'];
             $ors = $_POST['process_ors_id'];
+            $payroll_id = $_POST['payroll_id'];
 
             $transaction = Yii::$app->db->beginTransaction();
             $q = DateTime::createFromFormat('Y-m-d', $recieved_at);
@@ -1453,7 +1481,16 @@ class DvAucsController extends Controller
                     $model->payee_id = $payee_id;
                     $model->particular =  $particular;
                     $model->transaction_type = $transaction_type;
+                    $model->payroll_id = $payroll_id;
                     if ($model->save(false)) {
+                        if (strtolower($model->transaction_type) == 'payroll') {
+                            if (empty($model->payroll_id)) {
+                                return json_encode('Payroll number is required');
+                            } else if (!empty($model->payroll_id)) {
+                                $this->insertDvAccountingEntriesFromPayroll($model->id, $model->payroll_id);
+                            }
+                        }
+
                         $flag =  $this->insertDvEntries(
                             $model->id,
                             $ors,
@@ -1542,6 +1579,7 @@ class DvAucsController extends Controller
             $compensation = $_POST['compensation'];
             $liabilities = $_POST['other_trust_liabilities'];
             $ors = $_POST['process_ors_id'];
+            $payroll_id = $_POST['payroll_id'];
             $transaction = Yii::$app->db->beginTransaction();
             if ($transaction_type === 'Single') {
 
@@ -1576,7 +1614,14 @@ class DvAucsController extends Controller
                     $model->particular =  $particular;
                     $model->transaction_type = $transaction_type;
                     $model->recieved_at  = date('Y-m-d H:i:s', strtotime($recieved_at));
+                    $model->payroll_id = $payroll_id;
+
                     if ($model->save(false)) {
+
+                        // if (!empty($model->payroll_id)) {
+
+                        //     $this->insertDvAccountingEntriesFromPayroll($model->id, $model->payroll_id);
+                        // }
                         $flag =  $this->insertDvEntries(
                             $model->id,
                             $ors,
@@ -1633,5 +1678,27 @@ class DvAucsController extends Controller
                 ->queryOne();
             return json_encode($query);
         }
+    }
+
+    public function actionCreateNew()
+    {
+        $model = new DvAucs();
+
+        if ($_POST) {
+
+            if ($model->save()) {
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+        }
+
+
+        $searchModel = new ProcessOrsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('_form2', [
+
+            'model' => $model
+        ]);
     }
 }

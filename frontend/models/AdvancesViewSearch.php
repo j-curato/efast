@@ -79,6 +79,7 @@ class AdvancesViewSearch extends AdvancesView
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['reporting_period' => SORT_DESC]],
         ]);
 
         $this->load($params);

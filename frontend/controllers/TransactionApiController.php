@@ -72,6 +72,7 @@ class TransactionApiController extends \yii\rest\ActiveController
                             } else {
                                 $transaction->rollBack();
                                 return false;
+
                             }
                         } else {
                             $new_transaction = new transaction();

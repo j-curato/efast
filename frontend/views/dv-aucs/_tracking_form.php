@@ -15,8 +15,7 @@ use kartik\select2\Select2;
 use kartik\time\TimePicker;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
-
-
+use yii\web\JsExpression;
 
 $reporting_period = '';
 $payee_id  = '';
@@ -27,6 +26,7 @@ $book_id = '';
 $update_create = '?r=dv-aucs/create-tracking';
 $transaction_type = '';
 $date_receive = '';
+$payroll = [];
 if (!empty($model->id)) {
     $book_id = $model->book_id;
     $reporting_period = $model->reporting_period;
@@ -36,6 +36,13 @@ if (!empty($model->id)) {
     $transaction_type = $model->transaction_type;
     $date_receive = !empty($model->recieved_at) ? DateTime::createFromFormat('Y-m-d H:i:s', $model->recieved_at)->format('Y-m-d h:i A') : '';
     $update_create = '?r=dv-aucs/tracking-update&id=' . $model->id;
+    if (!empty($model->payroll_id)) {
+
+        $payroll_query = Yii::$app->db->createCommand('SELECT id,payroll_number FROM payroll WHERE id =:id')
+            ->bindValue(':id', $model->payroll_id)
+            ->queryAll();
+        $payroll = ArrayHelper::map($payroll_query, 'id', 'payroll_number');
+    }
 }
 ?>
 <div class="test">
@@ -144,6 +151,37 @@ if (!empty($model->id)) {
 
 
                     ?>
+                </div>
+                <div class="col-sm-3" id="payroll_display" style="display: none;">
+                    <label for="payee">Payroll No.</label>
+                    <?php
+                    echo Select2::widget([
+                        'name' => 'payroll_id',
+                        'id' => 'payroll_number',
+                        'data' => $payroll,
+                        'value' => !empty($model->payroll_id) ? $model->payroll_id : '',
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                            'minimumInputLength' => 1,
+                            'language' => [
+                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                            ],
+                            'ajax' => [
+                                'url' => Yii::$app->request->baseUrl . '?r=payroll/search-payroll',
+                                'dataType' => 'json',
+                                'delay' => 250,
+                                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                                'cache' => true
+                            ],
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        ],
+
+                    ])
+
+                    ?>
+                    <span class="payee_id_error form-error"></span>
                 </div>
 
                 <div class="col-sm-3"></div>
@@ -727,59 +765,7 @@ $csrfToken = Yii::$app->request->csrfToken;
             },
             placeholder: 'Search Accounting Code'
         });
-        // ADD ORS 
-        $('#submit').click(function(e) {
-            e.preventDefault();
 
-            var transaction_type = $('#transaction').val()
-            var count = $('#transaction_table tbody tr').length
-            if (transaction_type == 'Single' && count >= 1) {
-                swal({
-                    title: "Error",
-                    text: 'Transaction Type is Single',
-                    type: "error",
-                    timer: 6000,
-                    button: false
-                    // confirmButtonText: "Yes, delete it!",
-                });
-                return
-            }
-            $.ajax({
-                url: window.location.pathname + '?r=dv-aucs/get-dv',
-                method: "POST",
-                data: $('#add_data').serialize(),
-                success: function(data) {
-                    var res = JSON.parse(data)
-                    console.log(res)
-                    if (res.isSuccess) {
-
-                        addDvToTable(res.results, row)
-                        row++
-
-                    } else {
-                        swal({
-                            title: "Error",
-                            text: res.error,
-                            type: "error",
-                            timer: 6000,
-                            button: false
-                            // confirmButtonText: "Yes, delete it!",
-                        });
-                    }
-                    if (transaction_type == 'Single') {
-                        $("#particular").val(res.results[0]['transaction_particular'])
-                        var payeeSelect = $('#payee')
-                        var option = new Option(res.results[0]['transaction_payee'], [res.results[0]['transaction_payee_id']], true, true);
-                        payeeSelect.append(option).trigger('change');
-                    }
-
-                }
-            });
-            $('.checkbox').prop('checked', false); // Checks it
-            $('.amounts').prop('disabled', true);
-            $('.amounts').val(null);
-
-        })
 
     })
 
@@ -828,7 +814,8 @@ $script = <<< JS
                  "Multiple",
                 "Accounts Payable",
                 "Replacement to Stale Checks",
-               'Replacement of Check Issued'
+               'Replacement of Check Issued',
+               'Payroll'
         ]
             $('#transaction').select2({
                 data: transaction,
@@ -854,61 +841,60 @@ $script = <<< JS
          })
 
     })
- 
-    $('#save_data').submit(function(e) {
-  
+    
 
-         e.preventDefault();
+    $("#save_data").submit(function (e) {
+        e.preventDefault();
 
-         var url  = window.location.pathname +"$update_create";
-         $.ajax({
-            url:url ,
+        var url = window.location.pathname + "$update_create";
+        $.ajax({
+            url: url,
             method: "POST",
-            data: $('#save_data').serialize(),
-            success: function(data) {
-                var res=JSON.parse(data)
-                if (res.isSuccess==true) {
-                    swal({
-                        title: "Success",
-                        // text: "You will not be able to undo this action!",
-                        type: "success",
-                        timer: 3000,
-                        button: false
-                        // confirmButtonText: "Yes, delete it!",
-                    }, function() {
-                        window.location.href = window.location.pathname + '?r=dv-aucs/view&id='+res.id
-                    });
-                    $('#save_data')[0].reset();
+            data: $("#save_data").serialize(),
+            success: function (data) {
+            var res = JSON.parse(data);
+            if (res.isSuccess == true) {
+                swal(
+                {
+                    title: "Success",
+                    // text: "You will not be able to undo this action!",
+                    type: "success",
+                    timer: 3000,
+                    button: false,
+                    // confirmButtonText: "Yes, delete it!",
+                },
+                function () {
+                    window.location.href =
+                    window.location.pathname + "?r=dv-aucs/view&id=" + res.id;
                 }
-                else if(res.isSuccess==false){
-
-                    swal({
-                        title: "Error",
-                        text: res.error,
-                        type: "error",
-                        timer: 6000,
-                        button: false
-                        // confirmButtonText: "Yes, delete it!",
-                    });
-                }
-                else if(res.isSuccess=='exist'){
-                    var dv_link = window.location.pathname + "?r=dv-aucs/view&id=" +res.id
-                    $('#link').text('NAA NAY DV ANG ORS ')
-            bbb = $(`<a type="button" href='`+ dv_link+`' >link here</a>`);
-                        bbb.appendTo($("#link"));
-                    swal({
-                        title: "Error",
-                        text: "Naa Nay DV",
-                        type: "error",
-                        timer: 6000,
-                        button: false
-                        // confirmButtonText: "Yes, delete it!",
-                    });
-                }
+                );
+                $("#save_data")[0].reset();
+            } else if (res.isSuccess == false) {
+                swal({
+                title: "Error",
+                text: res.error,
+                type: "error",
+                timer: 6000,
+                button: false,
+                // confirmButtonText: "Yes, delete it!",
+                });
+            } else if (res.isSuccess == "exist") {
+                var dv_link = window.location.pathname + "?r=dv-aucs/view&id=" + res.id;
+                $("#link").text("NAA NAY DV ANG ORS ");
+                bbb = $(`<a type="button" href='` + dv_link + `' >link here</a>`);
+                bbb.appendTo($("#link"));
+                swal({
+                title: "Error",
+                text: "Naa Nay DV",
+                type: "error",
+                timer: 6000,
+                button: false,
+                // confirmButtonText: "Yes, delete it!",
+                });
             }
+            },
         });
-
-})
+        });
 
      
 

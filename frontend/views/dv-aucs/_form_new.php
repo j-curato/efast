@@ -125,6 +125,7 @@ $dv_items_row = 1;
                             "Accounts Payable"  => "Accounts Payable",
                             "Replacement to Stale Checks" =>  "Replacement to Stale Checks",
                             'Replacement of Check Issued' =>  'Replacement of Check Issued',
+                            'Payroll' =>  'Payroll',
                         ],
                         'value' => $transaction_type,
                         'pluginOptions' => [

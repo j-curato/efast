@@ -89,6 +89,7 @@ class DvAucs extends \yii\db\ActiveRecord
             'tracking_sheet_id' => 'Tracking Sheet ID',
             'in_timestamp' => 'In Timestamp',
             'recieved_at' => 'Recieve  Timestamp',
+            
         ];
     }
 
