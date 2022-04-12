@@ -61,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <?php
                 $total_obligation = 0;
-                $total_due_to_bir = 0;
+                $total_due_to_bir = floatval($model->due_to_bir_amount);
                 $total_trust_liab = 0;
                 $items = Yii::$app->db->createCommand(" SELECT 
                 payee.account_name as payee,
@@ -116,7 +116,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td><?= number_format($_2307, 2) ?></td>
                     <td><?= number_format($_1601c, 2) ?></td>
                     <td><?= number_format($total_trust_liab, 2) ?></td>
-                    <td><?= number_format($total_obligation + floatval($model->amount), 2) ?></td>
+                    <td><?= number_format($total_obligation + floatval($model->amount) + floatval($model->due_to_bir_amount), 2) ?></td>
                 </tr>
 
             </tbody>

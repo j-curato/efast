@@ -37,6 +37,11 @@ class Payroll extends \yii\db\ActiveRecord
             [['payroll_number', 'reporting_period', 'type'], 'string', 'max' => 255],
             [['payroll_number'], 'unique'],
             [['id'], 'unique'],
+            [[
+                'reporting_period',
+                'process_ors_id',
+                'type'
+            ], 'required'],
         ];
     }
 
@@ -58,6 +63,6 @@ class Payroll extends \yii\db\ActiveRecord
     }
     public function getProcessOrs()
     {
-        return $this->hasOne(ProcessOrs::class,['id'=>'process_ors_id']);
+        return $this->hasOne(ProcessOrs::class, ['id' => 'process_ors_id']);
     }
 }

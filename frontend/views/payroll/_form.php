@@ -270,17 +270,18 @@ $csrfToken = Yii::$app->request->csrfToken;
     }
 
     function getTotal() {
-        let total_trust_liab = 0
+        let total_trust_liab = 0;
         let total_due_to_bir = 0;
         let total_obligation = $('#payroll-amount').val() != '' ? parseFloat($('#payroll-amount').val()) : 0;
         $('input[name^="payee_amount"]').each(function(key, val) {
-            let value = val.value != '' ? $(this).maskMoney('unmasked')[0] : 0
+            let value = val.value != '' ? parseFloat($(this).val()) : 0
             const index_number = parseInt($(this).attr('name').replace(/[^0-9.]/g, ""));
             const object_code = $(`select[data-index=${index_number}]`).attr('data-object-code')
 
             if (object_code == '2020101000') {
                 total_due_to_bir += parseFloat(value)
             } else {
+                console.log(value)
                 total_trust_liab += value
 
             }
@@ -289,9 +290,11 @@ $csrfToken = Yii::$app->request->csrfToken;
 
 
         })
-        const due_to_bir_amount = $('#payroll-due_to_bir_amount').val()!=''?$('#payroll-due_to_bir_amount').val():0
+        const amount_disbursed = $('#payroll-amount').val() != '' ? parseFloat($('#payroll-amount').val()) : 0
+        const due_to_bir_amount = $('#payroll-due_to_bir_amount').val() != '' ? $('#payroll-due_to_bir_amount').val() : 0
+        console.log(amount_disbursed)
+        total_obligation +=  amount_disbursed
         total_due_to_bir += parseFloat(due_to_bir_amount)
-        console.log(total_due_to_bir)
         const payroll_type = $('#payroll-type').val()
         $("#2307_ewt").text('')
         $("#1601c_compensation").text('')
