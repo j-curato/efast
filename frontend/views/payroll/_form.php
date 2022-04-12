@@ -291,9 +291,9 @@ $csrfToken = Yii::$app->request->csrfToken;
 
         })
         const amount_disbursed = $('#payroll-amount').val() != '' ? parseFloat($('#payroll-amount').val()) : 0
-        const due_to_bir_amount = $('#payroll-due_to_bir_amount').val() != '' ? $('#payroll-due_to_bir_amount').val() : 0
+        const due_to_bir_amount = $('#payroll-due_to_bir_amount').val() != '' ? parseFloat($('#payroll-due_to_bir_amount').val()) : 0
         console.log(amount_disbursed)
-        total_obligation += amount_disbursed +due_to_bir_amount
+        total_obligation += amount_disbursed + due_to_bir_amount
         total_due_to_bir += parseFloat(due_to_bir_amount)
         const payroll_type = $('#payroll-type').val()
         $("#2307_ewt").text('')
