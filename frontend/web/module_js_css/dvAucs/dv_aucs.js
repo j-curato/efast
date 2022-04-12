@@ -107,7 +107,7 @@ $("#payroll_number").change(function () {
 
       if (res.type == "2307") {
         ewt_goods_services = res.total_due_to_bir;
-      } else if ((res.type = "1601C")) {
+      } else if ((res.type == "1601C")) {
         compensation = res.compensation;
       }
       var row = `<tr>
