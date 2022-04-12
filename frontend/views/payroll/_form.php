@@ -272,7 +272,7 @@ $csrfToken = Yii::$app->request->csrfToken;
     function getTotal() {
         let total_trust_liab = 0;
         let total_due_to_bir = 0;
-        let total_obligation = $('#payroll-amount').val() != '' ? parseFloat($('#payroll-amount').val()) : 0;
+        let total_obligation = 0;
         $('input[name^="payee_amount"]').each(function(key, val) {
             let value = val.value != '' ? parseFloat($(this).val()) : 0
             const index_number = parseInt($(this).attr('name').replace(/[^0-9.]/g, ""));
@@ -293,7 +293,7 @@ $csrfToken = Yii::$app->request->csrfToken;
         const amount_disbursed = $('#payroll-amount').val() != '' ? parseFloat($('#payroll-amount').val()) : 0
         const due_to_bir_amount = $('#payroll-due_to_bir_amount').val() != '' ? $('#payroll-due_to_bir_amount').val() : 0
         console.log(amount_disbursed)
-        total_obligation +=  amount_disbursed
+        total_obligation += amount_disbursed
         total_due_to_bir += parseFloat(due_to_bir_amount)
         const payroll_type = $('#payroll-type').val()
         $("#2307_ewt").text('')
