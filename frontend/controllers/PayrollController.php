@@ -285,16 +285,26 @@ class PayrollController extends Controller
             $query = Yii::$app->db->createCommand("SELECT
             payroll.payroll_number,
             payroll.type,
+            payroll.reporting_period,
+            process_ors.serial_number as ors_number,
+            process_ors.book_id,
+            process_ors.id as ors_id,
             payroll.amount as amount_disbursed,
+            `transaction`.particular,
+            payee.id as payee_id,
+            payee.account_name as payee,
             IFNULL(due_to_bir.total_due_to_bir,0) + IFNULL(payroll.due_to_bir_amount,0) as total_due_to_bir,
             IFNULL(trust_liab.total_trust_liab,0) as total_trust_liab
             
              FROM payroll
+             LEFT JOIN process_ors ON payroll.process_ors_id = process_ors.id
             LEFT JOIN (SELECT SUM(payroll_items.amount)as total_due_to_bir,payroll_items.payroll_id 
             FROM payroll_items WHERE  payroll_items.object_code LIKE '2020101000%' GROUP BY payroll_items.payroll_id) as due_to_bir  ON payroll.id = due_to_bir.payroll_id
             LEFT JOIN (SELECT SUM(payroll_items.amount)as total_trust_liab,payroll_items.payroll_id 
             FROM payroll_items WHERE  payroll_items.object_code NOT LIKE '2020101000%' GROUP BY payroll_items.payroll_id) as trust_liab  
             ON payroll.id = trust_liab.payroll_id
+            LEFT JOIN `transaction` ON process_ors.transaction_id = `transaction`.id
+            LEFT JOIN payee ON `transaction`.payee_id = payee.id
             WHERE payroll.id = :id
             ")
 

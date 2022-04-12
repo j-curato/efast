@@ -107,24 +107,32 @@ $("#payroll_number").change(function () {
 
       if (res.type == "2307") {
         ewt_goods_services = res.total_due_to_bir;
-      } else if ((res.type == "1601c")) {
+      } else if (res.type == "1601c") {
         compensation = res.total_due_to_bir;
       }
+      $("#reporting_period").val(res.reporting_period);
+      $("#particular").val(res.particular);
+      $("#book_id").val(res.book_id).trigger("change");
+
+      var payeeSelect = $("#payee");
+      var option = new Option([res.payee], [res.payee_id], true, true);
+      payeeSelect.append(option).trigger("change");
+
       var row = `<tr>
-      <td style='display:none'> <input style='display:none' value='n' type='text' name='process_ors_id[${row}]'/></td>
-      <td></td>
+      <td style='display:none'> <input style='display:none' value='${res.ors_id}' type='text' name='process_ors_id[1]'/></td>
+      <td>${res.ors_number}</td>
       <td> 
-     
+      ${res.particular}
       </td>
-      <td></td>
+      <td>${res.payee}</td>
       <td></td>
       <td>
-       <input value='${amount_disbursed}' name='amount_disbursed[${row}]' type='text'  class='amount_disbursed'/>
+       <input value='${amount_disbursed}' name='amount_disbursed[1]' type='text'  class='amount_disbursed'/>
       </td>
-      <td> <input value='0' type='text' name='vat_nonvat[${row}]' class='vat'/></td>
-      <td> <input value='${ewt_goods_services}' type='text' name='ewt_goods_services[${row}]' class='ewt'/></td>
-      <td> <input value='${compensation}' type='text' name='compensation[${row}]' class='compensation'/></td>
-      <td> <input value='${other_trust_liabilities}' type='text' name='other_trust_liabilities[${row}]' class='liabilities'/></td>
+      <td> <input value='0' type='text' name='vat_nonvat[1]' class='vat'/></td>
+      <td> <input value='${ewt_goods_services}' type='text' name='ewt_goods_services[1]' class='ewt'/></td>
+      <td> <input value='${compensation}' type='text' name='compensation[1]' class='compensation'/></td>
+      <td> <input value='${other_trust_liabilities}' type='text' name='other_trust_liabilities[1]' class='liabilities'/></td>
       <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
   `;
       $("#transaction_table tbody").append(row);
