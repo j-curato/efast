@@ -97,3 +97,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 <?php
+$script = <<<JS
+
+        $('a[title=Update]').click(function(e){
+            e.preventDefault();
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
+        });
+
+        
+
+JS;
+$this->registerJs($script);
+?>
