@@ -185,11 +185,14 @@ class DvAucsController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function insertAccountingEntries($dv_id = '', $object_codes = [], $debits = [], $credits = [])
+    public function insertAccountingEntries($dv_id = '', $object_codes = [], $debits = [], $credits = [], $accounting_entries = [])
     {
         foreach ($object_codes as $key => $val) {
-
-            $entry = new DvAccountingEntries();
+            if (empty($accounting_entries[$key])) {
+                $entry = new DvAccountingEntries();
+            } else {
+                $entry =  DvAccountingEntries::findOne($accounting_entries[$key]);
+            }
             $entry->dv_aucs_id = $dv_id;
             $entry->object_code = $val;
             $entry->debit = !empty($debits[$key]) ? $debits[$key] : 0;
@@ -295,7 +298,7 @@ class DvAucsController extends Controller
             // Yii::$app->db->createCommand("DELETE FROM dv_accounting_entries WHERE dv_aucs_id = :id ")
             //     ->bindValue(':id', $model->id)
             //     ->query();
-
+            $accounting_entries = !empty($_POST['accounting_entries']) ? $_POST['accounting_entries'] : [];
             try {
                 $flag = true;
                 if ($model->validate()) {
@@ -307,7 +310,7 @@ class DvAucsController extends Controller
                             return json_encode(['check_error' => "Not Balance $sum_debits :  $sum_credits"]);
                         }
                     }
-                    $accounting_entry =   $this->insertAccountingEntries($model->id, $object_codes, $debits, $credits);
+                    $accounting_entry =   $this->insertAccountingEntries($model->id, $object_codes, $debits, $credits, $accounting_entries);
                     if ($accounting_entry === false) {
                         $transaction->rollBack();
                         return json_encode(['check_error' => 'Error in inserting Accounting entries']);
@@ -364,7 +367,11 @@ class DvAucsController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         // echo $id;
 
-        $accounting_entries = Yii::$app->db->createCommand("SELECT CONCAT(dv_accounting_entries.object_code,'-',accounting_codes.account_title) as account_title ,dv_accounting_entries.object_code,dv_accounting_entries.debit,dv_accounting_entries.credit 
+        $accounting_entries = Yii::$app->db->createCommand("SELECT CONCAT(dv_accounting_entries.object_code,'-',accounting_codes.account_title) as account_title ,
+        dv_accounting_entries.object_code,
+        dv_accounting_entries.debit,
+        dv_accounting_entries.credit,
+        dv_accounting_entries.id 
         FROM dv_accounting_entries
         LEFT JOIN accounting_codes ON dv_accounting_entries.object_code = accounting_codes.object_code
          WHERE dv_accounting_entries.dv_aucs_id = :id")
@@ -1581,7 +1588,7 @@ class DvAucsController extends Controller
             $compensation = $_POST['compensation'];
             $liabilities = $_POST['other_trust_liabilities'];
             $ors = $_POST['process_ors_id'];
-            $payroll_id = $_POST['payroll_id'];
+            $payroll_id = !empty($_POST['payroll_id']) ? $_POST['payroll_id'] : null;
             $transaction = Yii::$app->db->beginTransaction();
             if ($transaction_type === 'Single') {
 
