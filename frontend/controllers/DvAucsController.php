@@ -1393,30 +1393,25 @@ class DvAucsController extends Controller
     }
     public function insertDvAccountingEntriesFromPayroll($dv_id, $payroll_id)
     {
-        $query = Yii::$app->db->createCommand("SELECT
-        :dv_id as dv_aucs_id,
-         payroll_items.object_code,
-        IF(chart_of_accounts.normal_balance ='Debit',payroll_items.amount,0) as debit,
-        IF(chart_of_accounts.normal_balance ='Credit',payroll_items.amount,0) as credit
-        FROM `payroll_items`
-        LEFT JOIN chart_of_accounts ON SUBSTRING_INDEX(payroll_items.object_code,'_',1) = chart_of_accounts.uacs
-        WHERE payroll_items.payroll_id = :payroll_id
+        $query = Yii::$app->db->createCommand("UPDATE dv_accounting_entries
+        SET dv_aucs_id =:dv_id
+        WHERE dv_accounting_entries.payroll_id = :payroll_id
         ")
             ->bindValue(':dv_id', $dv_id)
             ->bindValue(':payroll_id', $payroll_id)
-            ->queryAll();
-        foreach ($query as $val) {
+            ->query();
+        // foreach ($query as $val) {
 
-            $dv = new DvAccountingEntries();
-            $dv->dv_aucs_id = $dv_id;
-            $dv->object_code = $val['object_code'];
-            $dv->debit = !empty($val['debit']) ? $val['debit'] : 0;
-            $dv->credit = !empty($val['credit']) ? $val['credit'] : 0;
-            if ($dv->save(false)) {
-            } else {
-                return false;
-            }
-        }
+        //     $dv = new DvAccountingEntries();
+        //     $dv->dv_aucs_id = $dv_id;
+        //     $dv->object_code = $val['object_code'];
+        //     $dv->debit = !empty($val['debit']) ? $val['debit'] : 0;
+        //     $dv->credit = !empty($val['credit']) ? $val['credit'] : 0;
+        //     if ($dv->save(false)) {
+        //     } else {
+        //         return false;
+        //     }
+        // }
     }
     public function actionCreateTracking()
     {
@@ -1482,11 +1477,18 @@ class DvAucsController extends Controller
                     $model->particular =  $particular;
                     $model->transaction_type = $transaction_type;
                     $model->payroll_id = $payroll_id;
+                    $check  = Yii::$app->db->createCommand("SELECT EXISTS(SELECT * FROM dv_aucs WHERE payroll_id = :payroll_id)")
+                        ->bindValue(':payroll_id', $model->payroll_id)
+                        ->queryScalar();
+                    if (intval($check) == 1) {
+                        return json_encode(['isSuccess' => false, 'error' => 'Naa nay Tracking Sheet ']);
+                    }
                     if ($model->save(false)) {
                         if (strtolower($model->transaction_type) == 'payroll') {
                             if (empty($model->payroll_id)) {
-                                return json_encode('Payroll number is required');
+                                return json_encode(['isSuccess' => false, 'error' => 'Payroll Number is Required ']);
                             } else if (!empty($model->payroll_id)) {
+
                                 $this->insertDvAccountingEntriesFromPayroll($model->id, $model->payroll_id);
                             }
                         }

@@ -42,9 +42,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <th>Amount Disbursed:
-                        <span><?= number_format($model->amount,2) ?></span>
+                        <span><?= number_format($model->amount, 2) ?></span>
                     </th>
-                    <th>Due to BIR: <span> <?= number_format($model->due_to_bir_amount,2) ?></span></th>
+                    <th>Due to BIR: <span> <?= number_format($model->due_to_bir_amount, 2) ?></span></th>
                 </tr>
                 <tr>
                     <th>
@@ -66,16 +66,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 payee.account_name as payee,
                 accounting_codes.object_code,
                 accounting_codes.account_title,
-                payroll_items.amount,
+                IFNULL(dv_accounting_entries.debit,0) + IFNULL(dv_accounting_entries.credit,0) as amount,
                 remittance_payee.object_code as parent_object_code
                 
-                            FROM payroll_items
-                LEFT JOIN remittance_payee ON payroll_items.remittance_payee_id = remittance_payee.id
+                FROM dv_accounting_entries
+                LEFT JOIN remittance_payee ON dv_accounting_entries.remittance_payee_id = remittance_payee.id
                 LEFT JOIN payee ON remittance_payee.payee_id = payee.id
-                LEFT JOIN accounting_codes ON payroll_items.object_code = accounting_codes.object_code
+                LEFT JOIN accounting_codes ON dv_accounting_entries.object_code = accounting_codes.object_code
                 
                            
-            WHERE payroll_items.payroll_id = :id")
+            WHERE dv_accounting_entries.payroll_id = :id")
                     ->bindValue(':id', $model->id)
                     ->queryAll();
                 foreach ($items as $val) {

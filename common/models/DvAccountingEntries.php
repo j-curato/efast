@@ -2,6 +2,8 @@
 
 namespace common\models;
 
+use app\models\CashFlow;
+use app\models\NetAssetEquity;
 use Yii;
 
 /**
@@ -44,10 +46,10 @@ class DvAccountingEntries extends \yii\db\ActiveRecord
             [['debit', 'credit'], 'number'],
             [['closing_nonclosing'], 'string', 'max' => 50],
             [['current_noncurrent', 'object_code'], 'string', 'max' => 255],
-            [['cashflow_id'], 'exist', 'skipOnError' => true, 'targetClass' => CashFlow::className(), 'targetAttribute' => ['cashflow_id' => 'id']],
-            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::className(), 'targetAttribute' => ['chart_of_account_id' => 'id']],
-            [['dv_aucs_id'], 'exist', 'skipOnError' => true, 'targetClass' => DvAucs::className(), 'targetAttribute' => ['dv_aucs_id' => 'id']],
-            [['net_asset_equity_id'], 'exist', 'skipOnError' => true, 'targetClass' => NetAssetEquity::className(), 'targetAttribute' => ['net_asset_equity_id' => 'id']],
+            [['cashflow_id'], 'exist', 'skipOnError' => true, 'targetClass' => CashFlow::class, 'targetAttribute' => ['cashflow_id' => 'id']],
+            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
+            [['dv_aucs_id'], 'exist', 'skipOnError' => true, 'targetClass' => DvAucs::class, 'targetAttribute' => ['dv_aucs_id' => 'id']],
+            [['net_asset_equity_id'], 'exist', 'skipOnError' => true, 'targetClass' => NetAssetEquity::class, 'targetAttribute' => ['net_asset_equity_id' => 'id']],
         ];
     }
 
@@ -78,7 +80,7 @@ class DvAccountingEntries extends \yii\db\ActiveRecord
      */
     public function getCashflow()
     {
-        return $this->hasOne(CashFlow::className(), ['id' => 'cashflow_id']);
+        return $this->hasOne(CashFlow::class, ['id' => 'cashflow_id']);
     }
 
     /**
@@ -88,7 +90,7 @@ class DvAccountingEntries extends \yii\db\ActiveRecord
      */
     public function getChartOfAccount()
     {
-        return $this->hasOne(ChartOfAccounts::className(), ['id' => 'chart_of_account_id']);
+        return $this->hasOne(ChartOfAccounts::class, ['id' => 'chart_of_account_id']);
     }
 
     /**
@@ -98,7 +100,7 @@ class DvAccountingEntries extends \yii\db\ActiveRecord
      */
     public function getDvAucs()
     {
-        return $this->hasOne(DvAucs::className(), ['id' => 'dv_aucs_id']);
+        return $this->hasOne(DvAucs::class, ['id' => 'dv_aucs_id']);
     }
 
     /**
@@ -108,7 +110,7 @@ class DvAccountingEntries extends \yii\db\ActiveRecord
      */
     public function getNetAssetEquity()
     {
-        return $this->hasOne(NetAssetEquity::className(), ['id' => 'net_asset_equity_id']);
+        return $this->hasOne(NetAssetEquity::class, ['id' => 'net_asset_equity_id']);
     }
 
     /**

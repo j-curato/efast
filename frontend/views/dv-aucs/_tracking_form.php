@@ -808,7 +808,6 @@ $script = <<< JS
     $(document).ready(function() {
 
 
-        $("#payroll_number").trigger('change')
             // TRANSACTION TYPE
            var transaction = [
                "Single",

@@ -1,10 +1,12 @@
 <?php
 
+use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\money\MaskMoney;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 
@@ -125,14 +127,15 @@ if (!empty($model->id)) {
 
                 if (!empty($model->id)) {
                     $query = Yii::$app->db->createCommand("SELECT 
-            payroll_items.remittance_payee_id,
+            dv_accounting_entries.remittance_payee_id,
             payee.account_name,
-            payroll_items.amount,
-            remittance_payee.object_code
-            FROM `payroll_items`
-            LEFT JOIN remittance_payee ON payroll_items.remittance_payee_id = remittance_payee.id
+            IFNULL(dv_accounting_entries.debit,0) + IFNULL(dv_accounting_entries.credit,0) as amount,
+            remittance_payee.object_code,
+            dv_accounting_entries.id
+            FROM `dv_accounting_entries`
+            LEFT JOIN remittance_payee ON dv_accounting_entries.remittance_payee_id = remittance_payee.id
             LEFT JOIN payee ON remittance_payee.payee_id = payee.id
-            WHERE payroll_items.payroll_id = :id
+            WHERE dv_accounting_entries.payroll_id = :id
             ")
                         ->bindValue(':id', $model->id)
                         ->queryAll();
@@ -140,16 +143,18 @@ if (!empty($model->id)) {
 
 
                         echo "<tr>
+                        <td  style='display:none;'><span class='update_url'>" . Url::previous() . 'index.php?r=payroll/update-child&id=' . $val['id'] . "</span></td>
+                        <td  style='display:none;'><span class='remove_url'>" . Url::previous() . 'index.php?r=payroll/remove-row&id=' . $val['id'] . "</span></td>
                     <td>
                     <label>Remittance Payee</label>
-                    <select class='remittance-payee' name='remittance_payee[$row_number]' style='width:100%' data-index='$row_number' data-object-code='{$val['object_code']}'>
+                    <select class='remittance-payee' style='width:100%' data-index='$row_number' data-object-code='{$val['object_code']}'>
                     <option value='{$val['remittance_payee_id']}'>{$val['account_name']}</option>
                     </select>
                     </td>
                     <td>
                     <label for='payee_amount'>Amount</label>
                     <input type='text' class='mask-amount form-control payee_amount' value='{$val['amount']}'>
-                    <input type='hidden' name='payee_amount[${row_number}]' class='main_payee_amount'  value='{$val['amount']}'>
+                    <input type='hidden' class='main_payee_amount'  value='{$val['amount']}'>
                     </td>
                     <td>   <a class='remove_this_row btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a></td>
                 </tr>";
@@ -222,6 +227,7 @@ if (!empty($model->id)) {
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $csrfToken = Yii::$app->request->csrfToken;
+SweetAlertAsset::register($this);
 ?>
 
 <script>
@@ -281,7 +287,6 @@ $csrfToken = Yii::$app->request->csrfToken;
             if (object_code == '2020101000') {
                 total_due_to_bir += parseFloat(value)
             } else {
-                console.log(value)
                 total_trust_liab += value
 
             }
@@ -292,7 +297,6 @@ $csrfToken = Yii::$app->request->csrfToken;
         })
         const amount_disbursed = $('#payroll-amount').val() != '' ? parseFloat($('#payroll-amount').val()) : 0
         const due_to_bir_amount = $('#payroll-due_to_bir_amount').val() != '' ? parseFloat($('#payroll-due_to_bir_amount').val()) : 0
-        console.log(amount_disbursed)
         total_obligation += amount_disbursed + due_to_bir_amount
         total_due_to_bir += parseFloat(due_to_bir_amount)
         const payroll_type = $('#payroll-type').val()
@@ -323,7 +327,63 @@ $csrfToken = Yii::$app->request->csrfToken;
         })
         $('#items-table').on('click', '.remove_this_row', function(event) {
             event.preventDefault();
-            $(this).closest('tr').remove();
+            const remove_url = $(this).closest('tr').find('.remove_url').text()
+            if (remove_url != '') {
+                let isSuccess = ''
+                swal({
+                        title: "Are you sure to remove this row?",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: '#DD6B55',
+                        confirmButtonText: 'Remove',
+                        cancelButtonText: "Cancel",
+                        closeOnConfirm: false,
+                        closeOnCancel: true
+                    },
+                    function(isConfirm) {
+                        $(this).closest('tr').remove();
+                        if (isConfirm) {
+                            $.ajax({
+                                type: "POST",
+                                url: remove_url,
+                                data: {
+                                    '_csrf-frontend': "<?= $csrfToken ?>"
+                                },
+                                success: function(data) {
+                                    var res = JSON.parse(data)
+                                    var cancelled = res.cancelled ? "Successfuly Cancelled" : "Successfuly Activated";
+                                    if (res.isSuccess) {
+                                        swal({
+                                            title: 'Remove ',
+                                            type: 'success',
+                                            button: false,
+                                            timer: 3000,
+                                        })
+
+                                        isSuccess = true
+
+
+                                    } else {
+                                        swal({
+                                            title: "Error Cannot Cancel",
+                                            text: res.cancelled,
+                                            type: 'error',
+                                            button: false,
+                                            timer: 3000,
+                                        })
+                                    }
+
+                                }
+                            })
+
+                        }
+                    })
+                if (isSuccess = true) {
+                    $(this).closest('tr').remove();
+                }
+            } else {
+                $(this).closest('tr').remove();
+            }
             getTotal()
         });
         $('#payroll-amount').on('change keyup', function() {
@@ -332,12 +392,11 @@ $csrfToken = Yii::$app->request->csrfToken;
         $('#items-table').on('change keyup', '.payee_amount ', function() {
             getTotal()
         })
+
         $('#payroll-type').change(function() {
             getTotal()
         })
-        // $('#payroll-due_to_bir_amount-disp').on('keyup change',function() {
-        //     getTotal()
-        // })
+
 
         $('#items-table').on('select2:select', '.remittance-payee', function(e) {
             const data = e.params.data;
@@ -350,5 +409,58 @@ $csrfToken = Yii::$app->request->csrfToken;
         $("#payroll-due_to_bir_amount").on('keyup change', function() {
             getTotal()
         })
+
+
     })
 </script>
+<?php
+$csrfToken = Yii::$app->request->csrfToken;
+$script = <<<JS
+    $(document).ready(function(){
+        $('#items-table').on('change', '.payee_amount ', function() {
+            const data_row = $(this).closest('tr')
+            const _url = data_row.find('.update_url').text()
+            const remittance_payee = data_row.find('.remittance-payee').val()
+            const amount = data_row.find('.main_payee_amount').val()
+            if (_url!=''){
+                $.ajax({
+                    type: 'POST',
+                    url: _url,
+                    data: {
+                        remittance_payee_id: remittance_payee,
+                        amount: amount,
+                        '_csrf-frontend':"{$csrfToken}"
+                    },
+                    success: function(data) {
+                        console.log(data)
+                    }
+                })
+            }
+            
+        })
+        $('#items-table').on('change', '.remittance-payee ', function() {
+            const data_row = $(this).closest('tr')
+            const _url = data_row.find('.update_url').text()
+            const remittance_payee = data_row.find('.remittance-payee').val()
+            const amount = data_row.find('.main_payee_amount').val()
+            if (_url!=''){
+                $.ajax({
+                    type: 'POST',
+                    url: _url,
+                    data: {
+                        remittance_payee_id: remittance_payee,
+                        amount: amount,
+                        '_csrf-frontend':"{$csrfToken}"
+                    },
+                    success: function(data) {
+                        console.log(data)
+                    }
+                })
+            }
+            
+        })
+    })
+JS;
+
+$this->registerJs($script);
+?>
