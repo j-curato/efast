@@ -208,8 +208,8 @@ if (!empty($model->id)) {
                     <?php
 
                     if (!empty($model->id)) {
-                        if ($model->transaction_type != 'Payroll') {
-                            $query  = Yii::$app->db->createCommand(" SELECT 
+                        // if ($model->transaction_type != 'Payroll') {
+                        $query  = Yii::$app->db->createCommand(" SELECT 
         
                             dv_aucs_entries.process_ors_id,
                             process_ors.serial_number,
@@ -239,12 +239,12 @@ if (!empty($model->id)) {
                             ) as total_obligated ON process_ors.id=total_obligated.ors_id
                             WHERE
                             dv_aucs_entries.dv_aucs_id = :id")
-                                ->bindValue(':id', $model->id)
-                                ->queryAll();
-                            foreach ($query as $val) {
+                            ->bindValue(':id', $model->id)
+                            ->queryAll();
+                        foreach ($query as $val) {
 
 
-                                echo "<tr>
+                            echo "<tr>
                                 <td style='display:none' ><input value='{$val['process_ors_id']}' type='hidden' name='process_ors_id[$row]'/></td>
                                 <td> {$val['serial_number']}</td>
                                 <td> 
@@ -261,9 +261,9 @@ if (!empty($model->id)) {
                                 <td> <input value='{$val['other_trust_liabilities']}' type='text' name='other_trust_liabilities[$row]' class='liabilities'/></td>
                                 <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class='glyphicon glyphicon-minus'></i></button></td></tr>
                             ";
-                                $row++;
-                            }
+                            $row++;
                         }
+                        // }
                     }
                     ?>
                 </tbody>
