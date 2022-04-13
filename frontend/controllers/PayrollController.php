@@ -165,13 +165,19 @@ class PayrollController extends Controller
             $normal_balance = YIi::$app->db->createCommand("SELECT normal_balance FROM chart_of_accounts WHERE  uacs = :uacs")
                 ->bindValue(':uacs', explode('_', $check_account_title)[0])
                 ->queryScalar();
-
+            // CHECK IF PAYROLL HAS DV
+            $dv_id = Yii::$app->db->createCommand("SELECT dv_aucs.id FROM dv_aucs WHERE dv_aucs.payroll_id = :payroll_id")
+                ->bindValue(':payroll_id', $payroll_id)
+                ->queryScalar();
             $items = new DvAccountingEntries();
             $items->remittance_payee_id = $val;
             $items->debit = !empty($payee_amounts[$index])  && $normal_balance == 'Debit' ? $payee_amounts[$index] : 0;
             $items->credit = !empty($payee_amounts[$index])  && $normal_balance == 'Credit' ? $payee_amounts[$index] : 0;
             $items->object_code  = $check_account_title;
             $items->payroll_id = $payroll_id;
+            if (!empty($dv_id)) {
+                $items->dv_aucs_id = $dv_id;
+            }
             if ($items->save(false)) {
             } else {
                 return false;
