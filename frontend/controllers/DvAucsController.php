@@ -187,6 +187,10 @@ class DvAucsController extends Controller
      */
     public function insertAccountingEntries($dv_id = '', $object_codes = [], $debits = [], $credits = [], $accounting_entries = [])
     {
+        $params = [];
+        $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'dv_accounting_entries.id', $accounting_entries], $params);
+        Yii::$app->db->createCommand("DELETE FROM dv_accounting_entries WHERE $sql", $params)
+            ->query();
         foreach ($object_codes as $key => $val) {
             if (empty($accounting_entries[$key])) {
                 $entry = new DvAccountingEntries();
