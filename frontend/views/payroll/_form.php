@@ -327,9 +327,9 @@ SweetAlertAsset::register($this);
         })
         $('#items-table').on('click', '.remove_this_row', function(event) {
             event.preventDefault();
+            const base = $(this).closest('tr')
             const remove_url = $(this).closest('tr').find('.remove_url').text()
             if (remove_url != '') {
-                let isSuccess = ''
                 swal({
                         title: "Are you sure to remove this row?",
                         type: "warning",
@@ -361,7 +361,7 @@ SweetAlertAsset::register($this);
                                         })
 
                                         isSuccess = true
-
+                                        base.remove();
 
                                     } else {
                                         swal({
@@ -378,9 +378,7 @@ SweetAlertAsset::register($this);
 
                         }
                     })
-                if (isSuccess = true) {
-                    $(this).closest('tr').remove();
-                }
+
             } else {
                 $(this).closest('tr').remove();
             }

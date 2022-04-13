@@ -9,6 +9,7 @@ use kartik\widgets\FileInput;
 use kartik\widgets\ActiveForm;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
+use kartik\export\ExportMenu;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\ChartOfAccountsSearch */
@@ -73,6 +74,65 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    $gridColumn = [
+        [
+            'label' => 'UACS',
+            'attribute' => 'uacs',
+        ],
+        [
+            'label' => 'General Ledger',
+            'attribute' => 'general_ledger',
+        ],
+        [
+            'label' => 'Account Group',
+            'attribute' => 'account_group',
+
+        ],
+
+        [
+            'label' => 'Object Code',
+            'attribute' => 'majorAccount.object_code',
+            'value' => 'majorAccount.object_code',
+
+        ],
+
+        [
+            'label' => 'Major Account',
+            'attribute' => 'major_account_id',
+            'value' => 'majorAccount.name',
+            'filterType' => GridView::FILTER_SELECT2,
+            'filter' => ArrayHelper::map(MajorAccounts::find()->asArray()->all(), 'id', 'name'),
+            'filterWidgetOptions' => [
+                'pluginOptions' => ['allowClear' => true, 'placeholder' => 'Major Account'],
+            ],
+            'format' => 'raw'
+
+        ],
+        [
+            'label' => 'Object Code',
+            'attribute' => 'subMajorAccount.object_code',
+            'value' => 'subMajorAccount.object_code'
+
+        ],
+        [
+            'label' => 'SUb Major Account',
+            'attribute' => 'sub_major_account',
+            'value' => 'subMajorAccount.name'
+
+        ],
+        [
+            'label' => 'Actions',
+            'format' => 'raw',
+            'value' => function ($model) {
+                // $t = yii::$app->request->baseUrl . '/index.php?r=chart-of-accounts/update&id=' .
+                return ' ' . Html::button('<span class="">Add</span>', [
+                    'data-toggle' => "modal", 'class' => '"btn btn-info btn-xs add-sub',
+                    'data-toggle' => "modal", 'data-target' => "#myModal",
+                    'value' => $model->id,
+                ]);
+            }
+        ],
+    ];
     ?>
 
     <?= GridView::widget([
@@ -85,7 +145,26 @@ $this->params['breadcrumbs'][] = $this->title;
             'heading' => 'Recommendation List',
             //'after'=>$after,0
         ],
+        'toolbar' =>  [
+            [
+                'content' =>
+                ExportMenu::widget([
+                    'dataProvider' => $dataProvider,
+                    'columns' => $gridColumn,
+                    'filename' => 'Detailed_Dv',
+                    'batchSize' => 1,
+                    'exportConfig' => [
+                        ExportMenu::FORMAT_TEXT => false,
+                        // ExportMenu::FORMAT_PDF => false,
+                        ExportMenu::FORMAT_EXCEL => false,
+                        ExportMenu::FORMAT_HTML => false,
+                    ]
 
+                ]),
+                'options' => ['class' => 'btn-group mr-2', 'style' => 'margin-right:20px']
+            ],
+
+        ],
         'floatHeaderOptions' => [
             'top' => 50,
             'position' => 'absolute',
@@ -94,20 +173,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             'id',
-            // [
-            //     'class' => 'kartik\grid\ExpandRowColumn',
-            //     'width' => '50px',
-            //     'value' => function ($model, $key, $index, $column) {
-            //         return GridView::ROW_COLLAPSED;
-            //     },
-            //     // uncomment below and comment detail if you need to render via ajax
-            //     // 'detailUrl' => Url::to([ '/index.php?r=transaction/sample&id='.$model->id]),
-            //     'detail' => function ($model, $key, $index, $column) {
-            //         return Yii::$app->controller->renderPartial('view', ['model' => $model]);
-            //     },
-            //     // 'headerOptions' => ['class' => 'kartik-sheet-style'],
-            //     'expandOneOnly' => true
-            // ],
 
             [
                 'label' => 'UACS',
@@ -199,7 +264,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'pluginOptions' => [
                                     'minViewMode' => 'months',
                                     'format' => 'yyyy-mm',
-                                    'autoclose'=>true
+                                    'autoclose' => true
                                 ]
                             ])
                             ?>
