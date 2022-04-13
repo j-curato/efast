@@ -277,13 +277,13 @@ $dv_items_row = 1;
                                 <div class='row'>
                                     <div class='col-sm-12'>
                                         <label for='isCurrent'>Current/NonCurrent </label>
-                                        <input type='text' name='isCurrent[{$accounting_entry_row}]' placeholder='Current/NonCurrent' />
+                                        <input type='text'  placeholder='Current/NonCurrent' />
                                     </div>
                                 </div>
                                 <div class='row'>
                                     <div class='col-sm-12'>
                                         <label for='chart_of_account'> Chart of Account</label>
-                                        <select required name='object_code[{$accounting_entry_row}]' class='chart-of-accounts  accounting_entry_object_code' style='width: 100%'>
+                                        <select required  class='chart-of-accounts  accounting_entry_object_code' style='width: 100%'>
                                             <option value='{$val['object_code']}'>{$val['account_title']}</option>
                                         </select>
                                     </div>
@@ -292,12 +292,12 @@ $dv_items_row = 1;
                             <td>
                                 <label for='debit'>Debit</label>
                                 <input type='text' class='mask-amount form-control mask-debit' placeholder='Debit' value='{$val['debit']}'>
-                                <input type='text' name='debit[{$accounting_entry_row}]' class='debit ' placeholder='Debit' value='{$val['debit']}'>
+                                <input type='text'  class='debit ' placeholder='Debit' value='{$val['debit']}'>
                             </td>
                             <td>
                                 <label for='credit'>Credit</label>
                                 <input type='text' class='mask-amount form-control mask-credit' placeholder='Credit' value='{$val['credit']}'>
-                                <input type='text' name='credit[{$accounting_entry_row}]' class='credit ' value='{$val['credit']}'>
+                                <input type='text'  class='credit ' value='{$val['credit']}'>
                             </td>
                             <td style='float:right;' >
                                 <a class='add_accounting_entry_row btn btn-primary btn-xs' type='button' ><i class='fa fa-plus fa-fw'></i> </a>

@@ -292,9 +292,9 @@ class DvAucsController extends Controller
             $model->book_id = $book;
             $model->particular = $particular;
             // return $model->book_id;
-            Yii::$app->db->createCommand("DELETE FROM dv_accounting_entries WHERE dv_aucs_id = :id ")
-                ->bindValue(':id', $model->id)
-                ->query();
+            // Yii::$app->db->createCommand("DELETE FROM dv_accounting_entries WHERE dv_aucs_id = :id ")
+            //     ->bindValue(':id', $model->id)
+            //     ->query();
 
             try {
                 $flag = true;
