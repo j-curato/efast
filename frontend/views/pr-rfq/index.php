@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'rfq_number',
             'pr_purchase_request_id',
             '_date',
-            'rbac_composition_id',
+            // 'rbac_composition_id',
             //'employee_id',
             //'created_at',
 

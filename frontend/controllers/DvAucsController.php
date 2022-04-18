@@ -187,10 +187,13 @@ class DvAucsController extends Controller
      */
     public function insertAccountingEntries($dv_id = '', $object_codes = [], $debits = [], $credits = [], $accounting_entries = [])
     {
-        $params = [];
-        $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'dv_accounting_entries.id', $accounting_entries], $params);
-        Yii::$app->db->createCommand("DELETE FROM dv_accounting_entries WHERE $sql", $params)
-            ->query();
+
+        if (!empty($accounting_entries)) {
+            $params = [];
+            $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'dv_accounting_entries.id', $accounting_entries], $params);
+            Yii::$app->db->createCommand("DELETE FROM dv_accounting_entries WHERE $sql", $params)
+                ->query();
+        }
         foreach ($object_codes as $key => $val) {
             if (empty($accounting_entries[$key])) {
                 $entry = new DvAccountingEntries();
@@ -1488,12 +1491,12 @@ class DvAucsController extends Controller
                     $model->particular =  $particular;
                     $model->transaction_type = $transaction_type;
                     $model->payroll_id = $payroll_id;
-                    $check  = Yii::$app->db->createCommand("SELECT EXISTS(SELECT * FROM dv_aucs WHERE payroll_id = :payroll_id)")
-                        ->bindValue(':payroll_id', $model->payroll_id)
-                        ->queryScalar();
-                    if (intval($check) == 1) {
-                        return json_encode(['isSuccess' => false, 'error' => 'Naa nay Tracking Sheet ']);
-                    }
+                    // $check  = Yii::$app->db->createCommand("SELECT EXISTS(SELECT * FROM dv_aucs WHERE payroll_id = :payroll_id)")
+                    //     ->bindValue(':payroll_id', $model->payroll_id)
+                    //     ->queryScalar();
+                    // if (intval($check) == 1) {
+                    //     return json_encode(['isSuccess' => false, 'error' => 'Naa nay Tracking Sheet ']);
+                    // }
                     if ($model->save(false)) {
                         if (strtolower($model->transaction_type) == 'payroll') {
                             if (empty($model->payroll_id)) {
