@@ -123,7 +123,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <br>
                         <span style="text-align: left;">
 
-                            December 27, 2021 in a sealed envelope. Late submission will not be accepted.
+                           <?=DateTime::createFromFormat('Y-m-d',$model->deadline)->format('F d,Y')?> in a sealed envelope. Late submission will not be accepted.
                         </span>
                     </td>
 
