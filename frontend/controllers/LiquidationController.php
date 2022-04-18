@@ -1550,6 +1550,7 @@ class LiquidationController extends Controller
             $sheet->setCellValue('O1', 'Gross Payment');
             $sheet->setCellValue('P1', 'Province');
             $sheet->setCellValue('Q1', 'Original Reporting Period');
+            $sheet->setCellValue('R1', 'Bank Account');
 
 
             $x = 7;
@@ -1584,6 +1585,7 @@ class LiquidationController extends Controller
                 $sheet->setCellValueByColumnAndRow(15, $row,  $val['gross_payment']);
                 $sheet->setCellValueByColumnAndRow(16, $row,  $val['province']);
                 $sheet->setCellValueByColumnAndRow(17, $row,  $val['orig_reporting_period']);
+                $sheet->setCellValueByColumnAndRow(18, $row,  $val['bank_account']);
 
                 $row++;
             }
