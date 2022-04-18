@@ -1,5 +1,7 @@
 <?php
 
+use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -150,11 +152,35 @@ $this->params['breadcrumbs'][] = $this->title;
                         <br>
                         <br>
                         <span style="text-decoration: underline;">
-                            <?= $bac['employee_name'] ?>
+                            <?php
+                            $rbac = Yii::$app->db->createCommand("SELECT 
+                            employee_search_view.employee_name,
+                            bac_position.position
+                             FROM bac_composition
+                            LEFT JOIN bac_composition_member ON bac_composition.id = bac_composition_member.bac_composition_id
+                            LEFT JOIN bac_position ON bac_composition_member.bac_position_id = bac_position.id
+                            LEFT JOIN employee_search_view ON bac_composition_member.employee_id = employee_search_view.employee_id
+                            WHERE bac_composition.id = :id")
+                                ->bindValue(':id', $model->bac_composition_id)
+                                ->queryAll();
+                            echo Select2::widget([
+                                'data' => ArrayHelper::map($rbac, 'position', 'employee_name'),
+                                'name' => 'rbac',
+                                'id' => 'rbac',
+                                'pluginOptions' => [
+                                    'placeholder' => 'Select '
+                                ]
+
+                            ]);
+
+                            ?>
                         </span>
                         <br>
                         <span>
-                            RBAC Chairperson
+                            RBAC 
+                        </span>
+                        <span id="rbac_position">
+
                         </span>
 
                     </td>
@@ -255,7 +281,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             $query = Yii::$app->db->createCommand("SELECT UPPER(employee_name)  as employee_name FROM employee_search_view WHERE employee_id = :id ")
                                 ->bindValue(':id', $model->employee_id)
                                 ->queryOne();
-                            $employee  = !empty($query['employee_name'])?$query['employee_name']:'';
+                            $employee  = !empty($query['employee_name']) ? $query['employee_name'] : '';
                             echo "<span style='margin-top:3rem;text-decoration:underline'>" . $employee . "</span>";
                         } else {
 
@@ -383,5 +409,40 @@ $this->params['breadcrumbs'][] = $this->title;
             padding: .5rem;
             font-size: 10px
         }
+
+        .select2-selection__arrow {
+            display: none;
+        }
+
+        .select2-container--krajee .select2-selection {
+            /* -webkit-box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%); */
+            box-shadow: none;
+            background-color: #fff;
+            border: none;
+            border-radius: 0;
+            color: #555555;
+            font-size: 14px;
+            outline: 0;
+        }
+
+        .select2-container--krajee .select2-selection--single {
+            height: 5px;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .select2-container .select2-selection--single .select2-selection__rendered {
+            padding-right: 0;
+        }
+
     }
 </style>
+<script>
+    $(document).ready(function() {
+        $('#rbac').change(function() {
+            const name = $(this).val()
+            const nameCapitalized = name.charAt(0).toUpperCase() + name.slice(1)
+            $('#rbac_position').text(nameCapitalized)
+        })
+    })
+</script>
