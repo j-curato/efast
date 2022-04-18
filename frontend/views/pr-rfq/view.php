@@ -162,7 +162,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             LEFT JOIN employee_search_view ON bac_composition_member.employee_id = employee_search_view.employee_id
                             WHERE bac_composition.id = :id")
                                 ->bindValue(':id', $model->bac_composition_id);
-                            var_dump($rbac);
                             var_dump($rbac->getRawSql());
                             echo Select2::widget([
                                 'data' => ArrayHelper::map($rbac->queryAll(), 'position', 'employee_name'),
