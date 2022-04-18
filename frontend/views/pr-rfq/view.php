@@ -155,16 +155,17 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?php
                             $rbac = Yii::$app->db->createCommand("SELECT 
                             employee_search_view.employee_name,
-                            bac_position.position
+                            CONCAT(bac_position.position,'_', employee_search_view.employee_name) as pos
                              FROM bac_composition
                             LEFT JOIN bac_composition_member ON bac_composition.id = bac_composition_member.bac_composition_id
                             LEFT JOIN bac_position ON bac_composition_member.bac_position_id = bac_position.id
                             LEFT JOIN employee_search_view ON bac_composition_member.employee_id = employee_search_view.employee_id
                             WHERE bac_composition.id = :id")
-                                ->bindValue(':id', $model->bac_composition_id);
-                         
+                                ->bindValue(':id', $model->bac_composition_id)
+                                ->queryAll();
+
                             echo Select2::widget([
-                                'data' => ArrayHelper::map($rbac->queryAll(), 'position', 'employee_name'),
+                                'data' => ArrayHelper::map($rbac, 'pos', 'employee_name'),
                                 'name' => 'rbac',
                                 'id' => 'rbac',
                                 'pluginOptions' => [
@@ -440,7 +441,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <script>
     $(document).ready(function() {
         $('#rbac').change(function() {
-            const name = $(this).val()
+            const name = $(this).val().split('_')[0]
             const nameCapitalized = name.charAt(0).toUpperCase() + name.slice(1)
             $('#rbac_position').text(nameCapitalized)
         })
