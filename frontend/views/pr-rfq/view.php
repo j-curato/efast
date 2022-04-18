@@ -168,7 +168,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'name' => 'rbac',
                                 'id' => 'rbac',
                                 'pluginOptions' => [
-                                    'placeholder' => 'Select '
+                                    'placeholder' => 'Select RBAC '
                                 ]
 
                             ]);
