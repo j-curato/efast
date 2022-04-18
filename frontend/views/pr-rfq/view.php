@@ -163,6 +163,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             WHERE bac_composition.id = :id")
                                 ->bindValue(':id', $model->bac_composition_id)
                                 ->queryAll();
+                            var_dump($bac);
                             echo Select2::widget([
                                 'data' => ArrayHelper::map($rbac, 'position', 'employee_name'),
                                 'name' => 'rbac',
@@ -177,7 +178,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </span>
                         <br>
                         <span>
-                            RBAC 
+                            RBAC
                         </span>
                         <span id="rbac_position">
 
