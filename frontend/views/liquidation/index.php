@@ -236,6 +236,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 return $particular;
             }
         ],
+        'account_name',
 
         [
             'label' => 'Total Disbursements',

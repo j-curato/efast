@@ -33,6 +33,7 @@ class LiquidationViewSearch extends LiquidationView
                 'status',
                 'tracking_number',
                 'payee', 'particular', 'gross_payment',
+                'account_name',
                 $province,
             ], 'safe'],
 
@@ -108,6 +109,7 @@ class LiquidationViewSearch extends LiquidationView
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
             ->andFilterWhere(['like', 'gross_payment', $this->gross_payment])
             ->andFilterWhere(['like', 'status', $this->status])
+            ->andFilterWhere(['like', 'account_name', $this->account_name])
             ->andFilterWhere(['like', 'province', $province]);
 
         // var_dump($query->createCommand()->getRawSql());
