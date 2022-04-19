@@ -119,7 +119,8 @@ class ParController extends Controller
                 if ($pc->save()) {
                     // $url = Url::to(['@propertycardView', 'id' => $pc->pc_number]);
                     // echo $url;
-                    return Yii::$app->response->redirect(['property-card/view', 'id' => $pc->id]);
+                    // return Yii::$app->response->redirect(['property-card/view', 'id' => $pc->id]);
+                    return $this->redirect(['view', 'id' => $model->id]);
                     // return $this->redirect($url);
                 }
 
