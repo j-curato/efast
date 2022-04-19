@@ -323,23 +323,27 @@ class CibrController extends Controller
 
 
             $q1 = Yii::$app->db->createCommand("SELECT 
-                SUM(total) as total
+                IFNULL(SUM(total),0) as total
              from cibr_advances_balances
              where reporting_period <:reporting_period 
              AND province LIKE :province
+             AND bank_account_id = :bank_account_id
               ")
                 ->bindValue(':reporting_period',   $reporting_period)
                 ->bindValue(':province',   $province)
+                ->bindValue(':bank_account_id',   $bank_account_id)
                 ->queryScalar();
 
             $q2 = Yii::$app->db->createCommand("SELECT 
-                    SUM(total_withdrawals) as total_withdrawal
+                    IFNULL(SUM(total_withdrawals),0) as total_withdrawal
                 from cibr_liquidation_balances
                 where reporting_period <:reporting_period 
                 AND province LIKE :province
+                AND bank_account_id =:bank_account_id
                  ")
                 ->bindValue(':reporting_period',   $reporting_period)
                 ->bindValue(':province',   $province)
+                ->bindValue(':bank_account_id',   $bank_account_id)
                 ->queryScalar();
             $balance = $q1 - $q2;
 
@@ -380,10 +384,10 @@ class CibrController extends Controller
 
         $q1 = Yii::$app->db->createCommand("SELECT 
             SUM(total) as total
-         from cibr_advances_balances
-         where reporting_period <:reporting_period 
-         AND province LIKE :province
-         AND bank_account_id = :bank_account_id
+            from cibr_advances_balances
+            where reporting_period <:reporting_period 
+            AND province LIKE :province
+            AND bank_account_id = :bank_account_id
           ")
             ->bindValue(':reporting_period',   $reporting_period)
             ->bindValue(':province',   $province)
