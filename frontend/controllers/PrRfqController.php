@@ -351,7 +351,8 @@ class PrRfqController extends Controller
         $province = 'RO';
         $d  = DateTime::createFromFormat('Y-m-d', $date);
         $num  = 1;
-        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_rfq.rfq_number,'-',-1) AS UNSIGNED)  as last_num FROM pr_rfq WHERE _date=:_date")
+        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_rfq.rfq_number,'-',-1) AS UNSIGNED)  as last_num FROM pr_rfq WHERE _date=:_date 
+        ORDER BY last_num DESC LIMIT 1")
             ->bindValue('_date', $date)
             ->queryScalar();
         if (!empty($query)) {
