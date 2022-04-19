@@ -14,6 +14,8 @@ use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\LoginForm;
 use common\models\User;
+use DateInterval;
+use DateTime;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
@@ -316,11 +318,14 @@ class SiteController extends Controller
         $events = [];
         foreach ($ev as $e) {
             $day = date('d', strtotime($e->end_date)) + 1;
+            $date = new DateTime($e->end_date);
+            $date->add(new DateInterval('P1D'));
+            // echo $date->format('Y-m-d') . "\n";
             $event = [
                 'id' => $e->id,
                 'title' => $e->title,
                 'start' => $e->created_at,
-                'end' => date("Y-m-$day", strtotime($e->end_date)),
+                'end' => $date->format('Y-m-d'),
             ];
 
             $events[] = $event;
