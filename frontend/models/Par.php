@@ -30,9 +30,9 @@ class Par extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['property_number', 'agency_id'], 'required'],
+            [['property_number', 'agency_id', 'fk_property_id'], 'required'],
             [['agency_id'], 'integer'],
-            [['date'], 'safe'],
+            [['date', 'fk_property_id'], 'safe'],
             [['employee_id', 'actual_user'], 'string'],
             [['par_number', 'property_number'], 'string', 'max' => 255],
             [['par_number'], 'unique'],
@@ -63,7 +63,7 @@ class Par extends \yii\db\ActiveRecord
 
     public function getProperty()
     {
-        return $this->hasOne(Property::class, ['property_number' => 'property_number']);
+        return $this->hasOne(Property::class, ['id' => 'fk_property_id']);
     }
     public function getEmployee()
     {
@@ -75,7 +75,7 @@ class Par extends \yii\db\ActiveRecord
     }
     public function getPropertyCard()
     {
-        return $this->hasOne(PropertyCard::class, ['par_number' => 'par_number']);
+        return $this->hasOne(PropertyCard::class, ['fk_par_id' => 'id']);
     }
     public function getPtr()
     {
