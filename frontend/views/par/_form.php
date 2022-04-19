@@ -63,7 +63,7 @@ use yii\widgets\ActiveForm;
             <?= $form->field($model, 'fk_property_id')->widget(Select2::class, [
                 'data' => $property,
                 'name' => 'property_number',
-           
+
 
                 'pluginOptions' => [
                     'allowClear' => true,
@@ -277,7 +277,7 @@ use yii\widgets\ActiveForm;
 </script>
 <?php
 $js = <<<JS
-    var studentSelect = $('#par-property_number');
+    var studentSelect = $('#par-fk_property_id');
     $(document).ready(()=>{
         if (studentSelect.val() != '') {
 
@@ -291,7 +291,7 @@ $js = <<<JS
         $.ajax({
             type:'POST',
             url:window.location.pathname + '?r=property/get-property',
-            data:{id:$('#par-property_number').val()},
+            data:{id:$('#par-fk_property_id').val()},
             success:function(data){
                 var res = JSON.parse(data)
                 console.log(res)

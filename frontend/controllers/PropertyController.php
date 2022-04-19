@@ -221,8 +221,8 @@ class PropertyController extends Controller
             LEFT JOIN books ON property.book_id = books.id
             LEFT JOIN unit_of_measure ON property.unit_of_measure_id = unit_of_measure.id
             LEFT JOIN employee ON property.employee_id = employee.employee_id
-            WHERE property.property_number = :property_number")
-                ->bindValue(':property_number', $_POST['id'])
+            WHERE property.id = :id")
+                ->bindValue(':id', $_POST['id'])
                 ->queryOne();
             return json_encode($query);
         }
