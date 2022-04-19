@@ -383,19 +383,23 @@ class CibrController extends Controller
          from cibr_advances_balances
          where reporting_period <:reporting_period 
          AND province LIKE :province
+         AND bank_account_id = :bank_account_id
           ")
             ->bindValue(':reporting_period',   $reporting_period)
             ->bindValue(':province',   $province)
+            ->bindValue(':bank_account_id',   $bank_account_id)
             ->queryScalar();
 
         $q2 = Yii::$app->db->createCommand("SELECT 
                 SUM(total_withdrawals) as total_withdrawal
             from cibr_liquidation_balances
             where reporting_period <:reporting_period 
-            AND province LIKE :province
+            AND province LIKE :province 
+            AND bank_account_id = :bank_account_id
              ")
             ->bindValue(':reporting_period',   $reporting_period)
             ->bindValue(':province',   $province)
+            ->bindValue(':bank_account_id',   $bank_account_id)
             ->queryScalar();
         $balance = $q1 - $q2;
 
