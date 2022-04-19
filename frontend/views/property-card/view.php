@@ -26,8 +26,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
         <?php
-        if (!empty($model->par_number)) {
-            $t = yii::$app->request->baseUrl . "/index.php?r=par/view&id={$model->par_number}";
+        if (!empty($model->fk_par_id)) {
+            $t = yii::$app->request->baseUrl . "/index.php?r=par/view&id={$model->fk_par_id}";
             echo  Html::a('PAR Link', $t, ['class' => 'btn btn-success ']);
         }
         ?>
@@ -130,7 +130,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <span>Property, Plant and Equipment :</span>
                 <span>
                     <?php
-                $description = preg_replace('#\[n\]#', ",", $model->par->property->article);
+                    $description = preg_replace('#\[n\]#', ",", $model->par->property->article);
 
                     echo $description;
 
@@ -180,13 +180,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 $transfer_quantity = 1;
                 $balance -= 1;
             }
-            $date = New DateTime($model->par->date);
+            $date = new DateTime($model->par->date);
             $remark = '';
-            if (!empty($model->par->ptr)){
+            if (!empty($model->par->ptr)) {
                 $remark = $model->par->ptr->transfer_type_id;
             }
             echo "<tr>
-                    <td>".$date->format('F d, Y')."</td>
+                    <td>" . $date->format('F d, Y') . "</td>
                     <td>{$model->par->par_number}</td>
                     <td>1</td>
                     <td>$transfer_quantity</td>
