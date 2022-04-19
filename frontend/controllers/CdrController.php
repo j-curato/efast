@@ -246,8 +246,10 @@ class CdrController extends Controller
                             LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id  = advances_entries.id
                             LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id =  cash_disbursement.id
                             LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
+                            LEFT JOIN check_range ON liquidation.check_range_id = check_range.id
                             WHERE liquidation_entries.reporting_period = :reporting_period
                             AND liquidation.province = :province
+                            AND check_range.bank_account_id = :bank_account_id
                             AND advances_entries.report_type = :report_type
                             GROUP BY
                             liquidation_entries.reporting_period,
@@ -261,7 +263,9 @@ class CdrController extends Controller
                         LEFT JOIN liquidation ON liq.id = liquidation.id
                         LEFT JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
                         LEFT JOIN accounting_codes ON liq.gl_object_code = accounting_codes.object_code
+
                         UNION ALL
+
                         SELECT 
                         cash_disbursement.issuance_date as check_date,
                         cash_disbursement.check_or_ada_no as check_number,
@@ -282,33 +286,40 @@ class CdrController extends Controller
                         AND advances.province = :province
                         AND advances_entries.report_type =:report_type 
                         AND advances_entries.is_deleted NOT IN (1,2) 
+                        AND advances.bank_account_id = :bank_account_id
             
  
             ")->bindValue(':reporting_period',  $reporting_period)
                 ->bindValue(':province', $province)
                 ->bindValue(':report_type', $report_type)
+                ->bindValue(':bank_account_id', $bank_account_id)
                 ->queryAll();
 
             $advances_balance = 0;
             $liquidation_balance = 0;
 
-            $advances_balance = Yii::$app->db->createCommand("SELECT ROUND(SUM(balance),2)as balance
+            $advances_balance = Yii::$app->db->createCommand("SELECT ROUND(IFNULL(SUM(balance),0),2)as balance
                     FROM cdr_advances_balance
                     WHERE reporting_period <:reporting_period
                     AND province LIKE :province
-                    AND report_type LIKE :report_type")
+                    AND report_type LIKE :report_type
+                    AND bank_account_id = :bank_account_id
+                    ")
                 ->bindValue(':reporting_period',  $reporting_period)
                 ->bindValue(':province', $province)
                 ->bindValue(':report_type', $report_type)
+                ->bindValue(':bank_account_id', $bank_account_id)
                 ->queryScalar();
-            $liquidation_balance = Yii::$app->db->createCommand("SELECT ROUND(SUM(total_withdrawals),2)as balance
+            $liquidation_balance = Yii::$app->db->createCommand("SELECT ROUND(IFNULL(SUM(total_withdrawals),0),2)as balance
                     FROM cdr_liquidation_balance
                     WHERE reporting_period <:reporting_period
                     AND province LIKE :province
-                    AND report_type LIKE :report_type")
+                    AND report_type LIKE :report_type
+                    AND bank_account_id = :bank_account_id")
                 ->bindValue(':reporting_period',  $reporting_period)
                 ->bindValue(':province', $province)
                 ->bindValue(':report_type', $report_type)
+                ->bindValue(':bank_account_id', $bank_account_id)
                 ->queryScalar();
             $advances_balance_con = !empty($advances_balance) ? $advances_balance : 0;
             $liquidation_balance_con = !empty($liquidation_balance) ? $liquidation_balance : 0;
