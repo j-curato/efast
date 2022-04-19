@@ -109,15 +109,18 @@ class CibrController extends Controller
             ->queryOne();
         $province =  $bank_account_data['province'];
 
+
+
         $q1 = Yii::$app->db->createCommand("SELECT 
                 SUM(total) as total
              from cibr_advances_balances
              where reporting_period <:reporting_period 
              AND province LIKE :province
-            
+             AND bank_account_id = :bank_account_id
               ")
             ->bindValue(':reporting_period',   $model->reporting_period)
             ->bindValue(':province',   $province)
+            ->bindValue(':bank_account_id',   $model->bank_account_id)
             ->queryScalar();
 
         $q2 = Yii::$app->db->createCommand("SELECT 
@@ -125,9 +128,11 @@ class CibrController extends Controller
                 from cibr_liquidation_balances
                 where reporting_period <:reporting_period 
                 AND province LIKE :province
+                AND bank_account_id = :bank_account_id
                  ")
             ->bindValue(':reporting_period',   $model->reporting_period)
             ->bindValue(':province',   $province)
+            ->bindValue(':bank_account_id',   $model->bank_account_id)
             ->queryScalar();
         $balance = $q1 - $q2;
 
