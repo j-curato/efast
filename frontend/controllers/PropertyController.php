@@ -188,7 +188,7 @@ class PropertyController extends Controller
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
             $query = new Query();
-            $query->select('property.property_number as id, property.property_number AS text')
+            $query->select('property.id as id, property.property_number AS text')
                 ->from('property')
                 ->where(['like', 'property.property_number', $q]);
 

@@ -60,14 +60,10 @@ use yii\widgets\ActiveForm;
 
     <div class="row">
         <div class="col-sm-12">
-            <?= $form->field($model, 'property_number')->widget(Select2::class, [
+            <?= $form->field($model, 'fk_property_id')->widget(Select2::class, [
                 'data' => $property,
                 'name' => 'property_number',
-                'id' => 'property_number',
-                'options' => [
-                    'placeholder' => 'Search Property Number ...',
-
-                ],
+           
 
                 'pluginOptions' => [
                     'allowClear' => true,
