@@ -36,7 +36,6 @@ class Par extends \yii\db\ActiveRecord
             [['employee_id', 'actual_user'], 'string'],
             [['par_number', 'property_number'], 'string', 'max' => 255],
             [['par_number'], 'unique'],
-            [['property_number'], 'exist', 'skipOnError' => true, 'targetClass' => Property::class, 'targetAttribute' => ['property_number' => 'property_number']],
         ];
     }
 
