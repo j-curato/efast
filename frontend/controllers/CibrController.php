@@ -269,10 +269,9 @@ class CibrController extends Controller
             if ($model->is_final === 1) {
                 $r_periods = new LiquidationReportingPeriod();
                 $r_periods->reporting_period = $model->reporting_period;
-                $r_periods->province = $model->province;
+                $r_periods->province = $model->bankAccount->province;
                 $r_periods->bank_account_id = $model->bank_account_id;
                 if ($r_periods->save(false)) {
-
                     return $this->redirect(['view', 'id' => $model->id]);
                 }
             } else {
