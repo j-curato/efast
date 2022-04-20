@@ -172,26 +172,27 @@ class GeneralLedgerController extends Controller
         $book_id,
         $object_code
     ) {
-        $beginning_balance = Yii::$app->db->createCommand("SELECT
-        jev_beginning_balance_item.debit,
-        jev_beginning_balance_item.credit,
+        $beginning_balance = Yii::$app->db->createCommand("SELECT 
+        SUBSTRING_INDEX(accounting_codes.object_code,'_',1) as object_code,
+            IFNULL(SUM(jev_beginning_balance_item.credit),0)as credit,
+            IFNULL(SUM(jev_beginning_balance_item.debit),0) as debit,
         (CASE
-            WHEN chart_of_accounts.normal_balance ='Debit' THEN jev_beginning_balance_item.debit - jev_beginning_balance_item.credit
-        ELSE jev_beginning_balance_item.credit -  jev_beginning_balance_item.debit
-        END) as beginning_balance_total
-        
+        WHEN accounting_codes.normal_balance = 'Debit' THEN IFNULL(SUM(jev_beginning_balance_item.debit),0)  - IFNULL(SUM(jev_beginning_balance_item.credit),0)
+        ELSE IFNULL(SUM(jev_beginning_balance_item.credit),0) - IFNULL(SUM(jev_beginning_balance_item.debit),0)
+        END) as total_beginning_balance
         FROM jev_beginning_balance_item 
-        
         LEFT JOIN jev_beginning_balance ON jev_beginning_balance_item.jev_beginning_balance_id =jev_beginning_balance.id
-        LEFT JOIN chart_of_accounts ON jev_beginning_balance_item.object_code = chart_of_accounts.uacs
-            WHERE jev_beginning_balance.`year` = :_year
-            AND jev_beginning_balance_item.object_code = :object_code
-            AND jev_beginning_balance.book_id  = :book_id
-        
+        LEFT JOIN accounting_codes ON jev_beginning_balance_item.object_code = accounting_codes.object_code
+        LEFT JOIN books ON jev_beginning_balance.book_id = books.id
+        WHERE 
+        jev_beginning_balance.`year` = :_year
+        AND jev_beginning_balance.book_id = :book_id
+        AND jev_beginning_balance_item.object_code LIKE :object_code
+                
         ")
             ->bindValue(':_year', $year)
             ->bindValue(':book_id', $book_id)
-            ->bindValue(':object_code', $object_code)
+            ->bindValue(':object_code', $object_code . '%')
             ->queryOne();
         return $beginning_balance;
     }
@@ -217,7 +218,6 @@ class GeneralLedgerController extends Controller
                 jev_accounting_entries.debit,
                 jev_accounting_entries.credit,
                 SUBSTRING_INDEX(jev_accounting_entries.object_code,'_',1) as uacs
-                
                 
                 FROM jev_accounting_entries
                 LEFT JOIN jev_preparation ON jev_accounting_entries.jev_preparation_id = jev_preparation.id
