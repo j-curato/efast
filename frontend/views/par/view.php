@@ -57,7 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </th>
                     <th colspan="3">
                         <span>PAR No:</span>
-                        <span><?php echo $model->property->property_number; ?></span>
+                        <span><?php echo $model->par_number; ?></span>
                     </th>
                 </tr>
                 <tr>
@@ -83,7 +83,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <span style='font-style:italic;'>$description</span>
                         
                         </td>
-                        <td>{$model->property_number}</td>
+                        <td>{$model->property->property_number}</td>
                         <td>{$dateAquired}</td>
                         <td class='amount'>" . number_format($model->property->acquisition_amount, 2) . "</td>
                     </tr>";
