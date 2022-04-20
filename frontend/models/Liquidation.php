@@ -113,6 +113,6 @@ class Liquidation extends \yii\db\ActiveRecord
     }
     public function getCheckRange()
     {
-        return $this->hasMany(CheckRange::class, ['id' => 'check_range_id']);
+        return $this->hasOne(CheckRange::class, ['id' => 'check_range_id']);
     }
 }
