@@ -2,10 +2,10 @@ function displayData(beginning_balance, general_ledger) {
   let beginning_balance_debit =
     beginning_balance.debit != null ? parseFloat(beginning_balance.debit) : 0;
   let beginning_balance_credit =
-    beginning_balance.debit != null ? parseFloat(beginning_balance.credit) : 0;
+    beginning_balance.credit != null ? parseFloat(beginning_balance.credit) : 0;
   let total_beginning_balance =
-    beginning_balance.debit != null
-      ? parseFloat(beginning_balance.total_beginning_balance)
+    beginning_balance.balance != null
+      ? parseFloat(beginning_balance.balance)
       : 0;
   var row = `<tr>
             <td></td>
@@ -23,7 +23,6 @@ function displayData(beginning_balance, general_ledger) {
             )}</td>
             </tr>`;
   $("#data_table tbody").append(row);
-console.log(beginning_balance.total_beginning_balance)
   for (var i = 0; i < general_ledger.length; i++) {
     var reporting_period = general_ledger[i]["reporting_period"];
     var date = general_ledger[i]["date"];

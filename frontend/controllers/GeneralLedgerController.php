@@ -179,7 +179,7 @@ class GeneralLedgerController extends Controller
         (CASE
         WHEN accounting_codes.normal_balance = 'Debit' THEN IFNULL(SUM(jev_beginning_balance_item.debit),0)  - IFNULL(SUM(jev_beginning_balance_item.credit),0)
         ELSE IFNULL(SUM(jev_beginning_balance_item.credit),0) - IFNULL(SUM(jev_beginning_balance_item.debit),0)
-        END) as total_beginning_balance
+        END) as balance
         FROM jev_beginning_balance_item 
         LEFT JOIN jev_beginning_balance ON jev_beginning_balance_item.jev_beginning_balance_id =jev_beginning_balance.id
         LEFT JOIN accounting_codes ON jev_beginning_balance_item.object_code = accounting_codes.object_code
