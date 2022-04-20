@@ -258,7 +258,7 @@ class LiquidationController extends Controller
         }
         return true;
     }
-    public function validateReportingPeriod($reporting_period = '', $province = '')
+    public function validateReportingPeriod($reporting_period = '', $province = '', $bank_account_id = '')
     {
         if (empty($reporting_period) && empty($province)) {
             return 'empty';
@@ -268,6 +268,7 @@ class LiquidationController extends Controller
             ->from('liquidation_reporting_period')
             ->where('liquidation_reporting_period.reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
             ->andWhere('liquidation_reporting_period.province LIKE :province', ['province' => $province])
+            ->andWhere('liquidation_reporting_period.bank_account_id LIKE :bank_account_id', ['bank_account_id' => $bank_account_id])
             ->one();
         if (!empty($query)) {
             return false;
@@ -333,7 +334,7 @@ class LiquidationController extends Controller
                         return json_encode(['check_error' => 'No Entry']);
                     }
 
-                    $validateReportingPeriod = $this->validateReportingPeriod($reporting_period, $province);
+                    $validateReportingPeriod = $this->validateReportingPeriod($reporting_period, $province, $model->checkRange->bank_account_id);
                     if ($validateReportingPeriod === false) {
                         $transaction->rollBack();
                         return json_encode(['check_error' => 'Reporting Period is Disabled']);

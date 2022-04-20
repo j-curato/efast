@@ -50,7 +50,8 @@ class Par extends \yii\db\ActiveRecord
             'date' => 'Date',
             'employee_id' => 'Recieved By',
             'agency_id' => ' Agency',
-            'actual_user' => 'Actual User'
+            'actual_user' => 'Actual User',
+            'fk_property_id'=>'Property Number'
         ];
     }
 

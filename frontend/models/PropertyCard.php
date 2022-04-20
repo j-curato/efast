@@ -27,7 +27,7 @@ class PropertyCard extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['balance'], 'number'],
+            [['balance','fk_par_id'], 'number'],
             [['pc_number', 'par_number'], 'string', 'max' => 255],
         ];
     }

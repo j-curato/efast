@@ -115,6 +115,7 @@ class ParController extends Controller
                 $pc->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
                 $pc->pc_number = $this->getPcNumber();
                 $pc->par_number = $model->par_number;
+                $pc->fk_par_id = $model->id;
                 $this->generateQr($pc->pc_number);
                 if ($pc->save()) {
                     // $url = Url::to(['@propertycardView', 'id' => $pc->pc_number]);
