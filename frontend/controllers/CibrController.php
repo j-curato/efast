@@ -200,9 +200,11 @@ class CibrController extends Controller
         $model = $this->findModel($id);
         Yii::$app->db->createCommand("DELETE FROM liquidation_reporting_period WHERE reporting_period =:reporting_period
         AND province =:province
+        AND bank_account_id =:bank_account_id
         ")
             ->bindValue(':reporting_period', $model->reporting_period)
             ->bindValue(':province', $model->province)
+            ->bindValue(':bank_account_id', $model->bank_account_id)
             ->query();
 
         $model->delete();
@@ -268,15 +270,18 @@ class CibrController extends Controller
                 $r_periods = new LiquidationReportingPeriod();
                 $r_periods->reporting_period = $model->reporting_period;
                 $r_periods->province = $model->province;
+                $r_periods->bank_account_id = $model->bank_account_id;
                 if ($r_periods->save(false)) {
 
                     return $this->redirect(['view', 'id' => $model->id]);
                 }
             } else {
                 Yii::$app->db->createCommand("DELETE FROM  liquidation_reporting_period 
-                 WHERE reporting_period = :reporting_period AND province =:province")
+                 WHERE reporting_period = :reporting_period AND province =:province
+                 AND bank_account_id = :bank_account_id")
                     ->bindValue(':reporting_period', $model->reporting_period)
                     ->bindValue(':province', $model->province)
+                    ->bindValue(':bank_account_id', $model->bank_account_id)
                     ->query();
                 return $this->redirect(['view', 'id' => $model->id]);
             }
