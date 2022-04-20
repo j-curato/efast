@@ -268,7 +268,7 @@ class LiquidationController extends Controller
             ->from('liquidation_reporting_period')
             ->where('liquidation_reporting_period.reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
             ->andWhere('liquidation_reporting_period.province LIKE :province', ['province' => $province])
-            ->andWhere('liquidation_reporting_period.bank_account_id LIKE :bank_account_id', ['bank_account_id' => $bank_account_id])
+            ->andWhere('liquidation_reporting_period.bank_account_id = :bank_account_id', ['bank_account_id' => $bank_account_id])
             ->one();
         if (!empty($query)) {
             return false;
@@ -428,10 +428,15 @@ class LiquidationController extends Controller
             $check_number = $_POST['check_number'];
             $po_transaction_id = $_POST['po_transaction_id'];
             $province = Yii::$app->user->identity->province;
-
+            $model->reporting_period = $reporting_period;
+            $model->province = $province;
+            $model->check_date = $check_date;
+            $model->check_range_id = $check_range_id;
+            $model->check_number = $check_number;
+            $model->po_transaction_id = $po_transaction_id;
             if ($model->reporting_period !== $reporting_period) {
 
-                $validateReportingPeriod = $this->validateReportingPeriod($reporting_period, $province);
+                $validateReportingPeriod = $this->validateReportingPeriod($reporting_period, $province, $model->checkRange->bank_account_id);
                 if ($validateReportingPeriod === false) {
                     $transaction->rollBack();
                     return json_encode(['check_error' => 'Reporting Period is Disabled']);
@@ -440,12 +445,7 @@ class LiquidationController extends Controller
                     return json_encode(['check_error' => 'No Reporting Period']);
                 }
             }
-            $model->reporting_period = $reporting_period;
-            $model->province = $province;
-            $model->check_date = $check_date;
-            $model->check_range_id = $check_range_id;
-            $model->check_number = $check_number;
-            $model->po_transaction_id = $po_transaction_id;
+
 
             try {
                 $flag = true;
