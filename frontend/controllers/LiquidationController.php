@@ -261,13 +261,7 @@ class LiquidationController extends Controller
     }
     public function validateReportingPeriod($reporting_period = '', $province = '', $bank_account_id = '')
     {
-        echo $reporting_period;
-        echo "<br>";
-        echo $province;
-        echo "<br>";
-        echo $bank_account_id;
-        echo "<br>";
-        die();
+
         if (empty($reporting_period) || empty($province) || empty($bank_account_id)) {
             return false;
         }
@@ -443,6 +437,7 @@ class LiquidationController extends Controller
             $model->check_range_id = $check_range_id;
             $model->check_number = $check_number;
             $model->po_transaction_id = $po_transaction_id;
+            return  $model->checkRange->bank_account_id;
             if ($model->reporting_period !== $reporting_period) {
 
                 $validateReportingPeriod = $this->validateReportingPeriod($reporting_period, $province, $model->checkRange->bank_account_id);
