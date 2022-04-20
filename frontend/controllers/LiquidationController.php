@@ -186,7 +186,8 @@ class LiquidationController extends Controller
         $liq_damages = [],
         $withdrawal = [],
         $vat_nonvat = [],
-        $expanded_tax = []
+        $expanded_tax = [],
+        $bank_account_id
     ) {
 
 
@@ -354,7 +355,8 @@ class LiquidationController extends Controller
                             $liq_damages,
                             $withdrawal,
                             $vat_nonvat,
-                            $expanded_tax
+                            $expanded_tax,
+                            $model->checkRange->bank_account_id
                         );
                     }
                 } else {
@@ -468,7 +470,8 @@ class LiquidationController extends Controller
                             $liq_damages,
                             $withdrawal,
                             $vat_nonvat,
-                            $expanded_tax
+                            $expanded_tax,
+                            $model->checkRange->bank_account_id
 
                         );
                     }
