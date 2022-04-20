@@ -430,7 +430,7 @@ class LiquidationController extends Controller
             $check_number = $_POST['check_number'];
             $po_transaction_id = $_POST['po_transaction_id'];
             $province = Yii::$app->user->identity->province;
-            $model->reporting_period = $reporting_period;
+
             $model->province = $province;
             $model->check_date = $check_date;
             $model->check_range_id = $check_range_id;
@@ -448,7 +448,7 @@ class LiquidationController extends Controller
                 }
             }
 
-
+            $model->reporting_period = $reporting_period;
             try {
                 $flag = true;
                 if ($model->validate()) {
