@@ -612,8 +612,8 @@ $this->params['breadcrumbs'][] = $this->title;
         mywindow.document.write("</thead>");
         $.each(data, function(key, val) {
             // console.log(val[1]['object_code'])
-            let head_object_code = val[0]['object_code'] == null ? val[1]['object_code'] : val[0]['object_code']
-            let head_account_title = val[0]['account_title'] == null ? val[1]['account_title'] : val[0]['account_title']
+            let head_object_code = val[0]['object_code'] == null ? val[1]['object_code'] : val[0]['object_code'];
+            let head_account_title = val[0]['account_title'] == null ? val[1]['account_title'] : val[0]['account_title'];
             mywindow.document.write("<tr class='header_logo' style='margin-bottom:5px;'>");
             mywindow.document.write(" <th></th>");
             mywindow.document.write(` <th colspan='2'> <div style='display:flex'><img src='/afms/frontend/web/dti.jpg' style='width:80px;height:80px;margin-left:auto;margin-right:10px''><div style='margin-top:10px; text-align:center;'><h4 style='margin-top:13px'>Department of Trade and Industry</h4><h4>Subsidiary Ledger</h4><h4>${year}</h4></div></div></th>`);
