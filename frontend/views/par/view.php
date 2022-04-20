@@ -57,7 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </th>
                     <th colspan="3">
                         <span>PAR No:</span>
-                        <span><?php echo $model->par_number; ?></span>
+                        <span><?php echo $model->property->property_number; ?></span>
                     </th>
                 </tr>
                 <tr>
