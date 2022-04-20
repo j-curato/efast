@@ -11,6 +11,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 
 /**
  * SubTrialBalanceController implements the CRUD actions for SubTrialBalance model.
@@ -214,6 +215,8 @@ class SubTrialBalanceController extends Controller
         WHEN accounting_codes.normal_balance = 'Debit' THEN IFNULL(beginning_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.debit,0) - IFNULL(accounting_entries.credit,0))
         ELSE IFNULL(beginning_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.credit,0) - IFNULL(accounting_entries.debit,0))
         END) !=0
+
+        ORDER BY object_code
         ")
             ->bindValue(':from_reporting_period', $from_reporting_period)
             ->bindValue(':to_reporting_period', $to_reporting_period)
