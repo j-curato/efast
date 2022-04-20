@@ -31,7 +31,19 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
 
             'par_number',
-            'property_number',
+
+            [
+                'label' => 'Property',
+                'attribute' => 'fk_property_id',
+                'value' => function ($model) {
+                    $property = '';
+                    if (!empty($model->property->property_number) && !empty($model->property->article)) {
+                        $property = $model->property->property_number . ' - ' . $model->property->article;
+                    }
+                    return $property;
+                }
+            ],
+
             'date',
             [
                 'label' => 'Recieved By',
