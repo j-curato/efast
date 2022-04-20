@@ -260,8 +260,8 @@ class LiquidationController extends Controller
     }
     public function validateReportingPeriod($reporting_period = '', $province = '', $bank_account_id = '')
     {
-        if (empty($reporting_period) && empty($province)) {
-            return 'empty';
+        if (empty($reporting_period) || empty($province) || empty($bank_account_id)) {
+            return false;
         }
         $query = (new \yii\db\Query())
             ->select('*')
