@@ -210,7 +210,7 @@ class LiquidationController extends Controller
             if ($partial_balance < 0) {
                 return "Cannot Insert. Advances {$advances_entries_balance['fund_source']} Balance is not enough";
             }
-            if (!$this->validateReportingPeriod($reporting_period, $province)) {
+            if (!$this->validateReportingPeriod($reporting_period, $province, $bank_account_id)) {
                 return "Reporting is Disable in  Advances {$advances_entries_balance['fund_source']} line";
             };
 
