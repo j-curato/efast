@@ -261,6 +261,13 @@ class LiquidationController extends Controller
     }
     public function validateReportingPeriod($reporting_period = '', $province = '', $bank_account_id = '')
     {
+        echo $reporting_period;
+        echo "<br>";
+        echo $province;
+        echo "<br>";
+        echo $bank_account_id;
+        echo "<br>";
+        die();
         if (empty($reporting_period) || empty($province) || empty($bank_account_id)) {
             return false;
         }
