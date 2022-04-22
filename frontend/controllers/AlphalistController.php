@@ -107,7 +107,7 @@ class AlphalistController extends Controller
                 INNER JOIN advances_entries ON liq_entry.advances_entries_id = advances_entries.id 
                 INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
                 WHERE liquidation.province = :province
-                AND liquidation.check_date >='2022-01-01'
+                AND liquidation.check_date >='2022-04-01'
                 AND  liquidation.check_date <=:to_date
                 AND liq_entry.fk_alphalist_id IS NULL
                 AND liquidation.is_cancelled !=1) 
@@ -187,6 +187,7 @@ class AlphalistController extends Controller
         SELECT
             liquidation.province,
             liquidation.id,
+            liquidation.check_date,
             IFNULL(SUM(liquidation_entries.withdrawals),0) as withdrawals,
             IFNULL(SUM(liquidation_entries.expanded_tax),0) as expanded_tax,
             IFNULL(SUM(liquidation_entries.vat_nonvat),0) as vat_nonvat,
@@ -194,13 +195,16 @@ class AlphalistController extends Controller
             IFNULL(SUM(liquidation_entries.withdrawals),0)+
             IFNULL(SUM(liquidation_entries.vat_nonvat),0)+
             IFNULL(SUM(liquidation_entries.liquidation_damage),0)+
-            IFNULL(SUM(liquidation_entries.expanded_tax),0) as gross_amount
+            IFNULL(SUM(liquidation_entries.expanded_tax),0) as gross_amount,
+
+            IFNULL(SUM(liquidation_entries.vat_nonvat),0)+
+            IFNULL(SUM(liquidation_entries.expanded_tax),0) as total_tax
             FROM liquidation_entries
             INNER JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
             INNER JOIN advances_entries ON liquidation_entries.advances_entries_id = advances_entries.id 
             INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
             WHERE liquidation.province = :province
-            AND liquidation.check_date >='2022-01-01'
+            AND liquidation.check_date >='2022-04-01'
             AND  liquidation.check_date <=:_range
             AND liquidation_entries.fk_alphalist_id IS NULL
             AND liquidation.is_cancelled !=1
@@ -220,18 +224,15 @@ class AlphalistController extends Controller
                             liquidation.province,
                             cash_disbursement.book_id,
                             liquidation_entries.reporting_period,
-                            SUM(liquidation_entries.withdrawals) as withdrawals,
-                            IFNULL(SUM(liquidation_entries.withdrawals),0)+
                             IFNULL(SUM(liquidation_entries.vat_nonvat),0)+
-                            IFNULL(SUM(liquidation_entries.liquidation_damage),0)+
-                            IFNULL(SUM(liquidation_entries.expanded_tax),0) as gross_amount
+                            IFNULL(SUM(liquidation_entries.expanded_tax),0) as total_tax
                             
                             FROM liquidation_entries
                             INNER JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
                             INNER JOIN advances_entries ON liquidation_entries.advances_entries_id = advances_entries.id 
                             INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
                             WHERE liquidation.province = :province
-                            AND liquidation.check_date >='2022-01-01'
+                            AND liquidation.check_date >='2022-04-01'
                             AND  liquidation.check_date <=:_range
                             AND liquidation_entries.fk_alphalist_id IS NULL
                             GROUP BY 

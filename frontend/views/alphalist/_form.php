@@ -57,13 +57,15 @@ use yii\widgets\ActiveForm;
         <table class="" id="detailed_table" style="margin-top: 5rem;">
             <thead>
                 <th>DV Number</th>
+                <th>Check Date</th>
                 <th>Check Number</th>
                 <th>Payee</th>
                 <th>Gross Amount</th>
                 <th>Withdrawals</th>
+                <th>Liquidation Damages</th>
                 <th>Total Sales Tax (VAT/Non-VAT)</th>
                 <th>Income Tax (Expanded Tax)</th>
-                <th>Liquidation Damages</th>
+                <th>Total Tax</th>
             </thead>
             <tbody></tbody>
         </table>
@@ -115,7 +117,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/alphalistJ
                     // console.log(res)
                     $('#conso_table tbody').html('')
                     $('#detailed_table tbody').html('')
-
+                    header_rows_index = []
                     displayConsoHead(res.r)
                     displayConso(res.conso, res.r)
                     displayDetailed(res.detailed)

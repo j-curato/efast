@@ -34,13 +34,15 @@ $this->params['breadcrumbs'][] = $this->title;
         <table class="" id="detailed_table" style="margin-top: 5rem;">
             <thead>
                 <th>DV Number</th>
+                <th>Check Date</th>
                 <th>Check Number</th>
                 <th>Payee</th>
                 <th>Gross Amount</th>
                 <th>Withdrawals</th>
+                <th>Liquidation Damages</th>
                 <th>Total Sales Tax (VAT/Non-VAT)</th>
                 <th>Income Tax (Expanded Tax)</th>
-                <th>Liquidation Damages</th>
+                <th>Total Tax</th>
             </thead>
             <tbody></tbody>
         </table>
@@ -80,11 +82,17 @@ $this->params['breadcrumbs'][] = $this->title;
             padding: 0;
 
         }
-        .btn{
+
+        .btn {
             display: none;
         }
-        .main-footer{
+
+        .main-footer {
             display: none;
+        }
+
+        .total {
+            font-weight: bold;
         }
     }
 </style>
