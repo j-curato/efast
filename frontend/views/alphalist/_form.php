@@ -18,7 +18,8 @@ use yii\widgets\ActiveForm;
             <?= $form->field($model, 'check_range')->widget(DatePicker::class, [
                 'pluginOptions' => [
                     'autoclose' => true,
-                    'format' => 'yyyy-mm-dd'
+                    'format' => 'yyyy-mm',
+                    'minViewMode'=>'months'
                 ]
             ]) ?>
         </div>
