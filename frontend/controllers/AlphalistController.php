@@ -98,7 +98,6 @@ class AlphalistController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $model->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            $model->alphalist_number = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             $province = YIi::$app->user->identity->province;
             if (
                 $province === 'adn' ||
@@ -109,6 +108,8 @@ class AlphalistController extends Controller
             ) {
                 $model->province = $province;
             }
+            $model->alphalist_number = $this->alphalistNumber($model->province);
+
             if ($model->save(false)) {
 
                 $query =  Yii::$app->db->createCommand("UPDATE liquidation_entries  SET fk_alphalist_id = :id
@@ -287,5 +288,24 @@ class AlphalistController extends Controller
             $sql = Yii::$app->db->getQueryBuilder()->buildCondition('liquidation_entries.fk_alphalist_id IS NULL', $params);
             return $this->generateQuery($province, $range, $sql);
         }
+    }
+    public function alphalistNumber($province)
+    {
+        $last_num = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(alphalist_number,'-',-1) AS UNSIGNED) as last_num FROM alphalist
+        WHERE alphalist.province =:province
+      ORDER BY last_num DESC LIMIT 1
+      ")
+            ->bindValue(':province', $province)
+            ->queryScalar();
+        if (empty($last_num)) {
+            $last_num = 1;
+        } else {
+            $last_num = intval($last_num) + 1;
+        }
+        $zero = '';
+        for ($i = strlen($last_num); $i <= 4; $i++) {
+            $zero .= 0;
+        }
+        return strtoupper($province) . '-' . $zero . $last_num;
     }
 }
