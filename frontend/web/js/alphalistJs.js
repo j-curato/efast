@@ -1,6 +1,6 @@
 let header_rows_index = [];
 function displayConsoHead(consoHeadData) {
-  let head_row = "<tr><td>Books</td>";
+  let head_row = "<tr><th>Books</th>";
   let counter = 1;
   $.each(consoHeadData, function (key, val) {
     head_row += `<th>${val}</th>`;
@@ -38,9 +38,9 @@ function displayConso(data, head) {
   });
 
   // DISPLAY IYANG ROW FOR TOTALS
-  let total_row = `<tr><td class='total'>TOTAL</td>`;
+  let total_row = `<tr><th class='total'>TOTAL</th>`;
   $.each(head, function (key4, val4) {
-    total_row += `<td class='amount total'></td>`;
+    total_row += `<th class='amount total'></th>`;
   });
   total_row += "</tr>";
   // ASSIGN ang DATA KUNG UNSA SIYA NA ROW AND COL NUMBER
@@ -68,10 +68,10 @@ function displayConso(data, head) {
   );
 
   const conso_total_row = `<tr>
-                <td class='total' >Tax Grand Total</td>
-                <td class='amount total' >${thousands_separators(
+                <th class='total' >Tax Grand Total</th>
+                <th class='amount total' >${thousands_separators(
                   total_conso_total_tax.toFixed(2)
-                )}</td></tr>`;
+                )}</th></tr>`;
   $("#conso_table tbody").append(conso_total_row);
 }
 
@@ -119,25 +119,25 @@ function displayDetailed(data) {
     total_total_tax += total_tax;
   });
   const total_row = `<tr>
-                <td  colspan='4'class='total'>Total</td>
-                <td class='amount total'>${thousands_separators(
+                <th  colspan='4'class='total'>Total</th>
+                <th class='amount total'>${thousands_separators(
                   total_gross_amount.toFixed(2)
-                )}</td>
-                <td class='amount total'>${thousands_separators(
+                )}</th>
+                <th class='amount total'>${thousands_separators(
                   total_withdrawals.toFixed(2)
-                )}</td>
-                <td class='amount total'>${thousands_separators(
+                )}</th>
+                <th class='amount total'>${thousands_separators(
                   total_liquidation_damage.toFixed(2)
-                )}</td>
-                <td class='amount total'>${thousands_separators(
+                )}</th>
+                <th class='amount total'>${thousands_separators(
                   total_vat_nonvat.toFixed(2)
-                )}</td>
-                <td class='amount total'>${thousands_separators(
+                )}</th>
+                <th class='amount total'>${thousands_separators(
                   total_expanded_tax.toFixed(2)
-                )}</td>
-                <td class='amount total'>${thousands_separators(
+                )}</th>
+                <th class='amount total'>${thousands_separators(
                   total_total_tax.toFixed(2)
-                )}</td>
+                )}</th>
       
         </tr>`;
   $("#detailed_table tbody").append(total_row);

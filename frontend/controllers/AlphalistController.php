@@ -239,7 +239,7 @@ class AlphalistController extends Controller
         FROM (SELECT
                             liquidation.province,
                             cash_disbursement.book_id,
-                            liquidation_entries.reporting_period,
+                            DATE_FORMAT(liquidation.check_date,'%Y-%m') AS reporting_period,
                             IFNULL(SUM(liquidation_entries.vat_nonvat),0)+
                             IFNULL(SUM(liquidation_entries.expanded_tax),0) as total_tax
                             
@@ -254,7 +254,7 @@ class AlphalistController extends Controller
                             GROUP BY 
                             liquidation.province,
                             cash_disbursement.book_id,
-                            liquidation_entries.reporting_period) as conso
+                            DATE_FORMAT(liquidation.check_date,'%Y-%m')) as conso
                             LEFT JOIN books on conso.book_id = books.id")
             ->bindValue(':_range', $range)
             ->bindValue(':province', $province)
@@ -293,8 +293,7 @@ class AlphalistController extends Controller
     {
         $last_num = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(alphalist_number,'-',-1) AS UNSIGNED) as last_num FROM alphalist
         WHERE alphalist.province =:province
-      ORDER BY last_num DESC LIMIT 1
-      ")
+         ORDER BY last_num DESC LIMIT 1")
             ->bindValue(':province', $province)
             ->queryScalar();
         if (empty($last_num)) {
