@@ -395,6 +395,7 @@
                                 Yii::$app->user->can('po_transmittal') ? ['label' => 'Returned DV`s', 'icon' => 'circle-o', 'url' => ['/po-transmittal/returned-liquidation'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'PO Transmittal to COA', 'icon' => 'circle-o', 'url' => ['/po-transmittal-to-coa'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Positions', 'icon' => 'circle-o', 'url' => ['/employee-position'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Alphalist', 'icon' => 'circle-o', 'url' => ['/alphalist'],] : [],
 
                             ],
                         ] : ['label' => ''],

@@ -13,31 +13,40 @@ use yii\widgets\ActiveForm;
 <div class="alphalist-form">
 
     <?php $form = ActiveForm::begin(); ?>
+    <div class="row">
+        <div class="col-sm-3">
+            <?= $form->field($model, 'check_range')->widget(DatePicker::class, [
+                'pluginOptions' => [
+                    'autoclose' => true,
+                    'format' => 'yyyy-mm-dd'
+                ]
+            ]) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'province')->widget(Select2::class, [
+                'data' => [
+                    'adn' => 'ADN',
+                    'ads' => 'ADS',
+                    'sdn' => 'SDN',
+                    'sds' => 'SDS',
+                    'pdi' => 'pdi',
+                ],
+                'pluginOptions' => [
+                    'placeholder' => 'Select Province'
+                ]
+            ]) ?>
+        </div>
 
+        <div class="col-sm-3">
+            <button class="btn btn-warning" type='button' id="generate" style="margin-top: 24px;">Generate</button>
 
-    <?= $form->field($model, 'check_range')->widget(DatePicker::class, [
-        'pluginOptions' => [
-            'autoclose' => true,
-            'format' => 'yyyy-mm-dd'
-        ]
-    ]) ?>
-    <?= $form->field($model, 'province')->widget(Select2::class, [
-        'data' => [
-            'adn' => 'ADN',
-            'ads' => 'ADS',
-            'sdn' => 'SDN',
-            'sds' => 'SDS',
-            'pdi' => 'pdi',
-        ],
-        'pluginOptions'=>[
-            'placeholder'=>'Select Province'
-        ]
-    ]) ?>
-
-    <button class="btn btn-success" type='button' id="generate">Generate</button>
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => "margin-top: 24px;"]) ?>
+        </div>
     </div>
+
+
+
+
 
     <?php ActiveForm::end(); ?>
 
@@ -80,7 +89,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/alphalistJs.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 <script>
-      
     $(document).ready(function() {
         $('#generate').click(function() {
             $.ajax({
@@ -103,7 +111,4 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/alphalistJ
             })
         })
     })
-
-
-    
 </script>
