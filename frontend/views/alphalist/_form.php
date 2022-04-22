@@ -25,10 +25,10 @@ use yii\widgets\ActiveForm;
         <?php
         $province = Yii::$app->user->identity->province;
         if (
-            $province !== 'adn' ||
-            $province !== 'ads' ||
-            $province !== 'sdn' ||
-            $province !== 'sds' ||
+            $province !== 'adn' &&
+            $province !== 'ads' &&
+            $province !== 'sdn' &&
+            $province !== 'sds' &&
             $province !== 'pdi'
         ) {
         ?>
