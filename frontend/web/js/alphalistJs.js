@@ -4,7 +4,7 @@ function displayConsoHead(consoHeadData) {
   let counter = 1;
   $.each(consoHeadData, function (key, val) {
     head_row += `<th>${val}</th>`;
-    header_rows_index[counter] = val;\
+    header_rows_index[counter] = val;
     counter++
   });
   head_row += "</tr>";
