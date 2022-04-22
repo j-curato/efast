@@ -111,8 +111,8 @@ class AlphalistController extends Controller
             }
             if ($model->save(false)) {
 
-                $query =  Yii::$app->db->createCommand("UPDATE liquidation_entries SET fk_alphalist_id = :id
-                WHERE  liquidation_entries.id IN (SELECT
+                $query =  Yii::$app->db->createCommand("UPDATE liquidation_entries  SET fk_alphalist_id = :id
+                WHERE  EXISTS (SELECT z.id FROM (SELECT
                     x.id
                     FROM liquidation_entries as x
                     INNER JOIN liquidation ON x.liquidation_id = liquidation.id
@@ -122,7 +122,10 @@ class AlphalistController extends Controller
                     AND liquidation.check_date >='2021-10-01'
                     AND  liquidation.check_date <=:to_date
                     AND liquidation.is_cancelled !=1
-                    ) 
+                   
+                    )  as z
+                    WHERE   z.id =  liquidation_entries.id 
+                    )
                 ")
                     ->bindValue(':id', $model->id)
                     ->bindValue(':to_date', $model->check_range)
