@@ -19,7 +19,7 @@ use yii\widgets\ActiveForm;
                 'pluginOptions' => [
                     'autoclose' => true,
                     'format' => 'yyyy-mm',
-                    'minViewMode'=>'months'
+                    'minViewMode' => 'months'
                 ]
             ]) ?>
         </div>
@@ -85,8 +85,12 @@ use yii\widgets\ActiveForm;
 
 </div>
 <style>
-    table {
+    #detailed_table {
         width: 100%;
+    }
+
+    #conso_table {
+        width: 50%;
     }
 
     .total {
