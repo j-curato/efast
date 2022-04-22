@@ -29,9 +29,9 @@ function displayConso(data, head) {
       // row += `<td>${val2.withdrawals}</td>`;
       console.log(val2.reporting_period);
       const conso_total_tax = parseFloat(val2.total_tax);
-      const data_index = header_rows_index.indexOf(val2.reporting_period);
+      const data_index = header_rows_index.indexOf(val2.reporting_period) +1;
       console.log(data_index);
-      $(`#conso_table tbody tr > :nth-child(${data_index})`)+1
+      $(`#conso_table tbody tr > :nth-child(${data_index})`)
         .eq(row_number)
         .text(thousands_separators(conso_total_tax));
       total_conso_total_tax += conso_total_tax;
