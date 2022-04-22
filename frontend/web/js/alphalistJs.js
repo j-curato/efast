@@ -16,15 +16,18 @@ function displayConso(data, head) {
 
   $.each(data, function (key, val) {
     let row = `<tr><td>${key}</td>`;
+    // DISPLAY IYANG ROW
     $.each(head, function (key4, val4) {
       row += `<td class='amount'></td>`;
     });
     row += "</tr>";
     $("#conso_table tbody").append(row);
+    // ASSIGN ang DATA KUNG UNSA SIYA NA ROW AND COL NUMBER
     $.each(val, function (key2, val2) {
       // row += `<td>${val2.withdrawals}</td>`;
       const conso_gross_amount = parseFloat(val2.gross_amount);
       const data_index = header_rows_index.indexOf(val2.reporting_period) + 1;
+
       $(`#conso_table tbody tr > :nth-child(${data_index})`)
         .eq(row_number)
         .text(thousands_separators(conso_gross_amount));
@@ -32,9 +35,43 @@ function displayConso(data, head) {
     });
     row_number++;
   });
+
+  // DISPLAY IYANG ROW FOR TOTALS
+  let total_row = `<tr><td class='total'>TOTAL</td>`;
+  $.each(head, function (key4, val4) {
+    total_row += `<td class='amount total'></td>`;
+  });
+  total_row += "</tr>";
+  // ASSIGN ang DATA KUNG UNSA SIYA NA ROW AND COL NUMBER
+  $("#conso_table tbody").append(total_row);
+  $.each(
+    header_rows_index,
+    function (header_rows_index_key, header_rows_index_val) {
+      let col_total = 0;
+      if (header_rows_index_key > 0) {
+        const i = header_rows_index_key + 1;
+        $(`#conso_table tbody tr > :nth-child(${i})`).each(function (key, val) {
+          if (key > 0) {
+            const amount =
+              $(this).text() != ""
+                ? parseFloat($(this).text().replace(/,/g, ""))
+                : 0;
+            console.log(amount);
+            col_total += amount;
+          }
+        });
+        $(`#conso_table tbody tr > :nth-child(${i})`)
+          .eq(row_number)
+          .text(thousands_separators(col_total));
+      }
+    }
+  );
+
   const conso_total_row = `<tr>
-                <td style='font-weight:bold'>Grand Total</td>
-                <td class='amount' style='font-weight:bold'>${thousands_separators(total_conso_gross_amount.toFixed(2))}</td></tr>`;
+                <td class='total' >Gross Grand Total</td>
+                <td class='amount total' >${thousands_separators(
+                  total_conso_gross_amount.toFixed(2)
+                )}</td></tr>`;
   $("#conso_table tbody").append(conso_total_row);
 }
 
@@ -75,20 +112,20 @@ function displayDetailed(data) {
     total_liquidation_damage += liquidation_damage;
   });
   const total_row = `<tr>
-                <td  colspan='3'>Total</td>
-                <td class='amount'>${thousands_separators(
+                <td  colspan='3'class='total'>Total</td>
+                <td class='amount total'>${thousands_separators(
                   total_gross_amount.toFixed(2)
                 )}</td>
-                <td class='amount'>${thousands_separators(
+                <td class='amount total'>${thousands_separators(
                   total_withdrawals.toFixed(2)
                 )}</td>
-                <td class='amount'>${thousands_separators(
+                <td class='amount total'>${thousands_separators(
                   total_vat_nonvat.toFixed(2)
                 )}</td>
-                <td class='amount'>${thousands_separators(
+                <td class='amount total'>${thousands_separators(
                   total_expanded_tax.toFixed(2)
                 )}</td>
-                <td class='amount'>${thousands_separators(
+                <td class='amount total'>${thousands_separators(
                   total_liquidation_damage.toFixed(2)
                 )}</td>
         </tr>`;

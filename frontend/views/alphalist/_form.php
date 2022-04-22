@@ -49,27 +49,39 @@ use yii\widgets\ActiveForm;
 
 
     <?php ActiveForm::end(); ?>
+    <div class="con">
 
-    <table class="" id="conso_table">
-        <tbody></tbody>
-    </table>
-    <table class="" id="detailed_table" style="margin-top: 5rem;">
-        <thead>
-            <th>DV Number</th>
-            <th>Check Number</th>
-            <th>Payee</th>
-            <th>Gross Amount</th>
-            <th>Withdrawals</th>
-            <th>Total Sales Tax (VAT/Non-VAT)</th>
-            <th>Income Tax (Expanded Tax)</th>
-            <th>Liquidation Damages</th>
-        </thead>
-        <tbody></tbody>
-    </table>
+        <table class="" id="conso_table">
+            <tbody></tbody>
+        </table>
+        <table class="" id="detailed_table" style="margin-top: 5rem;">
+            <thead>
+                <th>DV Number</th>
+                <th>Check Number</th>
+                <th>Payee</th>
+                <th>Gross Amount</th>
+                <th>Withdrawals</th>
+                <th>Total Sales Tax (VAT/Non-VAT)</th>
+                <th>Income Tax (Expanded Tax)</th>
+                <th>Liquidation Damages</th>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
 </div>
 <style>
     table {
         width: 100%;
+    }
+
+    .total {
+        font-weight: bold;
+    }
+
+    .con {
+        background-color: white;
+        padding: 2rem;
     }
 
     th,
