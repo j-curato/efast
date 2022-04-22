@@ -5,7 +5,7 @@ function displayConsoHead(consoHeadData) {
   $.each(consoHeadData, function (key, val) {
     head_row += `<th>${val}</th>`;
     header_rows_index[counter] = val;
-    counter++
+    counter++;
   });
   head_row += "</tr>";
   // console.log(header_rows_index)
@@ -16,7 +16,6 @@ function displayConso(data, head) {
   let row_number = 1;
   let total_conso_total_tax = 0;
 
-  console.log(header_rows_index);
   $.each(data, function (key, val) {
     let row = `<tr><td>${key}</td>`;
     // DISPLAY IYANG ROW
@@ -28,10 +27,8 @@ function displayConso(data, head) {
     // ASSIGN ang DATA KUNG UNSA SIYA NA ROW AND COL NUMBER
     $.each(val, function (key2, val2) {
       // row += `<td>${val2.withdrawals}</td>`;
-      console.log(val2.reporting_period);
       const conso_total_tax = parseFloat(val2.total_tax);
       const data_index = header_rows_index.indexOf(val2.reporting_period) + 1;
-      console.log(data_index);
       $(`#conso_table tbody tr > :nth-child(${data_index})`)
         .eq(row_number)
         .text(thousands_separators(conso_total_tax));
