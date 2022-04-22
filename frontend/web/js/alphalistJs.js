@@ -15,6 +15,7 @@ function displayConso(data, head) {
   let total_conso_gross_amount = 0;
 
   $.each(data, function (key, val) {
+    header_rows_index;
     let row = `<tr><td>${key}</td>`;
     // DISPLAY IYANG ROW
     $.each(head, function (key4, val4) {
@@ -56,7 +57,6 @@ function displayConso(data, head) {
               $(this).text() != ""
                 ? parseFloat($(this).text().replace(/,/g, ""))
                 : 0;
-            console.log(amount);
             col_total += amount;
           }
         });
