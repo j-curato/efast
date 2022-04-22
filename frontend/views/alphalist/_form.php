@@ -107,6 +107,18 @@ use yii\widgets\ActiveForm;
     .amount {
         text-align: right;
     }
+
+    @media print {
+        .btn {
+            display: none
+        }
+
+        th,
+        td {
+            padding: 5px;
+            font-size: 10px;
+        }
+    }
 </style>
 
 <?php

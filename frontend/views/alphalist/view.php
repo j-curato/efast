@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="alphalist-view">
 
-<!-- 
+    <!-- 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
@@ -53,8 +53,12 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 3rem;
     }
 
-    table {
+    #detailed_table {
         width: 100%;
+    }
+
+    #conso_table {
+        width: 50%;
     }
 
     th,

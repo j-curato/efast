@@ -239,7 +239,7 @@ class AlphalistController extends Controller
         FROM (SELECT
                             liquidation.province,
                             cash_disbursement.book_id,
-                            DATE_FORMAT(liquidation.check_date,'%Y-%m') AS reporting_period,
+                            liquidation.reporting_period ,
                             IFNULL(SUM(liquidation_entries.vat_nonvat),0)+
                             IFNULL(SUM(liquidation_entries.expanded_tax),0) as total_tax
                             
@@ -254,7 +254,7 @@ class AlphalistController extends Controller
                             GROUP BY 
                             liquidation.province,
                             cash_disbursement.book_id,
-                            DATE_FORMAT(liquidation.check_date,'%Y-%m')) as conso
+                            liquidation.reporting_period) as conso
                             LEFT JOIN books on conso.book_id = books.id")
             ->bindValue(':_range', $range)
             ->bindValue(':province', $province)
