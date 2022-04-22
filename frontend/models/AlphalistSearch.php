@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Alphalist;
+use Yii;
 
 /**
  * AlphalistSearch represents the model behind the search form of `app\models\Alphalist`.
@@ -40,13 +41,25 @@ class AlphalistSearch extends Alphalist
      */
     public function search($params)
     {
+        $province = Yii::$app->user->identity->province;
         $query = Alphalist::find();
+        if (
+            $province === 'adn' ||
+            $province === 'ads' ||
+            $province === 'sdn' ||
+            $province === 'sds' ||
+            $province === 'pdi'
+        ) {
+            $query->where('province =:province', ['province' => $province]);
+        }
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
+
+
 
         $this->load($params);
 
