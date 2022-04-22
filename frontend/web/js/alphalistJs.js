@@ -1,9 +1,10 @@
 let header_rows_index = [];
 function displayConsoHead(consoHeadData) {
   let head_row = "<tr><td>Books</td>";
+  let counter = 1
   $.each(consoHeadData, function (key, val) {
     head_row += `<th>${val}</th>`;
-    header_rows_index[key + 1] = val;
+    header_rows_index[counter] = val;
   });
   head_row += "</tr>";
   // console.log(header_rows_index)
