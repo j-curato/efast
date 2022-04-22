@@ -1,10 +1,11 @@
 let header_rows_index = [];
 function displayConsoHead(consoHeadData) {
   let head_row = "<tr><td>Books</td>";
-  let counter = 1
+  let counter = 1;
   $.each(consoHeadData, function (key, val) {
     head_row += `<th>${val}</th>`;
-    header_rows_index[counter] = val;
+    header_rows_index[counter] = val;\
+    counter++
   });
   head_row += "</tr>";
   // console.log(header_rows_index)
@@ -29,7 +30,7 @@ function displayConso(data, head) {
       // row += `<td>${val2.withdrawals}</td>`;
       console.log(val2.reporting_period);
       const conso_total_tax = parseFloat(val2.total_tax);
-      const data_index = header_rows_index.indexOf(val2.reporting_period) +1;
+      const data_index = header_rows_index.indexOf(val2.reporting_period) + 1;
       console.log(data_index);
       $(`#conso_table tbody tr > :nth-child(${data_index})`)
         .eq(row_number)
