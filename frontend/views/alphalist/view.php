@@ -10,12 +10,10 @@ $this->title = $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Alphalists', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
-
 ?>
 <div class="alphalist-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
+<!-- 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
@@ -25,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
-    </p>
+    </p> -->
     <div class="container">
 
         <table class="" id="conso_table">

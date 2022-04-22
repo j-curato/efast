@@ -32,9 +32,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'alphalist_number',
             'check_range',
-            'created_at',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'kartik\grid\ActionColumn',
+                'deleteOptions' => ['style' => 'display:none'],
+                'updateOptions' => ['style' => 'display:none']
+            ],
         ],
     ]); ?>
 

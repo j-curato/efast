@@ -79,9 +79,11 @@ class AlphalistController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
+        $params = [];
+        $sql = Yii::$app->db->getQueryBuilder()->buildCondition("liquidation_entries.fk_alphalist_id ={$model->id}", $params);
         return $this->render('view', [
             'model' => $model,
-            'res' => $this->generateQuery($model->province, $model->check_range)
+            'res' => $this->generateQuery($model->province, $model->check_range, $sql, $model->id)
         ]);
     }
 
@@ -97,20 +99,31 @@ class AlphalistController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $model->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             $model->alphalist_number = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+            $province = YIi::$app->user->identity->province;
+            if (
+                $province === 'adn' ||
+                $province === 'ads' ||
+                $province === 'sdn' ||
+                $province === 'sds' ||
+                $province === 'pdi'
+            ) {
+                $model->province = $province;
+            }
             if ($model->save(false)) {
 
                 $query =  Yii::$app->db->createCommand("UPDATE liquidation_entries SET fk_alphalist_id = :id
-                WHERE EXISTS (SELECT
-                liq_entry.id
-                FROM liquidation_entries as liq_entry
-                INNER JOIN liquidation ON liq_entry.liquidation_id = liquidation.id
-                INNER JOIN advances_entries ON liq_entry.advances_entries_id = advances_entries.id 
-                INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
-                WHERE liquidation.province = :province
-                AND liquidation.check_date >='2022-04-01'
-                AND  liquidation.check_date <=:to_date
-                AND liq_entry.fk_alphalist_id IS NULL
-                AND liquidation.is_cancelled !=1) 
+                WHERE  EXISTS (SELECT
+                    x.id
+                    FROM liquidation_entries as x
+                    INNER JOIN liquidation ON x.liquidation_id = liquidation.id
+                    INNER JOIN advances_entries ON x.advances_entries_id = advances_entries.id 
+                    INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
+                    WHERE liquidation.province = :province
+                    AND liquidation.check_date >='2021-10-01'
+                    AND  liquidation.check_date <=:to_date
+                    AND liquidation.is_cancelled !=1
+                    AND liquidation_entries.id = x.id
+                    ) 
                 ")
                     ->bindValue(':id', $model->id)
                     ->bindValue(':to_date', $model->check_range)
@@ -133,18 +146,18 @@ class AlphalistController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
+    // public function actionUpdate($id)
+    // {
+    //     $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+    //     if ($model->load(Yii::$app->request->post()) && $model->save()) {
+    //         return $this->redirect(['view', 'id' => $model->id]);
+    //     }
 
-        return $this->render('update', [
-            'model' => $model,
-        ]);
-    }
+    //     return $this->render('update', [
+    //         'model' => $model,
+    //     ]);
+    // }
 
     /**
      * Deletes an existing Alphalist model.
@@ -153,12 +166,12 @@ class AlphalistController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    // public function actionDelete($id)
+    // {
+    //     $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
-    }
+    //     return $this->redirect(['index']);
+    // }
 
     /**
      * Finds the Alphalist model based on its primary key value.
@@ -175,7 +188,7 @@ class AlphalistController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function generateQuery($province, $range)
+    public function generateQuery($province, $range, $sql)
     {
         $detailed = Yii::$app->db->createCommand("SELECT 
         detailed.*,
@@ -206,7 +219,7 @@ class AlphalistController extends Controller
             WHERE liquidation.province = :province
             AND liquidation.check_date >='2022-04-01'
             AND  liquidation.check_date <=:_range
-            AND liquidation_entries.fk_alphalist_id IS NULL
+            AND $sql
             AND liquidation.is_cancelled !=1
             GROUP BY 
             liquidation.province,
@@ -234,7 +247,7 @@ class AlphalistController extends Controller
                             WHERE liquidation.province = :province
                             AND liquidation.check_date >='2022-04-01'
                             AND  liquidation.check_date <=:_range
-                            AND liquidation_entries.fk_alphalist_id IS NULL
+                            AND $sql
                             GROUP BY 
                             liquidation.province,
                             cash_disbursement.book_id,
@@ -268,8 +281,9 @@ class AlphalistController extends Controller
                 $province = $_POST['province'];
             }
             $range = $_POST['range'];
-
-            return $this->generateQuery($province, $range);
+            $params = [];
+            $sql = Yii::$app->db->getQueryBuilder()->buildCondition('liquidation_entries.fk_alphalist_id IS NULL', $params);
+            return $this->generateQuery($province, $range, $sql);
         }
     }
 }

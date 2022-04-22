@@ -22,20 +22,31 @@ use yii\widgets\ActiveForm;
                 ]
             ]) ?>
         </div>
-        <div class="col-sm-3">
-            <?= $form->field($model, 'province')->widget(Select2::class, [
-                'data' => [
-                    'adn' => 'ADN',
-                    'ads' => 'ADS',
-                    'sdn' => 'SDN',
-                    'sds' => 'SDS',
-                    'pdi' => 'pdi',
-                ],
-                'pluginOptions' => [
-                    'placeholder' => 'Select Province'
-                ]
-            ]) ?>
-        </div>
+        <?php
+        $province = Yii::$app->user->identity->province;
+        if (
+            $province !== 'adn' ||
+            $province !== 'ads' ||
+            $province !== 'sdn' ||
+            $province !== 'sds' ||
+            $province !== 'pdi'
+        ) {
+        ?>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'province')->widget(Select2::class, [
+                    'data' => [
+                        'adn' => 'ADN',
+                        'ads' => 'ADS',
+                        'sdn' => 'SDN',
+                        'sds' => 'SDS',
+                        'pdi' => 'pdi',
+                    ],
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Province'
+                    ]
+                ]) ?>
+            </div>
+        <?php } ?>
 
         <div class="col-sm-3">
             <button class="btn btn-warning" type='button' id="generate" style="margin-top: 24px;">Generate</button>
