@@ -121,7 +121,7 @@ class AlphalistController extends Controller
                     INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
                     WHERE liquidation.province = :province
                     AND liquidation.check_date >='2022-04-01'
-                    AND  liquidation.check_date <=:to_date
+                    AND  liquidation.check_date LIKE :to_date
                     AND liquidation.is_cancelled !=1
                    
                     )  as z
@@ -129,7 +129,7 @@ class AlphalistController extends Controller
                     )
                 ")
                     ->bindValue(':id', $model->id)
-                    ->bindValue(':to_date', $model->check_range)
+                    ->bindValue(':to_date', $model->check_range.'%')
                     ->bindValue(':province', $model->province)
                     ->query();
 
