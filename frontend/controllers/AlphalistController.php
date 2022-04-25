@@ -234,7 +234,7 @@ class AlphalistController extends Controller
             AND  liquidation.check_date  <= :_range
             AND $sql
             AND liquidation.is_cancelled !=1
-            AND liquidation_entries.fk_alphalist_id IS NULL
+           
             GROUP BY 
             liquidation.province,
             liquidation.id) as detailed
@@ -262,7 +262,7 @@ class AlphalistController extends Controller
                             AND liquidation.check_date >='2022-04-01'
                             AND  liquidation.check_date <= :_range
                             AND $sql
-                            AND liquidation_entries.fk_alphalist_id IS NULL
+                           
                             GROUP BY 
                             liquidation.province,
                             cash_disbursement.book_id,
