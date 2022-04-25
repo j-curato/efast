@@ -100,7 +100,7 @@ if (!empty($model->id)) {
                     'name' => 'mfo_code',
                     'id' => 'mfo_code',
                     'data' => ArrayHelper::map($data, 'id', 'new_text'),
-                    'value'=>$mfo_id,
+                    'value' => $mfo_id,
                     'options' => ['placeholder' => 'Select MFO/PAP'],
 
                 ]);
@@ -120,7 +120,7 @@ if (!empty($model->id)) {
                     'name' => 'document_recieve',
                     'id' => 'document_recieve',
                     'data' => ArrayHelper::map($data, 'id', 'name'),
-                    'value'=>$document_recieve_id,
+                    'value' => $document_recieve_id,
                     'options' => ['placeholder' => 'Select Document'],
 
                 ]);
@@ -137,9 +137,9 @@ if (!empty($model->id)) {
                 echo Select2::widget([
                     'name' => 'book_id',
                     'id' => 'book_id',
-                    
+
                     'data' => ArrayHelper::map($data, 'id', 'name'),
-                    'value'=>$book_id,
+                    'value' => $book_id,
                     'options' => ['placeholder' => 'Select Book'],
 
                 ]);
@@ -163,6 +163,8 @@ if (!empty($model->id)) {
 
                     <th rowspan="2"> MFO/PAP </th>
                     <th rowspan="2"> Document Recieve</th>
+                    <th rowspan="2">Prec Allotment</th>
+                    <th rowspan="2">Current Allotment</th>
                     <th rowspan="2">Allotment</th>
                     <th colspan="3">Obligation</th>
                     <th rowspan="2">BALANCES</th>
@@ -464,22 +466,28 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
 
     function addToSummaryTable(conso) {
         $('#summary_table tbody').html('')
-        var total_beginning_balance = 0
-        var total_prev = 0
-        var total_current = 0
-        var total_to_date = 0
-        var total_utilization = 0
-        var total_balance = 0
-        for (var i = 0; i < conso.length; i++) {
-            var beginning_balance = parseFloat(conso[i]['beginning_balance'])
-            var prev = parseFloat(conso[i]['prev'])
-            var current = parseFloat(conso[i]['current'])
-            var to_date = parseFloat(conso[i]['to_date'])
-            var utilization = to_date / beginning_balance * 100
-            var balance = beginning_balance - to_date
-            var row = `<tr>
+        let total_beginning_balance = 0
+        let total_prev = 0
+        let total_current = 0
+        let total_to_date = 0
+        let total_utilization = 0
+        let total_balance = 0
+        let total_prev_allotment = 0
+        let total_current_allotment = 0
+        for (let i = 0; i < conso.length; i++) {
+            const beginning_balance = parseFloat(conso[i]['beginning_balance'])
+            const current_allotment = parseFloat(conso[i]['current_allotment'])
+            const prev_allotment = parseFloat(conso[i]['prev_allotment'])
+            const prev = parseFloat(conso[i]['prev'])
+            const current = parseFloat(conso[i]['current'])
+            const to_date = parseFloat(conso[i]['to_date'])
+            const utilization = to_date / ((prev_allotment + current_allotment) * 100)
+            const balance = beginning_balance - to_date
+            const row = `<tr>
                 <td>` + conso[i]['mfo_name'] + `</td>
                 <td>` + conso[i]['document'] + `</td>
+                <td class='amount'>` + thousands_separators(prev_allotment) + `</td>
+                <td class='amount'>` + thousands_separators(current_allotment) + `</td>
                 <td class='amount'>` + thousands_separators(beginning_balance) + `</td>
                 <td class='amount'>` + thousands_separators(prev) + `</td>
                 <td class='amount'>` + thousands_separators(current) + `</td>
@@ -492,12 +500,15 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             total_prev += prev
             total_current += current
             total_to_date += to_date
-
             total_balance += balance
+            total_prev_allotment += prev_allotment
+            total_current_allotment += current_allotment
         }
         total_utilization = total_to_date / total_beginning_balance * 100
         row = `<tr>
                 <td style='font-weight:bold' colspan='2'>Total</td>
+                <td class='amount'>` + thousands_separators(total_prev_allotment.toFixed(2)) + `</td>
+                <td class='amount'>` + thousands_separators(total_current_allotment.toFixed(2)) + `</td>
                 <td class='amount'>` + thousands_separators(total_beginning_balance.toFixed(2)) + `</td>
                 <td class='amount'>` + thousands_separators(total_prev.toFixed(2)) + `</td>
                 <td class='amount'>` + thousands_separators(total_current.toFixed(2)) + `</td>

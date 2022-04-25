@@ -276,7 +276,6 @@ class SaobController extends Controller
         document_recieve.`name` as document_name,
         major_accounts.`name` as major_name,
         major_accounts.`object_code` as major_object_code,
-        
         sub_major_accounts.`name` as sub_major_name,
         chart_of_accounts.uacs,
         chart_of_accounts.general_ledger,
@@ -284,7 +283,11 @@ class SaobController extends Controller
         IFNULL(prev.total_ors ,0)as prev_total_ors,
         IFNULL(current.total_ors,0) as current_total_ors,
         IFNULL(prev.total_ors ,0) + 
-        IFNULL(current.total_ors,0) as ors_to_date
+        IFNULL(current.total_ors,0) as ors_to_date,
+        0 as prev_allotment
+
+
+
         FROM ($sql_current_ors) as current
         LEFT JOIN  ($sql_prev_ors) as prev ON (current.mfo_pap_code_id = prev.mfo_pap_code_id 
         AND current.document_recieve_id = prev.document_recieve_id
@@ -300,21 +303,21 @@ class SaobController extends Controller
         IFNULL(current.total_allotment,0) + IFNULL(prev.total_allotment,0) >0 OR 
         IFNULL(prev.total_ors ,0) + 
         IFNULL(current.total_ors,0) >0
-        UNION
+        UNION 
         SELECT
         mfo_pap_code.`name` as mfo_name,
         document_recieve.`name` as document_name,
         major_accounts.`name` as major_name,
         major_accounts.`object_code` as major_object_code,
-        
         sub_major_accounts.`name` as sub_major_name,
         chart_of_accounts.uacs,
         chart_of_accounts.general_ledger,
-        IFNULL(current.total_allotment,0) + IFNULL(prev.total_allotment,0) as allotment,
+       0 as allotment,
         IFNULL(prev.total_ors ,0)as prev_total_ors,
         IFNULL(current.total_ors,0) as current_total_ors,
         IFNULL(prev.total_ors ,0) + 
-        IFNULL(current.total_ors,0) as ors_to_date
+        IFNULL(current.total_ors,0) as ors_to_date,
+        IFNULL(current.total_allotment,0) + IFNULL(prev.total_allotment,0) as prev_allotment
         FROM ($sql_current_ors) as current
         RIGHT JOIN  ($sql_prev_ors) as prev ON (current.mfo_pap_code_id = prev.mfo_pap_code_id 
         AND current.document_recieve_id = prev.document_recieve_id
@@ -355,11 +358,12 @@ class SaobController extends Controller
         $result2 = ArrayHelper::index($query, null, [function ($element) {
             return $element['major_name'];
         }, 'sub_major_name',]);
+        // var_dump($result2);
+        // die();
         $conso_saob = array();
         $sort_by_mfo_document = ArrayHelper::index($query, null, [function ($element) {
             return $element['mfo_name'];
         }, 'document_name']);
-
 
         foreach ($sort_by_mfo_document as $mfo => $mfo_val) {
             foreach ($mfo_val as $document => $document_val) {
@@ -368,6 +372,8 @@ class SaobController extends Controller
                     [
                         'mfo_name' => $mfo,
                         'document' => $document,
+                        'prev_allotment' => round(array_sum(array_column($sort_by_mfo_document[$mfo][$document], 'prev_allotment')), 2),
+                        'current_allotment' => round(array_sum(array_column($sort_by_mfo_document[$mfo][$document], 'allotment')), 2),
                         'beginning_balance' => round(array_sum(array_column($sort_by_mfo_document[$mfo][$document], 'allotment')), 2),
                         'prev' => round(array_sum(array_column($sort_by_mfo_document[$mfo][$document], 'prev_total_ors')), 2),
                         'current' => round(array_sum(array_column($document_val, 'current_total_ors')), 2),
