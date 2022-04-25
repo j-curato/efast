@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\Alphalist;
 use app\models\AlphalistSearch;
+use DateTime;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -112,6 +113,10 @@ class AlphalistController extends Controller
 
             if ($model->save(false)) {
 
+
+                $d = new DateTime($model->check_range);
+                // echo $d->format('Y-m-t');
+
                 $query =  Yii::$app->db->createCommand("UPDATE liquidation_entries  SET fk_alphalist_id = :id
                 WHERE  EXISTS (SELECT z.id FROM (SELECT
                     x.id
@@ -121,7 +126,7 @@ class AlphalistController extends Controller
                     INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
                     WHERE liquidation.province = :province
                     AND liquidation.check_date >='2022-04-01'
-                    AND  liquidation.check_date LIKE :to_date
+                    AND  liquidation.check_date <= :to_date
                     AND liquidation.is_cancelled !=1
                    
                     )  as z
@@ -129,7 +134,7 @@ class AlphalistController extends Controller
                     )
                 ")
                     ->bindValue(':id', $model->id)
-                    ->bindValue(':to_date', $model->check_range.'%')
+                    ->bindValue(':to_date', $d->format('Y-m-t'))
                     ->bindValue(':province', $model->province)
                     ->query();
 
@@ -193,6 +198,11 @@ class AlphalistController extends Controller
     }
     public function generateQuery($province, $range, $sql)
     {
+
+
+        $d = new DateTime($range);
+        // echo $d->format('Y-m-t');
+
         $detailed = Yii::$app->db->createCommand("SELECT 
         detailed.*,
         liquidation.dv_number,
@@ -221,7 +231,7 @@ class AlphalistController extends Controller
             INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
             WHERE liquidation.province = :province
             AND liquidation.check_date >='2022-04-01'
-            AND  liquidation.check_date  LIKE :_range
+            AND  liquidation.check_date  <= :_range
             AND $sql
             AND liquidation.is_cancelled !=1
             GROUP BY 
@@ -230,7 +240,7 @@ class AlphalistController extends Controller
             INNER JOIN liquidation ON detailed.id = liquidation.id
             INNER JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
             ")
-            ->bindValue(':_range', $range . '%')
+            ->bindValue(':_range', $d->format('Y-m-t'))
             ->bindValue(':province', $province)
             ->queryAll();
         $conso = Yii::$app->db->createCommand("SELECT 
@@ -249,14 +259,14 @@ class AlphalistController extends Controller
                             INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
                             WHERE liquidation.province = :province
                             AND liquidation.check_date >='2022-04-01'
-                            AND  liquidation.check_date LIKE :_range
+                            AND  liquidation.check_date <= :_range
                             AND $sql
                             GROUP BY 
                             liquidation.province,
                             cash_disbursement.book_id,
                             liquidation.reporting_period) as conso
                             LEFT JOIN books on conso.book_id = books.id")
-            ->bindValue(':_range', $range . '%')
+            ->bindValue(':_range', $d->format('Y-m-t'))
             ->bindValue(':province', $province)
             ->queryAll();
         $reporting_periods  = array_unique(array_column($conso, 'reporting_period'));

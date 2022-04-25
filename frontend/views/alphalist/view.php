@@ -6,10 +6,13 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Alphalist */
 
-$this->title = $model->id;
+$this->title = $model->alphalist_number;
 $this->params['breadcrumbs'][] = ['label' => 'Alphalists', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+
+
+
 ?>
 <div class="alphalist-view">
 
@@ -25,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p> -->
     <div class="container">
-
+        <?php echo $this->title ?>
         <table class="" id="conso_table">
             <tbody></tbody>
         </table>
