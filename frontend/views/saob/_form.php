@@ -481,7 +481,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             const prev = parseFloat(conso[i]['prev'])
             const current = parseFloat(conso[i]['current'])
             const to_date = parseFloat(conso[i]['to_date'])
-            const utilization = to_date / ((prev_allotment + current_allotment) * 100)
+            const utilization = to_date / (prev_allotment + current_allotment) * 100
             const balance = beginning_balance - to_date
             const row = `<tr>
                 <td>` + conso[i]['mfo_name'] + `</td>
