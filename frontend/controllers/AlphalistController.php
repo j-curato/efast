@@ -120,7 +120,7 @@ class AlphalistController extends Controller
                     INNER JOIN advances_entries ON x.advances_entries_id = advances_entries.id 
                     INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
                     WHERE liquidation.province = :province
-                    AND liquidation.check_date >='2021-10-01'
+                    AND liquidation.check_date >='2022-04-01'
                     AND  liquidation.check_date <=:to_date
                     AND liquidation.is_cancelled !=1
                    
@@ -230,7 +230,7 @@ class AlphalistController extends Controller
             INNER JOIN liquidation ON detailed.id = liquidation.id
             INNER JOIN po_transaction ON liquidation.po_transaction_id = po_transaction.id
             ")
-            ->bindValue(':_range', $range.'%')
+            ->bindValue(':_range', $range . '%')
             ->bindValue(':province', $province)
             ->queryAll();
         $conso = Yii::$app->db->createCommand("SELECT 
@@ -256,7 +256,7 @@ class AlphalistController extends Controller
                             cash_disbursement.book_id,
                             liquidation.reporting_period) as conso
                             LEFT JOIN books on conso.book_id = books.id")
-            ->bindValue(':_range', $range.'%')
+            ->bindValue(':_range', $range . '%')
             ->bindValue(':province', $province)
             ->queryAll();
         $reporting_periods  = array_unique(array_column($conso, 'reporting_period'));
