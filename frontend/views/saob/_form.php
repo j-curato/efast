@@ -347,14 +347,14 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 }
                 $.each(val2, function(key, val3) {
                     const prev_allotment = parseFloat(val3.prev_allotment)
-                    const current_allotment = parseFloat(val3.allotment)
+                    const current_allotment = parseFloat(val3.current_allotment)
                     const prev_total_ors = parseFloat(val3.prev_total_ors)
                     const current_total_ors = parseFloat(val3.current_total_ors)
-                    const ors_to_date = parseFloat(val3.ors_to_date)
-                    const chart_of_account = val3.uacs + ' - ' + val3.general_ledger
+                    const ors_to_date = parseFloat(val3.to_date)
+                    const chart_of_account = val3.account_title
                     const mfo_name = val3.mfo_name
                     const document_name = val3.document_name
-                    const balance = (prev_allotment + current_allotment) - ors_to_date
+                    const balance = parseFloat(val3.balance)
                     let utilazation = 0
                     if (ors_to_date != 0 || (prev_allotment + current_allotment) != 0) {
                         utilazation = ors_to_date / (prev_allotment + current_allotment) * 100
@@ -541,18 +541,18 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         let total_balance = 0
         let total_prev_allotment = 0
         let total_current_allotment = 0
-        for (let i = 0; i < conso.length; i++) {
-            const beginning_balance = parseFloat(conso[i]['beginning_balance'])
-            const current_allotment = parseFloat(conso[i]['current_allotment'])
-            const prev_allotment = parseFloat(conso[i]['prev_allotment'])
-            const prev = parseFloat(conso[i]['prev'])
-            const current = parseFloat(conso[i]['current'])
-            const to_date = parseFloat(conso[i]['to_date'])
+        $.each(conso, function(key, val) {
+            const beginning_balance = parseFloat(val.beginning_balance)
+            const current_allotment = parseFloat(val.current_allotment)
+            const prev_allotment = parseFloat(val.prev_allotment)
+            const prev = parseFloat(val.prev_total_ors)
+            const current = parseFloat(val.current_total_ors)
+            const to_date = parseFloat(val.to_date)
             const utilization = to_date / (prev_allotment + current_allotment) * 100
-            const balance = beginning_balance - to_date
+            const balance = parseFloat(val.balance)
             const row = `<tr>
-                <td>` + conso[i]['mfo_name'] + `</td>
-                <td>` + conso[i]['document'] + `</td>
+                <td>` + val.mfo_name + `</td>
+                <td>` + val.document_name + `</td>
                 <td class='amount'>` + thousands_separators(prev_allotment) + `</td>
                 <td class='amount'>` + thousands_separators(current_allotment) + `</td>
                 <td class='amount'>` + thousands_separators(prev) + `</td>
@@ -569,8 +569,10 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             total_balance += balance
             total_prev_allotment += prev_allotment
             total_current_allotment += current_allotment
-        }
-        total_utilization = total_to_date / total_beginning_balance * 100
+
+        })
+
+        total_utilization = total_to_date / (total_prev_allotment + total_current_allotment) * 100
         row = `<tr>
                 <td style='font-weight:bold' colspan='2'>Total</td>
                 <td class='amount'>` + thousands_separators(total_prev_allotment.toFixed(2)) + `</td>

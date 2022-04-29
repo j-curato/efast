@@ -210,8 +210,10 @@ class SaobController extends Controller
             "saob_rao.document_recieve_id",
             "saob_rao.book_id",
             "saob_rao.chart_of_account_id",
-            "SUM(saob_rao.allotment_amount) as total_allotment",
-            "SUM(saob_rao.ors_amount) as total_ors"
+            "IFNULL(NULL,0) as prev_allotment",
+            "SUM(saob_rao.allotment_amount) as current_allotment",
+            "IFNULL(NULL,0) as prev_total_ors",
+            'SUM(saob_rao.ors_amount) AS `current_total_ors`'
         ])
             ->from('saob_rao')
 
@@ -241,8 +243,10 @@ class SaobController extends Controller
             "saob_rao.document_recieve_id",
             "saob_rao.book_id",
             "saob_rao.chart_of_account_id",
-            "SUM(saob_rao.allotment_amount) as total_allotment",
-            "SUM(saob_rao.ors_amount) as total_ors"
+            ' SUM(saob_rao.allotment_amount) AS `prev_total_allotment`',
+            "IFNULL(NULL,0) as current_allotment",
+            'SUM(saob_rao.ors_amount) AS `prev_total_ors`',
+            "IFNULL(NULL,0) as current_total_ors",
         ])
             ->from('saob_rao')
 
@@ -268,9 +272,71 @@ class SaobController extends Controller
 
 
 
+
         $sql_current_ors = $current_ors->createCommand()->getRawSql();
         $sql_prev_ors = $prev_ors->createCommand()->getRawSql();
-        // return json_encode($sql_prev_ors);
+
+
+        $detailed_query   = Yii::$app->db->createCommand("SELECT 
+        mfo_pap_code.`name` as mfo_name,
+        document_recieve.`name` as document_name,
+        books.`name` as book_name,
+        CONCAT(chart_of_accounts.uacs,'-',chart_of_accounts.general_ledger) as account_title,
+        major_accounts.`name` as major_name,
+        sub_major_accounts.`name` as sub_major_name,
+        SUM(q.prev_allotment) as prev_allotment,
+        SUM(q.current_allotment) as current_allotment,
+        SUM(q.prev_total_ors) as prev_total_ors,
+        SUM(q.current_total_ors) as current_total_ors,
+        SUM(q.prev_total_ors) + SUM(q.current_total_ors)  as to_date,
+        (SUM(q.prev_allotment) + SUM(q.current_allotment)) - (SUM(q.prev_total_ors) + SUM(q.current_total_ors)) as balance
+        FROM ( 
+        $sql_current_ors 
+        UNION ALL 
+        $sql_prev_ors
+        ) as q
+        LEFT JOIN chart_of_accounts ON q.chart_of_account_id = chart_of_accounts.id
+        LEFT JOIN major_accounts ON chart_of_accounts.major_account_id = major_accounts.id
+        LEFT JOIN sub_major_accounts ON chart_of_accounts.sub_major_account = sub_major_accounts.id
+        LEFT JOIN mfo_pap_code ON q.mfo_pap_code_id = mfo_pap_code.id
+        LEFT JOIN document_recieve ON q.document_recieve_id = document_recieve.id
+        LEFT JOIN books ON q.book_id = books.id
+        GROUP BY q.mfo_pap_code_id,
+        q.document_recieve_id,
+        q.book_id,
+        q.chart_of_account_id")
+            ->queryAll();
+
+        $conso_query   = Yii::$app->db->createCommand("SELECT 
+        mfo_pap_code.`name` as mfo_name,
+        document_recieve.`name` as document_name,
+        SUM(q.prev_allotment) as prev_allotment,
+        SUM(q.current_allotment) as current_allotment,
+        SUM(q.prev_total_ors) as prev_total_ors,
+        SUM(q.current_total_ors) as current_total_ors,
+        SUM(q.prev_total_ors) + SUM(q.current_total_ors)  as to_date,
+        (SUM(q.prev_allotment) + SUM(q.current_allotment)) - (SUM(q.prev_total_ors) + SUM(q.current_total_ors)) as balance
+        FROM ( 
+        $sql_current_ors 
+        UNION ALL 
+        $sql_prev_ors
+        ) as q
+        LEFT JOIN chart_of_accounts ON q.chart_of_account_id = chart_of_accounts.id
+        LEFT JOIN major_accounts ON chart_of_accounts.major_account_id = major_accounts.id
+        LEFT JOIN sub_major_accounts ON chart_of_accounts.sub_major_account = sub_major_accounts.id
+        LEFT JOIN mfo_pap_code ON q.mfo_pap_code_id = mfo_pap_code.id
+        LEFT JOIN document_recieve ON q.document_recieve_id = document_recieve.id
+        LEFT JOIN books ON q.book_id = books.id
+        GROUP BY q.mfo_pap_code_id,
+        q.document_recieve_id")
+            ->queryAll();
+        // return json_encode($detailed_query);
+
+
+        $result2 = ArrayHelper::index($detailed_query, null, [function ($element) {
+            return $element['major_name'];
+        }, 'sub_major_name',]);
+        return ['result' => $result2, 'allotments' => [], 'conso_saob' => $conso_query];
         $query = Yii::$app->db->createCommand("SELECT
         mfo_pap_code.`name` as mfo_name,
         document_recieve.`name` as document_name,
