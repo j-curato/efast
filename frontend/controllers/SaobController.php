@@ -82,15 +82,17 @@ class SaobController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
+
+        $data = $this->generateSaob(
+            $model->from_reporting_period,
+            $model->to_reporting_period,
+            $model->mfo_pap_code_id == 0 ? 'all' : $model->mfo_pap_code_id,
+            $model->document_recieve_id == 0 ? 'all' : $model->document_recieve_id,
+            $model->book_id
+        );
         return $this->render('view', [
             'model' => $model,
-            'json_data' => json_encode($this->generateSaob(
-                $model->from_reporting_period,
-                $model->to_reporting_period,
-                $model->mfo_pap_code_id,
-                $model->document_recieve_id,
-                $model->book_id
-            ))
+            'json_data' => json_encode($data)
         ]);
     }
 
