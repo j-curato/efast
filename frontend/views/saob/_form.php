@@ -328,12 +328,14 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
                         <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
                         <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
+                        <td class='major-header' style='text-align:left;font-weight:bold;background-color:#cccccc'></td>
                         </tr>`
             $('#fur_table tbody').append(major_row)
             $.each(val, function(sub_major_name, val2) {
                 const sub_major_row = `<tr class='data_row'>
                         <td colspan='' style='text-align:left;font-weight:bold'>` + sub_major_name + `</td>
                         <td ></td>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
