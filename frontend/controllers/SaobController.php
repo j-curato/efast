@@ -246,7 +246,7 @@ class SaobController extends Controller
         ])
             ->from('saob_rao')
 
-            ->andWhere(" saob_rao.reporting_period < :to_reporting_period", ['to_reporting_period' => $to_reporting_period])
+            ->andWhere(" saob_rao.reporting_period < :from_reporting_period", ['from_reporting_period' => $from_reporting_period])
             ->andWhere(" saob_rao.reporting_period LIKE '2022%'",)
             ->andWhere("saob_rao.book_id = :book_id", ['book_id' => $book_id]);
         if (strtolower($mfo_code) !== 'all') {
@@ -285,7 +285,6 @@ class SaobController extends Controller
         IFNULL(prev.total_ors ,0) + 
         IFNULL(current.total_ors,0) as ors_to_date,
         0 as prev_allotment
-
 
         FROM ($sql_current_ors) as current
         LEFT JOIN  ($sql_prev_ors) as prev ON (current.mfo_pap_code_id = prev.mfo_pap_code_id 
