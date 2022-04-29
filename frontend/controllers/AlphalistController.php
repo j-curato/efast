@@ -154,18 +154,48 @@ class AlphalistController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    // public function actionUpdate($id)
-    // {
-    //     $model = $this->findModel($id);
+    public function actionUpdate($id)
+    {
+        $model = $this->findModel($id);
 
-    //     if ($model->load(Yii::$app->request->post()) && $model->save()) {
-    //         return $this->redirect(['view', 'id' => $model->id]);
-    //     }
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->status === 10) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+            if ($model->save(false)) {
 
-    //     return $this->render('update', [
-    //         'model' => $model,
-    //     ]);
-    // }
+                $d = new DateTime($model->check_range);
+                // echo $d->format('Y-m-t');
+
+                $query =  Yii::$app->db->createCommand("UPDATE liquidation_entries  SET fk_alphalist_id = :id
+            WHERE  EXISTS (SELECT z.id FROM (SELECT
+                x.id
+                FROM liquidation_entries as x
+                INNER JOIN liquidation ON x.liquidation_id = liquidation.id
+                INNER JOIN advances_entries ON x.advances_entries_id = advances_entries.id 
+                INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
+                WHERE liquidation.province = :province
+                AND liquidation.check_date >='2021-10-01'
+                AND  liquidation.check_date <= :to_date
+                AND liquidation.is_cancelled !=1
+               AND x.fk_alphalist_id IS NULL
+                )  as z
+                WHERE   z.id =  liquidation_entries.id 
+                )
+            ")
+                    ->bindValue(':id', $model->id)
+                    ->bindValue(':to_date', $d->format('Y-m-t'))
+                    ->bindValue(':province', $model->province)
+                    ->query();
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+        }
+
+        return $this->render('update', [
+            'model' => $model,
+        ]);
+    }
 
     /**
      * Deletes an existing Alphalist model.
@@ -318,5 +348,27 @@ class AlphalistController extends Controller
             $zero .= 0;
         }
         return strtoupper($province) . '-' . $zero . $last_num;
+    }
+    public function actionFinal()
+    {
+        if ($_POST) {
+            if (Yii::$app->user->can('super-user')) {
+                $id = $_POST['id'];
+
+
+                $model = $this->findModel($id);
+
+                if ($model->status == 9) {
+                    $model->status = 10;
+                } else {
+                    $model->status  = 9;
+                }
+                if ($model->save(false)) {
+                    return json_encode(['isSuccess' => true]);
+                } else {
+                    return json_encode(['isSuccess' => false]);
+                }
+            }
+        }
     }
 }

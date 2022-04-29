@@ -4,17 +4,17 @@ use yii\helpers\Html;
 use kartik\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\PayrollSearch */
+/* @var $searchModel app\models\RemittanceSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Payrolls';
+$this->title = 'Remittances';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="payroll-index">
+<div class="remittance-index">
 
 
     <p>
-        <?= Html::a('Create Payroll', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Remittance', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
@@ -25,23 +25,18 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => 'primary',
-            'heading' => 'Payrolls'
+            'heading' => 'Remittance'
         ],
         'columns' => [
 
-            'payroll_number',
             'reporting_period',
             [
-                'label' => 'ORS Number',
-                'attribute' => 'process_ors_id',
-                'value' => 'processOrs.serial_number'
+                'label' => 'Book',
+                'attribute' => 'book_id',
+                'value' => 'book.name'
             ],
-            'amount',
 
-            [
-                'class' => 'kartik\grid\ActionColumn',
-                'deleteOptions' => ['style' => 'display:none']
-            ],
+            ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 

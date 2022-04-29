@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -14,24 +15,21 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="payroll-view">
 
 
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-
     <div class="container">
+
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('ORS Link', ['process-ors/view', 'id' => $model->process_ors_id], ['class' => ' btn btn-warning ']) ?>
+
+            <?php
+            if (!empty($model->dvAucs->id)) {
+                echo Html::a('DV Link', ['dv-aucs/view', 'id' => $model->dvAucs->id], ['class' => ' btn btn-link profile-link']);
+            }
+            ?>
+        </p>
+
         <table class="table table-striped">
-
-
-
             <tbody>
-
                 <tr>
                     <th>Payroll Number:
                         <span><?= $model->payroll_number ?></span>
@@ -88,7 +86,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     if ($val['parent_object_code'] === '2020101000') {
                         $total_due_to_bir += $amount;
-                    } else {
+                    } else if (!empty($val['parent_object_code'])) {
                         $total_trust_liab += $amount;
                     }
                     $total_obligation += $amount;
@@ -120,6 +118,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
             </tbody>
         </table>
+
+
+
     </div>
 
 </div>
@@ -133,6 +134,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
         .main-footer,
         .btn {
+            display: none;
+        }
+
+        #dv-links-table {
             display: none;
         }
     }

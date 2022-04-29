@@ -14,6 +14,8 @@ $("#transaction").change(function () {
   var count = $("#transaction_table tbody tr").length;
   if (transaction_type == "Payroll") {
     $("#payroll_display").show();
+  } else if (transaction_type == "Remittance") {
+    $("#remittance_display").show();
   } else if (
     transaction_type != "Single" &&
     transaction_type != "Multiple" &&
@@ -97,9 +99,8 @@ $("#payroll_number").change(function () {
     url: window.location.pathname + "?r=payroll/payroll-data",
     data: { id: $(this).val() },
     success: function (data) {
-      console.log(data);
       const res = JSON.parse(data);
-      console.log(res);
+
       const amount_disbursed = res.amount_disbursed;
       let ewt_goods_services = 0;
       let compensation = 0;
@@ -139,6 +140,48 @@ $("#payroll_number").change(function () {
       // total += amount_disbursed
       select_id++;
       dv_count++;
+    },
+  });
+});
+
+// REMITTANCE CHANGE
+$("#remittance").change(function (e) {
+  e.preventDefault();
+  $.ajax({
+    type: "POST",
+    url: window.location.pathname + "?r=remittance/details",
+    data: {
+      id: $(this).val(),
+    },
+    success: function (data) {
+      const res = JSON.parse(data);
+        console.log(res)
+      $("#reporting_period").val(res.reporting_period);
+      $("#particular").val(res.particular);
+      $("#book_id").val(res.book_id).trigger("change");
+
+      var payeeSelect = $("#payee");
+      var option = new Option([res.payee], [res.payee_id], true, true);
+      payeeSelect.append(option).trigger("change");
+      const amount_disbursed = res.amount;
+      var row = `<tr>
+       <td style='display:none'> <input style='display:none' value='${res.ors_id}' type='text' name='process_ors_id[1]'/></td>
+       <td>${res.ors_number}</td>
+       <td> 
+       ${res.particular}
+       </td>
+       <td>${res.payee}</td>
+       <td></td>
+       <td>
+        <input value='${amount_disbursed}' name='amount_disbursed[1]' type='text'  class='amount_disbursed'/>
+       </td>
+       <td> <input value='0' type='text' name='vat_nonvat[1]' class='vat'/></td>
+       <td> <input value='0' type='text' name='ewt_goods_services[1]' class='ewt'/></td>
+       <td> <input value='0' type='text' name='compensation[1]' class='compensation'/></td>
+       <td> <input value='0' type='text' name='other_trust_liabilities[1]' class='liabilities'/></td>
+       <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
+   `;
+      $("#transaction_table tbody").append(row);
     },
   });
 });

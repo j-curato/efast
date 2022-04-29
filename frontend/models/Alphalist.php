@@ -28,10 +28,11 @@ class Alphalist extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['alphalist_number', 'check_range','province'], 'required'],
+            [['alphalist_number', 'check_range', 'province'], 'required'],
             [['created_at'], 'safe'],
-            [['alphalist_number', 'check_range','province'], 'string', 'max' => 255],
+            [['alphalist_number', 'check_range', 'province'], 'string', 'max' => 255],
             [['alphalist_number'], 'unique'],
+            [['status'], 'integer'],
         ];
     }
 
@@ -46,6 +47,7 @@ class Alphalist extends \yii\db\ActiveRecord
             'check_range' => 'Check Range',
             'created_at' => 'Created At',
             'province' => 'Province',
+            'status' => 'Status',
         ];
     }
 }

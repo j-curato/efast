@@ -183,6 +183,37 @@ if (!empty($model->id)) {
                     ?>
                     <span class="payee_id_error form-error"></span>
                 </div>
+                <div class="col-sm-3" id="remittance_display" style="display: none;">
+                    <label for="remittance">Remittance</label>
+                    <?php
+                    echo Select2::widget([
+                        'name' => 'remittance_id',
+                        'id' => 'remittance',
+                        'data' => $payroll,
+                        'value' => !empty($model->payroll_id) ? $model->payroll_id : '',
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                            'minimumInputLength' => 1,
+                            'language' => [
+                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                            ],
+                            'ajax' => [
+                                'url' => Yii::$app->request->baseUrl . '?r=remittance/search-remittance',
+                                'dataType' => 'json',
+                                'delay' => 250,
+                                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                                'cache' => true
+                            ],
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        ],
+
+                    ])
+
+                    ?>
+                    <span class="payee_id_error form-error"></span>
+                </div>
 
                 <div class="col-sm-3"></div>
             </div>
@@ -815,7 +846,8 @@ $script = <<< JS
                 "Accounts Payable",
                 "Replacement to Stale Checks",
                'Replacement of Check Issued',
-               'Payroll'
+               'Payroll',
+               'Remittance'
         ]
             $('#transaction').select2({
                 data: transaction,

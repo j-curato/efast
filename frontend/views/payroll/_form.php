@@ -136,6 +136,7 @@ if (!empty($model->id)) {
             LEFT JOIN remittance_payee ON dv_accounting_entries.remittance_payee_id = remittance_payee.id
             LEFT JOIN payee ON remittance_payee.payee_id = payee.id
             WHERE dv_accounting_entries.payroll_id = :id
+            AND dv_accounting_entries.remittance_payee_id IS NOT NULL
             ")
                         ->bindValue(':id', $model->id)
                         ->queryAll();

@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Payroll;
+use app\models\Remittance;
 
 /**
- * PayrollSearch represents the model behind the search form of `app\models\Payroll`.
+ * RemittanceSearch represents the model behind the search form of `app\models\Remittance`.
  */
-class PayrollSearch extends Payroll
+class RemittanceSearch extends Remittance
 {
     /**
      * {@inheritdoc}
@@ -17,9 +17,8 @@ class PayrollSearch extends Payroll
     public function rules()
     {
         return [
-            [['id', 'process_ors_id'], 'integer'],
-            [['payroll_number', 'reporting_period', 'type', 'created_at'], 'safe'],
-            [['amount'], 'number'],
+            [['id'], 'integer'],
+            [['reporting_period', 'created_at','book_id','type'], 'safe'],
         ];
     }
 
@@ -41,13 +40,12 @@ class PayrollSearch extends Payroll
      */
     public function search($params)
     {
-        $query = Payroll::find();
+        $query = Remittance::find();
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => ['defaultOrder' => ['created_at' => SORT_DESC]]
         ]);
 
         $this->load($params);
@@ -57,19 +55,16 @@ class PayrollSearch extends Payroll
             // $query->where('0=1');
             return $dataProvider;
         }
-        $query->joinWith('processOrs');
+        $query->joinWith('book');
         // grid filtering conditions
         $query->andFilterWhere([
-            'payroll.id' => $this->id,
-
-            'payroll.amount' => $this->amount,
+            'id' => $this->id,
             'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['like', 'payroll.payroll_number', $this->payroll_number])
-            ->andFilterWhere(['like', 'payroll.reporting_period', $this->reporting_period])
-            ->andFilterWhere(['like', 'process_ors.serial_number', $this->process_ors_id])
-            ->andFilterWhere(['like', 'payroll.type', $this->type]);
+        $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
+        ->andFilterWhere(['like', 'books.name', $this->book_id])
+        ->andFilterWhere(['like', 'type', $this->type]);
 
         return $dataProvider;
     }

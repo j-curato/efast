@@ -209,7 +209,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'dv_number',
         'reporting_period',
         'tracking_number',
-        
+
         [
             'label' => 'Payee',
             'attribute' => 'payee',
@@ -293,57 +293,52 @@ $this->params['breadcrumbs'][] = $this->title;
         'toolbar' => [
             [
 
-                'content' =>
-                "<form id='export_filter'>" .
-                    "<span >" .
-                    DatePicker::widget([
-                        'name' => 'from_reporting_period',
-                        'id' => 'from_reporting_period',
-                        'options' => [
-                            'style' => 'width:100px'
-                        ],
-                        'pluginOptions' => [
-                            'format' => 'yyyy-mm',
-                            'minViewMode' => 'months',
-                            'autoclose' => true
-                        ],
-                        'options' => [
-                            'placeholder' => 'From',
-                            'readOnly' => true,
-                            'style' => 'background-color:white;width:120px',
-                            'class' => 'col-sm-3'
-                        ],
-                    ]) .
-                    '</span>'
-                    .
-                    DatePicker::widget([
-                        'name' => 'to_reporting_period',
-                        'id' => 'to_reporting_period',
-                        'options' => [
-                            'style' => 'width:100px'
-                        ],
-                        'pluginOptions' => [
-                            'format' => 'yyyy-mm',
-                            'minViewMode' => 'months',
-                            'autoclose' => true
-                        ],
-                        'options' => [
-                            'placeholder' => 'To',
-                            'readOnly' => true,
-                            'style' => 'background-color:white;width:120px'
+                'content' => "<h6>Export By Reporting Period</h6><form  id='export_filter'><div class='row'>
+                    <div class='col-sm-2'>" . DatePicker::widget([
+                    'name' => 'from_reporting_period',
+                    'id' => 'from_reporting_period',
 
-                        ],
-                    ]) .
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm',
+                        'minViewMode' => 'months',
+                        'autoclose' => true
+                    ],
+                    'options' => [
+                        'placeholder' => 'From',
+                        'readOnly' => true,
+                        'style' => 'background-color:white;width:120px',
+                        'class' => 'col-sm-3',
+                        'style' => 'width:100px'
+                    ],
+                ]) . "</div>
+                <div class='col-sm-2'>" . DatePicker::widget([
+                    'name' => 'to_reporting_period',
+                    'id' => 'to_reporting_period',
+                    'options' => [
+                        'style' => 'width:100px'
+                    ],
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm',
+                        'minViewMode' => 'months',
+                        'autoclose' => true
+                    ],
+                    'options' => [
+                        'placeholder' => 'To',
+                        'readOnly' => true,
+                        'style' => 'background-color:white;width:120px'
 
-                    "<button class='btn btn-primary' type='submit'>Export</button>",
-                '</form>',
+                    ],
+                ]) . "</div><div class='col-sm-3'>  <button class='btn btn-primary' type='submit'>Export</button></div>
+                </div>
+              
+                </form>
+                ",
                 'options' => [
                     'class' => 'btn-group mr-2', 'style' => 'margin-right:20px'
                 ]
             ]
         ]
     ]);
-
 
     ?>
     <?php Pjax::begin(['id' => 'employee', 'clientOptions' => ['method' => 'POST']]) ?>
@@ -355,6 +350,10 @@ $this->params['breadcrumbs'][] = $this->title;
     .grid-view td {
         white-space: normal;
         font-size: 12px;
+    }
+
+    .from_reporting_period {
+        width: 100%;
     }
 </style>
 
@@ -439,3 +438,46 @@ $script = <<<JS
 JS;
 $this->registerJs($script);
 ?>
+
+<!-- "<form id='export_filter'>" .
+                    "<span >" .
+                    DatePicker::widget([
+                        'name' => 'from_reporting_period',
+                        'id' => 'from_reporting_period',
+                        'options' => [
+                            'style' => 'width:100px'
+                        ],
+                        'pluginOptions' => [
+                            'format' => 'yyyy-mm',
+                            'minViewMode' => 'months',
+                            'autoclose' => true
+                        ],
+                        'options' => [
+                            'placeholder' => 'From',
+                            'readOnly' => true,
+                            'style' => 'background-color:white;width:120px',
+                            'class' => 'col-sm-3'
+                        ],
+                    ]) .
+                    '</span>'
+                    .
+                    DatePicker::widget([
+                        'name' => 'to_reporting_period',
+                        'id' => 'to_reporting_period',
+                        'options' => [
+                            'style' => 'width:100px'
+                        ],
+                        'pluginOptions' => [
+                            'format' => 'yyyy-mm',
+                            'minViewMode' => 'months',
+                            'autoclose' => true
+                        ],
+                        'options' => [
+                            'placeholder' => 'To',
+                            'readOnly' => true,
+                            'style' => 'background-color:white;width:120px'
+
+                        ],
+                    ]) .
+
+                    "<button class='btn btn-primary' type='submit'>Export</button>", -->

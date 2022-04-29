@@ -70,13 +70,14 @@
                                 Yii::$app->user->can('liquidation') ?     ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ['/liquidation'],] : [],
                                 Yii::$app->user->can('liquidation') ?     ['label' => 'Cancelled Check', 'icon' => 'circle-o', 'url' => ['/liquidation/cancelled-check-index'],] : [],
                                 Yii::$app->user->can('po_transmittal') ? ['label' => 'DV Transmittal', 'icon' => 'circle-o', 'url' => ['/po-transmittal'],] : [],
-
+                                
                             ],
                         ],
                         [
                             'label' => 'Reports',
                             'url' => '#',
                             'items' => [
+                                Yii::$app->user->can('province') ?     ['label' => 'Alphalist', 'icon' => 'circle-o', 'url' => ['/alphalist'],] : [],
                                 Yii::$app->user->can('po_cibr') ?     ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/cibr'],] : [],
                                 Yii::$app->user->can('po_cdr') ?     ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/cdr'],] : [],
                                 Yii::$app->user->can('province') ?     ['label' => 'FUR', 'icon' => 'circle-o', 'url' => ['/fur'],] : [],

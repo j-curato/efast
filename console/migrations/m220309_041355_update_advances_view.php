@@ -38,9 +38,6 @@ class m220309_041355_update_advances_view extends Migration
         cash_disbursement.book_id,
         CONCAT(bank_account.account_number,'-',bank_account.account_name) as bank_account,
         advances_entries.is_deleted
-        
-        
-        
         FROM `advances_entries`
         LEFT JOIN(SELECT SUM(liquidation_entries.withdrawals)as total_liquidation,
         liquidation_entries.advances_entries_id
@@ -57,8 +54,8 @@ class m220309_041355_update_advances_view extends Migration
         LEFT JOIN `transaction` on process_ors.transaction_id = `transaction`.id
         LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id= responsibility_center.id
         LEFT JOIN bank_account ON advances.bank_account_id = bank_account.id
-        WHERE advances_entries.is_deleted != 1
-        ORDER BY  advances.nft_number DESC ")->query();
+        WHERE advances_entries.is_deleted NOT IN (1,9)
+        ORDER BY  advances.created_at DESC ")->query();
     }
 
     /**
@@ -66,7 +63,6 @@ class m220309_041355_update_advances_view extends Migration
      */
     public function safeDown()
     {
-      
     }
 
     /*

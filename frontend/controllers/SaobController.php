@@ -287,7 +287,6 @@ class SaobController extends Controller
         0 as prev_allotment
 
 
-
         FROM ($sql_current_ors) as current
         LEFT JOIN  ($sql_prev_ors) as prev ON (current.mfo_pap_code_id = prev.mfo_pap_code_id 
         AND current.document_recieve_id = prev.document_recieve_id

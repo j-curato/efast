@@ -32,8 +32,12 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'payee_id',
-            'object_code',
+            'payee.account_name',
+            [
+                'label'=>'General Ledger',
+                'attribute'=>'generalLedger.general_ledger'
+            ],
+            'objec_code'
         ],
     ]) ?>
 

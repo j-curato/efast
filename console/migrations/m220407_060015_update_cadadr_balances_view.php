@@ -14,6 +14,7 @@ class m220407_060015_update_cadadr_balances_view extends Migration
     {
         $sql = <<<SQL
             DROP VIEW IF EXISTS cadadr_balances;
+            CREATE VIEW cadadr_balances as 
             SELECT
                 cadadr.book_name,
                 reporting_period,

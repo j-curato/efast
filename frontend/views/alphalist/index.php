@@ -9,7 +9,9 @@ use kartik\grid\GridView;
 
 $this->title = 'Alphalists';
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
+
 <div class="alphalist-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -19,6 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
+
     ?>
 
     <?= GridView::widget([
@@ -36,7 +39,8 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'class' => 'kartik\grid\ActionColumn',
                 'deleteOptions' => ['style' => 'display:none'],
-                'updateOptions' => ['style' => 'display:none']
+                'updateOptions' => ['hidden' => true],
+
             ],
         ],
     ]); ?>

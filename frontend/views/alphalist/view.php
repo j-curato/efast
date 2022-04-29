@@ -1,5 +1,6 @@
 <?php
 
+use aryelds\sweetalert\SweetAlertAsset;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -11,24 +12,32 @@ $this->params['breadcrumbs'][] = ['label' => 'Alphalists', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 
-
-
+$id = $model->id;
 ?>
 <div class="alphalist-view">
 
-    <!-- 
+
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p> -->
+        <?php
+
+        if ($model->status === 9) {
+            echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+        }
+        if (Yii::$app->user->can('super-user')) {
+
+            if ($model->status === 9) {
+                echo "<button class='btn btn-success final' style='margin:5px'>Final</button>";
+            } else {
+                echo "<button class='btn btn-danger final' style='margin:5px'>Draft</button>";
+            }
+        }
+        ?>
+
+    </p>
     <div class="container">
-        <?php echo $this->title ?>
+        <div style="text-align: right; width:100%">
+            <?php echo $this->title ?>
+        </div>
         <table class="" id="conso_table">
             <tbody></tbody>
         </table>
@@ -47,6 +56,28 @@ $this->params['breadcrumbs'][] = $this->title;
             </thead>
             <tbody></tbody>
         </table>
+
+        <div style="margin-top: 5rem;">
+            <span>Certified Correct By:</span>
+
+        </div>
+        <div style="text-align: center; width:30rem">
+
+            <br>
+            <span style="font-weight: bold;">
+                <?php
+                $prov =  Yii::$app->memem->cibrCdrHeader($model->province);
+                echo $prov['officer'];
+                ?>
+            </span>
+            <br>
+            <span>Signature Over Printed Name</span>
+            <br>
+
+
+            <span style="margin-right:150px;">Date: </span>
+        </div>
+
     </div>
 
 </div>
@@ -105,6 +136,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/alphalistJs.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+SweetAlertAsset::register($this);
 ?>
 <script>
     $(document).ready(function() {
@@ -117,5 +149,54 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/alphalistJ
         displayConsoHead(res.r)
         displayConso(res.conso, res.r)
         displayDetailed(res.detailed)
+        $('.final').click(function(e) {
+            e.preventDefault()
+            swal({
+                    title: "Are you sure?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: '#DD6B55',
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: "No",
+                    closeOnConfirm: false,
+                    closeOnCancel: true
+                },
+                function(isConfirm) {
+                    console.log('<?php echo $id ?>')
+                    if (isConfirm) {
+                        $.ajax({
+                            type: "POST",
+                            url: window.location.pathname + "?r=alphalist/final",
+                            data: {
+                                id: '<?= $model->id ?>'
+                            },
+                            success: function(data) {
+                                var res = JSON.parse(data)
+                                var cancelled = "Successfuly Activated";
+                                if (res.isSuccess) {
+                                    swal({
+                                        title: 'Success',
+                                        type: 'success',
+                                        button: false,
+                                        timer: 3000,
+                                    }, function() {
+                                        location.reload(true)
+                                    })
+                                } else {
+                                    swal({
+                                        title: "Error ",
+                                        type: 'error',
+                                        button: false,
+                                        timer: 3000,
+                                    })
+                                }
+
+                            }
+                        })
+
+
+                    }
+                })
+        })
     })
 </script>

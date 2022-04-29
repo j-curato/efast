@@ -13,6 +13,7 @@ use app\models\DvAucs;
 use app\models\PoTransmittalsPendingSearch;
 use app\models\RaoSearch;
 use app\models\TransactionArchiveSearch;
+use app\models\WithholdingAndRemittanceSummarySearch;
 use Da\QrCode\QrCode;
 use DateTime;
 use Yii;
@@ -3725,6 +3726,17 @@ class ReportController extends \yii\web\Controller
             );
         }
         return $this->render('detailed_financial_position');
+    }
+    public function actionWithholdingAndRemittanceSummary()
+    {
+
+        $searchModel = new WithholdingAndRemittanceSummarySearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('withholding_and_remittance_summary', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
     // public function actionSubTrial()

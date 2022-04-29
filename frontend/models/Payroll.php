@@ -65,4 +65,8 @@ class Payroll extends \yii\db\ActiveRecord
     {
         return $this->hasOne(ProcessOrs::class, ['id' => 'process_ors_id']);
     }
+    public function getDvAucs()
+    {
+        return $this->hasOne(DvAucs::class, ['payroll_id' => 'id']);
+    }
 }

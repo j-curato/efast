@@ -1457,6 +1457,7 @@ class DvAucsController extends Controller
             $liabilities = $_POST['other_trust_liabilities'];
             $ors = $_POST['process_ors_id'];
             $payroll_id = !empty($_POST['payroll_id']) ? $_POST['payroll_id'] : null;
+            $remittance_id = !empty($_POST['remittance_id']) ? $_POST['remittance_id'] : null;
 
             $transaction = Yii::$app->db->beginTransaction();
             $q = DateTime::createFromFormat('Y-m-d', $recieved_at);
@@ -1495,6 +1496,7 @@ class DvAucsController extends Controller
                     $model->particular =  $particular;
                     $model->transaction_type = $transaction_type;
                     $model->payroll_id = $payroll_id;
+                    $model->fk_remittance_id = $remittance_id;
                     $check  = Yii::$app->db->createCommand("SELECT EXISTS(SELECT * FROM dv_aucs WHERE payroll_id = :payroll_id)")
                         ->bindValue(':payroll_id', $model->payroll_id)
                         ->queryScalar();
@@ -1511,6 +1513,14 @@ class DvAucsController extends Controller
                             }
                         }
 
+                        if (strtolower($model->transaction_type) == 'remittance') {
+
+                            if (empty($model->fk_remittance_id)) {
+                                return json_encode(['isSuccess' => false, 'error' => 'Payroll Number is Required ']);
+                            }
+                        }
+
+
                         $flag =  $this->insertDvEntries(
                             $model->id,
                             $ors,
@@ -1526,6 +1536,25 @@ class DvAucsController extends Controller
                 }
                 if ($flag) {
                     $transaction->commit();
+                    if (strtolower($model->transaction_type) == 'remittance') {
+
+                        Yii::$app->db->createCommand("INSERT INTO dv_accounting_entries (dv_aucs_id,object_code,debit,credit)
+                             
+                        SELECT 
+                        :dv_id as dv_id,
+                        dv_accounting_entries.object_code,
+                        IF(accounting_codes.normal_balance ='Debit',remittance_items.amount,0) as debit,
+                        IF(accounting_codes.normal_balance ='Credit',remittance_items.amount,0) as credit
+                        FROM remittance_items
+                        LEFT JOIN dv_accounting_entries ON remittance_items.fk_dv_acounting_entries_id = dv_accounting_entries.id
+                        LEFT JOIN accounting_codes ON dv_accounting_entries.object_code = accounting_codes.object_code
+                        WHERE remittance_items.is_removed = 0 AND remittance_items.fk_remittance_id = :remittance_id")
+                            ->bindValue(':dv_id', $model->id)
+                            ->bindValue(':remittance_id', $model->fk_remittance_id)
+                            ->query();
+                    }
+
+
                     return $this->redirect(['tracking-view', 'id' => $model->id]);
                 } else {
                     return json_encode("Error");
