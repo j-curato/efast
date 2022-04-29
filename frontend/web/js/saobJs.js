@@ -49,6 +49,9 @@ function addData(res, major) {
                 if (ors_to_date != 0 || (prev_allotment + current_allotment) != 0) {
                     utilazation = ors_to_date / (prev_allotment + current_allotment) * 100
                 }
+                if(isNaN(utilazation)){
+                    utilazation=0
+                }
                 const data_row = `<tr class='data_row'>
                     <td colspan='' style='text-align:right;'>` + chart_of_account + `</td>
                     <td  class='amount'>${thousands_separators(prev_allotment)}</td>
@@ -57,7 +60,7 @@ function addData(res, major) {
                     <td class='amount'>${thousands_separators(current_total_ors)}</td>
                     <td class='amount'>${thousands_separators(ors_to_date)}</td>
                     <td class='amount'>${thousands_separators(balance)}</td>
-                    <td class='amount'>${thousands_separators(utilazation)}</td>
+                    <td class='amount'>${thousands_separators(utilazation)}%</td>
           
                     <td>${mfo_name}</td>
                     <td>${document_name}</td>
