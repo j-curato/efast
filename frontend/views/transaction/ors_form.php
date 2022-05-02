@@ -120,34 +120,34 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                 </tr>
                 <tr class="header">
-                    <td colspan="2">
+                    <td colspan="1" style="width:100px">
                         Responsibility Center
                     </td>
-                    <td colspan="3">
+                    <td colspan="2">
                         Particulars
                     </td>
-                    <td colspan="1">
+                    <td colspan="2" style="min-width: 150px;">
                         MFO/PAP
                     </td>
-                    <td colspan="1">
+                    <td colspan="2" style="min-width: 150px;">
                         UACS Object Code
                     </td>
-                    <td colspan="1">
+                    <td colspan="1" style="width: 30px">
                         Amount
                     </td>
                 </tr>
                 <tr>
-                    <td colspan='2' style="vertical-align: top;">
+                    <td colspan='1' style="vertical-align: top;">
                         <?php
                         echo !empty($model->responsibilityCenter->name) ? $model->responsibilityCenter->name : '';
                         ?>
                     </td>
-                    <td colspan='3' style="padding-bottom: 10rem;">
+                    <td colspan='2' style="padding-bottom: 10rem;max-width:250px">
                         <?php echo $model->particular ?>
                     </td>
-                    <td colspan='1'>
+                    <td colspan='2' style="min-width: 150px;">
                     </td>
-                    <td colspan='1'>
+                    <td colspan='2' style="min-width: 150px;">
                     </td>
                     <td colspan='1' style="vertical-align: top;text-align: right;padding-right:10px">
                         <?php echo number_format($model->gross_amount, 2) ?>
@@ -419,26 +419,29 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
 
-                    <td colspan="4">
+                    <td colspan="2">
                         Particulars
                     </td>
-                    <td>
+                    <td colspan="3">
                         MFO/PAP
                     </td>
                     <td>
                         Responsibility center
                     </td>
-                    <td  style="text-align: center;">
+                    <td style="text-align: center;">
                         Amount
                     </td>
                 </tr>
                 <tr>
-                    <td colspan='4' style='padding-bottom:10rem'>
+                    <td colspan='2' style='padding-bottom:10rem'>
                         <?php echo $model->particular ?>
                     </td>
-                    <td>
+                    <td colspan="3">
                     </td>
-                    <td>
+                    <td style="vertical-align: top; text-align: center;">
+                        <?php
+                        echo !empty($model->responsibilityCenter->name) ? $model->responsibilityCenter->name : '';
+                        ?>
                     </td>
                     <td style="vertical-align: top; text-align: right;padding-right:10px">
                         <?php echo number_format($model->gross_amount, 2) ?>
@@ -477,8 +480,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         margin-top:3rem;
                         margin-bottom:2rem;
                         font-size:10pt">
-                            <select name="" id="assignatory_5" class="assignatory" style="width: 300px;padding:0;"
-                             onchange="setPosition(this,5)">
+                            <select name="" id="assignatory_5" class="assignatory" style="width: 300px;padding:0;" onchange="setPosition(this,5)">
                                 <option value=""></option>
                             </select>
                             <div style="padding:0;font-weight:normal" class="pos" id="position_5">
@@ -523,14 +525,30 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <td colspan="4" style="padding-left:10px;">
-                        <!-- <h6 class="head">
-                            C. Certified
-                        </h6> -->
 
 
-                        <div><i class="fa-square-o square-icon"></i>Cash Available</div>
-                        <div><i class="fa-square-o square-icon"></i> Subject to Authority to Debit Account (when applicable)</div>
-                        <div><i class="fa-square-o square-icon"></i> Supporting documents complete and amount claimed </div>
+
+                        <div>
+                            <span style="height: 4px;border:1px solid black;padding-left:15px;margin:4px"></span>
+                            <span>
+                                Cash Available
+                            </span>
+                        </div>
+
+                        <div>
+                            <span style="height: 4px;border:1px solid black;padding-left:15px;margin:4px"></span>
+                            <span>
+                                Subject to Authority to Debit Account (when applicable)
+                            </span>
+                        </div>
+                        <div>
+                            <span style="height: 4px;border:1px solid black;padding-left:15px;margin:4px"></span>
+                            <span>
+                                Supporting documents complete and amount claimed
+                            </span>
+                        </div>
+
+
 
                     </td>
                     <td colspan="3" style="padding:0;">
@@ -673,9 +691,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- FORM 2 END-->
 
 
-    <script src="/afms/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <link href="/afms/frontend/web/js/select2.min.js" />
-    <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" />
+    <script src="<?php echo Url::base() ?>/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+    <link href="<?php echo Url::base() ?>/frontend/web/js/select2.min.js" />
+    <link href="<?php echo Url::base() ?>/frontend/web/css/select2.min.css" rel="stylesheet" />
     <script>
         var assignatory = []
         var positions = []
@@ -691,7 +709,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 placeholder: "Select Position",
 
             })
-            $.getJSON('/afms/frontend/web/index.php?r=assignatory/get-all-assignatory')
+            $.getJSON('<?php echo Url::base() ?>/frontend/web/index.php?r=assignatory/get-all-assignatory')
 
                 .then(function(data) {
 
@@ -732,11 +750,7 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 
 
-    .select2-container .select2-selection--single .select2-selection__rendered {
-        margin-top: 0;
-        vertical-align: bottom;
 
-    }
 
     .pos {
         text-align: center;
@@ -808,6 +822,12 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 
     @media print {
+        .select2-container .select2-selection--single .select2-selection__rendered {
+            margin-top: 0;
+            vertical-align: bottom;
+
+        }
+
         .actions {
             display: none;
         }
