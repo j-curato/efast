@@ -1,5 +1,6 @@
 <?php
 
+use kartik\date\DatePicker;
 use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -16,6 +17,13 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'chart_of_account_id')->textInput() ?>
 
     <?= $form->field($model, 'object_code')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'reporting_period')->widget(DatePicker::class,[
+        'pluginOptions'=>[
+            'autoclose'=>true,
+            'format'=>'yyyy-mm',
+            'minViewMode'=>'months'
+        ]
+    ]) ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'is_active')->widget(
