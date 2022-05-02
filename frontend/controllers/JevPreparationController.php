@@ -2035,7 +2035,31 @@ class JevPreparationController extends Controller
             $sql2 = Yii::$app->db->getQueryBuilder()->buildCondition('jev_beginning_balance_item.object_code =:object_code', $params);
             $query = $this->generateSubLedger($from_reporting_period, $to_reporting_period, $book_id, $year, $object_code, $sql1, $sql2);
             $result = ArrayHelper::index($query, 'row_num', 'head');
-            return json_encode($query);
+
+
+            $beginning_balance = Yii::$app->db->createCommand("SELECT 
+            SUBSTRING_INDEX(accounting_codes.object_code,'_',1) as object_code,
+                IFNULL(SUM(jev_beginning_balance_item.credit),0)as credit,
+                IFNULL(SUM(jev_beginning_balance_item.debit),0) as debit,
+            (CASE
+            WHEN accounting_codes.normal_balance = 'Debit' THEN IFNULL(SUM(jev_beginning_balance_item.debit),0)  - IFNULL(SUM(jev_beginning_balance_item.credit),0)
+            ELSE IFNULL(SUM(jev_beginning_balance_item.credit),0) - IFNULL(SUM(jev_beginning_balance_item.debit),0)
+            END) as balance
+            FROM jev_beginning_balance_item 
+            LEFT JOIN jev_beginning_balance ON jev_beginning_balance_item.jev_beginning_balance_id =jev_beginning_balance.id
+            LEFT JOIN accounting_codes ON jev_beginning_balance_item.object_code = accounting_codes.object_code
+            LEFT JOIN books ON jev_beginning_balance.book_id = books.id
+            WHERE 
+            jev_beginning_balance.`year` = :_year
+            AND jev_beginning_balance.book_id = :book_id
+            AND jev_beginning_balance_item.object_code = :object_code
+                    
+            ")
+                ->bindValue(':_year', $year)
+                ->bindValue(':book_id', $book_id)
+                ->bindValue(':object_code', $object_code)
+                ->queryOne();
+            return json_encode(['beginning_balance' => $beginning_balance, 'result' => $query]);
         }
         return $this->render('subsidiary_ledger_view');
     }

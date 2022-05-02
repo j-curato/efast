@@ -532,20 +532,33 @@ $this->params['breadcrumbs'][] = $this->title;
                 url: window.location.pathname + '?r=jev-preparation/generate-subsidiary-ledger',
                 data: $("#generate_filter").serialize(),
                 success: function(data) {
-                    console.log(JSON.parse(data))
                     let res = JSON.parse(data)
-                    diisplayData(res)
+                    console.log(res)
+
+                    diisplayData(res.result,res.beginning_balance)
+
 
                 }
             })
         })
     })
 
-    function diisplayData(data) {
-        let running_balance = 0
+    function diisplayData(data,begin_balance) {
+        let running_balance = parseFloat(begin_balance.balance)
         let total_debit = 0;
         let total_credit = 0;
         $("#ledger-table tbody").html('')
+        const begin_row = `<tr>
+                    <td></td>
+                    <td>Beginning Balance</td>
+                    <td></td>
+                    <td>${thousands_separators(begin_balance.debit)}</td>
+                    <td>${thousands_separators(begin_balance.credit)}</td>
+                    <td>${thousands_separators(begin_balance.balance)}</td>
+                    </tr>`
+
+        $("#ledger-table tbody").append(begin_row)
+
         $.each(data, function(key, val) {
             let debit = Number(val.debit);
             let credit = Number(val.credit);
