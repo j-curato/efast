@@ -6,6 +6,9 @@ use Yii;
 use app\models\Remittance;
 use app\models\RemittanceItems;
 use app\models\RemittanceSearch;
+use app\models\WithholdingAndRemittanceSummarySearch;
+use Codeception\GroupObject;
+use ErrorException;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -63,7 +66,6 @@ class RemittanceController extends Controller
     {
         $searchModel = new RemittanceSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -117,11 +119,15 @@ class RemittanceController extends Controller
     public function actionCreate()
     {
         $model = new Remittance();
+
+        $searchModel = new WithholdingAndRemittanceSummarySearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         if ($model->load(Yii::$app->request->post())) {
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             $model->remittance_number = $this->remittanceNumber($model->reporting_period);
             $dv_accounting_entry_id = $_POST['dv_accounting_entry_id'];
             $amount = $_POST['amount'];
+            $model->payee_id = $_POST['remittance_payee'];
 
             if ($model->save(false)) {
                 $this->insertItems($model->id, $dv_accounting_entry_id, $amount);
@@ -129,8 +135,11 @@ class RemittanceController extends Controller
             }
         }
 
+
         return $this->render('create', [
             'model' => $model,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -144,16 +153,17 @@ class RemittanceController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
+        $searchModel = new WithholdingAndRemittanceSummarySearch();
+        $searchModel->_newProperty = $model->type;
+        $searchModel->payee_id = $model->payee_id;
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         if ($model->load(Yii::$app->request->post())) {
             $dv_accounting_entry_id = !empty($_POST['dv_accounting_entry_id']) ? $_POST['dv_accounting_entry_id'] : [];
             $amount = !empty($_POST['amount']) ? $_POST['amount'] : [];
             $remittance_items_id = !empty($_POST['remittance_items_id']) ? $_POST['remittance_items_id'] : [];
-            if ($model->type === 'adjustment') {
-                $model->payroll_id = null;
-            } else {
-                $model->payee_id = null;
-            }
+            $model->payee_id = $_POST['remittance_payee'];
+            // var_dump($remittance_items_id);
+            // die();
             if ($model->save(false)) {
 
                 $params = [];
@@ -163,15 +173,27 @@ class RemittanceController extends Controller
 
                 if (!empty($remittance_items_id)) {
                     $and = 'AND';
-                    $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['AND NOT IN', 'remittance_items.id', $remittance_items_id], $params);
+                    $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'remittance_items.id', $remittance_items_id], $params);
+                    // var_dump($sql);
+                    // echo "<br>";
+                    // var_dump($params);
                 }
-                Yii::$app->db->createCommand("UPDATE remittance_items SET remittance_items.is_removed = 1
-                 WHERE remittance_items.fk_remittance_id =:id
-                 $and $sql
-
-                ", $params)
-                ->bindValue(':id', $model->id)
-                ->query();
+                try {
+                    Yii::$app->db->createCommand("UPDATE remittance_items SET remittance_items.is_removed = 1
+                    WHERE remittance_items.fk_remittance_id =:id
+                    $and $sql
+                   ", $params)
+                        ->bindValue(':id', $model->id)
+                        ->query();
+                    // Yii::$app->db->createCommand()
+                    //     ->update('remittance_items', [' remittance_items.is_removed' => 1], $sql, $params)
+                    //     ->bindValue(':id', $model->id)
+                    //     ->execute();
+                } catch (ErrorException $e) {
+                    var_dump($e->getMessage());
+                    die();
+                }
+                // die();
                 $this->insertItems($model->id, $dv_accounting_entry_id, $amount, $remittance_items_id);
                 if (!empty($model->dvAucs->id)) {
                     Yii::$app->db->createCommand("UPDATE `dv_accounting_entries` 
@@ -204,9 +226,10 @@ class RemittanceController extends Controller
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         }
-
         return $this->render('update', [
             'model' => $model,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -274,37 +297,92 @@ class RemittanceController extends Controller
         }
         return $out;
     }
+    public function actionSearchRemittancePayee($q = null, $id = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $user_province = strtolower(Yii::$app->user->identity->province);
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if ($id > 0) {
+            // $out['results'] = ['id' => $id, 'text' => Payroll::findOne($id)->payroll_number];
+        } else if (!is_null($q)) {
+            $query = new Query();
+            $query->select('payee.id, payee.account_name AS text')
+                ->from('remittance_payee')
+                ->join('INNER JOIN ', 'dv_accounting_entries', 'remittance_payee.id  = dv_accounting_entries.remittance_payee_id')
+                ->join('INNER JOIN ', 'payee', 'remittance_payee.payee_id = payee.id')
+                ->where("dv_accounting_entries.dv_aucs_id IS NOT NULL")
+
+                ->andWhere(['like', 'payee.account_name', $q])
+                ->groupBy('payee.account_name');
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        return $out;
+    }
     public function actionDetails()
     {
         if ($_POST) {
 
             $id = $_POST['id'];
-            $query = Yii::$app->db->createCommand("SELECT 
+            $query = Yii::$app->db->createCommand(" SELECT 
             remittance.reporting_period,
-            process_ors.id as ors_id,
-            remittance.book_id,
-            `transaction`.particular,
-            process_ors.serial_number as ors_number,
-            payee.account_name as payee,
-            payee.id as payee_id,
-            rem_items.amount
-            
-             FROM `remittance`
-            LEFT JOIN (
-            SELECT SUM(remittance_items.amount) as amount,remittance_items.fk_remittance_id 
+                        process_ors.id as ors_id,
+                        remittance.book_id,
+                        `transaction`.particular,
+                        process_ors.serial_number as ors_number,
+                        payee.account_name as payee,
+                        payee.id as payee_id,
+                        remittance_items.amount
             FROM remittance_items
-           WHERE remittance_items.fk_remittance_id = :id
+            INNER JOIN dv_accounting_entries ON remittance_items.fk_dv_acounting_entries_id = dv_accounting_entries.id
+            INNER JOIN remittance_payee ON dv_accounting_entries.remittance_payee_id = remittance_payee.id
+            INNER JOIN payroll ON dv_accounting_entries.payroll_id = payroll.id
+            INNER JOIN payee ON remittance_payee.payee_id = payee.id
+            INNER JOIN process_ors ON payroll.process_ors_id = process_ors.id
+            INNER JOIN remittance ON remittance_items.fk_remittance_id = remittance.id
+            INNER JOIN `transaction` ON process_ors.transaction_id  = `transaction`.id
+            WHERE remittance_items.fk_remittance_id = :id
             AND remittance_items.is_removed = 0
-            ) as rem_items ON remittance.id = rem_items.fk_remittance_id
-            LEFT JOIN payroll ON remittance.payroll_id = payroll.id
-            LEFT JOIN process_ors ON payroll.process_ors_id = process_ors.id
-            LEFT JOIN `transaction` ON process_ors.transaction_id = `transaction`.id
-            LEFT JOIN payee ON `transaction`.payee_id  = payee.id
-            
             ")
                 ->bindValue(':id', $id)
                 ->queryOne();
             return json_encode($query);
         }
+    }
+    public function actionSearchPayee($q = null, $type = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if ($type === 'remittance_to_payee' && !is_null($q)) {
+            $query = new Query();
+            $query->select('payee.id, payee.account_name AS text')
+                ->from('payroll')
+                ->join('INNER JOIN', 'dv_accounting_entries', 'payroll.id = dv_accounting_entries.payroll_id')
+                ->join('INNER JOIN', 'process_ors', 'payroll.process_ors_id = process_ors.id')
+                ->join('INNER JOIN', 'dv_aucs', 'payroll.id = dv_aucs.payroll_id')
+                ->join('INNER JOIN', 'remittance_payee', 'dv_accounting_entries.remittance_payee_id = remittance_payee.id')
+                ->join('INNER JOIN', 'payee', ' remittance_payee.payee_id = payee.id')
+                ->where(['like', 'payee.account_name', $q])
+                ->groupBy(" payee.id ,
+            payee.account_name ");
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        } else if (!is_null($q)) {
+            $query = new Query();
+            $query->select('payee.id, payee.account_name AS text')
+                ->from('payee')
+                ->where(['like', 'payee.account_name', $q])
+                ->andWhere('payee.isEnable = 1');
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        return $out;
     }
 }

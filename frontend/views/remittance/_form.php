@@ -2,6 +2,7 @@
 
 use app\models\Books;
 use kartik\date\DatePicker;
+use kartik\grid\GridView;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -22,6 +23,8 @@ if (!empty($model->payroll_id)) {
     $payroll_number = ArrayHelper::map($payroll_query, 'id', 'payroll_number');
 }
 $items = [];
+$payee = [];
+
 if (!empty($model->id)) {
     $items =  Yii::$app->db->createCommand("SELECT 
     payroll.payroll_number,
@@ -50,7 +53,11 @@ if (!empty($model->id)) {
     ")
         ->bindValue(':id', $model->id)
         ->queryAll();
+    $payee  = Yii::$app->db->createCommand("SELECT payee.id , payee.account_name FROM payee WHERE payee.id = :id")
+        ->bindValue(':id', $model->payee_id)
+        ->queryOne();
 }
+
 ?>
 
 <div class="remittance-form">
@@ -93,62 +100,32 @@ if (!empty($model->id)) {
 
                 ]) ?>
             </div>
+
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <label for="remittance_payee">Payee</label>
+                <select class='remittance_payee' name='remittance_payee' style="width: 100%;">
+                    <?php
+                    echo $model->payee_id;
+                    if (!empty($payee)) {
+                        // var_dump($payee);
+                        echo "  <option value='{$payee['id']}'>{$payee['account_name']}</option>";
+                    }else{
+                        echo "  <option></option>";
+                    }
+                    ?>
+                </select>
+
+            </div>
         </div>
 
 
-        <div class="payroll">
-
-            <?= $form->field($model, 'payroll_id')->widget(Select2::class, [
-                'data' => $payroll_number,
-                'pluginOptions' => [
-                    'allowClear' => true,
-                    'minimumInputLength' => 1,
-                    'language' => [
-                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                    ],
-                    'ajax' => [
-                        'url' => Yii::$app->request->baseUrl . '?r=payroll/search-payroll',
-                        'dataType' => 'json',
-                        'delay' => 250,
-                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                        'cache' => true
-                    ],
-                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                ],
-
-            ]) ?>
-        </div>
-
-        <div class="payee">
-
-            <?= $form->field($model, 'payee_id')->widget(Select2::class, [
-
-                'pluginOptions' => [
-                    'allowClear' => true,
-                    'minimumInputLength' => 1,
-                    'language' => [
-                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                    ],
-                    'ajax' => [
-                        'url' => Yii::$app->request->baseUrl . '?r=payee/search-payee',
-                        'dataType' => 'json',
-                        'delay' => 250,
-                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                        'cache' => true
-                    ],
-                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                ],
 
 
-            ]) ?>
-        </div>
 
 
-        <table id="items_table">
+        <table id="items_table" style="margin-top: 3rem;">
             <thead>
                 <th>Payroll No.</th>
                 <th>ORS No.</th>
@@ -194,32 +171,68 @@ if (!empty($model->id)) {
             <div class="col-sm-5"></div>
         </div>
         <?php ActiveForm::end(); ?>
+        <?php
+        $dataProvider->pagination = ['pageSize' => 10];
 
-        <table class="payee-table">
-            <thead>
-                <th></th>
-                <th>Payroll No.</th>
-                <th>ORS No.</th>
-                <th>DV No.</th>
-                <th>Payee</th>
-                <th>Object Code</th>
-                <th>Account Title</th>
-                <th>Amount Remitted</th>
-            </thead>
-            <tbody></tbody>
+        ?>
+        <?= GridView::widget([
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchModel,
+            'panel' => [
+                'type' => GridView::TYPE_PRIMARY,
+                'heading' => 'List of Areas',
+            ],
+            'floatHeaderOptions' => [
+                'top' => 50,
+                'position' => 'absolute',
+            ],
+            'export' => false,
+            'pjax' => true,
+            'pjaxSettings' => [
+                'options' => [
+                    'id' => 'pjax_advances'
 
-        </table>
-        <button type="button" id="add" class="btn btn-primary">Add</button>
+                ]
+            ],
+            'showPageSummary' => true,
+            'columns' => [
+                [
+                    'class' => '\kartik\grid\CheckboxColumn',
+                    'checkboxOptions' => function ($model) {
+                        return ['value' => $model->payroll_item_id, 'style' => 'width:20px;', 'class' => 'checkbox'];
+                    }
+                ],
+                'payroll_number',
+                'ors_number',
+                'dv_number',
+                'payee',
+                'object_code',
+                'account_title',
+                'amount',
+                [
+                    'attribute' => 'newProperty',
+                    'hidden' => true
+                ],
+                [
+                    'attribute' => 'payee_id',
+                    'hidden' => true
+                ],
+            ],
+        ]); ?>
+
+        <div class="row">
+            <div class="col-sm-5"></div>
+            <div class="col-sm-2">
+                <button type="button" id="add" class="btn btn-primary" style="margin-left: auto;">Add</button>
+
+            </div>
+            <div class="col-sm-5"></div>
+        </div>
     </div>
 
 
 </div>
 <style>
-    .payee,
-    .payroll {
-        display: none;
-    }
-
     table {
         width: 100%;
     }
@@ -230,6 +243,10 @@ if (!empty($model->id)) {
         border: 1px solid black;
         padding: 1rem;
 
+    }
+
+    .container {
+        background-color: white;
     }
 </style>
 <?php
@@ -272,26 +289,71 @@ $csrfToken = Yii::$app->request->csrfToken;
         })
     }
     let row_number = 0;
+
     $(document).ready(function() {
+
+
         maskAmount()
+        changeHiddenPayeeId()
+        $(".remittance_payee").select2({})
         row_number = <?= $row_number ?>;
         if ($('#remittance-payroll_id').val() != null) {
             $('.payroll').show()
+
             getPayrollData()
         }
         if ($('#remittance-payee_id').val() != null) {
             $('.payee').show()
         }
+        $(".remittance_payee").select2({
+            ajax: {
+                url: window.location.pathname + "?r=remittance/search-payee",
+                dataType: "json",
+                data: function(params) {
+                    return {
+                        q: params.term,
+                        type: $('#remittance-type').val()
+                    };
+                },
+                processResults: function(data) {
+                    // Transforms the top-level key of the response object from 'items' to 'results'
+                    return {
+                        results: data.results,
+                    };
+                },
+            },
+        });
         $('#remittance-type').change(function() {
+            $("input[name='WithholdingAndRemittanceSummarySearch[newProperty]']").val($('#remittance-type').val())
+            $("input[name='WithholdingAndRemittanceSummarySearch[newProperty]']").trigger('change')
+            $("input[name='WithholdingAndRemittanceSummarySearch[payee_id]']").val($(".remittance_payee").val())
+            $("input[name='WithholdingAndRemittanceSummarySearch[payee_id]']").trigger('change')
             if ($(this).val() == 'adjustment') {
-                $('.payee').show()
-                $('.payroll').hide()
+
+                // $("input[name='WithholdingAndRemittanceSummarySearch[payee]']").attr('', false)
                 $('#remittance-payroll_id').val('').trigger('change')
             } else if ($(this).val() == 'remittance_to_payee') {
-                $('.payee').hide()
-                $('.payroll').show()
+                // $("input[name='WithholdingAndRemittanceSummarySearch[payee]']").attr('', true)
                 $('#remittance-payee_id').val('').trigger('change')
             }
+            $(".remittance_payee").select2({
+                ajax: {
+                    url: window.location.pathname + "?r=remittance/search-payee",
+                    dataType: "json",
+                    data: function(params) {
+                        return {
+                            q: params.term,
+                            type: $('#remittance-type').val()
+                        };
+                    },
+                    processResults: function(data) {
+                        // Transforms the top-level key of the response object from 'items' to 'results'
+                        return {
+                            results: data.results,
+                        };
+                    },
+                },
+            });
         })
         $('#remittance-payroll_id').change(function() {
 
@@ -299,29 +361,35 @@ $csrfToken = Yii::$app->request->csrfToken;
         })
 
         $('#add').click(function() {
-            $(".checkbox:checked").each(function() {
-                const checkedValue = $(this).closest('tr');
-                // checkedValue.closest('.checkbox').removeAttr('checked')
+
+            const items_table_row_count = $("#items_table tbody tr").length;
+            if (items_table_row_count == 0) {
+
+                $(".checkbox:checked:first").each(function() {
+                    const checkedValue = $(this).closest('tr');
+                    // checkedValue.closest('.checkbox').removeAttr('checked')
 
 
-                const buttons = `<td><button  class='remove btn btn-danger '><i class="glyphicon glyphicon-minus"></i></button></td>`
-                const amount_input = `<td>
+                    const buttons = `<td><button  class='remove btn btn-danger '><i class="glyphicon glyphicon-minus"></i></button></td>`
+                    const amount_input = `<td>
                                     <input type='text' class='form-control mask-amount' >
                                     <input type='hidden' class='main-amount' name='amount[${row_number}]'>
                                     </td>`
-                const clone = checkedValue.clone();
-                // // console.log(clone.children('td').eq(0).find('.checkbox').val())
-                clone.find('.checkbox').attr('type', 'text');
-                clone.find('.checkbox').attr('name', `dv_accounting_entry_id[${row_number}]`);
-                clone.find('.checkbox').closest('td').css('display', 'none');
-                clone.append(amount_input)
-                clone.append(buttons)
+                    const clone = checkedValue.clone();
+                    // // console.log(clone.children('td').eq(0).find('.checkbox').val())
+                    clone.find('.checkbox').attr('type', 'text');
+                    clone.find('.checkbox').attr('name', `dv_accounting_entry_id[${row_number}]`);
+                    clone.find('.checkbox').closest('td').css('display', 'none');
+                    clone.append(amount_input)
+                    clone.append(buttons)
 
-                $('#items_table tbody').append(clone);
-                row_number++;
+                    $('#items_table tbody').append(clone);
+                    row_number++;
 
-            });
-            maskAmount()
+                });
+                maskAmount()
+            }
+
         })
 
         // $("#items_table").click('.remove',function(e){
@@ -337,5 +405,22 @@ $csrfToken = Yii::$app->request->csrfToken;
             event.preventDefault();
             $(this).closest('td').find('.main-amount').val($(this).maskMoney('unmasked')[0]);
         });
+        $(".remittance_payee").change(function() {
+
+            changeHiddenPayeeId($(this).val())
+
+
+        })
     })
+
+    function changeHiddenPayeeId(id) {
+        $("input[name='WithholdingAndRemittanceSummarySearch[newProperty]']").val($('#remittance-type').val())
+        if ($('#remittance-type').val() == 'adjustment') {
+            console.log($('#remittance-type').val())
+
+            $("input[name='WithholdingAndRemittanceSummarySearch[newProperty]']").trigger('change')
+        }
+        $("input[name='WithholdingAndRemittanceSummarySearch[payee_id]']").val(id)
+        $("input[name='WithholdingAndRemittanceSummarySearch[payee_id]']").trigger('change')
+    }
 </script>

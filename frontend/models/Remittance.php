@@ -27,16 +27,12 @@ class Remittance extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'type', 'book_id', 'remittance_number','reporting_period'], 'required'],
+            [['id', 'type', 'book_id', 'remittance_number', 'reporting_period'], 'required'],
             [['id', 'payee_id', 'book_id'], 'integer'],
             [['created_at', 'type', 'payroll_id', 'remittance_number'], 'safe'],
             [['reporting_period'], 'string', 'max' => 20],
             [['id'], 'unique'],
-            ['payee_id', 'required', 'when' => function ($model) {
-                return $model->type == 'adjustment';
-            }, 'whenClient' => "function (attribute, value) {
-                return $('#remittance-type').val() == 'adjustment';
-            }"],
+            ['payee_id', 'required'],
             ['payroll_id', 'required', 'when' => function ($model) {
                 return $model->type == 'remittance_to_payee';
             }, 'whenClient' => "function (attribute, value) {
@@ -68,20 +64,20 @@ class Remittance extends \yii\db\ActiveRecord
     }
     public function getBook()
     {
-        
-        return $this->hasOne(Books::class,['id'=>'book_id']);
+
+        return $this->hasOne(Books::class, ['id' => 'book_id']);
     }
     public function getPayee()
     {
-        
-        return $this->hasOne(Payee::class,['id'=>'payee_id']);
+
+        return $this->hasOne(Payee::class, ['id' => 'payee_id']);
     }
     public function getPayroll()
     {
-        return $this->hasOne(Payroll::class,['id'=>'payroll_id']);
+        return $this->hasOne(Payroll::class, ['id' => 'payroll_id']);
     }
     public function getDvAucs()
     {
-        return $this->hasOne(DvAucs::class,['fk_remittance_id'=>'id']);
+        return $this->hasOne(DvAucs::class, ['fk_remittance_id' => 'id']);
     }
 }

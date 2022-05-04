@@ -2018,6 +2018,7 @@ class JevPreparationController extends Controller
             ->bindValue(':object_code', $object_code)
             ->bindValue(':uacs', $uacs . '%')
             ->queryAll();
+            
         return $query;
     }
 

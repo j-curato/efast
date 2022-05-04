@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Remittance */
 
-$this->title = $model->id;
+$this->title = $model->remittance_number;
 $this->params['breadcrumbs'][] = ['label' => 'Remittances', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -41,7 +41,7 @@ AND remittance_items.is_removed = 0
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
- 
+
     </p>
 
 
@@ -69,15 +69,11 @@ AND remittance_items.is_removed = 0
                 <tr>
                     <td><?php echo $model->reporting_period ?></td>
                     <td><?php echo $model->book->name ?></td>
-                    <td><?php echo strtoupper($model->type) ?></td>
+                    <td><?php echo str_replace('_', ' ', strtoupper($model->type)) ?></td>
                     <td colspan="4">
 
                         <?php
-                        if ($model->type === 'adjustment') {
-                            echo $model->payee->account_name;
-                        } else {
-                            echo $model->payroll->payroll_number;
-                        }
+                        echo $model->payee->account_name;
                         ?>
                     </td>
                 </tr>

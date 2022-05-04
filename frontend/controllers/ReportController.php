@@ -13,6 +13,7 @@ use app\models\DvAucs;
 use app\models\PoTransmittalsPendingSearch;
 use app\models\RaoSearch;
 use app\models\TransactionArchiveSearch;
+use app\models\UnpaidObligationSearch;
 use app\models\WithholdingAndRemittanceSummarySearch;
 use Da\QrCode\QrCode;
 use DateTime;
@@ -182,9 +183,105 @@ class ReportController extends \yii\web\Controller
 
         return $this->render('pending_dv');
     }
+    public function generateUnpaidObligation($sql, $year)
+    {
+        $q = Yii::$app->db->createCommand("
+        $sql unpaid_obligation (
+            SELECT 
+            process_ors.reporting_period,
+            process_ors.serial_number,
+            IFNULL(ors_amount.total_amount,0),
+            IFNULL(total_dv.total_amount_disbursed,0),
+            IFNULL(ors_amount.total_amount,0) - IFNULL(total_dv.total_amount_disbursed,0) as unpaid_obligation,
+            dv_aucs.dv_number,
+            cash_disbursement.check_or_ada_no as check_number,
+            cash_disbursement.is_cancelled,
+            IFNULL(dv_detailed_amounts.amount_disbursed,0),
+            IFNULL(dv_detailed_amounts.vat_nonvat,0),
+            IFNULL(dv_detailed_amounts.ewt_goods_services,0),
+            IFNULL(dv_detailed_amounts.compensation,0),
+            IFNULL(dv_detailed_amounts.other_trust_liabilities,0),
+            IFNULL(dv_detailed_amounts.total_withheld,0)
+            FROM process_ors
+            LEFT JOIN (
+            SELECT process_ors_entries.process_ors_id ,
+            SUM(process_ors_entries.amount) as total_amount
+            FROM process_ors_entries 
+            GROUP BY process_ors_entries.process_ors_id)
+            as ors_amount ON process_ors.id =  ors_amount.process_ors_id
+            LEFT JOIN (SELECT 
+            dv_aucs_entries.process_ors_id,
+            SUM(dv_aucs_entries.amount_disbursed) as total_amount_disbursed 
+            FROM dv_aucs_entries 
+            INNER JOIN dv_aucs ON dv_aucs_entries.dv_aucs_id = dv_aucs.id
+            WHERE
+            dv_aucs.is_cancelled = 0
+            GROUP BY dv_aucs_entries.process_ors_id
+            ) as total_dv ON process_ors.id  = total_dv.process_ors_id
+            LEFT JOIN (
+            SELECT
+            dv_aucs_entries.dv_aucs_id,
+            dv_aucs_entries.process_ors_id,
+            SUM(dv_aucs_entries.amount_disbursed) as amount_disbursed,
+            SUM(dv_aucs_entries.vat_nonvat) as vat_nonvat,
+            SUM(dv_aucs_entries.ewt_goods_services) as ewt_goods_services,
+            SUM(dv_aucs_entries.compensation) as compensation,
+            SUM(dv_aucs_entries.other_trust_liabilities) as other_trust_liabilities,
+            SUM(dv_aucs_entries.total_withheld) as total_withheld
+            FROM dv_aucs_entries
+            GROUP BY 
+            dv_aucs_entries.dv_aucs_id,
+            dv_aucs_entries.process_ors_id
+            ) as dv_detailed_amounts ON process_ors.id = dv_detailed_amounts.process_ors_id
+            LEFT JOIN dv_aucs ON dv_detailed_amounts.dv_aucs_id = dv_aucs.id
+            LEFT JOIN cash_disbursement ON dv_detailed_amounts.dv_aucs_id = cash_disbursement.dv_aucs_id
+            WHERE process_ors.reporting_period LIKE :year
+            )
+            ")
+            ->bindValue(":year", $year . '%')
+            ->query();
+    }
     public function actionUnpaidObligation()
     {
-        return $this->render('unpaid_obligation');
+
+
+
+        $check_table = intval(Yii::$app->db->createCommand("SELECT COUNT(*)
+        FROM information_schema.tables 
+        WHERE table_schema = DATABASE()
+        AND table_name = 'unpaid_obligation'")->queryScalar());
+      
+        if ($_POST) {
+
+            $year = $_POST['year'];
+            if (!empty($year)) {
+                $sql = '';
+                if ($check_table === 1) {
+
+                    Yii::$app->db->createCommand("TRUNCATE TABLE unpaid_obligation")->query();
+                    $sql = 'INSERT INTO';
+                } else {
+                    $sql = 'CREATE TABLE';
+                }
+                $this->generateUnpaidObligation($sql, $year);
+            }
+        }
+
+
+        $searchModel = '';
+        if ($check_table !== 1) {
+            $dataProvider = new \yii\data\ArrayDataProvider();
+        } else {
+            $searchModel = new UnpaidObligationSearch();
+            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        }
+
+
+
+        return $this->render('unpaid_obligation', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
     public function actionRao()
     {

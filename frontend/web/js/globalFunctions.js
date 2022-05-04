@@ -58,7 +58,7 @@ function payeeSelect() {
         };
       },
     },
-    placeholder: "Search for a Payee",
+    // placeholder: "Search for a Payee",
   });
 }
 // MASK AMOUNT

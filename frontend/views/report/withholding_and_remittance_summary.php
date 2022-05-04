@@ -33,15 +33,12 @@ $this->params['breadcrumbs'][] = $this->title;
             'position' => 'absolute',
         ],
         'columns' => [
-
             'payroll_number',
             'ors_number',
             'dv_number',
             'object_code',
             'account_title',
             'amount',
-
-
         ],
     ]); ?>
 
