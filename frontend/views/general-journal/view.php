@@ -116,14 +116,22 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td colspan="3" class="br"></td>
 
                         <td colspan='3' style="text-align: center;font-weight:bold;padding-top:4rem">
-                            <span style="font-weight: bold;">
 
-                                JOHN VOLTAIRE S. ANCLA,CPA
-                            </span>
-                            <br>
-                            <span>
-                                Accountant III
-                            </span>
+                            <?php
+                            $reporting_period = DateTime::createFromFormat('Y-m', $model->reporting_period)->format('Y-m');
+                            if ($reporting_period < '2022-03') {
+                                echo "<span style='font-weight: bold;text-decoration:underline'>JOHN VOLTAIRE S. ANCLA, CPA</span>";
+                                echo "<br>";
+                                echo " <span>Accountant III</span>";
+                            } else {
+
+                                echo "<span style='font-weight: bold;text-decoration:underline'>CHARLIE C. DECHOS, CPA</span>";
+                                echo "<br>";
+                                echo " <span>OIC Accountant III </span>";
+                            }
+
+                            ?>
+
                         </td>
                     </tr>
                 </tfoot>
