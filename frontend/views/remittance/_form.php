@@ -111,7 +111,7 @@ if (!empty($model->id)) {
                     if (!empty($payee)) {
                         // var_dump($payee);
                         echo "  <option value='{$payee['id']}'>{$payee['account_name']}</option>";
-                    }else{
+                    } else {
                         echo "  <option></option>";
                     }
                     ?>
@@ -133,7 +133,8 @@ if (!empty($model->id)) {
                 <th>Payee</th>
                 <th>Object Code</th>
                 <th>Account Title</th>
-                <th>Amount Remitted</th>
+                <th> Unremitted Amount</th>
+                <th> Amount to be Remitted </th>
             </thead>
             <tbody>
 

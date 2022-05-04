@@ -18,8 +18,7 @@ payee.account_name as payee,
 accounting_codes.object_code,
 accounting_codes.account_title,
 remittance_items.amount,
-dv_aucs_entries.amount_disbursed
-
+dv_accounting_entries.debit +dv_accounting_entries.credit as amount_disbursed
  FROM `remittance_items`
 INNER JOIN dv_accounting_entries ON remittance_items.fk_dv_acounting_entries_id = dv_accounting_entries.id
 INNER JOIN payroll ON dv_accounting_entries.payroll_id = payroll.id
