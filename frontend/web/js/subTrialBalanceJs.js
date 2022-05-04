@@ -34,7 +34,7 @@ function displayResultData(data) {
       }
     }
 
-    const  row = `<tr>
+    const row = `<tr>
             <td>${val.account_title}</td>
             <td>${val.object_code}</td>
             <td class='amount'>${debit}</td>
@@ -42,7 +42,7 @@ function displayResultData(data) {
         </tr>`;
     $("#data_table tbody").append(row);
   });
-  const  total_row = `<tr>
+  const total_row = `<tr>
             <td colspan='2' style='text-align:center;font-weight:bold;'>Total</td>
             <td class='amount'>${thousands_separators(
               total_debit.toFixed(2)
@@ -66,6 +66,7 @@ function query(csrfToken, reporting_period, book_id) {
     },
     success: function (data) {
       var res = JSON.parse(data);
+      console.log(res);
       displayResultData(res);
       $("#month").text(res.month);
       $("#book_name").text(res.book_name);
