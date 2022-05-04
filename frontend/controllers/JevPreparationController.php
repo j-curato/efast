@@ -2009,7 +2009,7 @@ class JevPreparationController extends Controller
             AND accounting_codes.object_code !=accounting_codes.coa_object_code
             $and $sql2
             ) as q 
-            ORDER BY q.object_code DESC
+            ORDER BY q.row_num DESC
             ")
             ->bindValue(':from_reporting_period', $from_reporting_period)
             ->bindValue(':to_reporting_period', $to_reporting_period)
