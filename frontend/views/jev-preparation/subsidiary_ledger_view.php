@@ -41,142 +41,145 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
 
-    <div class="container panel panel-default" style="margin-top:6em;padding:2em;padding-top:4em;">
+    <div class="container panel panel-default">
 
 
+        <div class="filter_columns">
 
-        <form id="print_filter">
-            <div class="row">
-                <div class="col-sm-4"></div>
-                <div class="col-sm-2">
+            <form id="print_filter">
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div class="col-sm-2">
 
-                    <h4>Print Filter</h4>
+                        <h4>Print Filter</h4>
 
+
+                    </div>
+                    <div class="col-sm-5"></div>
+                </div>
+                <div class="row " style="bottom: 20px;">
+
+                    <div class="col-sm-3">
+                        <label for="uacs">General Ledger</label>
+                        <?php
+                        $coa = Yii::$app->db->createCommand("SELECT CONCAT(chart_of_accounts.uacs,'-',chart_of_accounts.general_ledger)as account_title,uacs FROM chart_of_accounts WHERE is_active=1")->queryAll();
+                        echo Select2::widget([
+                            'id' => 'uacs',
+                            'data' => ArrayHelper::map($coa, 'uacs', 'account_title'),
+                            'name' => 'print_uacs',
+                            'options' => ['placeholder' => 'Select General Ledger'],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                        ]);
+                        ?>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <label for="book"> Fund Cluster Code</label>
+                        <?php
+                        echo Select2::widget([
+                            'data' => ArrayHelper::map($book, 'id', 'name'),
+                            'name' => 'print_book_id',
+                            'options' => ['placeholder' => 'Select a Book '],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                        ]);
+                        ?>
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="reporting_period">Reporting Period</label>
+                        <?php
+                        echo DatePicker::widget([
+                            'id' => 'print_reporting_period',
+                            'name' => 'print_reporting_period',
+                            'readonly' => true,
+                            'pluginOptions' => [
+                                'autoclose' => true,
+                                'format' => 'yyyy-mm',
+                                'minViewMode' => "months",
+
+                            ]
+                        ]);
+                        ?>
+                    </div>
+                    <div class="col-sm-3" style="margin-top:25px;">
+                        <button id="print_all" type='button' class="btn btn-warning">Print</button>
+                    </div>
 
                 </div>
-                <div class="col-sm-5"></div>
-            </div>
-            <div class="row " style="bottom: 20px;">
+            </form>
 
-                <div class="col-sm-3">
-                    <label for="uacs">General Ledger</label>
-                    <?php
-                    $coa = Yii::$app->db->createCommand("SELECT CONCAT(chart_of_accounts.uacs,'-',chart_of_accounts.general_ledger)as account_title,uacs FROM chart_of_accounts WHERE is_active=1")->queryAll();
-                    echo Select2::widget([
-                        'id' => 'uacs',
-                        'data' => ArrayHelper::map($coa, 'uacs', 'account_title'),
-                        'name' => 'print_uacs',
-                        'options' => ['placeholder' => 'Select General Ledger'],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ]);
-                    ?>
+            <form id="generate_filter">
+                <div class="row">
+                    <div class="col-sm-4"></div>
+                    <div class="col-sm-2">
+
+                        <h4>Generate Filter</h4>
+
+
+                    </div>
+                    <div class="col-sm-5"></div>
                 </div>
-
-                <div class="col-sm-3">
-                    <label for="book"> Fund Cluster Code</label>
-                    <?php
-                    echo Select2::widget([
-                        'data' => ArrayHelper::map($book, 'id', 'name'),
-                        'name' => 'print_book_id',
-                        'options' => ['placeholder' => 'Select a Book '],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ]);
-                    ?>
-                </div>
-                <div class="col-sm-3">
-                    <label for="reporting_period">Reporting Period</label>
-                    <?php
-                    echo DatePicker::widget([
-                        'id' => 'print_reporting_period',
-                        'name' => 'print_reporting_period',
-                        'readonly' => true,
-                        'pluginOptions' => [
-                            'autoclose' => true,
-                            'format' => 'yyyy-mm',
-                            'minViewMode' => "months",
-
-                        ]
-                    ]);
-                    ?>
-                </div>
-                <div class="col-sm-3" style="margin-top:25px;">
-                    <button id="print_all" type='button' class="btn btn-warning">Print</button>
-                </div>
-
-            </div>
-        </form>
-
-        <form id="generate_filter">
-            <div class="row">
-                <div class="col-sm-4"></div>
-                <div class="col-sm-2">
-
-                    <h4>Generate Filter</h4>
+                <div class="row " style="bottom: 20px;">
 
 
-                </div>
-                <div class="col-sm-5"></div>
-            </div>
-            <div class="row " style="bottom: 20px;">
+                    <div class="col-sm-3">
+                        <label for="sub_account">Sub Account</label>
+                        <?php
+                        echo Select2::widget([
+                            'id' => 'sub_account',
+                            'data' => ArrayHelper::map($sub1, 'object_code', 'account_title'),
+                            'name' => 'object_code',
+                            'options' => ['placeholder' => 'Select Sub Account'],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                        ]);
+                        ?>
+                    </div>
 
 
-                <div class="col-sm-3">
-                    <label for="sub_account">Sub Account</label>
-                    <?php
-                    echo Select2::widget([
-                        'id' => 'sub_account',
-                        'data' => ArrayHelper::map($sub1, 'object_code', 'account_title'),
-                        'name' => 'object_code',
-                        'options' => ['placeholder' => 'Select Sub Account'],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ]);
-                    ?>
-                </div>
+                    <div class="col-sm-3">
+                        <label for="fund"> Book </label>
+                        <?php
+                        echo Select2::widget([
+                            'data' => ArrayHelper::map($book, 'id', 'name'),
+                            'id' => 'book',
+                            'name' => 'book_id',
+                            'options' => ['placeholder' => 'Select a Book '],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                        ]);
+                        ?>
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="reporting_period">Reporting Period</label>
+                        <?php
+                        echo DatePicker::widget([
+                            'id' => 'reporting_period',
+                            'name' => 'reporting_period',
+                            'readonly' => true,
+                            'pluginOptions' => [
+                                'autoclose' => true,
+                                'format' => 'yyyy-mm',
+                                'minViewMode' => "months",
 
+                            ]
+                        ]);
+                        ?>
+                    </div>
+                    <div class="col-sm-3" style="margin-top:25px;">
+                        <button id="generate" type="button" class="btn btn-success">Generate</button>
 
-                <div class="col-sm-3">
-                    <label for="fund"> Book </label>
-                    <?php
-                    echo Select2::widget([
-                        'data' => ArrayHelper::map($book, 'id', 'name'),
-                        'id' => 'book',
-                        'name' => 'book_id',
-                        'options' => ['placeholder' => 'Select a Book '],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ]);
-                    ?>
-                </div>
-                <div class="col-sm-3">
-                    <label for="reporting_period">Reporting Period</label>
-                    <?php
-                    echo DatePicker::widget([
-                        'id' => 'reporting_period',
-                        'name' => 'reporting_period',
-                        'readonly' => true,
-                        'pluginOptions' => [
-                            'autoclose' => true,
-                            'format' => 'yyyy-mm',
-                            'minViewMode' => "months",
-
-                        ]
-                    ]);
-                    ?>
-                </div>
-                <div class="col-sm-3" style="margin-top:25px;">
-                    <button id="generate" type="button" class="btn btn-success">Generate</button>
+                    </div>
 
                 </div>
+            </form>
+        </div>
 
-            </div>
-        </form>
         <!-- 
         <div class="document_header ">
 
@@ -204,53 +207,39 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th>
                         DEPARTMENT OF TRADE AND INDUSTRY
                     </th>
-                    <!-- <th>
-                    </th> -->
-                    <th colspan="2">
-                        Fund Cluster Code:
+
+                    <th colspan="4">
+                        <span>Fund Cluster Code:</span>
+                        <span id='book_name'> </span>
                     </th>
-                    <th colspan="2">
-                        <?php echo  !empty($fund_cluster) ? $fund_cluster : '' ?>
-                    </th>
+
                 </tr>
 
 
                 <tr>
-                    <th colspan="3" class="head">
+                    <th colspan="2" class="head">
 
-                        <div>
-                            <span> Account Of:</span>
-                            <span><?php echo  !empty($sl_name) ? $sl_name : '' ?></span>
-                        </div>
-                        <div>
-                            <span> Office/Address:</span>
-                            <span> PD , DTI</span>
-                        </div>
-                        <div>
-                            <span> Contact Number:</span>
-                            <span> PD , DTI</span>
-                        </div>
+                        <span> Account of:</span>
+                        <span></span>
+                        <br>
+                        <span> Office/Address:</span>
+                        <span> </span>
+                        <br>
+                        <span> Contact Number:</span>
+                        <span> </span>
                     </th>
 
-                    <th colspan="3">
-                        <?php
-                        if (!empty($object_code)) {
-                            echo $object_code;
-                        }
-                        ?>
-                        <div>
-                            <span>Account Code </span>
-                        </div>
-                        <div>
-                            <span> GL :</span>
-                            <span> <?php echo !empty($general_ledger) ? $general_ledger : '' ?></span>
-                        </div>
-                        <div>
-                            <span>SL :</span>
-                            <span>
-                                <span> <?php echo  !empty($sl_name) ? $sl_name : '' ?></span>
-                            </span>
-                        </div>
+                    <th colspan="4" style="text-align: left;">
+
+                        <span>Account Code: </span>
+                        <span id="object_code"></span>
+                        <br>
+                        <span> General Ledger: </span>
+                        <span id="general_ledger"></span>
+                        <br>
+                        <span>Subsidiary Ledger: </span>
+                        <span id="subsidiary_ledger">
+                        </span>
 
                     </th>
                 </tr>
@@ -428,6 +417,10 @@ $this->params['breadcrumbs'][] = $this->title;
             display: none;
         }
 
+        .filter_columns {
+            display: none;
+        }
+
         table,
         th,
         td {
@@ -452,7 +445,6 @@ $this->params['breadcrumbs'][] = $this->title;
         @page {
             size: auto;
             margin: 0cm;
-            margin-top: 0.5cm;
         }
 
 
@@ -460,6 +452,8 @@ $this->params['breadcrumbs'][] = $this->title;
         .container {
             margin: 0;
             top: 0;
+            border: none;
+            padding: 0;
 
         }
 
@@ -475,14 +469,15 @@ $this->params['breadcrumbs'][] = $this->title;
             background-color: white;
         }
 
-        .container {
-
-            border: none;
-        }
-
 
         table {
-            page-break-after: auto
+            page-break-after: auto;
+            margin-top: 0;
+
+        }
+
+        #ledger-table {
+            margin-top: 0px;
         }
 
         tr {
@@ -532,9 +527,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 url: window.location.pathname + '?r=jev-preparation/generate-subsidiary-ledger',
                 data: $("#generate_filter").serialize(),
                 success: function(data) {
-                    let res = JSON.parse(data)
-                    diisplayData(res)
+                    const res = JSON.parse(data)
+                    diisplayData(res.results)
+                    $("#book_name").text(res.book_name)
 
+                    $('#object_code').text(res.chart_of_account.object_code)
+                    $('#subsidiary_ledger').text(res.chart_of_account.account_title)
+                    $('#general_ledger').text(res.chart_of_account.coa_account_title)
 
                 }
             })

@@ -2038,29 +2038,20 @@ class JevPreparationController extends Controller
             $result = ArrayHelper::index($query, 'row_num', 'head');
 
 
-            // $beginning_balance = Yii::$app->db->createCommand("SELECT 
-            // SUBSTRING_INDEX(accounting_codes.object_code,'_',1) as object_code,
-            //     IFNULL(SUM(jev_beginning_balance_item.credit),0)as credit,
-            //     IFNULL(SUM(jev_beginning_balance_item.debit),0) as debit,
-            // (CASE
-            // WHEN accounting_codes.normal_balance = 'Debit' THEN IFNULL(SUM(jev_beginning_balance_item.debit),0)  - IFNULL(SUM(jev_beginning_balance_item.credit),0)
-            // ELSE IFNULL(SUM(jev_beginning_balance_item.credit),0) - IFNULL(SUM(jev_beginning_balance_item.debit),0)
-            // END) as balance
-            // FROM jev_beginning_balance_item 
-            // LEFT JOIN jev_beginning_balance ON jev_beginning_balance_item.jev_beginning_balance_id =jev_beginning_balance.id
-            // LEFT JOIN accounting_codes ON jev_beginning_balance_item.object_code = accounting_codes.object_code
-            // LEFT JOIN books ON jev_beginning_balance.book_id = books.id
-            // WHERE 
-            // jev_beginning_balance.`year` = :_year
-            // AND jev_beginning_balance.book_id = :book_id
-            // AND jev_beginning_balance_item.object_code = :object_code
-
-            // ")
-            //     ->bindValue(':_year', $year)
-            //     ->bindValue(':book_id', $book_id)
-            //     ->bindValue(':object_code', $object_code)
-            //     ->queryOne();
-            return json_encode($query);
+            $chart_of_account = Yii::$app->db->createCommand("SELECT 
+            accounting_codes.object_code,
+            accounting_codes.account_title,
+            accounting_codes.coa_object_code,
+            accounting_codes.coa_account_title
+            FROM accounting_codes
+            WHERE accounting_codes.object_code = :object_code
+            ")
+                ->bindValue(':object_code', $object_code)
+                ->queryOne();
+            $book_name = Yii::$app->db->createCommand("SELECT books.name FROM books WHERE books.id = :book_id")
+                ->bindValue(':book_id', $book_id)
+                ->queryScalar();
+            return json_encode(['results' => $query, 'chart_of_account' => $chart_of_account, 'book_name' => $book_name]);
         }
         return $this->render('subsidiary_ledger_view');
     }
