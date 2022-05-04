@@ -498,8 +498,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                 </tr>
                 <tr>
-                    <td style='padding:10px' colspan='4'> Account Title</td>
-                    <td>UACS Code</td>
+                    <td style='padding:10px' colspan='3'> Account Title</td>
+                    <td colspan="2">UACS Code</td>
                     <td>Debit</td>
                     <td>Credit</td>
                 </tr>
@@ -509,8 +509,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     echo "
                     <tr>
-                        <td style='padding:10px' colspan='4'></td>
-                        <td></td>
+                        <td style='padding:10px' colspan='3'></td>
+                        <td colspan='2'></td>
                         <td></td>
                         <td></td>
                     </tr>
@@ -520,11 +520,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 ?>
                 <tr>
-                    <td colspan="4" style="border-bottom: 1px solid white;font-weight:bold"> C. Certified</td>
-                    <td colspan="4" style="border-bottom: 1px solid white;font-weight:bold">D:Approved for Payment</td>
+                    <td colspan="3" style="border-bottom: none;font-weight:bold"> C. Certified</td>
+                    <td colspan="4" style="border-bottom: none;font-weight:bold">D:Approved for Payment</td>
                 </tr>
                 <tr>
-                    <td colspan="4" style="padding-left:10px;">
+                    <td colspan="3" style="padding-left:10px;">
 
 
 
@@ -551,7 +551,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
                     </td>
-                    <td colspan="3" style="padding:0;">
+                    <td colspan="4" style="padding:0;">
                         <!-- <h6 style="margin:0" style="float:left" class="head">D:Approved for Payment</h6> -->
                         <!-- <h5 style="text-align: center; margin:4rem">
                         </h5> -->
@@ -561,14 +561,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
 
                     <td>Signature</td>
-                    <td colspan="3"></td>
-                    <td>Signature</td>
                     <td colspan="2"></td>
+                    <td>Signature</td>
+                    <td colspan="3"></td>
                 </tr>
                 <tr>
 
                     <td>Printed Name</td>
-                    <td colspan="3">
+                    <td colspan="2">
                         <div>
                             <select name="" id="assignatory_3" class="assignatory" style="width: 100%;" onchange="setPosition(this,3)">
                                 <option value=""></option>
@@ -576,7 +576,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                     </td>
                     <td>Printed Name</td>
-                    <td colspan="2">
+                    <td colspan="3">
                         <div>
                             <select name="" class="assignatory" id="assignatory_4" style="width: 100%;" onchange="setPosition(this,4)">
                                 <option value=""></option>
@@ -586,19 +586,19 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <td>Postion</td>
-                    <td colspan="3" id="position_3" class="pos">
+                    <td colspan="2" id="position_3" class="pos">
 
                     </td>
                     <td>Postion</td>
-                    <td colspan="2" id="position_4" class="pos">
+                    <td colspan="3" id="position_4" class="pos">
                     </td>
                 </tr>
                 <tr>
                     <td>Date</td>
-                    <td colspan="3">
+                    <td colspan="2">
                     </td>
                     <td>Date</td>
-                    <td colspan='2'>
+                    <td colspan='3'>
                     </td>
                 </tr>
                 <!-- LETTER E -->
