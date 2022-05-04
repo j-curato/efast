@@ -163,6 +163,9 @@ class SubTrialBalanceController extends Controller
         accounting_codes.object_code,
         accounting_codes.account_title as account_title,
         accounting_codes.normal_balance,
+        IFNULL(beginning_balance.total_beginning_balance,0) as beg_balance,
+        IFNULL(accounting_entries.debit,0)  as deb,
+        IFNULL(accounting_entries.credit,0) as cred,
         (CASE
         WHEN accounting_codes.normal_balance = 'Debit' THEN IFNULL(beginning_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.debit,0) - IFNULL(accounting_entries.credit,0))
         ELSE IFNULL(beginning_balance.total_beginning_balance,0)+(IFNULL(accounting_entries.credit,0) - IFNULL(accounting_entries.debit,0))
