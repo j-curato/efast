@@ -535,7 +535,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     let res = JSON.parse(data)
                     console.log(res)
 
-                    diisplayData(res.result,res.beginning_balance)
+                    diisplayData(res.result, res.beginning_balance)
 
 
                 }
@@ -543,11 +543,11 @@ $this->params['breadcrumbs'][] = $this->title;
         })
     })
 
-    function diisplayData(data,begin_balance) {
+    function diisplayData(data, begin_balance) {
         let running_balance = parseFloat(begin_balance.balance)
         let total_debit = 0;
         let total_credit = 0;
-        // $("#ledger-table tbody").html('')
+        $("#ledger-table tbody").html('')
         // const begin_row = `<tr>
         //             <td></td>
         //             <td>Beginning Balance</td>
