@@ -459,24 +459,31 @@ class TransactionController extends Controller
             ->where("id =:id", ['id' => $responsibility_center_id])
             ->one();
 
-        // $latest_tracking_no = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(`transaction`.tracking_number,'-',-1)AS UNSIGNED) as last_number
-        // FROM `transaction`
-        // LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id = responsibility_center.id
-        // WHERE responsibility_center.`name` = :r_center
-        // AND `transaction`.created_at >  '2022-06-01'
-        // ORDER BY last_number DESC 
-        // ")
-        //     ->bindValue(':r_center', $responsibility_center['name'])
-        //     ->queryScalar();
-        $latest_tracking_no = Yii::$app->db->createCommand("SELECT 
+
+        if (date('Y-m-d') === '2022-05-06') {
+            $latest_tracking_no = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(`transaction`.tracking_number,'-',-1)AS UNSIGNED) as last_number
+        FROM `transaction`
+        LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id = responsibility_center.id
+        WHERE responsibility_center.`name` = :r_center
+        AND `transaction`.created_at >  '2022-06-01'
+        AND `transaction`.transaction_date LIKE :new_year
+        ORDER BY last_number DESC 
+        ")
+                ->bindValue(':r_center', $responsibility_center['name'])
+                ->bindValue(':new_year', '%' . $date)
+                ->queryScalar();
+        } else {
+
+            $latest_tracking_no = Yii::$app->db->createCommand("SELECT 
         CAST(SUBSTRING_INDEX(`transaction`.tracking_number,'-',-1) AS UNSIGNED) as last_number
         FROM `transaction`
         WHERE 
         `transaction`.transaction_date LIKE :new_year
         ORDER BY last_number DESC
         LIMIT 1")
-        ->bindValue(':new_year', '%' . $date)
-        ->queryScalar();
+                ->bindValue(':new_year', '%' . $date)
+                ->queryScalar();
+        }
 
         if ($latest_tracking_no) {
             // $x = explode('-', $latest_tracking_no['tracking_number']);
