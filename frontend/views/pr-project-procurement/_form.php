@@ -12,9 +12,28 @@ use yii\widgets\ActiveForm;
 /* @var $model app\models\PrProjectProcurement */
 /* @var $form yii\widgets\ActiveForm */
 
+$province = strtolower(Yii::$app->user->identity->province);
+$division = strtolower(Yii::$app->user->identity->division);
+if (
 
-$office = Yii::$app->db->createCommand("SELECT id, CONCAT(office,'-',division,'-',unit) as office_name FROM pr_office")
-    ->queryAll();
+    $province === 'ro' &&
+    $division === 'sdd' ||
+    $division === 'cpd' ||
+    $division === 'idd' ||
+    $division === 'ord'
+
+
+) {
+
+    $office = Yii::$app->db->createCommand("SELECT id, CONCAT(office,'-',division,'-',unit) as office_name 
+    FROM pr_office WHERE pr_office.division = :division ")
+        ->bindValue(':division', $division)
+        ->queryAll();
+} else {
+
+    $office = Yii::$app->db->createCommand("SELECT id, CONCAT(office,'-',division,'-',unit) as office_name FROM pr_office")
+        ->queryAll();
+}
 
 $employee_id = '';
 if (!empty($model->id)) {

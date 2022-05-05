@@ -44,11 +44,19 @@ class EmployeeController extends Controller
                             'create',
                             'update',
                             'delete',
-                            'search-employee',
 
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+
+                            'search-employee',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
                     ],
 
 

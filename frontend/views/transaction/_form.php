@@ -19,15 +19,20 @@ use kartik\select2\Select2;
         ->from('responsibility_center');
 
 
-    $user = Yii::$app->user->identity->province;
+    $user = strtolower(Yii::$app->user->identity->province);
+    $division = strtolower(Yii::$app->user->identity->division);
+
     if (
-        strtolower($user) === 'ro_idd' ||
-        strtolower($user) === 'ro_sdd' ||
-        strtolower($user) === 'ro_ord' ||
-        strtolower($user) === 'ro_cpd'
+
+        $user === 'ro' &&
+        $division === 'sdd' ||
+        $division === 'cpd' ||
+        $division === 'idd' ||
+        $division === 'ord'
+
 
     ) {
-        $r_center->where('name LIKE :name', ['name' => explode('_', $user)[1]]);
+        $r_center->where('name LIKE :name', ['name' => $division]);
     }
     $respons_center = $r_center->all();
     $payee = (new \yii\db\Query())->select('*')->from('payee')->where('isEnable=1')->all();
@@ -36,16 +41,34 @@ use kartik\select2\Select2;
     <?php $form = ActiveForm::begin(); ?>
 
     <div class="row">
-        <div class="col-sm-4">
+        <?php
 
-            <?= $form->field($model, 'responsibility_center_id')->widget(Select2::class, [
-                'data' => ArrayHelper::map($respons_center, 'id', 'name'),
-                'options' => ['placeholder' => 'Select  Responsibility Center'],
-                'pluginOptions' => [
-                    'allowClear' => true
-                ],
-            ]); ?>
-        </div>
+        if (
+
+            $user === 'ro' &&
+            $division === 'sdd' ||
+            $division === 'cpd' ||
+            $division === 'idd' ||
+            $division === 'ord'
+
+
+        ) {
+        } else {
+
+        ?>
+            <div class="col-sm-4">
+
+
+                <?= $form->field($model, 'responsibility_center_id')->widget(Select2::class, [
+                    'data' => ArrayHelper::map($respons_center, 'id', 'name'),
+                    'options' => ['placeholder' => 'Select  Responsibility Center'],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                ]); ?>
+            </div>
+        <?php } ?>
+
         <div class="col-sm-4">
             <?= $form->field($model, 'payee_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map($payee, 'id', 'account_name'),
@@ -66,19 +89,15 @@ use kartik\select2\Select2;
 
             ]) ?>
         </div>
-
     </div>
 
     <div class="row">
-        <div class="col-sm-4">
-            <?= $form->field($model, 'tracking_number')->textInput(['maxlength' => true, 'readOnly' => true]) ?>
 
-        </div>
-        <div class="col-sm-4">
+        <div class="col-sm-6">
             <?= $form->field($model, 'earmark_no')->textInput(['maxlength' => true]) ?>
 
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-6">
 
             <?= $form->field($model, 'payroll_number')->textInput(['maxlength' => true]) ?>
         </div>

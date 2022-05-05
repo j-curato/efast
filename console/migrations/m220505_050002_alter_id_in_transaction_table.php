@@ -14,8 +14,8 @@ class m220505_050002_alter_id_in_transaction_table extends Migration
     {
 
         $sql = <<<SQL
-        ALTER TABLE `process_burs` DROP FOREIGN KEY IF EXISTS `fk-process_burs-transaction_id`;
-        ALTER TABLE `process_ors` DROP FOREIGN KEY IF EXISTS `fk-process_ors-transaction_id`;
+        ALTER TABLE `process_burs` DROP FOREIGN KEY `fk-process_burs-transaction_id`;
+        -- ALTER TABLE `process_ors` DROP FOREIGN KEY IF EXISTS `fk-process_ors-transaction_id`;
         SQL;
         $this->execute($sql);
 

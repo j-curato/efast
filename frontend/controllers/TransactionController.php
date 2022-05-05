@@ -123,22 +123,43 @@ class TransactionController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
 
+            $division = strtolower(Yii::$app->user->identity->division);
+            $user = strtolower(Yii::$app->user->identity->province);
+
+            if (
+
+                $user === 'ro' &&
+                $division === 'sdd' ||
+                $division === 'cpd' ||
+                $division === 'idd' ||
+                $division === 'ord'
+
+
+            ) {
+                $r_center = Yii::$app->db->createCommand("SELECT `id` FROM responsibility_center WHERE `name`=:division")
+                    ->bindValue(':division', $division)
+                    ->queryScalar();
+            }
+            $model->responsibility_center_id = $r_center;
+
             $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date);
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             // $model->transaction_date = date('m-d-Y');
             // $model->created_at = date('2020-07-19 13:01:57');
             $date = date('Y-m-d H:i:s');
-            if (
-                strtolower(date('l')) === 'saturday'
+            // if (
+            //     strtolower(date('l')) === 'saturday'
 
-            ) {
-                $model->created_at = date('Y-m-d H:i:s', strtotime($date . ' + 2 days'));
-            } else if (
-                strtolower(date('l')) === 'sunday'
+            // ) {
+            //     $model->created_at = date('Y-m-d H:i:s', strtotime($date . ' + 2 days'));
+            // } else if (
+            //     strtolower(date('l')) === 'sunday'
 
-            ) {
-                $model->created_at = date('Y-m-d H:i:s', strtotime($date . ' + 1 days'));
-            }
+            // ) {
+            //     $model->created_at = date('Y-m-d H:i:s', strtotime($date . ' + 1 days'));
+            // }
+
+
 
             if ($model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
@@ -437,14 +458,14 @@ class TransactionController extends Controller
             ->from('responsibility_center')
             ->where("id =:id", ['id' => $responsibility_center_id])
             ->one();
-        $latest_tracking_no = Yii::$app->db->createCommand("SELECT 
-            CAST(SUBSTRING_INDEX(`transaction`.tracking_number,'-',-1) AS UNSIGNED) as last_number
-            FROM `transaction`
-            WHERE 
-            `transaction`.transaction_date LIKE :new_year
-            ORDER BY last_number DESC
-            LIMIT 1")
-            ->bindValue(':new_year', '%' . $date)
+        $latest_tracking_no = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(`transaction`.tracking_number,'-',-1)AS UNSIGNED) as last_number
+        FROM `transaction`
+        LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id = responsibility_center.id
+        WHERE responsibility_center.`name` = :r_center
+        AND `transaction`.created_at >  '2022-06-01'
+        ORDER BY last_number DESC
+        ")
+            ->bindValue(':r_center', $responsibility_center['name'])
             ->queryScalar();
         if ($latest_tracking_no) {
             // $x = explode('-', $latest_tracking_no['tracking_number']);

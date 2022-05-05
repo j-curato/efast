@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\PrProjectProcurement;
+use Yii;
 
 /**
  * PrProjectProcurementSearch represents the model behind the search form of `app\models\PrProjectProcurement`.
@@ -58,6 +59,21 @@ class PrProjectProcurementSearch extends PrProjectProcurement
         }
         $query->joinWith('office');
         $query->joinWith('employee');
+        $query->joinWith('office');
+        $province = strtolower(Yii::$app->user->identity->province);
+        $division = strtolower(Yii::$app->user->identity->division);
+        if (
+
+            $province === 'ro' &&
+            $division === 'sdd' ||
+            $division === 'cpd' ||
+            $division === 'idd' ||
+            $division === 'ord'
+
+
+        ) {
+            $query->andWhere('pr_office.division = :division', ['division' => $division]);
+        }
 
         // grid filtering conditions
         $query->andFilterWhere([
