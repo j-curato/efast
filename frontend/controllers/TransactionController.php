@@ -124,6 +124,7 @@ class TransactionController extends Controller
         if ($model->load(Yii::$app->request->post())) {
 
             $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date);
+            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             // $model->transaction_date = date('m-d-Y');
             // $model->created_at = date('2020-07-19 13:01:57');
             $date = date('Y-m-d H:i:s');
