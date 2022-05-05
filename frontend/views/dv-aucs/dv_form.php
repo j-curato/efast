@@ -106,22 +106,25 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                     <td colspan="6">
                         <div style="display: flex;width:100%;justify-content:space-evenly">
-                            <div style="display:flex">
-                                <div>
-                                    <div class="row">
-                                        <div></div>
-                                        <span><i class="fa-square-o square-icon"></i>MDS Check</span>
-                                    </div>
-                                </div>
+                            <div>
+                                <span class="box"></span>
+                                <span>MDS Check</span>
+
                             </div>
-                            <div style="display:flex">
-                                <span><i class="fa-square-o square-icon"></i>Commercial Check</span>
+                            <div>
+                                <span class="box"></span>
+                                <span>Commercial Check</span>
+
                             </div>
-                            <div style="display:flex">
-                                <span><i class="fa-square-o square-icon"></i>ADA</span>
+                            <div>
+                                <span class="box"></span>
+                                <span>ADA</span>
+
                             </div>
-                            <div style="display:flex">
-                                <span><i class="fa-square-o square-icon"></i>Others (Please specify)</span>
+                            <div>
+                                <span class="box"></span>
+                                <span>Others (Please specify)</span>
+
                             </div>
                         </div>
                     </td>
@@ -155,10 +158,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
 
-                    <td colspan="4">
+                    <td colspan="3">
                         Particulars
                     </td>
-                    <td>
+                    <td colspan="2">
                         MFO/PAP
                     </td>
                     <td>
@@ -169,10 +172,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                 </tr>
                 <tr>
-                    <td colspan='4' style='padding:10px'>
+                    <td colspan='3' style='padding:10px'>
                         <?php echo $model->particular ?>
                     </td>
-                    <td>
+                    <td colspan="2">
                     </td>
                     <td>
                     </td>
@@ -222,10 +225,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         $total += $val->amount_disbursed;
                         echo "
                     <tr>
-                        <td colspan='4' style='padding:0px'>
+                        <td colspan='3' style='padding:0px'>
                         $ors_serial_number
                         </td>
-                        <td>
+                        <td colspan='2'>
                         </td>
                         <td>
                         </td>
@@ -281,8 +284,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                 </tr>
                 <tr>
-                    <td style='padding:10px' colspan='4'> Account Title</td>
-                    <td>UACS Code</td>
+                    <td style='padding:10px' colspan='3'> Account Title</td>
+                    <td colspan='2'>UACS Code</td>
                     <td>Debit</td>
                     <td>Credit</td>
                 </tr>
@@ -292,8 +295,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     echo "
                     <tr>
-                        <td style='padding:10px' colspan='4'></td>
-                        <td></td>
+                        <td style='padding:10px' colspan='3'></td>
+                        <td colspan='2'></td>
                         <td></td>
                         <td></td>
                     </tr>
@@ -303,22 +306,23 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 ?>
                 <tr>
-                    <td colspan="4" style="border-bottom: 1px solid white;font-weight:bold"> C. Certified</td>
-                    <td colspan="3 " style="border-bottom: 1px solid white;font-weight:bold">D:Approved for Payment</td>
+                    <td colspan="3" style="border-bottom: 1px solid white;font-weight:bold"> C. Certified</td>
+                    <td colspan="4 " style="border-bottom: 1px solid white;font-weight:bold">D:Approved for Payment</td>
                 </tr>
                 <tr>
-                    <td colspan="4" style="padding:0;">
-                        <!-- <h6 class="head">
-                            C. Certified
-                        </h6> -->
+                    <td colspan="3" style="padding:0;">
+                        <span class='box'></span>
+                        <span>Cash Available</span>
+                        <br>
+                        <span class='box'></span>
+                        <span>Subject to Authority to Debit Account (when applicable)</span>
+                        <br>
+                        <span class='box'></span>
+                        <span> Supporting documents complete and amount claimed </span>
 
-
-                        <h6><i class="fa-square-o square-icon"></i>Cash Available</h6>
-                        <h6><i class="fa-square-o square-icon"></i> Subject to Authority to Debit Account (when applicable)</h6>
-                        <h6><i class="fa-square-o square-icon"></i> Supporting documents complete and amount claimed </h6>
 
                     </td>
-                    <td colspan="3" style="padding:0;">
+                    <td colspan="4" style="padding:0;">
                         <!-- <h6 style="margin:0" style="float:left" class="head">D:Approved for Payment</h6> -->
                         <!-- <h5 style="text-align: center; margin:4rem">
                         </h5> -->
@@ -328,14 +332,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
 
                     <td>Signature</td>
-                    <td colspan="3"></td>
-                    <td>Signature</td>
                     <td colspan="2"></td>
+                    <td>Signature</td>
+                    <td colspan="3"></td>
                 </tr>
                 <tr>
 
                     <td>Printed Name</td>
-                    <td colspan="3">
+                    <td colspan="2">
                         <div>
                             <select name="" id="assignatory_3" class="assignatory" style="width: 100%;" onchange="setPosition(this,3)">
                                 <option value=""></option>
@@ -343,7 +347,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                     </td>
                     <td>Printed Name</td>
-                    <td colspan="2">
+                    <td colspan="3">
                         <div>
                             <select name="" class="assignatory" id="assignatory_4" style="width: 100%;" onchange="setPosition(this,4)">
                                 <option value=""></option>
@@ -353,16 +357,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <td>Postion</td>
-                    <td colspan="3" id="position_3" class="pos">
+                    <td colspan="2" id="position_3" class="pos">
 
                     </td>
                     <td>Postion</td>
-                    <td colspan="2" id="position_4" class="pos">
+                    <td colspan="3" id="position_4" class="pos">
                     </td>
                 </tr>
                 <tr>
                     <td>Date</td>
-                    <td colspan="3">
+                    <td colspan="2">
                         <?php
 
                         // echo DatePicker::widget([
@@ -383,7 +387,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ?>
                     </td>
                     <td>Date</td>
-                    <td colspan='2'>
+                    <td colspan='3'>
                         <?php
 
                         // echo DatePicker::widget([
@@ -461,9 +465,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tbody>
             </table>
         </div> -->
-        <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-        <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
-        <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
+
         <script>
             var assignatory = []
             var positions = []
@@ -484,7 +486,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     placeholder: "Select Position",
 
                 })
-                $.getJSON('/dti-afms-2/frontend/web/index.php?r=assignatory/get-all-assignatory')
+                $.getJSON(window.location.pathname + '/frontend/web/index.php?r=assignatory/get-all-assignatory')
 
                     .then(function(data) {
 
@@ -513,6 +515,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <style>
         .square-icon {
             font-size: 20px;
+        }
+
+        .box {
+            border: 1px solid black;
+            height: 12px;
+            padding-left: 12px;
+            margin: 3px
         }
 
         .select2-container--default .select2-selection--single,
