@@ -468,11 +468,15 @@ class TransactionController extends Controller
         // ")
         //     ->bindValue(':r_center', $responsibility_center['name'])
         //     ->queryScalar();
-        $latest_tracking_no = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(`transaction`.tracking_number,'-',-1)AS UNSIGNED) as last_number
+        $latest_tracking_no = Yii::$app->db->createCommand("SELECT 
+        CAST(SUBSTRING_INDEX(`transaction`.tracking_number,'-',-1) AS UNSIGNED) as last_number
         FROM `transaction`
-        ORDER BY last_number DESC LIMIT 1
-        ")
-            ->queryScalar();
+        WHERE 
+        `transaction`.transaction_date LIKE :new_year
+        ORDER BY last_number DESC
+        LIMIT 1")
+        ->bindValue(':new_year', '%' . $date)
+        ->queryScalar();
 
         if ($latest_tracking_no) {
             // $x = explode('-', $latest_tracking_no['tracking_number']);
