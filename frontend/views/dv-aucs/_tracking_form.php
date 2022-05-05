@@ -717,12 +717,12 @@ $csrfToken = Yii::$app->request->csrfToken;
                 break;
             }
             $('#book_id').val(result[0]['book_id'])
-            var amount_disbursed = result[i]['amount_disbursed'] ? result[i]['amount_disbursed'] : 0;
-            var vat_nonvat = result[i]['vat_nonvat'] ? result[i]['vat_nonvat'] : 0;
-            var ewt_goods_services = result[i]['ewt_goods_services'] ? result[i]['ewt_goods_services'] : 0;
-            var compensation = result[i]['compensation'] ? result[i]['compensation'] : 0;
-            var other_trust_liabilities = result[i]['other_trust_liabilities'] ? result[i]['other_trust_liabilities'] : 0;
-            var row = `<tr>
+            const amount_disbursed = result[i]['amount_disbursed'] ? result[i]['amount_disbursed'] : 0;
+            const vat_nonvat = result[i]['vat_nonvat'] ? result[i]['vat_nonvat'] : 0;
+            const ewt_goods_services = result[i]['ewt_goods_services'] ? result[i]['ewt_goods_services'] : 0;
+            const compensation = result[i]['compensation'] ? result[i]['compensation'] : 0;
+            const other_trust_liabilities = result[i]['other_trust_liabilities'] ? result[i]['other_trust_liabilities'] : 0;
+            const entry_row = `<tr>
                             <td style='display:none'> <input style='display:none' value='${result[i]['ors_id']}' type='text' name='process_ors_id[${row}]'/></td>
                             <td> ${result[i]['serial_number']}</td>
                             <td> 
@@ -739,7 +739,7 @@ $csrfToken = Yii::$app->request->csrfToken;
                             <td> <input value='${other_trust_liabilities}' type='text' name='other_trust_liabilities[${row}]' class='liabilities'/></td>
                             <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
                         `
-            $('#transaction_table tbody').append(row);
+            $('#transaction_table tbody').append(entry_row);
             // total += amount_disbursed
             select_id++;
             dv_count++;
@@ -753,7 +753,7 @@ $csrfToken = Yii::$app->request->csrfToken;
 
     }
 
-
+    let row = 0;
 
     $(document).ready(() => {
         row = "<?= $row ?>";

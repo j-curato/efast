@@ -10,6 +10,7 @@ use app\models\PrPurchaseRequestSearch;
 use DateTime;
 use ErrorException;
 use yii\db\Query;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -25,6 +26,35 @@ class PrPurchaseRequestController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'create',
+                    'update',
+                    'delete',
+                    'search-pr',
+                    'get-items',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'search-pr',
+                            'get-items',
+                        ],
+                        'allow'=>true,
+                        'roles'=>[
+                            'super-user',
+                            'purchase_request'
+                        ]
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -293,12 +323,12 @@ class PrPurchaseRequestController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    // public function actionDelete($id)
+    // {
+    //     $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
-    }
+    //     return $this->redirect(['index']);
+    // }
 
     /**
      * Finds the PrPurchaseRequest model based on its primary key value.

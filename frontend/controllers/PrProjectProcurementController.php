@@ -6,6 +6,7 @@ use Yii;
 use app\models\PrProjectProcurement;
 use app\models\PrProjectProcurementSearch;
 use yii\db\Query;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -21,6 +22,40 @@ class PrProjectProcurementController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'view',
+                    'create',
+                    'index',
+                    'delete',
+                    'update',
+
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'view',
+                            'create',
+                            'index',
+                            'delete',
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'view',
+                            'create',
+                            'index',
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['project_procurement']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -135,13 +170,28 @@ class PrProjectProcurementController extends Controller
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
         $user_province = strtolower(Yii::$app->user->identity->province);
+        $division = strtolower(Yii::$app->user->identity->division);
 
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
             $query = new Query();
-            $query->select(' id, title AS text')
+            $query->select(' pr_project_procurement.id, pr_project_procurement.title AS text')
                 ->from('pr_project_procurement')
-                ->where(['like', 'title', $q]);
+                ->join("LEFT JOIN", 'pr_office', 'pr_project_procurement.pr_office_id = pr_office.id')
+                ->where(['like', 'pr_project_procurement.title', $q]);
+            if (
+
+                $user_province === 'ro' &&
+                $division === 'sdd' ||
+                $division === 'cpd' ||
+                $division === 'idd' ||
+                $division === 'ord'
+
+
+            ) {
+
+                $query->andWhere('pr_office.division =:division ', ['division' => $division]);
+            }
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);

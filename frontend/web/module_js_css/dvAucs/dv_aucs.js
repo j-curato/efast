@@ -14,8 +14,10 @@ $("#transaction").change(function () {
   var count = $("#transaction_table tbody tr").length;
   if (transaction_type == "Payroll") {
     $("#payroll_display").show();
+    $("#remittance_display").hide();
   } else if (transaction_type == "Remittance") {
     $("#remittance_display").show();
+    $("#payroll_display").hide();
   } else if (
     transaction_type != "Single" &&
     transaction_type != "Multiple" &&
@@ -155,33 +157,38 @@ $("#remittance").change(function (e) {
     },
     success: function (data) {
       const res = JSON.parse(data);
-        console.log(res)
-      $("#reporting_period").val(res.reporting_period);
-      $("#particular").val(res.particular);
-      $("#book_id").val(res.book_id).trigger("change");
+      $("#reporting_period").val(res.remittance_details.reporting_period);
+      $("#book_id").val(res.remittance_details.book_id).trigger("change");
 
       var payeeSelect = $("#payee");
-      var option = new Option([res.payee], [res.payee_id], true, true);
+      var option = new Option(
+        [res.remittance_details.payee],
+        [res.remittance_details.payee_id],
+        true,
+        true
+      );
       payeeSelect.append(option).trigger("change");
-      const amount_disbursed = res.amount;
-      var row = `<tr>
-       <td style='display:none'> <input style='display:none' value='${res.ors_id}' type='text' name='process_ors_id[1]'/></td>
-       <td>${res.ors_number}</td>
-       <td> 
-       ${res.particular}
-       </td>
-       <td>${res.payee}</td>
-       <td></td>
-       <td>
-        <input value='${amount_disbursed}' name='amount_disbursed[1]' type='text'  class='amount_disbursed'/>
-       </td>
-       <td> <input value='0' type='text' name='vat_nonvat[1]' class='vat'/></td>
-       <td> <input value='0' type='text' name='ewt_goods_services[1]' class='ewt'/></td>
-       <td> <input value='0' type='text' name='compensation[1]' class='compensation'/></td>
-       <td> <input value='0' type='text' name='other_trust_liabilities[1]' class='liabilities'/></td>
-       <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
-   `;
-      $("#transaction_table tbody").append(row);
+      $.each(res.remittance_items, function (key, val) {
+        const amount_disbursed = val.amount;
+        const row = `<tr>
+         <td style='display:none'> <input style='display:none' value='${val.ors_id}' type='text' name='process_ors_id[${key}]'/></td>
+         <td>${val.ors_number}</td>
+         <td> 
+         ${val.particular}
+         </td>
+         <td>${val.payee}</td>
+         <td></td>
+         <td>
+          <input value='${amount_disbursed}' name='amount_disbursed[${key}]' type='text'  class='amount_disbursed'/>
+         </td>
+         <td> <input value='0' type='text' name='vat_nonvat[${key}]' class='vat'/></td>
+         <td> <input value='0' type='text' name='ewt_goods_services[${key}]' class='ewt'/></td>
+         <td> <input value='0' type='text' name='compensation[${key}]' class='compensation'/></td>
+         <td> <input value='0' type='text' name='other_trust_liabilities[${key}]' class='liabilities'/></td>
+         <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
+     `;
+        $("#transaction_table tbody").append(row);
+      });
     },
   });
 });

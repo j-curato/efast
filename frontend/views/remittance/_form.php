@@ -36,7 +36,10 @@ if (!empty($model->id)) {
     remittance_items.amount,
     dv_accounting_entries.id as dv_accounting_entries_id,
     remittance_items.id as remittance_items_id,
-    dv_aucs_entries.amount_disbursed
+    IFNULL(dv_accounting_entries.credit,0) + IFNULL(dv_accounting_entries.debit,0) as to_remit_amount,
+        remitted.remitted_amount,
+        (IFNULL(dv_accounting_entries.credit,0) + IFNULL(dv_accounting_entries.debit,0)) - IFNULL(  remitted.remitted_amount,0) unremited_amount
+
     
      FROM `remittance_items`
     INNER JOIN dv_accounting_entries ON remittance_items.fk_dv_acounting_entries_id = dv_accounting_entries.id
@@ -47,6 +50,11 @@ if (!empty($model->id)) {
     INNER JOIN payee ON remittance_payee.payee_id = payee.id
     INNER JOIN accounting_codes ON dv_accounting_entries.object_code  = accounting_codes.object_code
     INNER JOIN dv_aucs_entries ON dv_accounting_entries.dv_aucs_id = dv_aucs_entries.dv_aucs_id
+    LEFT JOIN (SELECT 
+        remittance_items.fk_dv_acounting_entries_id,
+        SUM(remittance_items.amount) as remitted_amount
+        FROM remittance_items
+        GROUP BY fk_dv_acounting_entries_id) as remitted ON dv_accounting_entries.id = remitted.fk_dv_acounting_entries_id 
     WHERE remittance_items.fk_remittance_id=:id
 
     AND remittance_items.is_removed= 0
@@ -133,8 +141,10 @@ if (!empty($model->id)) {
                 <th>Payee</th>
                 <th>Object Code</th>
                 <th>Account Title</th>
-                <th> Unremitted Amount</th>
-                <th> Amount to be Remitted </th>
+                <th> To Be Remitted </th>
+                <th> Remitted</th>
+                <th> Unremitted</th>
+                <th> Amount</th>
             </thead>
             <tbody>
 
@@ -150,7 +160,9 @@ if (!empty($model->id)) {
                         <td>{$val['payee']}</td>
                         <td>{$val['object_code']}</td>
                         <td>{$val['account_title']}</td>
-                        <td>{$val['amount_disbursed']}</td>
+                        <td>{$val['to_remit_amount']}</td>
+                        <td>{$val['remitted_amount']}</td>
+                        <td>{$val['unremited_amount']}</td>
                         <td>
                         <input type='text' class='form-control mask-amount' value='{$val['amount']}'>
                         <input type='hidden' class='form-control main-amount' name='amount[$row_number]' value='{$val['amount']}'>
@@ -172,63 +184,83 @@ if (!empty($model->id)) {
             <div class="col-sm-5"></div>
         </div>
         <?php ActiveForm::end(); ?>
-        <?php
-        $dataProvider->pagination = ['pageSize' => 10];
+    </div>
 
-        ?>
-        <?= GridView::widget([
-            'dataProvider' => $dataProvider,
-            'filterModel' => $searchModel,
-            'panel' => [
-                'type' => GridView::TYPE_PRIMARY,
-                'heading' => 'List of Areas',
-            ],
-            'floatHeaderOptions' => [
-                'top' => 50,
-                'position' => 'absolute',
-            ],
-            'export' => false,
-            'pjax' => true,
-            'pjaxSettings' => [
-                'options' => [
-                    'id' => 'pjax_advances'
+    <?php
+    $dataProvider->pagination = ['pageSize' => 10];
 
-                ]
-            ],
-            'showPageSummary' => true,
-            'columns' => [
-                [
-                    'class' => '\kartik\grid\CheckboxColumn',
-                    'checkboxOptions' => function ($model) {
-                        return ['value' => $model->payroll_item_id, 'style' => 'width:20px;', 'class' => 'checkbox'];
-                    }
-                ],
-                'payroll_number',
-                'ors_number',
-                'dv_number',
-                'payee',
-                'object_code',
-                'account_title',
-                'amount',
-                [
-                    'attribute' => 'newProperty',
-                    'hidden' => true
-                ],
-                [
-                    'attribute' => 'payee_id',
-                    'hidden' => true
-                ],
-            ],
-        ]); ?>
+    ?>
 
-        <div class="row">
-            <div class="col-sm-5"></div>
-            <div class="col-sm-2">
-                <button type="button" id="add" class="btn btn-primary" style="margin-left: auto;">Add</button>
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
+        'panel' => [
+            'type' => GridView::TYPE_PRIMARY,
+            'heading' => 'List of Areas',
+        ],
+        'floatHeaderOptions' => [
+            'top' => 50,
+            'position' => 'absolute',
+        ],
+        'export' => false,
+        'pjax' => true,
+        'pjaxSettings' => [
+            'options' => [
+                'id' => 'pjax_advances'
 
-            </div>
-            <div class="col-sm-5"></div>
+            ]
+        ],
+        'showPageSummary' => true,
+        'columns' => [
+            [
+                'class' => '\kartik\grid\CheckboxColumn',
+                'checkboxOptions' => function ($model) {
+                    return ['value' => $model->payroll_item_id, 'style' => 'width:20px;', 'class' => 'checkbox'];
+                }
+            ],
+            'payroll_number',
+            'ors_number',
+            'dv_number',
+            'payee',
+            'object_code',
+            'account_title',
+            [
+                'label' => 'To Be Remitted',
+                'attribute' => 'amount',
+                'format' => ['decimal', 2],
+                'hAlign' => 'right'
+            ],
+            [
+                'label' => 'Remitted',
+                'attribute' => 'remitted_amount',
+                'format' => ['decimal', 2],
+                'hAlign' => 'right'
+            ],
+            [
+                'label' => 'UnRemitted',
+                'attribute' => 'unremitted_amount',
+                'format' => ['decimal', 2],
+                'hAlign' => 'right'
+            ],
+
+            [
+                'attribute' => 'newProperty',
+                'hidden' => true
+            ],
+            [
+                'attribute' => 'payee_id',
+                'hidden' => true
+            ],
+        ],
+    ]); ?>
+
+    <div class="row">
+        <div class="col-sm-5"></div>
+        <div class="col-sm-2">
+            <button type="button" id="add" class="btn btn-primary" style="margin-left: auto;">Add</button>
+
         </div>
+        <div class="col-sm-5"></div>
     </div>
 
 
@@ -364,32 +396,30 @@ $csrfToken = Yii::$app->request->csrfToken;
         $('#add').click(function() {
 
             const items_table_row_count = $("#items_table tbody tr").length;
-            if (items_table_row_count == 0) {
 
-                $(".checkbox:checked:first").each(function() {
-                    const checkedValue = $(this).closest('tr');
-                    // checkedValue.closest('.checkbox').removeAttr('checked')
+            $(".checkbox:checked").each(function() {
+                const checkedValue = $(this).closest('tr');
+                // checkedValue.closest('.checkbox').removeAttr('checked')
 
 
-                    const buttons = `<td><button  class='remove btn btn-danger '><i class="glyphicon glyphicon-minus"></i></button></td>`
-                    const amount_input = `<td>
+                const buttons = `<td><button  class='remove btn btn-danger '><i class="glyphicon glyphicon-minus"></i></button></td>`
+                const amount_input = `<td>
                                     <input type='text' class='form-control mask-amount' >
                                     <input type='hidden' class='main-amount' name='amount[${row_number}]'>
                                     </td>`
-                    const clone = checkedValue.clone();
-                    // // console.log(clone.children('td').eq(0).find('.checkbox').val())
-                    clone.find('.checkbox').attr('type', 'text');
-                    clone.find('.checkbox').attr('name', `dv_accounting_entry_id[${row_number}]`);
-                    clone.find('.checkbox').closest('td').css('display', 'none');
-                    clone.append(amount_input)
-                    clone.append(buttons)
+                const clone = checkedValue.clone();
+                // // console.log(clone.children('td').eq(0).find('.checkbox').val())
+                clone.find('.checkbox').attr('type', 'text');
+                clone.find('.checkbox').attr('name', `dv_accounting_entry_id[${row_number}]`);
+                clone.find('.checkbox').closest('td').css('display', 'none');
+                clone.append(amount_input)
+                clone.append(buttons)
 
-                    $('#items_table tbody').append(clone);
-                    row_number++;
+                $('#items_table tbody').append(clone);
+                row_number++;
 
-                });
-                maskAmount()
-            }
+            });
+            maskAmount()
 
         })
 

@@ -214,14 +214,14 @@ class RemittanceController extends Controller
                         ->bindValue(':dv_id', $model->dvAucs->id)
                         ->bindValue(':remittance_id', $model->id)
                         ->query();
-                    Yii::$app->db->createCommand("UPDATE dv_aucs_entries SET dv_aucs_entries.amount_disbursed = (SELECT SUM(remittance_items.amount) as amount
+                    //     Yii::$app->db->createCommand("UPDATE dv_aucs_entries SET dv_aucs_entries.amount_disbursed = (SELECT SUM(remittance_items.amount) as amount
 
-                    FROM remittance_items
-                   WHERE remittance_items.fk_remittance_id = :remittance_id
-                    AND remittance_items.is_removed = 0) WHERE dv_aucs_entries.dv_aucs_id =:dv_id")
-                        ->bindValue(':dv_id', $model->dvAucs->id)
-                        ->bindValue(':remittance_id', $model->id)
-                        ->query();
+                    //     FROM remittance_items
+                    //    WHERE remittance_items.fk_remittance_id = :remittance_id
+                    //     AND remittance_items.is_removed = 0) WHERE dv_aucs_entries.dv_aucs_id =:dv_id")
+                    //         ->bindValue(':dv_id', $model->dvAucs->id)
+                    //         ->bindValue(':remittance_id', $model->id)
+                    //         ->query();
                 }
                 return $this->redirect(['view', 'id' => $model->id]);
             }
@@ -348,8 +348,19 @@ class RemittanceController extends Controller
             AND remittance_items.is_removed = 0
             ")
                 ->bindValue(':id', $id)
+                ->queryAll();
+            $remittance_data  = Yii::$app->db->createCommand("SELECT
+            remittance.reporting_period,
+            remittance.book_id,
+            remittance.payee_id,
+            payee.account_name as payee
+            FROM remittance
+             INNER JOIN payee ON remittance.payee_id = payee.id
+             WHERE remittance.id  = :id
+            ")
+                ->bindValue(':id', $id)
                 ->queryOne();
-            return json_encode($query);
+            return json_encode(['remittance_items' => $query, 'remittance_details' => $remittance_data]);
         }
     }
     public function actionSearchPayee($q = null, $type = null)
