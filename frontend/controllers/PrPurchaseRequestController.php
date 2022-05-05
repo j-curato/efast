@@ -47,8 +47,8 @@ class PrPurchaseRequestController extends Controller
                             'search-pr',
                             'get-items',
                         ],
-                        'allow'=>true,
-                        'roles'=>[
+                        'allow' => true,
+                        'roles' => [
                             'super-user',
                             'purchase_request'
                         ]
@@ -127,7 +127,7 @@ class PrPurchaseRequestController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            $model->pr_number = $this->getPrNumber($model->date);
+            $model->pr_number = $this->getPrNumber($model->date, $model->pr_project_procurement_id);
 
             $pr_stocks_id = [];
             $specification = [];
@@ -213,10 +213,11 @@ class PrPurchaseRequestController extends Controller
             }
             if ($old_date !== $new_date) {
                 $arr =  explode('-', $model->pr_number);
-                $number = $arr[4];
+                $number = $arr[5];
                 $province = $arr[0];
+                $division = $arr[2];
 
-                $model->pr_number  = $province . '-' . $model->date . '-' . $number;
+                $model->pr_number  = $province . '-' . $division . '-' . $model->date . '-' . $number;
             }
             if (!empty($_POST['pr_item_id'])) {
                 $pr_item_id = $_POST['pr_item_id'];
@@ -345,12 +346,28 @@ class PrPurchaseRequestController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function getPrNumber($d)
+    public function getPrNumber($d, $pr_project_procurement_id)
     {
+        $division = Yii::$app->db->createCommand("SELECT
+                    pr_office.division,
+                    pr_project_procurement.*
+                    FROM pr_project_procurement
+                    INNER JOIN pr_office ON pr_project_procurement.pr_office_id = pr_office.id
+                    WHERE
+                    pr_project_procurement.id = :pr_project_procurement_id")
+            ->bindValue(':pr_project_procurement_id', $pr_project_procurement_id)
+            ->queryScalar();
 
         $province = 'RO';
         $date = DateTime::createFromFormat('Y-m-d', $d)->format('Y-m-d');
-        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_number,'-',-1) AS UNSIGNED) as last_number FROM pr_purchase_request ORDER BY last_number DESC LIMIT 1")
+        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_number,'-',-1) AS UNSIGNED) as last_number 
+        FROM pr_purchase_request
+        WHERE pr_purchase_request.date = :_date
+        AND 
+        pr_purchase_request.pr_number LIKE :division
+         ORDER BY last_number DESC LIMIT 1")
+            ->bindValue(':_date', $date)
+            ->bindValue(':division', '%' . $division . '%')
             ->queryScalar();
 
         $num  = 1;
@@ -364,7 +381,7 @@ class PrPurchaseRequestController extends Controller
 
 
 
-        return $province . '-' . $date . '-' . $final . $num;
+        return $province . '-' . strtoupper($division) . '-' . $date . '-' . $final . $num;
     }
     public function actionSearchPr($q = null, $id = null, $province = null)
     {
