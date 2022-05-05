@@ -17,8 +17,11 @@ dv_aucs.dv_number,
 payee.account_name as payee,
 accounting_codes.object_code,
 accounting_codes.account_title,
-remittance_items.amount,
-dv_accounting_entries.debit +dv_accounting_entries.credit as amount_disbursed
+remittance_items.amount as remittance_item_amount,
+IFNULL(dv_accounting_entries.credit,0) + IFNULL(dv_accounting_entries.debit,0) as amount_to_be_remitted,
+        remitted.remitted_amount,
+        (IFNULL(dv_accounting_entries.credit,0) + IFNULL(dv_accounting_entries.debit,0)) - IFNULL(  remitted.remitted_amount,0) unremitted_amount
+
  FROM `remittance_items`
 INNER JOIN dv_accounting_entries ON remittance_items.fk_dv_acounting_entries_id = dv_accounting_entries.id
 INNER JOIN payroll ON dv_accounting_entries.payroll_id = payroll.id
@@ -28,6 +31,12 @@ INNER JOIN remittance_payee ON dv_accounting_entries.remittance_payee_id = remit
 INNER JOIN payee ON remittance_payee.payee_id = payee.id
 INNER JOIN accounting_codes ON dv_accounting_entries.object_code  = accounting_codes.object_code
 INNER JOIN dv_aucs_entries ON dv_accounting_entries.dv_aucs_id = dv_aucs_entries.dv_aucs_id
+LEFT JOIN (SELECT 
+        remittance_items.fk_dv_acounting_entries_id,
+        IFNULL(SUM(remittance_items.amount),0)as remitted_amount
+        FROM remittance_items
+        WHERE remittance_items.is_removed =0
+        GROUP BY fk_dv_acounting_entries_id) as remitted ON dv_accounting_entries.id = remitted.fk_dv_acounting_entries_id 
 WHERE remittance_items.fk_remittance_id = :id
 AND remittance_items.is_removed = 0
 ")
@@ -83,12 +92,18 @@ AND remittance_items.is_removed = 0
                     <th> Payee</th>
                     <th> Object Code</th>
                     <th> Account Title</th>
-                    <th> Amount Remitted</th>
                     <th> Amount To Be Remitted</th>
+                    <th> Total Remitted</th>
+                    <th> Amount UnRemitted</th>
+                    <th> Remitted</th>
 
                 </tr>
                 <?php
                 foreach ($items as $val) {
+                    $remittance_item_amount = $val['remittance_item_amount'];
+                    $amount_to_be_remitted = $val['amount_to_be_remitted'];
+                    $remitted_amount = $val['remitted_amount'];
+                    $unremitted_amount = $val['unremitted_amount'];
                     echo "<tr>
                             <td>{$val['payroll_number']}</td>
                             <td>{$val['ors_number']}</td>
@@ -96,8 +111,10 @@ AND remittance_items.is_removed = 0
                             <td>{$val['payee']}</td>
                             <td>{$val['object_code']}</td>
                             <td>{$val['account_title']}</td>
-                            <td>{$val['amount_disbursed']}</td>
-                            <td>{$val['amount']}</td>
+                            <td>" . number_format($amount_to_be_remitted, 2) . "</td>
+                            <td>" . number_format($remitted_amount, 2) . "</td>
+                            <td>" . number_format($unremitted_amount, 2) . "</td>
+                            <td>" . number_format($remittance_item_amount, 2) . "</td>
                         </tr>";
                 }
                 ?>
@@ -110,5 +127,11 @@ AND remittance_items.is_removed = 0
 <style>
     .container {
         background-color: white;
+    }
+
+    @media print {
+        .btn {
+            display: none;
+        }
     }
 </style>
