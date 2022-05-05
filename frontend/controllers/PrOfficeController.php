@@ -32,7 +32,7 @@ class PrOfficeController extends Controller
                     'import',
 
                 ],
-                'ruels' => [
+                'rules' => [
                     [
                         'actions' => [
                             'index',
