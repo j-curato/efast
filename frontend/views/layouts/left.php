@@ -70,7 +70,7 @@
                                 Yii::$app->user->can('liquidation') ?     ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ['/liquidation'],] : [],
                                 Yii::$app->user->can('liquidation') ?     ['label' => 'Cancelled Check', 'icon' => 'circle-o', 'url' => ['/liquidation/cancelled-check-index'],] : [],
                                 Yii::$app->user->can('po_transmittal') ? ['label' => 'DV Transmittal', 'icon' => 'circle-o', 'url' => ['/po-transmittal'],] : [],
-                                
+
                             ],
                         ],
                         [
@@ -143,6 +143,14 @@
                                 Yii::$app->user->can('saob') ?     ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/report/saobs'],] : [],
                                 Yii::$app->user->can('fur-mfo') ?     ['label' => 'FUR per MFO/PAP', 'icon' => 'circle-o', 'url' => ['/report/fur-mfo'],] : [],
 
+                            ],
+                        ],
+                        [
+                            'label' => 'Procurement',
+                            'url' => '#',
+                            'items' => [
+                                Yii::$app->user->can('project_procurement') ?     ['label' => 'Activity/Project Procurement', 'icon' => 'circle-o', 'url' => ['/pr-project-procurement'],] : [],
+                                Yii::$app->user->can('purchase_request') ?     ['label' => 'Purchase Request', 'icon' => 'circle-o', 'url' => ['/pr-purchase-request'],] : [],
                             ],
                         ],
 
