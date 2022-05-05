@@ -35,12 +35,16 @@ LEFT JOIN (SELECT
         remittance_items.fk_dv_acounting_entries_id,
         IFNULL(SUM(remittance_items.amount),0)as remitted_amount
         FROM remittance_items
-        WHERE remittance_items.is_removed =0
-        GROUP BY fk_dv_acounting_entries_id) as remitted ON dv_accounting_entries.id = remitted.fk_dv_acounting_entries_id 
+        INNER JOIN remittance ON remittance_items.fk_remittance_id = remittance.id
+WHERE 
+remittance.created_at < :create_at 
+
+        GROUP BY remittance_items.fk_dv_acounting_entries_id) as remitted ON dv_accounting_entries.id = remitted.fk_dv_acounting_entries_id 
 WHERE remittance_items.fk_remittance_id = :id
 AND remittance_items.is_removed = 0
 ")
     ->bindValue(':id', $model->id)
+    ->bindValue(':create_at', $model->created_at)
     ->queryAll();
 ?>
 <div class="remittance-view">
@@ -92,18 +96,22 @@ AND remittance_items.is_removed = 0
                     <th> Payee</th>
                     <th> Object Code</th>
                     <th> Account Title</th>
-                    <th> Amount To Be Remitted</th>
-                    <th> Total Remitted</th>
-                    <th> Amount UnRemitted</th>
-                    <th> Remitted</th>
+                    <th class="amount"> Amount Withheld</th>
+                    <th class="amount"> Total Remitted</th>
+                    <th class="amount"> Amount UnRemitted</th>
+                    <th class="amount"> Remitted</th>
 
                 </tr>
                 <?php
+                $total_remittance_item_amount = 0;
+                $total_amount_to_be_remitted = 0;
+                $total_remitted_amount = 0;
+                $total_unremitted_amount = 0;
                 foreach ($items as $val) {
-                    $remittance_item_amount = $val['remittance_item_amount'];
-                    $amount_to_be_remitted = $val['amount_to_be_remitted'];
-                    $remitted_amount = $val['remitted_amount'];
-                    $unremitted_amount = $val['unremitted_amount'];
+                    $remittance_item_amount = floatval($val['remittance_item_amount']);
+                    $amount_to_be_remitted = floatval($val['amount_to_be_remitted']);
+                    $remitted_amount = floatval($val['remitted_amount']);
+                    $unremitted_amount = floatval($val['unremitted_amount']);
                     echo "<tr>
                             <td>{$val['payroll_number']}</td>
                             <td>{$val['ors_number']}</td>
@@ -111,12 +119,25 @@ AND remittance_items.is_removed = 0
                             <td>{$val['payee']}</td>
                             <td>{$val['object_code']}</td>
                             <td>{$val['account_title']}</td>
-                            <td>" . number_format($amount_to_be_remitted, 2) . "</td>
-                            <td>" . number_format($remitted_amount, 2) . "</td>
-                            <td>" . number_format($unremitted_amount, 2) . "</td>
-                            <td>" . number_format($remittance_item_amount, 2) . "</td>
+                            <td class='amount'>" . number_format($amount_to_be_remitted, 2) . "</td>
+                            <td class='amount'>" . number_format($remitted_amount, 2) . "</td>
+                            <td class='amount'>" . number_format($unremitted_amount, 2) . "</td>
+                            <td class='amount'>" . number_format($remittance_item_amount, 2) . "</td>
                         </tr>";
+
+                    $total_remittance_item_amount = $remittance_item_amount;
+                    $total_amount_to_be_remitted = $amount_to_be_remitted;
+                    $total_remitted_amount = $remitted_amount;
+                    $total_unremitted_amount = $unremitted_amount;
                 }
+                echo "<tr>
+                <td colspan='6' style='text-align:center;font-weight:bold'>TOTAL</td>
+               
+                <td style='font-weight:bold' class='amount'>" . number_format($total_amount_to_be_remitted, 2) . "</td>
+                <td style='font-weight:bold' class='amount'>" . number_format($total_remitted_amount, 2) . "</td>
+                <td style='font-weight:bold' class='amount'>" . number_format($total_unremitted_amount, 2) . "</td>
+                <td style='font-weight:bold' class='amount'>" . number_format($total_remittance_item_amount, 2) . "</td>
+            </tr>";
                 ?>
 
             </tbody>
@@ -127,6 +148,10 @@ AND remittance_items.is_removed = 0
 <style>
     .container {
         background-color: white;
+    }
+
+    .amount {
+        text-align: right;
     }
 
     @media print {
