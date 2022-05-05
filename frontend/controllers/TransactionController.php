@@ -139,8 +139,8 @@ class TransactionController extends Controller
                 $r_center = Yii::$app->db->createCommand("SELECT `id` FROM responsibility_center WHERE `name`=:division")
                     ->bindValue(':division', $division)
                     ->queryScalar();
+                $model->responsibility_center_id = $r_center;
             }
-            $model->responsibility_center_id = $r_center;
 
             $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date);
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
