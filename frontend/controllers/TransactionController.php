@@ -458,15 +458,22 @@ class TransactionController extends Controller
             ->from('responsibility_center')
             ->where("id =:id", ['id' => $responsibility_center_id])
             ->one();
+
+        // $latest_tracking_no = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(`transaction`.tracking_number,'-',-1)AS UNSIGNED) as last_number
+        // FROM `transaction`
+        // LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id = responsibility_center.id
+        // WHERE responsibility_center.`name` = :r_center
+        // AND `transaction`.created_at >  '2022-06-01'
+        // ORDER BY last_number DESC 
+        // ")
+        //     ->bindValue(':r_center', $responsibility_center['name'])
+        //     ->queryScalar();
         $latest_tracking_no = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(`transaction`.tracking_number,'-',-1)AS UNSIGNED) as last_number
         FROM `transaction`
-        LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id = responsibility_center.id
-        WHERE responsibility_center.`name` = :r_center
-        AND `transaction`.created_at >  '2022-06-01'
-        ORDER BY last_number DESC
+        ORDER BY last_number DESC LIMIT 1
         ")
-            ->bindValue(':r_center', $responsibility_center['name'])
             ->queryScalar();
+
         if ($latest_tracking_no) {
             // $x = explode('-', $latest_tracking_no['tracking_number']);
             $last_number = intval($latest_tracking_no) + $to_add;
