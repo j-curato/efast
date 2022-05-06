@@ -652,42 +652,45 @@ $this->params['breadcrumbs'][] = $this->title;
             </tbody>
         </table>
     </div>
+    <?php
 
-    <div class="container paner panel-default links" style="background-color: white;">
-
-        <table class="table ">
-            <tr>
-                <th>ORS Number</th>
-                <th>Link</th>
-            </tr>
-            <tbody>
-
-                <?php
-                if (!empty($model->processOrs)) {
-                    foreach ($model->processOrs as $val) {
-                        if (!empty($val->id)) {
-
-                            // $q = Raouds::find()
-                            //     ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' => $val->id])
-                            //     ->one();
+    if (Yii::$app->user->can('super-user')) {
 
 
-                            $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$val->id";
-                            // echo  Html::a('ORS Link', $t, ['class' => 'btn btn-success ']);
+    ?>
+        <div class="container paner panel-default links" style="background-color: white;">
 
-                        }
-                        echo "<tr>
+            <table class="table ">
+                <tr>
+                    <th>ORS Number</th>
+                    <th>Link</th>
+                </tr>
+                <tbody>
+
+                    <?php
+                    if (!empty($model->processOrs)) {
+                        foreach ($model->processOrs as $val) {
+                            if (!empty($val->id)) {
+
+                                // $q = Raouds::find()
+                                //     ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' => $val->id])
+                                //     ->one();
+                                $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$val->id";
+                                // echo  Html::a('ORS Link', $t, ['class' => 'btn btn-success ']);
+                            }
+                            echo "<tr>
                             <td>$val->serial_number</td>
                             <td>" . Html::a('ORS Link', $t, ['class' => 'btn btn-success ']) . "</td>
                         </tr>";
+                        }
                     }
-                }
 
 
-                ?>
-            </tbody>
-        </table>
-    </div>
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    <?php  } ?>
     <!-- FORM 2 END-->
 
 

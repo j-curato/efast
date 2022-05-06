@@ -465,7 +465,7 @@ class TransactionController extends Controller
         FROM `transaction`
         LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id = responsibility_center.id
         WHERE responsibility_center.`name` = :r_center
-        AND `transaction`.created_at >  '2022-06-01'
+        AND `transaction`.created_at >  '2022-05-06 08:00:00'
         AND `transaction`.transaction_date LIKE :new_year
         ORDER BY last_number DESC 
         ")
