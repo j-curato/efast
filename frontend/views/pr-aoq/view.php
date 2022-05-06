@@ -231,6 +231,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                         <div style="float: right;margin-right:20%;text-align:center;margin-top:2em">
                             <?php
+                            var_dump(array_column($bac_compositions, 'position'));
                             $search_chairperson =  array_search('chairperson', array_column($bac_compositions, 'position'));
                             $chairperson =  '';
                             if (!empty($search_chairperson)) {
