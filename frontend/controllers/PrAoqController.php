@@ -98,7 +98,7 @@ class PrAoqController extends Controller
         $payee_ids,
         $remarks,
         $pr_aoq_item,
-        $is_lowest
+        $is_lowest = []
     ) {
         // var_dump($pr_rfq_items);
         // die();
@@ -115,7 +115,7 @@ class PrAoqController extends Controller
             $aoq->amount = !empty($unit_costs[$i]) ? $unit_costs[$i] : '';
             $aoq->remark = !empty($remarks[$i]) ? $remarks[$i] : '';
             $aoq->pr_rfq_item_id = !empty($pr_rfq_items[$i]) ? $pr_rfq_items[$i] : '';
-            // $aoq->is_lowest = $is_lowest[$i];
+            $aoq->is_lowest = !empty($is_lowest[$i]) && $is_lowest[$i]=='on' ? 1 : 0;
             // var_dump($remarks[$i]);
             // die();
             // var_dump([
@@ -145,7 +145,7 @@ class PrAoqController extends Controller
             $unit_costs  = $_POST['unit_cost'];
             $pr_rfq_items = $_POST['pr_rfq_item'];
             $remarks = $_POST['remarks'];
-            $is_lowest = [];
+            $is_lowest = $_POST['lowest'];
 
             $transaction  = Yii::$app->db->beginTransaction();
 
@@ -212,7 +212,8 @@ class PrAoqController extends Controller
             $pr_rfq_items = $_POST['pr_rfq_item'];
             $remarks = $_POST['remarks'];
             $pr_aoq_item = !empty($_POST['pr_aoq_item']) ? $_POST['pr_aoq_item'] : [];
-            $is_lowest = [];
+            $is_lowest = $_POST['lowest'];
+            // return json_encode($is_lowest);
             // return json_encode([
             //     'pr_rfq_items'=>$pr_rfq_items,
             //     'unit_costs'=>$unit_costs,
@@ -343,7 +344,8 @@ class PrAoqController extends Controller
                 payee.account_name as payee,
                 payee.id as payee_id,
                 pr_aoq_entries.amount,
-                pr_aoq_entries.remark
+                pr_aoq_entries.remark,
+                pr_aoq_entries.is_lowest
                 FROM pr_aoq_entries
 
                 LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id

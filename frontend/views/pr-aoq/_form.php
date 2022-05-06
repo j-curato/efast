@@ -84,6 +84,10 @@ $row = 1;
 
                 if (!empty($aoq_entries)) {
                     foreach ($aoq_entries as $i => $val) {
+                        $checked = '';
+                        if (intval($val['is_lowest']) === 1) {
+                            $checked = 'checked';
+                        }
                         echo "
                       <tr>
                             <td style='display:none'>
@@ -114,6 +118,9 @@ $row = 1;
                             </td>
                             <td style='width:15em'>
                                 <textarea row='2' name='remarks[$row]' class='remark'>{$val['remark']}</textarea>
+                            </td>
+                            <td>
+                                 <input $checked class=' '  type='checkbox'  name='lowest[$row]'> 
                             </td>
                             <td style='text-align: center;width:80px'>
                                 <div class='pull-right'>
@@ -250,11 +257,17 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
                 const remark = `<td style='width:15em'>
                    <textarea row='2' name='remarks[${transaction_row}]' class='remark'></textarea>
                 </td>`;
+                const lowest_check_box = `<td>
+                                            <input class='checkbox ' type='checkbox'  name='lowest[${transaction_row}]'> 
+                                        </td>`
+                // clone.after(lowest_check_box)
+                // clone.find('.checkbox').after(lowest_check_box)
                 clone.append(payee_select)
                 clone.append(amount)
                 clone.append(remark)
+                clone.append(lowest_check_box)
                 clone.append(buttons)
-
+                console.log(clone)
                 $('#transaction_table tbody').append(clone);
                 payeeSelect()
                 maskAmount()

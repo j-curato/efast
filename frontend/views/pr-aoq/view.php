@@ -30,6 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
     pr_aoq_entries.amount,
     pr_purchase_request.purpose,
     pr_aoq_entries.remark,
+    pr_aoq_entries.is_lowest,
     unit_of_measure.unit_of_measure,pr_rfq.bac_composition_id
     FROM `pr_aoq_entries`
     LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
@@ -140,10 +141,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     $min_amount   = min(array_column($val, 'amount'));
                     $lowest = '';
                     $comma_counter = 0;
+
                     foreach ($payee_position as $index => $payee) {
                         $x = !empty($qqq[$i][$index]['amount']) ? $qqq[$i][$index]['amount'] : '';
                         // var_dump( $qqq[$i]);
-                        if (floatval($x) === floatval($min_amount)) {
+                        if (intval(($qqq[$i][$index]['is_lowest']))) {
                             if ($comma_counter > 0) {
                                 $lowest .= ',<br>';
                             }
