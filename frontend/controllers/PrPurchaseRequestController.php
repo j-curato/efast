@@ -43,14 +43,27 @@ class PrPurchaseRequestController extends Controller
                             'index',
                             'view',
                             'create',
+                            'search-pr',
+                            'get-items',
+                        ],
+                        'allow' => true,
+                        'roles' => [
+                            'purchase_request'
+                        ]
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
                             'update',
+                            'delete',
                             'search-pr',
                             'get-items',
                         ],
                         'allow' => true,
                         'roles' => [
                             'super-user',
-                            'purchase_request'
                         ]
                     ]
                 ]

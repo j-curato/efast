@@ -18,6 +18,19 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
+
+    if (Yii::$app->user->can('super-user')) {
+        $actions =   [
+            'class' => 'kartik\grid\ActionColumn',
+            'deleteOptions' => ['hidden' => true]
+        ];
+    } else {
+        $actions =   [
+            'class' => 'kartik\grid\ActionColumn',
+            'updateOptions' => ['hidden' => true],
+            'deleteOptions' => ['hidden' => true]
+        ];
+    }
     ?>
 
     <?= GridView::widget([
@@ -59,8 +72,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     return strtoupper($name);
                 }
             ],
+            $actions
 
-            ['class' => 'kartik\grid\ActionColumn'],
+
         ],
     ]); ?>
 

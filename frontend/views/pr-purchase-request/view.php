@@ -19,10 +19,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <div class="container ">
+        <?php
 
-        <p>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        </p>
+        if (Yii::$app->user->can('super-user')) {
+
+        ?>
+
+            <p>
+                <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+
+            </p>
+        <?php } ?>
         <table id="main_table">
             <thead>
                 <tr>
