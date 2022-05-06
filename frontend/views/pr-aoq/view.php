@@ -233,12 +233,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?php
                             $search_chairperson =  array_search('chairperson', array_column($bac_compositions, 'position'));
                             $chairperson =  '';
-                            var_dump(array_column($bac_compositions, 'position'));
-                            var_dump($search_chairperson);
+                            // var_dump(array_column($bac_compositions, 'position'));
+                            // var_dump($search_chairperson);
 
-                            if (!empty($search_chairperson)) {
-                                $chairperson =   $bac_compositions[$search_chairperson]['employee_name'];
-                            }
+                            // if (!empty($search_chairperson)) {
+                            $chairperson =   $bac_compositions[$search_chairperson]['employee_name'];
+                            // }
                             echo  "<span style='text-decoration:underline'>{$chairperson}</span>";
                             echo '<br>';
                             echo 'Chairperson';
