@@ -31,7 +31,8 @@ $this->params['breadcrumbs'][] = $this->title;
     pr_purchase_request.purpose,
     pr_aoq_entries.remark,
     pr_aoq_entries.is_lowest,
-    unit_of_measure.unit_of_measure,pr_rfq.bac_composition_id
+    unit_of_measure.unit_of_measure,
+    pr_rfq.bac_composition_id
     FROM `pr_aoq_entries`
     LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
     LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
@@ -45,15 +46,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
             ->bindValue(':id', $model->id)
             ->queryAll();
+
         $result = ArrayHelper::index($aoq_items_query, null, 'rfq_item_id');
         $qqq = ArrayHelper::index($aoq_items_query, 'payee', [function ($element) {
             return $element['rfq_item_id'];
         }]);
         $aoq_items_array  = ArrayHelper::index($aoq_items_query, 'payee');
         $header_count = count($aoq_items_array) + 5;
+
         $bac_compositions = Yii::$app->db->createCommand("SELECT 
             employee_search_view.employee_name,
-            bac_position.position
+            LOWER(bac_position.position)as position
             FROM bac_composition
             LEFT JOIN bac_composition_member ON bac_composition.id  = bac_composition_member.bac_composition_id
             LEFT JOIN bac_position ON bac_composition_member.bac_position_id = bac_position.id
@@ -152,7 +155,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             $lowest .= $index . ' ';
                             $comma_counter++;
                         }
-                        echo "<td>$x</td>";
+                        echo "<td>";
+                        echo $x;
+                        echo '<br>';
+                        echo '<br>';
+                        echo '<br>';
+                        echo $qqq[$i][$index]['remark'];
+                        echo "</td>";
                     }
 
                     echo "<td style='text-align:center'>$lowest</td>";
