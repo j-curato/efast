@@ -128,13 +128,14 @@ if (!empty($model->id)) {
                 if (!empty($model->id)) {
                     $query = Yii::$app->db->createCommand("SELECT 
             dv_accounting_entries.remittance_payee_id,
-            payee.account_name,
+            CONCAT(payee.account_name,' - ',chart_of_accounts.general_ledger) as account_name ,
             IFNULL(dv_accounting_entries.debit,0) + IFNULL(dv_accounting_entries.credit,0) as amount,
             remittance_payee.object_code,
             dv_accounting_entries.id
             FROM `dv_accounting_entries`
             LEFT JOIN remittance_payee ON dv_accounting_entries.remittance_payee_id = remittance_payee.id
             LEFT JOIN payee ON remittance_payee.payee_id = payee.id
+            LEFT JOIN chart_of_accounts ON remittance_payee.object_code = chart_of_accounts.uacs
             WHERE dv_accounting_entries.payroll_id = :id
             AND dv_accounting_entries.remittance_payee_id IS NOT NULL
             ")

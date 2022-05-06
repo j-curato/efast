@@ -160,9 +160,10 @@ class RemittancePayeeController extends Controller
             $out['results'] = ['id' => $id, 'text' => RemittancePayee::findOne($id)->serial_number];
         } else if (!is_null($q)) {
             $query = new Query();
-            $query->select('remittance_payee.id, payee.account_name AS text,remittance_payee.object_code')
+            $query->select(["remittance_payee.id, CONCAT(payee.account_name,' - ',chart_of_accounts.general_ledger) AS text,remittance_payee.object_code"])
                 ->from('remittance_payee')
                 ->join('LEFT JOIN', 'payee', 'remittance_payee.payee_id = payee.id')
+                ->join('LEFT JOIN', 'chart_of_accounts', 'remittance_payee.object_code = chart_of_accounts.uacs')
                 ->where(['like', 'payee.account_name', $q]);
             $command = $query->createCommand();
             $data = $command->queryAll();
