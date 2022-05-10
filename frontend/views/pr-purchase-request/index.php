@@ -15,6 +15,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Create  Purchase Request', ['create'], ['class' => 'btn btn-success']) ?>
+
+        <?php
+        $whitelist = array('127.0.0.1', "::1");
+
+        if (in_array($_SERVER['REMOTE_ADDR'], $whitelist)) {
+
+            if (Yii::$app->user->can('super-user')) {
+                echo "<button type='button' class='btn btn-primary'  id ='update_local_purchase_request'>Update Purchase Request</button>";
+            }
+        }
+        ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
@@ -80,3 +91,23 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
+<script>
+    $(document).ready(function() {
+
+        $('#update_local_purchase_request').click(function() {
+
+            $.ajax({
+                type: "POST",
+                url: window.location.pathname + '?r=sync-database/update-procurement',
+                data: {id:1},
+                success: function(data) {
+
+                    console.log(data)
+                    if (data == 'success') {
+                        // location.reload()
+                    }
+                }
+            })
+        })
+    })
+</script>

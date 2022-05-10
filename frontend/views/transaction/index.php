@@ -49,6 +49,18 @@ Modal::end();
     <p>
         <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=transaction/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
         <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
+
+
+        <?php
+        $whitelist = array('127.0.0.1', "::1");
+
+        if (in_array($_SERVER['REMOTE_ADDR'], $whitelist)) {
+
+            if (Yii::$app->user->can('super-user')) {
+                echo "<button type='button' class='btn btn-primary'  id ='update_local_transaction'>Update Local Transaction</button>";
+            }
+        }
+        ?>
     </p>
     <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
@@ -177,9 +189,15 @@ Modal::end();
         padding: 0;
     }
 </style>
+<script>
+    $(document).ready(function() {
 
+
+    })
+</script>
 <?php
 SweetAlertAsset::register($this);
+
 $script = <<<JS
             var i=false;
         $('#modalButtoncreate').click(function(){
@@ -251,6 +269,17 @@ $script = <<<JS
                 
             })
             $(document).ready(function(){
+                $('#update_local_transaction').click(function(e) {
+                    e.preventDefault()
+                    $.ajax({
+                        type: 'POST',
+                        url: window.location.pathname + '?r=sync-database/update-local-transaction',
+                        data: {id:1},
+                        success: function(data) {
+                            console.log(data)
+                        }
+                    })
+                })
              })
              
         

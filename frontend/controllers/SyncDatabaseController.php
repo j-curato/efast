@@ -27,12 +27,16 @@ use app\models\NetAssetEquity;
 use app\models\Payee;
 use app\models\PoAsignatory;
 use app\models\PoTransaction;
+use app\models\PrProjectProcurement;
+use app\models\PrPurchaseRequest;
+use app\models\PrPurchaseRequestItem;
 use app\models\ResponsibilityCenter;
 use app\models\Rod;
 use app\models\RodEntries;
 use app\models\SubAccounts1;
 use app\models\SubAccounts2;
 use app\models\SubMajorAccounts;
+use app\models\Transaction;
 use ErrorException;
 use Yii;
 
@@ -161,7 +165,7 @@ class SyncDatabaseController extends \yii\web\Controller
     //             'sub_major_accounts' => $sub_major_accounts,
     //             'sub_account1' => $sub_account1,
     //             'sub_account2' => $sub_account2,
-    //             'books' => $books,
+    //             'books' => $books,t
     //             'cash_flow' => $cash_flow,
     //             'nature_of_transaction' => $nature_of_transaction,
     //             'mrd_classification' => $mrd_classification,
@@ -522,6 +526,234 @@ class SyncDatabaseController extends \yii\web\Controller
                 'jev_accounting_entries' => $source_jev_accounting_entries_difference,
                 'to_delete' => array_column($to_delete, 'id')
             ]);
+        }
+    }
+    // CLOUD TRANSACTION TO LOCAL
+    public function actionUpdateLocalTransaction()
+    {
+
+
+        if ($_POST) {
+
+            $db = Yii::$app->db;
+            $local_transaction = $db->createCommand("SELECT * FROM `transaction` WHERE is_local =0")->queryAll();
+            $cloud_transaction =  Yii::$app->cloud_db->createCommand("SELECT * FROM `transaction` WHERE is_local =0")->queryAll();
+            $local_transaction_difference = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $cloud_transaction), array_map('serialize', $local_transaction))
+
+            );
+            foreach ($local_transaction_difference as $val) {
+                $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `transaction` WHERE id = :id)")
+                    ->bindValue(':id', $val['id'])
+                    ->queryScalar();
+                if (intval($query) === 1) {
+                    $update_transaction = transaction::findOne($val['id']);
+                } else {
+                    $update_transaction = new Transaction();
+                    $update_transaction->id = $val['id'];
+                }
+                $update_transaction->responsibility_center_id = $val['responsibility_center_id'];
+                $update_transaction->payee_id = $val['payee_id'];
+                $update_transaction->particular = $val['particular'];
+                $update_transaction->gross_amount = $val['gross_amount'];
+                $update_transaction->tracking_number = $val['tracking_number'];
+                $update_transaction->earmark_no = $val['earmark_no'];
+                $update_transaction->payroll_number = $val['payroll_number'];
+                $update_transaction->transaction_date = $val['transaction_date'];
+                $update_transaction->transaction_time = $val['transaction_time'];
+                $update_transaction->created_at = $val['created_at'];
+                $update_transaction->is_local = $val['is_local'];
+                if ($update_transaction->save(false)) {
+                } else {
+                    return 'error';
+                }
+            }
+
+            return json_encode('success');
+        }
+
+
+        // $params = [];
+        // $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'transaction.id', array_column($local_transaction_difference, 'id')], $params);
+
+        // $query = Yii::$app->cloud_db->createCommand("SELECT 
+
+        // id,
+        // responsibility_center_id,
+        // payee_id,
+        // particular,
+        // gross_amount,
+        // tracking_number,
+        // earmark_no,
+        // payroll_number,
+        // transaction_date,
+        // transaction_time,
+        // created_at FROM `transaction` WHERE $sql ", $params);
+        // $data = $query->queryAll();
+
+        // $column = [
+        //     'id',
+        //     'responsibility_center_id',
+        //     'payee_id',
+        //     'particular',
+        //     'gross_amount',
+        //     'tracking_number',
+        //     'earmark_no',
+        //     'payroll_number',
+        //     'transaction_date',
+        //     'transaction_time',
+        //     'created_at'
+        // ];
+        // $ja = Yii::$app->db->createCommand()->batchInsert('transaction', $column, $data)->execute();
+
+    }
+    public function actionLocalActivityProject()
+    {
+
+
+
+        $db = Yii::$app->db;
+        $local_project_procurement = $db->createCommand("SELECT id FROM `pr_project_procurement`")->queryAll();
+        $cloud_project_procurement =  Yii::$app->cloud_db->createCommand("SELECT id FROM `pr_project_procurement`")->queryAll();
+        $local_project_procurement_difference = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', $cloud_project_procurement), array_map('serialize', $local_project_procurement))
+
+        );
+
+        $params = [];
+        $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'pr_project_procurement.id', array_column($local_project_procurement_difference, 'id')], $params);
+
+        $query = Yii::$app->cloud_db->createCommand("SELECT 
+            id,
+            title,
+            pr_office_id,
+            amount,
+            employee_id,
+            created_at
+        
+        FROM `pr_project_procurement` 
+        WHERE $sql ", $params);
+        $data = $query->queryAll();
+
+        $column = [
+            'id',
+            'title',
+            'pr_office_id',
+            'amount',
+            'employee_id',
+            'created_at'
+        ];
+        $ja = Yii::$app->db->createCommand()->batchInsert('pr_project_procurement', $column, $data)->execute();
+    }
+    public function actionUpdateProcurement()
+    {
+
+
+        if ($_POST) {
+            $db = Yii::$app->db;
+            // PROJECT PROCUREMENT
+            $local_project_procurement = $db->createCommand("SELECT * FROM `pr_project_procurement`")->queryAll();
+            $cloud_project_procurement =  Yii::$app->cloud_db->createCommand("SELECT * FROM `pr_project_procurement`")->queryAll();
+            $local_project_procurement_difference = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $cloud_project_procurement), array_map('serialize', $local_project_procurement))
+
+            );
+            foreach ($local_project_procurement_difference as $val) {
+                $check_query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `pr_project_procurement` WHERE id = :id)")
+                    ->bindValue(':id', $val['id'])
+                    ->queryScalar();
+                if (intval($check_query) === 1) {
+                    $update_project_procurement = PrProjectProcurement::findOne($val['id']);
+                } else {
+
+                    $update_project_procurement = new PrProjectProcurement();
+                    $update_project_procurement->id = $val['id'];
+                }
+
+                $update_project_procurement->title = $val['title'];
+                $update_project_procurement->pr_office_id = $val['pr_office_id'];
+                $update_project_procurement->amount = $val['amount'];
+                $update_project_procurement->employee_id = $val['employee_id'];
+                $update_project_procurement->created_at = $val['created_at'];
+
+                if ($update_project_procurement->save(false)) {
+                } else {
+                    return false;
+                }
+            }
+            // PROJECT PROCUREMENT END
+            //    PURCHASE REQUEST START
+            $local_purchase_request = $db->createCommand("SELECT * FROM `pr_purchase_request`")->queryAll();
+            $cloud_purchase_request =  Yii::$app->cloud_db->createCommand("SELECT * FROM `pr_purchase_request`")->queryAll();
+            $local_purchase_request_difference = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $cloud_purchase_request), array_map('serialize', $local_purchase_request))
+
+            );
+            foreach ($local_purchase_request_difference as $val) {
+                $check_query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `pr_purchase_request` WHERE id = :id)")
+                    ->bindValue(':id', $val['id'])
+                    ->queryScalar();
+                if (intval($check_query) === 1) {
+                    $update_local_purchase_request = PrPurchaseRequest::findOne($val['id']);
+                } else {
+                    $update_local_purchase_request = new PrPurchaseRequest();
+                    $update_local_purchase_request->id = $val['id'];
+                }
+                $update_local_purchase_request->pr_number = $val['pr_number'];
+                $update_local_purchase_request->date = $val['date'];
+                $update_local_purchase_request->book_id = $val['book_id'];
+                $update_local_purchase_request->pr_project_procurement_id = $val['pr_project_procurement_id'];
+                $update_local_purchase_request->purpose = $val['purpose'];
+                $update_local_purchase_request->requested_by_id = $val['requested_by_id'];
+                $update_local_purchase_request->approved_by_id = $val['approved_by_id'];
+                $update_local_purchase_request->created_at = $val['created_at'];
+
+                if ($update_local_purchase_request->save(false)) {
+                } else {
+                    return false;
+                }
+            }
+
+
+
+            // PURCHASE REQUEST ITEM
+
+            $local_pr_purchase_request_items = $db->createCommand("SELECT * FROM `pr_purchase_request_item`")->queryAll();
+            $cloud_pr_purchase_request_items =  Yii::$app->cloud_db->createCommand("SELECT * FROM `pr_purchase_request_item`")->queryAll();
+            $local_pr_purchase_request_items_difference = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $cloud_pr_purchase_request_items), array_map('serialize', $local_pr_purchase_request_items))
+
+            );
+            foreach ($local_pr_purchase_request_items_difference as $val) {
+                $check_query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `pr_purchase_request_item` WHERE id = :id)")
+                    ->bindValue(':id', $val['id'])
+                    ->queryScalar();
+                if (intval($check_query) === 1) {
+                    $update_local_purchase_request_item = PrPurchaseRequestItem::findOne($val['id']);
+                } else {
+                    $update_local_purchase_request_item = new PrPurchaseRequestItem();
+                    $update_local_purchase_request_item->id = $val['id'];
+                }
+                $update_local_purchase_request_item->pr_purchase_request_id = $val['pr_purchase_request_id'];
+                $update_local_purchase_request_item->pr_stock_id = $val['pr_stock_id'];
+                $update_local_purchase_request_item->quantity = $val['quantity'];
+                $update_local_purchase_request_item->unit_cost = $val['unit_cost'];
+                $update_local_purchase_request_item->specification = $val['specification'];
+                $update_local_purchase_request_item->unit_of_measure_id = $val['unit_of_measure_id'];
+                $update_local_purchase_request_item->created_at = $val['created_at'];
+
+                if ($update_local_purchase_request_item->save(false)) {
+                } else {
+                    return false;
+                }
+            }
+            // PURCHASE REQUEST ITEM END
+            return 'success';
         }
     }
 

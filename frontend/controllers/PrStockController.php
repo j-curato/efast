@@ -175,6 +175,7 @@ class PrStockController extends Controller
         if ($model->load(Yii::$app->request->post())) {
 
             // $specification = $_POST['specification'];
+            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             $transaction = Yii::$app->db->beginTransaction();
 
             if ($model->part !== 'part-1') {
