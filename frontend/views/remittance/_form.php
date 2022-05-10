@@ -42,14 +42,14 @@ if (!empty($model->id)) {
 
     
      FROM `remittance_items`
-    INNER JOIN dv_accounting_entries ON remittance_items.fk_dv_acounting_entries_id = dv_accounting_entries.id
-    INNER JOIN payroll ON dv_accounting_entries.payroll_id = payroll.id
-    INNER JOIN process_ors ON payroll.process_ors_id = process_ors.id
-    INNER JOIN dv_aucs ON payroll.id = dv_aucs.payroll_id
-    INNER JOIN remittance_payee ON dv_accounting_entries.remittance_payee_id = remittance_payee.id
-    INNER JOIN payee ON remittance_payee.payee_id = payee.id
-    INNER JOIN accounting_codes ON dv_accounting_entries.object_code  = accounting_codes.object_code
-    INNER JOIN dv_aucs_entries ON dv_accounting_entries.dv_aucs_id = dv_aucs_entries.dv_aucs_id
+    LEFT JOIN dv_accounting_entries ON remittance_items.fk_dv_acounting_entries_id = dv_accounting_entries.id
+    LEFT JOIN payroll ON dv_accounting_entries.payroll_id = payroll.id
+    LEFT JOIN process_ors ON payroll.process_ors_id = process_ors.id
+    LEFT JOIN dv_aucs ON payroll.id = dv_aucs.payroll_id
+    LEFT JOIN remittance_payee ON dv_accounting_entries.remittance_payee_id = remittance_payee.id
+    LEFT JOIN payee ON remittance_payee.payee_id = payee.id
+    LEFT JOIN accounting_codes ON dv_accounting_entries.object_code  = accounting_codes.object_code
+    LEFT JOIN dv_aucs_entries ON dv_accounting_entries.dv_aucs_id = dv_aucs_entries.dv_aucs_id
     LEFT JOIN (SELECT 
         remittance_items.fk_dv_acounting_entries_id,
         SUM(remittance_items.amount) as remitted_amount
