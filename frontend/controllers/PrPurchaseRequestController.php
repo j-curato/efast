@@ -118,9 +118,11 @@ class PrPurchaseRequestController extends Controller
             if (empty($pr_item_id[$i])) {
 
                 $item = new PrPurchaseRequestItem();
+                $item->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             } else {
                 $item =  PrPurchaseRequestItem::findOne($pr_item_id[$i]);
             }
+
             $item->pr_purchase_request_id = $model_id;
             $item->pr_stock_id = $val;
             $item->quantity = $quantity[$i];

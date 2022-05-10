@@ -144,22 +144,12 @@ class TransactionController extends Controller
 
             $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date);
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            // $model->transaction_date = date('m-d-Y');
-            // $model->created_at = date('2020-07-19 13:01:57');
-            $date = date('Y-m-d H:i:s');
-            // if (
-            //     strtolower(date('l')) === 'saturday'
+          
+            $whitelist = array('127.0.0.1', "::1");
 
-            // ) {
-            //     $model->created_at = date('Y-m-d H:i:s', strtotime($date . ' + 2 days'));
-            // } else if (
-            //     strtolower(date('l')) === 'sunday'
-
-            // ) {
-            //     $model->created_at = date('Y-m-d H:i:s', strtotime($date . ' + 1 days'));
-            // }
-
-
+            if (!in_array($_SERVER['REMOTE_ADDR'], $whitelist)) {
+                $model->is_local = 0;
+            }
 
             if ($model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
