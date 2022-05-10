@@ -38,7 +38,7 @@ LEFT JOIN (SELECT
         INNER JOIN remittance ON remittance_items.fk_remittance_id = remittance.id
 WHERE 
 remittance.created_at < :create_at 
-
+AND remittance_items.is_removed = 0
         GROUP BY remittance_items.fk_dv_acounting_entries_id) as remitted ON dv_accounting_entries.id = remitted.fk_dv_acounting_entries_id 
 WHERE remittance_items.fk_remittance_id = :id
 AND remittance_items.is_removed = 0
