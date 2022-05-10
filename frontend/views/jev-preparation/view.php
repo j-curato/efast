@@ -255,8 +255,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
                 ArrayHelper::multisort($arr, ['credit', [SORT_ASC]]);
                 foreach ($arr as $val) {
-                    $debit = $val['debit'] > 0 ? number_format($val['debit'], 2) : '';
-                    $credit = $val['credit'] > 0 ? number_format($val['credit'], 2) : '';
+                    $debit = $val['debit'] != 0 ? number_format($val['debit'], 2) : '';
+                    $credit = $val['credit'] != 0 ? number_format($val['credit'], 2) : '';
                     echo "<tr>
                             <td></td>
                             <td>{$val['general_ledger']}</td>
