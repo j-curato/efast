@@ -98,7 +98,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th colspan="<?= $header_count ?>" style='padding:0;border:none;'>
                         <?php 
                         $date = DateTime::createFromFormat('Y-m-d',$model->pr_date);
-                        echo $date->format('F d,Y');
+                        echo $date->format('F d, Y');
                         
                         ?>
                     </th>
