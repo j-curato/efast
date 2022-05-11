@@ -72,7 +72,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <thead>
                 <tr>
-                    <th colspan="<?= $header_count ?>" style='text-align:center'>
+                    <th colspan="<?= $header_count ?>" style='text-align:center;border:none;'>
                         <span>
                             Department of Trade and Industry - Caraga
                         </span>
@@ -88,10 +88,19 @@ $this->params['breadcrumbs'][] = $this->title;
                     </th>
                 </tr>
                 <tr>
-                    <th colspan="<?= $header_count ?>" style='text-align:center'>
+                    <th colspan="<?= $header_count ?>" style='text-align:center;border:none;'>
                         <span>
                             ABSTRACT OF CANVASS AND ACTION OF AWARDS
                         </span>
+                    </th>
+                </tr>
+                <tr>
+                    <th colspan="<?= $header_count ?>" style='padding:0;border:none;'>
+                        <?php 
+                        $date = DateTime::createFromFormat('Y-m-d',$model->pr_date);
+                        echo $date->format('F d,Y');
+                        
+                        ?>
                     </th>
                 </tr>
                 <tr>
