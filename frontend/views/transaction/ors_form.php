@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
             </h6>
         </div>
-        <table style="margin-top:30px">
+        <table style="margin-top:30px" id="ors_form">
             <tbody>
 
                 <tr>
@@ -188,13 +188,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td class="ors_a">
                         Position:
                     </td>
-                    <td colspan="2" style="border-bottom: 1px solid white;vertical-align:text-top" class="pos form1_box_a_signatory" id="position_1">
+                    <td colspan="2" style="text-align:center;border-bottom: 1px solid white;vertical-align:text-top" class=" form1_box_a_signatory">
 
                     </td>
                     <td class="ors_b">
                         Position:
                     </td>
-                    <td colspan="4" style="border-bottom:1px solid white;" class="pos form1_box_b_signatory" id="position_2">
+                    <td colspan="4" style="text-align:center;border-bottom:1px solid white;" class="form1_box_b_signatory">
 
 
                     </td>
@@ -733,12 +733,14 @@ $this->params['breadcrumbs'][] = $this->title;
         .select2-container {
             height: 20px;
         }
-        .select2-selection__arrow{
+
+        .select2-selection__arrow {
             display: none !important;
         }
 
         .select2-container--default .select2-selection--single {
             border: none !important;
+            text-decoration: underline;
         }
 
 
@@ -861,9 +863,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depe
 
             })
         $("#ors_form").on('change', '.asignatory', function() {
-            const picked_signatory = $(this).val()
-            const signatory_position = $(this).attr('data-pos')
-            setSignatoryPosition(picked_signatory, signatory_position)
+            const ors_picked_signatory = $(this).val()
+            const ors_signatory_position = $(this).attr('data-pos')
+            setSignatoryPosition(ors_picked_signatory, ors_signatory_position)
         })
         $("#dv_form").on('change', '.asignatory', function() {
             const picked_signatory = $(this).val()
@@ -903,7 +905,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depe
             $("#form1_box_a_signatory").val('GAY A. TIDALGO, CESO IV').trigger('change')
             $("#form2_box_a_signatory").val('GAY A. TIDALGO, CESO IV').trigger('change')
         }
-        
+
         $("#form1_box_b_signatory").val('JULIETA B. OGOY').trigger('change')
         $("#form2_box_c_signatory").val('CHARLIE C. DECHOS').trigger('change')
         $("#form2_box_d_signatory").val('GAY A. TIDALGO, CESO IV').trigger('change')
