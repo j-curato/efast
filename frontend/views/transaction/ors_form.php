@@ -733,6 +733,9 @@ $this->params['breadcrumbs'][] = $this->title;
         .select2-container {
             height: 20px;
         }
+        .select2-selection__arrow{
+            display: none !important;
+        }
 
         .select2-container--default .select2-selection--single {
             border: none !important;
