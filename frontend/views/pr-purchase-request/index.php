@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Create  Purchase Request', ['create'], ['class' => 'btn btn-success']) ?>
 
         <?php
-        $whitelist = array('127.0.0.1', "::1");
+        $whitelist = array('127.0.0.1', "::1", '10.20.17.35');
 
         if (in_array($_SERVER['REMOTE_ADDR'], $whitelist)) {
 
@@ -99,7 +99,9 @@ $this->params['breadcrumbs'][] = $this->title;
             $.ajax({
                 type: "POST",
                 url: window.location.pathname + '?r=sync-database/update-procurement',
-                data: {id:1},
+                data: {
+                    id: 1
+                },
                 success: function(data) {
 
                     console.log(data)
