@@ -1,14 +1,7 @@
 <?php
 
-use app\models\ChartOfAccounts;
-use app\models\FundClusterCode;
-use app\models\ProcessOrsEntries;
-use app\models\Raouds;
-use app\models\ResponsibilityCenter;
+
 use yii\helpers\Html;
-use kartik\grid\GridView;
-use yii\helpers\ArrayHelper;
-use kartik\select2\Select2;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use aryelds\sweetalert\SweetAlertAsset;
@@ -30,32 +23,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 
-
+    $division = strtolower($model->responsibilityCenter->name);
     ?>
 
 
     <!-- FORM 1 -->
     <div class="container panel panel-default">
         <button class="btn btn-success" type="button" id="print">Print</button>
-        <p>
 
-            <?php
-
-
-            // if (!empty($model->processOrs->id)) {
-
-            //     $q = Raouds::find()
-            //         ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' => $model->processOrs->id])
-            //         ->one();
-
-
-            //     $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$q->id";
-            //     echo  Html::a('ORS Link', $t, ['class' => 'btn btn-success ']);
-            // }
-
-
-            ?>
-        </p>
 
         <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>
         <div style="float: right;">
@@ -154,28 +129,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                 </tr>
 
-                <?php
-                $i = 0;
-                // while ($i < 9) {
-                //     echo "
-                //     <tr >
-                //     <td colspan='2' style='padding:10px'>
-                //     </td>
-                //     <td colspan='3'>
-                //     </td>
-                //     <td colspan='1'>
-                //     </td>
-                //     <td colspan='1'>
-                //     </td>
-                //     <td colspan='1'>
-                //     </td>
-                // </tr>
 
-                //     ";
-                //     $i++;
-                // }
-
-                ?>
 
 
 
@@ -213,8 +167,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                     <td colspan="2" class="" style="border-bottom: 1px solid white;padding:0">
 
-                        <!-- ASSIGNATORY DROPDOWN -->
-                        <select name="" id="assignatory_1" class="assignatory" style="width: 100%;" onchange="setPosition(this,1)">
+
+                        <!-- FORM 1 BOX A SIGNATORY -->
+                        <select class="asignatory " data-pos='form1_box_a_signatory' id='form1_box_a_signatory' style="width: 100%;">
                             <option value=""></option>
                         </select>
                     </td>
@@ -223,8 +178,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                     <td colspan="4" style="border-bottom:1px solid white;">
 
-                        <!-- ASSIGNATORY DROPDOWN -->
-                        <select name="" id="assignatory_2" class="assignatory" style="width: 100%;" onchange="setPosition(this,2)">
+                        <!-- FORM 1 BOX B SIGNATORY -->
+                        <select class="asignatory" style="width: 100%;" data-pos='form1_box_b_signatory' id="form1_box_b_signatory">
                             <option value=""></option>
                         </select>
                     </td>
@@ -233,13 +188,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td class="ors_a">
                         Position:
                     </td>
-                    <td colspan="2" style="border-bottom: 1px solid white;vertical-align:text-top" class="pos" id="position_1">
+                    <td colspan="2" style="border-bottom: 1px solid white;vertical-align:text-top" class="pos form1_box_a_signatory" id="position_1">
 
                     </td>
                     <td class="ors_b">
                         Position:
                     </td>
-                    <td colspan="4" style="border-bottom:1px solid white;" class="pos" id="position_2">
+                    <td colspan="4" style="border-bottom:1px solid white;" class="pos form1_box_b_signatory" id="position_2">
 
 
                     </td>
@@ -334,7 +289,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
             </h6>
         </div>
-        <table style="margin-top:30px">
+        <table style="margin-top:30px" id="dv_form">
             <tbody>
 
                 <tr>
@@ -447,25 +402,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?php echo number_format($model->gross_amount, 2) ?>
                     </td>
                 </tr>
-                <?php
-                $x = 0;
-                // while ($x < 2) {
-                //     echo "
-                //     <tr>
-                //         <td colspan='4' style='padding:10px'>
-                //         </td>
-                //         <td>
-                //         </td>
-                //         <td>
-                //         </td>
-                //         <td>
-                //         </td>
-                //   </tr>
-                //     ";
-                //     $x++;
-                // }
 
-                ?>
                 <tr>
                     <td class="head" style="text-align: center; font-size:12px" colspan="6">
                         Amount Due
@@ -480,10 +417,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         margin-top:3rem;
                         margin-bottom:2rem;
                         font-size:10pt">
-                            <select name="" id="assignatory_5" class="assignatory" style="width: 300px;padding:0;" onchange="setPosition(this,5)">
+                            <select class="asignatory" style="width: 300px;padding:0;" data-pos='form2_box_a_signatory' id="form2_box_a_signatory">
                                 <option value=""></option>
                             </select>
-                            <div style="padding:0;font-weight:normal" class="pos" id="position_5">
+                            <div style="padding:0;font-weight:normal" class="pos form2_box_a_signatory">
 
                             </div>
                         </div>
@@ -570,7 +507,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>Printed Name</td>
                     <td colspan="2">
                         <div>
-                            <select name="" id="assignatory_3" class="assignatory" style="width: 100%;" onchange="setPosition(this,3)">
+                            <select class="asignatory" style="width: 100%;" data-pos='form2_box_c_signatory' id="form2_box_c_signatory">
                                 <option value=""></option>
                             </select>
                         </div>
@@ -578,7 +515,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>Printed Name</td>
                     <td colspan="3">
                         <div>
-                            <select name="" class="assignatory" id="assignatory_4" style="width: 100%;" onchange="setPosition(this,4)">
+                            <select class="asignatory" style="width: 100%;" data-pos='form2_box_d_signatory' id="form2_box_d_signatory">
                                 <option value=""></option>
                             </select>
                         </div>
@@ -586,11 +523,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <td>Postion</td>
-                    <td colspan="2" id="position_3" class="pos">
+                    <td colspan="2" style="text-align: center;" class="form2_box_c_signatory">
 
                     </td>
                     <td>Postion</td>
-                    <td colspan="3" id="position_4" class="pos">
+                    <td colspan="3" style="text-align: center;" class="form2_box_d_signatory ">
                     </td>
                 </tr>
                 <tr>
@@ -694,55 +631,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- FORM 2 END-->
 
 
-    <script src="<?php echo Url::base() ?>/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <link href="<?php echo Url::base() ?>/frontend/web/js/select2.min.js" />
-    <link href="<?php echo Url::base() ?>/frontend/web/css/select2.min.css" rel="stylesheet" />
-    <script>
-        var assignatory = []
-        var positions = []
-
-        function setPosition(q, pos) {
-            $("#position_" + pos).text(q.value)
-        }
-        $(document).ready(function() {
-
-            positions = ['Head', 'Budget', 'Division', 'Unit', 'Authorized Representative']
-            $('.position').select2({
-                data: positions,
-                placeholder: "Select Position",
-
-            })
-            $.getJSON('<?php echo Url::base() ?>/frontend/web/index.php?r=assignatory/get-all-assignatory')
-
-                .then(function(data) {
-
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.position,
-                            text: val.name
-                        })
-                    })
-                    assignatory = array
-                    $('.assignatory').select2({
-                        data: assignatory,
-                        placeholder: "Select ",
-
-                    })
-
-                })
-        })
-        // $("#assignatory").change(function(){
-        //     console.log("qwe")
-        // })
-        // function sample(q) {
-        //     console.log(q.value)
-
-        //     $("#ass").text(q.value)
-
-        // }
-    </script>
 </div>
+
 <style>
     .select2-selection--single {
         /* border: 1px solid #d2d6de; */
@@ -752,7 +642,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     }
 
-
+    .select2-container--default .select2-selection--single {
+        display: none;
+    }
 
 
     .pos {
@@ -774,7 +666,10 @@ $this->params['breadcrumbs'][] = $this->title;
         vertical-align: bottom;
         /* height: 34px; */
         font-weight: bold;
+        border: none;
     }
+
+
 
 
     .select2-container .select2-selection--single .select2-selection__rendered {
@@ -824,28 +719,25 @@ $this->params['breadcrumbs'][] = $this->title;
         border-left: 1px solid white;
     }
 
+    #ors_form>.select2-container--default .select2-selection--single {
+        border: none;
+    }
+
+
+    .select2-selection {
+        border: none;
+    }
+
     @media print {
-        .select2-container .select2-selection--single .select2-selection__rendered {
-            margin-top: 0;
-            vertical-align: bottom;
-
-        }
-
-        .actions {
-            display: none;
-        }
-
-        .select2-container--default .select2-selection--single,
-        .select2-selection .select2-selection--single {
-            /* border: 1px solid #d2d6de; */
-            /* border-radius: 0; */
-            padding: 0;
-
-        }
 
         .select2-container {
             height: 20px;
         }
+
+        .select2-container--default .select2-selection--single {
+            border: none !important;
+        }
+
 
         .links {
             display: none;
@@ -855,36 +747,8 @@ $this->params['breadcrumbs'][] = $this->title;
             display: none;
         }
 
-        .krajee-datepicker {
-            border: 1px solid white;
-            font-size: 10px;
-            padding-left: 9px;
-        }
 
-        /* .select2-selection__rendered{
-            text-decoration: underline;
-        } */
-        .select2-container--default .select2-selection--single {
-            background-color: #fff;
-            border: none;
-            padding: 0;
-        }
 
-        .select2-selection__arrow {
-            display: none;
-        }
-
-        .select2-selection {
-            border: 1px solid white;
-        }
-
-        select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            text-indent: 1px;
-            text-overflow: '';
-            border: none;
-        }
 
         table,
         th,
@@ -942,10 +806,106 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     }
 </style>
-
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
+
+
+<script src="<?php echo Url::base() ?>/frontend/web/js/jquery.min.js" type="text/javascript"></script>
+<link href="<?php echo Url::base() ?>/frontend/web/js/select2.min.js" />
+<link href="<?php echo Url::base() ?>/frontend/web/css/select2.min.css" rel="stylesheet" />
+<script>
+    let asignatory = []
+    var positions = []
+    const division = '<?= $division ?>';
+
+
+
+    $(document).ready(function() {
+        console.log('division')
+        positions = ['Head', 'Budget', 'Division', 'Unit', 'Authorized Representative']
+        $('.position').select2({
+            data: positions,
+            placeholder: "Select Position",
+
+        })
+
+        $.getJSON('<?php echo Url::base() ?>/frontend/web/index.php?r=assignatory/get-all-assignatory')
+
+            .then(function(data) {
+
+                let array = []
+                $.each(data, function(key, val) {
+                    array.push({
+                        id: val.name,
+                        text: val.name,
+                        emp: val.name,
+
+                    })
+                    asignatory.push({
+                        position: val.position,
+                        name: val.name,
+
+                    })
+                })
+                console.log(asignatory)
+                $('.asignatory').select2({
+                    data: array,
+                    placeholder: "Select ",
+
+                })
+                setDefaultSignatory(division)
+
+            })
+        $("#ors_form").on('change', '.asignatory', function() {
+            const picked_signatory = $(this).val()
+            const signatory_position = $(this).attr('data-pos')
+            setSignatoryPosition(picked_signatory, signatory_position)
+        })
+        $("#dv_form").on('change', '.asignatory', function() {
+            const picked_signatory = $(this).val()
+            const signatory_position = $(this).attr('data-pos')
+            setSignatoryPosition(picked_signatory, signatory_position)
+        })
+
+    })
+
+    function setSignatoryPosition(signatory_name, signatory_position) {
+
+        $.each(asignatory, function(key, val) {
+            if (val.name == signatory_name) {
+                $(`.${signatory_position}`).text(val.position)
+                return
+            }
+        })
+    }
+
+    function setDefaultSignatory(_division) {
+        if (_division == 'sdd') {
+            $("#form1_box_a_signatory").val('JASMIN B. FAELNAR').trigger('change')
+            $("#form2_box_a_signatory").val('JASMIN B. FAELNAR').trigger('change')
+        } else if (_division == 'idd') {
+            $("#form1_box_a_signatory").val('MARSON JAN S. DOLENDO').trigger('change')
+            $("#form2_box_a_signatory").val('MARSON JAN S. DOLENDO').trigger('change')
+        } else if (_division == 'cpd') {
+            $("#form1_box_a_signatory").val('ATTY. KURT CHINO A. MONTERO').trigger('change')
+            $("#form2_box_a_signatory").val('ATTY. KURT CHINO A. MONTERO').trigger('change')
+        } else if (_division == 'fad') {
+            $("#form1_box_a_signatory").val('JOHN VOLTAIRE S. ANCLA').trigger('change')
+            $("#form2_box_a_signatory").val('JOHN VOLTAIRE S. ANCLA').trigger('change')
+        } else if (_division == 'mssd') {
+            $("#form1_box_a_signatory").val('BRENDA B. CORVERA, CESO V').trigger('change')
+            $("#form2_box_a_signatory").val('BRENDA B. CORVERA, CESO V').trigger('change')
+        } else if (_division == 'ord') {
+            $("#form1_box_a_signatory").val('GAY A. TIDALGO, CESO IV').trigger('change')
+            $("#form2_box_a_signatory").val('GAY A. TIDALGO, CESO IV').trigger('change')
+        }
+        
+        $("#form1_box_b_signatory").val('JULIETA B. OGOY').trigger('change')
+        $("#form2_box_c_signatory").val('CHARLIE C. DECHOS').trigger('change')
+        $("#form2_box_d_signatory").val('GAY A. TIDALGO, CESO IV').trigger('change')
+    }
+</script>
 <?php
 SweetAlertAsset::register($this);
 $script = <<< JS
