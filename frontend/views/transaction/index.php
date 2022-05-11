@@ -52,7 +52,7 @@ Modal::end();
 
 
         <?php
-        $whitelist = array('127.0.0.1', "::1");
+        $whitelist = array('127.0.0.1', "::1", "10.20.17.35");
 
         if (in_array($_SERVER['REMOTE_ADDR'], $whitelist)) {
 
