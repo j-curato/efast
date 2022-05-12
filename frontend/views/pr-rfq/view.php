@@ -216,6 +216,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th class='bordered tb-head' style="width: 50px;">Item No.</th>
                     <th class='bordered tb-head'>Description</th>
                     <th class='bordered tb-head'>Quantity</th>
+                    <th class='bordered tb-head'>Unit of Measure</th>
                     <th class='bordered tb-head'>ABC Unit Price</th>
                     <th class='bordered tb-head'>ABC Total Price</th>
                     <th style="width: 10px;" class="bdr-none"></th>
@@ -236,6 +237,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td class='bordered'> <span  style='font-weight:bold'>" . $val->purchaseRequestItem->stock->stock_title . "</span></br>
                         <span style='font-style:italic'>" . "{$specs}</span></td>
                         <td class='bordered' style='text-align:center' >{$val->purchaseRequestItem->quantity}</td>
+                        <td style='text-align:center;'>" .$val->purchaseRequestItem->unitOfMeasure->unit_of_measure. "</td>
                         <td class='bordered amount' >" . number_format($val->purchaseRequestItem->unit_cost, 2) . "</td>
                         <td class='bordered amount' >" . number_format($total_cost, 2) . "</td>
                         <td class='bdr-none'></td>
@@ -245,7 +247,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
                 ?>
                 <tr>
-                    <td class='bordered' colspan="5">
+                    <td class='bordered' colspan="6">
 
                         <span style="font-weight: bold;">
 
