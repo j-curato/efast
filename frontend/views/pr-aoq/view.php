@@ -23,29 +23,30 @@ $this->params['breadcrumbs'][] = $this->title;
         // $aoq_items_array = [];
         $aoq_items_query = Yii::$app->db->createCommand("SELECT 
         pr_rfq_item.id as rfq_item_id,
-    pr_purchase_request_item.quantity,
-    pr_stock.stock_title as `description`,
-    pr_purchase_request_item.specification,
-    payee.account_name as payee,
-    pr_aoq_entries.amount,
-    pr_purchase_request.purpose,
-    pr_aoq_entries.remark,
-    pr_aoq_entries.is_lowest,
-    unit_of_measure.unit_of_measure,
-    pr_rfq.bac_composition_id
-    FROM `pr_aoq_entries`
-    LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
-    LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
-    LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id= pr_purchase_request_item.id
-    LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
-    LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id  = pr_stock.id
-    LEFT JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
-    LEFT JOIN pr_rfq ON pr_rfq_item.pr_rfq_id = pr_rfq.id
-    WHERE pr_aoq_entries.pr_aoq_id = :id
+        pr_purchase_request_item.quantity,
+        pr_stock.stock_title as `description`,
+        pr_purchase_request_item.specification,
+        payee.account_name as payee,
+        pr_aoq_entries.amount,
+        pr_purchase_request.purpose,
+        pr_aoq_entries.remark,
+        pr_aoq_entries.is_lowest,
+        unit_of_measure.unit_of_measure,
+        pr_rfq.bac_composition_id
+        FROM `pr_aoq_entries`
+        LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
+        LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+        LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id= pr_purchase_request_item.id
+        LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
+        LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id  = pr_stock.id
+        LEFT JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
+        LEFT JOIN pr_rfq ON pr_rfq_item.pr_rfq_id = pr_rfq.id
+        WHERE pr_aoq_entries.pr_aoq_id = :id
     ")
 
             ->bindValue(':id', $model->id)
             ->queryAll();
+        $for_print = ArrayHelper::index($aoq_items_query, null, 'description');
 
         $result = ArrayHelper::index($aoq_items_query, null, 'rfq_item_id');
         $qqq = ArrayHelper::index($aoq_items_query, 'payee', [function ($element) {
@@ -68,7 +69,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         ?>
 
-        <table>
+        <table id="table">
 
             <thead>
                 <tr>
@@ -96,10 +97,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <th colspan="<?= $header_count ?>" style='padding:0;border:none;'>
-                        <?php 
-                        $date = DateTime::createFromFormat('Y-m-d',$model->pr_date);
+                        <?php
+                        $date = DateTime::createFromFormat('Y-m-d', $model->pr_date);
                         echo $date->format('F d, Y');
-                        
+
                         ?>
                     </th>
                 </tr>
@@ -113,7 +114,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <?php
                     $payee_position = [];
-                    $payee_count  = 1;
+                    $payee_count  = 5;
                     $payee_head_query = Yii::$app->db->createCommand("SELECT payee.account_name as payee
                     FROM `pr_aoq_entries`
                     LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
@@ -129,7 +130,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         echo "<td style='text-align:center'>
                                 <span style='float:right'>$payee</span>
                             </td>";
-                        $payee_position[$payee] = $payee_count;
+                        $payee_position[$payee_count] = $payee;
                         $payee_count++;
                     }
                     ?>
@@ -138,59 +139,63 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th>Lowest</th>
 
                 </tr>
-                <?php foreach ($result as $i => $val) {
-                    $description = $val[0]['description'];
-                    $specification =  $specs = preg_replace('#\[n\]#', "<br>", $val[0]['specification']);
-                    $quantity = $val[0]['quantity'];
-                    $unit_of_measure = $val[0]['unit_of_measure'];
-                    echo " <tr><td></td><td> {$quantity}</td>
-                        <td> {$unit_of_measure}</td>
-                        <td><span>$description</span>
-                        <br>
-                        <span>$specification</span>
-                        </td>
-                        ";
-                    $min_amount   = min(array_column($val, 'amount'));
-                    $lowest = '';
-                    $comma_counter = 0;
+                <?php
+                // foreach ($result as $i => $val) {
+                //     $description = $val[0]['description'];
+                //     $specification =  $specs = preg_replace('#\[n\]#', "<br>", $val[0]['specification']);
+                //     $quantity = $val[0]['quantity'];
+                //     $unit_of_measure = $val[0]['unit_of_measure'];
+                //     echo " <tr><td></td><td> {$quantity}</td>
+                //         <td> {$unit_of_measure}</td>
+                //         <td><span>$description</span>
+                //         <br>
+                //         <span>$specification</span>
+                //         </td>
+                //         ";
+                //     $min_amount   = min(array_column($val, 'amount'));
+                //     $lowest = '';
+                //     $comma_counter = 0;
 
-                    foreach ($payee_position as $index => $payee) {
-                        $x = !empty($qqq[$i][$index]['amount']) ? $qqq[$i][$index]['amount'] : '';
-                        // var_dump( $qqq[$i]);
-                        if (intval(($qqq[$i][$index]['is_lowest']))) {
-                            if ($comma_counter > 0) {
-                                $lowest .= ',<br>';
-                            }
-                            $lowest .= $index . ' ';
-                            $comma_counter++;
-                        }
-                        echo "<td>";
-                        echo $x;
-                        echo '<br>';
-                        echo '<br>';
-                        echo '<br>';
-                        echo $qqq[$i][$index]['remark'];
-                        echo "</td>";
-                    }
+                //     foreach ($payee_position as $index => $payee) {
+                //         $x = !empty($qqq[$i][$index]['amount']) ? $qqq[$i][$index]['amount'] : '';
+                //         // var_dump( $qqq[$i]);
+                //         // if (intval(($qqq[$i][$index]['is_lowest']))) {
+                //         //     if ($comma_counter > 0) {
+                //         //         $lowest .= ',<br>';
+                //         //     }
+                //         //     $lowest .= $index . ' ';
+                //         //     $comma_counter++;
+                //         // }
+                //         echo "<td>";
+                //         echo $x;
+                //         echo '<br>';
+                //         echo '<br>';
+                //         echo '<br>';
+                //         // echo $qqq[$i][$index]['remark'];
+                //         echo "</td>";
+                //     }
 
-                    echo "<td style='text-align:center'>$lowest</td>";
-                    // foreach ($val as $q) {
-                    //     $amount = $q['amount'];
-                    //     $remark = $q['remark'];
-                    //     echo "<td style='text-align:center'>
-                    //     <span style='float:right'>$amount</span>
-                    //     <br>
-                    //     <br>
-                    //     <br>
-                    //     <span >$remark</span>
+                //     // echo "<td style='text-align:center'>$lowest</td>";
+                //     foreach ($val as $q) {
+                //         $amount = $q['amount'];
+                //         $remark = $q['remark'];
+                //         echo "<td style='text-align:center'>
+                //         <span style='float:right'>$amount</span>
+                //         <br>
+                //         <br>
+                //         <br>
+                //         <span >$remark</span>
 
-                    // </td>";
-                    // }
-                    echo "</tr>";
-                } ?>
+                //     </td>";
+                //     }
+                //     echo "</tr>";
+                // } 
+                ?>
+
 
             </thead>
-            <tbody>
+            <tbody></tbody>
+            <tfoot>
                 <tr>
                     <td colspan="<?= $header_count ?>" style='border:none;padding-top:0'>
                         Based on the aboove abstract of canvass, it is recommended that the award be made to the Lowest Calculated and Responsive Bidder,
@@ -256,7 +261,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     </td>
                 </tr>
-            </tbody>
+            </tfoot>
         </table>
 
     </div>
@@ -265,6 +270,10 @@ $this->params['breadcrumbs'][] = $this->title;
 <style>
     .no-border {
         border: 0;
+    }
+
+    .amount {
+        text-align: center;
     }
 
     .bac-members {
@@ -300,5 +309,80 @@ $this->params['breadcrumbs'][] = $this->title;
         .container {
             padding: 0;
         }
+
+        table {
+            width: 100%;
+        }
+
+        th,
+        td {
+            padding: 6px;
+        }
+
+        .main-footer {
+            display: none;
+        }
     }
 </style>
+
+<?php
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+?>
+<script>
+    $(document).ready(function() {
+
+        const q = JSON.parse('<?php echo json_encode($for_print) ?>');
+        const payee_position = JSON.parse('<?php echo json_encode($payee_position) ?>');
+        console.log(q)
+        // console.log(payee_position)
+        let row_number = 0
+        $.each(q, function(key, val) {
+            let min_key = ''
+            $.each(val, function(key, val2) {
+                min_key = key
+                return false
+            })
+            const quantity = val[min_key]['quantity']
+            const unit_of_measure = val[min_key]['unit_of_measure']
+            const description = val[min_key]['description']
+
+            let row = `<tr>
+            <td></td>
+            <td>${quantity}</td>
+            <td>${unit_of_measure}</td>
+            <td>${description}</td>
+
+          `;
+            $.each(payee_position, function(key, val2) {
+                row += `<td class='amount'></td>`;
+            })
+            row += `<td></td>`;
+            $("#table tbody").append(row)
+
+            let lowest = ''
+
+            $.each(val, function(key, val2) {
+                let key_pos = '';
+
+                $.each(payee_position, function(key, payee) {
+                    if (payee == val2.payee) {
+                        key_pos = parseInt(key)
+                        return false
+                    }
+                })
+                if (parseInt(val2.is_lowest) == 1) {
+                    lowest = lowest + val2.payee
+                    console.log(val2.payee)
+                }
+                let key_pos_1 = 5
+                const amount = `<span>${val2.amount}</span><br><br>`
+                const remark = `<span>${val2.remark}</span>`
+                $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(amount)
+                $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(remark)
+            })
+            $("#table tbody ").find(`td:last-child`).eq(row_number).text(lowest)
+            row_number++
+        })
+
+    })
+</script>
