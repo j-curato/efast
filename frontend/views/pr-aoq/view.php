@@ -346,26 +346,31 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
             const unit_of_measure = val[min_key]['unit_of_measure']
             const description = val[min_key]['description']
             const specification = val[min_key]['specification']
+            const purpose = val[min_key]['purpose']
 
             let row = `<tr>
-            <td class='amount'>${row_number+1}</td>
-            <td>${quantity}</td>
-            <td>${unit_of_measure}</td>
+            <td class='amount' style='vertical-align:top'>${row_number+1}</td>
+            <td style='vertical-align:top'>${quantity}</td>
+            <td style='vertical-align:top'>${unit_of_measure}</td>
             <td>
-            <span>
+            <span style='font-weight:bold;vertical-align:top'>
             ${description}
             </span>
             </br>
-            <span>
+            <span style='vertical-align:text-bottom;font-style:italic;'>
             ${specification}
+            </span>
+            <span style='vertical-align:bottom;'>
+            </br>
+            ${purpose}
             </span>
             </td>
 
           `;
             $.each(payee_position, function(key, val2) {
-                row += `<td class='amount'></td>`;
+                row += `<td class='amount' ></td>`;
             })
-            row += `<td></td>`;
+            row += `<td style='vertical-align:top'></td>`;
             $("#table tbody").append(row)
 
             let lowest = ''
@@ -384,8 +389,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                     console.log(val2.payee)
                 }
                 let key_pos_1 = 5
-                const amount = `<span>${thousands_separators(val2.amount)}</span><br><hr>`
-                const remark = `<span>${val2.remark}</span>`
+                const amount = `<span style='display:block;margin-bottom:auto;margin-top:0;'>${thousands_separators(val2.amount)}</span><br><br>`
+                const remark = `<span  style='vertical-align:bottom;'>${val2.remark}</span>`
                 $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(amount)
                 $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(remark)
             })
