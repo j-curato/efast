@@ -347,7 +347,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
             const description = val[min_key]['description']
 
             let row = `<tr>
-            <td></td>
+            <td class='amount'>${row_number+1}</td>
             <td>${quantity}</td>
             <td>${unit_of_measure}</td>
             <td>${description}</td>
