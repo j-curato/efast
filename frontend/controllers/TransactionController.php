@@ -486,7 +486,7 @@ class TransactionController extends Controller
             $final_number .= 0;
         }
         $final_number .= $last_number;
-        $tracking_number = $responsibility_center['name'] . '-' . $date . '-' . $final_number;
+        $tracking_number = $responsibility_center['name'] . '-' . $q->format('Y-m') . '-' . $final_number;
         return  $tracking_number;
     }
     public function actionGetTransaction()
