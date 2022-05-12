@@ -141,7 +141,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <br>
                             <span style="text-decoration: underline;">
                                 <?php
-                                // echo strtoupper($model->authorizedOfficial->f_name . ' ' . $model->authorizedOfficial->m_name[0] . '. ' . $model->authorizedOfficial->l_name)
+                                echo strtoupper($model->authorizedOfficial->f_name . ' ' . $model->authorizedOfficial->m_name[0] . '. ' . $model->authorizedOfficial->l_name)
                                 ?>
                             </span>
                             <br>
