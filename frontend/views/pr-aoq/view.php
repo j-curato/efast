@@ -213,10 +213,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
                                 if ($val['position'] === 'member') {
 
-                                    $member_name =  ucwords($val['employee_name']);
+                                    $member_name =  strtoupper($val['employee_name']);
                                     $member_position = ucwords($val['position']);
                                     echo "<div style='text-align:center'>
-                                            <span style='text-decoration:underline'>$member_name</span>
+                                            <span style='text-decoration:underline;font-weight:bold'>$member_name</span>
                                             <br>
                                             <span >$member_position</span>
                                     </div>";
@@ -234,10 +234,10 @@ $this->params['breadcrumbs'][] = $this->title;
                             $search_vice =  array_search('vice-chairperson', array_column($bac_compositions, 'position'));
                             $vice_chairperson = '';
                             if (!empty($search_vice)) {
-                                $vice_chairperson =   $bac_compositions[$search_vice]['employee_name'];
+                                $vice_chairperson =   strtoupper($bac_compositions[$search_vice]['employee_name']);
                             }
 
-                            echo  "<span style='text-decoration:underline'>{$vice_chairperson}</span>";
+                            echo  "<span style='text-decoration:underline;font-weight:bold'>{$vice_chairperson}</span>";
 
                             echo '<br>';
                             echo 'Vice-Chairperson';
@@ -251,9 +251,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             // var_dump($search_chairperson);
 
                             // if (!empty($search_chairperson)) {
-                            $chairperson =   $bac_compositions[$search_chairperson]['employee_name'];
+                            $chairperson =   strtoupper($bac_compositions[$search_chairperson]['employee_name']);
                             // }
-                            echo  "<span style='text-decoration:underline'>{$chairperson}</span>";
+                            echo  "<span style='text-decoration:underline;font-weight:bold'>{$chairperson}</span>";
                             echo '<br>';
                             echo 'Chairperson';
                             ?>
@@ -270,6 +270,26 @@ $this->params['breadcrumbs'][] = $this->title;
 <style>
     .no-border {
         border: 0;
+    }
+
+    td.fooed {
+        position: relative;
+
+        display: table-cell;
+        vertical-align: text-bottom;
+    }
+
+    .foo {
+        position: absolute;
+        top: 2rem;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+        display: table-cell;
+        text-align: center;
+        height: 100%;
+
+
     }
 
     .amount {
@@ -336,6 +356,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
         console.log(q)
         // console.log(payee_position)
         let row_number = 0
+        let purpose = ''
+
         $.each(q, function(key, val) {
             let min_key = ''
             $.each(val, function(key, val2) {
@@ -346,7 +368,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
             const unit_of_measure = val[min_key]['unit_of_measure']
             const description = val[min_key]['description']
             const specification = val[min_key]['specification']
-            const purpose = val[min_key]['purpose']
+            purpose = val[min_key]['purpose']
 
             let row = `<tr>
             <td class='amount' style='vertical-align:top'>${row_number+1}</td>
@@ -360,15 +382,12 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
             <span style='vertical-align:text-bottom;font-style:italic;'>
             ${specification}
             </span>
-            <span style='vertical-align:bottom;'>
-            </br>
-            ${purpose}
-            </span>
+      
             </td>
 
           `;
             $.each(payee_position, function(key, val2) {
-                row += `<td class='amount' ></td>`;
+                row += `<td class='fooed' style='vertical-align:bottom' ></td>`;
             })
             row += `<td style='vertical-align:top'></td>`;
             $("#table tbody").append(row)
@@ -389,14 +408,24 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                     console.log(val2.payee)
                 }
                 let key_pos_1 = 5
-                const amount = `<span style='display:block;margin-bottom:auto;margin-top:0;'>${thousands_separators(val2.amount)}</span><br><br>`
-                const remark = `<span  style='vertical-align:bottom;'>${val2.remark}</span>`
+                const amount = `<div class=foo><div >${thousands_separators(val2.amount)}</div></div><br>`
+                const remark = `<span>${val2.remark}</span>`
                 $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(amount)
                 $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(remark)
+
             })
             $("#table tbody ").find(`td:last-child`).eq(row_number).text(lowest)
             row_number++
         })
+
+        let colCount = 5
+        $.each(payee_position, function(key, val2) {
+            colCount++
+        })
+        console.log(colCount)
+        const purpose_row = `<tr><td colspan='${colCount}'><span style='font-weight:bold'>Purpose:  </span><span>${purpose}</span></td></tr>`;
+        $("#table tbody").append(purpose_row)
+
 
     })
 </script>
