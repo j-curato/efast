@@ -357,7 +357,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
         // console.log(payee_position)
         let row_number = 0
         let purpose = ''
-
+        let remark_arr = []
+        let remark_arr_index = 0
         $.each(q, function(key, val) {
             let min_key = ''
             $.each(val, function(key, val2) {
@@ -400,18 +401,27 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                 $.each(payee_position, function(key, payee) {
                     if (payee == val2.payee) {
                         key_pos = parseInt(key)
+
                         return false
                     }
                 })
+                if (key_pos != '') {
+                    remark_arr[remark_arr_index] = {
+                        'key_pos': key_pos,
+                        'remark': val2.remark
+                    };
+                    remark_arr_index++
+                }
+
                 if (parseInt(val2.is_lowest) == 1) {
                     lowest = lowest + val2.payee
-                    console.log(val2.payee)
                 }
                 let key_pos_1 = 5
                 const amount = `<div class=foo><div >${thousands_separators(val2.amount)}</div></div><br>`
                 const remark = `<span>${val2.remark}</span>`
+
                 $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(amount)
-                $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(remark)
+                // $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(remark)
 
             })
             $("#table tbody ").find(`td:last-child`).eq(row_number).text(lowest)
@@ -419,10 +429,40 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
         })
 
         let colCount = 5
+        console.log(row_number)
+        let remark_row = `<tr>
+            <td class='amount' style='vertical-align:top'></td>
+            <td style='vertical-align:top'></td>
+            <td style='vertical-align:top'></td>
+            <td>
+            <span style='font-weight:bold;vertical-align:top'>
+            </span>
+            </br>
+            <span style='vertical-align:text-bottom;font-style:italic;'>
+            </span>
+      
+            </td>
+
+          `;
+
         $.each(payee_position, function(key, val2) {
+            remark_row += `<td class='fooed' style='vertical-align:bottom' ></td>`;
             colCount++
         })
-        console.log(colCount)
+        remark_row += `<td style='vertical-align:top'></td>`;
+        $("#table tbody").append(remark_row)
+        $.each(remark_arr, function(key, val) {
+
+            const pos = parseInt(val.key_pos)
+            const remark = val.remark
+            const table_col = $("#table tbody").find(`td:nth-child(${pos})`).eq(row_number)
+            if (table_col.text() != '') {
+                table_col.append(',<br>')
+            }
+            table_col.append(val.remark)
+        })
+
+
         const purpose_row = `<tr><td colspan='${colCount}'><span style='font-weight:bold'>Purpose:  </span><span>${purpose}</span></td></tr>`;
         $("#table tbody").append(purpose_row)
 
