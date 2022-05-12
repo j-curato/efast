@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
         pr_rfq_item.id as rfq_item_id,
         pr_purchase_request_item.quantity,
         pr_stock.stock_title as `description`,
-        pr_purchase_request_item.specification,
+        REPLACE(pr_purchase_request_item.specification,'[n]','<br>') as specification,
         payee.account_name as payee,
         pr_aoq_entries.amount,
         pr_purchase_request.purpose,
@@ -127,9 +127,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     foreach ($payee_head_query as $i => $val) {
 
                         $payee = $val['payee'];
-                        echo "<td style='text-align:center'>
+                        echo "<th style='text-align:center'>
                                 <span style='float:right'>$payee</span>
-                            </td>";
+                            </th>";
                         $payee_position[$payee_count] = $payee;
                         $payee_count++;
                     }
@@ -345,12 +345,21 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
             const quantity = val[min_key]['quantity']
             const unit_of_measure = val[min_key]['unit_of_measure']
             const description = val[min_key]['description']
+            const specification = val[min_key]['specification']
 
             let row = `<tr>
             <td class='amount'>${row_number+1}</td>
             <td>${quantity}</td>
             <td>${unit_of_measure}</td>
-            <td>${description}</td>
+            <td>
+            <span>
+            ${description}
+            </span>
+            </br>
+            <span>
+            ${specification}
+            </span>
+            </td>
 
           `;
             $.each(payee_position, function(key, val2) {
