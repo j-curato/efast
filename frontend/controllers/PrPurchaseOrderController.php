@@ -164,7 +164,6 @@ class PrPurchaseOrderController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
         if ($model->load(Yii::$app->request->post())) {
 
             // return json_encode($_POST['aoq_id']);
@@ -338,7 +337,7 @@ class PrPurchaseOrderController extends Controller
             $zero .= 0;
         }
 
-        return 'RO-' . $contract_type . '-' . $reporting_period . '-' . $zero . $last_number;
+        return 'RO-' . strtoupper($contract_type) . '-' . $reporting_period . '-' . $zero . $last_number;
     }
     public function actionSearchPurchaseOrder($q = null, $id = null, $province = null)
     {

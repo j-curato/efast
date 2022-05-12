@@ -328,6 +328,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         .container {
             padding: 0;
+            min-width: 80%;
         }
 
         table {
