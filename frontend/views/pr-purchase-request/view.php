@@ -19,17 +19,20 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <div class="container ">
-        <?php
+        <p>
 
-        if (Yii::$app->user->can('super-user')) {
+            <?php
 
-        ?>
+            if (Yii::$app->user->can('super-user')) {
 
-            <p>
+            ?>
+
                 <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
-            </p>
-        <?php } ?>
+            <?php } ?>
+            <button type="button" class="print btn btn-warning">Print</button>
+        </p>
+
         <table id="main_table">
             <thead>
                 <tr>
@@ -94,7 +97,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $total_cost = intval($val->quantity) * floatval($val->unit_cost);
                     $total += $total_cost;
                     $specs = preg_replace('#\[n\]#', "<br>", $val->specification);
-
+                    // $bac_code = 
                     echo "<tr>
                         <td>{$val->stock->bac_code}</td>
                         <td class='center'>{$val->unitOfMeasure->unit_of_measure}</td>
@@ -295,3 +298,12 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     }
 </style>
+
+<script>
+    $(document).ready(function() {
+
+        $('.print').click(function() {
+            window.print()
+        })
+    })
+</script>
