@@ -384,7 +384,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                     console.log(val2.payee)
                 }
                 let key_pos_1 = 5
-                const amount = `<span>${thousands_separators(val2.amount)}</span><br><br>`
+                const amount = `<span>${thousands_separators(val2.amount)}</span><br><hr>`
                 const remark = `<span>${val2.remark}</span>`
                 $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(amount)
                 $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(remark)
