@@ -1,5 +1,6 @@
 <?php
 
+use aryelds\sweetalert\SweetAlertAsset;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
@@ -28,13 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 if ($model->is_final) {
                     $btn_color = 'btn btn-success';
                 }
-                echo  Html::a('Final', ['final', 'id' => $model->id], [
-                    'class' => $btn_color,
-                    'data' => [
-                        'confirm' => 'Are you sure you want to Final this item?',
-                        'method' => 'post',
-                    ],
-                ]);
+                echo "<button type='button' class='$btn_color' id='final'>Final</button>";
             }
             ?>
         </p>
@@ -123,6 +118,67 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 20px;
     }
 </style>
+<?php
+
+SweetAlertAsset::register($this);
+
+?>
+<script>
+    $(document).ready(function() {
+
+
+        $("#final").click(function(e) {
+            e.preventDefault()
+            swal({
+                    title: "Are you sure?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: '#DD6B55',
+                    confirmButtonText: 'Comfirm',
+                    cancelButtonText: "Cancel",
+                    closeOnConfirm: false,
+                    closeOnCancel: true
+                },
+                function(isConfirm) {
+
+                    if (isConfirm) {
+                        $.ajax({
+                            type: "POST",
+                            url: window.location.pathname + "?r=pr-stock/final",
+                            data: {
+                                id: '<?= $model->id ?>',
+                                '_csrf-frontend': '<?php echo Yii::$app->request->csrfToken ?>'
+                            },
+                            success: function(data) {
+                                var res = JSON.parse(data)
+                                if (res.isSuccess) {
+                                    swal({
+                                        title: 'Success',
+                                        type: 'success',
+                                        button: false,
+                                        timer: 3000,
+                                    }, function() {
+                                        location.reload(true)
+                                    })
+                                } else {
+                                    swal({
+                                        title: "Error Cannot Cancel",
+                                        text: res.error,
+                                        type: 'error',
+                                        button: false,
+                                        timer: 3000,
+                                    })
+                                }
+
+                            }
+                        })
+
+
+                    }
+                })
+        })
+    })
+</script>
 <?php
 $script = <<<JS
             var i=false;

@@ -245,17 +245,13 @@ $script = <<<JS
                         stockTypeSelect.append(option)
                     })
                     $('#prstock-type').val('')
-
                     // console.log(array)
                     // var types = array
                     // for (var i = 0; i < types.length; i++) {
-
                     // }
-
                     // $('#prstock-type').select2({
                     //     data: qqq,
                     //     placeholder: "Select Unit of Measure",
-
                     // })
                 }
             })

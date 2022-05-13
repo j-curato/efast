@@ -427,20 +427,23 @@ class PrStockController extends Controller
             return json_encode($query);
         }
     }
-    public function actionFinal($id)
+    public function actionFinal()
     {
-        $model = $this->findModel($id);
-        if ($model->chart_of_account_id == null) {
-            return;
+        if ($_POST) {
+            $id = $_POST['id'];
+            $model = $this->findModel($id);
+            if ($model->chart_of_account_id == null) {
+                return json_encode(['isSuccess' => false, 'error' => 'No Chart of Account']);
+            }
+            if ($model->is_final) {
+                $model->is_final = 0;
+            } else {
+                $model->is_final = 1;
+                $model->bac_code = $this->bacCode($model->part, $model->type, $model->chart_of_account_id);
+            }
+            if ($model->save(false))
+                return json_encode(['isSuccess' => true]);
         }
-        if ($model->is_final) {
-            $model->is_final = 0;
-        } else {
-            $model->is_final = 1;
-        }
-        if ($model->save(false))
-            return $this->render('view', [
-                'model' => $model,
-            ]);
+        return 'qweqwe';
     }
 }
