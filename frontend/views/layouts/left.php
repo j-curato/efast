@@ -362,6 +362,7 @@
                             'url' => '#',
                             'items' => [
 
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Stock Type', 'icon' => 'circle-o', 'url' => ['/pr-contract-type'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Contract Type', 'icon' => 'circle-o', 'url' => ['/pr-contract-type'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Mode of Procurment', 'icon' => 'circle-o', 'url' => ['/pr-mode-of-procurement'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Office/Section', 'icon' => 'circle-o', 'url' => ['/pr-office'],] : [],

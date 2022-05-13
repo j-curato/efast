@@ -216,14 +216,17 @@ $script = <<<JS
 
         $('#prstock-part').change(function(e) {
             e.preventDefault()
-            var q = $(this).val()
-            var x = q.toLowerCase()
+            var part = $(this).val()
+            var x = part.toLowerCase()
             $.ajax({
                 type: 'POST',
-                url: window.location.pathname + "?r=pr-stock/get-part&part=" + x,
+                url: window.location.pathname + "?r=pr-stock/get-part" ,
+                data:{
+                    part:part
+                },
                 success: function(data) {
                     // console.log(data)
-                    var types = JSON.parse(data)
+                    const types = JSON.parse(data)
                     stock_types = types
 
                     $('#prstock-type')
@@ -234,8 +237,8 @@ $script = <<<JS
                         .val('');
 
 
-                    var array = []
-                    var stockTypeSelect = $('#prstock-type')
+                    const array = []
+                    const stockTypeSelect = $('#prstock-type')
                     $.each(types, function(key, val) {
 
                         var option = new Option([val.type], [val.type], true, true);

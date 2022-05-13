@@ -411,15 +411,28 @@ class PrStockController extends Controller
             return ob_get_clean();
         }
     }
-    public function actionGetPart($part)
+    public function actionGetPart()
     {
-        $parts = YIi::$app->memem->getStockPart()[$part];
-        return json_encode($parts);
+        // $parts = YIi::$app->memem->getStockPart()[$part];
+        // return json_encode($parts);
+
+        if ($_POST) {
+            $part = $_POST['part'];
+            $query = Yii::$app->db->createCommand("SELECT `type`,chart_of_accounts.uacs as object_code
+             FROM pr_stock_type
+             LEFT JOIN chart_of_accounts ON pr_stock_type.fk_chart_of_account_id = chart_of_accounts.id
+              WHERE pr_stock_type.part = :part")
+                ->bindValue(':part', $part)
+                ->queryAll();
+            return json_encode($query);
+        }
     }
     public function actionFinal($id)
     {
         $model = $this->findModel($id);
-
+        if ($model->chart_of_account_id == null) {
+            return;
+        }
         if ($model->is_final) {
             $model->is_final = 0;
         } else {
