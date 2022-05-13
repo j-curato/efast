@@ -125,10 +125,10 @@ AND remittance_items.is_removed = 0
                             <td class='amount'>" . number_format($remittance_item_amount, 2) . "</td>
                         </tr>";
 
-                    $total_remittance_item_amount = $remittance_item_amount;
-                    $total_amount_to_be_remitted = $amount_to_be_remitted;
-                    $total_remitted_amount = $remitted_amount;
-                    $total_unremitted_amount = $unremitted_amount;
+                    $total_remittance_item_amount += $remittance_item_amount;
+                    $total_amount_to_be_remitted += $amount_to_be_remitted;
+                    $total_remitted_amount += $remitted_amount;
+                    $total_unremitted_amount += $unremitted_amount;
                 }
                 echo "<tr>
                 <td colspan='6' style='text-align:center;font-weight:bold'>TOTAL</td>

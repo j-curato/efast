@@ -29,6 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
 
+            'remittance_number',
             'reporting_period',
             [
                 'label' => 'Book',

@@ -18,7 +18,7 @@ class RemittanceSearch extends Remittance
     {
         return [
             [['id'], 'integer'],
-            [['reporting_period', 'created_at','book_id','type'], 'safe'],
+            [['reporting_period', 'created_at','book_id','type','remittance_number'], 'safe'],
         ];
     }
 
@@ -64,6 +64,7 @@ class RemittanceSearch extends Remittance
 
         $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
         ->andFilterWhere(['like', 'books.name', $this->book_id])
+        ->andFilterWhere(['like', 'remittance_number', $this->remittance_number])
         ->andFilterWhere(['like', 'type', $this->type]);
 
         return $dataProvider;
