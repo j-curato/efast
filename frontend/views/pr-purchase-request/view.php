@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <?php
 
-            if (Yii::$app->user->can('super-user')) {
+            if (!$model->is_final) {
 
             ?>
 
@@ -31,6 +31,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <?php } ?>
             <button type="button" class="print btn btn-warning">Print</button>
+            <?php
+
+            if (Yii::$app->user->can('super-user')) {
+                $btn_color = 'btn btn-danger';
+                if ($model->is_final){
+                    $btn_color = 'btn btn-success';
+                }
+                echo  Html::a('Final', ['final', 'id' => $model->id], [
+                    'class' => $btn_color,
+                    'data' => [
+                        'confirm' => 'Are you sure you want to Final this item?',
+                        'method' => 'post',
+                    ],
+                ]);
+            }
+            ?>
         </p>
 
         <table id="main_table">
@@ -97,7 +113,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $total_cost = intval($val->quantity) * floatval($val->unit_cost);
                     $total += $total_cost;
                     $specs = preg_replace('#\[n\]#', "<br>", $val->specification);
-                    // $bac_code = 
+                    $bac_code = !empty($val->stock->bac_code) ? $val->stock->bac_code : '';
                     echo "<tr>
                         <td>{$val->stock->bac_code}</td>
                         <td class='center'>{$val->unitOfMeasure->unit_of_measure}</td>

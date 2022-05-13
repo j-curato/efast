@@ -29,8 +29,10 @@ if (!empty($model->id)) {
 <div class="pr-stock-form">
 
     <?php
-
-
+    $stock_part = ['part-1' => 'Part-1', 'part-2' => 'Part-2', 'part-3' => 'Part-3'];
+    if (!Yii::$app->user->can('super-user')) {
+        $stock_part = ['part-2' => 'Part-2', 'part-3' => 'Part-3'];
+    }
     ?>
 
 
@@ -57,7 +59,7 @@ if (!empty($model->id)) {
     </div> -->
 
     <?= $form->field($model, 'part')->widget(Select2::class, [
-        'data' => ['part-1' => 'Part-1', 'part-2' => 'Part-2', 'part-3' => 'Part-3'],
+        'data' => $stock_part,
         'pluginOptions' => [
             'placeholder' => 'Select Unit of Measure'
         ]
@@ -73,7 +75,7 @@ if (!empty($model->id)) {
             'style' => 'width:100%'
         ]
     ]) ?>
-    <?= $form->field($model, 'bac_code')->textInput(['placeholder'=>'BAC Code']) ?>
+    <?= $form->field($model, 'bac_code')->textInput(['placeholder' => 'BAC Code']) ?>
 
     <?= $form->field($model, 'unit_of_measure_id')->widget(Select2::class, [
         'data' => ArrayHelper::map(UnitOfMeasure::find()->asArray()->all(), 'id', 'unit_of_measure'),
@@ -81,28 +83,35 @@ if (!empty($model->id)) {
             'placeholder' => 'Select Unit of Measure'
         ]
     ]) ?>
-    <?= $form->field($model, 'chart_of_account_id')->widget(Select2::class, [
-        'data' => $chart_of_account_id,
-        'options' => ['placeholder' => 'Search for a Chart of Account ...'],
-        'pluginOptions' => [
-            'allowClear' => true,
-            'minimumInputLength' => 1,
-            'language' => [
-                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-            ],
-            'ajax' => [
-                'url' => Yii::$app->request->baseUrl . '?r=chart-of-accounts/search-chart-of-accounts',
-                'dataType' => 'json',
-                'delay' => 250,
-                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                'cache' => true
-            ],
-            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-        ],
 
-    ]) ?>
+
+
+    <?php
+    if (Yii::$app->user->can('super-user')) {
+        echo $form->field($model, 'chart_of_account_id')->widget(Select2::class, [
+            'data' => $chart_of_account_id,
+            'options' => ['placeholder' => 'Search for a Chart of Account ...'],
+            'pluginOptions' => [
+                'allowClear' => true,
+                'minimumInputLength' => 1,
+                'language' => [
+                    'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                ],
+                'ajax' => [
+                    'url' => Yii::$app->request->baseUrl . '?r=chart-of-accounts/search-chart-of-accounts',
+                    'dataType' => 'json',
+                    'delay' => 250,
+                    'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                    'cache' => true
+                ],
+                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+            ],
+
+        ]);
+    }
+    ?>
 
 
 

@@ -21,7 +21,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <p>
             <?= Html::button('<i class="glyphicon glyphicon-pencil"></i> Update', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=pr-stock/update&id=' . $model->id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+            <?php
 
+            if (Yii::$app->user->can('super-user')) {
+                $btn_color = 'btn btn-danger';
+                if ($model->is_final) {
+                    $btn_color = 'btn btn-success';
+                }
+                echo  Html::a('Final', ['final', 'id' => $model->id], [
+                    'class' => $btn_color,
+                    'data' => [
+                        'confirm' => 'Are you sure you want to Final this item?',
+                        'method' => 'post',
+                    ],
+                ]);
+            }
+            ?>
         </p>
         <table class="table table-striped">
 
@@ -53,7 +68,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <th>Chart of Account</th>
-                    <td><?= $model->chartOfAccount->uacs . ' - ' . $model->chartOfAccount->general_ledger  ?></td>
+                    <td><?php
+                        if (!empty($model->chartOfAccount->uacs)) {
+                            echo   $model->chartOfAccount->uacs . ' - ' . $model->chartOfAccount->general_ledger;
+                        }
+                        ?></td>
                 </tr>
                 <tr>
                     <th>Part</th>

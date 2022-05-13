@@ -45,6 +45,7 @@ class PrPurchaseRequestController extends Controller
                             'create',
                             'search-pr',
                             'get-items',
+                            'update',
                         ],
                         'allow' => true,
                         'roles' => [
@@ -203,6 +204,9 @@ class PrPurchaseRequestController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        if ($model->is_final) {
+            return $this->goHome();
+        }
 
         if ($model->load(Yii::$app->request->post())) {
             $old = $this->findModel($id);
@@ -469,5 +473,19 @@ class PrPurchaseRequestController extends Controller
                 'pr_items_data' => $pr_items_data
             ]);
         }
+    }
+    public function actionFinal($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($model->is_final) {
+            $model->is_final = 0;
+        } else {
+            $model->is_final = 1;
+        }
+        if ($model->save(false))
+            return $this->render('view', [
+                'model' => $model,
+            ]);
     }
 }

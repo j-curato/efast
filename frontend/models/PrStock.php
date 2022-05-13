@@ -33,13 +33,13 @@ class PrStock extends \yii\db\ActiveRecord
         return [
             [['unit_of_measure_id', 'chart_of_account_id'], 'integer'],
             [['amount'], 'number'],
-            [['created_at'], 'safe'],
+            [['created_at',  'chart_of_account_id'], 'safe'],
             [[
                 'unit_of_measure_id',
-                'chart_of_account_id',
+
                 'stock_title',
                 'amount',
-                'bac_code','part', 'type'
+                'bac_code', 'part', 'type'
             ], 'required'],
             [['stock_title', 'part', 'type'], 'safe'],
         ];

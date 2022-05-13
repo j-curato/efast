@@ -299,7 +299,9 @@ class PrStockController extends Controller
 
             $query->select([" id, `stock_title` as text"])
                 ->from('pr_stock')
-                ->where(['like', 'stock_title', $q]);
+                ->where(['like', 'stock_title', $q])
+                // ->andwhere('pr_stock.is_final = 1')
+            ;
 
             $command = $query->createCommand();
             $data = $command->queryAll();
@@ -413,5 +415,19 @@ class PrStockController extends Controller
     {
         $parts = YIi::$app->memem->getStockPart()[$part];
         return json_encode($parts);
+    }
+    public function actionFinal($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($model->is_final) {
+            $model->is_final = 0;
+        } else {
+            $model->is_final = 1;
+        }
+        if ($model->save(false))
+            return $this->render('view', [
+                'model' => $model,
+            ]);
     }
 }
