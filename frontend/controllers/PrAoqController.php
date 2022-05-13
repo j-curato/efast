@@ -12,6 +12,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 
 /**
  * PrAoqController implements the CRUD actions for PrAoq model.
@@ -256,7 +257,7 @@ class PrAoqController extends Controller
 
         return $this->render('update', [
             'model' => $model,
-            'aoq_entries' => $this->aoqEntriesData($id)
+            'aoq_entries' => $result = ArrayHelper::index($this->aoqEntriesData($id), null,'rfq_item_id')
         ]);
     }
 
