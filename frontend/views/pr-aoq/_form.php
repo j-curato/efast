@@ -439,7 +439,6 @@ $csrfToken = Yii::$app->request->csrfToken;
                                         <td>
                                             <span> <input class='checkbox ' type='checkbox' ${lowest}   name='lowest[${transaction_row}]'> </span>
                                             <div class='pull-right' style='float:left'>
-                                            <a class='copy_row btn btn-primary btn-xs' type='button'><i class='fa fa-copy fa-fw'></i> </a>
                                             <a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw' ></i> </a>
                                             </div>
                                         </td>
