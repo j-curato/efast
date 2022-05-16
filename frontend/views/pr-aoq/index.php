@@ -18,20 +18,23 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Create  AOQ', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-        'panel'=>[
-            'type'=>GridView::TYPE_PRIMARY,
-            'heading'=>'AOQ'
+        'panel' => [
+            'type' => GridView::TYPE_PRIMARY,
+            'heading' => 'AOQ'
         ],
         'columns' => [
 
-            'id',
             'aoq_number',
-            'pr_rfq_id',
+            [
+                'attribute' => 'pr_rfq_id',
+                'value'=>'rfq.rfq_number'
+            ],
             'pr_date',
 
             ['class' => 'yii\grid\ActionColumn'],

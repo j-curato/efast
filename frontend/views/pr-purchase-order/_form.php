@@ -50,7 +50,7 @@ if (!empty($model->id)) {
             <div class="col-sm-3">
                 <?= $form->field($model, 'fk_pr_aoq_id')->widget(Select2::class, [
                     'data' => $aoq_id,
-                    'options' => ['placeholder' => 'Search for a RFQ'],
+                    'options' => ['placeholder' => 'Search for a AOQ Number'],
                     'pluginOptions' => [
                         'allowClear' => true,
                         'minimumInputLength' => 1,
@@ -70,14 +70,7 @@ if (!empty($model->id)) {
                     ],
                 ]) ?>
             </div>
-            <div class="col-sm-3">
-                <?= $form->field($model, 'delivery_date')->widget(DatePicker::class, [
-                    'pluginOptions' => [
-                        'format' => 'yyyy-mm-dd',
-                        'autoclose' => true,
-                    ]
-                ]) ?>
-            </div>
+
             <div class="col-sm-3">
                 <?= $form->field($model, 'fk_contract_type_id')->widget(Select2::class, [
                     'data' => ArrayHelper::map(PrContractType::find()->asArray()->all(), 'id', 'contract_name'),
@@ -98,18 +91,23 @@ if (!empty($model->id)) {
 
         </div>
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-sm-6">
                 <?= $form->field($model, 'place_of_delivery')->textInput() ?>
-
+            </div>
+            <div class="col-sm-6">
+                <?= $form->field($model, 'delivery_date')->textInput() ?>
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-sm-6">
                 <?= $form->field($model, 'delivery_term')->textInput() ?>
 
             </div>
+            <div class="col-sm-6">
+
+                <?= $form->field($model, 'payment_term')->textInput(['maxlength' => true]) ?>
+            </div>
         </div>
-        <?= $form->field($model, 'payment_term')->textInput(['maxlength' => true]) ?>
 
         <div class="row">
             <div class="col-sm-6">

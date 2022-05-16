@@ -133,6 +133,8 @@ class PrPurchaseOrderController extends Controller
     public function actionCreate()
     {
         $model = new PrPurchaseOrder();
+        $model->payment_term ='credit';
+        $model->delivery_term ='FOB Destination';
 
         if ($model->load(Yii::$app->request->post())) {
 

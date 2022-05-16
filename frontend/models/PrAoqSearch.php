@@ -17,8 +17,8 @@ class PrAoqSearch extends PrAoq
     public function rules()
     {
         return [
-            [['id', 'pr_rfq_id'], 'integer'],
-            [['aoq_number', 'pr_date', 'created_at'], 'safe'],
+            [['id'], 'integer'],
+            [['aoq_number', 'pr_date', 'created_at', 'pr_rfq_id'], 'safe'],
         ];
     }
 
@@ -55,16 +55,17 @@ class PrAoqSearch extends PrAoq
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->joinWith('rfq');
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'pr_rfq_id' => $this->pr_rfq_id,
+
             'pr_date' => $this->pr_date,
             'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['like', 'aoq_number', $this->aoq_number]);
+        $query->andFilterWhere(['like', 'aoq_number', $this->aoq_number])
+            ->andFilterWhere(['like', 'pr_rfq.rfq_number', $this->pr_rfq_id]);
 
         return $dataProvider;
     }

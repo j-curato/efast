@@ -36,7 +36,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     <tr>
                         <td colspan="3">
                             <span>Supplier:</span>
-                            <span><?php echo $val['payee'] ?></span>
+                            <span><?php $payee =  $val['payee'];
+                                    echo $payee;
+
+                                    ?></span>
                             <br>
                             <span>Address:</span>
                             <span><?php echo $val['address'] ?></span>
@@ -92,7 +95,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     </tr>
                     <?php
-
+                    $total_amount = intval($val['quantity']) * floatval($val['unit_cost']);
+                    $unit_cost = number_format($val['unit_cost'],2);
                     echo "<tr>
                         <td>{$val['bac_code']}</td>
                         <td>{$val['unit_of_measure']}</td>
@@ -105,13 +109,20 @@ $this->params['breadcrumbs'][] = $this->title;
                             </span>
                         </td>
                         <td> {$val['quantity']}</td>
-                        <td class='amount'> {$val['unit_cost']} </td>
-                        <td class='amount'>" . intval($val['quantity']) * floatval($val['unit_cost']) . " </td>
+                        <td class='amount'> {$unit_cost} </td>
+                        <td class='amount'>" . number_format($total_amount,2) . " </td>
                     </tr>";
                     ?>
 
                     <tr>
-                        <td colspan="6"> <span>(Total Amount in Words)</span></td>
+                        <td colspan="6">
+                            <span>(Total Amount in Words): </span>
+                            <span style="font-weight: bold;">
+                                <?php
+                                echo strtoupper(Yii::$app->memem->convertNumberToWord($total_amount));
+                                ?>
+                            </span>
+                        </td>
                     </tr>
                     <tr>
                         <td colspan="6">
@@ -124,7 +135,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <br>
                             <br>
                             <br>
-                            <span>________________________________</span>
+                            <span style="text-decoration:underline;font-weight:bold"><?= $payee ?></span>
 
                             <br>
                             <span>Signature over Printed Name of Supplier</span>
@@ -139,7 +150,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <br>
                             <br>
                             <br>
-                            <span style="text-decoration: underline;">
+                            <span style="text-decoration: underline; font-weight:bold">
                                 <?php
                                 echo strtoupper($model->authorizedOfficial->f_name . ' ' . $model->authorizedOfficial->m_name[0] . '. ' . $model->authorizedOfficial->l_name)
                                 ?>
@@ -163,9 +174,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             <br>
                             <br>
                             <br>
-                            <span style="text-decoration:underline;"> <?php
-                                    echo strtoupper($model->accountingUnit->f_name . ' ' . $model->accountingUnit->m_name[0] . '. ' . $model->accountingUnit->l_name)
-                                    ?></span>
+                            <span style="text-decoration:underline; font-weight:bold;"> <?php
+                                                                                        echo strtoupper($model->accountingUnit->f_name . ' ' . $model->accountingUnit->m_name[0] . '. ' . $model->accountingUnit->l_name)
+                                                                                        ?></span>
                             <br>
                             <span style="margin-left:auto;width:100%">Signature over Printed Name of Chief Accountant/Head of </span>
                             <br>

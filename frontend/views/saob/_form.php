@@ -1,23 +1,10 @@
 <!-- <link href="/frontend/web/css/site.css" rel="stylesheet" /> -->
 <?php
 
-use app\models\AdvancesEntries;
-use app\models\Books;
-use app\models\DvAucs;
-use app\models\FundSourceType;
-use app\models\MajorAccounts;
-use app\models\MfoPapCode;
-use kartik\grid\GridView;
-use yii\widgets\Pjax;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
-use kartik\export\ExportMenu;
 use kartik\select2\Select2;
-use Mpdf\Tag\Select;
-use yii\data\ActiveDataProvider;
-use yii\db\Query;
 use yii\helpers\ArrayHelper;
-use yii\web\JsExpression;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
@@ -160,6 +147,9 @@ if (!empty($model->id)) {
         <table id="summary_table">
             <thead>
                 <tr>
+                    <th colspan='10' style="background-color:  #80ccff;">Detailed</th>
+                </tr>
+                <tr>
 
                     <th rowspan="2"> MFO/PAP </th>
                     <th rowspan="2"> Document Recieve</th>
@@ -185,9 +175,39 @@ if (!empty($model->id)) {
             </tbody>
 
         </table>
+        <table id="summary_per_major_account" style="margin-top:5rem ;">
+            <thead>
+                <tr class="danger">
+                    <th colspan='9' style="background-color:  #80ccff;">Summary Per Allotment Class</th>
+                </tr>
+                <tr>
 
+                    <th rowspan="2"> Allotment Class </th>
+                    <th rowspan="2"> Document Recieve</th>
+                    <th rowspan="2">Prev. Allotment</th>
+                    <th rowspan="2">Current Allotment</th>
+                    <th colspan="3">Obligation</th>
+                    <th rowspan="2">BALANCES</th>
+                    <th rowspan="2"> UTILIZATION</th>
+
+                </tr>
+                <tr>
+                    <th>Last Month</th>
+                    <th>This Month</th>
+                    <th>To Date</th>
+                </tr>
+
+
+
+
+            </thead>
+            <tbody></tbody>
+        </table>
         <table class="" id="fur_table" style="margin-top: 30px;">
             <thead>
+                <tr>
+                    <th colspan='10' style="background-color:  #80ccff;">Detailed</th>
+                </tr>
                 <tr>
 
                     <th rowspan="2">Project / Program</th>
@@ -300,18 +320,16 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/saobJs.js"
             success: function(data) {
                 var res = JSON.parse(data)
                 // var detailed = res.detailed
-                console.log(res)
+                console.table(res.conso_per_major)
                 addData(res.result, res.allotments)
                 addToSummaryTable(res.conso_saob)
-
+                summaryPerMajorAccount(res.conso_per_major)
                 $('#con').show()
                 $('#dots5').hide()
             }
 
         })
     })
-
-
 </script>
 <?php
 SweetAlertAsset::register($this);

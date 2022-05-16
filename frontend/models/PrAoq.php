@@ -54,4 +54,8 @@ class PrAoq extends \yii\db\ActiveRecord
     {
         return $this->hasMany(PrAoqEntries::class, ['pr_aoq_id' => 'id']);
     }
+    public function getRfq()
+    {
+        return $this->hasOne(PrRfq::class, ['id' => 'pr_rfq_id']);
+    }
 }

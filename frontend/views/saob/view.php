@@ -32,6 +32,9 @@ if (!empty($model->id)) {
     <div id='con'>
         <table id="summary_table">
             <thead>
+                <tr class="danger">
+                    <th colspan='10' style="background-color:  #80ccff;">Consolidated</th>
+                </tr>
                 <tr>
 
                     <th rowspan="2"> MFO/PAP </th>
@@ -58,9 +61,40 @@ if (!empty($model->id)) {
             </tbody>
 
         </table>
+        <table id="summary_per_major_account" style="margin-top:5rem ;">
+            <thead>
+                <tr class="danger">
+                    <th colspan='9' style="background-color:  #80ccff;">Summary Per Allotment Class</th>
+                </tr>
+                <tr>
+
+                    <th rowspan="2"> Allotment Class </th>
+                    <th rowspan="2"> Document Recieve</th>
+                    <th rowspan="2">Prev. Allotment</th>
+                    <th rowspan="2">Current Allotment</th>
+                    <th colspan="3">Obligation</th>
+                    <th rowspan="2">BALANCES</th>
+                    <th rowspan="2"> UTILIZATION</th>
+
+                </tr>
+                <tr>
+                    <th>Last Month</th>
+                    <th>This Month</th>
+                    <th>To Date</th>
+                </tr>
+
+
+
+
+            </thead>
+            <tbody></tbody>
+        </table>
 
         <table class="" id="fur_table" style="margin-top: 30px;">
             <thead>
+                <tr class="danger">
+                    <th colspan='10' style="background-color:  #80ccff;">Detailed</th>
+                </tr>
                 <tr>
 
                     <th rowspan="2">Project / Program</th>
@@ -155,6 +189,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/saobJs.js"
         // var detailed = res.detailed
         addData(res.result, res.allotments)
         addToSummaryTable(res.conso_saob)
+        summaryPerMajorAccount(res.conso_per_major)
 
     })
 </script>
