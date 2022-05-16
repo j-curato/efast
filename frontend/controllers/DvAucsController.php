@@ -253,6 +253,7 @@ class DvAucsController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $oldModel = $model;
 
         if ($_POST) {
             $transaction = YIi::$app->db->beginTransaction();
@@ -263,7 +264,13 @@ class DvAucsController extends Controller
             $transaction_type = !empty($_POST['transaction_type']) ? $_POST['transaction_type'] : null;
             $book = !empty($_POST['book']) ? $_POST['book'] : null;
             $particular = !empty($_POST['particular']) ? $_POST['particular'] : null;
-
+            if ($oldModel->book_id != $book) {
+                $book_name = Yii::$app->db->createCommand("SELECT `name` FROM books WHERE id = :id")->bindValue(':id', $book)->queryScalar();
+                $dv_number = explode('-', $model->dv_number);
+                $dv_number[0] = $book_name;
+                $new_dv = implode('-', $dv_number);
+                $model->dv_number = $new_dv;
+            }
 
             $object_codes = !empty($_POST['object_code']) ? $_POST['object_code'] : [];
             $debits = !empty($_POST['debit']) ? $_POST['debit'] : [];
