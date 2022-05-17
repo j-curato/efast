@@ -378,9 +378,8 @@ class RemittanceController extends Controller
                 ->join('INNER JOIN', 'remittance_payee', 'dv_accounting_entries.remittance_payee_id = remittance_payee.id')
                 ->join('INNER JOIN', 'payee', ' remittance_payee.payee_id = payee.id')
                 ->where(['like', 'payee.account_name', $q])
-                ->groupBy(" payee.id ,
-            payee.account_name ");
-            $command = $query->createCommand();
+                ->groupBy(" payee.id ,payee.account_name ");
+                $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
         } else if (!is_null($q)) {

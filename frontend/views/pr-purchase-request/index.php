@@ -55,8 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'pr_number',
             'date',
-            'purpose:ntext',
-            'book_id',
+            'purpose',
             [
                 'label' => 'Book',
                 'attribute' => 'book_id',

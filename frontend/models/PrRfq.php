@@ -71,4 +71,9 @@ class PrRfq extends \yii\db\ActiveRecord
     {
         return $this->hasOne(PrPurchaseRequest::class, ['id' => 'pr_purchase_request_id']);
     }
+    public function getCanvasser()
+    {
+
+        return $this->hasOne(Employee::class, ['id' => 'employee_id']);
+    }
 }

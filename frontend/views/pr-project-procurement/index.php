@@ -43,7 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'amount',
             [
-                'label' => 'Employee',
+                'label' => 'Prepared By',
                 'attribute' => 'employee_id',
                 'value' => function ($model) {
                     $name = $model->employee->f_name . ' '. $model->employee->m_name[0].'. '.$model->employee->l_name ; 

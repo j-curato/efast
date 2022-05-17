@@ -29,13 +29,16 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'rfq_number',
-            'pr_purchase_request_id',
+            [
+                'attribute'=>'pr_purchase_request_id',
+                'value'=>'purchaseRequest.pr_number'
+            ],
             '_date',
-            // 'rbac_composition_id',
-            //'employee_id',
-            //'created_at',
+            [
+                'attribute'=>'employee_id',
+                'value'=>'canvasser.f_name'
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

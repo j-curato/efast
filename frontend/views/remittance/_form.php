@@ -41,7 +41,7 @@ if (!empty($model->id)) {
         (IFNULL(dv_accounting_entries.credit,0) + IFNULL(dv_accounting_entries.debit,0)) - IFNULL(  remitted.remitted_amount,0) unremited_amount
 
     
-     FROM `remittance_items`
+    FROM `remittance_items`
     LEFT JOIN dv_accounting_entries ON remittance_items.fk_dv_acounting_entries_id = dv_accounting_entries.id
     LEFT JOIN payroll ON dv_accounting_entries.payroll_id = payroll.id
     LEFT JOIN process_ors ON payroll.process_ors_id = process_ors.id

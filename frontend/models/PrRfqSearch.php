@@ -17,8 +17,8 @@ class PrRfqSearch extends PrRfq
     public function rules()
     {
         return [
-            [['id', 'pr_purchase_request_id', 'bac_composition_id'], 'integer'],
-            [['rfq_number', '_date', 'employee_id', 'created_at'], 'safe'],
+            [['id',  'bac_composition_id'], 'integer'],
+            [['rfq_number', '_date', 'employee_id', 'created_at', 'pr_purchase_request_id'], 'safe'],
         ];
     }
 
@@ -55,18 +55,18 @@ class PrRfqSearch extends PrRfq
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->joinWith('purchaseRequest');
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'pr_purchase_request_id' => $this->pr_purchase_request_id,
             '_date' => $this->_date,
             'bac_composition_id' => $this->bac_composition_id,
             'created_at' => $this->created_at,
         ]);
 
         $query->andFilterWhere(['like', 'rfq_number', $this->rfq_number])
-            ->andFilterWhere(['like', 'employee_id', $this->employee_id]);
+            ->andFilterWhere(['like', 'employee_id', $this->employee_id])
+            ->andFilterWhere(['like', 'pr_purchase_request.pr_number', $this->pr_purchase_request_id]);
 
         return $dataProvider;
     }

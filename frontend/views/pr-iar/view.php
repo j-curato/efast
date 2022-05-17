@@ -95,7 +95,7 @@ WHERE pr_iar_item.fk_pr_iar_id = :id
                     $description = $val['description'];
                     $specification = $val['specification'];
                     $bac_code = $val['bac_code'];
-                    $quantity = $val['quantity'];
+                    $quantity = !empty($val['quantity'])?$val['quantity']:'';
                     $unit_of_measure = $val['unit_of_measure'];
 
                     echo "<tr>
