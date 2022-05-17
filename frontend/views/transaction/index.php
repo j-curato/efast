@@ -52,13 +52,10 @@ Modal::end();
 
 
         <?php
-        $whitelist = array('127.0.0.1', "::1", "10.20.17.35");
 
-        if (in_array($_SERVER['REMOTE_ADDR'], $whitelist)) {
 
-            if (Yii::$app->user->can('super-user')) {
-                echo "<button type='button' class='btn btn-primary'  id ='update_local_transaction'>Update Local Transaction</button>";
-            }
+        if (Yii::$app->user->can('super-user')) {
+            echo "<button type='button' class='btn btn-primary'  id ='update_local_transaction'>Update Local Transaction</button>";
         }
         ?>
     </p>
