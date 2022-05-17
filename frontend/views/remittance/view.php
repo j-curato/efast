@@ -49,7 +49,7 @@ AND remittance_items.is_removed = 0
 ?>
 <div class="remittance-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -58,7 +58,8 @@ AND remittance_items.is_removed = 0
 
 
     <div class="container">
-        <table class="table table-striped">
+        <h4><?= Html::encode($this->title) ?></h4>
+        <table >
 
             <thead>
                 <tr class="primary">
@@ -148,15 +149,32 @@ AND remittance_items.is_removed = 0
 <style>
     .container {
         background-color: white;
+        padding: 3rem;
+
+
     }
 
     .amount {
         text-align: right;
+    }
+    table{
+        width: 100%;
+    }
+    th,td{
+        padding: .8rem;
+        font-size: medium;
     }
 
     @media print {
         .btn {
             display: none;
         }
+        .main-footer{
+            display: none;
+        }
+        th,td{
+        padding: 4px;
+        font-size:12px;
+    }
     }
 </style>
