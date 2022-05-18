@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         </span>
                         <span style="font-weight: bold;">
-                            DEAPARTMENT OF TRADE & INDUSTRY
+                            DEPARTMENT OF TRADE & INDUSTRY
                         </span>
                     </td>
                 </tr>
