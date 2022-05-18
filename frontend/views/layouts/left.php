@@ -111,7 +111,8 @@
             $division === 'idd' ||
             $division === 'sdd' ||
             $division === 'ord' ||
-            $division === 'cpd'
+            $division === 'cpd' ||
+            $division === 'mssu'
         ) {
 
             echo dmstr\widgets\Menu::widget(
