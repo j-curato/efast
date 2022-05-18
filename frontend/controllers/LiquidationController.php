@@ -1675,4 +1675,18 @@ class LiquidationController extends Controller
             'dataProvider' => $dataProvider
         ];
     }
+    public function actionCheckAdvancesBook()
+    {
+        if ($_POST) {
+            $id = $_POST['id'];
+
+            $query = Yii::$app->db->createCommand("SELECT books.name FROM advances_entries
+            LEFT JOIN books ON advances_entries.book_id = books.id
+            WHERE advances_entries.id = :id
+            ")
+                ->bindValue(':id', $id)
+                ->queryScalar();
+            return json_encode($query);
+        }
+    }
 }

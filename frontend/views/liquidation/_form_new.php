@@ -488,9 +488,9 @@ SweetAlertAsset::register($this);
 
         $.each(data, function(key, val) {
             let disabled_input = ''
-            if (val.book_name.toLowerCase() == 'rapid lp'){
+            if (val.book_name.toLowerCase() == 'rapid lp') {
                 console.log(val.book_name.toLowerCase())
-                 disabled_input = 'disabled'
+                disabled_input = 'disabled'
             }
             const row = `<tr>
         
@@ -548,13 +548,7 @@ SweetAlertAsset::register($this);
 
     }
 
-    function copyRow(row) {
-
-        $('.liquidation-chart-of-accounts').select2('destroy');
-        //     $('.unit_of_measure').select2('destroy');
-        //     $('.unit_cost').maskMoney('destroy');
-        var source = $(row).closest('tr');
-        var clone = source.clone(true);
+    function displayCopyRow(clone, disable) {
         const chart_of_account = clone.find('.liquidation-chart-of-accounts')
         const liq_damage = clone.find('.liq_damages_main')
         const advances_etries_id = clone.find('.advances_etries_id')
@@ -573,8 +567,8 @@ SweetAlertAsset::register($this);
 
         liq_damages_mask.prop('disabled', false)
         withdrawal_mask.prop('disabled', false)
-        vat_nonvat_mask.prop('disabled', false)
-        expanded_mask.prop('disabled', false)
+        vat_nonvat_mask.prop('disabled', disable)
+        expanded_mask.prop('disabled', disable)
         chart_of_account.attr('class', `form-control`)
         chart_of_account.css('height:12px')
 
@@ -637,6 +631,34 @@ SweetAlertAsset::register($this);
         // chart_of_account.val().trigger('change');
         liquidationAccountingCodesSelect()
         maskAmount()
+
+
+    }
+
+    function copyRow(row) {
+
+        $('.liquidation-chart-of-accounts').select2('destroy');
+        //     $('.unit_of_measure').select2('destroy');
+        //     $('.unit_cost').maskMoney('destroy');
+        var source = $(row).closest('tr');
+        let disable = false;
+        var clone = source.clone(true);
+        $.ajax({
+            type: 'POST',
+            url: window.location.pathname + '?r=liquidation/check-advances-book',
+            data: {
+                id: source.find('.advances_entries_id').val()
+            },
+            success: function(data) {
+                const res = JSON.parse(data)
+                if (res.toLowerCase() == 'rapid lp') {
+                    disable = true
+
+                }
+                displayCopyRow(clone, disable)
+            }
+        })
+
 
     }
 
