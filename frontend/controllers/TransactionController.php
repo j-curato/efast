@@ -126,16 +126,7 @@ class TransactionController extends Controller
             $division = strtolower(Yii::$app->user->identity->division);
             $user = strtolower(Yii::$app->user->identity->province);
 
-            if (
-
-                $user === 'ro' &&
-                $division === 'sdd' ||
-                $division === 'cpd' ||
-                $division === 'idd' ||
-                $division === 'ord'
-
-
-            ) {
+            if (!Yii::$app->user->can('super-user')) {
                 $r_center = Yii::$app->db->createCommand("SELECT `id` FROM responsibility_center WHERE `name`=:division")
                     ->bindValue(':division', $division)
                     ->queryScalar();
@@ -486,7 +477,7 @@ class TransactionController extends Controller
             $final_number .= 0;
         }
         $final_number .= $last_number;
-        $tracking_number = $responsibility_center['name'] . '-' . $q->format('Y-m') . '-' . $final_number;
+        $tracking_number = strtoupper($responsibility_center['name']) . '-' . $q->format('Y-m') . '-' . $final_number;
         return  $tracking_number;
     }
     public function actionGetTransaction()

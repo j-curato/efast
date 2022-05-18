@@ -236,6 +236,7 @@
                                         ['label' => 'Conso Cashflow', 'icon' => 'circle-o', 'url' => ['/jev-preparation/consolidated-cashflow'],],
                                         ['label' => 'Net Asset Changes', 'icon' => 'circle-o', 'url' => ['/jev-preparation/changes-netasset-equity'],],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'Transaction Archive', 'icon' => 'circle-o', 'url' => ['/report/transaction-archive'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Remittance Summary', 'icon' => 'circle-o', 'url' => ['/report/withholding-and-remittance-summary'],] : [],
 
                                     ],
                                 ] : ['label' => ''],

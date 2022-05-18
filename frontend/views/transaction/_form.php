@@ -44,12 +44,7 @@ use kartik\select2\Select2;
         <?php
 
         if (
-
-            $user === 'ro' &&
-            $division === 'sdd' ||
-            $division === 'cpd' ||
-            $division === 'idd' ||
-            $division === 'ord'
+            !Yii::$app->user->can('super-user')
 
 
         ) {

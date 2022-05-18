@@ -134,7 +134,14 @@ if (!empty($model->id)) {
             </div>
             <div class="col-sm-2" style="margin-top: 2.5rem;">
                 <button class="btn btn-primary" type='button' id="generate">Generate</button>
-                <button class="btn btn-success" type='submit' id="save">save</button>
+
+
+                <?php
+
+                if (Yii::$app->user->can('super-user')) {
+                    echo "   <button class='btn btn-success' type='submit' id='save'>Save</button>";
+                }
+                ?>
             </div>
 
         </div>

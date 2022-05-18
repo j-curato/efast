@@ -106,19 +106,22 @@ class SaobController extends Controller
         $model = new Saob();
 
         if ($_POST) {
-            $from_reporting_period = $_POST['from_reporting_period'];
-            $to_reporting_period = $_POST['to_reporting_period'];
-            $book_id = $_POST['book_id'];
-            $mfo_pap_code_id = $_POST['mfo_code'];
-            $document_recieve_id = $_POST['document_recieve'];
+            if (Yii::$app->user->can('super-user')) {
 
-            $model->from_reporting_period = $from_reporting_period;
-            $model->to_reporting_period = $to_reporting_period;
-            $model->book_id = $book_id;
-            $model->mfo_pap_code_id = $mfo_pap_code_id;
-            $model->document_recieve_id = $document_recieve_id;
-            if ($model->save(false)) {
-                return $this->redirect(['view', 'id' => $model->id]);
+                $from_reporting_period = $_POST['from_reporting_period'];
+                $to_reporting_period = $_POST['to_reporting_period'];
+                $book_id = $_POST['book_id'];
+                $mfo_pap_code_id = $_POST['mfo_code'];
+                $document_recieve_id = $_POST['document_recieve'];
+
+                $model->from_reporting_period = $from_reporting_period;
+                $model->to_reporting_period = $to_reporting_period;
+                $model->book_id = $book_id;
+                $model->mfo_pap_code_id = $mfo_pap_code_id;
+                $model->document_recieve_id = $document_recieve_id;
+                if ($model->save(false)) {
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
             }
         }
 

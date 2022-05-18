@@ -16,11 +16,7 @@ $province = strtolower(Yii::$app->user->identity->province);
 $division = strtolower(Yii::$app->user->identity->division);
 if (
 
-    $province === 'ro' &&
-    $division === 'sdd' ||
-    $division === 'cpd' ||
-    $division === 'idd' ||
-    $division === 'ord'
+    !Yii::$app->user->can('super-user')
 
 
 ) {

@@ -64,15 +64,11 @@ class PrPurchaseRequestSearch extends PrPurchaseRequest
         $division = strtolower(Yii::$app->user->identity->division);
         if (
 
-            $user_province === 'ro' &&
-            $division === 'sdd' ||
-            $division === 'cpd' ||
-            $division === 'idd' ||
-            $division === 'ord'
+            !Yii::$app->user->can('super-user')
 
 
         ) {
-            $query->join('LEFT JOIN','pr_office','pr_project_procurement.pr_office_id = pr_office.id');
+            $query->join('LEFT JOIN', 'pr_office', 'pr_project_procurement.pr_office_id = pr_office.id');
             $query->andWhere('pr_office.division =:division ', ['division' => $division]);
         }
         // grid filtering conditions

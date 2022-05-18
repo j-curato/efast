@@ -60,7 +60,8 @@ class ReportController extends \yii\web\Controller
                     'annex-A',
                     'raaf',
                     'trial-balance',
-                    'detailed-financial-position'
+                    'detailed-financial-position',
+                    'withholding-and-remittance-summary'
 
                 ],
                 'rules' => [
@@ -79,9 +80,8 @@ class ReportController extends \yii\web\Controller
                             'detailed-dv-aucs',
                             'conso-detailed-dv',
                             'trial-balance',
-                            'detailed-financial-position'
-
-
+                            'detailed-financial-position',
+                            'withholding-and-remittance-summary'
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
@@ -250,7 +250,7 @@ class ReportController extends \yii\web\Controller
         FROM information_schema.tables 
         WHERE table_schema = DATABASE()
         AND table_name = 'unpaid_obligation'")->queryScalar());
-      
+
         if ($_POST) {
 
             $year = $_POST['year'];
@@ -3835,6 +3835,30 @@ class ReportController extends \yii\web\Controller
             'dataProvider' => $dataProvider,
         ]);
     }
+    public function actionRandomString()
+    {
+        $n = 8;
+        echo $this->getName($n);
+    }
+    function getName($n)
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $randomString = '';
+
+        for ($i = 0; $i < $n; $i++) {
+            $index = rand(0, strlen($characters) - 1);
+            $randomString .= $characters[$index];
+        }
+
+        return $randomString;
+    }
+    public function actionQ()
+    {
+        return var_dump($_SERVER['REMOTE_ADDR']);
+    }
+
+
+
 
     // public function actionSubTrial()
     // {

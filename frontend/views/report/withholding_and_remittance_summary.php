@@ -39,6 +39,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'object_code',
             'account_title',
             'amount',
+            'remitted_amount',
+            'unremitted_amount'
         ],
     ]); ?>
 

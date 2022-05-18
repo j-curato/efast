@@ -32,7 +32,7 @@ class WithholdingAndRemittanceSummarySearch extends WithholdingAndRemittanceSumm
 
     public function rules()
     {
-      
+
         return [
             [['amount',], 'number'],
             [[
@@ -44,7 +44,9 @@ class WithholdingAndRemittanceSummarySearch extends WithholdingAndRemittanceSumm
                 'type',
                 'payee',
                 'newProperty',
-                'payee_id'
+                'payee_id',
+                'remitted_amount',
+                'unremitted_amount'
 
             ], 'safe'],
         ];
@@ -78,15 +80,7 @@ class WithholdingAndRemittanceSummarySearch extends WithholdingAndRemittanceSumm
         ]);
 
         $this->load($params);
-        if ($this->_newProperty === 'remittance_to_payee') {
-            $query->where('payee_id  = :payee_id', ['payee_id' => $this->payee_id]);
-        }
-        if (!$this->validate()) {
 
-            return $dataProvider;
-        }
-
-        // grid filtering conditions
         $query->andFilterWhere([]);
 
         $query->andFilterWhere(['like', 'amount', $this->amount])
@@ -95,12 +89,10 @@ class WithholdingAndRemittanceSummarySearch extends WithholdingAndRemittanceSumm
             ->andFilterWhere(['like', 'dv_number', $this->dv_number])
             ->andFilterWhere(['like', 'object_code', $this->object_code])
             ->andFilterWhere(['like', 'payee', $this->payee])
+            ->andFilterWhere(['like', 'remitted_amount', $this->remitted_amount])
+            ->andFilterWhere(['like', 'unremitted_amount', $this->unremitted_amount])
             ->andFilterWhere(['like', 'account_title', $this->account_title]);
-        if ($this->_newProperty == '') {
-            $dataProvider = new \yii\data\ArrayDataProvider();
-        } else if ($this->_newProperty == 'remittance_to_payee' && $this->payee_id === '') {
-            $dataProvider = new \yii\data\ArrayDataProvider();
-        }
+
 
         return $dataProvider;
     }

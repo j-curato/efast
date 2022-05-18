@@ -20,7 +20,7 @@ class TransactionSearch extends Transaction
     {
         return [
             [['id',], 'integer'],
-            [['responsibility_center_id','particular', 'tracking_number', 'earmark_no', 'payroll_number', 'transaction_date', 'transaction_time', 'payee_id'], 'safe'],
+            [['responsibility_center_id', 'particular', 'tracking_number', 'earmark_no', 'payroll_number', 'transaction_date', 'transaction_time', 'payee_id'], 'safe'],
             [['gross_amount'], 'number'],
         ];
     }
@@ -55,10 +55,7 @@ class TransactionSearch extends Transaction
         // ->where("$sql",$qwe)
 
         if (
-            strtolower($province) === 'idd' ||
-            strtolower($province) === 'cpd' ||
-            strtolower($province) === 'sdd' ||
-            strtolower($province) === 'ord'
+            !Yii::$app->user->can('super-user')
 
         ) {
             $q->joinWith('responsibilityCenter')
