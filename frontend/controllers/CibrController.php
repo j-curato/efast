@@ -198,9 +198,13 @@ class CibrController extends Controller
     {
 
         $model = $this->findModel($id);
+        // var_dump($model->reporting_period);
+        // var_dump($model->province);
+        // var_dump($model->bank_account_id);
+        // return;
         Yii::$app->db->createCommand("DELETE FROM liquidation_reporting_period WHERE reporting_period =:reporting_period
-        AND province =:province
-        AND bank_account_id =:bank_account_id
+        AND( province =:province
+        OR bank_account_id =:bank_account_id)
         ")
             ->bindValue(':reporting_period', $model->reporting_period)
             ->bindValue(':province', $model->province)
