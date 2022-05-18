@@ -151,6 +151,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th>Reporting Period</th>
                     <th>NFT Number</th>
                     <th>Report Type</th>
+                    <th>Fund Source Type</th>
                     <th>Fund Source</th>
                     <th>Payee</th>
                     <th>Particulars</th>
@@ -191,6 +192,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         $report_type = '';
                         $province = '';
                         $fund_source = '';
+                        $fund_source_type = '';
                         $uacs = '';
                         $general_ledger = '';
                         $total_withdrawal += $val->withdrawals;
@@ -199,9 +201,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         $total_liquidation_damages += $val->liquidation_damage;
                         if (!empty($val->advances_entries_id)) {
                             $nft_number =  $val->advancesEntries->advances->nft_number;
-                            $report_type = $val->advancesEntries->advances->report_type;
+                            $report_type = $val->advancesEntries->report_type;
                             $province = $val->advancesEntries->advances->province;
                             $fund_source =  $val->advancesEntries->fund_source;
+                            $fund_source_type =  $val->advancesEntries->fund_source_type;
                         }
                         if (!empty($val->new_object_code)) {
 
@@ -225,6 +228,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td>{$val->reporting_period}</td>
                 <td>{$nft_number}</td>
                 <td>{$report_type}</td>
+                <td>{$fund_source_type}</td>
                 <td>{$fund_source}</td>
                 <td>{$payee}</td>
                 <td>{$particular}</td>

@@ -487,6 +487,11 @@ SweetAlertAsset::register($this);
     function insertEntries(data) {
 
         $.each(data, function(key, val) {
+            let disabled_input = ''
+            if (val.book_name.toLowerCase() == 'rapid lp'){
+                console.log(val.book_name.toLowerCase())
+                 disabled_input = 'disabled'
+            }
             const row = `<tr>
         
                 <td style='display:none;'>
@@ -514,13 +519,13 @@ SweetAlertAsset::register($this);
                     </td>
                     <td> 
 
-                            <input type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control amount mask-amount'>
+                            <input type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control amount mask-amount' ${disabled_input}>
                             <input type='hidden'  class='vat_nonvat_main main_amount' name='vat_nonvat[${entries_row}]'>
 
                     </td>
            
                     <td> 
-                        <input type='text'  onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control expanded_tax amount mask-amount' '>
+                        <input type='text'  onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control expanded_tax amount mask-amount' ${disabled_input}>
                         <input type='hidden'  class='expanded_tax_main main_amount' name='expanded_tax[${entries_row}]'>
 
                     </td>

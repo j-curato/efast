@@ -588,10 +588,12 @@ class LiquidationController extends Controller
                     'advances_entries.*',
                     'advances.nft_number',
                     'advances.report_type',
+                    'books.name as book_name',
                     'advances.province'
                 ])
                 ->from('advances_entries')
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
+                ->join('LEFT JOIN', 'books', 'advances_entries.book_id = books.id')
                 ->where("$sql", $params)
                 ->all();
 
