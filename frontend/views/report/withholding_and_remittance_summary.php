@@ -38,9 +38,23 @@ $this->params['breadcrumbs'][] = $this->title;
             'dv_number',
             'object_code',
             'account_title',
-            'amount',
-            'remitted_amount',
-            'unremitted_amount'
+            [
+                'label' => 'Amount Withheld',
+                'attribute' => 'amount',
+                'hAlign' => 'right',
+                'format' => ['decimal', 2]
+            ],
+            [
+                'attribute' => 'remitted_amount',
+                'hAlign' => 'right',
+                'format' => ['decimal', 2]
+            ],
+            [
+                'attribute' => 'unremitted_amount',
+                'hAlign' => 'right',
+                'format' => ['decimal', 2]
+            ],
+
         ],
     ]); ?>
 
