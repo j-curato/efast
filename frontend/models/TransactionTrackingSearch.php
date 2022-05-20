@@ -65,7 +65,7 @@ class TransactionTrackingSearch extends TransactionTracking
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => ['defaultOrder' => ['transaction_date' => SORT_DESC]]
+            'sort' => ['defaultOrder' => ['transaction_date' => SORT_DESC]],
         ]);
 
         $this->load($params);

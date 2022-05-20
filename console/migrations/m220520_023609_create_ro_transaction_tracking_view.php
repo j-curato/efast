@@ -25,13 +25,15 @@ class m220520_023609_create_ro_transaction_tracking_view extends Migration
                 `transaction`.particular,
                 ors.ors_number,
                 ors.ors_date,
-                ors.created_at,
+                ors.created_at as ors_created_at,
                 dv.dv_number,
                 dv.recieved_at,
                 dv.in_timestamp,
                 dv.out_timestamp,
                 cash_disbursement.check_or_ada_no,
                 cash_disbursement.issuance_date,
+                cash_disbursement.begin_time as cash_in,
+                cash_disbursement.out_time as cash_out
                 IF(cash_disbursement.is_cancelled =1,'Cancelled','Good') cash_is_cancelled
                 FROM `transaction`
                 LEFT JOIN payee ON `transaction`.payee_id = payee.id
@@ -66,7 +68,6 @@ class m220520_023609_create_ro_transaction_tracking_view extends Migration
      */
     public function safeDown()
     {
-    
     }
 
     /*

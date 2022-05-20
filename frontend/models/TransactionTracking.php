@@ -44,7 +44,12 @@ class TransactionTracking extends \yii\db\ActiveRecord
             [['id', 'gross_amount', 'particular'], 'required'],
             [['id'], 'integer'],
             [['gross_amount'], 'number'],
-            [['created_at', 'recieved_at', 'in_timestamp', 'out_timestamp'], 'safe'],
+            [[
+                'ors_created_at', 'recieved_at', 'in_timestamp', 'out_timestamp',
+
+                'cash_in',
+                'cash_out'
+            ], 'safe'],
             [['tracking_number', 'division', 'payee', 'particular', 'ors_number', 'dv_number'], 'string', 'max' => 255],
             [['transaction_date', 'issuance_date'], 'string', 'max' => 50],
             [['ors_date'], 'string', 'max' => 20],
@@ -68,14 +73,16 @@ class TransactionTracking extends \yii\db\ActiveRecord
             'particular' => 'Particular',
             'ors_number' => 'Ors Number',
             'ors_date' => 'Ors Date',
-            'created_at' => 'Created At',
+            'ors_created_at' => 'Ors Created At',
             'dv_number' => 'Dv Number',
             'recieved_at' => 'Recieved At',
-            'in_timestamp' => 'In Timestamp',
-            'out_timestamp' => 'Out Timestamp',
-            'check_or_ada_no' => 'Check Or Ada No',
-            'issuance_date' => 'Issuance Date',
-            'cash_is_cancelled' => 'Cash Is Cancelled',
+            'in_timestamp' => 'Accountance In Timestamp',
+            'out_timestamp' => 'Accountance Out Timestamp',
+            'check_or_ada_no' => 'Check Number',
+            'issuance_date' => 'Check Issuance Date',
+            'cash_is_cancelled' => 'Check Good/Cancelled',
+            'in_timestamp' => 'Cashier In',
+            'out_timestamp' => 'Cashier Out',
         ];
     }
 }
