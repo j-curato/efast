@@ -1612,6 +1612,7 @@ class DvAucsController extends Controller
     {
         $model = $this->findModel($id);
         $searchModel = new ProcessOrsSearch();
+        $oldModel = $model;
 
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         // echo $id;
@@ -1622,6 +1623,7 @@ class DvAucsController extends Controller
             if (empty($_POST['reporting_period'])) {
                 return json_encode(['isSuccess' => false, 'error' => 'Reporting Period is Required']);
             }
+
 
             $recieved_at = !empty($_POST['date_receive']) ? $_POST['date_receive'] : null;
             $reporting_period = $_POST['reporting_period'];
@@ -1637,6 +1639,13 @@ class DvAucsController extends Controller
             $ors = $_POST['process_ors_id'];
             $payroll_id = !empty($_POST['payroll_id']) ? $_POST['payroll_id'] : null;
             $transaction = Yii::$app->db->beginTransaction();
+            if ($oldModel->book_id != $book_id) {
+                $book_name = Yii::$app->db->createCommand("SELECT `name` FROM books WHERE id = :id")->bindValue(':id', $book_id)->queryScalar();
+                $dv_number = explode('-', $model->dv_number);
+                $dv_number[0] = $book_name;
+                $new_dv = implode('-', $dv_number);
+                $model->dv_number = $new_dv;
+            }
             if ($transaction_type === 'Single') {
 
                 $book_id = Yii::$app->db->createCommand("SELECT book_id FROM process_ors WHERE id = :id")->bindValue(':id', $ors[min(array_keys($ors))])->queryScalar();
