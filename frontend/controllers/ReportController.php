@@ -13,6 +13,8 @@ use app\models\DvAucs;
 use app\models\PoTransmittalsPendingSearch;
 use app\models\RaoSearch;
 use app\models\TransactionArchiveSearch;
+use app\models\TransactionTracking;
+use app\models\TransactionTrackingSearch;
 use app\models\UnpaidObligationSearch;
 use app\models\WithholdingAndRemittanceSummarySearch;
 use Da\QrCode\QrCode;
@@ -61,7 +63,8 @@ class ReportController extends \yii\web\Controller
                     'raaf',
                     'trial-balance',
                     'detailed-financial-position',
-                    'withholding-and-remittance-summary'
+                    'withholding-and-remittance-summary',
+                    'transaction-tracking'
 
                 ],
                 'rules' => [
@@ -81,7 +84,8 @@ class ReportController extends \yii\web\Controller
                             'conso-detailed-dv',
                             'trial-balance',
                             'detailed-financial-position',
-                            'withholding-and-remittance-summary'
+                            'withholding-and-remittance-summary',
+                            'transaction-tracking'
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
@@ -106,7 +110,6 @@ class ReportController extends \yii\web\Controller
                             'annex-A',
                             'raaf',
 
-
                         ],
                         'allow' => true,
                         'roles' => ['@']
@@ -115,6 +118,7 @@ class ReportController extends \yii\web\Controller
                         'actions' => [
                             'division-fur',
                             'saobs',
+                            'transaction-tracking'
 
                         ],
                         'allow' => true,
@@ -3831,6 +3835,17 @@ class ReportController extends \yii\web\Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('withholding_and_remittance_summary', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+    public function actionTransactionTracking()
+    {
+
+        $searchModel = new TransactionTrackingSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('transaction_tracking', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);

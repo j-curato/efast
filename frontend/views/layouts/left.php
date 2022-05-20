@@ -339,6 +339,7 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Annex A', 'icon' => 'circle-o', 'url' => ['/report/annex-a'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'RAAF', 'icon' => 'circle-o', 'url' => ['/report/raaf'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'CDJ', 'icon' => 'circle-o', 'url' => ['/report/cdj'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Transaction Tracking', 'icon' => 'circle-o', 'url' => ['/report/transaction-tracking'],] : [],
                             ],
                         ] : [],
                         Yii::$app->user->can('super-user') ?    [
