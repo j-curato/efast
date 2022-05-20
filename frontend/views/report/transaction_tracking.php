@@ -1,20 +1,13 @@
 <?php
 
-use app\models\AdvancesEntries;
-use app\models\DvAucs;
 use kartik\grid\GridView;
-use yii\widgets\Pjax;
-use aryelds\sweetalert\SweetAlertAsset;
-use kartik\date\DatePicker;
 use kartik\export\ExportMenu;
-use kartik\select2\Select2;
-use yii\data\ActiveDataProvider;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = "List of Pending DV's";
+$this->title = "Transaction Tracking";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index" style="background-color: white;">
@@ -51,7 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'List of Unobligated Transactions',
+            'heading' => 'Transaction Tracking',
         ],
         'floatHeaderOptions' => [
             'top' => 50,
