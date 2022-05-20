@@ -3874,7 +3874,7 @@ class ReportController extends \yii\web\Controller
     public function actionServer()
     {
 
-        echo $_SERVER['SERVER_NAME'];
+        echo $_SERVER['REMOTE_ADDR'];
     }
 }
 
