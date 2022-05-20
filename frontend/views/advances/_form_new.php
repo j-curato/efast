@@ -371,7 +371,7 @@ $bank_account_id = '';
                     </td>
      
                     <td><a id='copy_${transaction_table_count}' class='btn btn-success ' type='button' onclick='copy(this)'><i class="fa fa-copy "></i></a></td>
-                    <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
+                    
                 `
             $("#transaction_table tbody").append(row)
             $(`#amount-${transaction_table_count}`).maskMoney({
