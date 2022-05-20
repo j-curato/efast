@@ -139,7 +139,7 @@ $row = 1;
 
 
 
-        <table id="rfq_items_table" class="table table-striped">
+        <table id="rfq_items_table" class="table table-stripe">
             <thead>
                 <th>action</th>
 
@@ -202,6 +202,7 @@ $csrfToken = Yii::$app->request->csrfToken;
                     };
                 },
             },
+            placeholder:'Select Payee'
         });
     }
 
@@ -222,17 +223,13 @@ $csrfToken = Yii::$app->request->csrfToken;
     let aoq_items = ''
     let transaction_row = 1;
     $(document).ready(function() {
-        aoq_items = JSON.parse('<?= json_encode($aoq_entries) ?>');
+        aoq_items = JSON.parse(`<?= json_encode($aoq_entries) ?>`);
         payeeSelect()
         maskAmount()
 
-
-
-        console.log(aoq_items)
+      
         transaction_row = <?= $row ?>;
-        $('.add_new_row').click(function() {
-            console.log('q')
-        })
+
 
         $('#rfq_items_table').on('click', '.remove_this_row', function() {
             $(this).closest('tr').remove()
@@ -335,9 +332,7 @@ $csrfToken = Yii::$app->request->csrfToken;
                 },
                 success: function(data) {
                     var res = JSON.parse(data)
-                    console.log(res)
                     for (var i = 0; i < res.length; i++) {
-                        console.log(i)
                         var row = `<tr class='danger'>
                             <td>
                                 <input type='button' class='btn-xs btn-primary add' value='+'

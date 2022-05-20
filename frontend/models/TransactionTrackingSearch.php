@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\TransactionTracking;
+use Yii;
 
 /**
  * TransactionTrackingSearch represents the model behind the search form of `app\models\TransactionTracking`.
@@ -62,7 +63,9 @@ class TransactionTrackingSearch extends TransactionTracking
         $query = TransactionTracking::find();
 
         // add conditions that should always apply here
-
+        if (!Yii::$app->user->can('super-user')) {
+            $query->where('division = :division', ['division' => Yii::$app->user->identity->division]);
+        }
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => ['defaultOrder' => ['transaction_date' => SORT_DESC]],
