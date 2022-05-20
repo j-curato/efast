@@ -352,9 +352,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
 <script>
     $(document).ready(function() {
 
-        const q = JSON.parse('<?php echo json_encode($for_print) ?>');
-        const payee_position = JSON.parse('<?php echo json_encode($payee_position) ?>');
-        console.log(q)
+        const q = JSON.parse(`<?php echo json_encode($for_print) ?>`);
+        const payee_position = JSON.parse(`<?php echo json_encode($payee_position) ?>`);
         // console.log(payee_position)
         let row_number = 0
         let purpose = ''

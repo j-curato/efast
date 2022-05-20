@@ -76,13 +76,13 @@ class TransactionTracking extends \yii\db\ActiveRecord
             'ors_created_at' => 'Ors Created At',
             'dv_number' => 'Dv Number',
             'recieved_at' => 'Recieved At',
-            'in_timestamp' => 'Accountance In Timestamp',
-            'out_timestamp' => 'Accountance Out Timestamp',
+            'in_timestamp' => 'Accounting In',
+            'out_timestamp' => 'Accounting Out',
             'check_or_ada_no' => 'Check Number',
             'issuance_date' => 'Check Issuance Date',
             'cash_is_cancelled' => 'Check Good/Cancelled',
-            'in_timestamp' => 'Cashier In',
-            'out_timestamp' => 'Cashier Out',
+            'cash_in' => 'Cashier In',
+            'cash_out' => 'Cashier Out',
         ];
     }
 }
