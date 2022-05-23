@@ -60,14 +60,14 @@ class PrStockSearch extends PrStock
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'bac_code' => $this->bac_code,
             'amount' => $this->amount,
             'chart_of_account_id' => $this->chart_of_account_id,
             'created_at' => $this->created_at,
         ]);
 
         $query->andFilterWhere(['like', 'stock_title', $this->stock_title])
-            ->andFilterWhere(['like', 'unit_of_measure.unit_of_measure', $this->unit_of_measure_id]);
+            ->andFilterWhere(['like', 'unit_of_measure.unit_of_measure', $this->unit_of_measure_id])
+            ->andFilterWhere(['like', 'bac_code', $this->bac_code]);
 
         return $dataProvider;
     }
