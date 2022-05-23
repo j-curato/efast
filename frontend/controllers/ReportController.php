@@ -3915,6 +3915,7 @@ class ReportController extends \yii\web\Controller
             cash_disbursement.is_cancelled !=1
             AND cash_disbursement.reporting_period >= :from_reporting_period
             AND cash_disbursement.reporting_period <= :to_reporting_period
+            ORDER BY cash_disbursement.issuance_date ASC
 
             ")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
