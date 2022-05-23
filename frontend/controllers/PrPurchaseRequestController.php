@@ -142,6 +142,8 @@ class PrPurchaseRequestController extends Controller
         $model = new PrPurchaseRequest();
 
         if ($model->load(Yii::$app->request->post())) {
+
+            // return var_dump($_POST['segment']);
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             $model->pr_number = $this->getPrNumber($model->date, $model->pr_project_procurement_id);
 
@@ -438,7 +440,7 @@ class PrPurchaseRequestController extends Controller
             pr_purchase_request_item.unit_cost * pr_purchase_request_item.quantity as total_cost
             FROM pr_purchase_request_item 
             LEFT JOIN pr_stock  ON pr_purchase_request_item.pr_stock_id = pr_stock.id
-            LEFT JOIN unit_of_measure ON pr_stock.unit_of_measure_id = unit_of_measure.id
+            LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
             WHERE pr_purchase_request_item.pr_purchase_request_id =:id")
                 ->bindValue(':id', $_POST['id'])
                 ->queryAll();
