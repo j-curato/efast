@@ -99,7 +99,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th colspan="3">Elapsed Time in Accounting Unit</th>
                 <th colspan="3">Elapsed Time in Accounting Unit</th>
                 <th rowspan="2">Total Turn-around Time(in working day/s)</th>
-                <th rowspan="2">Within / Beyond the Timeline of 3 Working Days)</th>
+                <th rowspan="2">Within / Beyond the Timeline of 3 Working Days) <br><span style="font-size: 11px;font-style:italic;"> If sum equals 0 value shall be 1</span></th>
                 <th rowspan="2">Remarks</th>
             </tr>
             <tr>
@@ -301,7 +301,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
             <td></td>
             </tr>`
 
-            $('#data_table').append(datarow)
+            $('#data_table tbody').append(datarow)
         })
 
         const foot_row = `
@@ -311,7 +311,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
         <tr><td colspan='13'>Note: *Elapsed Day/s only include/s regular working days. Thus, excluded in the computation of elapsed Day/s are Non-working Holidays, Saturdays, and Sundays</td></tr>
    
         `
-        $('#data_table').append(foot_row)
+        $('#data_table tbody').append(foot_row)
         const accomplished = (parseInt(total_within) / parseInt(dv_count)) * 100
         console.log(accomplished * 100)
         const evaluation_row = `
@@ -369,7 +369,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
                 </td>
             </tr>
             `
-        $('#data_table').append(evaluation_row)
+        $('#data_table tbody').append(evaluation_row)
         signatory()
 
     }
