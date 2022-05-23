@@ -286,8 +286,8 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
             const datarow = `<tr>
             <td>${key+1}</td>
             <td>${payee}</td>
-            <td class='amount'>${dv_number}</td>
-            <td>${thousands_separators(dv_amount)}</td>
+            <td >${dv_number}</td>
+            <td class='amount'>${thousands_separators(dv_amount)}</td>
             <td>${dv_in}</td>
             <td>${dv_out}</td>
             <td>${dv_elapse}</td>
