@@ -146,7 +146,7 @@
                             'label' => 'Procurement',
                             'url' => '#',
                             'items' => [
-                                Yii::$app->user->can('department-offices') ?     ['label' => 'Stock/Property', 'icon' => 'circle-o', 'url' => ['/pr-stock'],] : [],
+                                // Yii::$app->user->can('department-offices') ?     ['label' => 'Stock/Property', 'icon' => 'circle-o', 'url' => ['/pr-stock'],] : [],
                                 Yii::$app->user->can('project_procurement') ?     ['label' => 'Activity/Project Procurement', 'icon' => 'circle-o', 'url' => ['/pr-project-procurement'],] : [],
                                 Yii::$app->user->can('purchase_request') ?     ['label' => 'Purchase Request', 'icon' => 'circle-o', 'url' => ['/pr-purchase-request'],] : [],
                             ],
@@ -340,6 +340,7 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'RAAF', 'icon' => 'circle-o', 'url' => ['/report/raaf'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'CDJ', 'icon' => 'circle-o', 'url' => ['/report/cdj'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Transaction Tracking', 'icon' => 'circle-o', 'url' => ['/report/transaction-tracking'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'DV Time Monitoring', 'icon' => 'circle-o', 'url' => ['/report/dv-time-monitoring'],] : [],
                             ],
                         ] : [],
                         Yii::$app->user->can('super-user') ?    [

@@ -64,7 +64,8 @@ class ReportController extends \yii\web\Controller
                     'trial-balance',
                     'detailed-financial-position',
                     'withholding-and-remittance-summary',
-                    'transaction-tracking'
+                    'transaction-tracking',
+                    'dv-time-monitoring'
 
                 ],
                 'rules' => [
@@ -85,7 +86,8 @@ class ReportController extends \yii\web\Controller
                             'trial-balance',
                             'detailed-financial-position',
                             'withholding-and-remittance-summary',
-                            'transaction-tracking'
+                            'transaction-tracking',
+                            'dv-time-monitoring'
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
@@ -3875,6 +3877,113 @@ class ReportController extends \yii\web\Controller
     {
 
         echo $_SERVER['REMOTE_ADDR'];
+    }
+    public function actionDvTimeMonitoring()
+    {
+        if ($_POST) {
+            $from_reporting_period = $_POST['from_reporting_period'];
+            $to_reporting_period = $_POST['to_reporting_period'];
+            $query = Yii::$app->db->createCommand("SELECT 
+            dv_aucs.dv_number,
+            payee.account_name as payee,
+            IFNULL(DATE_FORMAT(dv_aucs.in_timestamp,'%Y-%m-%d'),'') as dv_in,
+            IFNULL(DATE_FORMAT(dv_aucs.out_timestamp,'%Y-%m-%d'),'') as dv_out,
+            cash_disbursement.check_or_ada_no,
+            cash_disbursement.ada_number,
+            cash_disbursement.issuance_date,
+            cash_disbursement.begin_time as cash_in,
+            cash_disbursement.out_time as cash_out,
+            dv_entry_amount.dv_amount,
+
+            dv_aucs.is_cancelled,
+            cash_disbursement.is_cancelled
+
+            FROM
+            dv_aucs
+            INNER JOIN payee ON dv_aucs.payee_id = payee.id
+            INNER JOIN cash_disbursement ON dv_aucs.id = cash_disbursement.dv_aucs_id
+            LEFT JOIN (SELECT dv_aucs_entries.dv_aucs_id,
+            SUM(dv_aucs_entries.amount_disbursed)as dv_amount 
+            FROM dv_aucs_entries
+            GROUP BY 
+            dv_aucs_entries.dv_aucs_id) AS dv_entry_amount ON dv_aucs.id = dv_entry_amount.dv_aucs_id
+
+            WHERE
+
+            dv_aucs.is_cancelled !=1
+            AND 
+            cash_disbursement.is_cancelled !=1
+            AND cash_disbursement.reporting_period >= :from_reporting_period
+            AND cash_disbursement.reporting_period <= :to_reporting_period
+
+            ")
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->bindValue(':to_reporting_period', $to_reporting_period)
+                ->queryAll();
+            $holidays = ['01-01', '01-28'];
+
+            $holidays_query = array_column(Yii::$app->db->createCommand("SELECT DATE_FORMAT(holidays.date,'%m-%d') as _date FROM holidays
+            WHERE holidays.date >= :from_year
+            AND holidays.date <= :to_year
+            ")
+                ->bindValue(':from_year', $from_reporting_period . '-01')
+                ->bindValue(':to_year', $to_reporting_period . '-01')
+                ->queryAll(), '_date');
+            // var_dump(array_merge($holidays_query,$holidays));
+            return json_encode(['data' => $query, 'holidays' => $holidays]);
+        }
+        // echo $this->getWorkdays('2022-05-23', '2022-05-24');
+
+        return $this->render('dv_time_monitoring');
+    }
+
+    function getWorkdays($date1, $date2, $workSat = FALSE, $patron = NULL)
+    {
+        if (!defined('SATURDAY')) define('SATURDAY', 6);
+        if (!defined('SUNDAY')) define('SUNDAY', 0);
+
+        // Array of all public festivities
+        $publicHolidays = array('01-01', '12-30', '12-25', '04-09', '');
+        $publicHolidays[] = array_column(Yii::$app->db->createCommand("SELECT DATE_FORMAT(holidays.date,'%m-%d') as _date FROM holidays")->queryAll(), '_date');
+        var_dump($publicHolidays);
+        // var_dump($publicHolidays2);
+        // // The Patron day (if any) is added to public festivities
+        if ($patron) {
+            $publicHolidays[] = $patron;
+        }
+
+        /*
+             * Array of all Easter Mondays in the given interval
+             */
+        $yearStart = date('Y', strtotime($date1));
+        $yearEnd   = date('Y', strtotime($date2));
+
+        for ($i = $yearStart; $i <= $yearEnd; $i++) {
+            $easter = date('Y-m-d', easter_date($i));
+            list($y, $m, $g) = explode("-", $easter);
+            $monday = mktime(0, 0, 0, date($m), date($g) + 1, date($y));
+            $easterMondays[] = $monday;
+        }
+
+        $start = strtotime($date1);
+        $end   = strtotime($date2);
+        $workdays = 0;
+        for ($i = $start; $i <= $end; $i = strtotime("+1 day", $i)) {
+            $day = date("w", $i);  // 0=sun, 1=mon, ..., 6=sat
+            $mmgg = date('m-d', $i);
+            if (
+                $day != SUNDAY &&
+                !in_array($mmgg, $publicHolidays) &&
+                !in_array($i, $easterMondays) &&
+                !($day == SATURDAY && $workSat == FALSE)
+            ) {
+                $workdays++;
+            }
+        }
+
+
+
+        return intval($workdays - 1);
     }
 }
 

@@ -34,7 +34,7 @@ class m220520_023609_create_ro_transaction_tracking_view extends Migration
                 cash_disbursement.issuance_date,
                 cash_disbursement.begin_time as cash_in,
                 cash_disbursement.out_time as cash_out
-                IF(cash_disbursement.is_cancelled =1,'Cancelled','Good') cash_is_cancelled
+                IF(cash_disbursement.is_cancelled =1,'Cancelled','Good') cash_is_cancelled,
                 FROM `transaction`
                 LEFT JOIN payee ON `transaction`.payee_id = payee.id
                 LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id  = responsibility_center.id
