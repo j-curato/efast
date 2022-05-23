@@ -251,10 +251,11 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
         let total_within = 0
 
         let dv_count = 0
+        let grand_total = 0
         $.each(data, function(key, val) {
             const payee = val.payee
             const dv_number = val.dv_number
-            const dv_amount = val.dv_amount
+            const dv_amount = parseFloat(val.dv_amount)
             const dv_in = val.dv_in
             const dv_out = val.dv_out
             const cash_in = val.cash_in
@@ -263,6 +264,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
 
             const cash_elapse = 0
             const check_number = val.check_or_ada_no
+            grand_total += dv_amount
             let turn_around = 0
             let dv_elapse = ''
             let within_or_beyond = ''
@@ -301,7 +303,14 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
 
             $('#data_table').append(datarow)
         })
-        const foot_row = "<tr><td colspan='13'>Note: *Elapsed Day/s only include/s regular working days. Thus, excluded in the computation of elapsed Day/s are Non-working Holidays, Saturdays, and Sundays</td></tr>"
+
+        const foot_row = `
+        <tr><th colspan='3'>Grand Total</th><th class='amount'> ${thousands_separators(grand_total.toFixed(2))}</th>
+        <td colspan='9'></td>
+        </tr>
+        <tr><td colspan='13'>Note: *Elapsed Day/s only include/s regular working days. Thus, excluded in the computation of elapsed Day/s are Non-working Holidays, Saturdays, and Sundays</td></tr>
+   
+        `
         $('#data_table').append(foot_row)
         const accomplished = (parseInt(total_within) / parseInt(dv_count)) * 100
         console.log(accomplished * 100)
