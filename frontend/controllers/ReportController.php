@@ -3920,7 +3920,16 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->queryAll();
-            $holidays = ['01-01', '01-28'];
+            $holidays = [
+                '01-01',
+                '04-09',
+                '05-01',
+                '08-28',
+                '11-30',
+                '12-08',
+                '12-25',
+                '12-30',
+            ];
 
             $holidays_query = array_column(Yii::$app->db->createCommand("SELECT DATE_FORMAT(holidays.date,'%m-%d') as _date FROM holidays
             WHERE holidays.date >= :from_year
