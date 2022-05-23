@@ -17,8 +17,8 @@ class PrStockSearch extends PrStock
     public function rules()
     {
         return [
-            [['id', 'bac_code',  'chart_of_account_id'], 'integer'],
-            [['stock_title', 'created_at', 'unit_of_measure_id'], 'safe'],
+            [['id',  'chart_of_account_id'], 'integer'],
+            [['stock_title', 'created_at', 'unit_of_measure_id', 'bac_code'], 'safe'],
             [['amount'], 'number'],
         ];
     }
