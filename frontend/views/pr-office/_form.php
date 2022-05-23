@@ -25,6 +25,7 @@ $division = [
     'OPD' => 'OPD',
     'ORD' => 'ORD',
     'SDD' => 'SDD',
+    'MSSU' => 'MSSU',
 ];
 
 ?>
