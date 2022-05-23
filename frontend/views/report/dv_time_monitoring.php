@@ -9,6 +9,7 @@ use kartik\date\DatePicker;
 use kartik\export\ExportMenu;
 use kartik\select2\Select2;
 use yii\data\ActiveDataProvider;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
@@ -55,7 +56,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </form>
     </div>
-    <table id="data_table" >
+    <table id="data_table">
         <thead>
             <tr>
                 <th colspan="13" style="border:0;padding-bottom:2rem">
@@ -86,6 +87,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
             </tr>
             <tr>
+                <th colspan="13" style="border: 0;text-align:left;font-weight:bold">
+                    I. Turn-around Time Tabulation
+                </th>
+            </tr>
+            <tr>
                 <th rowspan="2">No.</th>
                 <th rowspan="2">Payee</th>
                 <th rowspan="2">DV No.</th>
@@ -104,14 +110,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>Date Out (Upon Issuance of Check/LDDAP)</th>
                 <th>Elapsed Day/s*</th>
             </tr>
-            <tr>
 
-            </tr>
-            <tr>
 
-            </tr>
         </thead>
         <tbody>
+
 
         </tbody>
     </table>
@@ -136,11 +139,17 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 5px;
         text-align: center;
     }
-    table{
+
+    table {
         margin-top: 3rem;
     }
-    .btn{
+
+    .btn {
         margin-top: 25px;
+    }
+
+    .amount {
+        text-align: right;
     }
 
     @media print {
@@ -158,11 +167,63 @@ $this->params['breadcrumbs'][] = $this->title;
             padding: 3px;
             text-align: center;
         }
+
+        .select2-selection__arrow {
+            display: none !important;
+        }
+
+        .select2-container--default .select2-selection--single {
+            border: none !important;
+            text-decoration: underline;
+        }
     }
 </style>
+<?php
+
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.min.css", ['depends' => [\yii\web\JqueryAsset::class]]);
+
+?>
 <script>
     let holidays = [];
+    let asignatory = []
+
+    function signatory() {
+        $('.asignatory').select2({
+            data: asignatory,
+            placeholder: "Select ",
+
+        })
+    }
     $(document).ready(() => {
+        $.getJSON('<?php echo Url::base() ?>/frontend/web/index.php?r=assignatory/get-all-assignatory')
+
+            .then(function(data) {
+
+                let array = []
+                $.each(data, function(key, val) {
+                    array.push({
+                        id: val.name,
+                        text: val.name,
+                        emp: val.name,
+
+                    })
+                    asignatory.push({
+                        position: val.position,
+                        name: val.name,
+                        id: val.position,
+                        text: val.name,
+
+                    })
+                })
+
+
+            })
+        $('#data_table').on('change', '.asignatory', function() {
+            console.log($(this).val())
+            $(this).closest('td').find('.position').text($(this).val())
+        })
         $('#calc').click(() => {
             var d1 = $('#d1').val();
             var d2 = $('#d2').val();
@@ -186,6 +247,10 @@ $this->params['breadcrumbs'][] = $this->title;
     });
 
     function displayData(data) {
+        $('#data_table tbody').html('')
+        let total_within = 0
+
+        let dv_count = 0
         $.each(data, function(key, val) {
             const payee = val.payee
             const dv_number = val.dv_number
@@ -210,16 +275,19 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
                 if (turn_around <= 3) {
                     within_or_beyond = 'Within Timeline'
+                    total_within++
+
                 } else {
                     within_or_beyond = 'Beyond Timeline'
                 }
             }
+            dv_count++
 
             const datarow = `<tr>
             <td>${key+1}</td>
             <td>${payee}</td>
-            <td>${dv_number}</td>
-            <td>${dv_amount}</td>
+            <td class='amount'>${dv_number}</td>
+            <td>${thousands_separators(dv_amount)}</td>
             <td>${dv_in}</td>
             <td>${dv_out}</td>
             <td>${dv_elapse}</td>
@@ -233,6 +301,68 @@ $this->params['breadcrumbs'][] = $this->title;
 
             $('#data_table').append(datarow)
         })
+        const foot_row = "<tr><td colspan='13'>Note: *Elapsed Day/s only include/s regular working days. Thus, excluded in the computation of elapsed Day/s are Non-working Holidays, Saturdays, and Sundays</td></tr>"
+        $('#data_table').append(foot_row)
+        const accomplished = (parseInt(total_within) / parseInt(dv_count)) * 100
+        console.log(accomplished * 100)
+        const evaluation_row = `
+        <tr>
+                <td style="font-weight:bold;border: 0;padding-top:5rem;text-align:left;" colspan='3'>II. Turn-around Time Analysis and Evaluation</td>
+            </tr>
+            <tr>
+
+                <td></td>
+                <td>Number</td>
+                <td>Accomplishment</td>
+
+            </tr>
+            <tr>
+                <td>Total Claims Processed within Timeline of 3 working days</td>
+                <td>${total_within}</td>
+                <td rowspan="2">${accomplished.toFixed(2)}%</td>
+            </tr>
+            <tr>
+                <td>Total Claims Received/Processed</td>
+                <td>${dv_count}</td>
+            </tr>
+            <tr>
+            <td colspan='13' style='border:none;'>To summarize, ${accomplished.toFixed(2)}% or ${total_within} out of ${dv_count} total claims for the month of February,
+             2022 were processed within 3 Working Days. 1 claim was processed beyond the set timeline of 3 Working days.</td>
+            </tr>
+
+            <tr>
+                <td style='border:none;' colspan='3'>
+                    <span style='float:left;'>Prepared By</span>
+                    <br>
+                    <select class="asignatory "  style="width: 100%;">
+                    <option value=""></option>
+                    </select>
+                    <br>
+                    <span class='position'></span>
+                </td>
+                <td style='border:none;' colspan='4'>
+                    <span style='float:left;'>Reviewed By</span>
+                    <br>
+                    <select class="asignatory "  style="width: 100%;">
+                    <option value=""></option>
+                    </select>
+                    <br>
+                    <span class='position'></span>
+                </td>
+                <td style='border:none;' colspan='4'>
+                    <span style='float:left;'>Approved By</span>
+                    <br>
+                    <select class="asignatory " style="width: 100%;">
+                    <option value=""></option>
+                    </select>
+                    <br>
+                    <span class='position'></span>
+                </td>
+            </tr>
+            `
+        $('#data_table').append(evaluation_row)
+        signatory()
+
     }
 
     let workingDaysBetweenDates = (d0, d1) => {
