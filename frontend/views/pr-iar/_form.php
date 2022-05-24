@@ -118,7 +118,7 @@ if (!empty($model->id)) {
                         'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
                         'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
                     ]
-                ],) ?>
+                ]) ?>
             </div>
             <div class="col-sm-6">
                 <?= $form->field($model, 'fk_property_custodian')->widget(Select2::class, [
