@@ -154,7 +154,7 @@ if (!empty($model->id)) {
         <table id="summary_table">
             <thead>
                 <tr>
-                    <th colspan='10' style="background-color:  #80ccff;">Detailed</th>
+                    <th colspan='10' style="background-color:  #80ccff;">Summary</th>
                 </tr>
                 <tr>
 
