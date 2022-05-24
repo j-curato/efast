@@ -394,7 +394,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]
             ]
         ],
-        'pjax' => true,
+      
         'export' => false,
         'columns' => $columns
     ]); ?>
