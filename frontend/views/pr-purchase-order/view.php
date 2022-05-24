@@ -52,7 +52,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             <span><?php echo $model->po_number ?></span>
                             <br>
                             <span>Date:</span>
-                            <span>_________________</span>
+                            <span><?php
+                                    if (!empty($model->po_date)) {
+
+                                        echo  DateTime::createFromFormat('Y-m-d', $model->po_date)->format('F d, Y');
+                                    }
+                                    ?></span>
                             <br>
                             <span>Mode of Procurement:</span>
                             <span><?php echo $model->modeOfProcurement->mode_name ?></span>
@@ -96,7 +101,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </tr>
                     <?php
                     $total_amount = intval($val['quantity']) * floatval($val['unit_cost']);
-                    $unit_cost = number_format($val['unit_cost'],2);
+                    $unit_cost = number_format($val['unit_cost'], 2);
                     echo "<tr>
                         <td>{$val['bac_code']}</td>
                         <td>{$val['unit_of_measure']}</td>
@@ -110,7 +115,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </td>
                         <td> {$val['quantity']}</td>
                         <td class='amount'> {$unit_cost} </td>
-                        <td class='amount'>" . number_format($total_amount,2) . " </td>
+                        <td class='amount'>" . number_format($total_amount, 2) . " </td>
                     </tr>";
                     ?>
 

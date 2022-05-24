@@ -39,12 +39,13 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
             [[
                 'id', 'po_number', 'fk_contract_type_id', 'fk_mode_of_procurement_id', 'fk_pr_aoq_id', 'delivery_term',
                 'fk_auth_official',
-                'fk_accounting_unit'
+                'fk_accounting_unit',
+                'po_date'
             ], 'required'],
             [['id', 'fk_contract_type_id', 'fk_mode_of_procurement_id', 'fk_pr_aoq_id', 'fk_auth_official', 'fk_accounting_unit', 'fk_bac_composition_id'], 'integer'],
             [['place_of_delivery'], 'string'],
             [['delivery_date', 'bac_date'], 'safe'],
-            [['po_number', 'payment_term', 'delivery_term'], 'string', 'max' => 255],
+            [['po_number', 'payment_term', 'delivery_term', 'po_date'], 'string', 'max' => 255],
             [['po_number'], 'unique'],
             [['id'], 'unique'],
         ];
@@ -69,6 +70,7 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
             'fk_accounting_unit' => ' Accounting Unit',
             'fk_bac_composition_id' => 'BAC RSO Number',
             'bac_date' => 'BAC Date',
+            'po_date' => 'Date'
 
 
         ];

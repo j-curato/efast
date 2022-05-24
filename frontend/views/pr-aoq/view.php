@@ -102,6 +102,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         echo $date->format('F d, Y');
 
                         ?>
+                        <span style="float: right;">
+                            <?php
+                            echo $model->aoq_number;
+                            ?>
+                        </span>
                     </th>
                 </tr>
                 <tr>

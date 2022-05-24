@@ -48,6 +48,14 @@ if (!empty($model->id)) {
         <?php $form = ActiveForm::begin(); ?>
         <div class="row">
             <div class="col-sm-3">
+                <?= $form->field($model, 'po_date')->widget(DatePicker::class, [
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm-dd',
+                        'autoclose' => true
+                    ]
+                ]) ?>
+            </div>
+            <div class="col-sm-3">
                 <?= $form->field($model, 'fk_pr_aoq_id')->widget(Select2::class, [
                     'data' => $aoq_id,
                     'options' => ['placeholder' => 'Search for a AOQ Number'],

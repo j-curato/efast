@@ -9,6 +9,7 @@ use kartik\grid\GridView;
 
 $this->title = 'Purchase Orders';
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="pr-purchase-order-index">
 
@@ -17,14 +18,15 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Create Purchase Order', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-        'panel'=>[
-            'type'=>Gridview::TYPE_PRIMARY,
-            'heading'=>'Purchase Order'
+        'panel' => [
+            'type' => Gridview::TYPE_PRIMARY,
+            'heading' => 'Purchase Order'
         ],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],

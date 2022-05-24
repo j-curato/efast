@@ -6,6 +6,7 @@ use app\models\PrAoqEntries;
 use Yii;
 use app\models\PrPurchaseOrder;
 use app\models\PrPurchaseOrderSearch;
+use DateTime;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -133,13 +134,13 @@ class PrPurchaseOrderController extends Controller
     public function actionCreate()
     {
         $model = new PrPurchaseOrder();
-        $model->payment_term ='credit';
-        $model->delivery_term ='FOB Destination';
+        $model->payment_term = 'credit';
+        $model->delivery_term = 'FOB Destination';
 
         if ($model->load(Yii::$app->request->post())) {
 
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            $model->po_number = $this->generatePoNumber($model->fk_contract_type_id);
+            $model->po_number = $this->generatePoNumber($model->fk_contract_type_id, $model->po_date);
 
             if ($model->save()) {
                 if (!empty(array_unique($_POST['aoq_id']))) {
@@ -322,13 +323,18 @@ class PrPurchaseOrderController extends Controller
             }
         }
     }
-    public function generatePoNumber($contract_id)
+    public function generatePoNumber($contract_id, $date)
     {
-        $reporting_period = '2022-01';
+        $reporting_period = date('Y-m-d');
         $contract_type = Yii::$app->db->createCommand("SELECT pr_contract_type.contract_name FROM pr_contract_type WHERE id =:id")
             ->bindValue(':id', $contract_id)
             ->queryScalar();
-        $last_number  = Yii::$app->db->createCommand("SELECT SUBSTRING_INDEX(po_number,'-',-1) as q  FROM pr_purchase_order ORDER BY q DESC LIMIT 1")->queryScalar();
+        $last_number  = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(po_number,'-',-1) AS UNSIGNED) as q 
+        FROM pr_purchase_order
+       WHERE pr_purchase_order.po_number LIKE :_date
+        ORDER BY q DESC LIMIT 1")
+            ->bindValue(':_date', '%' . $date . '%')
+            ->queryScalar();
         if (!empty($last_number)) {
             $last_number += 1;
         } else {
@@ -338,8 +344,7 @@ class PrPurchaseOrderController extends Controller
         for ($i = strlen($last_number); $i < 4; $i++) {
             $zero .= 0;
         }
-
-        return 'RO-' . strtoupper($contract_type) . '-' . $reporting_period . '-' . $zero . $last_number;
+        return 'RO-' . strtoupper($contract_type) . '-' . $date . '-' . $zero . $last_number;
     }
     public function actionSearchPurchaseOrder($q = null, $id = null, $province = null)
     {
