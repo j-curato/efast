@@ -426,7 +426,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                 if (val2.amount != '') {
                     amount_to_display = thousands_separators(val2.amount)
                 }
-                const amount = `<div class=foo><div >${amount_to_display}</div></div><br>`
+                const amount = `<div class=foo><div >${ thousands_separators(val2.amount)}</div></div><br>`
                 const remark = `<span>${val2.remark}</span>`
 
                 $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(amount)
