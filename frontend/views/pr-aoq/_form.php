@@ -223,7 +223,7 @@ $csrfToken = Yii::$app->request->csrfToken;
     let aoq_items = ''
     let transaction_row = 1;
     $(document).ready(function() {
-        aoq_items = JSON.parse(`<?= json_encode($aoq_entries) ?>`);
+        aoq_items =<?= json_encode($aoq_entries) ?>;
         payeeSelect()
         maskAmount()
 
