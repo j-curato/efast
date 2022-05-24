@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
         pr_stock.stock_title as `description`,
         REPLACE(pr_purchase_request_item.specification,'[n]','<br>') as specification,
         payee.account_name as payee,
-        pr_aoq_entries.amount,
+        IFNULL(pr_aoq_entries.amount,'') as amount,
         pr_purchase_request.purpose,
         pr_aoq_entries.remark,
         pr_aoq_entries.is_lowest,
