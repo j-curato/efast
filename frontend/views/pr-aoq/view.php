@@ -423,7 +423,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                 }
                 let to_display = ''
                 if (val2.amount != '') {
-                    console.log("YAWA KAAYO")
+
                     to_display = thousands_separators(val2.amount)
                 }
                 let key_pos_1 = 5
@@ -439,7 +439,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
         })
 
         let colCount = 5
-        console.log(row_number)
+
         let remark_row = `<tr>
             <td class='amount' style='vertical-align:top'></td>
             <td style='vertical-align:top'></td>

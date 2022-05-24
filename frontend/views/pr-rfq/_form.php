@@ -68,7 +68,7 @@ if (!empty($model->pr_purchase_request_id)) {
                 <div class="col-sm-2">
                     <?= $form->field($model, '_date')->widget(DatePicker::class, [
                         'pluginOptions' => [
-                            'format' => 'yyyy-mm-d',
+                            'format' => 'yyyy-mm-dd',
                             'autoclose' => true
                         ],
                         'options' => [
@@ -80,7 +80,7 @@ if (!empty($model->pr_purchase_request_id)) {
                 <div class="col-sm-2">
                     <?= $form->field($model, 'deadline')->widget(DatePicker::class, [
                         'pluginOptions' => [
-                            'format' => 'yyyy-mm-d',
+                            'format' => 'yyyy-mm-dd',
                             'autoclose' => true
                         ],
                         'options' => [
