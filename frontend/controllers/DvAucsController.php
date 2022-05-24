@@ -1523,7 +1523,7 @@ class DvAucsController extends Controller
                         if (strtolower($model->transaction_type) == 'remittance') {
 
                             if (empty($model->fk_remittance_id)) {
-                                return json_encode(['isSuccess' => false, 'error' => 'Payroll Number is Required ']);
+                                return json_encode(['isSuccess' => false, 'error' => 'Remittance Number is Required ']);
                             }
                         }
 
@@ -1550,8 +1550,8 @@ class DvAucsController extends Controller
                         SELECT 
                         :dv_id as dv_id,
                         dv_accounting_entries.object_code,
-                        IF(accounting_codes.normal_balance ='Debit',remittance_items.amount,0) as debit,
-                        IF(accounting_codes.normal_balance ='Credit',remittance_items.amount,0) as credit
+                        remittance_items.amount as debit,
+                        0 as credit
                         FROM remittance_items
                         LEFT JOIN dv_accounting_entries ON remittance_items.fk_dv_acounting_entries_id = dv_accounting_entries.id
                         LEFT JOIN accounting_codes ON dv_accounting_entries.object_code = accounting_codes.object_code

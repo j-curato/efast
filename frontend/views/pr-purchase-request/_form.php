@@ -406,6 +406,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
             var specs = $(this).val()
             var main_specs = $(this).closest('tr');
             specs = specs.replace(/\n/g, "[n]");
+            specs = specs.replace(/"/g, '\'');
             main_specs.children('td').eq(0).find('.specs').val(specs)
         })
 
