@@ -421,6 +421,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                 if (parseInt(val2.is_lowest) == 1) {
                     lowest = lowest + val2.payee
                 }
+                if (val2.amount==''){
+                    console.log("YAWA KAAYO")
+                }
                 let key_pos_1 = 5
                 const amount = `<div class=foo><div >${thousands_separators(val2.amount)}</div></div><br>`
                 const remark = `<span>${val2.remark}</span>`
