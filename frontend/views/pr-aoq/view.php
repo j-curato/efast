@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
         pr_stock.stock_title as `description`,
         REPLACE(pr_purchase_request_item.specification,'[n]','<br>') as specification,
         payee.account_name as payee,
-        IFNULL(pr_aoq_entries.amount,'') as amount,
+        pr_aoq_entries.amount,
         pr_purchase_request.purpose,
         pr_aoq_entries.remark,
         pr_aoq_entries.is_lowest,
@@ -422,7 +422,11 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                     lowest = lowest + val2.payee
                 }
                 let key_pos_1 = 5
-                const amount = `<div class=foo><div >${thousands_separators(val2.amount)}</div></div><br>`
+                const amount_to_display = ''
+                if (val2.amount != '') {
+                    amount_to_display = thousands_separators(val2.amount)
+                }
+                const amount = `<div class=foo><div >${amount_to_display}</div></div><br>`
                 const remark = `<span>${val2.remark}</span>`
 
                 $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(amount)
