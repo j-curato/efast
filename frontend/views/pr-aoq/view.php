@@ -421,11 +421,13 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                 if (parseInt(val2.is_lowest) == 1) {
                     lowest = lowest + val2.payee
                 }
-                if (val2.amount==''){
+                let to_display = ''
+                if (val2.amount != '') {
                     console.log("YAWA KAAYO")
+                    to_display = thousands_separators(val2.amount)
                 }
                 let key_pos_1 = 5
-                const amount = `<div class=foo><div >${thousands_separators(val2.amount)}</div></div><br>`
+                const amount = `<div class=foo><div >${to_display}</div></div><br>`
                 const remark = `<span>${val2.remark}</span>`
 
                 $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(amount)
