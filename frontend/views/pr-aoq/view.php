@@ -46,7 +46,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
             ->bindValue(':id', $model->id)
             ->queryAll();
-        $for_print = ArrayHelper::index($aoq_items_query, null, 'description');
+        $for_print = ArrayHelper::index($aoq_items_query, null, 'rfq_item_id');
+
 
         $result = ArrayHelper::index($aoq_items_query, null, 'rfq_item_id');
         $qqq = ArrayHelper::index($aoq_items_query, 'payee', [function ($element) {
