@@ -3896,7 +3896,7 @@ class ReportController extends \yii\web\Controller
             cash_disbursement.issuance_date,
             cash_disbursement.begin_time as cash_in,
             cash_disbursement.out_time as cash_out,
-            dv_entry_amount.dv_amount,
+            IFNULL(dv_entry_amount.dv_amount,0),
 
             dv_aucs.is_cancelled,
             cash_disbursement.is_cancelled
