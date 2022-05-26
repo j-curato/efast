@@ -3915,7 +3915,7 @@ class ReportController extends \yii\web\Controller
             cash_disbursement.is_cancelled !=1
             AND dv_aucs.reporting_period >= :from_reporting_period
             AND dv_aucs.reporting_period <= :to_reporting_period
-            ORDER BY cash_disbursement.issuance_date ASC
+            ORDER BY dv_aucs.out_timestamp DESC
 
             ")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
@@ -3932,28 +3932,30 @@ class ReportController extends \yii\web\Controller
                 '12-30',
             ];
             $holidays = [];
+            $from_reporting_period_format = DateTime::createFromFormat('Y-m', $from_reporting_period);
+            $to_reporting_period_format = DateTime::createFromFormat('Y-m', $from_reporting_period);
             foreach ($static_holidays as $val) {
-                $holidays[] = DateTime::createFromFormat('Y-m', $from_reporting_period)->format('Y') . '-' . $val;
+                $holidays[] = $from_reporting_period_format->format('Y') . '-' . $val;
             }
             foreach ($static_holidays as $val) {
-                $holidays[] = DateTime::createFromFormat('Y-m', $to_reporting_period)->format('Y') . '-' . $val;
+                $holidays[] = $to_reporting_period_format->format('Y') . '-' . $val;
             }
             // var_dump(array_unique($holidays));
             // die();
 
-            $holidays_query = array_column(Yii::$app->db->createCommand("SELECT holidays.date FROM holidays
+            $holidays_query = Yii::$app->db->createCommand("SELECT holidays.date FROM holidays
             WHERE holidays.date >= :from_year
             AND holidays.date <= :to_year
             ")
-                ->bindValue(':from_year', $from_reporting_period . '-01')
-                ->bindValue(':to_year', $to_reporting_period . '-31')
-                ->queryAll(), 'date');
+                ->bindValue(':from_year', $from_reporting_period_format->format('Y') . '-01' . '-01')
+                ->bindValue(':to_year', $to_reporting_period_format->format('Y') . '-12' . '-31')
+                ->queryAll();
             // var_dump(array_merge(array_unique($holidays), $holidays_query));
             // var_dump($from_reporting_period . '-01');
             // var_dump($to_reporting_period . '-01');
-            // var_dump($holidays_query);
+            // var_dump($holidays_query->queryAll());
             // die();
-            return json_encode(['data' => $query, 'holidays' => array_merge(array_unique($holidays), $holidays_query)]);
+            return json_encode(['data' => $query, 'holidays' => array_merge(array_unique($holidays), array_column($holidays_query, 'date'))]);
         }
         // echo $this->getWorkdays('2022-05-23', '2022-05-24');
 
