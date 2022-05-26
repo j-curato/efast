@@ -3915,7 +3915,7 @@ class ReportController extends \yii\web\Controller
             cash_disbursement.is_cancelled !=1
             AND dv_aucs.reporting_period >= :from_reporting_period
             AND dv_aucs.reporting_period <= :to_reporting_period
-            ORDER BY dv_aucs.out_timestamp DESC
+            ORDER BY cash_disbursement.issuance_date
 
             ")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
@@ -3926,6 +3926,7 @@ class ReportController extends \yii\web\Controller
                 '04-09',
                 '05-01',
                 '08-28',
+                '11-01',
                 '11-30',
                 '12-08',
                 '12-25',

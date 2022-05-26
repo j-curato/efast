@@ -221,7 +221,6 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
 
             })
         $('#data_table').on('change', '.asignatory', function() {
-            // console.log($(this).val())
             $(this).closest('td').find('.position').text($(this).val())
         })
         $('#calc').click(() => {
@@ -238,7 +237,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
                 success: function(data) {
                     const res = JSON.parse(data)
                     holidays = res.holidays
-                
+
                     displayData(res.data)
                 }
 
@@ -271,22 +270,32 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
             if (dv_in != '' && dv_out != '') {
 
 
-                dv_elapse = parseInt(workingDaysBetweenDates(dv_in, dv_out))
-                turn_around = dv_elapse + cash_elapse
-                if (turn_around == 0) {
-                    turn_around = 1
-                }
-                if (turn_around <= 3) {
-                    within_or_beyond = 'Within Timeline'
-                    total_within++
 
+                dv_elapse = workingDaysBetweenDates(dv_in, dv_out)
+                if (dv_elapse != 'undefine') {
+                    turn_around = dv_elapse + cash_elapse
+                    if (turn_around == 0) {
+                        turn_around = 1
+                    }
+                    if (turn_around <= 3) {
+                        within_or_beyond = 'Within Timeline'
+                        total_within++
+
+                    } else {
+                        within_or_beyond = 'Beyond Timeline'
+                    }
                 } else {
-                    within_or_beyond = 'Beyond Timeline'
+                    dv_elapse = 'Out Date is Less Than In Date'
                 }
+
+
             }
             dv_count++
-
-            const datarow = `<tr>
+            let row_color = '';
+            if (within_or_beyond == '') {
+                row_color = 'background-color:#ffb3b3;'
+            }
+            const datarow = `<tr style='${row_color}'>
             <td>${key+1}</td>
             <td>${payee}</td>
             <td >${dv_number}</td>
@@ -314,7 +323,6 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
         `
         $('#data_table tbody').append(foot_row)
         const accomplished = (parseInt(total_within) / parseInt(dv_count)) * 100
-        // console.log(accomplished * 100)
         const evaluation_row = `
         <tr>
                 <td style="font-weight:bold;border: 0;padding-top:5rem;text-align:left;" colspan='3'>II. Turn-around Time Analysis and Evaluation</td>
@@ -377,14 +385,13 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
 
     let workingDaysBetweenDates = (d0, d1) => {
         /* Two working days and an sunday (not working day) */
-        console.log(holidays)
         $.ajax
         var startDate = parseDate(d0);
         var endDate = parseDate(d1);
 
         // Validate input
-        if (endDate <= startDate) {
-            return 0;
+        if (endDate < startDate) {
+            return 'undefine';
         }
 
         // Calculate days between dates
@@ -420,7 +427,6 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
 
             if ((day >= d0) && (day <= d1)) {
                 if ((parseDate(day).getDay() % 6) != 0) {
-                    console.log('123')
                     days--;
                 }
             }
