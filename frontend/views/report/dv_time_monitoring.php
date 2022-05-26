@@ -18,7 +18,7 @@ use yii\helpers\Url;
 $this->title = "DV Time Monitoring";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="jev-preparation-index" style="background-color: white;">
+<div class="jev-preparation-index" style="background-color: white;padding:2rem;">
     <div class="row">
         <form id="filter">
             <div class="col-sm-3">
