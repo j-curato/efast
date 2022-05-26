@@ -221,7 +221,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
 
             })
         $('#data_table').on('change', '.asignatory', function() {
-            console.log($(this).val())
+            // console.log($(this).val())
             $(this).closest('td').find('.position').text($(this).val())
         })
         $('#calc').click(() => {
@@ -237,8 +237,8 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
                 data: $('#filter').serialize(),
                 success: function(data) {
                     const res = JSON.parse(data)
-                    console.log(res)
                     holidays = res.holidays
+                
                     displayData(res.data)
                 }
 
@@ -269,6 +269,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
             let dv_elapse = ''
             let within_or_beyond = ''
             if (dv_in != '' && dv_out != '') {
+
 
                 dv_elapse = parseInt(workingDaysBetweenDates(dv_in, dv_out))
                 turn_around = dv_elapse + cash_elapse
@@ -313,7 +314,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
         `
         $('#data_table tbody').append(foot_row)
         const accomplished = (parseInt(total_within) / parseInt(dv_count)) * 100
-        console.log(accomplished * 100)
+        // console.log(accomplished * 100)
         const evaluation_row = `
         <tr>
                 <td style="font-weight:bold;border: 0;padding-top:5rem;text-align:left;" colspan='3'>II. Turn-around Time Analysis and Evaluation</td>
@@ -376,7 +377,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
 
     let workingDaysBetweenDates = (d0, d1) => {
         /* Two working days and an sunday (not working day) */
-
+        console.log(holidays)
         $.ajax
         var startDate = parseDate(d0);
         var endDate = parseDate(d1);
@@ -415,18 +416,17 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
         }
         /* Here is the code */
         holidays.forEach(day => {
-            const d = new Date();
-            let year = d.getFullYear();
-            var parts = day.match(/(\d+)/g);
-            day = year + '-' + parts[0] + '-' + parts[1]
+
 
             if ((day >= d0) && (day <= d1)) {
                 if ((parseDate(day).getDay() % 6) != 0) {
+                    console.log('123')
                     days--;
                 }
             }
         });
         return days - 1;
+
     }
 
     function parseDate(input) {

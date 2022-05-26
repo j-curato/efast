@@ -3913,15 +3913,15 @@ class ReportController extends \yii\web\Controller
             dv_aucs.is_cancelled !=1
             AND 
             cash_disbursement.is_cancelled !=1
-            AND cash_disbursement.reporting_period >= :from_reporting_period
-            AND cash_disbursement.reporting_period <= :to_reporting_period
+            AND dv_aucs.reporting_period >= :from_reporting_period
+            AND dv_aucs.reporting_period <= :to_reporting_period
             ORDER BY cash_disbursement.issuance_date ASC
 
             ")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->queryAll();
-            $holidays = [
+            $static_holidays = [
                 '01-01',
                 '04-09',
                 '05-01',
@@ -3931,21 +3931,35 @@ class ReportController extends \yii\web\Controller
                 '12-25',
                 '12-30',
             ];
+            $holidays = [];
+            foreach ($static_holidays as $val) {
+                $holidays[] = DateTime::createFromFormat('Y-m', $from_reporting_period)->format('Y') . '-' . $val;
+            }
+            foreach ($static_holidays as $val) {
+                $holidays[] = DateTime::createFromFormat('Y-m', $to_reporting_period)->format('Y') . '-' . $val;
+            }
+            // var_dump(array_unique($holidays));
+            // die();
 
-            $holidays_query = array_column(Yii::$app->db->createCommand("SELECT DATE_FORMAT(holidays.date,'%m-%d') as _date FROM holidays
+            $holidays_query = array_column(Yii::$app->db->createCommand("SELECT holidays.date FROM holidays
             WHERE holidays.date >= :from_year
             AND holidays.date <= :to_year
             ")
                 ->bindValue(':from_year', $from_reporting_period . '-01')
-                ->bindValue(':to_year', $to_reporting_period . '-01')
-                ->queryAll(), '_date');
-            // var_dump(array_merge($holidays_query,$holidays));
-            return json_encode(['data' => $query, 'holidays' => $holidays]);
+                ->bindValue(':to_year', $to_reporting_period . '-31')
+                ->queryAll(), 'date');
+            // var_dump(array_merge(array_unique($holidays), $holidays_query));
+            // var_dump($from_reporting_period . '-01');
+            // var_dump($to_reporting_period . '-01');
+            // var_dump($holidays_query);
+            // die();
+            return json_encode(['data' => $query, 'holidays' => array_merge(array_unique($holidays), $holidays_query)]);
         }
         // echo $this->getWorkdays('2022-05-23', '2022-05-24');
 
         return $this->render('dv_time_monitoring');
     }
+
 
     function getWorkdays($date1, $date2, $workSat = FALSE, $patron = NULL)
     {
@@ -3994,6 +4008,35 @@ class ReportController extends \yii\web\Controller
 
 
         return intval($workdays - 1);
+    }
+    public function actionPrReport()
+    {
+        if ($_POST) {
+            $from_date = $_POST['from_date'];
+            $to_date = $_POST['to_date'];
+
+            $total_pr_query = Yii::$app->db->createCommand("SELECT 
+            pr_purchase_request.pr_number,
+            pr_purchase_request.date,
+            pr_purchase_request.purpose,
+            books.`name` as book_name,
+            req_by.employee_name as requested_by,
+            app_by.employee_name as approved_by
+            FROM pr_purchase_request
+            LEFT JOIN books ON pr_purchase_request.book_id = books.id
+            LEFT JOIN employee_search_view as req_by ON pr_purchase_request.requested_by_id = req_by.employee_id
+            LEFT JOIN employee_search_view  as app_by ON pr_purchase_request.approved_by_id = app_by.employee_id
+            LEFT JOIN pr_project_procurement ON pr_purchase_request.pr_project_procurement_id  = pr_project_procurement.id
+            
+            WHERE 
+            pr_purchase_request.created_at >=:from_date
+            AND pr_purchase_request.created_at <=:to_date")
+                ->bindValue(':from_date', $from_date)
+                ->bindValue(':to_date', $to_date)
+                ->queryAll();
+            return json_encode($total_pr_query);
+        }
+        return $this->render('pr_report');
     }
 }
 
