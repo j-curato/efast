@@ -15,7 +15,7 @@ use yii\helpers\Url;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = "List of Pending DV's";
+$this->title = "DV Time Monitoring";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index" style="background-color: white;">

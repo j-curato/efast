@@ -65,7 +65,9 @@ class ReportController extends \yii\web\Controller
                     'detailed-financial-position',
                     'withholding-and-remittance-summary',
                     'transaction-tracking',
-                    'dv-time-monitoring'
+                    'dv-time-monitoring',
+
+                    'dv-time-monitoring-summary'
 
                 ],
                 'rules' => [
@@ -87,7 +89,8 @@ class ReportController extends \yii\web\Controller
                             'detailed-financial-position',
                             'withholding-and-remittance-summary',
                             'transaction-tracking',
-                            'dv-time-monitoring'
+                            'dv-time-monitoring',
+                            'dv-time-monitoring-summary'
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
@@ -3961,6 +3964,68 @@ class ReportController extends \yii\web\Controller
         // echo $this->getWorkdays('2022-05-23', '2022-05-24');
 
         return $this->render('dv_time_monitoring');
+    }
+    public function actionDvTimeMonitoringSummary()
+    {
+
+        if ($_POST) {
+            $year = $_POST['year'];
+            $query  = Yii::$app->db->createCommand("SELECT 
+            dv_aucs.reporting_period,
+            COUNT(dv_aucs.id) as total_dv,
+            SUM(IF(IF((5 * (DATEDIFF(DATE_FORMAT(dv_aucs.out_timestamp,'%Y-%m-%d'), DATE_FORMAT(dv_aucs.in_timestamp,'%Y-%m-%d')) DIV 7) 
+            + MID('0123444401233334012222340111123400012345001234550', 7 * WEEKDAY(DATE_FORMAT(dv_aucs.in_timestamp,'%Y-%m-%d')) 
+            + WEEKDAY(DATE_FORMAT(dv_aucs.out_timestamp,'%Y-%m-%d')) + 1, 1))  +0=0,1,(5 * (DATEDIFF(DATE_FORMAT(dv_aucs.out_timestamp,'%Y-%m-%d'), DATE_FORMAT(dv_aucs.in_timestamp,'%Y-%m-%d')) DIV 7) 
+            + MID('0123444401233334012222340111123400012345001234550', 7 * WEEKDAY(DATE_FORMAT(dv_aucs.in_timestamp,'%Y-%m-%d')) 
+            + WEEKDAY(DATE_FORMAT(dv_aucs.out_timestamp,'%Y-%m-%d')) + 1, 1)) +0) - (SELECT COUNT(hol_days.date)
+            FROM 
+            (SELECT 
+            holidays.date
+            FROM holidays
+            UNION 
+            VALUES
+            
+             ('2022-01-01'),
+             ('2022-04-09'),
+              ('2022-05-01'),
+             ('2022-08-28'),
+              ('2022-11-30'),
+               ('2022-12-08'),
+                ('2022-12-25'),
+                 ('2022-12-30')
+            ) hol_days
+            
+            WHERE 
+            hol_days.date >=DATE_FORMAT(dv_aucs.in_timestamp,'%Y-%m-%d')
+            AND hol_days.date <=DATE_FORMAT(dv_aucs.out_timestamp,'%Y-%m-%d')
+            AND
+            DAYOFWEEK(hol_days.date) != 7
+            AND DAYOFWEEK(hol_days.date) != 1
+            )<=3,1,0)) as dv_within 
+            
+                        FROM
+                        dv_aucs
+                        INNER JOIN payee ON dv_aucs.payee_id = payee.id
+                        INNER JOIN cash_disbursement ON dv_aucs.id = cash_disbursement.dv_aucs_id
+                        LEFT JOIN (SELECT dv_aucs_entries.dv_aucs_id,
+                        SUM(dv_aucs_entries.amount_disbursed)as dv_amount 
+                        FROM dv_aucs_entries
+                        GROUP BY 
+                        dv_aucs_entries.dv_aucs_id) AS dv_entry_amount ON dv_aucs.id = dv_entry_amount.dv_aucs_id
+            
+                        WHERE
+            
+                        dv_aucs.is_cancelled !=1
+                        AND 
+                        cash_disbursement.is_cancelled !=1
+                        AND dv_aucs.reporting_period LIKE :_year
+                      
+            GROUP BY dv_aucs.reporting_period")
+                ->bindValue(':_year', $year . '%')
+                ->queryAll();
+            return json_encode($query);
+        }
+        return $this->render('dv_time_monitoring_summary');
     }
 
 

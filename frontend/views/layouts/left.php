@@ -341,6 +341,7 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'CDJ', 'icon' => 'circle-o', 'url' => ['/report/cdj'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Transaction Tracking', 'icon' => 'circle-o', 'url' => ['/report/transaction-tracking'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'DV Time Monitoring', 'icon' => 'circle-o', 'url' => ['/report/dv-time-monitoring'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'DV Time Monitoring Summary', 'icon' => 'circle-o', 'url' => ['/report/dv-time-monitoring-summary'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Holidays', 'icon' => 'circle-o', 'url' => ['/holidays'],] : [],
                             ],
                         ] : [],
