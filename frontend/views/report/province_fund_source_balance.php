@@ -77,6 +77,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
             </tbody>
         </table>
+        <div id="dots5">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </div>
 
 </div>
@@ -85,6 +91,8 @@ $this->params['breadcrumbs'][] = $this->title;
         background-color: white;
         padding: 3rem;
     }
+
+
 
     #data_table {
         margin-top: 3rem;
@@ -99,14 +107,21 @@ $this->params['breadcrumbs'][] = $this->title;
     .amount {
         text-align: right;
     }
+
+    #dots5 {
+        display: none;
+    }
 </style>
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 <script>
     $(document).ready(function() {
 
         $('#filter').submit(function(e) {
+            $('#data_table').hide()
+            $('#dots5').show()
             e.preventDefault()
             $.ajax({
                 type: 'POST',
@@ -114,6 +129,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                 data: $('#filter').serialize(),
                 success: function(data) {
                     displayData(JSON.parse(data))
+
+                    $('#data_table').show()
+                    $('#dots5').hide()
                 }
             })
         })
