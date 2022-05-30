@@ -19,67 +19,70 @@ $this->title = "DV Time Monitoring Summary";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index">
-<div class="container">
+    <div class="container">
 
-    <div class="row">
-        <form id="filter">
-            <div class="col-sm-3">
-                <label for="from_reporting_period">From Reporting Period</label>
-                <?php
+        <div class="row">
+            <form id="filter">
+                <div class="col-sm-3">
+                    <label for="from_reporting_period">From Reporting Period</label>
+                    <?php
 
-                echo DatePicker::widget([
-                    'name' => 'year',
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'format' => 'yyyy',
-                        'minViewMode' => 'years'
-                    ]
-                ]);
+                    echo DatePicker::widget([
+                        'name' => 'year',
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'format' => 'yyyy',
+                            'minViewMode' => 'years'
+                        ]
+                    ]);
 
-                ?>
-            </div>
+                    ?>
+                </div>
 
-            <div class="col-sm-3">
-                <button class="btn btn-success" type="submit">Generate</button>
-            </div>
-        </form>
-    </div>
-    <table id="data_table">
-        <thead>
-            <tr>
-                <th colspan="4">
-                    Process Cycle Time Monitoring Report Summary for Processing of Claims
-                </th>
-            </tr>
-            <tr>
-                <th>Month</th>
-                <th>Total Claims Received/Processed</th>
-                <th>Total Claims Processed within Timeline of 3 working days</th>
-                <th>% Accomplishment</th>
-            </tr>
-        </thead>
-        <tbody>
+                <div class="col-sm-3">
+                    <button class="btn btn-success" type="submit">Generate</button>
+                </div>
+            </form>
+        </div>
+        <table id="data_table">
+            <thead>
+                <tr>
+                    <th colspan="4">
+                        Process Cycle Time Monitoring Report Summary for Processing of Claims
+                    </th>
+                </tr>
+                <tr>
+                    <th>Month</th>
+                    <th>Total Claims Received/Processed</th>
+                    <th>Total Claims Processed within Timeline of 3 working days</th>
+                    <th>% Accomplishment</th>
+                </tr>
+            </thead>
+            <tbody>
 
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
     </div>
 
 
 </div>
 <style>
-    .bold{
+    .bold {
         font-weight: bold;
     }
-    .container{
+
+    .container {
         background-color: white;
         padding: 3rem;
     }
+
     th,
     td {
         border: 1px solid black;
         padding: 8px;
         text-align: center;
+        width: auto;
     }
 
     table {
@@ -107,17 +110,12 @@ $this->params['breadcrumbs'][] = $this->title;
         th,
         td {
             border: 1px solid black;
-            padding: 3px;
+            padding: 5px;
             text-align: center;
         }
 
-        .select2-selection__arrow {
-            display: none !important;
-        }
-
-        .select2-container--default .select2-selection--single {
-            border: none !important;
-            text-decoration: underline;
+        .main-footer {
+            display: none;
         }
     }
 </style>

@@ -66,8 +66,8 @@ class ReportController extends \yii\web\Controller
                     'withholding-and-remittance-summary',
                     'transaction-tracking',
                     'dv-time-monitoring',
-
-                    'dv-time-monitoring-summary'
+                    'dv-time-monitoring-summary',
+                    'province-fund-source-balance'
 
                 ],
                 'rules' => [
@@ -90,7 +90,8 @@ class ReportController extends \yii\web\Controller
                             'withholding-and-remittance-summary',
                             'transaction-tracking',
                             'dv-time-monitoring',
-                            'dv-time-monitoring-summary'
+                            'dv-time-monitoring-summary',
+                            'province-fund-source-balance'
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
@@ -4105,6 +4106,51 @@ class ReportController extends \yii\web\Controller
             return json_encode($total_pr_query);
         }
         return $this->render('pr_report');
+    }
+    public function actionProvinceFundSourceBalance()
+    {
+        if ($_POST) {
+
+            $province = $_POST['province'];
+            $year = $_POST['year'];
+            $db = Yii::$app->db;
+
+            if ($_SERVER['REMOTE_ADDR'] !== '210.1.103.26') {
+                $db = Yii::$app->cloud_db;
+            }
+            $query = $db->createCommand("SELECT 
+            advances.province,
+            advances_entries.reporting_period,
+            advances_entries.fund_source,
+            advances_entries.amount,
+            total_liquidaton.withdrawals,
+            advances_entries.amount - total_liquidaton.withdrawals as balance,
+            (total_liquidaton.withdrawals/advances_entries.amount) *100 as utilization
+            FROM advances_entries
+            LEFT JOIN advances ON advances_entries.advances_id = advances.id
+            LEFT JOIN
+            (
+            
+            SELECT 
+            advances_entries.id,
+            IFNULL(SUM(IFNULL(liquidation_entries.withdrawals,0)),0) as withdrawals
+            FROM advances_entries
+            LEFT JOIN liquidation_entries ON advances_entries.id = liquidation_entries.advances_entries_id
+            
+            GROUP BY 
+            advances_entries.id
+            ) as total_liquidaton ON advances_entries.id  = total_liquidaton.id
+            WHERE advances_entries.reporting_period LIKE :_year
+            AND advances_entries.is_deleted !=1 
+            AND advances_entries.is_deleted !=9
+            AND advances.province = :province
+            ")
+                ->bindValue(':province', $province)
+                ->bindValue(':_year', $year . '%')
+                ->queryAll();
+            return json_encode($query);
+        }
+        return $this->render('province_fund_source_balance');
     }
 }
 
