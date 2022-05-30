@@ -24,9 +24,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row">
             <form id="filter">
                 <div class="col-sm-3">
-                    <label for="from_reporting_period">From Reporting Period</label>
+                    <label for="year">Year</label>
                     <?php
-
                     echo DatePicker::widget([
                         'name' => 'year',
                         'pluginOptions' => [

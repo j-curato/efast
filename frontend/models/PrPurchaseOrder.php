@@ -98,4 +98,14 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Employee::class, ['employee_id' => 'fk_accounting_unit']);
     }
+    public function getContractType()
+    {
+        
+        return $this->hasOne(PrContractType::class,['id'=>'fk_contract_type_id']);
+    }
+    public function getAoq()
+    {
+        
+        return $this->hasOne(PrAoq::class,['id'=>'fk_pr_aoq_id']);
+    }
 }
