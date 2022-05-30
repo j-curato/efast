@@ -71,7 +71,8 @@ class WithholdingAndRemittanceSummarySearch extends WithholdingAndRemittanceSumm
     public function search($params)
     {
 
-        $query = WithholdingAndRemittanceSummary::find();
+        $query = WithholdingAndRemittanceSummary::find()
+        ->where('unremitted_amount !=0');
 
         // add conditions that should always apply here
 
