@@ -69,14 +69,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     <span>Butuan City</span>
                     <br>
                     <span>
-                        ADMINISTRATIVE, FINANCE MANAGEMENT DIVISION
+                        DEPARTMENT of FINANCE and ADMINISTRATIVE DIVISION
                     </span>
                 </th>
             </tr>
             <tr>
                 <th colspan="13" style="border:0;">
                     <span>
-                        Process Ctcle Time Monitoring Report for Processing of Claims
+                        Process Cycle Time Monitoring Report for Processing of Claims
 
                     </span>
                     <br>
