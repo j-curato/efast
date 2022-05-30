@@ -67,7 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
 
                 <tr>
-                    <th class='bdr-none' colspan="7" style="text-align: center;" class="bdr-top-none bdr-btm-none">REQUEST FOR QUOTAION</th>
+                    <th class='bdr-none' colspan="7" style="text-align: center;" class="bdr-top-none bdr-btm-none">REQUEST FOR QUOTATION</th>
                 </tr>
                 <tr>
                     <td class='bdr-none' colspan="2" style="text-align: left;padding-top:5rem;" class="bdr-top-none bdr-btm-none bdr-right-none bdr-btm-none">
