@@ -4113,6 +4113,7 @@ class ReportController extends \yii\web\Controller
 
             $province = $_POST['province'];
             $year = $_POST['year'];
+            $report_type = $_POST['report_type'];
             $db = Yii::$app->db;
 
             if ($_SERVER['REMOTE_ADDR'] !== '210.1.103.26') {
@@ -4144,9 +4145,11 @@ class ReportController extends \yii\web\Controller
             AND advances_entries.is_deleted !=1 
             AND advances_entries.is_deleted !=9
             AND advances.province = :province
+            AND advances_entries.report_type = :report_type
             ")
                 ->bindValue(':province', $province)
                 ->bindValue(':_year', $year . '%')
+                ->bindValue(':report_type', $report_type)
                 ->queryAll();
             return json_encode($query);
         }

@@ -2,12 +2,14 @@
 
 use app\models\DvAucs;
 use app\models\PoTransmittal;
+use app\models\ReportType;
 use kartik\grid\GridView;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\export\ExportMenu;
 use kartik\select2\Select2;
 use yii\data\ActiveDataProvider;
+use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
@@ -25,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <div class="row">
                 <div class="col-sm-3">
-                    <label for="year">Year</label>
+                    <label for="province">Province</label>
                     <?php
                     echo Select2::widget([
                         'name' => 'province',
@@ -38,6 +40,19 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                         'pluginOptions' => [
                             'placeholder' => 'Select Province'
+                        ]
+                    ])
+                    ?>
+                </div>
+                <div class="col-sm-3">
+                    <label for="report_type">Report Type</label>
+                    <?php
+
+                    echo Select2::widget([
+                        'name' => 'report_type',
+                        'data' => ArrayHelper::map(ReportType::find()->asArray()->all(), 'name', 'name'),
+                        'pluginOptions' => [
+                            'placeholder' => 'Report Type'
                         ]
                     ])
                     ?>
@@ -104,6 +119,10 @@ $this->params['breadcrumbs'][] = $this->title;
         border: 1px solid black;
     }
 
+    th {
+        text-align: center;
+    }
+
     .amount {
         text-align: right;
     }
@@ -163,7 +182,8 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
             $('#data_table tbody').append(data_row)
         })
 
-        total_utilization = (total_withdrawals / total_amount) * 100
+        if (total_withdrawals != 0 && total_amount!=0 )
+            total_utilization = (total_withdrawals / total_amount) * 100
         const total_row = `<tr>
             <td style='font-weight:bold;text-align:center'>Total</td>
             <td class='amount' style='font-weight:bold'>${thousands_separators(total_amount.toFixed(2))}</td>
