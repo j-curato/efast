@@ -33,7 +33,9 @@ $this->params['breadcrumbs'][] = $this->title;
             $quantity = $val['quantity'];
             $purpose =  $model->aoq->rfq->purchaseRequest->purpose;
             $auth_personel = strtoupper($model->authorizedOfficial->f_name . ' ' . $model->authorizedOfficial->m_name[0] . '. ' . $model->authorizedOfficial->l_name);
+            $auth_personel_position =  $model->authorizedOfficial->position;
             $accountant = strtoupper($model->accountingUnit->f_name . ' ' . $model->accountingUnit->m_name[0] . '. ' . $model->accountingUnit->l_name);
+            $accountant_position = $model->accountingUnit->position;
             $requested_by = '';
             $requested_by_position = '';
 
@@ -252,7 +254,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </span>
                                 <br>
                                 <span>
-                                    <?php echo $requested_by_position ?>
+                                    <?php echo $auth_personel_position ?>
+                                    
 
                                 </span>
                             </td>
@@ -274,7 +277,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </span>
                                 <br>
                                 <span>
-                                    <?php echo $requested_by_position ?>
+                                    <?php echo $accountant_position ?>
 
                                 </span>
                             </td>
