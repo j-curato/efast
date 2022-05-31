@@ -178,14 +178,14 @@ $property_custodian_position = $model->property->employee->position
         } else {
         ?>
             <table>
-                <thead>
-                    <th colspan="6" style="border-bottom: none;">
-
-                    </th>
-                </thead>
+          
                 <tbody>
                     <tr>
-                        <th colspan="6" style="text-align: center;">PROPERTY ACKNOWLEDGEMENT RECIEPT</th>
+                        <th colspan="6" style="text-align: center;">
+                        <br>
+                        PROPERTY ACKNOWLEDGEMENT RECIEPT
+                        <br>
+                    </th>
                     </tr>
                     <tr>
                         <th colspan="6">
@@ -284,13 +284,13 @@ $property_custodian_position = $model->property->employee->position
 
                     </tr>
                     <tr>
-                        <th class='foot' colspan="3">
+                        <th class='foot' colspan="3" style="border-bottom: 1px solid black;">
 
                             <span>_______________</span>
                             <br>
                             <span>Date</span>
                         </th>
-                        <th class='foot' colspan="3">
+                        <th class='foot' colspan="3" style="border-bottom: 1px solid black;">
                             <span>_______________</span>
                             <br>
                             <span>Date</span>
