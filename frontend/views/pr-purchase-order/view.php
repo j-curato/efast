@@ -137,13 +137,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
                                 <div class="greeting">
-                                    <div><?php echo $description ?></div>
+                                    <div style="font-weight: bold;"><?php echo $description ?></div>
                                     <?php
 
                                     $spec =  explode('<br>', $specification);
                                     foreach ($spec as $val) {
 
-                                        echo "<div>
+                                        echo "<div style='font-style:italic;'>
                                             {$val}
                                         </div>";
                                     }
