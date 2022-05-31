@@ -32,13 +32,40 @@ $this->params['breadcrumbs'][] = $this->title;
             $specification = $val['specification'];
             $quantity = $val['quantity'];
             $purpose =  $model->aoq->rfq->purchaseRequest->purpose;
+            $auth_personel = strtoupper($model->authorizedOfficial->f_name . ' ' . $model->authorizedOfficial->m_name[0] . '. ' . $model->authorizedOfficial->l_name);
+            $accountant = strtoupper($model->accountingUnit->f_name . ' ' . $model->accountingUnit->m_name[0] . '. ' . $model->accountingUnit->l_name);
+            $requested_by = '';
+            $requested_by_position = '';
 
+            $inspected_by = '';
+            $inspected_by_position = '';
+
+
+            if (!empty($model->requestedBy->f_name)) {
+                $requested_by = strtoupper($model->requestedBy->f_name . ' ' . $model->requestedBy->m_name[0] . '. ' . $model->requestedBy->l_name);
+                $requested_by_position = $model->requestedBy->position;
+            }
+            if (!empty($model->inspectedBy->f_name)) {
+                $inspected_by = strtoupper($model->inspectedBy->f_name . ' ' . $model->inspectedBy->m_name[0] . '. ' . $model->inspectedBy->l_name);
+                $inspected_by_position = $model->inspectedBy->position;
+            }
             $po_date = '';
             if (!empty($model->po_date)) {
 
                 $po_date =  DateTime::createFromFormat('Y-m-d', $model->po_date)->format('F d, Y');
             }
-            if ($model->contractType->contract_name === 'qwe') {
+
+            $date_begun = '';
+            $date_completed = '';
+
+            if (!empty($model->date_work_begun)) {
+                $date_begun  = DateTime::createFromFormat('Y-m-d', $model->date_work_begun)->format('F d, Y');
+            }
+
+            if (!empty($model->date_completed)) {
+                $date_completed  = DateTime::createFromFormat('Y-m-d', $model->date_completed)->format('F d, Y');
+            }
+            if ($model->contractType->contract_name === 'jo') {
             ?>
                 <table>
                     <thead>
@@ -58,8 +85,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             </th>
                         </tr>
                         <tr>
-                            <td colspan="2" class="no-border"></td>
-                            <th colspan="2" class="no-border">
+                            <td colspan="3" class="no-border"></td>
+                            <th colspan="1" class="no-border left">
                                 <span>
                                     Job Order No.:
                                 </span>
@@ -69,8 +96,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             </th>
                         </tr>
                         <tr>
-                            <td colspan="2" class="no-border"></td>
-                            <th colspan="2" class="no-border">
+                            <td colspan="3" class="no-border"></td>
+                            <th colspan="1" class="no-border left">
                                 <span>
 
                                     Date:
@@ -79,15 +106,27 @@ $this->params['breadcrumbs'][] = $this->title;
                             </th>
                         </tr>
                         <tr>
-                            <th class="no-border">To</th>
-                            <th colspan="3" class="no-border"><?php echo $payee ?></th>
+                            <th class="no-border left">To</th>
+                            <th colspan="3" class="no-border left">
+                                <div class="greeting">
+                                    <div style="padding:0;">
+                                        : <?php echo $payee ?>
+                                    </div>
+                                </div>
+                            </th>
                         </tr>
                         <tr>
-                            <th class="no-border">ADDRESS</th>
-                            <th colspan="3" class="no-border"><?php echo $payee_address ?></th>
+                            <th class="no-border left">ADDRESS</th>
+                            <th colspan="3" class="no-border left">
+                                <div class="greeting">
+                                    <div style="padding:0;">
+                                        : <?php echo $payee_address ?>
+                                    </div>
+                                </div>
+                            </th>
                         </tr>
                         <tr>
-                            <th class="no-border">DESCRIPTION OF WORK</th>
+                            <th class="no-border left">DESCRIPTION OF WORK</th>
                             <th colspan="3" class="no-border"></th>
                         </tr>
                     </thead>
@@ -116,7 +155,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </tr>
                         <tr>
                             <td class="no-border" style="border-bottom: 1px solid black;"></td>
-                            <td colspan="3" class="no-border" style="border-bottom: 1px solid black;"><?php echo $purpose ?></td>
+                            <td colspan="3" class="no-border" style="border-bottom: 1px solid black; font-weight:bold;"><?php echo $purpose ?></td>
 
                         </tr>
 
@@ -124,39 +163,121 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td class="no-border">
                                 Estimated Cost
                             </td>
-                            <td colspan="3" class="no-border"></td>
+                            <td colspan="2" class="no-border ">
+                                <div class="greeting">
+                                    <div style="padding: 0;">
+                                        :<?php echo $total_amount ?>
+
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                         <tr>
                             <td class="no-border">
                                 Project Charge
                             </td>
-                            <td colspan="3" class="no-border"></td>
+                            <td colspan="2" class="no-border ">
+
+                                <div class="greeting">
+                                    <div style="padding: 0;">
+                                        :<?php echo $total_amount ?>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                         <tr>
                             <td class="no-border">
                                 Date & Time Work Begun
                             </td>
-                            <td colspan="3" class="no-border"></td>
+                            <td colspan="2" class="no-border">
+
+                                <div class="greeting">
+                                    <div style='padding:0;'>
+                                        : <?php echo $date_begun ?>
+                                    </div>
+                                </div>
+                            </td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td class="no-border">
                                 Date & Time Completed
                             </td>
-                            <td colspan="3" class="no-border"></td>
+                            <td colspan="2" class="no-border">
+                                <div class="greeting">
+                                    <div style='padding:0;'>
+                                        : <?php echo $date_completed ?>
+                                    </div>
+                                </div>
+                            </td>
+                            <td></td>
                         </tr>
                         <tr>
-                            <td class="no-border">
+                            <td class="no-border" style="vertical-align:top;">
                                 Conforme
                             </td>
-                            <td colspan="3" class="no-border">
+                            <td colspan="2" class="no-border" style="font-weight:bold;">
+                                <br>
+                                <br>
+                                <br>
 
+                                <div class="greeting">
+                                    <div style="text-align: center;padding:0;"> <?php echo $payee ?></div>
+                                </div>
+                                <br>
+                                <br>
                             </td>
+                            <td c></td>
                         </tr>
                         <tr>
                             <td class="no-border">Requested by</td>
-                            <td class="no-border">Requested by</td>
-                            <td class="no-border">Requested by</td>
-                            <td class="no-border">Requested by</td>
+                            <td class="no-border">Authorized by</td>
+                            <td class="no-border">Inspected by</td>
+                            <td class="no-border">Funds Availablility by</td>
+                        </tr>
+                        <tr>
+                            <td class="center">
+                                <span class="personel" style="text-decoration: underline;">
+                                    <?php echo $requested_by ?>
+                                </span>
+                                <br>
+                                <span >
+                                    <?php echo $requested_by_position ?>
+                                </span>
+                            </td>
+                            <td class="center">
+                                <span class="personel" style="text-decoration: underline;">
+                                    <?php echo $auth_personel ?>
+
+                                </span>
+                                <br>
+                                <span >
+                                    <?php echo $requested_by_position ?>
+
+                                </span>
+                            </td>
+                            <td class="center">
+                                <span class="personel" style="text-decoration: underline;">
+                                    <?php echo $inspected_by ?>
+
+                                </span>
+                                <br>
+                                <span >
+                                    <?php echo $requested_by_position ?>
+
+                                </span>
+                            </td>
+                            <td class="center">
+                                <span class="personel" style="text-decoration: underline;">
+                                    <?php echo $accountant ?>
+
+                                </span>
+                                <br>
+                                <span >
+                                    <?php echo $requested_by_position ?>
+
+                                </span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -367,6 +488,25 @@ $this->params['breadcrumbs'][] = $this->title;
 
     }
 
+    .center {
+        text-align: center;
+    }
+
+    .personel {
+        text-align: center;
+        font-weight: bold;
+        border: none;
+
+    }
+
+    .right {
+        text-align: right;
+    }
+
+    .left {
+        text-align: left;
+    }
+
     .greeting div {
 
         text-align: left;
@@ -389,7 +529,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     td,
     th {
-        border: 1px solid black;
+
         padding: 2rem;
     }
 

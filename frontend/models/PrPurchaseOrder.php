@@ -42,9 +42,14 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
                 'fk_accounting_unit',
                 'po_date'
             ], 'required'],
-            [['id', 'fk_contract_type_id', 'fk_mode_of_procurement_id', 'fk_pr_aoq_id', 'fk_auth_official', 'fk_accounting_unit', 'fk_bac_composition_id'], 'integer'],
+            [['id', 'fk_contract_type_id', 'fk_mode_of_procurement_id', 'fk_pr_aoq_id', 
+            'fk_auth_official', 'fk_accounting_unit', 'fk_bac_composition_id'], 'integer'],
             [['place_of_delivery'], 'string'],
-            [['delivery_date', 'bac_date'], 'safe'],
+            [['delivery_date', 'bac_date','fk_requested_by','fk_inspected_by',
+            'date_work_begun',
+            'date_completed'
+        
+        ], 'safe'],
             [['po_number', 'payment_term', 'delivery_term', 'po_date'], 'string', 'max' => 255],
             [['po_number'], 'unique'],
             [['id'], 'unique'],
@@ -70,7 +75,12 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
             'fk_accounting_unit' => ' Accounting Unit',
             'fk_bac_composition_id' => 'BAC RSO Number',
             'bac_date' => 'BAC Date',
-            'po_date' => 'Date'
+            'po_date' => 'Date',
+            'fk_requested_by' => 'Requested By',
+            'fk_inspected_by' => 'Inspected By',
+            'date_work_begun' => 'Date Work Begun',
+            'date_completed' => 'Date Completed',
+
 
 
         ];
@@ -97,6 +107,14 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
     public function getAccountingUnit()
     {
         return $this->hasOne(Employee::class, ['employee_id' => 'fk_accounting_unit']);
+    }
+    public function getRequestedBy()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_requested_by']);
+    }
+    public function getInspectedBy()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_inspected_by']);
     }
     public function getContractType()
     {

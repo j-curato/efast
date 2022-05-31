@@ -22,6 +22,8 @@ use yii\widgets\ActiveForm;
 
 $auth_official = '';
 $accounting_unit = '';
+$requested_by = '';
+$inspected_by = '';
 $aoq_id = '';
 $model_id = '';
 if (!empty($model->id)) {
@@ -33,9 +35,27 @@ if (!empty($model->id)) {
         ->bindValue(':id', $model->fk_accounting_unit)
         ->queryAll();
     $accounting_unit = ArrayHelper::map($accounting_unit_query, 'employee_id', 'employee_name');
+
+    $requested_by_query   = Yii::$app->db->createCommand("SELECT employee_id,UPPER(employee_name)  as employee_name FROM employee_search_view WHERE employee_id = :id")
+        ->bindValue(':id', $model->fk_requested_by)
+        ->queryAll();
+    $requested_by = ArrayHelper::map($requested_by_query, 'employee_id', 'employee_name');
+
+    $inspected_query   = Yii::$app->db->createCommand("SELECT employee_id,UPPER(employee_name)  as employee_name FROM employee_search_view WHERE employee_id = :id")
+        ->bindValue(':id', $model->fk_inspected_by)
+        ->queryAll();
+    $inspected_by = ArrayHelper::map($inspected_query, 'employee_id', 'employee_name');
+
+
+
+
+
+
     $aoq_id_query   = Yii::$app->db->createCommand("SELECT id, aoq_number FROM pr_aoq WHERE id = :id")
         ->bindValue(':id', $model->fk_pr_aoq_id)
         ->queryAll();
+
+
     $aoq_id = ArrayHelper::map($aoq_id_query, 'id', 'aoq_number');
     $model_id = $model->id;
 }
@@ -98,6 +118,24 @@ if (!empty($model->id)) {
 
 
         </div>
+        <div class="row " id="jo_date">
+            <div class="col-sm-3">
+                <?= $form->field($model, 'date_work_begun')->widget(DatePicker::class, [
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm-dd',
+                        'autoclose' => true
+                    ]
+                ]) ?>
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'date_completed')->widget(DatePicker::class, [
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm-dd',
+                        'autoclose' => true
+                    ]
+                ]) ?>
+            </div>
+        </div>
         <div class="row">
             <div class="col-sm-6">
                 <?= $form->field($model, 'place_of_delivery')->textInput() ?>
@@ -145,6 +183,56 @@ if (!empty($model->id)) {
             <div class="col-sm-6">
                 <?= $form->field($model, 'fk_accounting_unit')->widget(Select2::class, [
                     'data' => $accounting_unit,
+                    'options' => ['placeholder' => 'Search for a Employee ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
+
+                ]) ?>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <?= $form->field($model, 'fk_requested_by')->widget(Select2::class, [
+                    'data' => $requested_by,
+                    'options' => ['placeholder' => 'Search for a Employee ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
+
+                ]) ?>
+            </div>
+            <div class="col-sm-6">
+                <?= $form->field($model, 'fk_inspected_by')->widget(Select2::class, [
+                    'data' => $inspected_by,
                     'options' => ['placeholder' => 'Search for a Employee ...'],
                     'pluginOptions' => [
                         'allowClear' => true,
@@ -287,7 +375,9 @@ if (!empty($model->id)) {
         text-align: right;
     }
 
-
+    #jo_date {
+        display: none;
+    }
 
     .con {
         background-color: white;
@@ -307,7 +397,21 @@ $this->registerJs($script);
 
 ?>
 <script>
+    function contractTypeChange() {
+
+        const selected = $('#prpurchaseorder-fk_contract_type_id :selected').text()
+        if (selected == 'jo') {
+            $('#jo_date').show()
+        } else {
+            $('#jo_date').hide()
+
+        }
+    }
     $(document).ready(function() {
+        contractTypeChange()
+        $('#prpurchaseorder-fk_contract_type_id').change(function() {
+            contractTypeChange()
+        })
         $("#change_lowest").click(function(e) {
             e.preventDefault()
             changeLowest()
