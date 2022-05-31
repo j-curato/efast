@@ -17,8 +17,8 @@ class PrPurchaseOrderSearch extends PrPurchaseOrder
     public function rules()
     {
         return [
-            [['id', 'fk_contract_type_id', 'fk_mode_of_procurement_id', 'fk_pr_aoq_id', 'fk_auth_official', 'fk_accounting_unit'], 'integer'],
-            [['po_number', 'place_of_delivery', 'delivery_date', 'payment_term','delivery_term'], 'safe'],
+            [['id', 'fk_auth_official', 'fk_accounting_unit'], 'integer'],
+            [[ 'fk_pr_aoq_id', 'fk_mode_of_procurement_id', 'fk_contract_type_id', 'po_number', 'place_of_delivery', 'delivery_date', 'payment_term', 'delivery_term'], 'safe'],
         ];
     }
 
@@ -55,21 +55,23 @@ class PrPurchaseOrderSearch extends PrPurchaseOrder
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->joinWith('contractType');
+        $query->joinWith('modeOfProcurement');
+        $query->joinWith('aoq');
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'fk_contract_type_id' => $this->fk_contract_type_id,
-            'fk_mode_of_procurement_id' => $this->fk_mode_of_procurement_id,
-            'fk_pr_aoq_id' => $this->fk_pr_aoq_id,
+
             'delivery_date' => $this->delivery_date,
             'fk_auth_official' => $this->fk_auth_official,
             'fk_accounting_unit' => $this->fk_accounting_unit,
         ]);
-
         $query->andFilterWhere(['like', 'po_number', $this->po_number])
             ->andFilterWhere(['like', 'place_of_delivery', $this->place_of_delivery])
             ->andFilterWhere(['like', 'delivery_term', $this->delivery_term])
+            ->andFilterWhere(['like', 'pr_contract_type.contract_name', $this->fk_contract_type_id])
+            ->andFilterWhere(['like', 'pr_mode_of_procurement.mode_name', $this->fk_mode_of_procurement_id])
+            ->andFilterWhere(['like', 'pr_aoq.aoq_number', $this->fk_pr_aoq_id])
             ->andFilterWhere(['like', 'payment_term', $this->payment_term]);
 
         return $dataProvider;

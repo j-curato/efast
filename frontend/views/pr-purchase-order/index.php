@@ -31,11 +31,20 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'po_number',
-            'fk_contract_type_id',
-            'fk_mode_of_procurement_id',
-            'fk_pr_aoq_id',
+            [
+                'label' => 'Contract Type',
+                'attribute' => 'fk_contract_type_id',
+                'value' => 'contractType.contract_name'
+            ],
+            [
+                'attribute' => 'fk_mode_of_procurement_id',
+                'value' => 'modeOfProcurement.mode_name'
+            ],
+            [
+                'attribute' => 'fk_pr_aoq_id',
+                'value' => 'aoq.aoq_number'
+            ],
             //'place_of_delivery:ntext',
             //'delivery_date',
             //'payment_term',
