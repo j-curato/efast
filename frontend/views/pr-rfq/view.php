@@ -22,6 +22,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container">
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?php
+
+            $link = yii::$app->request->baseUrl . "/index.php?r=pr-purchase-request/view&id={$model->pr_purchase_request_id}";
+            echo   Html::a('Purchase Request Link ', $link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px'])
+            ?>
         </p>
         <table>
             <thead>
@@ -123,7 +128,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <br>
                         <span style="text-align: left;">
 
-                           <?=DateTime::createFromFormat('Y-m-d',$model->deadline)->format('F d, Y')?> in a sealed envelope. Late submission will not be accepted.
+                            <?= DateTime::createFromFormat('Y-m-d', $model->deadline)->format('F d, Y') ?> in a sealed envelope. Late submission will not be accepted.
                         </span>
                     </td>
 
@@ -237,7 +242,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td class='bordered'> <span  style='font-weight:bold'>" . $val->purchaseRequestItem->stock->stock_title . "</span></br>
                         <span style='font-style:italic'>" . "{$specs}</span></td>
                         <td class='bordered' style='text-align:center' >{$val->purchaseRequestItem->quantity}</td>
-                        <td style='text-align:center;'>" .$val->purchaseRequestItem->unitOfMeasure->unit_of_measure. "</td>
+                        <td style='text-align:center;'>" . $val->purchaseRequestItem->unitOfMeasure->unit_of_measure . "</td>
                         <td class='bordered amount' >" . number_format($val->purchaseRequestItem->unit_cost, 2) . "</td>
                         <td class='bordered amount' >" . number_format($total_cost, 2) . "</td>
                         <td class='bdr-none'></td>
@@ -323,6 +328,37 @@ $this->params['breadcrumbs'][] = $this->title;
 
             </tbody>
         </table>
+
+        <?php
+
+        $rfqs = Yii::$app->db->createCommand("SELECT id, aoq_number  FROM pr_aoq WHERE pr_rfq_id = :id")
+            ->bindValue(':id', $model->id)
+            ->queryAll();
+
+        if (Yii::$app->user->can('super-user')) {
+
+        ?>
+            <table id="link_table" class="table table-striped" style="margin-top:3rem">
+
+                <tbody>
+                    <tr class="danger">
+                        <th colspan="2" style="text-align: center;border:none">AOQ LINKS</th>
+                    </tr>
+
+                    <?php
+
+                    foreach ($rfqs as $val) {
+                        $link = yii::$app->request->baseUrl . "/index.php?r=pr-aoq/view&id={$val['id']}";
+
+                        echo "<tr>
+                            <td style='border:none;'>{$val['aoq_number']}</td>
+                            <td style='border:none;'>" . Html::a('AOQ Link ', $link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px']) . "</td>
+                            </tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        <?php } ?>
     </div>
 
 
@@ -397,6 +433,11 @@ $this->params['breadcrumbs'][] = $this->title;
     @media print {
         .container {
             padding: 0;
+        }
+
+        #link_table {
+            display: none;
+
         }
 
         .btn {

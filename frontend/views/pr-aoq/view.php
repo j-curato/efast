@@ -18,6 +18,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?php
+
+            $link = yii::$app->request->baseUrl . "/index.php?r=pr-rfq/view&id={$model->pr_rfq_id}";
+            echo   Html::a('RFQ Link ', $link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px'])
+            ?>
         </p>
         <?php
         // $aoq_items_array = [];
@@ -27,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
         pr_stock.stock_title as `description`,
         REPLACE(pr_purchase_request_item.specification,'[n]','<br>') as specification,
         payee.account_name as payee,
-        IFNULL(pr_aoq_entries.amount,'') as amount,
+        IF(pr_aoq_entries.no_bid=0,pr_aoq_entries.amount,'No Bid') as amount,
         pr_purchase_request.purpose,
         pr_aoq_entries.remark,
         pr_aoq_entries.is_lowest,
@@ -423,9 +428,11 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                     lowest = lowest + val2.payee
                 }
                 let to_display = ''
-                if (val2.amount != '') {
+                if (val2.amount.toLowerCase() != 'no bid') {
 
                     to_display = thousands_separators(val2.amount)
+                } else if (val2.amount.toLowerCase() == 'no bid') {
+                    to_display = 'No Bid'
                 }
                 let key_pos_1 = 5
                 const amount = `<div class=foo><div >${to_display}</div></div><br>`

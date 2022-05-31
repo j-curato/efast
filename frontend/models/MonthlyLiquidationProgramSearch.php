@@ -17,8 +17,8 @@ class MonthlyLiquidationProgramSearch extends MonthlyLiquidationProgram
     public function rules()
     {
         return [
-            [['id', 'book_id'], 'integer'],
-            [['reporting_period', 'province', 'fund_source_type', 'created_at'], 'safe'],
+            [['id'], 'integer'],
+            [['reporting_period', 'province', 'fund_source_type', 'created_at', 'book_id'], 'safe'],
             [['amount'], 'number'],
         ];
     }
@@ -56,17 +56,18 @@ class MonthlyLiquidationProgramSearch extends MonthlyLiquidationProgram
             // $query->where('0=1');
             return $dataProvider;
         }
+        $query->joinWith('book');
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
             'amount' => $this->amount,
-            'book_id' => $this->book_id,
             'created_at' => $this->created_at,
         ]);
 
         $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
             ->andFilterWhere(['like', 'province', $this->province])
+            ->andFilterWhere(['like', 'books.name', $this->book_id])
             ->andFilterWhere(['like', 'fund_source_type', $this->fund_source_type]);
 
         return $dataProvider;

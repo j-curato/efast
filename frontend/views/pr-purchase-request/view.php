@@ -34,8 +34,10 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php
 
             if (Yii::$app->user->can('super-user')) {
+
+
                 $btn_color = 'btn btn-danger';
-                if ($model->is_final){
+                if ($model->is_final) {
                     $btn_color = 'btn btn-success';
                 }
                 echo  Html::a('Final', ['final', 'id' => $model->id], [
@@ -239,6 +241,36 @@ $this->params['breadcrumbs'][] = $this->title;
 
             </tbody>
         </table>
+        <?php
+
+        $rfqs = Yii::$app->db->createCommand("SELECT id, rfq_number FROM pr_rfq WHERE pr_purchase_request_id = :id")
+            ->bindValue(':id', $model->id)
+            ->queryAll();
+
+        if (Yii::$app->user->can('super-user')) {
+
+        ?>
+            <table id="link_table" class="table table-striped" style="margin-top:3rem">
+
+                <tbody>
+                    <tr class="danger">
+                        <th colspan="2" style="text-align: center;">RFQ LINKS</th>
+                    </tr>
+
+                    <?php
+
+                    foreach ($rfqs as $val) {
+                        $link = yii::$app->request->baseUrl . "/index.php?r=pr-rfq/view&id={$val['id']}";
+
+                        echo "<tr>
+                    <td>{$val['rfq_number']}</td>
+                    <td>" . Html::a('RFQ Link ', $link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px']) . "</td>
+                    </tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        <?php } ?>
     </div>
 
 </div>
@@ -296,6 +328,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
     @media print {
         .main-footer {
+            display: none;
+        }
+
+        #link_table {
             display: none;
         }
 

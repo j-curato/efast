@@ -5,7 +5,8 @@ use kartik\date\DatePicker;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
 use yii\helpers\Html;
-use yii\grid\GridView;
+use kartik\grid\GridView;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\MonthlyLiquidationProgramSearch */
@@ -19,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Monthly Liquidation Program', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=monthly-liquidation-program/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
         <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
     </p>
 
@@ -31,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
                 </div>
                 <div class='modal-body'>
-                    <center><a href="/afms/frontend/web/import_formats/Transaction_Format.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                    <center><a href="<?php echo Yii::$app->request->baseUrl?>/frontend/web/import_formats/monthly_liquidation_program.xlsx">Download Template Here to avoid error during Upload.</a></center>
                     <hr>
                     <label for="ledger"> SELECT YEAR</label>
 
@@ -85,16 +86,24 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel' => [
+            'type' => 'primary',
+            'headin' => 'Monthly Liquidation Program'
+        ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'reporting_period',
-            'amount',
-            'book_id',
             'province',
-            //'fund_source_type',
-            //'created_at',
+            'reporting_period',
+            [
+                'attribute' => 'amount',
+                'hAlign' => 'right',
+                'format' => ['decimal', 2]
+            ],
+            [
+                'attribute' => 'book_id',
+                'value' => 'book.name'
+            ],
+            'fund_source_type',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
@@ -107,6 +116,14 @@ $this->params['breadcrumbs'][] = $this->title;
     let submitted = false;
     $(document).ready(function() {
 
+        $('#modalButtoncreate').click(function() {
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+        });
+        $('a[title=Update]').click(function(e) {
+            e.preventDefault();
+
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
+        });
 
         $('#import').submit(function(e) {
             e.preventDefault();

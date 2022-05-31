@@ -235,7 +235,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td class="no-border">Requested by</td>
                             <td class="no-border">Authorized by</td>
                             <td class="no-border">Inspected by</td>
-                            <td class="no-border">Funds Availablility by</td>
+                            <td class="no-border">Funds Availability </td>
                         </tr>
                         <tr>
                             <td class="center no-border">

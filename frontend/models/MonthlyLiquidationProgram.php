@@ -54,4 +54,9 @@ class MonthlyLiquidationProgram extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
         ];
     }
+    public function getBook()
+    {
+
+        return $this->hasOne(Books::class, ['id' => 'book_id']);
+    }
 }

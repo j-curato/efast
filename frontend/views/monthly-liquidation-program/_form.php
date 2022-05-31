@@ -1,5 +1,11 @@
 <?php
 
+use app\models\Books;
+use app\models\FundSourceType;
+use kartik\date\DatePicker;
+use kartik\money\MaskMoney;
+use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -12,17 +18,58 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'reporting_period')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'reporting_period')->widget(
+        DatePicker::class,
+        [
+            'pluginOptions' => [
+                'format' => 'yyyy-mm',
+                'minViewMode' => 'months',
+                'autoclose' => true
+            ]
+        ]
+    ) ?>
 
-    <?= $form->field($model, 'amount')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'amount')->widget(MaskMoney::class, [
+        'options' => [
+            'class' => 'amounts',
+        ],
+        'pluginOptions' => [
+            'prefix' => 'PHP ',
+            'allowNegative' => true
+        ],
+    ]) ?>
 
-    <?= $form->field($model, 'book_id')->textInput() ?>
+    <?= $form->field($model, 'book_id')->widget(Select2::class, [
+        'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
+        'pluginOptions' => [
+            'placeholder' => 'Select Book'
+        ]
+    ]) ?>
 
-    <?= $form->field($model, 'province')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'province')->widget(Select2::class, [
+        'data' => [
+            'adn' => 'ADN',
+            'ads' => 'ADs',
+            'pdi' => 'PDI',
+            'sdn' => 'SDN',
+            'sds' => 'SDS',
+        ],
+        'pluginOptions' => [
+            'placeholder' => 'Select Province'
+        ]
+    ]) ?>
 
-    <?= $form->field($model, 'fund_source_type')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'fund_source_type')->widget(
+        Select2::class,
+        [
+            'data' => ArrayHelper::map(FundSourceType::find()->asArray()->all(), 'name', 'name'),
+            'pluginOptions' => [
+                'placeholder' => 'Select Fund Source Type',
 
-    <?= $form->field($model, 'created_at')->textInput() ?>
+            ]
+        ]
+    ) ?>
+
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
