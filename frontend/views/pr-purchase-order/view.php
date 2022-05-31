@@ -168,7 +168,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td colspan="2" class="no-border ">
                                 <div class="greeting">
                                     <div style="padding: 0;">
-                                        :<?php echo $total_amount ?>
+                                        :<?php echo number_format($total_amount, 2) ?>
 
                                     </div>
                                 </div>
@@ -182,7 +182,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                                 <div class="greeting">
                                     <div style="padding: 0;">
-                                        :<?php echo $total_amount ?>
+                                        :<?php echo number_format($total_amount, 2) ?>
                                     </div>
                                 </div>
                             </td>
@@ -255,7 +255,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <br>
                                 <span>
                                     <?php echo $auth_personel_position ?>
-                                    
+
 
                                 </span>
                             </td>
