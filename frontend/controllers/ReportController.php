@@ -4107,53 +4107,127 @@ class ReportController extends \yii\web\Controller
         }
         return $this->render('pr_report');
     }
-    public function actionProvinceFundSourceBalance()
+    public function actionProvinceAdequacy()
     {
         if ($_POST) {
 
             $province = $_POST['province'];
-            $year = $_POST['year'];
-            $report_type = $_POST['report_type'];
+            $to_reporting_period = $_POST['reporting_period'];
+            $book = $_POST['book'];
+            $from_reporting_period = DateTime::createFromFormat('Y-m', $to_reporting_period)->format('Y') . '-01';
             $db = Yii::$app->db;
 
             if ($_SERVER['REMOTE_ADDR'] !== '210.1.103.26') {
                 $db = Yii::$app->cloud_db;
             }
             $query = $db->createCommand("SELECT 
-            advances.province,
-            advances_entries.reporting_period,
-            advances_entries.fund_source,
-            advances_entries.amount,
-            total_liquidaton.withdrawals,
-            advances_entries.amount - total_liquidaton.withdrawals as balance,
-            (total_liquidaton.withdrawals/advances_entries.amount) *100 as utilization
-            FROM advances_entries
-            LEFT JOIN advances ON advances_entries.advances_id = advances.id
-            LEFT JOIN
-            (
+            liquidation_target.fund_source_type,
+            IFNULL(liquidation_target.total_amount,0) as target_liquidation,
+            IFNULL(total_liquidation.total_liquidation,0) as actual_liquidation,
+            IFNULL(total_liquidation.total_liquidation,0) - IFNULL(liquidation_target.total_amount,0) as variance,
+            IFNULL(total_advances.total_advances,0) as total_advances,
+            IFNULL(begin_balance.begin_balance,0) as begin_balance,
+            (IFNULL(begin_balance.begin_balance,0)+IFNULL(total_advances.total_advances,0)) - total_liquidation.total_liquidation as balance
             
-            SELECT 
-            advances_entries.id,
-            IFNULL(SUM(IFNULL(liquidation_entries.withdrawals,0)),0) as withdrawals
+            FROM (SELECT 
+            monthly_liquidation_program.province,
+            monthly_liquidation_program.fund_source_type,
+            SUM(monthly_liquidation_program.amount) as total_amount
+            FROM 
+            monthly_liquidation_program
+            WHERE 
+            monthly_liquidation_program.reporting_period >=:from_reporting_period
+            AND monthly_liquidation_program.reporting_period <=:to_reporting_period
+            AND monthly_liquidation_program.book_id = :book
+            AND monthly_liquidation_program.province = :province
+            GROUP BY
+            monthly_liquidation_program.province,
+            monthly_liquidation_program.fund_source_type
+            
+            ) as liquidation_target
+            LEFT JOIN (SELECT 
+            liquidation.province,
+            advances_entries.fund_source_type,
+            
+            SUM(liquidation_entries.withdrawals) as total_liquidation
             FROM advances_entries
             LEFT JOIN liquidation_entries ON advances_entries.id = liquidation_entries.advances_entries_id
+            LEFT JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
             
-            GROUP BY 
-            advances_entries.id
-            ) as total_liquidaton ON advances_entries.id  = total_liquidaton.id
-            WHERE advances_entries.reporting_period LIKE :_year
-            AND advances_entries.is_deleted !=1 
-            AND advances_entries.is_deleted !=9
+            WHERE liquidation_entries.reporting_period >=:from_reporting_period
+            AND liquidation_entries.reporting_period <=:to_reporting_period
+            AND advances_entries.book_id =:book
+            AND liquidation.province = :province
+            AND advances_entries.is_deleted NOT IN (1,9)
+            GROUP BY
+            liquidation.province,
+            advances_entries.fund_source_type
+            ) total_liquidation ON liquidation_target.province = total_liquidation.province
+            AND  liquidation_target.fund_source_type = total_liquidation.fund_source_type
+            LEFT JOIN (SELECT 
+            advances.province,
+            advances_entries.fund_source_type,
+            
+            SUM(advances_entries.amount) as total_advances
+            FROM advances_entries
+            LEFT JOIN advances ON advances_entries.advances_id  = advances.id
+            
+            WHERE advances_entries.reporting_period >=:from_reporting_period
+            AND advances_entries.reporting_period <=:to_reporting_period
+            AND advances_entries.book_id =:book
             AND advances.province = :province
-            AND advances_entries.report_type = :report_type
+            AND advances_entries.is_deleted NOT IN (1,9)
+            GROUP BY
+            advances.province,
+            advances_entries.fund_source_type
+            ) total_advances ON liquidation_target.province = total_advances.province
+            AND  liquidation_target.fund_source_type = total_advances.fund_source_type
+            
+            LEFT JOIN (
+            
+            
+            
+            SELECT
+            begin_total_advances.fund_source_type,
+            begin_total_advances.total_advances - IFNULL(begin_total_liquidation.total_liquidation,0) as begin_balance
+            
+            FROM
+            (SELECT advances_entries.fund_source_type,
+            SUM(advances_entries.amount) as total_advances
+            FROM advances_entries
+            LEFT JOIN advances ON advances_entries.advances_id = advances.id
+            
+            WHERE advances_entries.reporting_period <:from_reporting_period
+            AND advances.province = :province
+            AND advances_entries.book_id =:book
+            AND advances_entries.is_deleted NOT IN (1,9)
+            GROUP BY advances_entries.fund_source_type
+            ) as begin_total_advances
+            LEFT JOIN 
+            (
+            SELECT advances_entries.fund_source_type,
+            SUM(liquidation_entries.withdrawals) as total_liquidation
+            FROM advances_entries
+            LEFT JOIN advances ON advances_entries.advances_id = advances.id
+            LEFT JOIN liquidation_entries ON advances_entries.id = liquidation_entries.advances_entries_id
+            WHERE liquidation_entries.reporting_period <:from_reporting_period
+            AND advances.province = :province
+            AND advances_entries.book_id =:book
+            AND advances_entries.is_deleted NOT IN (1,9)
+            GROUP BY advances_entries.fund_source_type
+            ) begin_total_liquidation ON begin_total_advances.fund_source_type = begin_total_liquidation.fund_source_type
+            ) as begin_balance ON liquidation_target.fund_source_type  = begin_balance.fund_source_type
+            
+            
             ")
                 ->bindValue(':province', $province)
-                ->bindValue(':_year', $year . '%')
-                ->bindValue(':report_type', $report_type)
+                ->bindValue(':to_reporting_period', $to_reporting_period)
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->bindValue(':book', $book)
                 ->queryAll();
             return json_encode($query);
         }
-        return $this->render('province_fund_source_balance');
+        return $this->render('province_adequacy');
     }
 }
 
