@@ -197,7 +197,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     </div>
                                 </div>
                             </td>
-                            <td></td>
+                            <td class="no-border"></td>
                         </tr>
                         <tr>
                             <td class="no-border">
@@ -210,7 +210,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     </div>
                                 </div>
                             </td>
-                            <td></td>
+                            <td class="no-border"></td>
                         </tr>
                         <tr>
                             <td class="no-border" style="vertical-align:top;">
@@ -227,7 +227,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <br>
                                 <br>
                             </td>
-                            <td c></td>
+                            <td class='no-border'></td>
                         </tr>
                         <tr>
                             <td class="no-border">Requested by</td>
@@ -236,44 +236,44 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td class="no-border">Funds Availablility by</td>
                         </tr>
                         <tr>
-                            <td class="center">
+                            <td class="center no-border">
                                 <span class="personel" style="text-decoration: underline;">
                                     <?php echo $requested_by ?>
                                 </span>
                                 <br>
-                                <span >
+                                <span>
                                     <?php echo $requested_by_position ?>
                                 </span>
                             </td>
-                            <td class="center">
+                            <td class="center no-border">
                                 <span class="personel" style="text-decoration: underline;">
                                     <?php echo $auth_personel ?>
 
                                 </span>
                                 <br>
-                                <span >
+                                <span>
                                     <?php echo $requested_by_position ?>
 
                                 </span>
                             </td>
-                            <td class="center">
+                            <td class="center no-border">
                                 <span class="personel" style="text-decoration: underline;">
                                     <?php echo $inspected_by ?>
 
                                 </span>
                                 <br>
-                                <span >
+                                <span>
                                     <?php echo $requested_by_position ?>
 
                                 </span>
                             </td>
-                            <td class="center">
+                            <td class="center no-border">
                                 <span class="personel" style="text-decoration: underline;">
                                     <?php echo $accountant ?>
 
                                 </span>
                                 <br>
-                                <span >
+                                <span>
                                     <?php echo $requested_by_position ?>
 
                                 </span>
@@ -284,7 +284,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php
             } else {
             ?>
-                <table>
+                <table id="purchase_order">
                     <tbody>
                         <tr>
                             <th style="text-align: center;" colspan="6">
@@ -529,7 +529,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     td,
     th {
-
+        border: 1px solid black;
         padding: 2rem;
     }
 
