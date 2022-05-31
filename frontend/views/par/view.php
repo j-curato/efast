@@ -116,7 +116,7 @@ $property_custodian_position = $model->property->employee->position
                         
                         </td>
                         <td>{$model->property->property_number}</td>
-                        <td>{$model->property->estimated_life}</td>
+                        <td class='center'>{$model->property->estimated_life}</td>
                     </tr>";
                     for ($i = 0; $i < 4; $i++) {
                         echo "<tr>
