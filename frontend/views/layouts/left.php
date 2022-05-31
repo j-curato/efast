@@ -410,7 +410,7 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'PO Transmittal to COA', 'icon' => 'circle-o', 'url' => ['/po-transmittal-to-coa'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Positions', 'icon' => 'circle-o', 'url' => ['/employee-position'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Alphalist', 'icon' => 'circle-o', 'url' => ['/alphalist'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Fund Source Balance', 'icon' => 'circle-o', 'url' => ['/report/province-fund-source-balance'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Adequacy of Resource', 'icon' => 'circle-o', 'url' => ['/report/province-adequacy'],] : [],
 
                             ],
                         ] : ['label' => ''],

@@ -4127,7 +4127,7 @@ class ReportController extends \yii\web\Controller
             IFNULL(total_liquidation.total_liquidation,0) - IFNULL(liquidation_target.total_amount,0) as variance,
             IFNULL(total_advances.total_advances,0) as total_advances,
             IFNULL(begin_balance.begin_balance,0) as begin_balance,
-            (IFNULL(begin_balance.begin_balance,0)+IFNULL(total_advances.total_advances,0)) - total_liquidation.total_liquidation as balance
+            (IFNULL(begin_balance.begin_balance,0)+IFNULL(total_advances.total_advances,0)) - IFNULL(total_liquidation.total_liquidation,0) as balance
             
             FROM (SELECT 
             monthly_liquidation_program.province,

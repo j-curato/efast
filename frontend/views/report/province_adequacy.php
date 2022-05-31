@@ -16,7 +16,7 @@ use yii\helpers\ArrayHelper;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = "Fund Source";
+$this->title = "Adequacy of Resource";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index">
@@ -86,6 +86,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>Target for Liquidation</th>
                 <th>Actual Liquidation</th>
                 <th>Variance</th>
+                <th class='no-border'></th>
+                <th>Beginning Balance</th>
+                <th>Advances</th>
+                <th>Liquidation</th>
+                <th>Balance</th>
 
             </thead>
             <tbody>
@@ -107,7 +112,9 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 3rem;
     }
 
-
+    .no-border {
+        border: none;
+    }
 
     #data_table {
         margin-top: 3rem;
@@ -129,6 +136,23 @@ $this->params['breadcrumbs'][] = $this->title;
 
     #dots5 {
         display: none;
+    }
+
+    @media print {
+
+        .main-footer {
+            display: none;
+        }
+
+        #filter {
+            display: none;
+        }
+
+        th,
+        td {
+            padding: 5px;
+            border: 1px solid black;
+        }
     }
 </style>
 <?php
@@ -162,9 +186,12 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
         let total_target_liquidation = 0
         let total_actual_liquidation = 0
         let total_variance = 0
+        let total_begin_balance = 0
+        let grand_total_advances = 0
+        let total_balance = 0
         $.each(data, function(key, val) {
 
-            
+
 
 
             const fund_source_type = val.fund_source_type
@@ -177,11 +204,19 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
             total_target_liquidation += target_liquidation
             total_actual_liquidation += actual_liquidation
             total_variance += variance
+            total_balance += balance
+            total_begin_balance += begin_balance
+            grand_total_advances += total_advances
             const data_row = `<tr>
             <td>${fund_source_type}</td>
             <td class='amount'>${thousands_separators(target_liquidation.toFixed(2))}</td>
             <td class='amount'>${thousands_separators(actual_liquidation.toFixed(2))}</td>
             <td class='amount'>${thousands_separators(variance.toFixed(2))}</td>
+            <td class='no-border'></td>
+            <td class='amount'>${thousands_separators(begin_balance.toFixed(2))}</td>
+            <td class='amount'>${thousands_separators(total_advances.toFixed(2))}</td>
+            <td class='amount'>${thousands_separators(actual_liquidation.toFixed(2))}</td>
+            <td class='amount'>${thousands_separators(balance.toFixed(2))}</td>
         
             </tr>`;
             $('#data_table tbody').append(data_row)
@@ -194,6 +229,12 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
             <td class='amount' style='font-weight:bold'>${thousands_separators(total_target_liquidation.toFixed(2))}</td>
             <td class='amount' style='font-weight:bold'>${thousands_separators(total_actual_liquidation.toFixed(2))}</td>
             <td class='amount' style='font-weight:bold'>${thousands_separators(total_variance.toFixed(2))}</td>
+            <td class='no-border'></td>
+            <td class='amount'  style='font-weight:bold'>${thousands_separators(total_begin_balance.toFixed(2))}</td>
+            <td class='amount'  style='font-weight:bold'>${thousands_separators(grand_total_advances.toFixed(2))}</td>
+            <td class='amount'  style='font-weight:bold'>${thousands_separators(total_actual_liquidation.toFixed(2))}</td>
+            <td class='amount'  style='font-weight:bold'>${thousands_separators(total_balance.toFixed(2))}</td>
+        
             </tr>`;
         $('#data_table tbody').append(total_row)
     }
