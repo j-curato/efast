@@ -399,7 +399,7 @@ $this->registerJs($script);
 <script>
     function contractTypeChange() {
 
-        const selected = $('#prpurchaseorder-fk_contract_type_id :selected').text()
+        const selected = $('#prpurchaseorder-fk_contract_type_id :selected').text().toLowerCase()
         if (selected == 'jo') {
             $('#jo_date').show()
         } else {

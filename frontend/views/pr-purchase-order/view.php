@@ -65,7 +65,7 @@ $this->params['breadcrumbs'][] = $this->title;
             if (!empty($model->date_completed)) {
                 $date_completed  = DateTime::createFromFormat('Y-m-d', $model->date_completed)->format('F d, Y');
             }
-            if ($model->contractType->contract_name === 'jo') {
+            if (strtolower($model->contractType->contract_name) === 'jo') {
             ?>
                 <table>
                     <thead>
