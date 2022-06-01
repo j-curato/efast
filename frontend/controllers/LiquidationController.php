@@ -432,7 +432,8 @@ class LiquidationController extends Controller
             $po_transaction_id = $_POST['po_transaction_id'];
             $province = Yii::$app->user->identity->province;
 
-            $model->province = $province;
+            // if ($province)
+            // $model->province = $province;
             $model->check_date = $check_date;
             $model->check_range_id = $check_range_id;
             $model->check_number = $check_number;
