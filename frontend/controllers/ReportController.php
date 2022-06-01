@@ -2476,8 +2476,15 @@ class ReportController extends \yii\web\Controller
     {
         if ($_POST) {
             $to_reporting_period = $_POST['to_reporting_period'];
+
+            $book_id = $_POST['book'];
             $from_reporting_period = date('Y-01', strtotime($to_reporting_period));
-            $query = Yii::$app->db->createCommand("SELECT
+            $db = Yii::$app->db;
+            if ($_SERVER['REMOTE_ADDR'] !== '210.1.103.26') {
+
+                $db = Yii::$app->cloud_db;
+            }
+            $query = $db->createCommand("SELECT
             cash_disbursement.id,
             cash_disbursement.check_or_ada_no as check_number,
             cash_disbursement.issuance_date as check_date,
@@ -2543,7 +2550,8 @@ class ReportController extends \yii\web\Controller
             
             dv_aucs.reporting_period <= :to_reporting_period
             AND  report_type.advance_type  NOT LIKE 'Others'
-            AND advances_entries.is_deleted !=1
+            AND advances_entries.is_deleted NOT IN (1,9)
+            AND advances_entries.book_id = :book_id
             GROUP BY 
             advances.province,
             report_type.advance_type,
@@ -2555,6 +2563,7 @@ class ReportController extends \yii\web\Controller
             ")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->bindValue(':to_reporting_period', $to_reporting_period)
+                ->bindValue(':book_id', $book_id)
                 ->queryAll();
             $d = new DateTime($to_reporting_period);
             $report = $d->format('F t, Y');

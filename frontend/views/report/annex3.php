@@ -38,6 +38,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 ])
                 ?>
             </div>
+            <div class="col-sm-3">
+<label for="book">Book</label>
+            <?php 
+            echo Select2::widget([
+                'name'=>'book',
+                'data'=>ArrayHelper::map(Books::find()->asArray()->all(),'id','name'),
+                'pluginOptions'=>[
+                    'placeholder'=>'Select Book'
+                ]
+            ])
+            ?>
+            </div>
 
             <div class="col-sm-2">
                 <button class="btn btn-success" id="generate" style="margin-top:23px">Generate</button>
