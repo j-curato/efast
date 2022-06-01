@@ -450,6 +450,11 @@ class DvAucsController extends Controller
                 $ad_entry->is_deleted = 9;
             } else {
                 $ad_entry = AdvancesEntries::findOne($advances_entries_id[$i]);
+                if (!empty($ad_entry->advances->cashDisbursement->id)) {
+                    if ($ad_entry->advances->cashDisbursement->is_cancelled != 1) {
+                        $ad_entry->is_deleted = 0;
+                    }
+                }
             }
             $ad_entry->advances_id = $advances_id;
             $ad_entry->fund_source_type = $fund_source_type[$i];
@@ -458,7 +463,7 @@ class DvAucsController extends Controller
             $ad_entry->reporting_period = $reporting_periods[$i];
             $ad_entry->amount = $amounts[$i];
             $ad_entry->report_type = $report_type[$i];
-        
+
             $ad_entry->book_id = intval($book_id);
             if ($ad_entry->save(false)) {
             } else {
