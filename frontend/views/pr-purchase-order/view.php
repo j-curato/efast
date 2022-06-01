@@ -19,6 +19,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?php
+
+            $link = yii::$app->request->baseUrl . "/index.php?r=pr-aoq/view&id={$model->fk_pr_aoq_id}";
+            echo   Html::a('AOQ Link ', $link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px'])
+            ?>
         </p>
         <?php foreach ($aoq_lowest as $val) {
         ?>

@@ -275,6 +275,30 @@ $this->params['breadcrumbs'][] = $this->title;
             </tfoot>
         </table>
 
+
+        <table class="links_table table table-stripe">
+
+            <tbody>
+
+                <tr>
+                    <th>PO Links</th>
+                </tr>
+
+                <?php
+                $po = YIi::$app->db->createCommand("SELECT id,po_number FROM pr_purchase_order WHERE fk_pr_aoq_id= :id")
+                    ->bindValue(':id', $model->id)
+                    ->queryAll();
+                foreach ($po as $val) {
+                    $link = yii::$app->request->baseUrl . "/index.php?r=pr-purchase-order/view&id={$val['id']}";
+
+                    echo "<tr>
+                <td>{$val['po_number']}</td>
+                <td>" . Html::a('RFQ Link ', $link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px']) . "</td>
+                </tr>";
+                }
+                ?>
+            </tbody>
+        </table>
     </div>
 
 </div>
@@ -303,6 +327,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     }
 
+
     .amount {
         text-align: center;
     }
@@ -328,7 +353,16 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 3em;
     }
 
+    .links_table td,
+    th {
+        border: none;
+    }
+
     @media print {
+        .links_table {
+            display: none;
+        }
+
         .main-footer {
             display: none;
         }
