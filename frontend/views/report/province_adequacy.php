@@ -138,6 +138,10 @@ $this->params['breadcrumbs'][] = $this->title;
         display: none;
     }
 
+    .negative td {
+        background-color: #ff9999;
+    }
+
     @media print {
 
         .main-footer {
@@ -207,7 +211,11 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
             total_balance += balance
             total_begin_balance += begin_balance
             grand_total_advances += total_advances
-            const data_row = `<tr>
+            let color = ''
+            if (variance < 0) {
+                color = 'negative'
+            }
+            const data_row = `<tr class='${color}'>
             <td>${fund_source_type}</td>
             <td class='amount'>${thousands_separators(target_liquidation.toFixed(2))}</td>
             <td class='amount'>${thousands_separators(actual_liquidation.toFixed(2))}</td>
