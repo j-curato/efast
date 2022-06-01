@@ -198,6 +198,14 @@ class DvAucsController extends Controller
         //         ->bindValue(':id', $dv_id)
         //         ->query();
         // }
+        // $query = YIi::$app->db->createCommand("SELECT id FROM dv_accounting_entries WHERE dv_aucs_id = :id")->bindValue(':id', $dv_id)->queryAll();
+        // $source_fund_source_type_difference = array_map(
+        //     'unserialize',
+        //     array_diff(array_map('serialize', array_column($query,'id')), array_map('serialize', $accounting_entries))
+
+        // );
+        // var_dump($source_fund_source_type_difference);
+        // die();
         foreach ($object_codes as $key => $val) {
             if (empty($accounting_entries[$key])) {
                 $entry = new DvAccountingEntries();
@@ -439,6 +447,7 @@ class DvAucsController extends Controller
             if (empty($advances_entries_id[$i])) {
 
                 $ad_entry = new AdvancesEntries();
+                $ad_entry->is_deleted = 9;
             } else {
                 $ad_entry = AdvancesEntries::findOne($advances_entries_id[$i]);
             }
@@ -449,7 +458,7 @@ class DvAucsController extends Controller
             $ad_entry->reporting_period = $reporting_periods[$i];
             $ad_entry->amount = $amounts[$i];
             $ad_entry->report_type = $report_type[$i];
-            $ad_entry->is_deleted = 9;
+        
             $ad_entry->book_id = intval($book_id);
             if ($ad_entry->save(false)) {
             } else {
@@ -1661,9 +1670,9 @@ class DvAucsController extends Controller
                 LIMIT 1")
                     ->bindValue(':id', $ors[$min_key])
                     ->queryScalar();
-                if (strtotime($recieved_at) > strtotime($ors_created_at)) {
-                    return json_encode(['isSuccess' => false, 'error' => 'Receive Date must be Greater than  ORS date']);
-                }
+                // if (strtotime($recieved_at) < strtotime($ors_created_at)) {
+                //     return json_encode(['isSuccess' => false, 'error' => 'Receive Date must be Greater than  ORS date']);
+                // }
             }
 
             Yii::$app->db->createCommand("DELETE FROM dv_aucs_entries WHERE dv_aucs_entries.dv_aucs_id =:id")
