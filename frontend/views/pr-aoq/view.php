@@ -354,7 +354,7 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 
     .links_table td,
-    th {
+    .links_table th {
         border: none;
     }
 
