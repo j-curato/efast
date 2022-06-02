@@ -210,6 +210,7 @@
                                         Yii::$app->user->can('super-user') ? ['label' => 'Remittance Payee', 'icon' => 'circle-o', 'url' => ['/remittance-payee'],] : [],
                                         Yii::$app->user->can('super-user') ? ['label' => 'Payroll', 'icon' => 'circle-o', 'url' => ['/payroll'],] : [],
                                         Yii::$app->user->can('super-user') ? ['label' => 'Remittance', 'icon' => 'circle-o', 'url' => ['/remittance'],] : [],
+                                        Yii::$app->user->can('super-user') ? ['label' => 'Alphalist', 'icon' => 'circle-o', 'url' => ['/ro-alphalist'],] : [],
 
                                     ],
                                 ] : [],
