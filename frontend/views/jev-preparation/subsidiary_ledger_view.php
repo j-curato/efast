@@ -10,6 +10,7 @@ use yii\helpers\ArrayHelper;
 use kartik\select2\Select2;
 use Mpdf\Tag\Em;
 use yii\helpers\Url;
+use yii\web\JsExpression;
 use yii\widgets\Pjax;
 use yii\widgets\ActiveForm;
 
@@ -129,12 +130,25 @@ $this->params['breadcrumbs'][] = $this->title;
                         <label for="sub_account">Sub Account</label>
                         <?php
                         echo Select2::widget([
-                            'id' => 'sub_account',
-                            'data' => ArrayHelper::map($sub1, 'object_code', 'account_title'),
                             'name' => 'object_code',
-                            'options' => ['placeholder' => 'Select Sub Account'],
+                         
+                            'options' => ['placeholder' => 'Search Transaction'],
                             'pluginOptions' => [
-                                'allowClear' => true
+                                'allowClear' => true,
+                                'minimumInputLength' => 1,
+                                'language' => [
+                                    'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                                ],
+                                'ajax' => [
+                                    'url' => Yii::$app->request->baseUrl . '?r=chart-of-accounts/search-sub-account',
+                                    'dataType' => 'json',
+                                    'delay' => 250,
+                                    'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                                    'cache' => true
+                                ],
+                                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                                'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                                'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
                             ],
                         ]);
                         ?>
