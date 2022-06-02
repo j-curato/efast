@@ -488,7 +488,9 @@ SweetAlertAsset::register($this);
 
         $.each(data, function(key, val) {
             let disabled_input = ''
-            if (val.book_name.toLowerCase() == 'rapid lp') {
+
+
+            if (val.book_name.toLowerCase() == 'rapid lp' && <?php echo Yii::$app->user->can('super-user') ? 1 : 0 ?> != 1) {
                 console.log(val.book_name.toLowerCase())
                 disabled_input = 'disabled'
             }
@@ -651,7 +653,7 @@ SweetAlertAsset::register($this);
             },
             success: function(data) {
                 const res = JSON.parse(data)
-                if (res.toLowerCase() == 'rapid lp') {
+                if (res.toLowerCase() == 'rapid lp' && <?php echo Yii::$app->user->can('super-user') ? 1 : 0 ?> != 1) {
                     disable = true
 
                 }
