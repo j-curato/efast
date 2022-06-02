@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'particular',
         'ors_number',
         'ors_date',
-        'created_at',
+        'ors_created_at',
         'dv_number',
         'recieved_at',
         'in_timestamp',
