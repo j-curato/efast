@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
         pr_stock.stock_title as `description`,
         REPLACE(pr_purchase_request_item.specification,'[n]','<br>') as specification,
         payee.account_name as payee,
-        IF(pr_aoq_entries.no_bid=0,pr_aoq_entries.amount,'No Bid') as amount,
+        IF(pr_aoq_entries.amount!=0,pr_aoq_entries.amount,'-') as amount,
         pr_purchase_request.purpose,
         pr_aoq_entries.remark,
         pr_aoq_entries.is_lowest,
@@ -462,11 +462,11 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                     lowest = lowest + val2.payee
                 }
                 let to_display = ''
-                if (val2.amount.toLowerCase() != 'no bid') {
+                if (val2.amount.toLowerCase() != '-') {
 
                     to_display = thousands_separators(val2.amount)
-                } else if (val2.amount.toLowerCase() == 'no bid') {
-                    to_display = 'No Bid'
+                } else if (val2.amount.toLowerCase() == '-') {
+                    to_display = '-'
                 }
                 let key_pos_1 = 5
                 const amount = `<div class=foo><div >${to_display}</div></div><br>`
