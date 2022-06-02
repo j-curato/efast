@@ -28,7 +28,7 @@ class TransactionTrackingSearch extends TransactionTracking
                 'particular',
                 'ors_number',
                 'ors_date',
-                'created_at',
+                'ors_created_at',
                 'dv_number',
                 'recieved_at',
                 'in_timestamp',
@@ -92,7 +92,7 @@ class TransactionTrackingSearch extends TransactionTracking
             ->andFilterWhere(['like', 'particular', $this->particular])
             ->andFilterWhere(['like', 'ors_number', $this->ors_number])
             ->andFilterWhere(['like', 'ors_date', $this->ors_date])
-            ->andFilterWhere(['like', 'created_at', $this->created_at])
+            ->andFilterWhere(['like', 'ors_created_at', $this->ors_created_at])
             ->andFilterWhere(['like', 'dv_number', $this->dv_number])
             ->andFilterWhere(['like', 'recieved_at', $this->recieved_at])
             ->andFilterWhere(['like', 'in_timestamp', $this->in_timestamp])

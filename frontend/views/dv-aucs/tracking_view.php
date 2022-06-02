@@ -16,9 +16,71 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <?php
+
+    $dv_timestamps = Yii::$app->db->createCommand("SELECT 
+
+    IFNULL(dv_aucs.in_timestamp,'') as accountant_in, 
+    IFNULL(dv_aucs.out_timestamp,'') as accountant_out,
+    IFNULL(dv_aucs.created_at,'') as dv_created_at,
+    IFNULL(dv_aucs.recieved_at,'') as dv_recieved_at,
+    IFNULL(cash_disbursement.issuance_date,'') as check_date,
+    IFNULL(cash_disbursement.begin_time,'') as cash_in,
+    IFNULL(cash_disbursement.out_time,'') as cash_out,
+    IFNULL(cash_disbursement.is_cancelled,'')
+    FROM 
+    dv_aucs
+    LEFT  JOIN cash_disbursement ON dv_aucs.id = cash_disbursement.dv_aucs_id
+    
+    WHERE
+    dv_aucs.is_cancelled !=1
+    AND (cash_disbursement.is_cancelled  = 0 OR cash_disbursement.id IS NULL)
+    AND dv_aucs.id = :id
+    ")->bindValue(':id', $model->id)
+        ->queryOne();
     // $ors_number = !empty($model->process_ors_id) ? $model->processOrs->serial_number : '';
     $date = date('M d, Y', strtotime($model->created_at));
     $time = date('h:i A', strtotime($model->created_at));
+
+
+    $chief_accountant_time_in = '';
+    $chief_accountant_time_out = '';
+    $chief_accountant_date_in = '';
+    $chief_accountant_date_out = '';
+
+    $cashier_time_in = '';
+    $cashier_time_out = '';
+    $cashier_date = '';
+
+    if (!empty($dv_timestamps['accountant_in'])) {
+        $timestamp = new Datetime($dv_timestamps['accountant_in']);
+        $chief_accountant_date_in = $timestamp->format('F d, Y');
+        $chief_accountant_time_in = $timestamp->format('h:i A');
+    }
+    if (!empty($dv_timestamps['accountant_out'])) {
+        $out_timestamp = new Datetime($dv_timestamps['accountant_out']);
+
+        $chief_accountant_date_out = $out_timestamp->format('F d, Y');
+        $chief_accountant_time_out = $out_timestamp->format('h:i A');
+    }
+    if (!empty($dv_timestamps['check_date'])) {
+        $cashier_date = DateTime::createFromFormat('Y-m-d', $dv_timestamps['check_date'])->format('F d, Y');
+    }
+    if (!empty($dv_timestamps['cash_in'])) {
+        $time_in = DateTime::createFromFormat('H:i:s', $dv_timestamps['cash_in']);
+        $cashier_time_in = $time_in->format('h:i A');
+    }
+    if (!empty($dv_timestamps['cash_out'])) {
+        $time_out = DateTime::createFromFormat('H:i:s', $dv_timestamps['cash_out']);
+        $cashier_time_out = $time_out->format('h:i A');
+    }
+
+    $cash_check_issuance_date = '';
+    $cash_time_id = '';
+    $cash_time_out = '';
+
+
+
+
     $ors_date = '';
     $ors_time = '';
     $transaction_date = '';
@@ -27,7 +89,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     if (!empty($model->recieved_at) &&  DateTime::createFromFormat('Y-m-d H:i:s', $model->recieved_at)->format('Y') >= 1) {
         $recieve_timestamp = DateTime::createFromFormat('Y-m-d H:i:s', $model->recieved_at);
-
         $transaction_date = $recieve_timestamp->format('F d, y');
         $transaction_time = $recieve_timestamp->format('h:i A');
     }
@@ -104,89 +165,34 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <tbody>
                 <tr>
-                    <td colspan="5" class="header">
-                        <span style="float:right;margin-right:5px">
+                    <th colspan="6" class='no-border'>
+                        DEPARTMENT OF TRADE AND INDUSTRY
+                    </th>
+                </tr>
+                <tr>
+                    <th colspan="6" class='no-border'>REGION</th>
+                </tr>
+                <tr>
+                    <th colspan="4" class='no-border'>
+                        <span>Payee: </span>
+                        <span style="font-size:12px;text-decoration:underline"><?php echo $model->payee->account_name ?></span>
+                        <br>
+                        <span>Particulars:</span>
+                        <span style="font-size: 12px;text-decoration:underline;"><?php echo $model->particular ?></span>
+                    </th>
+
+                    <th colspan="2" class='no-border'>
+                        <span>DV No.: </span>
+                        <span style="text-decoration: underline;">
                             <?php
                             echo $model->dv_number;
-                            ?>
-                        </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="4" style="text-align: left; " class="header">
-                        <span>
-
-                            Payee:
-                        </span>
-                        <span>
-
-                            <?php echo $model->payee->account_name; ?> </span>
-                    </td>
-                    <td colspan="1" rowspan="2" class="header"> <?= Html::img(
-                                                                    Yii::$app->request->baseUrl . '/frontend/web/dti3.png',
-                                                                    ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width: 50px;height:50px;margin-left:auto']
-                                                                ); ?></td>
-                </tr>
-                <tr>
-                    <td colspan="4" class="header">
-                        <span>
-                            Gross Amount:
-
-                        </span>
-                        <span><?php
-                                echo number_format($gross_amount, 2)
-                                ?></span>
-
-                    </td>
-                </tr>
-
-                <tr>
-                    <td colspan="4" class="header">
-                        <span>
-                            Net Amount:
-                        </span>
-                        <span>
-                            <?= number_format($net_amount, 2) ?>
-                        </span>
-
-
-                    </td>
-                    <td class="header" style="padding-top: 10px;"><span>Particular</span></td>
-                </tr>
-
-                <tr>
-                    <td colspan="3" class="header">
-                        <span>
-
-                            DV No. :
-                        </span>
-                        <span>
-                            <?php
-                            if (!empty($model->dv_number)) {
-                                echo $model->dv_number;
-                                // var_dump($model);
-                            }
-                            ?>
-
-                        </span>
-                    </td>
-                    <td colspan="2" rowspan="2">
-                        <span>
-                            <?php
-                            echo $model->particular;
-
-                            ?>
-                        </span>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="3" class="header">
-                        <span>
-
-                            ORS NO.:
-                        </span>
-                        <span>
+                            ?></span>
+                        <br>
+                        <span>DV Amount: </span>
+                        <span style="text-decoration: underline;"> <?= number_format($net_amount, 2) ?></span>
+                        <br>
+                        <span>ORS No.</span>
+                        <span style="text-decoration:underline ;">
                             <?php
                             $ors_numbers = Yii::$app->db->createCommand("SELECT 
                             process_ors.serial_number
@@ -203,19 +209,44 @@ $this->params['breadcrumbs'][] = $this->title;
                                 }
                             }
 
-                            // echo $ors_number 
+
                             ?>
                         </span>
-                    </td>
+                        <br>
+                        <span>Gross Amount: </span>
+                        <span style="text-decoration: underline;"><?php echo number_format($gross_amount, 2) ?></span>
+                    </th>
                 </tr>
+                <tr>
+                    <th colspan="6" class='no-border'>Part 1: Routing Slip</th>
+                </tr>
+                <?php
+                // Html::img(Yii::$app->request->baseUrl . '/frontend/web/dti3.png',
+                //                                                         ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width: 50px;height:50px;margin-left:auto']
+                ?>
 
                 <tr>
 
-                    <td></td>
-                    <td style="width:80px;" class="bold">DATE</td>
-                    <td style="width:80px;" class="bold">TIME-IN</td>
-                    <td style="width:80px;" class="bold">TIME-OUT</td>
+                    <td>Personnel Action</td>
+                    <td style="width:auto;" class="bold">DATE-IN</td>
+                    <td style="width:auto;" class="bold">TIME-IN</td>
+                    <td style="width:auto;" class="bold">DATE-OUT</td>
+                    <td style="width:auto;" class="bold">TIME-OUT</td>
                     <td class="bold">REMARKS</td>
+                </tr>
+                <tr>
+                    <td class="bold">Budget Officer <span></span>
+
+                    </td>
+
+                    <td><?php
+                        echo $budget_date
+
+                        ?></td>
+                    <td><?php echo $budget_time_in ?></td>
+                    <td></td>
+                    <td></td>
+                    <td><?= $budget_remarks ?></td>
                 </tr>
                 <tr>
                     <td style="width: 230px;" class="bold">Accounting Staff <br>
@@ -233,20 +264,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td><?php echo $transaction_time ?></td>
                     <td></td>
                     <td></td>
-                </tr>
-                <tr>
-                    <td class="bold">Budget Officer <span></span>
-
-                    </td>
-
-                    <td><?php
-                        echo $budget_date
-
-                        ?></td>
-                    <td><?php echo $budget_time_in ?></td>
                     <td></td>
-                    <td><?= $budget_remarks ?></td>
                 </tr>
+
                 <tr>
                     <td class="bold">Accountant II
                         <br>
@@ -256,12 +276,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         </span><br>
                         <span class="note">Time out left blank unless if Accountant II acts as OIC Chief Accountant</span>
                     </td>
-                    <td><?php
+                    <td>
+                        <?php
 
                         echo $acc_2_date;
                         ?></td>
                     <td><?php echo $acc_2_in_time; ?></td>
                     <td><?php echo $acc_2_out_time ?></td>
+                    <td></td>
                     <td></td>
                 </tr>
                 <tr>
@@ -269,18 +291,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         <span class="note">Time in left blank unless if Accountant II is on leave or upon compliance of lacking documents, if any</span><br>
                         <span class="note">Time out when the DV's were acknowledged to be complete,correct and consistent or upon compliance of lacking documents, whichever is later</span>
                     </td>
-                    <td><?php echo $acc_3_date; ?></td>
-                    <td><?php echo $acc_3_in_time ?></td>
-                    <td><?php echo $acc_3_out_time ?></td>
+                    <td><?php echo $chief_accountant_date_in ?></td>
+                    <td><?php echo $chief_accountant_time_in; ?></td>
+                    <td><?php echo $chief_accountant_date_out ?></td>
+                    <td><?php echo $chief_accountant_time_out ?></td>
                     <td></td>
-                </tr>
-                <tr>
-                    <td colspan="5" class="bold"><span>Note: Accounting Staff,then encodes to the web-based system the time-in and time-out from Accountants II and III, before Forwarding the DV's for RD's Signature. The "Process DV" module Shall be used for this.</span></td>
-
-                </tr>
-                <tr>
-                    <td colspan="5" style="text-align: center;font-weight:bold" class="bold"> Voucher at Cash Unit</td>
-
                 </tr>
                 <tr>
 
@@ -291,60 +306,50 @@ $this->params['breadcrumbs'][] = $this->title;
                         <br>
                         <span class="note">(Date and Time for Acknowledging Receipt of Approved DV from RD)</span>
                     </td>
-                    <td><?php
-
-                        if (!empty($model->cashDisbursement->issuance_date)) {
-                            // echo 'date';
-                        }
-                        ?></td>
-                    <td></td>
-                    <td></td>
+                    <td><?= $cashier_date ?></td>
+                    <td><?= $cashier_time_in ?></td>
+                    <td><?= $cashier_date ?></td>
+                    <td><?= $cashier_time_out ?></td>
                     <td></td>
                 </tr>
-                <tr>
 
-                    <td>
-                        <span class="bold">
-                            Cashier
-                        </span>
+
+                <tr>
+                    <th colspan="6" class="no-border">
+
+                        <span>Part 2: Checklist of Attachments/Supporting documents (for FAD use) </span>
+                    </th>
+                </tr>
+                <tr>
+                    <th class='no-border'><span>
+                            Transaction:
+                        </span></th>
+                    <th colspan="6" class='no-border'><span></span></th>
+                </tr>
+                <tr>
+                    <th colspan="6" class='no-border'>
+                        <span>__________________</span>
+                        <span>Certificate of travel Completed</span>
                         <br>
-                        <span class="note">
-                            (Date and TIme For Check Issuance)
+                        <span>__________________</span>
+                        <span>Aprroved Travel Order</span>
+                        <br>
+                        <span>__________________</span>
+                        <span>Aprroved Itinerary Order</span>
+                        <br>
+                        <span>__________________</span>
+                        <span>Paper/Electronic Plane, Boat or bus Tickets, boarding pass.terminal fee and other reciepts</span>
+                        <br>
+                        <span>__________________</span>
+                        <span>Certificate of Expense not Requiring Receipts</span>
+                        <br>
+                        <span>__________________</span>
+                        <span>Certificat of Appearance</span>
+                        <br>
+                        <span>__________________</span>
+                        <span>Others</span>
 
-                        </span>
-
-                    </td>
-                    <td><?php
-
-                        if (!empty($model->cashDisbursement->issuance_date)) {
-                            // echo $model->cashDisbursement->issuance_date;
-                            $cashTimeIn = DateTime::createFromFormat('H:i:s', $model->cashDisbursement->begin_time)->format('h:i A');
-                            $cashTimeOut = DateTime::createFromFormat('H:i:s', $model->cashDisbursement->out_time)->format('h:i A');
-                            echo DateTime::createFromFormat('Y-m-d', $model->cashDisbursement->issuance_date)->format('F d, Y');
-                            // $cash_date = date('F d, Y', strtotime($model->cashDisbursement->issuance_date));
-                            // return $cash_date;
-                            // echo ($cashTimeOut);
-                        }
-                        ?></td>
-                    <td>
-                        <?= $cashTimeIn ?>
-
-                    </td>
-
-
-                    <td> <?= $cashTimeOut ?></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td colspan="5" style="font-weight: bold;">Note: Cash unit staff,then, encodes to the web-based system the time-in and time-out from Cash Unit, upon check issuances. The "Cash Disbursement" module Shall be used for this</td>
-                </tr>
-                <tr>
-                    <td colspan="5">
-                        <span style="float:right" class="bold">
-
-                            TURN AROUND TIME:_____________________________
-                        </span>
-                    </td>
+                    </th>
                 </tr>
             </tbody>
         </table>
@@ -352,6 +357,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             <tbody>
+
                 <tr>
                     <td>
 
@@ -573,6 +579,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
         </table>
 
+        <table>
+            <thead>
+
+            </thead>
+        </table>
     </div>
 
 
@@ -598,12 +609,21 @@ $this->params['breadcrumbs'][] = $this->title;
         font-weight: bold;
     }
 
-    table,
+    table {
+        width: 100%;
+    }
+
     td,
     th {
         padding: 20px;
         border: 1px solid black;
     }
+
+    #check_list {
+        border: 1px solid black;
+    }
+
+
 
     .header {
         text-align: left;
@@ -629,6 +649,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
     .container {
         padding: 1rem;
+    }
+
+    .no-border {
+        border: none;
     }
 
     @media print {
