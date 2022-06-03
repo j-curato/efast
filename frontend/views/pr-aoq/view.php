@@ -315,7 +315,7 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 
     .foo {
-        position: absolute;
+        position: relative;
         top: 2rem;
         left: 0px;
         right: 0px;
