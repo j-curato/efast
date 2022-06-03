@@ -235,20 +235,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td class="bold">REMARKS</td>
                 </tr>
                 <tr>
-                    <td class="bold">Budget Officer <span></span>
-
-                    </td>
-
-                    <td><?php
-                        echo $budget_date
-
-                        ?></td>
-                    <td><?php echo $budget_time_in ?></td>
-                    <td></td>
-                    <td></td>
-                    <td><?= $budget_remarks ?></td>
-                </tr>
-                <tr>
                     <td style="width: 230px;" class="bold">Accounting Staff <br>
                         <span class="note">
                             (Date and Time for Acknowledgin Receipt of DV's with complete documents)
@@ -266,6 +252,21 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td></td>
                     <td></td>
                 </tr>
+                <tr>
+                    <td class="bold">Budget Officer <span></span>
+
+                    </td>
+
+                    <td><?php
+                        echo $budget_date
+
+                        ?></td>
+                    <td><?php echo $budget_time_in ?></td>
+                    <td></td>
+                    <td></td>
+                    <td><?= $budget_remarks ?></td>
+                </tr>
+
 
                 <tr>
                     <td class="bold">Accountant II
@@ -314,7 +315,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
 
 
-                <tr>
+                <!-- <tr>
                     <th colspan="6" class="no-border">
 
                         <span>Part 2: Checklist of Attachments/Supporting documents (for FAD use) </span>
@@ -350,7 +351,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <span>Others</span>
 
                     </th>
-                </tr>
+                </tr> -->
             </tbody>
         </table>
         <table id="check_list">

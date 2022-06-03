@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
         pr_rfq_item.id as rfq_item_id,
         pr_purchase_request_item.quantity,
         pr_stock.stock_title as `description`,
-        REPLACE(pr_purchase_request_item.specification,'[n]','<br>') as specification,
+        IFNULL(REPLACE(pr_purchase_request_item.specification,'[n]','<br>'),'') as specification,
         payee.account_name as payee,
         IF(pr_aoq_entries.amount!=0,pr_aoq_entries.amount,'-') as amount,
         pr_purchase_request.purpose,
@@ -508,8 +508,11 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
             const pos = parseInt(val.key_pos)
             const remark = val.remark
             const table_col = $("#table tbody").find(`td:nth-child(${pos})`).eq(row_number)
-            if (table_col.text() != '') {
-                table_col.append(',<br>')
+            if (table_col.text() != '  ') {
+                if ($.trim(remark) != '') {
+
+                    table_col.append(',<br>')
+                }
             }
             table_col.append(val.remark)
         })
