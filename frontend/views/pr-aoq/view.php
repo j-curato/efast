@@ -358,9 +358,11 @@ $this->params['breadcrumbs'][] = $this->title;
     .links_table th {
         border: none;
     }
+
     tfoot {
         display: table-row-group
     }
+
     @media print {
         .links_table {
             display: none;
@@ -513,8 +515,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
             const table_col = $("#table tbody").find(`td:nth-child(${pos})`).eq(row_number)
             if (table_col.text() != '  ') {
                 if ($.trim(remark) != '') {
-
-                    table_col.append(',<br>')
+                    if (table_col.text() != '')
+                        table_col.append(',<br>')
                 }
             }
             table_col.append(val.remark)
