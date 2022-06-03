@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
         pr_stock.stock_title as `description`,
         IFNULL(REPLACE(pr_purchase_request_item.specification,'[n]','<br>'),'') as specification,
         payee.account_name as payee,
-        IF(pr_aoq_entries.amount!=0,pr_aoq_entries.amount,'-') as amount,
+        IF(IFNULL(pr_aoq_entries.amount,0)!=0,pr_aoq_entries.amount,'-') as amount,
         pr_purchase_request.purpose,
         pr_aoq_entries.remark,
         pr_aoq_entries.is_lowest,
@@ -328,6 +328,7 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 
 
+
     .amount {
         text-align: center;
     }
@@ -357,7 +358,9 @@ $this->params['breadcrumbs'][] = $this->title;
     .links_table th {
         border: none;
     }
-
+    tfoot {
+        display: table-row-group
+    }
     @media print {
         .links_table {
             display: none;
