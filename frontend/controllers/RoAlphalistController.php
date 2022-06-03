@@ -86,7 +86,7 @@ class RoAlphalistController extends Controller
             $sql = Yii::$app->db->getQueryBuilder()->buildCondition([
                 'AND',
                 ["<=", 'cash_disbursement.reporting_period', $model->reporting_period],
-                ['>=', 'cash_disbursement.reporting_period', '2022-01'],
+                ['>=', 'cash_disbursement.reporting_period', '2022-05'],
                 ['!=', 'dv_aucs.is_cancelled', 1],
                 'dv_aucs.fk_ro_alphalist_id IS  NULL'
             ], $params);
@@ -257,7 +257,7 @@ class RoAlphalistController extends Controller
             $sql = Yii::$app->db->getQueryBuilder()->buildCondition([
                 'AND',
                 ["<=", 'cash_disbursement.reporting_period', $reporting_period],
-                ['>=', 'cash_disbursement.reporting_period', '2022-01'],
+                ['>=', 'cash_disbursement.reporting_period', '2022-05'],
                 ['!=', 'dv_aucs.is_cancelled', 1],
                 'dv_aucs.fk_ro_alphalist_id IS  NULL'
             ], $params);
@@ -300,7 +300,7 @@ class RoAlphalistController extends Controller
                             LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
                             INNER JOIN cash_disbursement ON dv_aucs.id  = cash_disbursement.dv_aucs_id
                             WHERE cash_disbursement.reporting_period <= :reporting_period
-                            and cash_disbursement.reporting_period >= '2022-01'
+                            and cash_disbursement.reporting_period >= '2022-05'
                             AND dv_aucs.is_cancelled !=1
                             AND dv_aucs.fk_ro_alphalist_id IS  NULL
                             GROUP BY 
