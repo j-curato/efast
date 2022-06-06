@@ -404,11 +404,12 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
 
         const q = <?php echo json_encode($for_print) ?>;
         const payee_position = JSON.parse(`<?php echo json_encode($payee_position) ?>`);
-        // console.log(payee_position)
+        console.log(q)
         let row_number = 0
         let purpose = ''
         let remark_arr = []
         let remark_arr_index = 0
+        let row_number_index = 1
         $.each(q, function(key, val) {
             let min_key = ''
             $.each(val, function(key, val2) {
@@ -438,7 +439,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
 
           `;
             $.each(payee_position, function(key, val2) {
-                row += `<td class='fooed' style='vertical-align:bottom' ></td>`;
+                row += `<td class='fooed' style='text-align:center;vertical-align:middle' ></td>`;
             })
             row += `<td style='vertical-align:top'></td>`;
             $("#table tbody").append(row)
@@ -458,7 +459,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                 if (key_pos != '') {
                     remark_arr[remark_arr_index] = {
                         'key_pos': key_pos,
-                        'remark': val2.remark
+                        'remark': val2.remark + ` Row  No. ${row_number+1}`
                     };
                     remark_arr_index++
                 }
@@ -474,7 +475,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                     to_display = '-'
                 }
                 let key_pos_1 = 5
-                const amount = `<div class=foo><div >${to_display}</div></div><br>`
+                const amount = `${to_display}<br>`
                 const remark = `<span>${val2.remark}</span>`
 
                 $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(amount)
@@ -483,6 +484,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
             })
             $("#table tbody ").find(`td:last-child`).eq(row_number).text(lowest)
             row_number++
+
         })
 
         let colCount = 5
@@ -502,6 +504,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
 
           `;
 
+
+        //   ADD REMARKS EACH COL
         $.each(payee_position, function(key, val2) {
             remark_row += `<td class='fooed' style='vertical-align:bottom' ></td>`;
             colCount++
@@ -511,7 +515,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
         $.each(remark_arr, function(key, val) {
 
             const pos = parseInt(val.key_pos)
-            const remark = val.remark
+            const remark = val.remark 
             const table_col = $("#table tbody").find(`td:nth-child(${pos})`).eq(row_number)
             if (table_col.text() != '  ') {
                 if ($.trim(remark) != '') {
