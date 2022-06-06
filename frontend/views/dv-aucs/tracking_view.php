@@ -315,12 +315,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
 
 
-                <!-- <tr>
+               <tr>
                     <th colspan="6" class="no-border">
 
                         <span>Part 2: Checklist of Attachments/Supporting documents (for FAD use) </span>
                     </th>
                 </tr>
+                  <!--
                 <tr>
                     <th class='no-border'><span>
                             Transaction:
