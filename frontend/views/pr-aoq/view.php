@@ -457,9 +457,13 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                     }
                 })
                 if (key_pos != '') {
+                    let rem = val2.remark
+                    if ($.trim(val2.remark) != '') {
+                        rem += ` Row  No. ${row_number+1}`
+                    }
                     remark_arr[remark_arr_index] = {
                         'key_pos': key_pos,
-                        'remark': val2.remark + ` Row  No. ${row_number+1}`
+                        'remark': rem
                     };
                     remark_arr_index++
                 }
@@ -515,7 +519,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
         $.each(remark_arr, function(key, val) {
 
             const pos = parseInt(val.key_pos)
-            const remark = val.remark 
+            const remark = val.remark
             const table_col = $("#table tbody").find(`td:nth-child(${pos})`).eq(row_number)
             if (table_col.text() != '  ') {
                 if ($.trim(remark) != '') {
