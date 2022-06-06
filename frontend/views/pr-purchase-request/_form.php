@@ -181,6 +181,7 @@ if (!empty($model->id)) {
                             </th>
                         </tr>
                     </thead>
+
                     <tbody>
 
                         <?php
@@ -224,7 +225,8 @@ if (!empty($model->id)) {
                                                 <div class='col-sm-12'>
                                                     <label for='specs'>Specification</label>
                                                     <textarea rows='2' class='specs_view' id='q'>$specification</textarea>
-                                                    <input name='specification[$i]' rows='2' class='specs' type='hidden' value='$val->specification'>
+                                       
+                                                    <textarea name='specification[$i]' class='specs' type='hidden' style='display:none'  >$val->specification</textarea>
                                                 </div>
                                             </div>
 
@@ -286,6 +288,7 @@ if (!empty($model->id)) {
                                             <label for="specs_view">Specification</label>
                                             <textarea rows="2" class="specs_view form-control" id="q"></textarea>
                                             <input name="specification[0]" rows="2" class="specs" type='hidden'>
+                                            <textarea name='specification[0]' class='specs' type='hidden'></textarea>
                                         </div>
                                     </div>
                                 </td>

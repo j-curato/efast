@@ -116,10 +116,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     $total += $total_cost;
                     $specs = preg_replace('#\[n\]#', "<br>", $val->specification);
                     $bac_code = !empty($val->stock->bac_code) ? $val->stock->bac_code : '';
+                    $stock_title = !empty($val->stock->stock_title)?$val->stock->stock_title:'';
                     echo "<tr>
-                        <td>{$val->stock->bac_code}</td>
+                        <td>{$bac_code}</td>
                         <td class='center'>{$val->unitOfMeasure->unit_of_measure}</td>
-                        <td><span class='description'>" . $val->stock->stock_title . "</span>" .
+                        <td><span class='description'>" .  $stock_title . "</span>" .
                         "<br><span class='specs'>"
 
                         . $specs
