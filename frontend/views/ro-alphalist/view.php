@@ -43,6 +43,7 @@ if ($model->is_final == true) {
         </table>
         <table class="" id="detailed_table" style="margin-top: 5rem;">
             <thead>
+                <th>Book</th>
                 <th>DV Number</th>
                 <th>Check Date</th>
                 <th>Check Number</th>

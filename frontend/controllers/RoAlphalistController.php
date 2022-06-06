@@ -86,7 +86,7 @@ class RoAlphalistController extends Controller
             $sql = Yii::$app->db->getQueryBuilder()->buildCondition([
                 'AND',
                 ["<=", 'cash_disbursement.reporting_period', $model->reporting_period],
-                ['>=', 'cash_disbursement.reporting_period', '2022-05'],
+                ['>=', 'cash_disbursement.reporting_period', '2022-01'],
                 ['!=', 'dv_aucs.is_cancelled', 1],
                 'dv_aucs.fk_ro_alphalist_id IS  NULL'
             ], $params);
@@ -199,7 +199,8 @@ class RoAlphalistController extends Controller
         IFNULL(dv.vat_nonvat,0) as vat_nonvat,
         IFNULL(dv.ewt_goods_services,0) as ewt_goods_services,
         IFNULL(dv.compensation,0) as compensation,
-        IFNULL(dv.other_trust_liabilities,0) as other_trust_liabilities
+        IFNULL(dv.other_trust_liabilities,0) as other_trust_liabilities,
+        books.name as book_name
         FROM (
         SELECT 
         dv_aucs.id,
@@ -210,6 +211,7 @@ class RoAlphalistController extends Controller
         SUM(dv_aucs_entries.other_trust_liabilities) as other_trust_liabilities
         FROM dv_aucs
         LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
+       
         INNER JOIN cash_disbursement ON dv_aucs.id  = cash_disbursement.dv_aucs_id
 
         WHERE 
@@ -218,6 +220,7 @@ class RoAlphalistController extends Controller
         GROUP BY 
         dv_aucs.id) as dv
         INNER JOIN dv_aucs ON dv.id  = dv_aucs.id
+        LEFT JOIN books ON dv_aucs.book_id  = books.id
         INNER JOIN cash_disbursement ON dv_aucs.id  = cash_disbursement.dv_aucs_id
         WHERE cash_disbursement.is_cancelled !=1
         
@@ -229,7 +232,10 @@ class RoAlphalistController extends Controller
                     dv_aucs.reporting_period,
                     dv_aucs.book_id,
                     IFNULL(SUM(dv_aucs_entries.vat_nonvat),0)+
-                    IFNULL(SUM(dv_aucs_entries.ewt_goods_services),0) as total_tax
+                    IFNULL(SUM(dv_aucs_entries.ewt_goods_services),0) as total_tax,
+                    IFNULL(SUM(dv_aucs_entries.vat_nonvat),0) as total_vat_nonvat,
+                    IFNULL(SUM(dv_aucs_entries.ewt_goods_services),0) as total_ewt_goods_services,
+                    IFNULL(SUM(dv_aucs_entries.compensation),0) as total_compensation
                     FROM dv_aucs
                     INNER JOIN cash_disbursement ON dv_aucs.id  = cash_disbursement.dv_aucs_id
                     LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
@@ -242,8 +248,9 @@ class RoAlphalistController extends Controller
             ->queryAll();
         $reporting_periods  = array_unique(array_column($conso_query, 'reporting_period'));
         $conso_result = ArrayHelper::index($conso_query, 'reporting_period', 'book_name');
+        $detailed_result = ArrayHelper::index($detailed_query, null, 'book_name');
         return json_encode([
-            'detailed' => $detailed_query,
+            'detailed' => $detailed_result,
             'conso' => $conso_result,
             'reporting_periods' => $reporting_periods,
         ]);
@@ -257,7 +264,7 @@ class RoAlphalistController extends Controller
             $sql = Yii::$app->db->getQueryBuilder()->buildCondition([
                 'AND',
                 ["<=", 'cash_disbursement.reporting_period', $reporting_period],
-                ['>=', 'cash_disbursement.reporting_period', '2022-05'],
+                ['>=', 'cash_disbursement.reporting_period', '2022-01'],
                 ['!=', 'dv_aucs.is_cancelled', 1],
                 'dv_aucs.fk_ro_alphalist_id IS  NULL'
             ], $params);
@@ -300,7 +307,7 @@ class RoAlphalistController extends Controller
                             LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
                             INNER JOIN cash_disbursement ON dv_aucs.id  = cash_disbursement.dv_aucs_id
                             WHERE cash_disbursement.reporting_period <= :reporting_period
-                            and cash_disbursement.reporting_period >= '2022-05'
+                            and cash_disbursement.reporting_period >= '2022-01'
                             AND dv_aucs.is_cancelled !=1
                             AND dv_aucs.fk_ro_alphalist_id IS  NULL
                             GROUP BY 

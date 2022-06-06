@@ -44,6 +44,7 @@ use yii\widgets\ActiveForm;
         </table>
         <table class="" id="detailed_table" style="margin-top: 5rem;">
             <thead>
+                <th>Book</th>
                 <th>DV Number</th>
                 <th>Check Date</th>
                 <th>Check Number</th>
@@ -122,6 +123,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/roAlphalis
                 success: function(data) {
                     const res = JSON.parse(data)
                     console.log(res.conso)
+                    header_rows_index = []
                     $("#conso_table tbody").html('')
                     $("#detailed_table tbody").html('')
 
