@@ -24,12 +24,13 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php
 
             if (!$model->is_final) {
-
-            ?>
-
-                <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-
-            <?php } ?>
+                $check_rfqs = YIi::$app->db->createCommand("SELECT id FROM pr_rfq WHERE pr_purchase_request_id = :id")
+                    ->bindValue(':id', $model->id)
+                    ->queryAll();
+                if (empty($check_rfqs)) {
+                    echo     Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+                }
+            } ?>
             <button type="button" class="print btn btn-warning">Print</button>
             <?php
 
@@ -116,7 +117,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $total += $total_cost;
                     $specs = preg_replace('#\[n\]#', "<br>", $val->specification);
                     $bac_code = !empty($val->stock->bac_code) ? $val->stock->bac_code : '';
-                    $stock_title = !empty($val->stock->stock_title)?$val->stock->stock_title:'';
+                    $stock_title = !empty($val->stock->stock_title) ? $val->stock->stock_title : '';
                     echo "<tr>
                         <td>{$bac_code}</td>
                         <td class='center'>{$val->unitOfMeasure->unit_of_measure}</td>

@@ -288,7 +288,7 @@ if (!empty($model->id)) {
                                             <label for="specs_view">Specification</label>
                                             <textarea rows="2" class="specs_view form-control" id="q"></textarea>
                                             <input name="specification[0]" rows="2" class="specs" type='hidden'>
-                                            <textarea name='specification[0]' class='specs' type='hidden'></textarea>
+                                            <textarea name='specification[0]' class='specs' type='hidden' style='display:none'></textarea>
                                         </div>
                                     </div>
                                 </td>

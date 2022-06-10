@@ -209,6 +209,12 @@ class PrPurchaseRequestController extends Controller
         if ($model->is_final) {
             return $this->goHome();
         }
+        $check_rfqs = YIi::$app->db->createCommand("SELECT id FROM pr_rfq WHERE pr_purchase_request_id = :id")
+            ->bindValue(':id', $model->id)
+            ->queryAll();
+        if (!empty($check_rfqs)) {
+            return $this->goBack();
+        }
 
         if ($model->load(Yii::$app->request->post())) {
             $old = $this->findModel($id);
