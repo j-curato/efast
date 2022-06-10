@@ -21,8 +21,15 @@ $id = $model->id;
         <?php
 
         if ($model->status === 9) {
-            echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+            echo Html::a('Update', ['update', 'id' => $model->id], [
+                'class' => "btn btn-primary",
+                'data' => [
+                    'confirm' => 'Are you sure you want to final this item?',
+                    'method' => 'post',
+                ],
+            ]);
         }
+
         if (Yii::$app->user->can('super-user')) {
 
             if ($model->status === 9) {
@@ -32,7 +39,6 @@ $id = $model->id;
             }
         }
         ?>
-
     </p>
     <div class="container">
         <div style="text-align: right; width:100%">

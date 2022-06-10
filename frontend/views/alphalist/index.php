@@ -38,8 +38,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'class' => 'kartik\grid\ActionColumn',
-                'deleteOptions' => ['style' => 'display:none'],
-                'updateOptions' => ['hidden' => true],
+                'template' =>  Yii::$app->user->can('super-user')?'{view} {delete}':'{view} ',
+
+                // 'deleteOptions' => function () {
+
+                //     if (!Yii::$app->user->can('super-user')) {
+                //         return ['style' => 'display:none'];
+                //     } else {
+                //         return [];
+                //     }
+                // },
+                // 'updateOptions' => ['hidden' => true],
 
             ],
         ],

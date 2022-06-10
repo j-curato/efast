@@ -125,7 +125,7 @@ class AlphalistController extends Controller
                     INNER JOIN advances_entries ON x.advances_entries_id = advances_entries.id 
                     INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
                     WHERE liquidation.province = :province
-                    AND liquidation.check_date >='2022-04-01'
+                    AND liquidation.check_date >='2022-05-01'
                     AND  liquidation.check_date <= :to_date
                     AND liquidation.is_cancelled !=1
                    AND x.fk_alphalist_id IS NULL
@@ -158,24 +158,24 @@ class AlphalistController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post())) {
-            if ($model->status === 10) {
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
-            if ($model->save(false)) {
+        // if ($model->load(Yii::$app->request->post())) {
+        if ($model->status === 10) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+        if ($model->save(false)) {
 
-                $d = new DateTime($model->check_range);
-                // echo $d->format('Y-m-t');
+            $d = new DateTime($model->check_range);
+            // echo $d->format('Y-m-t');
 
-                $query =  Yii::$app->db->createCommand("UPDATE liquidation_entries  SET fk_alphalist_id = :id
-            WHERE  EXISTS (SELECT z.id FROM (SELECT
+            $query =  Yii::$app->db->createCommand("UPDATE liquidation_entries  SET fk_alphalist_id = :id
+              WHERE  EXISTS (SELECT z.id FROM (SELECT
                 x.id
                 FROM liquidation_entries as x
                 INNER JOIN liquidation ON x.liquidation_id = liquidation.id
                 INNER JOIN advances_entries ON x.advances_entries_id = advances_entries.id 
                 INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
                 WHERE liquidation.province = :province
-                AND liquidation.check_date >='2021-10-01'
+                AND liquidation.check_date >='2022-05-01'
                 AND  liquidation.check_date <= :to_date
                 AND liquidation.is_cancelled !=1
                AND x.fk_alphalist_id IS NULL
@@ -183,18 +183,18 @@ class AlphalistController extends Controller
                 WHERE   z.id =  liquidation_entries.id 
                 )
             ")
-                    ->bindValue(':id', $model->id)
-                    ->bindValue(':to_date', $d->format('Y-m-t'))
-                    ->bindValue(':province', $model->province)
-                    ->query();
+                ->bindValue(':id', $model->id)
+                ->bindValue(':to_date', $d->format('Y-m-t'))
+                ->bindValue(':province', $model->province)
+                ->query();
 
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
+            return $this->redirect(['view', 'id' => $model->id]);
         }
+        // }
 
-        return $this->render('update', [
-            'model' => $model,
-        ]);
+        // return $this->render('update', [
+        //     'model' => $model,
+        // ]);
     }
 
     /**
@@ -204,12 +204,18 @@ class AlphalistController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    // public function actionDelete($id)
-    // {
-    //     $this->findModel($id)->delete();
+    public function actionDelete($id)
+    {
 
-    //     return $this->redirect(['index']);
-    // }
+        if (Yii::$app->user->can('super-user')) {
+            $model = $this->findModel($id);
+            Yii::$app->db->createCommand("UPDATE liquidation_entries SET liquidation_entries.fk_alphalist_id=null WHERE liquidation_entries.fk_alphalist_id = :id")
+                ->bindValue(':id', $model->id)
+                ->execute();
+            $model->delete();
+        }
+        return $this->redirect(['index']);
+    }
 
     /**
      * Finds the Alphalist model based on its primary key value.
@@ -260,7 +266,7 @@ class AlphalistController extends Controller
             INNER JOIN advances_entries ON liquidation_entries.advances_entries_id = advances_entries.id 
             INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
             WHERE liquidation.province = :province
-            AND liquidation.check_date >='2022-04-01'
+            AND liquidation.check_date >='2022-05-01'
             AND  liquidation.check_date  <= :_range
             AND $sql
             AND liquidation.is_cancelled !=1
