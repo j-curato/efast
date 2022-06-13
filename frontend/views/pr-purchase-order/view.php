@@ -419,7 +419,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <span>(Total Amount in Words): </span>
                                 <span style="font-weight: bold;">
                                     <?php
-                                    echo strtoupper(Yii::$app->memem->convertNumberToWord($total_amount));
+                                    echo strtoupper(Yii::$app->memem->convertNumberToWord($grand_total));
                                     ?>
                                 </span>
                             </td>
