@@ -12,6 +12,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 
 /**
  * PrPurchaseOrderController implements the CRUD actions for PrPurchaseOrder model.
@@ -122,7 +123,8 @@ class PrPurchaseOrderController extends Controller
         // }
         return $this->render('view', [
             'model' => $model,
-            'aoq_lowest' => $aoq_lowest
+            'aoq_lowest' => ArrayHelper::index($aoq_lowest, null, 'payee')
+
         ]);
     }
 
