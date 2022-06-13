@@ -459,7 +459,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                 if (key_pos != '') {
                     let rem = val2.remark
                     if ($.trim(val2.remark) != '') {
-                        rem += ` Row No. ${row_number+1}`
+                        rem += ` Item No. ${row_number+1}`
                     }
                     remark_arr[remark_arr_index] = {
                         'key_pos': key_pos,
