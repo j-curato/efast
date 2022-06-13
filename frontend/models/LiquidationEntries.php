@@ -38,6 +38,7 @@ class LiquidationEntries extends \yii\db\ActiveRecord
             [['liquidation_id', 'chart_of_account_id', 'advances_entries_id'], 'integer'],
             [['withdrawals', 'vat_nonvat', 'expanded_tax', 'liquidation_damage'], 'number'],
             [['reporting_period'], 'string'],
+            [['new_object_code'], 'safe'],
             [['advances_entries_id'], 'exist', 'skipOnError' => true, 'targetClass' => AdvancesEntries::class, 'targetAttribute' => ['advances_entries_id' => 'id']],
             [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
             [['liquidation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Liquidation::class, 'targetAttribute' => ['liquidation_id' => 'id']],
