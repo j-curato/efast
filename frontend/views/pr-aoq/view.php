@@ -293,7 +293,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     echo "<tr>
                 <td>{$val['po_number']}</td>
-                <td>" . Html::a('RFQ Link ', $link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px']) . "</td>
+                <td>" . Html::a('PO Link ', $link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px']) . "</td>
                 </tr>";
                 }
                 ?>
@@ -459,7 +459,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                 if (key_pos != '') {
                     let rem = val2.remark
                     if ($.trim(val2.remark) != '') {
-                        rem += ` Row  No. ${row_number+1}`
+                        rem += ` Row No. ${row_number+1}`
                     }
                     remark_arr[remark_arr_index] = {
                         'key_pos': key_pos,
