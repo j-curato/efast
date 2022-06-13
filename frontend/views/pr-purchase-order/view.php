@@ -376,7 +376,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         </tr>
                         <?php
-
+                        $grand_total = 0;
                         foreach ($val as $val2) {
 
                             $total_amount = intval($val2['quantity']) * floatval($val2['unit_cost']);
@@ -396,9 +396,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <td class='amount'> {$unit_cost} </td>
                                 <td class='amount'>" . number_format($total_amount, 2) . " </td>
                             </tr>";
+                            $grand_total += $total_amount;
                         }
 
                         ?>
+                        <tr>
+                            <th colspan="5">Grand Total</th>
+                            <th style="text-align: right;"><?php echo $grand_total ?></th>
+                        </tr>
                         <tr>
                             <td colspan="6">
                                 <span>Purpose: </span>
