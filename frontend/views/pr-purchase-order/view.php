@@ -29,9 +29,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <?php
             $payee =  $index;
-            $payee_address =   $val[0]['address'];
-            $payee_tin_number =   $val[0]['tin_number'];
-            
+            $payee_address =   !empty($val[0]['address']) ? $val[0]['address'] : '';
+            $payee_tin_number =   !empty($val[0]['tin_number']) ? $val[0]['tin_number'] : '';
+
             // $total_amount = intval($val['quantity']) * floatval($val['unit_cost']);
             $total_amount = 0;
             // $unit_of_measure = $val['unit_of_measure'];
@@ -315,12 +315,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <br>
                                 <span>Address:</span>
                                 <span><?php
-                                        echo $payee_address 
+                                        echo $payee_address
                                         ?></span>
                                 <br>
                                 <span>TIN:</span>
                                 <span><?php
-                                        echo $payee_tin_number 
+                                        echo $payee_tin_number
                                         ?></span>
                             </td>
                             <td colspan="3">
