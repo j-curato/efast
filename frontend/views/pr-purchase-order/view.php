@@ -32,9 +32,9 @@ $this->params['breadcrumbs'][] = $this->title;
             $payee_address =   !empty($val[0]['address']) ? $val[0]['address'] : '';
             $payee_tin_number =   !empty($val[0]['tin_number']) ? $val[0]['tin_number'] : '';
 
-            // $total_amount = intval($val['quantity']) * floatval($val['unit_cost']);
-            $total_amount = 0;
-            // $unit_of_measure = $val['unit_of_measure'];
+            $total_amount = intval($val[0]['quantity']) * floatval($val[0]['unit_cost']);
+            // $total_amount = 0;
+            $unit_of_measure = $val[0]['unit_of_measure'];
             $description = $val[0]['description'];
             $specification = $val[0]['specification'];
             $quantity = $val[0]['quantity'];
