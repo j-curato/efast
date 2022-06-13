@@ -121,30 +121,34 @@ class TransactionController extends Controller
         $model = new Transaction();
         date_default_timezone_set('Asia/Manila');
 
+
         if ($model->load(Yii::$app->request->post())) {
 
-            $division = strtolower(Yii::$app->user->identity->division);
-            $user = strtolower(Yii::$app->user->identity->province);
+            if ($_SERVER['REMOTE_ADDR'] === '210.1.103.26' || Yii::$app->user->can('super-user')) {
 
-            if (!Yii::$app->user->can('super-user')) {
-                $r_center = Yii::$app->db->createCommand("SELECT `id` FROM responsibility_center WHERE `name`=:division")
-                    ->bindValue(':division', $division)
-                    ->queryScalar();
-                $model->responsibility_center_id = $r_center;
+                $division = strtolower(Yii::$app->user->identity->division);
+                $user = strtolower(Yii::$app->user->identity->province);
+
+                if (!Yii::$app->user->can('super-user')) {
+                    $r_center = Yii::$app->db->createCommand("SELECT `id` FROM responsibility_center WHERE `name`=:division")
+                        ->bindValue(':division', $division)
+                        ->queryScalar();
+                    $model->responsibility_center_id = $r_center;
+                }
+
+                $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date);
+                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+
+                $whitelist = array('127.0.0.1', "::1", "10.20.17.35");
+
+                if ($_SERVER['REMOTE_ADDR'] === '210.1.103.26') {
+                    $model->is_local = 0;
+                }
+                if ($model->save()) {
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
             }
-
-            $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date);
-            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-
-            $whitelist = array('127.0.0.1', "::1", "10.20.17.35");
-
-            if (!in_array($_SERVER['REMOTE_ADDR'], $whitelist)) {
-                $model->is_local = 0;
-            }
-
-            if ($model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
+            return $this->actionIndex();
             // return $q;
         }
 
@@ -169,32 +173,35 @@ class TransactionController extends Controller
 
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post())) {
-            $old =  $this->findModel($id);
-            $old_responsibility_center = intval($old->responsibility_center_id);
-            $new_responsibility_center = intval($model->responsibility_center_id);
-            $old_year = DateTime::createFromFormat('m-d-Y', $old->transaction_date)->format('Y');
-            $new_year = DateTime::createFromFormat('m-d-Y', $model->transaction_date)->format('Y');
-            if (intval($old_year) !== intval($new_year)) {
-                $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date);
+            if ($_SERVER['REMOTE_ADDR'] === '210.1.103.26' || Yii::$app->user->can('super-user')) {
+                $old =  $this->findModel($id);
+                $old_responsibility_center = intval($old->responsibility_center_id);
+                $new_responsibility_center = intval($model->responsibility_center_id);
+                $old_year = DateTime::createFromFormat('m-d-Y', $old->transaction_date)->format('Y');
+                $new_year = DateTime::createFromFormat('m-d-Y', $model->transaction_date)->format('Y');
+                if (intval($old_year) !== intval($new_year)) {
+                    $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date);
+                }
+                if ($old_responsibility_center !==  $new_responsibility_center) {
+                    $old_tracking_number = explode('-', $old->tracking_number)[2];
+                    $new_tracking_number = explode('-', $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date));
+                    $new_tracking_number[2] = $old_tracking_number;
+
+                    $model->tracking_number = implode('-', $new_tracking_number);
+                    // var_dump($model->tracking_number);
+                    // die();
+                }
+
+
+                // return json_encode(
+                //     $model->tracking_number
+                // );
+                if ($model->save(false)) {
+
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
             }
-            if ($old_responsibility_center !==  $new_responsibility_center) {
-                $old_tracking_number = explode('-', $old->tracking_number)[2];
-                $new_tracking_number = explode('-', $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date));
-                $new_tracking_number[2] = $old_tracking_number;
-
-                $model->tracking_number = implode('-', $new_tracking_number);
-                // var_dump($model->tracking_number);
-                // die();
-            }
-
-
-            // return json_encode(
-            //     $model->tracking_number
-            // );
-            if ($model->save(false)) {
-
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
+            return $this->actionIndex();
         }
 
         return $this->renderAjax('update', [
