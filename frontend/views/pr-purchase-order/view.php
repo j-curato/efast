@@ -402,7 +402,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ?>
                         <tr>
                             <th colspan="5">Grand Total</th>
-                            <th style="text-align: right;"><?php echo $grand_total ?></th>
+                            <th style="text-align: right;"><?php echo number_format($grand_total, 2) ?></th>
                         </tr>
                         <tr>
                             <td colspan="6">
