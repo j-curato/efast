@@ -10,7 +10,6 @@ $this->title = $model->po_number;
 $this->params['breadcrumbs'][] = ['label' => 'Pr Purchase Orders', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
-
 ?>
 <div class="pr-purchase-order-view">
 
@@ -25,17 +24,20 @@ $this->params['breadcrumbs'][] = $this->title;
             echo   Html::a('AOQ Link ', $link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px'])
             ?>
         </p>
-        <?php foreach ($aoq_lowest as $val) {
+        <?php foreach ($aoq_lowest as $index => $val) {
         ?>
 
             <?php
-            $payee =  $val['payee'];
-            $payee_address =   $val['address'];
-            $total_amount = intval($val['quantity']) * floatval($val['unit_cost']);
-            $unit_of_measure = $val['unit_of_measure'];
-            $description = $val['description'];
-            $specification = $val['specification'];
-            $quantity = $val['quantity'];
+            $payee =  $index;
+            $payee_address =   $val[0]['address'];
+            $payee_tin_number =   $val[0]['tin_number'];
+            
+            // $total_amount = intval($val['quantity']) * floatval($val['unit_cost']);
+            $total_amount = 0;
+            // $unit_of_measure = $val['unit_of_measure'];
+            // $description = $val['description'];
+            // $specification = $val['specification'];
+            // $quantity = $val['quantity'];
             $purpose =  $model->aoq->rfq->purchaseRequest->purpose;
             $auth_personel = strtoupper($model->authorizedOfficial->f_name . ' ' . $model->authorizedOfficial->m_name[0] . '. ' . $model->authorizedOfficial->l_name);
             $auth_personel_position =  $model->authorizedOfficial->position;
@@ -312,10 +314,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                         ?></span>
                                 <br>
                                 <span>Address:</span>
-                                <span><?php echo $val['address'] ?></span>
+                                <span><?php
+                                        echo $payee_address 
+                                        ?></span>
                                 <br>
                                 <span>TIN:</span>
-                                <span><?php echo $val['tin_number'] ?></span>
+                                <span><?php
+                                        echo $payee_tin_number 
+                                        ?></span>
                             </td>
                             <td colspan="3">
                                 <span>P.O No.:</span>
@@ -370,23 +376,28 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         </tr>
                         <?php
-                        $total_amount = intval($val['quantity']) * floatval($val['unit_cost']);
-                        $unit_cost = number_format($val['unit_cost'], 2);
-                        echo "<tr>
-                        <td>{$val['bac_code']}</td>
-                        <td>{$val['unit_of_measure']}</td>
-                        <td>
-                          
-                            <span style='font-weight:bold'>  {$val['description']}</span>
-                            <br>
-                            <span style='font-style:italic'>
-                            {$val['specification']}
-                            </span>
-                        </td>
-                        <td> {$val['quantity']}</td>
-                        <td class='amount'> {$unit_cost} </td>
-                        <td class='amount'>" . number_format($total_amount, 2) . " </td>
-                    </tr>";
+
+                        foreach ($val as $val2) {
+
+                            $total_amount = intval($val2['quantity']) * floatval($val2['unit_cost']);
+                            $unit_cost = number_format($val2['unit_cost'], 2);
+                            echo "<tr>
+                                <td>{$val2['bac_code']}</td>
+                                <td>{$val2['unit_of_measure']}</td>
+                                <td>
+                                
+                                    <span style='font-weight:bold'>  {$val2['description']}</span>
+                                    <br>
+                                    <span style='font-style:italic'>
+                                    {$val2['specification']}
+                                    </span>
+                                </td>
+                                <td> {$val2['quantity']}</td>
+                                <td class='amount'> {$unit_cost} </td>
+                                <td class='amount'>" . number_format($total_amount, 2) . " </td>
+                            </tr>";
+                        }
+
                         ?>
                         <tr>
                             <td colspan="6">
