@@ -149,13 +149,23 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <div style="font-weight: bold;"><?php echo $description ?></div>
                                     <?php
 
-                                    $spec =  explode('<br>', $specification);
-                                    foreach ($spec as $val) {
 
-                                        echo "<div style='font-style:italic;'>
-                                            {$val}
+                                    foreach ($val as $val2) {
+                                        $total_amount = intval($val2['quantity']) * floatval($val2['unit_cost']);
+                                        // $total_amount = 0;
+                                        $unit_of_measure = $val2['unit_of_measure'];
+                                        $description = $val2['description'];
+                                        $specification = $val2['specification'];
+                                        $quantity = $val2['quantity'];
+                                        $spec =  explode('<br>', $specification);
+                                        foreach ($spec as $specs_val) {
+
+                                            echo "<div style='font-style:italic;'>
+                                            {$specs_val}
                                         </div>";
+                                        }
                                     }
+
                                     ?>
 
                                 </div>
