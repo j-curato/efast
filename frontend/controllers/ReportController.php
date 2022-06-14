@@ -9,7 +9,7 @@ use app\models\ChartOfAccounts;
 
 use app\models\DetailedDvAucsSearch;
 use app\models\DvAucs;
-
+use app\models\Liquidation;
 use app\models\PoTransmittalsPendingSearch;
 use app\models\RaoSearch;
 use app\models\TransactionArchiveSearch;
@@ -3882,14 +3882,12 @@ class ReportController extends \yii\web\Controller
 
         return $randomString;
     }
-    public function actionQ()
-    {
-        return var_dump($_SERVER['REMOTE_ADDR']);
-    }
+    // public function actionQ()
+    // {
+    //     return var_dump($_SERVER['REMOTE_ADDR']);
+    // }
     public function actionServer()
     {
-
-        echo $_SERVER['REMOTE_ADDR'];
     }
     public function actionDvTimeMonitoring()
     {
@@ -4237,6 +4235,135 @@ class ReportController extends \yii\web\Controller
             return json_encode($query);
         }
         return $this->render('province_adequacy');
+    }
+    public function actionQ()
+    {
+        return Yii::$app->memem->convertNumberToWord(12345.40);
+    }
+    // public function actionUpdateLiquidation()
+    // {
+    //     if (!empty($_POST)) {
+    //         // $chart_id = $_POST['chart_id'];
+    //         $name = $_FILES["file"]["name"];
+    //         // var_dump($_FILES['file']);
+    //         // die();
+    //         $id = uniqid();
+    //         $file = "transaction/{$id}_{$name}";
+    //         if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
+    //         } else {
+    //             return "ERROR 2: MOVING FILES FAILED.";
+    //             die();
+    //         }
+    //         $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+    //         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+    //         $excel = $reader->load($file);
+    //         $excel->setActiveSheetIndexByName('Indicate Correct Date');
+    //         $worksheet = $excel->getActiveSheet();
+
+
+
+    //         $transaction = Yii::$app->db->beginTransaction();
+    //         foreach ($worksheet->getRowIterator(3) as $key => $row) {
+    //             $cellIterator = $row->getCellIterator();
+    //             $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+    //             $cells = [];
+    //             $y = 0;
+    //             foreach ($cellIterator as $x => $cell) {
+    //                 $q = '';
+    //                 if ($y === 2) {
+    //                     $cells[] = $cell->getFormattedValue();
+    //                 } else {
+    //                     $cells[] =   $cell->getValue();
+    //                 }
+    //                 $y++;
+    //             }
+    //             if (!empty($cells)) {
+
+    //                 $check_number = $cells[0];
+    //                 $check_date = new DateTime($cells[2]);
+    //                 // if ($key == 5) {
+    //                 //     echo $check_date->format('Y-m-d');
+    //                 //     die();
+    //                 // }
+    //                 Yii::$app->db->createCommand("UPDATE liquidation SET liquidation.check_date = :check_date WHERE liquidation.check_number = :check_number AND liquidation.province = 'sds'")
+    //                     ->bindValue(':check_number', $check_number)
+    //                     ->bindValue(':check_date', $check_date->format('Y-m-d'))
+    //                     ->execute();
+    //                 // $liq  = Liquidation::find()->where('liquidation.check_number = :check_number', ['check_number' => $check_number])->one();
+
+    //                 // $liq->check_date = $check_date->format('Y-m-d');
+    //                 // if ($liq->save(false)) {
+
+    //                 //     echo $liq->check_date;
+    //                 //     die();
+    //                 // }
+    //             }
+    //         }
+
+
+    //         $transaction->commit();
+    //         ob_clean();
+    //         echo "<pre>";
+    //         var_dump('success');
+    //         echo "</pre>";
+    //         return ob_get_clean();
+    //     }
+    //     return $this->render('update_liquidation');
+    // }
+    public function actionLiquidationReportAnnex()
+    {
+
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $book_id = $_POST['book_id'];
+            $query = Yii::$app->db->createCommand("SELECT 
+                cash_disbursement.id as cash_id,
+                    payee.account_name as payee,
+                    cash_disbursement.check_or_ada_no as check_number,
+                    cash_disbursement.ada_number,
+                    CONCAT(dv_aucs.dv_number,'-',dv_aucs.particular) as particular,
+                    cash_disbursement.issuance_date,
+                    total_dv_amount.total_disbursed,
+                IFNULL(liquidation_report_items_total.total_items_amount,0) + IFNULL(liquidation_report_refunds_total.total_refund,0) as liquidated_amount,
+            
+                total_dv_amount.total_disbursed - (	IFNULL(liquidation_report_items_total.total_items_amount,0) + IFNULL(liquidation_report_refunds_total.total_refund,0)) as balance
+                    FROM cash_disbursement
+                    LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
+                    LEFT JOIN payee ON dv_aucs.payee_id = payee.id
+                    LEFT JOIN (SELECT SUM(dv_aucs_entries.amount_disbursed) as total_disbursed,
+                    dv_aucs_entries.dv_aucs_id 
+                    FROM dv_aucs_entries GROUP BY 
+                    dv_aucs_entries.dv_aucs_id
+                    ) as total_dv_amount ON dv_aucs.id = total_dv_amount.dv_aucs_id
+                            LEFT JOIN (SELECT 
+                            ro_liquidation_report_items.fk_cash_disbursement_id,
+                            SUM(ro_liquidation_report_items.amount) as total_items_amount
+                            FROM ro_liquidation_report_items
+            WHERE ro_liquidation_report_items.is_deleted !=1
+                            GROUP BY ro_liquidation_report_items.fk_cash_disbursement_id)
+             as liquidation_report_items_total ON cash_disbursement.id = liquidation_report_items_total.fk_cash_disbursement_id
+                    LEFT JOIN (
+                SELECT ro_liquidation_report_refunds.fk_cash_disbursement_id,
+            SUM(ro_liquidation_report_refunds.amount) as total_refund
+            FROm ro_liquidation_report_refunds
+            WHERE ro_liquidation_report_refunds.is_deleted !=1
+            GROUP BY ro_liquidation_report_refunds.fk_cash_disbursement_id
+                    ) as liquidation_report_refunds_total ON cash_disbursement.id = liquidation_report_refunds_total.fk_cash_disbursement_id
+            
+            LEFT JOIN nature_of_transaction ON dv_aucs.nature_of_transaction_id = nature_of_transaction.id
+            WHERE
+                    cash_disbursement.is_cancelled =0
+                    AND cash_disbursement.reporting_period LIKE'2022%' 
+                    AND cash_disbursement.reporting_period = :reporting_period
+                    AND cash_disbursement.book_id = :book_id
+                AND nature_of_transaction.`name` = 'CA to Employees' ")
+                ->bindValue(':reporting_period', $reporting_period)
+                ->bindValue(':book_id', $book_id)
+                ->queryAll();
+            return json_encode($query);
+        }
+
+        return $this->render('liquidation_report_annex');
     }
 }
 
