@@ -146,7 +146,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $refund_total += $amount;
                 }
                 echo "<tr>
-                <td colspan='7' style='text-align:center;font-weight:bold;'>Total</td>
+                <td colspan='8' style='text-align:center;font-weight:bold;'>Total</td>
 
                 <td class='amount'>" . number_format($refund_total, 2) . "</td>
                 
