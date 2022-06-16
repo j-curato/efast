@@ -211,6 +211,7 @@
                                         Yii::$app->user->can('super-user') ? ['label' => 'Payroll', 'icon' => 'circle-o', 'url' => ['/payroll'],] : [],
                                         Yii::$app->user->can('super-user') ? ['label' => 'Remittance', 'icon' => 'circle-o', 'url' => ['/remittance'],] : [],
                                         Yii::$app->user->can('super-user') ? ['label' => 'Alphalist', 'icon' => 'circle-o', 'url' => ['/ro-alphalist'],] : [],
+                                        Yii::$app->user->can('super-user') ? ['label' => 'Liquidation Report', 'icon' => 'circle-o', 'url' => ['/ro-liquidation-report'],] : [],
 
                                     ],
                                 ] : [],
@@ -238,6 +239,7 @@
                                         ['label' => 'Net Asset Changes', 'icon' => 'circle-o', 'url' => ['/jev-preparation/changes-netasset-equity'],],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'Transaction Archive', 'icon' => 'circle-o', 'url' => ['/report/transaction-archive'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'Remittance Summary', 'icon' => 'circle-o', 'url' => ['/report/withholding-and-remittance-summary'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Annex 3 CA to Employees', 'icon' => 'circle-o', 'url' => ['/report/liquidation-report-annex'],] : [],
 
                                     ],
                                 ] : ['label' => ''],
