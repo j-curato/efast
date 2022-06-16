@@ -51,7 +51,7 @@ class PrIar extends \yii\db\ActiveRecord
             'reporting_period' => 'Reporting Period',
             'invoice_number' => 'Invoice Number',
             'invoice_date' => 'Invoice Date',
-            'fk_pr_purchase_order_id' => 'Pr Purchase Order',
+            'fk_pr_purchase_order_id' => 'Purchase Order',
             'fk_inspection_officer' => 'Insepection Officer',
             'fk_property_custodian' => 'Property Custodian',
         ];

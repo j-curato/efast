@@ -49,7 +49,7 @@ class DvForLiquidationReportSearch extends DvForLiquidationReport
      */
     public function search($params)
     {
-        $query = DvForLiquidationReport::find();
+        $query = DvForLiquidationReport::find()->where('balance!=0');
 
         // add conditions that should always apply here
 

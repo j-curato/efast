@@ -52,7 +52,7 @@ class PrRfq extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'rfq_number' => 'Rfq Number',
-            'pr_purchase_request_id' => 'Pr Purchase Request ',
+            'pr_purchase_request_id' => 'Purchase Request ',
             '_date' => 'Date',
             'bac_composition_id' => 'Rbac Composition ',
             'employee_id' => 'Canvasser',
