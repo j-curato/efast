@@ -54,7 +54,9 @@ $this->params['breadcrumbs'][] = $this->title;
             </thead>
 
             <tbody>
+
                 <?php
+                $entry_total = 0;
                 foreach ($items as $val) {
                     $reporting_period = $val['reporting_period'];
                     $payee = $val['payee'];
@@ -64,7 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $particular = $val['particular'];
                     $object_code = $val['object_code'];
                     $account_title = $val['account_title'];
-                    $amount = $val['amount'];
+                    $amount = floatVal($val['amount']);
                     echo "<tr>
                     <td>$reporting_period</td>
                     <td>$payee</td>
@@ -73,11 +75,20 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>$issuance_date</td>
                     <td>$particular</td>
                     <td>$object_code - $account_title</td>
-                    <td class='amount'>".number_format($amount,2)."</td>
+                    <td class='amount'>" . number_format($amount, 2) . "</td>
                     
                     
                     </tr>";
+                    $entry_total += $amount;
                 }
+
+                echo "<tr>
+                <td colspan='7'  style='text-align:center;font-weight:bold;'>Total</td>
+
+                <td class='amount'>" . number_format($entry_total, 2) . "</td>
+                
+                
+                </tr>";
                 ?>
             </tbody>
         </table>
@@ -107,6 +118,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <tbody>
                 <?php
+                $refund_total = 0;
                 foreach ($refund_items as $val) {
                     $reporting_period = $val['reporting_period'];
                     $payee = $val['payee'];
@@ -127,11 +139,19 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td>$particular</td>
                     <td>$or_date</td>
                     <td>$or_number</td>
-                    <td class='amount'>".number_format($amount,2)."</td>
+                    <td class='amount'>" . number_format($amount, 2) . "</td>
                     
                     
                     </tr>";
+                    $refund_total += $amount;
                 }
+                echo "<tr>
+                <td colspan='7' style='text-align:center;font-weight:bold;'>Total</td>
+
+                <td class='amount'>" . number_format($refund_total, 2) . "</td>
+                
+                
+                </tr>";
                 ?>
             </tbody>
         </table>
@@ -143,10 +163,12 @@ $this->params['breadcrumbs'][] = $this->title;
         background-color: white;
         padding: 3rem;
     }
-    th{
+
+    th {
         text-align: center;
     }
-    .amount{
+
+    .amount {
         text-align: right;
     }
 </style>
