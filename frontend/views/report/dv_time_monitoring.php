@@ -189,6 +189,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
 <script>
     let holidays = [];
     let asignatory = []
+    let for_the_month = '';
 
     function signatory() {
         $('.asignatory').select2({
@@ -221,8 +222,24 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
 
 
             })
-        $('#data_table').on('change', '.asignatory', function() {
-            $(this).closest('td').find('.position').text($(this).val())
+        $('#data_table').on('change', '.employee_select', function() {
+            const id = $(this).val()
+            let position = ''
+            const this_pos = $(this).closest('td').find('.position')
+            $.ajax({
+                url: window.location.pathname + "?r=employee/search-employee",
+                data: {
+                    q: id
+                },
+                success: function(data) {
+                    position = data.results[0].position
+                    this_pos.text(data.results[0].position)
+                }
+            })
+
+
+
+
         })
         $('#calc').click(() => {
             var d1 = $('#d1').val();
@@ -246,13 +263,13 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
                         const d = new Date($('#to_reporting_period').val())
                         const selected_month = month[d.getMonth()]
                         const year = d.getFullYear()
-
+                        for_the_month = 'For the Month of ' + selected_month + ', ' + year
                         $('.for_the_month').text('For the Month of ' + selected_month + ', ' + year)
                     } else {
                         const d = new Date($('#to_reporting_period').val())
                         const selected_month = month[d.getMonth()]
                         const year = d.getFullYear()
-
+                        for_the_month = 'As of ' + selected_month + ', ' + year
                         $('.for_the_month').text('As of ' + selected_month + ', ' + year)
                     }
                     displayData(res.data)
@@ -363,15 +380,15 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
                 <td>${dv_count}</td>
             </tr>
             <tr>
-            <td colspan='13' style='border:none;'>To summarize, ${accomplished.toFixed(2)}% or ${total_within} out of ${dv_count} total claims for the month of February,
-             2022 were processed within 3 Working Days. ${beyond_timeline} claim was processed beyond the set timeline of 3 Working days.</td>
+            <td colspan='13' style='border:none;'>To summarize, ${accomplished.toFixed(2)}% or ${total_within} out of ${dv_count} total claims ${for_the_month}
+              were processed within 3 Working Days. ${beyond_timeline} claim was processed beyond the set timeline of 3 Working days.</td>
             </tr>
 
             <tr>
                 <td style='border:none;' colspan='3'>
                     <span style='float:left;'>Prepared By</span>
                     <br>
-                    <select class="asignatory "  style="width: 100%;">
+                    <select class="employee_select "  style="width: 100%;">
                     <option value=""></option>
                     </select>
                     <br>
@@ -380,7 +397,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
                 <td style='border:none;' colspan='4'>
                     <span style='float:left;'>Reviewed By</span>
                     <br>
-                    <select class="asignatory "  style="width: 100%;">
+                    <select class="employee_select "  style="width: 100%;">
                     <option value=""></option>
                     </select>
                     <br>
@@ -389,7 +406,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
                 <td style='border:none;' colspan='4'>
                     <span style='float:left;'>Approved By</span>
                     <br>
-                    <select class="asignatory " style="width: 100%;">
+                    <select class="employee_select " style="width: 100%;">
                     <option value=""></option>
                     </select>
                     <br>
@@ -398,7 +415,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
             </tr>
             `
         $('#data_table tbody').append(evaluation_row)
-        signatory()
+        employeeSelect()
 
     }
 

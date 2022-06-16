@@ -17,7 +17,9 @@ class m211103_044701_create_employee_search_view extends Migration
             CREATE VIEW employee_search_view as 
             SELECT 
             employee_id ,
-            CONCAT(f_name,' ',LEFT(m_name,1),'. ' , l_name) as `employee_name`
+            CONCAT(f_name,' ',LEFT(m_name,1),'. ' , l_name) as `employee_name`,
+            employee.position
+            
             FROM 
             employee 
         SQL;

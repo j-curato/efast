@@ -195,15 +195,15 @@ class EmployeeController extends Controller
     public function actionSearchEmployee($q = null, $id = null, $province = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-
         $user_province = strtolower(Yii::$app->user->identity->province);
 
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
             $query = new Query();
-            $query->select('employee_id as id, UPPER(employee_name) AS text')
+            $query->select('employee_id as id, UPPER(employee_name) AS text,employee_search_view.position ')
                 ->from('employee_search_view')
-                ->where(['like', 'employee_name', $q]);
+                ->where(['like', 'employee_name', $q])
+                ->orwhere(['like', 'employee_id', $q]);
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);

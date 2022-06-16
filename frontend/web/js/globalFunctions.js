@@ -98,3 +98,23 @@ function natureOfTransactionSelect() {
 function getFundSourceType() {
   return $.getJSON(base_url + "?r=fund-source-type/all-fund-source-type");
 }
+
+function employeeSelect() {
+  $(".employee_select").select2({
+    ajax: {
+      url: window.location.pathname + "?r=employee/search-employee",
+      dataType: "json",
+      data: function (params) {
+        return {
+          q: params.term,
+        };
+      },
+      processResults: function (data) {
+        // Transforms the top-level key of the response object from 'items' to 'results'
+        return {
+          results: data.results,
+        };
+      },
+    },
+  });
+}

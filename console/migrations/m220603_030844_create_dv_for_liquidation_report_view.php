@@ -14,7 +14,7 @@ class m220603_030844_create_dv_for_liquidation_report_view extends Migration
     {
         $sql = <<<SQL
             DROP VIEW IF EXISTS dv_for_liquidation_report;
-            CREATE VIEW dv_for_liquidation_report as SELECT 
+            CREATE VIEW dv_for_liquidation_report as  
             SELECT 
                     cash_disbursement.id as cash_id,
                     payee.account_name as payee,
@@ -51,7 +51,7 @@ class m220603_030844_create_dv_for_liquidation_report_view extends Migration
                 LEFT JOIN nature_of_transaction ON dv_aucs.nature_of_transaction_id = nature_of_transaction.id
                 WHERE
                     cash_disbursement.is_cancelled =0
-                    AND cash_disbursement.reporting_period LIKE'2022%' 
+                    AND (dv_aucs.reporting_period LIKE'2022%'  OR dv_aucs.id IN (7351,7426,7748,7869,7885,7965,8018))
                     AND nature_of_transaction.`name` = 'CA to Employees' 
             
         SQL;
