@@ -26,6 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
 
                 echo DatePicker::widget([
+                    'id' => 'from_reporting_period',
                     'name' => 'from_reporting_period',
                     'pluginOptions' => [
                         'autoclose' => true,
@@ -41,6 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
 
                 echo DatePicker::widget([
+                    'id' => 'to_reporting_period',
                     'name' => 'to_reporting_period',
                     'pluginOptions' => [
                         'autoclose' => true,
@@ -69,7 +71,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <span>Butuan City</span>
                     <br>
                     <span>
-                        DEPARTMENT of FINANCE and ADMINISTRATIVE DIVISION
+                        FINANCE and ADMINISTRATIVE DIVISION
                     </span>
                 </th>
             </tr>
@@ -80,8 +82,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     </span>
                     <br>
-                    <span>
-                        For the Month of February, 2022
+                    <span class='for_the_month'>
                     </span>
                 </th>
 
@@ -98,16 +99,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th rowspan="2">DV Amount</th>
                 <th colspan="3">Elapsed Time in Accounting Unit</th>
                 <th colspan="3">Elapsed Time in Accounting Unit</th>
-                <th rowspan="2">Total Turn-around Time(in working day/s)</th>
-                <th rowspan="2">Within / Beyond the Timeline of 3 Working Days) <br><span style="font-size: 11px;font-style:italic;"> If sum equals 0 value shall be 1</span></th>
+                <th rowspan="2">Total Turn-around Time(in working day/s)<br><span style="font-size: 11px;font-style:italic;"> (If sum equals 0 value shall be 1)</span></th>
+                <th rowspan="2">Within / Beyond the Timeline of 3 Working Days) </th>
                 <th rowspan="2">Remarks</th>
             </tr>
             <tr>
-                <th>Date In (upon receipt of COmplete Supporting Documents)</th>
-                <th>Date Out (Upon Accountant's)</th>
+                <th>Date In <br> <span style="font-size: 11px;font-style:italic;">(upon receipt of Complete Supporting Documents)</span></th>
+                <th>Date Out <br> <span style="font-size: 11px;font-style:italic;">(Upon Accountant's Signature in Box C of DV)</span></th>
                 <th>Elapsed Day/s*</th>
-                <th>Date In (Upon Receipt of Approved DV by the Cashier)</th>
-                <th>Date Out (Upon Issuance of Check/LDDAP)</th>
+                <th>Date In <br> <span style="font-size: 11px;font-style:italic;">(Upon Receipt of Approved DV by the Cashier)</span></th>
+                <th>Date Out <br> <span style="font-size: 11px;font-style:italic;">(Upon Issuance of Check/LDDAP)</span></th>
                 <th>Elapsed Day/s*</th>
             </tr>
 
@@ -237,8 +238,25 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
                 success: function(data) {
                     const res = JSON.parse(data)
                     holidays = res.holidays
+                    const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+                    if (
+                        $('#from_reporting_period').val() == $('#to_reporting_period').val()
+                    ) {
+                        const d = new Date($('#to_reporting_period').val())
+                        const selected_month = month[d.getMonth()]
+                        const year = d.getFullYear()
+
+                        $('.for_the_month').text('For the Month of ' + selected_month + ', ' + year)
+                    } else {
+                        const d = new Date($('#to_reporting_period').val())
+                        const selected_month = month[d.getMonth()]
+                        const year = d.getFullYear()
+
+                        $('.for_the_month').text('As of ' + selected_month + ', ' + year)
+                    }
                     displayData(res.data)
+
                 }
 
             })
@@ -248,7 +266,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
     function displayData(data) {
         $('#data_table tbody').html('')
         let total_within = 0
-
+        let beyond_timeline = 0
         let dv_count = 0
         let grand_total = 0
         $.each(data, function(key, val) {
@@ -283,6 +301,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
 
                     } else {
                         within_or_beyond = 'Beyond Timeline'
+                        beyond_timeline++
                     }
                 } else {
                     dv_elapse = 'Out Date is Less Than In Date'
@@ -345,7 +364,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
             </tr>
             <tr>
             <td colspan='13' style='border:none;'>To summarize, ${accomplished.toFixed(2)}% or ${total_within} out of ${dv_count} total claims for the month of February,
-             2022 were processed within 3 Working Days. 1 claim was processed beyond the set timeline of 3 Working days.</td>
+             2022 were processed within 3 Working Days. ${beyond_timeline} claim was processed beyond the set timeline of 3 Working days.</td>
             </tr>
 
             <tr>
