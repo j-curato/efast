@@ -180,10 +180,10 @@ use yii\widgets\ActiveForm;
             'ada_number',
             'particular',
             'issuance_date',
-            'total_disbursed',
-            'liquidated_amount',
-            'balance'
-        ],  
+            ['attribute' => 'total_disbursed', 'format' => ['decimal', 2], 'hAlign' => 'right'],
+            ['attribute' => 'liquidated_amount', 'format' => ['decimal', 2], 'hAlign' => 'right'],
+            ['attribute' => 'balance', 'format' => ['decimal', 2], 'hAlign' => 'right'],
+        ],
     ]); ?>
 </div>
 
