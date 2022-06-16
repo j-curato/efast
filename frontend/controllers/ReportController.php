@@ -67,7 +67,8 @@ class ReportController extends \yii\web\Controller
                     'transaction-tracking',
                     'dv-time-monitoring',
                     'dv-time-monitoring-summary',
-                    'province-fund-source-balance'
+                    'province-fund-source-balance',
+                    'liquidation-report-annex'
 
                 ],
                 'rules' => [
@@ -91,7 +92,9 @@ class ReportController extends \yii\web\Controller
                             'transaction-tracking',
                             'dv-time-monitoring',
                             'dv-time-monitoring-summary',
-                            'province-fund-source-balance'
+                            'province-fund-source-balance',
+                            'liquidation-report-annex'
+
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
@@ -3888,6 +3891,7 @@ class ReportController extends \yii\web\Controller
     // }
     public function actionServer()
     {
+        echo   $_SERVER['REMOTE_ADDR'];
     }
     public function actionDvTimeMonitoring()
     {
@@ -4285,7 +4289,7 @@ class ReportController extends \yii\web\Controller
     //                 //     echo $check_date->format('Y-m-d');
     //                 //     die();
     //                 // }
-    //                 Yii::$app->db->createCommand("UPDATE liquidation SET liquidation.check_date = :check_date WHERE liquidation.check_number = :check_number AND liquidation.province = 'sds'")
+    //                 Yii::$app->cloud_db->createCommand("UPDATE liquidation SET liquidation.check_date = :check_date WHERE liquidation.check_number = :check_number AND liquidation.province = 'sds'")
     //                     ->bindValue(':check_number', $check_number)
     //                     ->bindValue(':check_date', $check_date->format('Y-m-d'))
     //                     ->execute();
