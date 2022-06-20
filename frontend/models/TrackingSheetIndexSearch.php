@@ -65,7 +65,9 @@ class TrackingSheetIndexSearch extends TrackingSheetIndex
 
         $query->andFilterWhere(['like', 'dv_number', $this->dv_number])
             ->andFilterWhere(['like', 'particular', $this->particular])
-            ->andFilterWhere(['like', 'account_name', $this->account_name]);
+            ->andFilterWhere(['like', 'account_name', $this->account_name])
+            ->andFilterWhere(['like', 'recieved_at', $this->recieved_at])
+            ;
 
         return $dataProvider;
     }

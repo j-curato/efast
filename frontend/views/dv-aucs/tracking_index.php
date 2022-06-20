@@ -12,7 +12,7 @@ use yii\helpers\Html;
 /* @var $searchModel app\models\DvAucsSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Tracking Sheet';
+$this->title = 'Routing Slip';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="dv-aucs-index">
@@ -60,7 +60,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]
             ]
         ],
-        'pjax' => true,
         'export' => false,
         'columns' => [
             // ['class' => 'yii\grid\SerialColumn'],
@@ -74,10 +73,10 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'label' => 'Recive Date and Time',
-                'value' => function ($model) {
-                    return $model->recieved_at;
-                }
+                'attribute' => 'recieved_at',
+
             ],
+
 
 
 
