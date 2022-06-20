@@ -203,7 +203,7 @@
                                         Yii::$app->user->can('super-user') ?  ['label' => 'Jev', 'icon' => 'circle-o', 'url' => ['/jev-preparation'],] : [],
                                         Yii::$app->user->can('super-user') ? ['label' => 'Process Dv', 'icon' => 'circle-o', 'url' => ['/dv-aucs'],] : [],
                                         Yii::$app->user->can('super-user') ? ['label' => 'Transmittal', 'icon' => 'circle-o', 'url' => ['/transmittal'],] : [],
-                                        Yii::$app->user->can('super-user') ? ['label' => 'Tracking Sheet', 'icon' => 'circle-o', 'url' => ['/dv-aucs/tracking-index'],] : [],
+                                        Yii::$app->user->can('super-user') ? ['label' => 'Routing Slip', 'icon' => 'circle-o', 'url' => ['/dv-aucs/tracking-index'],] : [],
                                         Yii::$app->user->can('super-user') ? ['label' => 'Turn Arround Time', 'icon' => 'circle-o', 'url' => ['/dv-aucs/turnarround-time'],] : [],
                                         Yii::$app->user->can('super-user') ? ['label' => 'Document Tracking', 'icon' => 'circle-o', 'url' => ['/document-tracker'],] : [],
                                         Yii::$app->user->can('super-user') ? ['label' => 'JEV Beginning Balance', 'icon' => 'circle-o', 'url' => ['/jev-beginning-balance'],] : [],
@@ -384,6 +384,16 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'AOQ', 'icon' => 'circle-o', 'url' => ['/pr-aoq'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Purchase Order', 'icon' => 'circle-o', 'url' => ['/pr-purchase-order'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'IAR', 'icon' => 'circle-o', 'url' => ['/pr-iar'],] : [],
+
+                            ],
+                        ] : [],
+                        Yii::$app->user->can('super-user') ?    [
+                            'label' => 'General Services',
+                            'url' => '#',
+                            'items' => [
+
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Job Request', 'icon' => 'circle-o', 'url' => ['/maintenance-job-request'],] : [],
+                               
 
                             ],
                         ] : [],
