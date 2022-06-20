@@ -285,7 +285,7 @@ class CdrController extends Controller
                         WHERE advances_entries.reporting_period = :reporting_period
                         AND advances.province = :province
                         AND advances_entries.report_type =:report_type 
-                        AND advances_entries.is_deleted NOT IN (1,2) 
+                        AND advances_entries.is_deleted NOT IN (1,9)
                         AND advances.bank_account_id = :bank_account_id
             
  
