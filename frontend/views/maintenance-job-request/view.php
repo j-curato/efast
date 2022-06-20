@@ -105,6 +105,9 @@ $employee = Yii::$app->db->createCommand("SELECT employee_name,position FROM emp
                         <span class='bold'> Requested By:</span>
                         <span><?= $employee['employee_name'] ?></span>
                         <br>
+                        <span class='bold'> Designation:</span>
+                        <span><?= $employee['position'] ?></span>
+                        <br>
                         <br>
                         <span class='bold'>Date:</span>
                         <span>_____________________________</span>

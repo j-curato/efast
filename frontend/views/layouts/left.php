@@ -393,7 +393,6 @@
                             'items' => [
 
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Job Request', 'icon' => 'circle-o', 'url' => ['/maintenance-job-request'],] : [],
-                               
 
                             ],
                         ] : [],
