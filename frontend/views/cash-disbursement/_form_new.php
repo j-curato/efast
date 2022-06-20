@@ -348,7 +348,7 @@
                             }  
                         swal({
                             title:"Error",
-                            text:q,
+                            text:res.error,
                             type:'error',
                             button:false,
                             timer:3000,

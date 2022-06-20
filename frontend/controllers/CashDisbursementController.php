@@ -228,7 +228,6 @@ class CashDisbursementController extends Controller
             if (!empty($_POST['update_id'])) {
                 $cd = CashDisbursement::findOne($_POST['update_id']);
             } else {
-
                 $cd = new CashDisbursement();
             }
             if ($good_cancelled == 0) {
@@ -239,6 +238,15 @@ class CashDisbursementController extends Controller
                 if (count($selected_items) > 1) {
                     return json_encode(["error" => "Selected Dv is More Than 1"]);
                     die();
+                } else {
+
+
+                    $check_accounting_in_out = Yii::$app->db->createCommand("SELECT dv_aucs.in_timestamp, dv_aucs.out_timestamp FROM dv_aucs WHERE dv_aucs.id = :id")->bindValue(':id', $_POST['selection'][0])->queryOne();
+
+                    if (empty($check_accounting_in_out['in_timestamp']) || empty($check_accounting_in_out['out_timestamp'])) {
+                        return json_encode(['isSuccess' => false, "error" => "There is no time in and time out for DV selected."]);
+                        die();
+                    }
                 }
 
                 $cd->dv_aucs_id = $_POST['selection'][0];
