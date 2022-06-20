@@ -55,6 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-sm-3">
                 <button class="btn btn-success" type="submit">Generate</button>
+                <button class="btn btn-warning" type="button" id="export">Export</button>
             </div>
         </form>
     </div>
@@ -199,6 +200,23 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
         })
     }
     $(document).ready(() => {
+        $('#export').click(function(e) {
+            e.preventDefault()
+
+            $.ajax({
+                url: window.location.pathname + '?r=report/dv-time-monitoring-export',
+                type: 'POST',
+                data: {
+                    from_reporting_period: $('#from_reporting_period').val(),
+                    to_reporting_period: $('#to_reporting_period').val(),
+                },
+                success: function(data) {
+                    var res = JSON.parse(data)
+                    console.log(res)
+                    window.open(res)
+                }
+            })
+        })
         $.getJSON('<?php echo Url::base() ?>/frontend/web/index.php?r=assignatory/get-all-assignatory')
 
             .then(function(data) {

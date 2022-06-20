@@ -68,7 +68,8 @@ class ReportController extends \yii\web\Controller
                     'dv-time-monitoring',
                     'dv-time-monitoring-summary',
                     'province-fund-source-balance',
-                    'liquidation-report-annex'
+                    'liquidation-report-annex',
+                    'dv-time-monitoring-export'
 
                 ],
                 'rules' => [
@@ -93,7 +94,9 @@ class ReportController extends \yii\web\Controller
                             'dv-time-monitoring',
                             'dv-time-monitoring-summary',
                             'province-fund-source-balance',
-                            'liquidation-report-annex'
+                            'liquidation-report-annex',
+                            'dv-time-monitoring-export'
+
 
                         ],
                         'allow' => true,
@@ -4040,6 +4043,189 @@ class ReportController extends \yii\web\Controller
         return $this->render('dv_time_monitoring_summary');
     }
 
+    public function dvTimeMonitoringQuery($from_reporting_period, $to_reporting_period)
+    {
+        if (empty($from_reporting_period || empty($to_reporting_period))) {
+            return;
+        }
+        $query = Yii::$app->db->createCommand("SELECT 
+        dv_aucs.dv_number,
+        payee.account_name as payee,
+        IFNULL(DATE_FORMAT(dv_aucs.in_timestamp,'%Y-%m-%d'),'') as dv_in,
+        IFNULL(DATE_FORMAT(dv_aucs.out_timestamp,'%Y-%m-%d'),'') as dv_out,
+        cash_disbursement.check_or_ada_no,
+        cash_disbursement.ada_number,
+        cash_disbursement.issuance_date,
+        cash_disbursement.begin_time as cash_in,
+        cash_disbursement.out_time as cash_out,
+        IFNULL(dv_entry_amount.dv_amount,0) as dv_amount,
+
+        dv_aucs.is_cancelled,
+        cash_disbursement.is_cancelled
+
+        FROM
+        dv_aucs
+        INNER JOIN payee ON dv_aucs.payee_id = payee.id
+        INNER JOIN cash_disbursement ON dv_aucs.id = cash_disbursement.dv_aucs_id
+        LEFT JOIN (SELECT dv_aucs_entries.dv_aucs_id,
+        SUM(dv_aucs_entries.amount_disbursed)as dv_amount 
+        FROM dv_aucs_entries
+        GROUP BY 
+        dv_aucs_entries.dv_aucs_id) AS dv_entry_amount ON dv_aucs.id = dv_entry_amount.dv_aucs_id
+
+        WHERE
+
+        dv_aucs.is_cancelled !=1
+        AND 
+        cash_disbursement.is_cancelled !=1
+        AND dv_aucs.reporting_period >= :from_reporting_period
+        AND dv_aucs.reporting_period <= :to_reporting_period
+        ORDER BY cash_disbursement.issuance_date
+
+        ")
+            ->bindValue(':from_reporting_period', $from_reporting_period)
+            ->bindValue(':to_reporting_period', $to_reporting_period)
+            ->queryAll();
+        return $query;
+    }
+    public function actionDvTimeMonitoringExport()
+    {
+        // return YIi::$app->memem->getWorkdays('2022-06-17', '2022-06-20');
+        if ($_POST) {
+            $from_reporting_period = $_POST['from_reporting_period'];
+            $to_reporting_period = $_POST['to_reporting_period'];
+            $from_reporting_period_format = DateTime::createFromFormat('Y-m', $from_reporting_period);
+            $to_reporting_period_format = DateTime::createFromFormat('Y-m', $from_reporting_period);
+            // $holidays_query = Yii::$app->db->createCommand("SELECT holidays.date FROM holidays
+            // WHERE holidays.date >= :from_year
+            // AND holidays.date <= :to_year
+            // ")
+            //     ->bindValue(':from_year', $from_reporting_period_format->format('Y') . '-01' . '-01')
+            //     ->bindValue(':to_year', $to_reporting_period_format->format('Y') . '-12' . '-31')
+            //     ->queryAll();
+            $query = $this->dvTimeMonitoringQuery($from_reporting_period, $to_reporting_period);
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            // header
+            $sheet->setAutoFilter('A1:F1');
+            $sheet->setCellValue('A1', "Payee");
+            $sheet->setCellValue('B1', "DV Number");
+            $sheet->setCellValue('C1', "Accounting DV IN");
+            $sheet->setCellValue('D1', "Accounting DV Out");
+            $sheet->setCellValue('E1', "Cash DV IN");
+            $sheet->setCellValue('F1', 'Cash DV Out');
+
+
+            // BEGINNING BALANCE
+            // $sheet->setCellValue('K2', 'Beginning Balance');
+            // $sheet->setCellValue('L2', $q1['total_debit']);
+            // $sheet->setCellValue('M2', $q1['total_credit']);
+            $x = 7;
+            $styleArray = array(
+                'borders' => array(
+                    'allBorders' => array(
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                        'color' => array('argb' => 'FFFF0000'),
+                    ),
+                ),
+            );
+
+
+            $row = 2;
+            foreach ($query as $val) {
+
+                $payee = $val['payee'];
+                $dv_number = $val['dv_number'];
+                $accounting_in = $val['dv_in'];
+                $accounting_out = $val['dv_out'];
+                $check_or_ada_no = $val['check_or_ada_no'];
+                $ada_number = $val['ada_number'];
+                $issuance_date = $val['issuance_date'];
+                $cash_in = $val['cash_in'];
+                $cash_out = $val['cash_out'];
+
+
+
+
+
+
+
+                $sheet->setCellValueByColumnAndRow(
+                    1,
+                    $row,
+                    $payee
+                );
+
+
+                $sheet->setCellValueByColumnAndRow(
+                    2,
+                    $row,
+                    $dv_number
+                );
+                $sheet->setCellValueByColumnAndRow(
+                    3,
+                    $row,
+                    $accounting_in
+                );
+                $sheet->setCellValueByColumnAndRow(
+                    4,
+                    $row,
+                    $accounting_out
+                );
+                $sheet->setCellValueByColumnAndRow(
+                    5,
+                    $row,
+                    $issuance_date . ' ' . $cash_in
+                );
+                $sheet->setCellValueByColumnAndRow(
+                    6,
+                    $row,
+                    $issuance_date . ' ' . $cash_out
+                );
+
+                $row++;
+            }
+
+            date_default_timezone_set('Asia/Manila');
+            // return date('l jS \of F Y h:i:s A');
+            $id = date('Y-m-d h A');
+            $file_name = "jev_$id.xlsx";
+            // header('Content-Type: application/vnd.ms-excel');
+            // header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
+            // header('Content-Transfer-Encoding: binary');
+            // header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+            // header('Pragma: public'); // HTTP/1.0
+            // echo readfile($file);
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+            $file =  "transaction\jev_$id.xlsx";
+            $file2 = Url::base() . '/' . "transaction/jev_$id.xlsx";
+
+            $writer->save($file);
+            // return ob_get_clean();
+            header('Content-Type: application/vnd.ms-excel');
+            header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
+            header('Content-Transfer-Encoding: binary');
+            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+            header('Pragma: public'); // HTTP/1.0
+            // readfile($file2);
+            return json_encode($file2);
+            echo "<script>window.open('$file2','_self')</script>";
+            // return json_encode($file2);
+            // unlink($file2);
+            // flush();
+            // ob_clean();
+            // flush();
+
+            // // echo "<script> window.location.href = '$file';</script>";
+            // echo "<script>window.open('$file2','_self')</script>";
+
+            //    echo readfile("../../frontend/web/transaction/" . $file_name);
+            exit();
+            // return json_encode(['res' => "transaction\ckdj_excel_$id.xlsx"]);
+            // return json_encode($file);
+            // exit;
+        }
+    }
 
     function getWorkdays($date1, $date2, $workSat = FALSE, $patron = NULL)
     {
@@ -4240,10 +4426,7 @@ class ReportController extends \yii\web\Controller
         }
         return $this->render('province_adequacy');
     }
-    public function actionQ()
-    {
-        return Yii::$app->memem->convertNumberToWord(12345.40);
-    }
+
     // public function actionUpdateLiquidation()
     // {
     //     if (!empty($_POST)) {
