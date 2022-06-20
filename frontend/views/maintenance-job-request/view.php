@@ -103,7 +103,7 @@ $employee = Yii::$app->db->createCommand("SELECT employee_name,position FROM emp
                     <td colspan="1" style="min-width: 300px;padding-top:4rem">
 
                         <span class='bold'> Requested by:</span>
-                        <span class="bold" style="text-decoration:underline"><?= strtoupper('__' . $employee['employee_name']) . '__' ?></span>
+                        <span class="bold" style="text-decoration:underline"><?= strtoupper(  $employee['employee_name'])  ?></span>
                         <br>
                         <span class='bold'> Designation:</span>
                         <span><?= $employee['position'] ?></span>
