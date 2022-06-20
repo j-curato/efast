@@ -92,6 +92,7 @@ class MaintenanceJobRequestController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $model->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+            $model->mjr_number = $this->mjrNumber();
             if ($model->save(false)) {
                 return $this->redirect(['view', 'id' => $model->id]);
             }
@@ -150,5 +151,22 @@ class MaintenanceJobRequestController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    public function mjrNumber()
+    {
+
+        $last_num = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(mjr_number,'-',-1) AS UNSIGNED) as last_num FROM maintenance_job_request ORDER BY last_num DESC LIMIT 1")->queryScalar();
+
+        if (!empty($last_num)) {
+            $last_num = intval($last_num) + 1;
+        } else {
+            $last_num = 1;
+        }
+        $zero = '';
+
+        for ($i = strlen($last_num); $i <= 4; $i++) {
+            $zero .= 0;
+        }
+        return date('Y') . '-' . $zero . $last_num;
     }
 }
