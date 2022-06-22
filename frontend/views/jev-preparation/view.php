@@ -90,7 +90,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="container ">
 
-        <table>
+        <table id="data_table">
 
             <thead>
                 <tr>
@@ -303,11 +303,30 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td class="amount"><?php echo number_format($total_credit, 2); ?></td>
                 </tr>
                 <tr>
-                    <td colspan="2">
+                    <td colspan="2" style="text-align: center;">
+
+                        <div>
+                            <h6 class="pull-left">
+                                Prepared By:
+                            </h6>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <select class="employee_select " style="width: 50%;font-weight:bold">
+                                <option value=""></option>
+                            </select>
+                            <br>
+                            <span class='position'></span>
+                        </div>
+
+                    </td>
+                    <td colspan="3">
 
                         <div>
                             <h6>
-                                Prepared By:
+                                Certified Correct:
                             </h6>
                         </div>
                         <div style="text-align: center;">
@@ -324,23 +343,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             <h6>
                                 Accountant II
                             </h6>
-                        </div>
-                    </td>
-                    <td colspan="3">
-
-                        <div>
-                            <h6>
-                                Certified Correct:
-                            </h6>
-                        </div>
-                        <div style="text-align: center;">
-                            <h5>
-                                JOHN VOLTAIRE S. ANCLA, CPA
-                            </h5>
-                            <h6>
-                                Accountant III
-                            </h6>
-                        </div>
                     </td>
 
                 </tr>
@@ -503,15 +505,50 @@ $this->params['breadcrumbs'][] = $this->title;
                 display: none;
             }
 
+            .select2-selection__arrow {
+                display: none !important;
+            }
+
+            .select2-container--default .select2-selection--single {
+                border: none !important;
+                font-weight: bold;
+            }
+
         }
     </style>
 </div>
 <?php
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/jquery.dataTables.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
+<script>
+    $(document).ready(function() {
+
+        employeeSelect()
+        $('#data_table').on('change', '.employee_select', function() {
+            const id = $(this).val()
+            let position = ''
+            const this_pos = $(this).closest('td').find('.position')
+            $.ajax({
+                url: window.location.pathname + "?r=employee/search-employee",
+                data: {
+                    q: id
+                },
+                success: function(data) {
+                    position = data.results[0].position
+                    this_pos.text(data.results[0].position)
+                }
+            })
+
+
+
+
+        })
+    })
+</script>
 <?php
 SweetAlertAsset::register($this);
 $script = <<< JS
