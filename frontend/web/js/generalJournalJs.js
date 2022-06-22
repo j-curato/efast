@@ -44,10 +44,33 @@ function displayData(data) {
                             <td></td>
                             <td>${account_title}</td>
                             <td>${object_code}</td>
-                            <td class='amount'>${thousands_separators(debit)}</td>
-                            <td class='amount'>${thousands_separators(credit)}</td>
+                            <td class='amount'>${thousands_separators(
+                              debit
+                            )}</td>
+                            <td class='amount'>${thousands_separators(
+                              credit
+                            )}</td>
                         </tr>`;
       $("#data-table tbody").append(item_row);
     });
   });
+
+  const footer = `<tr class="footer1" style="border:0;">
+                  <td colspan="3" class="br"></td>
+                  <td colspan='2' class="br" style="padding-top:2em">
+                      CERTIFIED CORRECT:
+                  </td>
+                  <td></td>
+                </tr>
+                <tr class="footer2">
+                  <td colspan="3" class="br"></td>
+
+                  <td colspan='3' style="text-align: center;font-weight:bold;padding-top:4rem">
+                          <span style='font-weight: bold;text-decoration:underline'>CHARLIE C. DECHOS, CPA</span>
+                          <br>
+                           <span>OIC Accountant III </span>
+               
+                  </td>
+                </tr>`;
+                $("#data-table tbody").append(footer);
 }

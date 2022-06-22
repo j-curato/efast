@@ -103,9 +103,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
                 </tbody>
-                <tfoot>
 
-                    <tr class="footer1" style="border:0;">
+                    <!-- <tr class="footer1" style="border:0;">
                         <td colspan="3" class="br"></td>
                         <td colspan='2' class="br" style="padding-top:2em">
                             CERTIFIED CORRECT:
@@ -115,26 +114,25 @@ $this->params['breadcrumbs'][] = $this->title;
                     <tr class="footer2">
                         <td colspan="3" class="br"></td>
 
-                        <td colspan='3' style="text-align: center;font-weight:bold;padding-top:4rem">
+                        <td colspan='3' style="text-align: center;font-weight:bold;padding-top:4rem"> -->
 
                             <?php
-                            $reporting_period = DateTime::createFromFormat('Y-m', $model->reporting_period)->format('Y-m');
-                            if ($reporting_period < '2022-03') {
-                                echo "<span style='font-weight: bold;text-decoration:underline'>JOHN VOLTAIRE S. ANCLA, CPA</span>";
-                                echo "<br>";
-                                echo " <span>Accountant III</span>";
-                            } else {
+                            // $reporting_period = DateTime::createFromFormat('Y-m', $model->reporting_period)->format('Y-m');
+                            // if ($reporting_period < '2022-03') {
+                            //     echo "<span style='font-weight: bold;text-decoration:underline'>JOHN VOLTAIRE S. ANCLA, CPA</span>";
+                            //     echo "<br>";
+                            //     echo " <span>Accountant III</span>";
+                            // } else {
 
-                                echo "<span style='font-weight: bold;text-decoration:underline'>CHARLIE C. DECHOS, CPA</span>";
-                                echo "<br>";
-                                echo " <span>OIC Accountant III </span>";
-                            }
+                            //     echo "<span style='font-weight: bold;text-decoration:underline'>CHARLIE C. DECHOS, CPA</span>";
+                            //     echo "<br>";
+                            //     echo " <span>OIC Accountant III </span>";
+                            // }
 
                             ?>
 
-                        </td>
-                    </tr>
-                </tfoot>
+                        <!-- </td>
+                    </tr> -->
             </table>
 
         </div>
