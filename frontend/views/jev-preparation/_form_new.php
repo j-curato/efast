@@ -314,9 +314,16 @@ $entry_row = 1;
         </tfoot>
 
     </table>
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="row" style="margin-top: 4rem;">
+        <div class="col-sm-5"></div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%;']) ?>
+            </div>
+        </div>
+        <div class="col-sm-5"></div>
     </div>
+
     <?php ActiveForm::end(); ?>
 
 

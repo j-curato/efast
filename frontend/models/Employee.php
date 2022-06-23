@@ -48,7 +48,7 @@ class Employee extends \yii\db\ActiveRecord
             'm_name' => 'Middle Name',
             'status' => 'Status',
             'property_custodian' => 'Property Custodian',
-            'position' => 'Position',
+            'position' => 'Designation',
             'employee_number' => 'Employee Number',
             'suffix' => 'Suffix',
         ];
