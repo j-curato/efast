@@ -1,436 +1,612 @@
 <?php
 
-use app\models\ChartOfAccounts;
-use app\models\FundClusterCode;
-use app\models\Payee;
+use app\models\Books;
+use app\models\ResponsibilityCenter;
+use aryelds\sweetalert\SweetAlert;
+use kartik\date\DatePicker;
+use aryelds\sweetalert\SweetAlertAsset;
+use kartik\form\ActiveForm;
+use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
-use kartik\select2\Select2;
-use wbraganca\dynamicform\DynamicFormWidget;
-use kartik\date\DatePicker;
-use kartik\money\MaskMoney;
-use aryelds\sweetalert\SweetAlertAsset;
+use yii\web\JsExpression;
+use yii\widgets\Pjax;
 
-/* @var $this yii\web\View */
-/* @var $model app\models\JevPreparation */
-/* @var $form yii\widgets\ActiveForm */
+$payee = [];
+$entry_row = 1;
 ?>
-<link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" />
+<div class="test" style="background-color:white;border:1px solid black;padding:20px">
 
-<div class="jev-preparation-form">
 
-    <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
+    <!-- <div id="container" class="container"> -->
 
+    <?php $form = ActiveForm::begin([
+        'id' => $model->formName()
+    ]); ?>
     <?php
-    $r_center = Yii::$app->db->createCommand(
-        "SELECT * from responsibility_center"
-    )->queryAll();
-    $f_code = FundClusterCode::find()
-        ->all();
-    $chart = Yii::$app->db->createCommand("SELECT  ca.id ,CONCAT(ca.uacs,'-',ca.general_ledger) as ledger from chart_of_accounts as ca")->queryAll();
-    $payee = Payee::find()->all();
 
+    $dv_number = '';
+    $payee_id = '';
+    $reporting_period = '';
+    $book_id = '';
+    $particular = '';
+    $payee_name = '';
+    $cash_dibursement_id = '';
+    if (!empty($model->payee_id)) {
+        $payee_query = Yii::$app->db->createCommand("SELECT id,account_name FROM payee WHERE id = :id")->bindValue(':id', $model->payee->id)->queryAll();
+        $payee = ArrayHelper::map($payee_query, 'id', 'account_name');
+    }
+    if (!empty($model->cash_disbursement_id)) {
+
+        $cash_disbursement_id = Yii::$app->db->createCommand("SELECT cash_disbursement.id, dv_aucs.dv_number FROM cash_disbursement
+        INNER JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
+        WHERE cash_disbursement.id = :id")
+            ->bindValue(':id', $model->cash_disbursement_id)
+            ->queryAll();
+        $cash_dibursement_id = ArrayHelper::map($cash_disbursement_id, 'id', 'dv_number');
+    }
+    if (!empty($model->id)) {
+    }
     ?>
-
-
-    <div class="card " style="width: full;background-color:white; padding:2rem;margin-bottom:1rem;border-radius:1rem;box-shadow:5rem">
-        <div class="card-body">
-
-
-            <div class="row ">
-                <div class="col-sm-3">
-
-
-                    <?= $form->field($model, 'date')->widget(DatePicker::class, [
-                        'name' => 'birth_date',
-                        'value' => '12-31-2010',
-                        'pluginOptions' => [
-                            'autoclose' => true,
-                            'format' => 'mm-dd-yyyy'
-                        ],
-
-                    ]); ?>
-                </div>
-                <div class="col-sm-3">
-
-
-                    <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
-                        'options' => ['placeholder' => 'Reporting Period', 'id' => 'reporting_period',],
-                        // 'type' => DatePicker::TYPE_INPUT,
-
-                        'pluginOptions' => [
-
-                            'autoclose' => true,
-                            'format' => 'yyyy-mm',
-                            'startView' => "year",
-                            'minViewMode' => "months",
-                        ]
-                    ]); ?>
-                </div>
-                <div class="col-sm-3">
-
-
-                    <?= $form->field($model, 'check_ada_date')->widget(DatePicker::class, [
-                        'name' => 'birth_date',
-                        'value' => '12-31-2010',
-                        'pluginOptions' => [
-                            'autoclose' => true,
-                            'format' => 'mm-dd-yyyy'
-                        ],
-
-                    ]); ?>
-                </div>
-
-
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'ref_number')->widget(Select2::class, [
-                        'data' => [1 => "ADADJ", 2 => "CDJ", 3 => "CKDJ", 4 => "CRJ", 5 => "GJ"],
-                        'options' => ['placeholder' => 'Select a Reference'],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ]); ?>
-                </div>
-
-
-     
-
-            </div>
-
-            <div class="row">
-
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'responsibility_center_id')->widget(Select2::class, [
-                        'data' => ArrayHelper::map($r_center, 'id', 'name'),
-                        'options' => ['placeholder' => 'Select a Fund Source'],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ]); ?>
-                </div>
-
-
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'fund_cluster_code_id')->widget(Select2::class, [
-                        'data' => ArrayHelper::map($f_code, 'id', 'name'),
-                        'options' => ['placeholder' => 'Select a Fund Source'],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ]); ?>
-                </div>
-
-
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'dv_number')->textInput(['maxlength' => true, 'style' => 'border-radius:5px']) ?>
-
-                </div>
-           
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'lddap_number')->textInput(['maxlength' => true, 'style' => 'border-radius:5px']) ?>
-                </div>
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'cadadr_serial_number')->textInput(['maxlength' => true, 'style' => 'border-radius:5px'],) ?>
-
-                </div>
-
-            </div>
-
-            <div class="row">
-
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'explaination')->textInput(['maxlength' => true, 'style' => 'border-radius:5px'],) ?>
-
-                </div>
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'payee_id')->widget(Select2::class, [
-                        'data' => ArrayHelper::map($payee, 'id', 'account_name'),
-                        'options' => ['placeholder' => 'Select a Payee'],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ]); ?>
-                </div>
-
-
-
-
-            </div>
-            <div class="row">
-
-               
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'check_ada')->textInput(['maxlength' => true, 'style' => 'border-radius:5px'],) ?>
-
-                </div>
-
-
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'check_ada_number')->widget(Select2::class, [
-                        'data' => [1 => "ADADJ", 2 => "CDJ", 3 => "CKDJ", 4 => "CRJ", 5 => "GJ"],
-                        'options' => ['placeholder' => 'Select a Reference'],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                    ]); ?>
-                </div>
-            </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <h4 id="have_jev" style='color:red'></h4>
         </div>
-    </div>
+        <div class="col-sm-3">
 
-
-
-
-
-
-
-
-
-    <div class="panel panel-default" style="border-radius:1rem;box-shadow:2rem">
-        <div class="panel-heading" style="border-radius:1rem 1rem 0 0 ;">
-            <h4><i class="glyphicon "></i> JEV Accounting Entries</h4>
-        </div>
-        <div class="panel-body">
-            <?php DynamicFormWidget::begin([
-                'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
-                'widgetBody' => '.container-items', // required: css class selector
-                'widgetItem' => '.item', // required: css class
-                'limit' => 50, // the maximum times, an element can be cloned (default 999)
-                'min' => 1, // 0 or 1 (default 1)
-                'insertButton' => '.add-item', // css class
-                'deleteButton' => '.remove-item', // css class
-                'model' => $modelJevItems[0],
-                'formId' => 'dynamic-form',
-                'formFields' => [
-                    'chart_of_account_id',
-                    'debit',
-                    'credit',
-                    'current_noncurrent',
-
+            <?= $form->field($model, 'cash_disbursement_id')->widget(Select2::class, [
+                'data' => $cash_dibursement_id,
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=cash-disbursement/search-dv',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
                 ],
-            ]); ?>
 
-            <div class="container-items">
-                <!-- widgetContainer -->
+            ]) ?>
+        </div>
+        <div class="col-sm-3">
+            <label for="total_disbursed"> Total Disbursed</label>
+            <h4 id="total_disbursed"></h4>
+        </div>
+        <div class="col-sm-3">
 
-                <?php $x = 0;
-                foreach ($modelJevItems as $i => $modelJevItem) : ?>
-                    <div class="item panel panel-default" style="border:1px solid black">
-                        <!-- widgetBody -->
-                        <div class="panel-heading" style="background-color: white;border:none">
-                            <!-- <h3 class="panel-title pull-left">Entry</h3> -->
-                            <div class="pull-right">
-                                <button type="button" class="add-item btn btn-success btn-xs"><i class="glyphicon glyphicon-plus"></i></button>
-                                <button type="button" class="remove-item btn btn-danger btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
-                            </div>
-                            <div class="clearfix"></div>
-                        </div>
-                        <div class="panel-body">
-                            <?php
-                            // necessary for update action.
-                            if (!$modelJevItem->isNewRecord) {
-                                echo Html::activeHiddenInput($modelJevItem, "[{$i}]id");
-                            }
-                            ?>
-                            <div class="row">
-                                <div class="col-sm-4">
-                                    <?= $form->field($modelJevItem,  "[{$i}]chart_of_account_id")->widget(Select2::class, [
-                                        'data' => ArrayHelper::map($chart, 'id', 'ledger'),
-                                        'options' => ['placeholder' => 'Select a Fund Source',],
-                                   
-                                    ]);
-                                    ?>
-                                </div>
-
-
-                                <div class="col-sm-4">
-                                    <?=
-
-                                    $form->field($modelJevItem, "[{$i}]debit")->textInput(['maxlength' => true, 'class' => 'debit',])
-
-                                    ?>
-                                </div>
-
-                                <div class="col-sm-4">
-                                    <?=
-                                    $form->field($modelJevItem, "[{$i}]credit")->textInput(['maxlength' => true, 'class' => 'credit'])
-                                    ?>
-
-
-                                </div>
-
-
-                            </div><!-- .row -->
-                            <div class="row">
-
-                                <div class="col-sm-4">
-                                    <?=
-
-                                    $form->field($modelJevItem, "[{$i}]current_noncurrent")->textInput(['maxlength' => true, 'id' => "$i",])
-
-                                    ?>
-                                </div>
-
-                                <div class="col-sm-4">
-                                </div>
-                            </div><!-- .row -->
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-
-            </div>
-
-
-            <div class="total">
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">TOTAL DEBIT</label>
-                        <input disabled type="email" style="background-color:white" class="form-control" id="d_total" aria-describedby="emailHelp" placeholder="Total Dedit">
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">TOTAL CREDIT</label>
-                        <input disabled type="email" style="background-color:white" class="form-control" id="c_total" aria-describedby="emailHelp" placeholder="Total Dedit">
-                    </div>
-                </div>
-
-            </div>
-            <?php DynamicFormWidget::end(); ?>
+            <?= $form->field($model, 'entry_type')->widget(Select2::class, [
+                'data' => [
+                    'Closing' => 'Closing',
+                    'Non-Closing' => 'Non-Closing'
+                ],
+                'pluginOptions' => [
+                    'placeholder' => 'Select Entry Type'
+                ]
+            ]) ?>
         </div>
 
-        <div class="form-group submit-btn">
-            <?= Html::submitButton('SAVE', ['class' => 'btn save-btn']) ?>
+    </div>
+    <div class="row">
+
+        <div class="col-sm-3">
+
+
+
+            <?= $form->field($model, 'check_ada_date')->widget(DatePicker::class, [
+                'pluginOptions' => [
+                    'autoclose' => true,
+                    'format' => 'yyyy-mm-dd',
+                ],
+                'options' => []
+            ]) ?>
+        </div>
+        <div class="col-sm-3">
+
+
+            <?= $form->field($model, 'date')->widget(DatePicker::class, [
+                'pluginOptions' => [
+                    'autoclose' => true,
+                    'format' => 'yyyy-mm-dd',
+                ],
+            ]) ?>
+        </div>
+        <div class="col-sm-3">
+
+            <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
+                'pluginOptions' => [
+                    'autoclose' => true,
+                    'format' => 'yyyy-mm',
+                    'startView' => "year",
+                    'minViewMode' => "months",
+                ]
+            ]) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'ref_number')->widget(Select2::class, [
+                'data' => [
+                    "CDJ" => "CDJ",
+                    "CRJ" => "CRJ",
+                    "GJ" => "GJ"
+                ],
+                'options' => [],
+
+                'pluginOptions' => [
+                    'placeholder' => 'Select Reference',
+
+                ]
+            ]) ?>
+        </div>
+    </div>
+    <div class="row">
+
+        <div class="col-sm-3" style="height:60x">
+            <?= $form->field($model, 'book_id')->widget(Select2::class, [
+                'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
+                'pluginOptions' => [
+                    'placeholder' => 'Select Book'
+                ]
+            ]) ?>
+        </div>
+        <div class="col-sm-3">
+
+            <?= $form->field($model, 'responsibility_center_id')->widget(Select2::class, [
+                'data' => ArrayHelper::map(ResponsibilityCenter::find()->asArray()->all(), 'id', 'name'),
+                'pluginOptions' => [
+                    'placeholder' => 'Select Responsibility Center'
+                ]
+            ]) ?>
         </div>
 
-        <?php ActiveForm::end(); ?>
+        <div class="col-sm-3">
+
+            <?= $form->field($model, 'check_ada')->widget(Select2::class, [
+                'data' => [
+                    'Noncash' => 'Noncash',
+                    'Check' => 'Check',
+                    'ADA' => 'ADA'
+                ],
+                'pluginOptions' => [
+                    'placeholder' => 'Check/ADA'
+                ]
+            ]) ?>
+        </div>
+        <div class="col-sm-3">
+
+            <?= $form->field($model, 'payee_id')->widget(Select2::class, [
+                'name' => 'payee',
+                'data' => $payee,
+
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=payee/search-payee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
+
+            ]) ?>
+        </div>
     </div>
 
-    <style>
-        .total {
-            width: 100%;
-            height: 100px;
-            border: 1px solid black;
-            padding: 1rem;
-            align-items: center;
-            display: flex;
-            justify-content: space-around;
-            text-align: center;
-            border-radius: 5px;
-        }
-
-        input {
-            background-color: white;
-        }
-
-        #reporting_period {
-            background-color: white;
-            border-radius: 5px;
-            color: black;
-        }
-
-        #date {
-            background-color: white;
-            border-radius: 5px;
-        }
-
-        .save-btn {
-            background-color: white;
-            color: black;
-            border: 1px solid green;
-            transition-duration: 0.4s;
-            width: 95%;
-        }
-
-        .submit-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    <div class=" row">
 
 
-        .save-btn:hover {
-            background-color: #4CAF50;
-            color: white;
-        }
+        <div class="col-sm-3">
+            <?= $form->field($model, 'lddap_number')->textInput() ?>
+        </div>
+        <div class="col-sm-3">
 
-        .credit {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            padding: 6px 24px 6px 12px;
-            border: 1px solid gray;
-        }
+            <?= $form->field($model, 'dv_number')->textInput() ?>
+        </div>
+        <div class="col-sm-3">
 
-        .debit {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            padding: 6px 24px 6px 12px;
-            border: 1px solid gray;
-        }
+            <?= $form->field($model, 'cadadr_serial_number')->textInput() ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'check_ada_number')->textInput() ?>
+        </div>
 
-        .total>div>input {
-            color: red;
-        }
-    </style>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <?= $form->field($model, 'explaination')->textarea(['cols' => "151", 'rows' => "3"]) ?>
+        </div>
+    </div>
+    <table class="table" id='entry_table'>
 
-    <script src="/dti-afms-2/frontend/web/js/jquery.min.js"></script>
-    <script src="/dti-afms-2/frontend/web/js/select2.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#chart_acc_0').select2({
-                ajax: {
-                    url: '/dti-afms-2/frontend/web/index.php?r=chart-of-accounts/get-all-account',
-                    dataType: 'json',
-                    type: 'get',
-                    processResults: function(data) {
-                        // Transforms the top-level key of the response object from 'items' to 'results'
-                        console.table(data)
-                        return {
-                            id: data.id,
-                            text: data.uacs
-                        };
+
+
+        <tbody>
+
+            <?php
+
+            if (!empty($entries)) {
+                foreach ($entries as $val) {
+                    $id = '';
+                    if (!empty($val['id'])) {
+                        $id = $val['id'];
                     }
+                    $debit = $val['debit'];
+                    $credit = $val['credit'];
+                    $object_code = $val['object_code'];
+                    $account_title = $val['account_title'];
+
+                    echo "<tr>
+                        <td style='width: 300px;max-width:300px'>
+                            <div>
+                                <label for='chart-of-accounts'>UACS</label>
+                                <select required name='object_code[$entry_row]' class='chart-of-accounts' style='width: 100%'>
+                                    <option value='$object_code' selected>$object_code - $account_title</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td style='width: 150px;'>
+                        <label for='debit'>Debit</label>
+                            <input type='text' class='  mask-amount' placeholder='Debit' value='$debit'>
+                            <input type='hidden' name='debit[$entry_row]' class='debit main_amount' placeholder='Debit' value='$debit'>
+                        </td>
+                        <td style='width: 150px;'>
+                        <label for='credit'>Credit</label>
+                            <input type='text' class='  mask-amount' placeholder='Credit' value='$credit'>
+                            <input type='hidden' name='credit[$entry_row]' class='credit main_amount' placeholder='Credit' value='$credit'>
+                        </td>
+                        <td style='width: 50px;'>
+                            <button type='button' class='remove btn btn-danger btn-xs' style=' text-align: center; float:right;'><i class='glyphicon glyphicon-minus'></i></button>
+                            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='glyphicon glyphicon-plus'></i></button> 
+                        </td>
+                    </tr>";
+                    $entry_row++;
                 }
-            });
+            } else {
+
+            ?>
+                <tr>
+                    <td style="width: 300px;max-width:300px">
+                        <div>
+                            <label for="chart-of-accounts">UACS</label>
+                            <select required name="object_code[0]" class="chart-of-accounts" style="width: 100%">
+                                <option></option>
+                            </select>
+                        </div>
+                    </td>
+                    <td style="width: 150px;">
+                        <label for="debit">Debit</label>
+                        <input type="text" class="  mask-amount" placeholder="Debit">
+                        <input type="hidden" name="debit[0]" class="debit main_amount" placeholder="Debit">
+                    </td>
+                    <td style="width: 150px;">
+                        <label for="credit">Credit</label>
+                        <input type="text" class="  mask-amount" placeholder="Credit">
+                        <input type="hidden" name="credit[0]" class="credit main_amount" placeholder="Credit">
+                    </td>
+                    <td style="width: 50px;">
+                        <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;"><i class="glyphicon glyphicon-minus"></i></button>
+                        <button type="button" class='add btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px"><i class="glyphicon glyphicon-plus"></i></button>
+                    </td>
+                </tr>
+            <?php } ?>
+        </tbody>
+        <tfoot>
+
+            <tr>
+                <th style="text-align: center;">Total</th>
+                <th><span class="total_debit"></span></th>
+                <th><span class="total_credit"></span></th>
+            </tr>
+        </tfoot>
+
+    </table>
+    <div class="form-group">
+        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    </div>
+    <?php ActiveForm::end(); ?>
+
+
+
+</div>
+
+<style>
+    textarea {
+        max-width: 100%;
+        width: 100%;
+    }
+
+
+    .accounting_entries {
+        max-width: 98%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    input {
+        width: 100%;
+        font-size: 15px;
+        padding: 5px;
+        border-radius: 5px;
+        border: 1px solid black;
+
+    }
+
+    .row {
+        margin: 5px;
+    }
+
+    .container {
+        background-color: white;
+        height: auto;
+        padding: 10px;
+        border-radius: 2px;
+    }
+
+    .accounting_entries {
+        background-color: white;
+        padding: 2rem;
+        border: 1px solid black;
+        border-radius: 5px;
+    }
+
+    .swal-text {
+        background-color: #FEFAE3;
+        padding: 17px;
+        border: 1px solid #F0E1A1;
+        display: block;
+        margin: 22px;
+        text-align: center;
+        color: #61534e;
+    }
+</style>
+<?php
+
+// $csrfTokenName = Yii::$app->request->csrfTokenName;
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$csrfToken = Yii::$app->request->csrfToken;
+SweetAlertAsset::register($this);
+?>
+
+<script>
+    let row_number = <?= $entry_row ?>;
+
+    function getTotal() {
+        let total_credit = 0;
+        let total_debit = 0;
+
+        $('input[name^="credit"]').each(function() {
+            total_credit += Number($(this).val());
+        });
+        $('input[name^="debit"]').each(function() {
+            total_debit += Number($(this).val());
+        });
+
+
+
+        $('.total_debit').text(thousands_separators(total_debit))
+        $('.total_credit').text(thousands_separators(total_credit))
+
+    }
+
+    // INSERT ENTRIES ON CASH_DISBURSEMENT_ID_CHANGE
+    function insertEntryFromDv(entries) {
+        $("#entry_table tbody").html("")
+
+        $.each(entries, function(key, val) {
+            const credit = val.credit
+            const debit = val.debit
+            const account_title = val.account_title
+            const object_code = val.object_code
+            const row = ` <tr>
+                    <td style="width: 300px;max-width:300px">
+                        <div>
+                            <label for="chart-of-accounts">UACS</label>
+                            <select required name="object_code[${row_number}]" class="chart-of-accounts" style="width: 100%">
+                                <option value='${object_code}' selected>${object_code} - ${account_title}</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td style="width: 150px;">
+                        <label for="debit">Debit</label>
+                        <input type="text" class="debit  mask-amount" placeholder="Debit" value='${debit}'>
+                        <input type="hidden" name="debit[${row_number}]" class="debit main_amount" placeholder="Debit" value='${debit}'>
+                    </td>
+                    <td style="width: 150px;">
+                        <label for="credit">Credit</label>
+                        <input type="text" class="credit  mask-amount" placeholder="Credit" value='${credit}'>
+                        <input type="hidden" name="credit[${row_number}]" class="credit main_amount" placeholder="Credit" value='${credit}'>
+                    </td>
+                    <td style="width: 50px;">
+                        <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;"><i class="glyphicon glyphicon-minus"></i></button>
+                        <button type="button" class='add btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px"><i class="glyphicon glyphicon-plus"></i></button>
+                    </td>
+                </tr>`
+
+            $("#entry_table tbody").append(row)
+            maskAmount()
+            accountingCodesSelect()
+            row_number++
         })
-    </script>
+    }
 
-    <?php
-    SweetAlertAsset::register($this);
-    $script = <<< JS
-    // console.table('haha')
-    
-    
-    $(document).on("keyup change", ".credit, .debit", function(){
-         var total_credit = 0.00;
-         var total_debit = 0.00;
-         $(".credit").each(function(){
-            total_credit += +$(this).val()
-         })
-         $("#c_total").val(total_credit)
+    function onCashDisbursementChange(data) {
+        $('#jevpreparation-dv_number').val(data.dv_number).tri
+        $('#jevpreparation-book_id').val(data.book_id).trigger('change')
+        $('#jevpreparation-ref_number').prop('disabled', true)
+        $("#jevpreparation-book_id option:not(:selected)").attr("disabled", true)
+        let payeeSelect = $('#jevpreparation-payee_id');
+        const option = new Option([data.payee_name], [data.payee_id], true, true);
+        payeeSelect.append(option).trigger('change');
+        $('#jevpreparation-responsibility_center_id').val(data.rc_id).trigger('change')
+        $("#jevpreparation-responsibility_center_id option:not(:selected)").attr("disabled", true)
+        $('#jevpreparation-explaination').val(data.particular)
+        $('#jevpreparation-ada_number').val(data.check_or_ada_no)
+        $('#jevpreparation-check_ada_date').val(data.issuance_date)
+        $('#jevpreparation-date').val(data.issuance_date)
+        $('#jevpreparation-check_ada_number').val(data.check_or_ada_no)
+        $('#total_disbursed').text(thousands_separators(data.total_disbursed))
+        $('#jevpreparation-reporting_period').val(data.reporting_period)
 
-         $(".debit").each(function(){
-            total_debit +=+$(this).val()
-         })
-         $("#d_total").val(total_debit)
+        if (data.mode_of_payment.toLowerCase() == 'ada') {
+            $("#jevpreparation-check_ada").val('ADA').trigger('change')
+            $("#jevpreparation-ada_number").val(data.ada_number).trigger('change')
 
-         if (total_debit == total_credit){
-            $(".save-btn").removeAttr("disabled");
-         }
+        } else {
 
-         else{
-            $(".save-btn").attr("disabled", true);
-         }
-         
-        //  console.log(total_debit);
+            $("#jevpreparation-check_ada").val('Check').trigger('change')
+            $("#jevpreparation-ada_number").val(data.check_or_ada_no).trigger('change')
+        }
+        $("#jevpreparation-check_ada option:not(:selected)").attr("disabled", true)
+    }
+    $(document).ready(function() {
+        accountingCodesSelect()
+        maskAmount()
+        getTotal()
 
-     })
-    //  $(document).change(".sample",function(){
-    //      console.log($(this).val())
-    //  })
-    JS;
-    $this->registerJs($script);
-    ?>
+        if ($("#jevpreparation-cash_disbursement_id").val() != null) {
+            $.ajax({
+                type: "POST",
+                url: window.location.pathname + "?r=cash-disbursement/get-dv",
+                data: {
+                    cash_id: $("#jevpreparation-cash_disbursement_id").val(),
+                    '_csrf-frontend': '<?= $csrfToken ?>'
+                },
+                success: function(data) {
+                    const res = JSON.parse(data)
+                    insertEntryFromDv(res.dv_accounting_entries)
+                }
+            })
+        }
+        $('#entry_table').on('change', '.mask-amount', function() {
+            var amount = $(this).maskMoney('unmasked')[0];
+            var source = $(this).closest('td');
+            source.find('.main_amount').val(amount)
+            getTotal()
+        })
+        $("#jevpreparation-cash_disbursement_id").change(function() {
+
+            $.ajax({
+                type: "POST",
+                url: window.location.pathname + "?r=cash-disbursement/get-dv",
+                data: {
+                    cash_id: $(this).val()
+                },
+                success: function(data) {
+                    const res = JSON.parse(data)
+                    console.log(res)
+                    if (res.results.jev_id) {
+
+                        $('#have_jev').text('This DV Naa nay JEV ')
+                        eee = window.location.pathname + "?r=jev-preparation/view&id=" + res.results.jev_id
+
+                        bbb = $(`<a type="button" href='` + eee + `' >link here</a>`);
+                        bbb.appendTo($("#have_jev"));
+
+
+                    }
+                    onCashDisbursementChange(res.results)
+                    insertEntryFromDv(res.dv_accounting_entries)
+                    getTotal()
+                }
+            })
+
+        })
+
+
+        $('.remove').on('click', function(event) {
+            event.preventDefault();
+
+            $(this).closest('tr').remove();
+        });
+        $('#entry_table').on('click', '.add', function(event) {
+            event.preventDefault();
+            const source = $(this).closest('tr');
+            source.find('.chart-of-accounts').select2('destroy')
+            const clone = source.clone(true);
+            const debit = clone.find('.debit')
+            const credit = clone.find('.credit')
+            const chart_of_account = clone.find('.chart-of-accounts')
+            clone.find('.mask-amount').val('')
+            clone.find('.chart-of-accounts').val('')
+            clone.find('.debit').attr('name', `debit[${row_number}]`)
+            clone.find('.credit').attr('name', `credit[${row_number}]`)
+            clone.find('.debit').val(0)
+            clone.find('.credit').val(0)
+            clone.find('.chart-of-accounts').attr('name', `object_code[${row_number}]`)
+            $('#entry_table tbody').append(clone)
+            maskAmount()
+            accountingCodesSelect()
+
+            row_number++
+        });
+
+
+    })
+</script>
+
+
+
+
+
+
+<?php
+SweetAlertAsset::register($this);
+
+$script = <<< JS
+
+    $('#JevPreparation').on('submit',function(e){
+   
+        var \$form = $(this);
+        $.post(
+            \$form.attr("action"),
+            \$form.serialize()
+        )
+        .done(function(result){
+            const res = JSON.parse(result)
+            if (res.isSuccess){
+                swal( {
+                    icon: 'success',
+                    title: "Successfuly Added",
+                    type: "success",
+                    timer:3000,
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                },function(){
+                    window.location.href = window.location.pathname + "?r=transaction"
+                })
+            }else{
+                swal( {
+                    icon: 'error',
+                    title:'Error',
+                    text: res.error,
+                    type: "error",
+                    timer:10000,
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                })
+            }
+        })
+
+        e.preventDefault()
+    })       
+
+JS;
+$this->registerJs($script);
+?>

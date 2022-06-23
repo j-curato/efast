@@ -14,23 +14,10 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-create">
 
-    <?php
-
-    $dv_entries = '';
-    if (!empty($dv_accounting_entries)) {
-        $dv_entries  = $dv_accounting_entries;
-    }
-    $dv_data = '';
-    if (!empty($dv)) {
-        $dv_data  = $dv;
-    }
-    ?>
-    <?= $this->render('_form', [
+    <?= $this->render('_form_new', [
         'model' => $model,
         'type' => $type,
-        // 'modelJevItems' => $modelJevItems
-        'dv_entries' => $dv_entries,
-        'dv_data' => $dv_data
+        'entries' => $entries,
     ]) ?>
 </div>
 

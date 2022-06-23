@@ -18,6 +18,7 @@ use app\models\SubAccounts1;
 use app\models\SubAccounts2;
 use app\models\SubMajorAccounts;
 use app\models\SubMajorAccounts2;
+use aryelds\sweetalert\SweetAlert;
 use DateTime;
 use ErrorException;
 use Exception;
@@ -431,69 +432,101 @@ class JevPreparationController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
+
+    public function insertEntries($jev_id, $object_codes, $debit = [], $credit = [])
+    {
+
+
+        foreach ($object_codes as $i => $val) {
+
+            $entry = new JevAccountingEntries();
+            $entry->object_code = $val;
+            $entry->debit = !empty($debit[$i]) ? $debit[$i] : 0;
+            $entry->credit = !empty($credit[$i]) ? $credit[$i] : 0;
+            $entry->jev_preparation_id = $jev_id;
+            if ($entry->save(false)) {
+            }
+        }
+    }
+    public function checkReportingPeriod($reporting_period)
+    {
+
+        $xyz = (new \yii\db\Query())
+            ->select('*')
+            ->from('jev_reporting_period')
+            ->where('jev_reporting_period.reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+            ->one();
+        if (!empty($xyz)) {
+            return false;
+        }
+        return true;
+    }
+    public function checkDebitCredit($debits = [], $credits = [])
+    {
+        $total_debit = number_format(floatVal(array_sum($debits)), 2);
+        $total_credit = number_format(floatVal(array_sum($credits)), 2);
+
+        if ($total_debit !== $total_credit) {
+
+            return false;
+        }
+        return true;
+    }
     public function actionCreate()
     {
-        // $model = new JevPreparation();
+        $model = new JevPreparation();
 
         // $modelJevItems = [new JevAccountingEntries()];
-        // if ($model->load(Yii::$app->request->post())) {
-        //     $modelJevItems = Model::createMultiple(JevAccountingEntries::class);
-        //     Model::loadMultiple($modelJevItems, Yii::$app->request->post());
-
-        //     // ajax validation
-        //     // if (Yii::$app->request->isAjax) {
-        //     //     Yii::$app->response->format = Response::FORMAT_JSON;
-        //     //     return ArrayHelper::merge(
-        //     //         ActiveForm::validateMultiple($modelsAddress),
-        //     //         ActiveForm::validate($modelCustomer)
-        //     //     );
-        //     // }
-
-        //     // validate all models
-        //     $valid = $model->validate();
-        //     $valid = Model::validateMultiple($modelJevItems) && $valid;
-        //     // $model->jev_number .= '-' . $model->fund_cluster_code_id . '-' . $this->jevNumber($model->reporting_period);
-
-        //     if ($valid) {
+        if ($model->load(Yii::$app->request->post())) {
+            $debits = $_POST['debit'];
+            $credits = $_POST['credit'];
+            $object_code = $_POST['object_code'];
+            $check_ada = $model->check_ada;
 
 
-        //         if ($this->checkIfBalance($modelJevItems)) {
-        //             $transaction = \Yii::$app->db->beginTransaction();
-        //             try {
-        //                 if ($flag = $model->save(false)) {
 
-        //                     foreach ($modelJevItems as $modelJevItem) {
-        //                         $modelJevItem->jev_preparation_id = $model->id;
-        //                         if (!($flag = $modelJevItem->save(false))) {
-        //                             $transaction->rollBack();
-        //                             break;
-        //                         }
-        //                     }
-        //                 }
-        //                 if ($flag) {
-        //                     $transaction->commit();
-        //                     return $this->redirect(['view', 'id' => $model->id]);
-        //                 }
-        //             } catch (Exception $e) {
-        //                 $transaction->rollBack();
-        //             }
-        //         }
-        //     }
-        //     // return $this->redirect(['view', 'id' => $model->id]);
-        // }
 
-        // return $this->render('create', [
-        //     'model' => $model,
-        //     'modelJevItems' => (empty($modelJevItems)) ? [new JevAccountingEntries] : $modelJevItems
-        // ]);
-        if (Yii::$app->user->can('create-jev')) {
-            return $this->render('create', [
-                'model' => '',
-                'type' => 'create'
-            ]);
-        } else {
-            throw new ForbiddenHttpException();
+            if (!$this->checkReportingPeriod($model->reporting_period)) {
+                return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
+            }
+
+            if (!$this->checkDebitCredit($debits, $credits)) {
+                return json_encode(['isSuccess' => false, 'error' => 'Debit & Credit are Not Equal']);
+            }
+            if (strtolower($check_ada) === 'ada') {
+                $reference = 'ADADJ';
+            } else if (strtolower($check_ada) === 'check') {
+                $reference = 'CKDJ';
+            } else {
+                $reference =  $model->ref_number;
+            }
+            $model->ref_number = $reference;
+            $model->jev_number = $reference;
+            $model->jev_number .= '-' . $this->getJevNumber($model->book_id, $model->reporting_period, $reference, 1);
+            if ($model->validate()) {
+                if ($model->save(false)) {
+                    $this->insertEntries($model->id, $object_code, $debits, $credits);
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
+            } else {
+                return json_encode($model->errors);
+            }
         }
+
+        return $this->render('create', [
+            'model' => $model,
+            'type' => 'create',
+            'entries' => [],
+            'error' => ''
+        ]);
+        // if (Yii::$app->user->can('create-jev')) {
+        //     return $this->render('create', [
+        //         'model' => '',
+        //         'type' => 'create'
+        //     ]);
+        // } else {
+        //     throw new ForbiddenHttpException();
+        // }
     }
 
     /**
@@ -505,69 +538,65 @@ class JevPreparationController extends Controller
      */
     public function actionUpdate($id)
     {
-        // $modelCustomer = $this->findModel($id);
-        // $modelsAddress = $modelCustomer->addresses;
-        // if (Yii::$app->user->can('update-jev')) {
-
-        // $model = $this->findModel($id);
-        // $modelJevItems = $model->jevAccountingEntries;
-        // if ($model->load(Yii::$app->request->post()) && $model->save()) {
-        //     $oldIDs = ArrayHelper::map($modelJevItems, 'id', 'id');
-        //     $modelJevItems = Model::createMultiple(JevAccountingEntries::class, $modelJevItems);
-        //     Model::loadMultiple($modelJevItems, Yii::$app->request->post());
-        //     $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelJevItems, 'id', 'id')));
-
-
-        //     // validate all models
-        //     $valid = $model->validate();
-        //     $valid = Model::validateMultiple($modelJevItems);
-
-        //     if ($valid) {
-        //         $transaction = \Yii::$app->db->beginTransaction();
-        //         try {
-        //             if ($flag = $model->save(false)) {
-        //                 if (!empty($deletedIDs)) {
-        //                     JevAccountingEntries::deleteAll(['id' => $deletedIDs]);
-        //                 }
-        //                 foreach ($modelJevItems as $modelAddress) {
-        //                     $modelAddress->jev_preparation_id = $model->id;
-        //                     if (!($flag = $modelAddress->save(false))) {
-        //                         $transaction->rollBack();
-        //                         break;
-        //                     }
-        //                 }
-        //             }
-        //             if ($flag) {
-        //                 $transaction->commit();
-        //                 return $this->redirect(['view', 'id' => $model->id]);
-        //             }
-        //         } catch (Exception $e) {
-        //             // var_dump($e);
-        //             $transaction->rollBack();
-        //         }
-        //     }
-        //     // return $this->redirect(['view', 'id' => $model->id]);
-        // }
         $model = $this->findModel($id);
-        // if (date('Y', strtotime($model->reporting_period)) < date('Y')) {
-        //     throw new ForbiddenHttpException();
-        // }
-        // $q = (new \yii\db\Query())
-        //     ->select("*")
-        //     ->from('jev_reporting_period')
-        //     ->where('reporting_period =:reporting_period', ['reporting_period' => $model->reporting_period])
-        //     ->one();
-        // if (!empty($q)) {
-        //     throw new ForbiddenHttpException();
-        // }
-        return $this->render('_form', [
-            'model' => $id,
-            'type' => 'update'
-            // 'modelJevItems' => (empty($modelJevItems)) ? [new JevAccountingEntries] : $modelJevItems
+        $oldModel = $this->findModel($id);
+        if ($model->load(Yii::$app->request->post())) {
+
+            if ($model->load(Yii::$app->request->post())) {
+                $debits = $_POST['debit'];
+                $credits = $_POST['credit'];
+                $object_code = $_POST['object_code'];
+                $check_ada = $model->check_ada;
+                if (!$this->checkReportingPeriod($model->reporting_period)) {
+                    return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
+                }
+
+                if (!$this->checkDebitCredit($debits, $credits)) {
+                    return json_encode(['isSuccess' => false, 'error' => 'Debit & Credit are Not Equal']);
+                }
+                if (strtolower($check_ada) === 'ada') {
+                    $reference = 'ADADJ';
+                } else if (strtolower($check_ada) === 'check') {
+                    $reference = 'CKDJ';
+                } else {
+                    $reference =  $model->ref_number;
+                }
+                $model->ref_number = $reference;
+                $model->jev_number = $reference;
+                if ($model->validate()) {
+                    if ($model->save(false)) {
+                        if (!empty($model->jevAccountingEntries)) {
+                            foreach ($model->jevAccountingEntries as $val) {
+                                $val->delete();
+                            }
+                        }
+                        $this->insertEntries($model->id, $object_code, $debits, $credits);
+                        return $this->redirect(['view', 'id' => $model->id]);
+                    }
+                } else {
+                    return json_encode($model->errors);
+                }
+            }
+        }
+
+        $entries = Yii::$app->db->createCommand("SELECT 
+        jev_accounting_entries.id,
+        jev_accounting_entries.debit,
+        jev_accounting_entries.credit,
+        jev_accounting_entries.object_code,
+        accounting_codes.account_title
+        FROM
+         jev_accounting_entries 
+        LEFT JOIN accounting_codes ON jev_accounting_entries.object_code = accounting_codes.object_code WHERE jev_preparation_id =:id")
+            ->bindValue(':id', $model->id)
+            ->queryAll();
+
+
+        return $this->render('update', [
+            'model' => $model,
+            'entries' => $entries
+
         ]);
-        // } else {
-        //     throw new ForbiddenHttpException();
-        // }
     }
 
     /**
@@ -2891,6 +2920,42 @@ class JevPreparationController extends Controller
     public function actionDvToJev($id)
     {
 
+        $model = new JevPreparation();
+
+        if ($model->load(Yii::$app->request->post())) {
+            $debits = $_POST['debit'];
+            $credits = $_POST['credit'];
+            $object_code = $_POST['object_code'];
+            $check_ada = $model->check_ada;
+
+
+
+
+            if (!$this->checkReportingPeriod($model->reporting_period)) {
+                return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
+            }
+            if (!$this->checkDebitCredit($debits, $credits)) {
+                return json_encode(['isSuccess' => false, 'error' => 'Debit & Credit are Not Equal']);
+            }
+            if (strtolower($check_ada) === 'ada') {
+                $reference = 'ADADJ';
+            } else if (strtolower($check_ada) === 'check') {
+                $reference = 'CKDJ';
+            } else {
+                $reference =  $model->ref_number;
+            }
+            $model->ref_number = $reference;
+            $model->jev_number = $reference;
+            $model->jev_number .= '-' . $this->getJevNumber($model->book_id, $model->reporting_period, $reference, 1);
+            if ($model->validate()) {
+                if ($model->save(false)) {
+                    $this->insertEntries($model->id, $object_code, $debits, $credits);
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
+            } else {
+                return json_encode($model->errors);
+            }
+        }
         $dv_entries = Yii::$app->db->createCommand("SELECT 
         accounting_codes.account_title,
         dv_accounting_entries.object_code,
@@ -2902,12 +2967,10 @@ class JevPreparationController extends Controller
          WHERE dv_aucs_id = :id")
             ->bindValue(':id', $id)
             ->queryAll();
-        $dv = DvAucs::findOne($id);
         return $this->render('create', [
-            'model' => '',
-            'type' => 'dv_payable',
-            'dv_accounting_entries' => $dv_entries,
-            'dv' => $dv
+            'model' => $model,
+            'type' => 'create',
+            'entries' => $dv_entries,
 
         ]);
     }
