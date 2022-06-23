@@ -38,13 +38,14 @@ class JevPreparation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['book_id', 'reporting_period', 'date', 'jev_number', 'explaination', 'ref_number'], 'required'],
-            [['responsibility_center_id', 'fund_cluster_code_id', 'cash_flow_id', 'payee_id', 'book_id'], 'integer'],
-            [['date'], 'safe'],
-            [['reporting_period','entry_type'], 'string', 'max' => 50],
+            [['book_id', 'reporting_period', 'date', 'jev_number', 'explaination', 'responsibility_center_id', 'check_ada_date', 'payee_id', 'entry_type'], 'required'],
+            [['responsibility_center_id', 'fund_cluster_code_id', 'cash_flow_id', 'payee_id', 'book_id', 'cash_disbursement_id'], 'integer'],
+            [['date', 'check_ada_date'], 'safe'],
+            [['reporting_period', 'entry_type'], 'string', 'max' => 50],
             [['jev_number', 'dv_number', 'lddap_number', 'ref_number'], 'string', 'max' => 100],
             [['explaination',], 'string', 'max' => 1000],
             [['jev_number',], 'unique'],
+            [['entry_type',], 'string'],
             [['cadadr_serial_number', 'check_ada'], 'string', 'max' => 255],
             [['fund_cluster_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => FundClusterCode::class, 'targetAttribute' => ['fund_cluster_code_id' => 'id']],
             [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
@@ -76,7 +77,11 @@ class JevPreparation extends \yii\db\ActiveRecord
             'check_ada_number' => 'Check/ADA Number',
             'chek_ada_date' => 'Check/ADA Date',
             'book_id' => 'Book',
-            'is_payable'=>'Is Payable'
+            'is_payable' => 'Is Payable',
+            'entry_type' => 'Entry Type',
+            'check_ada_date' => 'Check/ADA Date',
+            'cash_disbursement_id' => 'DV Number',
+
         ];
     }
 

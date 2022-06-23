@@ -562,7 +562,6 @@ class JevPreparationController extends Controller
                     $reference =  $model->ref_number;
                 }
                 $model->ref_number = $reference;
-                $model->jev_number = $reference;
                 if ($model->validate()) {
                     if ($model->save(false)) {
                         if (!empty($model->jevAccountingEntries)) {
