@@ -3895,6 +3895,13 @@ class ReportController extends \yii\web\Controller
     public function actionServer()
     {
         echo   $_SERVER['REMOTE_ADDR'];
+
+        $host = gethostname();
+        echo '<br>';
+        $ip = gethostbyname($host);
+        echo $host;
+        echo '<br>';
+        echo $ip;
     }
     public function actionDvTimeMonitoring()
     {
@@ -4115,11 +4122,6 @@ class ReportController extends \yii\web\Controller
             $sheet->setCellValue('E1', "Cash DV IN");
             $sheet->setCellValue('F1', 'Cash DV Out');
 
-
-            // BEGINNING BALANCE
-            // $sheet->setCellValue('K2', 'Beginning Balance');
-            // $sheet->setCellValue('L2', $q1['total_debit']);
-            // $sheet->setCellValue('M2', $q1['total_credit']);
             $x = 7;
             $styleArray = array(
                 'borders' => array(
@@ -4144,18 +4146,11 @@ class ReportController extends \yii\web\Controller
                 $cash_in = $val['cash_in'];
                 $cash_out = $val['cash_out'];
 
-
-
-
-
-
-
                 $sheet->setCellValueByColumnAndRow(
                     1,
                     $row,
                     $payee
                 );
-
 
                 $sheet->setCellValueByColumnAndRow(
                     2,
@@ -4190,12 +4185,7 @@ class ReportController extends \yii\web\Controller
             // return date('l jS \of F Y h:i:s A');
             $id = date('Y-m-d h A');
             $file_name = "jev_$id.xlsx";
-            // header('Content-Type: application/vnd.ms-excel');
-            // header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
-            // header('Content-Transfer-Encoding: binary');
-            // header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-            // header('Pragma: public'); // HTTP/1.0
-            // echo readfile($file);
+
             $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
             $file =  "transaction\jev_$id.xlsx";
             $file2 = Url::base() . '/' . "transaction/jev_$id.xlsx";
@@ -4207,23 +4197,9 @@ class ReportController extends \yii\web\Controller
             header('Content-Transfer-Encoding: binary');
             header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
             header('Pragma: public'); // HTTP/1.0
-            // readfile($file2);
             return json_encode($file2);
             echo "<script>window.open('$file2','_self')</script>";
-            // return json_encode($file2);
-            // unlink($file2);
-            // flush();
-            // ob_clean();
-            // flush();
-
-            // // echo "<script> window.location.href = '$file';</script>";
-            // echo "<script>window.open('$file2','_self')</script>";
-
-            //    echo readfile("../../frontend/web/transaction/" . $file_name);
             exit();
-            // return json_encode(['res' => "transaction\ckdj_excel_$id.xlsx"]);
-            // return json_encode($file);
-            // exit;
         }
     }
 
@@ -4478,8 +4454,7 @@ class ReportController extends \yii\web\Controller
     //                     ->execute();
     //                 // $liq  = Liquidation::find()->where('liquidation.check_number = :check_number', ['check_number' => $check_number])->one();
 
-    //                 // $liq->check_date = $check_date->format('Y-m-d');
-    //                 // if ($liq->save(false)) {
+    //                 // $liq->check_date = $check_date->format('Y-m-d'); 
 
     //                 //     echo $liq->check_date;
     //                 //     die();
