@@ -38,7 +38,7 @@ class JevPreparation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['book_id', 'reporting_period', 'date', 'jev_number', 'explaination', 'responsibility_center_id', 'check_ada_date', 'payee_id', 'entry_type'], 'required'],
+            [['book_id', 'reporting_period', 'date', 'jev_number', 'explaination', 'check_ada_date', 'entry_type'], 'required'],
             [['responsibility_center_id', 'fund_cluster_code_id', 'cash_flow_id', 'payee_id', 'book_id', 'cash_disbursement_id'], 'integer'],
             [['date', 'check_ada_date'], 'safe'],
             [['reporting_period', 'entry_type'], 'string', 'max' => 50],

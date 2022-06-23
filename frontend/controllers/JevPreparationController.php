@@ -482,10 +482,6 @@ class JevPreparationController extends Controller
             $credits = $_POST['credit'];
             $object_code = $_POST['object_code'];
             $check_ada = $model->check_ada;
-
-
-
-
             if (!$this->checkReportingPeriod($model->reporting_period)) {
                 return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
             }
@@ -499,6 +495,16 @@ class JevPreparationController extends Controller
                 $reference = 'CKDJ';
             } else {
                 $reference =  $model->ref_number;
+            }
+            if ($reference == 'ADADJ' || $reference === 'CKDJ') {
+
+                if (empty($model->payee_id)) {
+                    return json_encode(['isSuccess' => false, 'error' => 'Payee Cannot be Blank']);
+                }
+
+                if (empty($model->responsibility_center_id)) {
+                    return json_encode(['isSuccess' => false, 'error' => 'Responsibility Center Cannot be Blank']);
+                }
             }
             $model->ref_number = $reference;
             $model->jev_number = $reference;
@@ -560,6 +566,16 @@ class JevPreparationController extends Controller
                     $reference = 'CKDJ';
                 } else {
                     $reference =  $model->ref_number;
+                }
+                if ($reference == 'ADADJ' || $reference === 'CKDJ') {
+
+                    if (empty($model->payee_id)) {
+                        return json_encode(['isSuccess' => false, 'error' => 'Payee Cannot be Blank']);
+                    }
+
+                    if (empty($model->responsibility_center_id)) {
+                        return json_encode(['isSuccess' => false, 'error' => 'Responsibility Center Cannot be Blank']);
+                    }
                 }
                 $model->ref_number = $reference;
                 if ($model->validate()) {
