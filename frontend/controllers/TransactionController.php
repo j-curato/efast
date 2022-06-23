@@ -129,6 +129,11 @@ class TransactionController extends Controller
             $division = strtolower(Yii::$app->user->identity->division);
             $user = strtolower(Yii::$app->user->identity->province);
 
+            $host = gethostname();
+            $ip = gethostbyname($host);
+            if ($division == 'sdd' &&  $ip !== '10.20.17.35') {
+                return $this->actionIndex();
+            }
             if (!Yii::$app->user->can('super-user')) {
                 $r_center = Yii::$app->db->createCommand("SELECT `id` FROM responsibility_center WHERE `name`=:division")
                     ->bindValue(':division', $division)
