@@ -11,6 +11,7 @@ use app\models\DetailedDvAucsSearch;
 use app\models\DvAucs;
 use app\models\Liquidation;
 use app\models\PoTransmittalsPendingSearch;
+use app\models\ProcurementSummarySearch;
 use app\models\RaoSearch;
 use app\models\TransactionArchiveSearch;
 use app\models\TransactionTracking;
@@ -4526,6 +4527,16 @@ class ReportController extends \yii\web\Controller
         }
 
         return $this->render('liquidation_report_annex');
+    }
+    public function actionProcurementSummary()
+    {
+        $searchModel = new ProcurementSummarySearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('procurement_summary', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 }
 
