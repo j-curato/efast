@@ -2360,7 +2360,7 @@ class ReportController extends \yii\web\Controller
                 WHEN QUARTER(CONCAT(cadadr.reporting_period,'-01')) = QUARTER(CONCAT(cadadr.cancelled_r_period,'-01')) AND SUBSTRING_INDEX(cadadr.reporting_period,'-',1) = SUBSTRING_INDEX(cadadr.cancelled_r_period,'-',1)
                 THEN cadadr.check_issued 
                 ELSE
-                cadadr.check_issued * (-1)
+                0
                 END
                 ) as check_issued,
                 (CASE
@@ -2368,7 +2368,7 @@ class ReportController extends \yii\web\Controller
                 WHEN QUARTER(CONCAT(cadadr.reporting_period,'-01')) = QUARTER(CONCAT(cadadr.cancelled_r_period,'-01')) AND SUBSTRING_INDEX(cadadr.reporting_period,'-',1) = SUBSTRING_INDEX(cadadr.cancelled_r_period,'-',1)
                 THEN cadadr.ada_issued 
                 ELSE
-                cadadr.ada_issued * (-1)
+               0
                 END
                 ) as ada_issued,
                 cadadr.is_cancelled,
