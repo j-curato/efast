@@ -482,6 +482,36 @@ SweetAlertAsset::register($this);
         }
         $("#jevpreparation-check_ada option:not(:selected)").attr("disabled", true)
     }
+
+    function dvChange(id) {
+
+        $.ajax({
+            type: "POST",
+            url: window.location.pathname + "?r=cash-disbursement/get-dv",
+            data: {
+                cash_id: id
+            },
+            success: function(data) {
+                const res = JSON.parse(data)
+                console.log(res)
+                if (res.results.jev_id) {
+
+                    $('#have_jev').text('This DV Naa nay JEV ')
+                    eee = window.location.pathname + "?r=jev-preparation/view&id=" + res.results.jev_id
+
+                    bbb = $(`<a type="button" href='` + eee + `' >link here</a>`);
+                    bbb.appendTo($("#have_jev"));
+
+
+                } else {
+                    $('#have_jev').text('')
+                }
+                onCashDisbursementChange(res.results)
+                insertEntryFromDv(res.dv_accounting_entries)
+                getTotal()
+            }
+        })
+    }
     $(document).ready(function() {
         accountingCodesSelect()
         maskAmount()
@@ -509,33 +539,7 @@ SweetAlertAsset::register($this);
         })
         $("#jevpreparation-cash_disbursement_id").change(function() {
 
-            $.ajax({
-                type: "POST",
-                url: window.location.pathname + "?r=cash-disbursement/get-dv",
-                data: {
-                    cash_id: $(this).val()
-                },
-                success: function(data) {
-                    const res = JSON.parse(data)
-                    console.log(res)
-                    if (res.results.jev_id) {
-
-                        $('#have_jev').text('This DV Naa nay JEV ')
-                        eee = window.location.pathname + "?r=jev-preparation/view&id=" + res.results.jev_id
-
-                        bbb = $(`<a type="button" href='` + eee + `' >link here</a>`);
-                        bbb.appendTo($("#have_jev"));
-
-
-                    } else {
-                        $('#have_jev').text('')
-                    }
-                    onCashDisbursementChange(res.results)
-                    insertEntryFromDv(res.dv_accounting_entries)
-                    getTotal()
-                }
-            })
-
+            dvChange($(this).val())
         })
 
 
