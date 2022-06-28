@@ -472,6 +472,21 @@ class JevPreparationController extends Controller
         }
         return true;
     }
+    // CHECK FV IF NAA NAY JEV
+    public function checkDv($id = '')
+    {
+        if (empty($id)) {
+            return false;
+        }
+        $query = Yii::$app->db->createCommand("SELECT EXISTS(SELECT * FROM jev_preparation WHERE jev_preparation.cash_disbursement_id  =  :id)")
+            ->bindValue(':id', $id)
+            ->queryScalar();
+        if ($query) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     public function actionCreate()
     {
         $model = new JevPreparation();
@@ -488,6 +503,9 @@ class JevPreparationController extends Controller
 
             if (!$this->checkDebitCredit($debits, $credits)) {
                 return json_encode(['isSuccess' => false, 'error' => 'Debit & Credit are Not Equal']);
+            }
+            if ($this->checkDv($model->cash_disbursement_id)) {
+                return json_encode(['isSuccess' => false, 'error' => 'DV is already have a JEV']);
             }
             if (strtolower($check_ada) === 'ada') {
                 $reference = 'ADADJ';
@@ -559,6 +577,9 @@ class JevPreparationController extends Controller
 
                 if (!$this->checkDebitCredit($debits, $credits)) {
                     return json_encode(['isSuccess' => false, 'error' => 'Debit & Credit are Not Equal']);
+                }
+                if ($this->checkDv($model->cash_disbursement_id)) {
+                    return json_encode(['isSuccess' => false, 'error' => 'DV is already have a JEV']);
                 }
                 if (strtolower($check_ada) === 'ada') {
                     $reference = 'ADADJ';
@@ -2952,6 +2973,9 @@ class JevPreparationController extends Controller
             if (!$this->checkDebitCredit($debits, $credits)) {
                 return json_encode(['isSuccess' => false, 'error' => 'Debit & Credit are Not Equal']);
             }
+            if ($this->checkDv($model->cash_disbursement_id)) {
+                return json_encode(['isSuccess' => false, 'error' => 'DV is already have a JEV']);
+            }
             if (strtolower($check_ada) === 'ada') {
                 $reference = 'ADADJ';
             } else if (strtolower($check_ada) === 'check') {
@@ -3136,5 +3160,93 @@ class JevPreparationController extends Controller
         }
 
         return $this->render('subsidiary_trial_balance');
+    }
+    public function actionLiquidationReportToJev($id)
+    {
+
+        $entries = Yii::$app->db->createCommand("SELECT 
+                accounting_codes.account_title,
+                ro_liquidation_report_items.object_code,
+                ro_liquidation_report_items.amount as debit,
+                0 as credit 
+                FROM ro_liquidation_report_items
+                LEFT JOIN accounting_codes ON ro_liquidation_report_items.object_code = accounting_codes.object_code
+                WHERE ro_liquidation_report_items.fk_ro_liquidation_report_id = :id
+                UNION ALL 
+                SELECT 
+                    '' as account_title,
+                    '' as object_code,
+                    0 as debit,
+                    ro_liquidation_report_refunds.amount as credit 
+                FROM ro_liquidation_report_refunds 
+                WHERE ro_liquidation_report_refunds.fk_ro_liquidation_report_id = :id
+
+                UNION ALL
+                SELECT 
+                    '' as account_title,
+                    '' as object_code,
+                    0 as debit,
+                    (
+                    SELECT 
+                    SUM(ro_liquidation_report_items.amount)as items_total
+                    FROM 
+                    ro_liquidation_report_items
+                    WHERE ro_liquidation_report_items.fk_ro_liquidation_report_id = :id
+                    )  -
+                    (
+                    SELECT 
+                    SUM(ro_liquidation_report_refunds.amount)as refunds_total
+                    FROM 
+                    ro_liquidation_report_refunds
+                    WHERE ro_liquidation_report_refunds.fk_ro_liquidation_report_id = :id
+                    ) as credit
+                    ")->bindValue(':id', $id)
+            ->queryAll();
+        $model = new JevPreparation();
+
+        if ($model->load(Yii::$app->request->post())) {
+            $debits = $_POST['debit'];
+            $credits = $_POST['credit'];
+            $object_code = $_POST['object_code'];
+            $check_ada = $model->check_ada;
+
+
+
+
+            if (!$this->checkReportingPeriod($model->reporting_period)) {
+                return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
+            }
+            if (!$this->checkDebitCredit($debits, $credits)) {
+                return json_encode(['isSuccess' => false, 'error' => 'Debit & Credit are Not Equal']);
+            }
+            if ($this->checkDv($model->cash_disbursement_id)) {
+                return json_encode(['isSuccess' => false, 'error' => 'DV is already have a JEV']);
+            }
+            if (strtolower($check_ada) === 'ada') {
+                $reference = 'ADADJ';
+            } else if (strtolower($check_ada) === 'check') {
+                $reference = 'CKDJ';
+            } else {
+                $reference =  $model->ref_number;
+            }
+            $model->ref_number = $reference;
+            $model->jev_number = $reference;
+            $model->jev_number .= '-' . $this->getJevNumber($model->book_id, $model->reporting_period, $reference, 1);
+            if ($model->validate()) {
+                if ($model->save(false)) {
+                    $this->insertEntries($model->id, $object_code, $debits, $credits);
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
+            } else {
+                return json_encode($model->errors);
+            }
+        }
+
+        return $this->render('create', [
+            'model' => $model,
+            'type' => 'create',
+            'entries' => $entries,
+
+        ]);
     }
 }
