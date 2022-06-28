@@ -527,6 +527,8 @@ SweetAlertAsset::register($this);
                         bbb.appendTo($("#have_jev"));
 
 
+                    } else {
+                        $('#have_jev').text('')
                     }
                     onCashDisbursementChange(res.results)
                     insertEntryFromDv(res.dv_accounting_entries)
