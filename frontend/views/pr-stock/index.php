@@ -19,7 +19,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=pr-stock/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
-        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
+        <button class="btn btn-warning" type='button' id="update_cloud">Update Cloud</button>
+        <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button> -->
     </p>
     <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
@@ -99,6 +100,47 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
+<script>
+    $(document).ready(function() {
+        $('#update_cloud').click(function(e) {
+            e.preventDefault()
+            const stockapi = new Promise((resolve, reject) => {
+                // RECORD ALLOTMENT API
+                $.post(window.location.pathname + '?r=sync-database/pr-stocks', // url
+                    {
+                        myData: ''
+                    }, // data to be submit
+                    function(data) { // success callback
+                        var d = JSON.parse(data)
+                        $.ajax({
+                            type: "post",
+                            url: 'https://fisdticaraga.com/index.php?r=pr-stock-api/create',
+                            contentType: "application/json",
+                            data: JSON.stringify(d),
+                            dataType: 'json',
+                            headers: {
+                                "Authorization": `Bearer ${localStorage.getItem('token')}`
+                            },
+                            success: function(newdata) {
+                                resolve(newdata)
+                            }
+                        })
+                    })
+
+            })
+            Promise.all([
+                stockapi
+
+            ]).then(values => {
+
+                console.log('qwer')
+            }, reason => {
+                console.log("Promises failed: " + reason);
+            });
+        })
+
+    })
+</script>
 <?php
 $script = <<<JS
 
