@@ -81,6 +81,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- <div id="con"> -->
 
     <div id='con'>
+
+
         <table id="cadadr">
             <thead>
 
@@ -97,7 +99,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <th class='head' colspan="">Bank Name:</th>
                     <th class='head' colspan="7">LAND BANK OF THE PHILIPPINES (MDS ACCT# 101-2036-90014-1)</th>
-                    <th class='head' colspan="2">'APRIL 2021</th>
+                    <th class='head' colspan="2"><span id="period"></span></th>
                     <th class='head' colspan="2">Sheet Number:</th>
                     <th class='head' colspan="1"> 15/</th>
                 </tr>
@@ -150,7 +152,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
         </table>
 
+        <table id='mode_of_payment_count'>
 
+            <tr>
+                <th>Check:</th>
+                <th id="check"></th>
+            </tr>
+            <tr>
+                <th>ADA:</th>
+                <th id="ada"></th>
+            </tr>
+
+        </table>
 
 
         <table id="cancelled_checks_table">
@@ -292,6 +305,11 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 displayData(res.results, res.begin_balance, res.adjustment)
                 // addToSummaryTable(res.conso_saob)
                 displayCancelledChecks(res.cancelled_checks)
+                const d = new Date($('#to_reporting_period').val())
+                const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+                console.log(d.getMonth())
+                $('#period').text('As of ' + month[d.getMonth()] + ', ' + d.getFullYear())
                 setTimeout(() => {
                     $('#con').show()
                     $('#dots5').hide()
@@ -345,6 +363,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         $("#cadadr tbody").html('');
         var arr = []
         var balance = parseFloat(begin_balance)
+        let check_count = 0
+        let ada_count = 0
         row = `<tr class='data_row'>
                 <td colspan='' ></td>
                 <td colspan='' ></td>
@@ -378,6 +398,12 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             var particular = data['particular']
             var reporting_period = data['reporting_period']
             var nca_recieve = parseFloat(data['nca_recieve'])
+            const mode_of_payment = data['mode_of_payment']
+            if (mode_of_payment.toLowerCase() == 'lbp check') {
+                check_count++
+            } else if (mode_of_payment.toLowerCase() != '') {
+                ada_count++
+            }
             balance += nca_recieve - (ada_issued + check_issued)
             // if (jQuery.inArray(dv_number, arr) == -1) {
             //     arr.push(dv_number)
@@ -411,6 +437,10 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             total_ada_issued += ada_issued
 
         }
+
+
+        $('#check').text(check_count)
+        $('#ada').text(ada_count)
         row = `<tr class='data_row'>
                 <td  ></td>
                 <td  ></td>
