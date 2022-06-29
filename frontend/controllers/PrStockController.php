@@ -178,6 +178,9 @@ class PrStockController extends Controller
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             $transaction = Yii::$app->db->beginTransaction();
 
+            if (Yii::$app->memem->serverIp() !== '10.20.17.35') {
+                return $this->actionIndex();
+            }
             if ($model->part !== 'part-1') {
 
                 $model->bac_code = $this->bacCode($model->part, $model->type, $model->chart_of_account_id);
