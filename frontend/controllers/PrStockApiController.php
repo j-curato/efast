@@ -32,6 +32,7 @@ class PrStockApiController extends \yii\rest\ActiveController
     public function actionCreate()
     {
         $source_json = Yii::$app->getRequest()->getBodyParams();
+        return var_dump($source_json);
         if (!empty($source_json)) {
             $transaction = Yii::$app->db->beginTransaction();
 
