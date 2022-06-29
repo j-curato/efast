@@ -204,6 +204,25 @@ class SyncDatabaseController extends \yii\web\Controller
     //         ]);
     //     }
     // }
+    public function actionPrStocks()
+    {
+        if ($_POST) {
+            $db = Yii::$app->db;
+            $source_pr_stock = $db->createCommand('SELECT * FROM pr_stock')->queryAll();
+            $target_pr_stock =  Yii::$app->cloud_db->createCommand("SELECT * FROM `pr_stock`")->queryAll();
+            $source_pr_stock_difference = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $source_pr_stock), array_map('serialize', $target_pr_stock))
+
+            );
+            $to_delete = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $target_pr_stock), array_map('serialize', $source_pr_stock))
+
+            );
+            return json_encode($source_pr_stock_difference);
+        }
+    }
     public function actionFundSourceType()
     {
         if ($_POST) {
@@ -2166,29 +2185,6 @@ class SyncDatabaseController extends \yii\web\Controller
                 $q  = RodEntries::findOne($val['id']);
                 $q->delete();
             }
-        }
-    }
-
-    public function actionPrStocks()
-    {
-        if ($_POST) {
-            $db = Yii::$app->db;
-            $source_pr_stock = $db->createCommand('SELECT * FROM pr_stock')->queryAll();
-            $target_pr_stock =  Yii::$app->cloud_db->createCommand("SELECT * FROM `pr_stock`")->queryAll();
-            $source_pr_stock_difference = array_map(
-                'unserialize',
-                array_diff(array_map('serialize', $source_pr_stock), array_map('serialize', $target_pr_stock))
-
-            );
-            $to_delete = array_map(
-                'unserialize',
-                array_diff(array_map('serialize', $target_pr_stock), array_map('serialize', $source_pr_stock))
-
-            );
-            return json_encode([
-                'pr_stock' => $source_pr_stock_difference,
-                'to_delete' => array_column($to_delete, 'id')
-            ]);
         }
     }
 }
