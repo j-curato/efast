@@ -38,7 +38,7 @@ class PrStockApiController extends \yii\rest\ActiveController
             try {
                 if ($flag = true) {
                     foreach ($source_json as $val) {
-                        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `pr_stocks` WHERE id = :id)")
+                        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `pr_stock` WHERE id = :id)")
                             ->bindValue(':id', $val['id'])
                             ->queryScalar();
                         if (intval($query) == 1) {
