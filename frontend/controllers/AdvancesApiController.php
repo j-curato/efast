@@ -35,6 +35,7 @@ class AdvancesApiController extends \yii\rest\ActiveController
 
         $transaction = Yii::$app->db->beginTransaction();
         $source_json = Yii::$app->getRequest()->getBodyParams();
+        return var_dump($source_json);
         if (!empty($source_json)) {
             try {
                 if ($flag = true) {
