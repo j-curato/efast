@@ -9,6 +9,7 @@ use app\models\RoLiquidationReport;
 use app\models\RoLiquidationReportItems;
 use app\models\RoLiquidationReportRefunds;
 use app\models\RoLiquidationReportSearch;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -78,18 +79,37 @@ class RoLiquidationReportController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
+    public function dvDetails($id)
+    {
+        $query = Yii::$app->db->createCommand("SELECT 
+            dv_number,
+            payee,
+            check_number,
+            ada_number,
+            particular,
+            issuance_date,
+            total_disbursed,
+            liquidated_amount,
+            balance
+         FROM dv_for_liquidation_report WHERE dv_id = :id")
+            ->bindValue(':id', $id)
+            ->queryOne();
+        return $query;
+    }
     public function actionView($id)
     {
+        $model =  $this->findModel($id);
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
             'items' => $this->itemsQuery($id),
-            'refund_items' => $this->refundItemsQuery($id)
+            'refund_items' => $this->refundItemsQuery($id),
+            'dv_detail' => $this->dvDetails($model->fk_dv_aucs_id)
         ]);
     }
 
-    public function insertLiquidationReportItems($id, $entries = [], $amount = [], $object_code = [], $reporting_period = [], $items_id = [], $type = '')
+    public function insertLiquidationReportItems($id, $amount = [], $object_code = [], $reporting_period = [], $items_id = [], $type = '', $reimbursements = [])
     {
-        foreach ($entries as $i => $val) {
+        foreach ($object_code as $i => $val) {
 
             if (!empty($items_id[$i])) {
                 $items = RoLiquidationReportItems::findOne($items_id[$i]);
@@ -97,9 +117,11 @@ class RoLiquidationReportController extends Controller
                 $items = new RoLiquidationReportItems();
                 $items->fk_ro_liquidation_report_id = $id;
             }
-            $items->fk_cash_disbursement_id = $val;
+            if (!empty($reimbursements[$i])) {
+                $items->is_reimburse = 1;
+            }
             $items->amount = !empty($amount[$i]) ? $amount[$i] : 0;
-            $items->object_code = $object_code[$i];
+            $items->object_code = $val;
             if ($type === 'create') {
                 $items->reporting_period = $reporting_period;
             } else if ($type = 'update') {
@@ -110,10 +132,10 @@ class RoLiquidationReportController extends Controller
             }
         }
     }
-    public function insertLiquidationReportRefunds($id, $entries = [], $amount = [], $or_number = [], $reporting_period = [], $refund_id = [], $or_dates = [], $type = '')
+    public function insertLiquidationReportRefunds($id, $amount = [], $or_number = [], $reporting_period = [], $refund_id = [], $or_dates = [], $type = '')
     {
 
-        foreach ($entries as $i => $val) {
+        foreach ($or_number as $i => $val) {
             $refund_items = new RoLiquidationReportRefunds();
 
             if (!empty($refund_id[$i])) {
@@ -122,9 +144,9 @@ class RoLiquidationReportController extends Controller
                 $refund_items = new RoLiquidationReportRefunds();
                 $refund_items->fk_ro_liquidation_report_id = $id;
             }
-            $refund_items->fk_cash_disbursement_id = $val;
+
             $refund_items->amount = !empty($amount[$i]) ? $amount[$i] : 0;
-            $refund_items->or_number = $or_number[$i];
+            $refund_items->or_number = $val;
             $refund_items->or_date = $or_dates[$i];
             if ($type === 'create') {
                 $refund_items->reporting_period = $reporting_period;
@@ -135,6 +157,24 @@ class RoLiquidationReportController extends Controller
             if ($refund_items->save(false)) {
             }
         }
+    }
+    public function actionSearchDv($q = null, $id = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+            $query->select('dv_for_liquidation_report.dv_id as id,dv_for_liquidation_report.dv_number AS text')
+                ->from('dv_for_liquidation_report')
+                ->where(['like', 'dv_for_liquidation_report.dv_number', $q]);
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        return $out;
     }
     /**
      * Creates a new RoLiquidationReport model.
@@ -149,39 +189,39 @@ class RoLiquidationReportController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         if ($model->load(Yii::$app->request->post())) {
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            $refund_cash_id = !empty($_POST['refund_cash_id']) ? $_POST['refund_cash_id'] : [];
+
             $refund_reporting_period = !empty($_POST['refund_reporting_period']) ? $_POST['refund_reporting_period'] : [];
             $refund_or_date = !empty($_POST['refund_or_date']) ? $_POST['refund_or_date'] : [];
             $refund_or_number = !empty($_POST['refund_or_number']) ? $_POST['refund_or_number'] : [];
             $refund_amount = !empty($_POST['refund_amount']) ? $_POST['refund_amount'] : [];
 
 
-            $entry_cash_id = !empty($_POST['entry_cash_id']) ? $_POST['entry_cash_id'] : [];
+
             $entry_amount = !empty($_POST['entry_amount']) ? $_POST['entry_amount'] : [];
             $entry_reporting_period = !empty($_POST['entry_reporting_period']) ? $_POST['entry_reporting_period'] : [];
             $entry_object_code = !empty($_POST['entry_object_code']) ? $_POST['entry_object_code'] : [];
-
+            $is_reimburse = !empty($_POST['is_reim']) ? $_POST['is_reim'] : [];
 
 
             $model->liquidation_report_number = $this->lrNumber($model->reporting_period);
             if ($model->save(false)) {
 
-                if (!empty($entry_cash_id)) {
+                if (!empty($entry_object_code)) {
 
                     $this->insertLiquidationReportItems(
                         $model->id,
-                        $entry_cash_id,
+
                         $entry_amount,
                         $entry_object_code,
                         $model->reporting_period,
                         [],
-                        'create'
+                        'create',
+                        $is_reimburse
                     );
                 }
-                if (!empty($refund_cash_id)) {
+                if (!empty($refund_or_date)) {
                     $this->insertLiquidationReportRefunds(
                         $model->id,
-                        $refund_cash_id,
                         $refund_amount,
                         $refund_or_number,
                         $model->reporting_period,
@@ -200,7 +240,7 @@ class RoLiquidationReportController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'entries' => [],
-            'refund_items' =>[]
+            'refund_items' => []
         ]);
     }
 
@@ -233,7 +273,7 @@ class RoLiquidationReportController extends Controller
             $entry_amount = !empty($_POST['entry_amount']) ? $_POST['entry_amount'] : [];
             $entry_reporting_period = !empty($_POST['entry_reporting_period']) ? $_POST['entry_reporting_period'] : [];
             $entry_object_code = !empty($_POST['entry_object_code']) ? $_POST['entry_object_code'] : [];
-
+            $is_reimburse = !empty($_POST['is_reim']) ? $_POST['is_reim'] : [];
             $params = [];
             $sql = '';
             if (!empty($item_ids)) {
@@ -261,22 +301,21 @@ class RoLiquidationReportController extends Controller
 
             if ($model->save(false)) {
 
-                if (!empty($entry_cash_id)) {
+                if (!empty($entry_object_code)) {
 
                     $this->insertLiquidationReportItems(
                         $model->id,
-                        $entry_cash_id,
                         $entry_amount,
                         $entry_object_code,
                         $entry_reporting_period,
                         $item_ids,
-                        'update'
+                        'update',
+                        $is_reimburse
                     );
                 }
-                if (!empty($refund_cash_id)) {
+                if (!empty($refund_or_date)) {
                     $this->insertLiquidationReportRefunds(
                         $model->id,
-                        $refund_cash_id,
                         $refund_amount,
                         $refund_or_number,
                         $refund_reporting_period,
@@ -305,12 +344,12 @@ class RoLiquidationReportController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    // public function actionDelete($id)
+    // {
+    //     $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
-    }
+    //     return $this->redirect(['index']);
+    // }
 
     /**
      * Finds the RoLiquidationReport model based on its primary key value.
@@ -350,29 +389,15 @@ class RoLiquidationReportController extends Controller
 
         $entries = YIi::$app->db->createCommand("SELECT
         ro_liquidation_report_items.id,
-        ro_liquidation_report_items.fk_cash_disbursement_id,
         ro_liquidation_report_items.amount,
         ro_liquidation_report_items.object_code,
         accounting_codes.account_title,
-        ro_liquidation_report_items.reporting_period,
-        payee.account_name as payee,
-        cash_disbursement.check_or_ada_no,
-        cash_disbursement.ada_number,
-        dv_aucs.particular,
-        cash_disbursement.issuance_date,
-        cash_disbursement.id as cash_id,
-        total_dv_amount.total_disbursed
+        ro_liquidation_report_items.reporting_period
+    
         FROM 
         `ro_liquidation_report_items`
-        LEFT JOIN cash_disbursement ON ro_liquidation_report_items.fk_cash_disbursement_id = cash_disbursement.id
-        LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
-        LEFT JOIN payee ON dv_aucs.payee_id = payee.id
         LEFT JOIN accounting_codes ON ro_liquidation_report_items.object_code = accounting_codes.object_code
-        LEFT JOIN (SELECT SUM(dv_aucs_entries.amount_disbursed) as total_disbursed,
-                dv_aucs_entries.dv_aucs_id 
-                FROM dv_aucs_entries GROUP BY 
-                dv_aucs_entries.dv_aucs_id
-                ) as total_dv_amount ON dv_aucs.id = total_dv_amount.dv_aucs_id
+
         WHERE ro_liquidation_report_items.fk_ro_liquidation_report_id = :id
         AND ro_liquidation_report_items.is_deleted !=1
         ")
@@ -384,34 +409,30 @@ class RoLiquidationReportController extends Controller
     {
         $refund_items = YIi::$app->db->createCommand("SELECT
                 ro_liquidation_report_refunds.id,
-                ro_liquidation_report_refunds.fk_cash_disbursement_id,
                 ro_liquidation_report_refunds.amount,
                 ro_liquidation_report_refunds.reporting_period,
-
                 ro_liquidation_report_refunds.or_number,
-                ro_liquidation_report_refunds.or_date,
-                payee.account_name as payee,
-                cash_disbursement.check_or_ada_no,
-                cash_disbursement.ada_number,
-                dv_aucs.particular,
-                cash_disbursement.issuance_date,
-                cash_disbursement.id as cash_id,
-                total_dv_amount.total_disbursed
+                ro_liquidation_report_refunds.or_date
+              
                 FROM 
                 `ro_liquidation_report_refunds`
-                LEFT JOIN cash_disbursement ON ro_liquidation_report_refunds.fk_cash_disbursement_id = cash_disbursement.id
-                LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
-                LEFT JOIN payee ON dv_aucs.payee_id = payee.id
-                LEFT JOIN (SELECT SUM(dv_aucs_entries.amount_disbursed) as total_disbursed,
-                        dv_aucs_entries.dv_aucs_id 
-                        FROM dv_aucs_entries GROUP BY 
-                        dv_aucs_entries.dv_aucs_id
-                        ) as total_dv_amount ON dv_aucs.id = total_dv_amount.dv_aucs_id
                 WHERE ro_liquidation_report_refunds.fk_ro_liquidation_report_id = :id
                 AND ro_liquidation_report_refunds.is_deleted !=1
                 ")
             ->bindValue(':id', $id)
             ->queryAll();
         return $refund_items;
+    }
+    public function actionDvDetails()
+    {
+
+        if ($_POST) {
+            $id = $_POST['id'];
+            $query = Yii::$app->db->createCommand("SELECT * FROM dv_for_liquidation_report WHERE dv_id = :id")
+                ->bindValue(':id', $id)
+                ->queryOne();
+
+            return json_encode($query);
+        }
     }
 }

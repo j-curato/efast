@@ -32,9 +32,9 @@ class RoLiquidationReport extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'liquidation_report_number'], 'required'],
-            [['id'], 'integer'],
-            [['date', 'updated_at', 'created_at','reporting_period'], 'safe'],
+            [['id', 'liquidation_report_number', 'fk_dv_aucs_id', 'reporting_period', 'date'], 'required'],
+            [['id', 'f_dv_aucs_id'], 'integer'],
+            [['date', 'updated_at', 'created_at', 'reporting_period'], 'safe'],
             [['liquidation_report_number'], 'string', 'max' => 255],
             [['liquidation_report_number'], 'unique'],
             [['id'], 'unique'],
@@ -53,6 +53,7 @@ class RoLiquidationReport extends \yii\db\ActiveRecord
             'updated_at' => 'Updated At',
             'created_at' => 'Created At',
             'reporting_period' => 'Reporting Period',
+            'fk_dv_aucs_id' => 'DV Aucs',
         ];
     }
 

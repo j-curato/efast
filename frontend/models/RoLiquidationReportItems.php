@@ -32,7 +32,7 @@ class RoLiquidationReportItems extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fk_ro_liquidation_report_id'], 'integer'],
+            [['fk_ro_liquidation_report_id','is_reimburse'], 'integer'],
             [['amount'], 'number'],
             [['created_at'], 'safe'],
             [['object_code'], 'string', 'max' => 255],
@@ -53,6 +53,7 @@ class RoLiquidationReportItems extends \yii\db\ActiveRecord
             'object_code' => 'Object Code',
             'reporting_period' => 'Reporting Period',
             'created_at' => 'Created At',
+            'is_reimburse' => 'Is Reimburse',
         ];
     }
 
