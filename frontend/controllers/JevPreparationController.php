@@ -578,7 +578,7 @@ class JevPreparationController extends Controller
                 if (!$this->checkDebitCredit($debits, $credits)) {
                     return json_encode(['isSuccess' => false, 'error' => 'Debit & Credit are Not Equal']);
                 }
-                if ($model->cash_disbursement_id !== $oldModel->cash_disbursement_id) {
+                if (intVal($model->cash_disbursement_id) !== intVal($oldModel->cash_disbursement_id)) {
 
                     if ($this->checkDv($model->cash_disbursement_id)) {
                         return json_encode(['isSuccess' => false, 'error' => 'DV is already have a JEV']);
