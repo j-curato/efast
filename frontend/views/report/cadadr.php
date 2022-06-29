@@ -82,6 +82,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div id='con'>
 
+        <table id='mode_of_payment_count'>
+
+            <tr>
+                <th>Check:</th>
+                <th id="check"></th>
+            </tr>
+            <tr>
+                <th>ADA:</th>
+                <th id="ada"></th>
+            </tr>
+
+        </table>
 
         <table id="cadadr">
             <thead>
@@ -152,18 +164,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
         </table>
 
-        <table id='mode_of_payment_count'>
-
-            <tr>
-                <th>Check:</th>
-                <th id="check"></th>
-            </tr>
-            <tr>
-                <th>ADA:</th>
-                <th id="ada"></th>
-            </tr>
-
-        </table>
 
 
         <table id="cancelled_checks_table">
