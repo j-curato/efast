@@ -15,6 +15,15 @@ $row = 1;
 $advances_entries_row = 1;
 $accounting_entry_row  = 1;
 $dv_items_row = 1;
+$dv_object_code = [];
+
+if (!empty($model->object_code)) {
+
+    $q = Yii::$app->db->createCommand("SELECT object_code,CONCAT(object_code,'-',account_title) as account_title FROM accounting_codes WHERE object_code =:object_code")
+        ->bindValue(':object_code', $model->object_code)
+        ->queryAll();
+    $dv_object_code = ArrayHelper::map($q, 'object_code', 'account_title');
+}
 ?>
 <div class="test">
     <div id="container" style="background-color: white;width:90%;margin-left:auto;margin-right:auto">
@@ -80,6 +89,38 @@ $dv_items_row = 1;
 
                     ?>
                     <span class="mrd_classification_error form-error"></span>
+                </div>
+                <div class="col-sm-3" style="height:60x;display:none;" id='dv_object_code'>
+                    <label for="object_code">UACS</label>
+
+                    <?php
+                    echo Select2::widget([
+                        'name' => 'dv_object_code',
+                        'data' => $dv_object_code,
+                        'value' => !empty($model->object_code) ? $model->object_code : '',
+                        'options' => ['placeholder' => 'Search for a UACS ...'],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                            'minimumInputLength' => 1,
+                            'language' => [
+                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                            ],
+                            'ajax' => [
+                                'url' => Yii::$app->request->baseUrl . '?r=chart-of-accounts/search-accounting-code',
+                                'dataType' => 'json',
+                                'delay' => 250,
+                                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                                'cache' => true
+                            ],
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        ],
+
+                    ])
+
+                    ?>
+                    <span class="object_code_error form-error"></span>
                 </div>
             </div>
             <div class="row">
@@ -1136,8 +1177,12 @@ SweetAlertAsset::register($this);
             var nature_selected = $(this).children(':selected').text()
             if (nature_selected == 'CA to SDOs/OPEX') {
                 $('#advances_table').show()
+            } else if (nature_selected == 'CA to Employees') {
+                $('#dv_object_code').show()
+                $('#advances_table').hide()
             } else {
                 $('#advances_table').hide()
+                $('#dv_object_code').hide()
             }
         })
         $('#nature_of_transaction').trigger('change')

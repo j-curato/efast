@@ -36,7 +36,7 @@ class DvAucs extends \yii\db\ActiveRecord
     {
         return [
             [['net_amount_paid', 'tracking_sheet_id', 'is_payable'], 'number'],
-            [['dv_number', 'tax_withheld', 'other_trust_liability_withheld'], 'string', 'max' => 255],
+            [['dv_number', 'tax_withheld', 'other_trust_liability_withheld','object_code'], 'string', 'max' => 255],
 
             [['reporting_period'], 'string', 'max' => 50],
             [['particular', 'payee_id'], 'required'],
@@ -63,6 +63,7 @@ class DvAucs extends \yii\db\ActiveRecord
             'is_payable' => 'Is Payable',
             'particular' => 'Particular',
             'mrd_classification_id' => 'MRD Classification',
+            'object_code' => 'Object Code',
         ];
     }
 

@@ -8,7 +8,7 @@
                 <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="img-circle" alt="User Image" />
             </div>
             <div class="pull-left info">
-                <p><?php echo Yii::$app->user->identity->username ?></p>
+                <p><?php echo !empty(Yii::$app->user->identity->username) ? Yii::$app->user->identity->username : '' ?></p>
                 <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
         </div>
@@ -34,8 +34,8 @@
 
         ?>
         <?php
-        $province = strtolower(Yii::$app->user->identity->province);
-        $division =  strtolower(Yii::$app->user->identity->division);
+        $province = !empty(Yii::$app->user->identity->province) ? strtolower(Yii::$app->user->identity->province) : '';
+        $division = !empty(Yii::$app->user->identity->division) ? strtolower(Yii::$app->user->identity->division) : '';
         if (
             $province === 'adn' ||
             $province === 'ads' ||

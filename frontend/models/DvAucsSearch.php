@@ -77,6 +77,7 @@ class DvAucsSearch extends DvAucs
             'dv_aucs.id' => $this->id,
             'net_amount_paid' => $this->net_amount_paid,
             'is_cancelled' => $this->is_cancelled,
+            'recieved_at' => $this->recieved_at
         ]);
 
         $query->andFilterWhere(['like', 'dv_number', $this->dv_number])
@@ -89,7 +90,6 @@ class DvAucsSearch extends DvAucs
             ->andFilterWhere(['like', 'accept_timestamp', $this->accept_timestamp])
             ->andFilterWhere(['like', 'out_timestamp', $this->out_timestamp])
             ->andFilterWhere(['like', 'created_at', $this->created_at])
-            ->andFilterWhere(['like', 'recieved_at', $this->recieved_at])
             ->andFilterWhere(['like', 'mrd_classification.name', $this->mrd_classification_id])
             ->andFilterWhere(['like', 'nature_of_transaction.name', $this->nature_of_transaction_id])
             ->andFilterWhere(['like', 'other_trust_liability_withheld', $this->other_trust_liability_withheld]);

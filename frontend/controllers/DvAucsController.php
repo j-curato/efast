@@ -2,27 +2,28 @@
 
 namespace frontend\controllers;
 
-use app\models\Advances;
-use app\models\AdvancesEntries;
-use app\models\Books;
-use app\models\DvAccountingEntries;
-use app\models\DvAucs;
 use Yii;
+use DateTime;
+use yii\db\Query;
+use ErrorException;
+use app\models\Books;
+use app\models\DvAucs;
 
-use app\models\DvAucsEntries;
+use yii\web\Controller;
+use app\models\Advances;
+use yii\filters\VerbFilter;
 use app\models\DvAucsSearch;
-use app\models\ProcessOrsEntries;
-use app\models\ProcessOrsSearch;
 
 use app\models\SubAccounts2;
-use app\models\TrackingSheetIndexSearch;
-use DateTime;
-use ErrorException;
-use phpDocumentor\Reflection\PseudoTypes\False_;
+use app\models\DvAucsEntries;
 use yii\filters\AccessControl;
-use yii\web\Controller;
+use app\models\AdvancesEntries;
+use app\models\ProcessOrsSearch;
+use app\models\ProcessOrsEntries;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
+use app\models\DvAccountingEntries;
+use app\models\TrackingSheetIndexSearch;
+use phpDocumentor\Reflection\PseudoTypes\False_;
 
 /**
  * DvAucsController implements the CRUD actions for DvAucs model.
@@ -301,6 +302,7 @@ class DvAucsController extends Controller
             $advances_object_code = !empty($_POST['advances_object_code']) ? $_POST['advances_object_code'] : [];
             $advances_amount = !empty($_POST['advances_amount']) ? $_POST['advances_amount'] : [];
             $advances_update_id = !empty($_POST['advances_id']) ? $_POST['advances_id'] : '';
+            $dv_object_code = !empty($_POST['dv_object_code']) ? $_POST['dv_object_code'] : '';
 
 
             if (empty($mrd_classification)) {
@@ -320,6 +322,7 @@ class DvAucsController extends Controller
             $model->mrd_classification_id =  $mrd_classification;
             $model->book_id = $book;
             $model->particular = $particular;
+            $model->object_code = $dv_object_code;
             // return $model->book_id;
             // Yii::$app->db->createCommand("DELETE FROM dv_accounting_entries WHERE dv_aucs_id = :id ")
             //     ->bindValue(':id', $model->id)

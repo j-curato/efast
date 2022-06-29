@@ -3181,26 +3181,30 @@ class JevPreparationController extends Controller
                     ro_liquidation_report_refunds.amount as credit 
                 FROM ro_liquidation_report_refunds 
                 WHERE ro_liquidation_report_refunds.fk_ro_liquidation_report_id = :id
-
                 UNION ALL
                 SELECT 
-                    '' as account_title,
-                    '' as object_code,
+                    accounting_codes.account_title,
+                    dv_aucs.object_code,
                     0 as debit,
-                    (
-                    SELECT 
-                    SUM(ro_liquidation_report_items.amount)as items_total
-                    FROM 
-                    ro_liquidation_report_items
-                    WHERE ro_liquidation_report_items.fk_ro_liquidation_report_id = :id
-                    )  -
-                    (
-                    SELECT 
-                    SUM(ro_liquidation_report_refunds.amount)as refunds_total
-                    FROM 
-                    ro_liquidation_report_refunds
-                    WHERE ro_liquidation_report_refunds.fk_ro_liquidation_report_id = :id
-                    ) as credit
+                    IFNULL(items_total.total,0) - IFNULL(refund_total.total,0) as credit
+
+                    FROM ro_liquidation_report
+                    LEFT JOIN 
+                    (SELECT SUM(ro_liquidation_report_items.amount) as total, ro_liquidation_report_items.fk_ro_liquidation_report_id
+                    FROM ro_liquidation_report_items 
+                    WHERE ro_liquidation_report_items.is_deleted !=1
+                    GROUP BY ro_liquidation_report_items.fk_ro_liquidation_report_id) as items_total
+                    ON ro_liquidation_report.id = items_total.fk_ro_liquidation_report_id
+                    LEFT JOIN 
+                    (SELECT SUM(ro_liquidation_report_refunds.amount) as total,ro_liquidation_report_refunds.fk_ro_liquidation_report_id 
+                    FROM ro_liquidation_report_refunds 
+                    WHERE 
+                    ro_liquidation_report_refunds.is_deleted !=1
+                    GROUP BY ro_liquidation_report_refunds.fk_ro_liquidation_report_id) as refund_total
+                    ON ro_liquidation_report.id = refund_total.fk_ro_liquidation_report_id
+                    LEFT JOIN dv_aucs ON ro_liquidation_report.fk_dv_aucs_id = dv_aucs.id
+                    LEFT JOIN accounting_codes ON dv_aucs.object_code = accounting_codes.object_code
+                    WHERE ro_liquidation_report.id = :id
                     ")->bindValue(':id', $id)
             ->queryAll();
         $model = new JevPreparation();
