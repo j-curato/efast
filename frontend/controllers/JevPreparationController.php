@@ -564,57 +564,55 @@ class JevPreparationController extends Controller
     {
         $model = $this->findModel($id);
         $oldModel = $this->findModel($id);
+
         if ($model->load(Yii::$app->request->post())) {
+            $debits = $_POST['debit'];
+            $credits = $_POST['credit'];
+            $object_code = $_POST['object_code'];
+            $check_ada = $model->check_ada;
+            if (!$this->checkReportingPeriod($model->reporting_period)) {
+                return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
+            }
 
-            if ($model->load(Yii::$app->request->post())) {
-                $debits = $_POST['debit'];
-                $credits = $_POST['credit'];
-                $object_code = $_POST['object_code'];
-                $check_ada = $model->check_ada;
-                if (!$this->checkReportingPeriod($model->reporting_period)) {
-                    return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
+            if (!$this->checkDebitCredit($debits, $credits)) {
+                return json_encode(['isSuccess' => false, 'error' => 'Debit & Credit are Not Equal']);
+            }
+            if (intVal($model->cash_disbursement_id) !== intVal($oldModel->cash_disbursement_id)) {
+
+                if ($this->checkDv($model->cash_disbursement_id)) {
+                    return json_encode(['isSuccess' => false, 'error' => 'DV is already have a JEV']);
+                }
+            }
+            if (strtolower($check_ada) === 'ada') {
+                $reference = 'ADADJ';
+            } else if (strtolower($check_ada) === 'check') {
+                $reference = 'CKDJ';
+            } else {
+                $reference =  $model->ref_number;
+            }
+            if ($reference == 'ADADJ' || $reference === 'CKDJ') {
+
+                if (empty($model->payee_id)) {
+                    return json_encode(['isSuccess' => false, 'error' => 'Payee Cannot be Blank']);
                 }
 
-                if (!$this->checkDebitCredit($debits, $credits)) {
-                    return json_encode(['isSuccess' => false, 'error' => 'Debit & Credit are Not Equal']);
+                if (empty($model->responsibility_center_id)) {
+                    return json_encode(['isSuccess' => false, 'error' => 'Responsibility Center Cannot be Blank']);
                 }
-                if (intVal($model->cash_disbursement_id) !== intVal($oldModel->cash_disbursement_id)) {
-
-                    if ($this->checkDv($model->cash_disbursement_id)) {
-                        return json_encode(['isSuccess' => false, 'error' => 'DV is already have a JEV']);
-                    }
-                }
-                if (strtolower($check_ada) === 'ada') {
-                    $reference = 'ADADJ';
-                } else if (strtolower($check_ada) === 'check') {
-                    $reference = 'CKDJ';
-                } else {
-                    $reference =  $model->ref_number;
-                }
-                if ($reference == 'ADADJ' || $reference === 'CKDJ') {
-
-                    if (empty($model->payee_id)) {
-                        return json_encode(['isSuccess' => false, 'error' => 'Payee Cannot be Blank']);
-                    }
-
-                    if (empty($model->responsibility_center_id)) {
-                        return json_encode(['isSuccess' => false, 'error' => 'Responsibility Center Cannot be Blank']);
-                    }
-                }
-                $model->ref_number = $reference;
-                if ($model->validate()) {
-                    if ($model->save(false)) {
-                        if (!empty($model->jevAccountingEntries)) {
-                            foreach ($model->jevAccountingEntries as $val) {
-                                $val->delete();
-                            }
+            }
+            $model->ref_number = $reference;
+            if ($model->validate()) {
+                if ($model->save(false)) {
+                    if (!empty($model->jevAccountingEntries)) {
+                        foreach ($model->jevAccountingEntries as $val) {
+                            $val->delete();
                         }
-                        $this->insertEntries($model->id, $object_code, $debits, $credits);
-                        return $this->redirect(['view', 'id' => $model->id]);
                     }
-                } else {
-                    return json_encode($model->errors);
+                    $this->insertEntries($model->id, $object_code, $debits, $credits);
+                    return $this->redirect(['view', 'id' => $model->id]);
                 }
+            } else {
+                return json_encode($model->errors);
             }
         }
 
