@@ -116,7 +116,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             type: "post",
                             url: 'https://fisdticaraga.com/index.php?r=pr-stock-api/create',
                             contentType: "application/json",
-                            data: JSON.stringify(d),
+                            data: JSON.stringify(d.pr_stock),
                             dataType: 'json',
                             headers: {
                                 "Authorization": `Bearer ${localStorage.getItem('token')}`
