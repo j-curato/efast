@@ -161,7 +161,11 @@ class PrPurchaseRequestController extends Controller
                 $specification = $_POST['specification'];
                 $unit_of_measure_id = $_POST['unit_of_measure_id'];
             }
-
+            $host = gethostname();
+            $ip = gethostbyname($host);
+            if ($ip !== '10.20.17.35') {
+                $model->is_cloud = 1;
+            }
             $transaction = Yii::$app->db->beginTransaction();
 
             try {

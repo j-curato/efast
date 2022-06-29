@@ -34,7 +34,7 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
     {
         return [
             [['date', 'created_at'], 'safe'],
-            [['book_id', 'pr_project_procurement_id', 'requested_by_id', 'approved_by_id'], 'integer'],
+            [['book_id', 'pr_project_procurement_id', 'requested_by_id', 'approved_by_id', 'is_cloud'], 'integer'],
             [['purpose'], 'string'],
             [['pr_number'], 'string', 'max' => 255],
             [['pr_number'], 'unique'],
@@ -67,6 +67,7 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
             'requested_by_id' => 'Requested By ',
             'approved_by_id' => 'Approved By ',
             'created_at' => 'Created At',
+            'is_cloud' => 'is_cloud',
         ];
     }
     public function getRequestedBy()
