@@ -3906,7 +3906,8 @@ class ReportController extends \yii\web\Controller
     }
     public function actionDvTimeMonitoring()
     {
-        if ($_POST) {
+        if (Yii::$app->request->isPost) {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             $from_reporting_period = $_POST['from_reporting_period'];
             $to_reporting_period = $_POST['to_reporting_period'];
             $query = Yii::$app->db->createCommand("SELECT 
@@ -3937,6 +3938,9 @@ class ReportController extends \yii\web\Controller
             WHERE
 
             dv_aucs.is_cancelled !=1
+            AND dv_aucs.in_timestamp IS NOT NULL
+            AND dv_aucs.out_timestamp IS NOT NULL
+
             AND 
             cash_disbursement.is_cancelled !=1
             AND dv_aucs.reporting_period >= :from_reporting_period
@@ -4537,6 +4541,10 @@ class ReportController extends \yii\web\Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+    public function actionQ()
+    {
+        echo  Yii::$app->getSecurity()->decryptByPassword('MIOBSffkc1yR3VZM658Ef7ndQp0DdMzi', '$13$SkF5x6EUe/Qs95K3Hl5UZuRGfhZ6f9t1iCttNzw2P2fBvVEYEPLpu');
     }
 }
 
