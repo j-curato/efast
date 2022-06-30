@@ -138,7 +138,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
                 </tbody>
-                <tfoot>
+                <!-- <tfoot>
 
                     <tr class="footer1" style="border:0;">
                         <td colspan="3" class="br"></td>
@@ -161,7 +161,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </td>
                         <td></td>
                     </tr>
-                </tfoot>
+                </tfoot> -->
             </table>
 
         </div>
