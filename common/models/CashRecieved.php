@@ -46,9 +46,21 @@ class CashRecieved extends \yii\db\ActiveRecord
             [['reporting_period'], 'string', 'max' => 40],
             [['nca_no', 'nta_no', 'nft_no', 'account_number'], 'string', 'max' => 100],
             [['purpose'], 'string', 'max' => 255],
-            [['book_id'], 'exist', 'skipOnError' => true, 'targetClass' => Books::className(), 'targetAttribute' => ['book_id' => 'id']],
-            [['document_recieved_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentRecieve::className(), 'targetAttribute' => ['document_recieved_id' => 'id']],
-            [['mfo_pap_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => MfoPapCode::className(), 'targetAttribute' => ['mfo_pap_code_id' => 'id']],
+            [['book_id'], 'exist', 'skipOnError' => true, 'targetClass' => Books::class, 'targetAttribute' => ['book_id' => 'id']],
+            [[
+                'id',
+                'document_recieved_id',
+                'book_id',
+                'mfo_pap_code_id',
+                'date',
+                'reporting_period',
+                'nca_no',
+                'nta_no',
+                'nft_no',
+                'purpose',
+                'amount',
+                'account_number',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process']
         ];
     }
 
@@ -80,7 +92,7 @@ class CashRecieved extends \yii\db\ActiveRecord
      */
     public function getBook()
     {
-        return $this->hasOne(Books::className(), ['id' => 'book_id']);
+        return $this->hasOne(Books::class, ['id' => 'book_id']);
     }
 
     /**
@@ -90,7 +102,7 @@ class CashRecieved extends \yii\db\ActiveRecord
      */
     public function getDocumentRecieved()
     {
-        return $this->hasOne(DocumentRecieve::className(), ['id' => 'document_recieved_id']);
+        return $this->hasOne(DocumentRecieve::class, ['id' => 'document_recieved_id']);
     }
 
     /**
@@ -100,7 +112,7 @@ class CashRecieved extends \yii\db\ActiveRecord
      */
     public function getMfoPapCode()
     {
-        return $this->hasOne(MfoPapCode::className(), ['id' => 'mfo_pap_code_id']);
+        return $this->hasOne(MfoPapCode::class, ['id' => 'mfo_pap_code_id']);
     }
 
     /**

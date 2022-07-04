@@ -30,6 +30,12 @@ class FundSourceType extends \yii\db\ActiveRecord
             [['name'], 'required'],
             [['name'], 'string', 'max' => 255],
             [['division'], 'string', 'max' => 50],
+            [[
+                'id',
+                'name',
+                'division',
+               
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

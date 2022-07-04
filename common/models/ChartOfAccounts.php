@@ -49,14 +49,27 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['uacs', 'general_ledger', 'major_account_id', 'sub_major_account', 'sub_major_account_2_id', 'account_group', 'current_noncurrent', 'enable_disable','normal_balance'], 'required'],
+            [['uacs', 'general_ledger', 'major_account_id', 'sub_major_account', 'sub_major_account_2_id', 'account_group', 'current_noncurrent', 'enable_disable', 'normal_balance'], 'required'],
             [['major_account_id', 'sub_major_account', 'sub_major_account_2_id', 'is_active'], 'integer'],
             [['uacs'], 'string', 'max' => 30],
             [['general_ledger', 'account_group', 'current_noncurrent', 'enable_disable'], 'string', 'max' => 255],
             [['normal_balance'], 'string', 'max' => 20],
             [['uacs'], 'unique'],
-            [['major_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => MajorAccounts::className(), 'targetAttribute' => ['major_account_id' => 'id']],
-            [['sub_major_account'], 'exist', 'skipOnError' => true, 'targetClass' => SubMajorAccounts::className(), 'targetAttribute' => ['sub_major_account' => 'id']],
+            [['major_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => MajorAccounts::class, 'targetAttribute' => ['major_account_id' => 'id']],
+            [['sub_major_account'], 'exist', 'skipOnError' => true, 'targetClass' => SubMajorAccounts::class, 'targetAttribute' => ['sub_major_account' => 'id']],
+            [[
+                'id',
+                'uacs',
+                'general_ledger',
+                'major_account_id',
+                'sub_major_account',
+                'sub_major_account_2_id',
+                'account_group',
+                'current_noncurrent',
+                'enable_disable',
+                'normal_balance',
+                'is_active',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process']
         ];
     }
 
@@ -87,7 +100,7 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
      */
     public function getMajorAccount()
     {
-        return $this->hasOne(MajorAccounts::className(), ['id' => 'major_account_id']);
+        return $this->hasOne(MajorAccounts::class, ['id' => 'major_account_id']);
     }
 
     /**
@@ -97,7 +110,7 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
      */
     public function getSubMajorAccount()
     {
-        return $this->hasOne(SubMajorAccounts::className(), ['id' => 'sub_major_account']);
+        return $this->hasOne(SubMajorAccounts::class, ['id' => 'sub_major_account']);
     }
 
     /**
@@ -107,7 +120,7 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
      */
     public function getDvAccountingEntries()
     {
-        return $this->hasMany(DvAccountingEntries::className(), ['chart_of_account_id' => 'id']);
+        return $this->hasMany(DvAccountingEntries::class, ['chart_of_account_id' => 'id']);
     }
 
     /**
@@ -117,7 +130,7 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
      */
     public function getJevAccountingEntries()
     {
-        return $this->hasMany(JevAccountingEntries::className(), ['chart_of_account_id' => 'id']);
+        return $this->hasMany(JevAccountingEntries::class, ['chart_of_account_id' => 'id']);
     }
 
     /**
@@ -127,7 +140,7 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
      */
     public function getLiquidationEntries()
     {
-        return $this->hasMany(LiquidationEntries::className(), ['chart_of_account_id' => 'id']);
+        return $this->hasMany(LiquidationEntries::class, ['chart_of_account_id' => 'id']);
     }
 
     /**
@@ -137,7 +150,7 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
      */
     public function getProcessOrsEntries()
     {
-        return $this->hasMany(ProcessOrsEntries::className(), ['chart_of_account_id' => 'id']);
+        return $this->hasMany(ProcessOrsEntries::class, ['chart_of_account_id' => 'id']);
     }
 
     /**
@@ -147,7 +160,7 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
      */
     public function getRaoudEntries()
     {
-        return $this->hasMany(RaoudEntries::className(), ['chart_of_account_id' => 'id']);
+        return $this->hasMany(RaoudEntries::class, ['chart_of_account_id' => 'id']);
     }
 
     /**
@@ -157,7 +170,7 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
      */
     public function getRecordAllotmentEntries()
     {
-        return $this->hasMany(RecordAllotmentEntries::className(), ['chart_of_account_id' => 'id']);
+        return $this->hasMany(RecordAllotmentEntries::class, ['chart_of_account_id' => 'id']);
     }
 
     /**
@@ -167,7 +180,7 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
      */
     public function getSubAccounts1s()
     {
-        return $this->hasMany(SubAccounts1::className(), ['chart_of_account_id' => 'id']);
+        return $this->hasMany(SubAccounts1::class, ['chart_of_account_id' => 'id']);
     }
 
     /**

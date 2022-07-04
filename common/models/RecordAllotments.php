@@ -56,13 +56,33 @@ class RecordAllotments extends \yii\db\ActiveRecord
             [['particulars'], 'string'],
             [['reporting_period'], 'string', 'max' => 20],
             [['serial_number', 'allotment_number', 'date_issued', 'valid_until', 'funding_code'], 'string', 'max' => 50],
-            [['authorization_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => AuthorizationCode::className(), 'targetAttribute' => ['authorization_code_id' => 'id']],
-            [['document_recieve_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentRecieve::className(), 'targetAttribute' => ['document_recieve_id' => 'id']],
-            [['financing_source_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinancingSourceCode::className(), 'targetAttribute' => ['financing_source_code_id' => 'id']],
-            [['fund_category_and_classification_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => FundCategoryAndClassificationCode::className(), 'targetAttribute' => ['fund_category_and_classification_code_id' => 'id']],
-            [['fund_cluster_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => FundClusterCode::className(), 'targetAttribute' => ['fund_cluster_code_id' => 'id']],
-            [['fund_source_id'], 'exist', 'skipOnError' => true, 'targetClass' => FundSource::className(), 'targetAttribute' => ['fund_source_id' => 'id']],
-            [['mfo_pap_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => MfoPapCode::className(), 'targetAttribute' => ['mfo_pap_code_id' => 'id']],
+            [[
+                'id',
+                'document_recieve_id',
+                'fund_cluster_code_id',
+                'financing_source_code_id',
+                'fund_category_and_classification_code_id',
+                'authorization_code_id',
+                'mfo_pap_code_id',
+                'fund_source_id',
+                'reporting_period',
+                'serial_number',
+                'allotment_number',
+                'date_issued',
+                'valid_until',
+                'particulars',
+                'fund_classification',
+                'book_id',
+                'funding_code',
+                'responsibility_center_id',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [['authorization_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => AuthorizationCode::class, 'targetAttribute' => ['authorization_code_id' => 'id']],
+            [['document_recieve_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentRecieve::class, 'targetAttribute' => ['document_recieve_id' => 'id']],
+            [['financing_source_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinancingSourceCode::class, 'targetAttribute' => ['financing_source_code_id' => 'id']],
+            [['fund_category_and_classification_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => FundCategoryAndClassificationCode::class, 'targetAttribute' => ['fund_category_and_classification_code_id' => 'id']],
+            [['fund_cluster_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => FundClusterCode::class, 'targetAttribute' => ['fund_cluster_code_id' => 'id']],
+            [['fund_source_id'], 'exist', 'skipOnError' => true, 'targetClass' => FundSource::class, 'targetAttribute' => ['fund_source_id' => 'id']],
+            [['mfo_pap_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => MfoPapCode::class, 'targetAttribute' => ['mfo_pap_code_id' => 'id']],
         ];
     }
 
@@ -100,7 +120,7 @@ class RecordAllotments extends \yii\db\ActiveRecord
      */
     public function getRecordAllotmentEntries()
     {
-        return $this->hasMany(RecordAllotmentEntries::className(), ['record_allotment_id' => 'id']);
+        return $this->hasMany(RecordAllotmentEntries::class, ['record_allotment_id' => 'id']);
     }
 
     /**
@@ -110,7 +130,7 @@ class RecordAllotments extends \yii\db\ActiveRecord
      */
     public function getAuthorizationCode()
     {
-        return $this->hasOne(AuthorizationCode::className(), ['id' => 'authorization_code_id']);
+        return $this->hasOne(AuthorizationCode::class, ['id' => 'authorization_code_id']);
     }
 
     /**
@@ -120,7 +140,7 @@ class RecordAllotments extends \yii\db\ActiveRecord
      */
     public function getDocumentRecieve()
     {
-        return $this->hasOne(DocumentRecieve::className(), ['id' => 'document_recieve_id']);
+        return $this->hasOne(DocumentRecieve::class, ['id' => 'document_recieve_id']);
     }
 
     /**
@@ -130,7 +150,7 @@ class RecordAllotments extends \yii\db\ActiveRecord
      */
     public function getFinancingSourceCode()
     {
-        return $this->hasOne(FinancingSourceCode::className(), ['id' => 'financing_source_code_id']);
+        return $this->hasOne(FinancingSourceCode::class, ['id' => 'financing_source_code_id']);
     }
 
     /**
@@ -140,7 +160,7 @@ class RecordAllotments extends \yii\db\ActiveRecord
      */
     public function getFundCategoryAndClassificationCode()
     {
-        return $this->hasOne(FundCategoryAndClassificationCode::className(), ['id' => 'fund_category_and_classification_code_id']);
+        return $this->hasOne(FundCategoryAndClassificationCode::class, ['id' => 'fund_category_and_classification_code_id']);
     }
 
     /**
@@ -150,7 +170,7 @@ class RecordAllotments extends \yii\db\ActiveRecord
      */
     public function getFundClusterCode()
     {
-        return $this->hasOne(FundClusterCode::className(), ['id' => 'fund_cluster_code_id']);
+        return $this->hasOne(FundClusterCode::class, ['id' => 'fund_cluster_code_id']);
     }
 
     /**
@@ -160,7 +180,7 @@ class RecordAllotments extends \yii\db\ActiveRecord
      */
     public function getFundSource()
     {
-        return $this->hasOne(FundSource::className(), ['id' => 'fund_source_id']);
+        return $this->hasOne(FundSource::class, ['id' => 'fund_source_id']);
     }
 
     /**
@@ -170,7 +190,7 @@ class RecordAllotments extends \yii\db\ActiveRecord
      */
     public function getMfoPapCode()
     {
-        return $this->hasOne(MfoPapCode::className(), ['id' => 'mfo_pap_code_id']);
+        return $this->hasOne(MfoPapCode::class, ['id' => 'mfo_pap_code_id']);
     }
 
     /**

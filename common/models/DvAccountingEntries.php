@@ -50,6 +50,19 @@ class DvAccountingEntries extends \yii\db\ActiveRecord
             [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
             [['dv_aucs_id'], 'exist', 'skipOnError' => true, 'targetClass' => DvAucs::class, 'targetAttribute' => ['dv_aucs_id' => 'id']],
             [['net_asset_equity_id'], 'exist', 'skipOnError' => true, 'targetClass' => NetAssetEquity::class, 'targetAttribute' => ['net_asset_equity_id' => 'id']],
+            [[
+                'id',
+                'dv_aucs_id',
+                'cashflow_id',
+                'net_asset_equity_id',
+                'chart_of_account_id',
+                'debit',
+                'credit',
+                'closing_nonclosing',
+                'current_noncurrent',
+                'lvl',
+                'object_code',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process']
         ];
     }
 

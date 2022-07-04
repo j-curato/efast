@@ -39,8 +39,17 @@ class RecordAllotmentEntries extends \yii\db\ActiveRecord
             [['record_allotment_id', 'chart_of_account_id', 'lvl'], 'integer'],
             [['amount'], 'number'],
             [['object_code', 'report_type'], 'string', 'max' => 255],
-            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::className(), 'targetAttribute' => ['chart_of_account_id' => 'id']],
-            [['record_allotment_id'], 'exist', 'skipOnError' => true, 'targetClass' => RecordAllotments::className(), 'targetAttribute' => ['record_allotment_id' => 'id']],
+            [[
+                'id',
+                'record_allotment_id',
+                'chart_of_account_id',
+                'amount',
+                'lvl',
+                'object_code',
+                'report_type',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
+            [['record_allotment_id'], 'exist', 'skipOnError' => true, 'targetClass' => RecordAllotments::class, 'targetAttribute' => ['record_allotment_id' => 'id']],
         ];
     }
 
@@ -67,7 +76,7 @@ class RecordAllotmentEntries extends \yii\db\ActiveRecord
      */
     public function getRaouds()
     {
-        return $this->hasMany(Raouds::className(), ['record_allotment_entries_id' => 'id']);
+        return $this->hasMany(Raouds::class, ['record_allotment_entries_id' => 'id']);
     }
 
     /**
@@ -77,7 +86,7 @@ class RecordAllotmentEntries extends \yii\db\ActiveRecord
      */
     public function getChartOfAccount()
     {
-        return $this->hasOne(ChartOfAccounts::className(), ['id' => 'chart_of_account_id']);
+        return $this->hasOne(ChartOfAccounts::class, ['id' => 'chart_of_account_id']);
     }
 
     /**
@@ -87,7 +96,7 @@ class RecordAllotmentEntries extends \yii\db\ActiveRecord
      */
     public function getRecordAllotment()
     {
-        return $this->hasOne(RecordAllotments::className(), ['id' => 'record_allotment_id']);
+        return $this->hasOne(RecordAllotments::class, ['id' => 'record_allotment_id']);
     }
 
     /**

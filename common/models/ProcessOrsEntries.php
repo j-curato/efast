@@ -38,8 +38,17 @@ class ProcessOrsEntries extends \yii\db\ActiveRecord
             [['chart_of_account_id', 'process_ors_id', 'record_allotment_entries_id', 'is_realign'], 'integer'],
             [['amount'], 'number'],
             [['reporting_period'], 'string', 'max' => 20],
-            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::className(), 'targetAttribute' => ['chart_of_account_id' => 'id']],
-            [['process_ors_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProcessOrs::className(), 'targetAttribute' => ['process_ors_id' => 'id']],
+            [[
+                'id',
+                'chart_of_account_id',
+                'process_ors_id',
+                'amount',
+                'reporting_period',
+                'record_allotment_entries_id',
+                'is_realign',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
+            [['process_ors_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProcessOrs::class, 'targetAttribute' => ['process_ors_id' => 'id']],
         ];
     }
 
@@ -66,7 +75,7 @@ class ProcessOrsEntries extends \yii\db\ActiveRecord
      */
     public function getChartOfAccount()
     {
-        return $this->hasOne(ChartOfAccounts::className(), ['id' => 'chart_of_account_id']);
+        return $this->hasOne(ChartOfAccounts::class, ['id' => 'chart_of_account_id']);
     }
 
     /**
@@ -76,7 +85,7 @@ class ProcessOrsEntries extends \yii\db\ActiveRecord
      */
     public function getProcessOrs()
     {
-        return $this->hasOne(ProcessOrs::className(), ['id' => 'process_ors_id']);
+        return $this->hasOne(ProcessOrs::class, ['id' => 'process_ors_id']);
     }
 
     /**

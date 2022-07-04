@@ -41,6 +41,18 @@ class PrStock extends \yii\db\ActiveRecord
             [['created_at'], 'safe'],
             [['bac_code'], 'string', 'max' => 255],
             [['id'], 'unique'],
+            [[
+                'id',
+                'stock_title',
+                'bac_code',
+                'unit_of_measure_id',
+                'amount',
+                'chart_of_account_id',
+                'part',
+                'type',
+                'created_at',
+                'is_final',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

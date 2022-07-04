@@ -40,8 +40,18 @@ class TrackingSheet extends \yii\db\ActiveRecord
             [['gross_amount'], 'number'],
             [['created_at'], 'safe'],
             [['tracking_number', 'transaction_type'], 'string', 'max' => 255],
-            [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::className(), 'targetAttribute' => ['payee_id' => 'id']],
-            [['process_ors_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProcessOrs::className(), 'targetAttribute' => ['process_ors_id' => 'id']],
+            [[
+                'id',
+                'payee_id',
+                'process_ors_id',
+                'tracking_number',
+                'particular',
+                'transaction_type',
+                'gross_amount',
+                'created_at',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::class, 'targetAttribute' => ['payee_id' => 'id']],
+            [['process_ors_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProcessOrs::class, 'targetAttribute' => ['process_ors_id' => 'id']],
         ];
     }
 
@@ -69,7 +79,7 @@ class TrackingSheet extends \yii\db\ActiveRecord
      */
     public function getPayee()
     {
-        return $this->hasOne(Payee::className(), ['id' => 'payee_id']);
+        return $this->hasOne(Payee::class, ['id' => 'payee_id']);
     }
 
     /**
@@ -79,7 +89,7 @@ class TrackingSheet extends \yii\db\ActiveRecord
      */
     public function getProcessOrs()
     {
-        return $this->hasOne(ProcessOrs::className(), ['id' => 'process_ors_id']);
+        return $this->hasOne(ProcessOrs::class, ['id' => 'process_ors_id']);
     }
 
     /**

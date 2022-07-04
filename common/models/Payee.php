@@ -41,6 +41,17 @@ class Payee extends \yii\db\ActiveRecord
             [['account_name', 'registered_name', 'contact_person', 'registered_address', 'remark'], 'string', 'max' => 255],
             [['contact'], 'string', 'max' => 20],
             [['tin_number'], 'string', 'max' => 30],
+            [[
+                'id',
+                'account_name',
+                'registered_name',
+                'contact_person',
+                'registered_address',
+                'contact',
+                'remark',
+                'tin_number',
+                'isEnable',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -69,7 +80,7 @@ class Payee extends \yii\db\ActiveRecord
      */
     public function getLiquidations()
     {
-        return $this->hasMany(Liquidation::className(), ['payee_id' => 'id']);
+        return $this->hasMany(Liquidation::class, ['payee_id' => 'id']);
     }
 
     /**
@@ -79,7 +90,7 @@ class Payee extends \yii\db\ActiveRecord
      */
     public function getTrackingSheets()
     {
-        return $this->hasMany(TrackingSheet::className(), ['payee_id' => 'id']);
+        return $this->hasMany(TrackingSheet::class, ['payee_id' => 'id']);
     }
 
     /**
@@ -89,7 +100,7 @@ class Payee extends \yii\db\ActiveRecord
      */
     public function getTransactions()
     {
-        return $this->hasMany(Transaction::className(), ['payee_id' => 'id']);
+        return $this->hasMany(Transaction::class, ['payee_id' => 'id']);
     }
 
     /**

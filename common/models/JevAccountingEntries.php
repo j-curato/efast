@@ -44,10 +44,24 @@ class JevAccountingEntries extends \yii\db\ActiveRecord
             [['debit', 'credit'], 'number'],
             [['closing_nonclosing'], 'string', 'max' => 50],
             [['current_noncurrent', 'object_code'], 'string', 'max' => 255],
-            [['cashflow_id'], 'exist', 'skipOnError' => true, 'targetClass' => CashFlow::className(), 'targetAttribute' => ['cashflow_id' => 'id']],
-            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::className(), 'targetAttribute' => ['chart_of_account_id' => 'id']],
-            [['jev_preparation_id'], 'exist', 'skipOnError' => true, 'targetClass' => JevPreparation::className(), 'targetAttribute' => ['jev_preparation_id' => 'id']],
-            [['net_asset_equity_id'], 'exist', 'skipOnError' => true, 'targetClass' => NetAssetEquity::className(), 'targetAttribute' => ['net_asset_equity_id' => 'id']],
+            [[
+
+                'id',
+                'jev_preparation_id',
+                'cashflow_id',
+                'net_asset_equity_id',
+                'chart_of_account_id',
+                'debit',
+                'credit',
+                'closing_nonclosing',
+                'current_noncurrent',
+                'lvl',
+                'object_code',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [['cashflow_id'], 'exist', 'skipOnError' => true, 'targetClass' => CashFlow::class, 'targetAttribute' => ['cashflow_id' => 'id']],
+            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
+            [['jev_preparation_id'], 'exist', 'skipOnError' => true, 'targetClass' => JevPreparation::class, 'targetAttribute' => ['jev_preparation_id' => 'id']],
+            [['net_asset_equity_id'], 'exist', 'skipOnError' => true, 'targetClass' => NetAssetEquity::class, 'targetAttribute' => ['net_asset_equity_id' => 'id']],
         ];
     }
 
@@ -78,7 +92,7 @@ class JevAccountingEntries extends \yii\db\ActiveRecord
      */
     public function getCashflow()
     {
-        return $this->hasOne(CashFlow::className(), ['id' => 'cashflow_id']);
+        return $this->hasOne(CashFlow::class, ['id' => 'cashflow_id']);
     }
 
     /**
@@ -88,7 +102,7 @@ class JevAccountingEntries extends \yii\db\ActiveRecord
      */
     public function getChartOfAccount()
     {
-        return $this->hasOne(ChartOfAccounts::className(), ['id' => 'chart_of_account_id']);
+        return $this->hasOne(ChartOfAccounts::class, ['id' => 'chart_of_account_id']);
     }
 
     /**
@@ -98,7 +112,7 @@ class JevAccountingEntries extends \yii\db\ActiveRecord
      */
     public function getJevPreparation()
     {
-        return $this->hasOne(JevPreparation::className(), ['id' => 'jev_preparation_id']);
+        return $this->hasOne(JevPreparation::class, ['id' => 'jev_preparation_id']);
     }
 
     /**
@@ -108,7 +122,7 @@ class JevAccountingEntries extends \yii\db\ActiveRecord
      */
     public function getNetAssetEquity()
     {
-        return $this->hasOne(NetAssetEquity::className(), ['id' => 'net_asset_equity_id']);
+        return $this->hasOne(NetAssetEquity::class, ['id' => 'net_asset_equity_id']);
     }
 
     /**

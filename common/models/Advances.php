@@ -41,6 +41,19 @@ class Advances extends \yii\db\ActiveRecord
             [['particular'], 'string', 'max' => 500],
             [['nft_number', 'advances_type'], 'string', 'max' => 255],
             [['reporting_period'], 'string', 'max' => 20],
+            [[
+                'id',
+                'province',
+                'report_type',
+                'particular',
+                'nft_number',
+                'created_at',
+                'reporting_period',
+                'book_id',
+                'advances_type',
+                'bank_account_id',
+                'dv_aucs_id',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

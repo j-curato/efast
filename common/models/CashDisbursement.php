@@ -46,8 +46,24 @@ class CashDisbursement extends \yii\db\ActiveRecord
             [['reporting_period', 'mode_of_payment', 'issuance_date'], 'string', 'max' => 50],
             [['check_or_ada_no'], 'string', 'max' => 100],
             [['ada_number'], 'string', 'max' => 40],
-            [['book_id'], 'exist', 'skipOnError' => true, 'targetClass' => Books::className(), 'targetAttribute' => ['book_id' => 'id']],
-            [['dv_aucs_id'], 'exist', 'skipOnError' => true, 'targetClass' => DvAucs::className(), 'targetAttribute' => ['dv_aucs_id' => 'id']],
+            [['book_id'], 'exist', 'skipOnError' => true, 'targetClass' => Books::class, 'targetAttribute' => ['book_id' => 'id']],
+            [['dv_aucs_id'], 'exist', 'skipOnError' => true, 'targetClass' => DvAucs::class, 'targetAttribute' => ['dv_aucs_id' => 'id']],
+
+            [[
+                'id',
+                'book_id',
+                'dv_aucs_id',
+                'reporting_period',
+                'mode_of_payment',
+                'check_or_ada_no',
+                'is_cancelled',
+                'issuance_date',
+                'ada_number',
+                'begin_time',
+                'out_time',
+                'parent_disbursement',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -79,7 +95,7 @@ class CashDisbursement extends \yii\db\ActiveRecord
      */
     public function getAdvancesEntries()
     {
-        return $this->hasMany(AdvancesEntries::className(), ['cash_disbursement_id' => 'id']);
+        return $this->hasMany(AdvancesEntries::class, ['cash_disbursement_id' => 'id']);
     }
 
     /**
@@ -89,7 +105,7 @@ class CashDisbursement extends \yii\db\ActiveRecord
      */
     public function getBook()
     {
-        return $this->hasOne(Books::className(), ['id' => 'book_id']);
+        return $this->hasOne(Books::class, ['id' => 'book_id']);
     }
 
     /**
@@ -99,7 +115,7 @@ class CashDisbursement extends \yii\db\ActiveRecord
      */
     public function getDvAucs()
     {
-        return $this->hasOne(DvAucs::className(), ['id' => 'dv_aucs_id']);
+        return $this->hasOne(DvAucs::class, ['id' => 'dv_aucs_id']);
     }
 
     /**
@@ -109,7 +125,7 @@ class CashDisbursement extends \yii\db\ActiveRecord
      */
     public function getTransmittalEntries()
     {
-        return $this->hasMany(TransmittalEntries::className(), ['cash_disbursement_id' => 'id']);
+        return $this->hasMany(TransmittalEntries::class, ['cash_disbursement_id' => 'id']);
     }
 
     /**

@@ -54,9 +54,33 @@ class DvAucs extends \yii\db\ActiveRecord
             [['net_amount_paid'], 'number'],
             [['mrd_classification_id', 'nature_of_transaction_id', 'payee_id', 'book_id', 'is_cancelled', 'tracking_sheet_id'], 'integer'],
             [['particular', 'dv_link'], 'string'],
-            [['created_at', 'transaction_begin_time', 'return_timestamp', 'out_timestamp', 'accept_timestamp', 'in_timestamp','recieved_at'], 'safe'],
+            [['created_at', 'transaction_begin_time', 'return_timestamp', 'out_timestamp', 'accept_timestamp', 'in_timestamp', 'recieved_at'], 'safe'],
             [['dv_number', 'tax_withheld', 'other_trust_liability_withheld'], 'string', 'max' => 255],
             [['reporting_period', 'transaction_type'], 'string', 'max' => 50],
+            [[
+                'id',
+                'dv_number',
+                'reporting_period',
+                'tax_withheld',
+                'other_trust_liability_withheld',
+                'net_amount_paid',
+                'mrd_classification_id',
+                'nature_of_transaction_id',
+                'particular',
+                'payee_id',
+                'transaction_type',
+                'book_id',
+                'is_cancelled',
+                'created_at',
+                'dv_link',
+                'transaction_begin_time',
+                'return_timestamp',
+                'out_timestamp',
+                'accept_timestamp',
+                'tracking_sheet_id',
+                'in_timestamp',
+                'recieved_at',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
             [['mrd_classification_id'], 'exist', 'skipOnError' => true, 'targetClass' => MrdClassification::class, 'targetAttribute' => ['mrd_classification_id' => 'id']],
         ];
     }
@@ -89,7 +113,7 @@ class DvAucs extends \yii\db\ActiveRecord
             'tracking_sheet_id' => 'Tracking Sheet ID',
             'in_timestamp' => 'In Timestamp',
             'recieved_at' => 'Recieve  Timestamp',
-            
+
         ];
     }
 
