@@ -384,4 +384,9 @@ class PrRfqController extends Controller
 
         return $out;
     }
+    public function actionBlankView()
+    {
+
+        return $this->render('blank_view');
+    }
 }

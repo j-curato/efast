@@ -40,6 +40,19 @@ class Payee extends \yii\db\ActiveRecord
             [['contact'], 'string', 'max' => 20],
             [['tin_number'], 'string', 'max' => 30],
             [['isEnable'], 'integer',],
+            [[
+                'id',
+                'account_name',
+                'registered_name',
+                'contact_person',
+                'registered_address',
+                'contact',
+                'remark',
+                'tin_number',
+                'isEnable',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+
         ];
     }
 
@@ -74,5 +87,4 @@ class Payee extends \yii\db\ActiveRecord
     {
         return $this->hasMany(JevPreparation::className(), ['payee_id' => 'id']);
     }
-    
 }

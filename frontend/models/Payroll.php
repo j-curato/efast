@@ -42,6 +42,17 @@ class Payroll extends \yii\db\ActiveRecord
                 'process_ors_id',
                 'type'
             ], 'required'],
+            [[
+                'id',
+                'payroll_number',
+                'reporting_period',
+                'process_ors_id',
+                'type',
+                'amount',
+                'due_to_bir_amount',
+                'created_at',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

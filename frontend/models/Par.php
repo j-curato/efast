@@ -36,6 +36,18 @@ class Par extends \yii\db\ActiveRecord
             [['employee_id', 'actual_user'], 'string'],
             [['par_number', 'property_number'], 'string', 'max' => 255],
             [['par_number'], 'unique'],
+            [[
+                'par_number',
+                'id',
+                'date',
+                'employee_id',
+                'agency_id',
+                'created_at',
+                'actual_user',
+                'property_number',
+                'fk_property_id',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -51,7 +63,7 @@ class Par extends \yii\db\ActiveRecord
             'employee_id' => 'Recieved By',
             'agency_id' => ' Agency',
             'actual_user' => 'Actual User',
-            'fk_property_id'=>'Property Number'
+            'fk_property_id' => 'Property Number'
         ];
     }
 
