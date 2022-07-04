@@ -15,6 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Create Pr Rfq', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Rfq Form', ['blank-view'], ['class' => 'btn btn-warning']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -39,6 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute'=>'employee_id',
                 'value'=>'canvasser.f_name'
             ],
+            'created_at',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
