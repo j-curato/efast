@@ -99,7 +99,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th rowspan="2">DV No.</th>
                 <th rowspan="2">DV Amount</th>
                 <th colspan="3">Elapsed Time in Accounting Unit</th>
-                <th colspan="3">Elapsed Time in Accounting Unit</th>
+                <th colspan="3">Elapsed Time in Cash Unit</th>
                 <th rowspan="2">Total Turn-around Time(in working day/s)<br><span style="font-size: 11px;font-style:italic;"> (If sum equals 0 value shall be 1)</span></th>
                 <th rowspan="2">Within / Beyond the Timeline of 3 Working Days) </th>
                 <th rowspan="2">Remarks</th>
