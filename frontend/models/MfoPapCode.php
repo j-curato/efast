@@ -28,8 +28,16 @@ class MfoPapCode extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['code', 'name', 'description','division'], 'required'],
-            [['code', 'name', 'description','division'], 'string', 'max' => 255],
+            [['code', 'name', 'description', 'division'], 'required'],
+            [['code', 'name', 'description', 'division'], 'string', 'max' => 255],
+            [[
+                'id',
+                'code',
+                'name',
+                'description',
+                'division',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

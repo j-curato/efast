@@ -40,12 +40,29 @@ class CashRecieved extends \yii\db\ActiveRecord
     {
         return [
             [['document_recieved_id', 'book_id', 'mfo_pap_code_id'], 'integer'],
-            [['document_recieved_id', 'book_id', 'date','reporting_period','nca_no','purpose','amount'], 'required'],
+            [['document_recieved_id', 'book_id', 'date', 'reporting_period', 'nca_no', 'purpose', 'amount'], 'required'],
             [['amount'], 'number'],
             [['date'], 'string', 'max' => 50],
             [['reporting_period'], 'string', 'max' => 40],
-            [['nca_no', 'nta_no', 'nft_no','account_number'], 'string', 'max' => 100],
+            [['nca_no', 'nta_no', 'nft_no', 'account_number'], 'string', 'max' => 100],
             [['purpose'], 'string', 'max' => 255],
+            [[
+                'id',
+                'document_recieved_id',
+                'book_id',
+                'mfo_pap_code_id',
+                'date',
+                'reporting_period',
+                'nca_no',
+                'nta_no',
+                'nft_no',
+                'purpose',
+                'amount',
+                'account_number',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+
+
             [['book_id'], 'exist', 'skipOnError' => true, 'targetClass' => Books::class, 'targetAttribute' => ['book_id' => 'id']],
             [['document_recieved_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentRecieve::class, 'targetAttribute' => ['document_recieved_id' => 'id']],
             [['mfo_pap_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => MfoPapCode::class, 'targetAttribute' => ['mfo_pap_code_id' => 'id']],

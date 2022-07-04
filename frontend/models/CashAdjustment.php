@@ -34,6 +34,15 @@ class CashAdjustment extends \yii\db\ActiveRecord
             [['amount'], 'number'],
             [['date'], 'string', 'max' => 255],
             [['reporting_period'], 'string', 'max' => 50],
+            [[
+                'id',
+                'book_id',
+                'particular',
+                'date',
+                'amount',
+                'reporting_period',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -48,8 +57,7 @@ class CashAdjustment extends \yii\db\ActiveRecord
             'particular' => 'Particular',
             'date' => 'Date',
             'amount' => 'Amount',
-            
-            'reporting_period'=>'Reporting Period',
+            'reporting_period' => 'Reporting Period',
         ];
     }
     public function getBooks()

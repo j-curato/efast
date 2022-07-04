@@ -38,11 +38,26 @@ class CashDisbursement extends \yii\db\ActiveRecord
         return [
 
 
-            [['book_id', 'dv_aucs_id', 'reporting_period', 'mode_of_payment', 'issuance_date','check_or_ada_no'], 'required'],
+            [['book_id', 'dv_aucs_id', 'reporting_period', 'mode_of_payment', 'issuance_date', 'check_or_ada_no'], 'required'],
             [['book_id', 'dv_aucs_id', 'is_cancelled'], 'integer'],
             [['reporting_period', 'mode_of_payment', 'issuance_date'], 'string', 'max' => 50],
             [['ada_number'], 'string', 'max' => 40],
             [['check_or_ada_no'], 'string', 'max' => 100],
+            [[
+                'id',
+                'book_id',
+                'dv_aucs_id',
+                'reporting_period',
+                'mode_of_payment',
+                'check_or_ada_no',
+                'is_cancelled',
+                'issuance_date',
+                'ada_number',
+                'begin_time',
+                'out_time',
+                'parent_disbursement',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
             [['book_id'], 'exist', 'skipOnError' => true, 'targetClass' => Books::class, 'targetAttribute' => ['book_id' => 'id']],
         ];
     }

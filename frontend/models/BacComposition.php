@@ -33,6 +33,21 @@ class BacComposition extends \yii\db\ActiveRecord
             [['effectivity_date', 'expiration_date'], 'safe'],
             [['effectivity_date', 'expiration_date'], 'required'],
             [['rso_number'], 'string', 'max' => 255],
+
+            [[
+                'id',
+                'effectivity_date',
+                'expiration_date',
+                'rso_number',
+                'created_at',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+
+
+
+
+
+
         ];
     }
 
@@ -46,6 +61,7 @@ class BacComposition extends \yii\db\ActiveRecord
             'effectivity_date' => 'Effectivity Date',
             'expiration_date' => 'Expiration Date',
             'rso_number' => 'Rso Number',
+            'created_at' => 'Created At',
         ];
     }
 

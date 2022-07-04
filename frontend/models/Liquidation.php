@@ -51,7 +51,29 @@ class Liquidation extends \yii\db\ActiveRecord
             [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::class, 'targetAttribute' => ['payee_id' => 'id']],
             [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
             [['po_transaction_id'], 'exist', 'skipOnError' => true, 'targetClass' => PoTransaction::class, 'targetAttribute' => ['po_transaction_id' => 'id']],
-
+            [[
+                'id',
+                'payee_id',
+                'responsibility_center_id',
+                'check_date',
+                'check_number',
+                'dv_number',
+                'particular',
+                'reporting_period',
+                'is_cancelled',
+                'created_at',
+                'po_transaction_id',
+                'check_range_id',
+                'is_locked',
+                'status',
+                'province',
+                'payee',
+                'is_final',
+                'document_link',
+                'cancel_reporting_period',
+                'exclude_in_raaf',
+                'bank_account_id',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

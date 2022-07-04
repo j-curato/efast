@@ -34,6 +34,13 @@ class GeneralLedger extends \yii\db\ActiveRecord
             [['created_at'], 'safe'],
             [['reporting_period'], 'string', 'max' => 20],
             [['object_code'], 'string', 'max' => 255],
+            [[
+                'id',
+                'reporting_period',
+                'object_code',
+                'book_id',
+                'created_at',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

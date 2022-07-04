@@ -32,7 +32,16 @@ class BacCompositionMember extends \yii\db\ActiveRecord
         return [
             [['bac_composition_id', 'bac_position_id'], 'integer'],
             [['employee_id'], 'string', 'max' => 255],
-            [['bac_composition_id'], 'exist', 'skipOnError' => true, 'targetClass' => BacComposition::className(), 'targetAttribute' => ['bac_composition_id' => 'id']],
+            [[
+                'id',
+                'bac_composition_id',
+                'employee_id',
+                'bac_position_id',
+               
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [['bac_composition_id'], 'exist', 'skipOnError' => true, 'targetClass' => BacComposition::class, 'targetAttribute' => ['bac_composition_id' => 'id']],
+
+
         ];
     }
 
@@ -46,6 +55,7 @@ class BacCompositionMember extends \yii\db\ActiveRecord
             'bac_composition_id' => 'Bac Composition ID',
             'employee_id' => 'Employee ID',
             'bac_position_id' => 'Bac Position ID',
+            'created_at'=>'Created At',
         ];
     }
 

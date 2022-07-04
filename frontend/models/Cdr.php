@@ -36,6 +36,18 @@ class Cdr extends \yii\db\ActiveRecord
             [['serial_number'], 'string', 'max' => 100],
             [['reporting_period', 'province', 'book_name'], 'string', 'max' => 50],
             [['report_type'], 'string', 'max' => 255],
+            [[
+                'id',
+                'serial_number',
+                'reporting_period',
+                'province',
+                'book_name',
+                'report_type',
+                'is_final',
+                'document_link',
+                'fk_bank_account_id',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

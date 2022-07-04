@@ -28,6 +28,15 @@ class MrdClassification extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'description'], 'string', 'max' => 255],
+            [[
+                'id',
+                'reporting_period',
+                'amount',
+                'book_id',
+                'province',
+                'fund_source_type',
+                'created_at',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

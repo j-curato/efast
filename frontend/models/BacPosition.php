@@ -27,6 +27,14 @@ class BacPosition extends \yii\db\ActiveRecord
     {
         return [
             [['position'], 'string', 'max' => 255],
+            [['position'], 'required'],
+            [[
+                'id',
+                'position',
+                'created_at',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+
         ];
     }
 

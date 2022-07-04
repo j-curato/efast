@@ -31,6 +31,11 @@ class GeneralJournal extends \yii\db\ActiveRecord
             [['book_id'], 'required'],
             [['book_id'], 'integer'],
             [['reporting_period'], 'string', 'max' => 20],
+            [[
+                'id',
+                'book_id',
+                'reporting_period',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -50,5 +55,4 @@ class GeneralJournal extends \yii\db\ActiveRecord
 
         return $this->hasOne(Books::class, ['id' => 'book_id']);
     }
-
 }

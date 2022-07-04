@@ -29,6 +29,12 @@ class AuthorizationCode extends \yii\db\ActiveRecord
         return [
             [['name', 'description'], 'required'],
             [['name', 'description'], 'string', 'max' => 255],
+            [[
+                'id',
+                'name',
+                'description',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
         ];
     }
 

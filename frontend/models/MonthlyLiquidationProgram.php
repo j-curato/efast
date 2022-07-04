@@ -36,6 +36,15 @@ class MonthlyLiquidationProgram extends \yii\db\ActiveRecord
             [['created_at'], 'safe'],
             [['reporting_period', 'province'], 'string', 'max' => 20],
             [['fund_source_type'], 'string', 'max' => 255],
+            [[
+                'id',
+                'reporting_period',
+                'amount',
+                'book_id',
+                'province',
+                'fund_source_type',
+                'created_at',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

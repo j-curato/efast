@@ -32,12 +32,24 @@ class MaintenanceJobRequest extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'fk_responsibility_center_id', 'fk_employee_id', 'date_requested', 'problem_description','mjr_number'], 'required'],
+            [['id', 'fk_responsibility_center_id', 'fk_employee_id', 'date_requested', 'problem_description', 'mjr_number'], 'required'],
             [['id', 'fk_responsibility_center_id', 'fk_employee_id'], 'integer'],
             [['date_requested', 'created_at'], 'safe'],
             [['mjr_number'], 'unique'],
-            [['problem_description', 'recommendation', 'action_taken','mjr_number'], 'string'],
+            [['problem_description', 'recommendation', 'action_taken', 'mjr_number'], 'string'],
             [['id'], 'unique'],
+            [[
+                'id',
+                'mjr_number',
+                'fk_responsibility_center_id',
+                'fk_employee_id',
+                'date_requested',
+                'problem_description',
+                'recommendation',
+                'action_taken',
+                'created_at',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -60,10 +72,10 @@ class MaintenanceJobRequest extends \yii\db\ActiveRecord
     }
     public function getResponsibilityCenter()
     {
-        return $this->hasOne(ResponsibilityCenter::class,['id'=>'fk_responsibility_center_id']);
+        return $this->hasOne(ResponsibilityCenter::class, ['id' => 'fk_responsibility_center_id']);
     }
     public function getEmployee()
     {
-        return $this->hasOne(Employee::class,['employee_id'=>'fk_employee_id']);
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_employee_id']);
     }
 }

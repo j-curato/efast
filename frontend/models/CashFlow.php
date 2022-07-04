@@ -30,6 +30,15 @@ class CashFlow extends \yii\db\ActiveRecord
     {
         return [
             [['major_cashflow', 'sub_cashflow1', 'sub_cashflow2', 'specific_cashflow'], 'string', 'max' => 255],
+            [[
+                'id',
+                'major_cashflow',
+                'sub_cashflow1',
+                'sub_cashflow2',
+                'specific_cashflow',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+
         ];
     }
 

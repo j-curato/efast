@@ -29,8 +29,16 @@ class Event extends \yii\db\ActiveRecord
     {
         return [
             [['descriptions'], 'string'],
-            [['created_at','end_date'], 'safe'],
+            [['created_at', 'end_date'], 'safe'],
             [['title'], 'string', 'max' => 255],
+            [[
+                'id',
+                'title',
+                'descriptions',
+                'created_at',
+                'end_date',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -44,7 +52,7 @@ class Event extends \yii\db\ActiveRecord
             'title' => 'Title',
             'descriptions' => 'Descriptions',
             'created_at' => 'Start Date',
-            'end_date'=>'End Date'
+            'end_date' => 'End Date'
         ];
     }
 }

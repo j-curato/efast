@@ -28,9 +28,18 @@ class AdvancesCashDisbursementSearch extends AdvancesCashDisbursement
                 'dv_number',
                 'payee',
                 'particular',
-
                 'book_name'
             ], 'safe'],
+            [[
+                'mode_of_payment',
+                'check_or_ada_no',
+                'ada_number',
+                'issuance_date',
+                'dv_number',
+                'payee',
+                'particular',
+                'book_name'
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

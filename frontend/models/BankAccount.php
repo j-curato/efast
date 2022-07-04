@@ -31,6 +31,15 @@ class BankAccount extends \yii\db\ActiveRecord
             [['account_number'], 'required'],
             [['created_at', 'account_name'], 'safe'],
             [['account_number', 'province'], 'string', 'max' => 255],
+            [[
+                'id',
+                'account_number',
+                'account_name',
+                'province',
+                'created_at',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+
         ];
     }
 

@@ -30,6 +30,14 @@ class JevReportingPeriod extends \yii\db\ActiveRecord
             [['reporting_period'], 'required'],
             [['is_disabled'], 'integer'],
             [['reporting_period'], 'string', 'max' => 20],
+            [[
+                'id',
+                'reporting_period',
+                'is_disabled',
+                'book_id',
+                'reference',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

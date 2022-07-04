@@ -209,7 +209,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <tfoot>
                 <tr>
                     <td colspan="<?= $header_count ?>" style='border:none;padding-top:0'>
-                        Based on the aboove abstract of canvass, it is recommended that the award be made to the Lowest Calculated and Responsive Bidder,
+                        Based on the above abstract of canvass, it is recommended that the award be made to the Lowest Calculated and Responsive Bidder,
                     </td>
                 </tr>
 

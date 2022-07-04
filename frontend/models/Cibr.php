@@ -31,6 +31,17 @@ class Cibr extends \yii\db\ActiveRecord
             [['reporting_period'], 'string', 'max' => 50],
             [['bank_account_id'], 'integer'],
             [['province', 'book_name', 'serial_number'], 'string', 'max' => 255],
+            [[
+                'id',
+                'serial_number',
+                'reporting_period',
+                'province',
+                'book_name',
+                'is_final',
+                'document_link',
+                'bank_account_id',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

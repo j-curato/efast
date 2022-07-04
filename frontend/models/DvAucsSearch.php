@@ -19,7 +19,7 @@ class DvAucsSearch extends DvAucs
         return [
             [['id'], 'integer'],
             [[
-                'dv_number', 'reporting_period', 'tax_withheld', 'other_trust_liability_withheld',
+                'dv_number', 'reporting_period',
                 'particular',
                 'transaction_begin_time',
                 'return_timestamp',
@@ -31,7 +31,6 @@ class DvAucsSearch extends DvAucs
                 'nature_of_transaction_id',
                 'recieved_at'
             ], 'safe'],
-            [['net_amount_paid'], 'number'],
         ];
     }
 
@@ -75,7 +74,6 @@ class DvAucsSearch extends DvAucs
         // grid filtering conditions
         $query->andFilterWhere([
             'dv_aucs.id' => $this->id,
-            'net_amount_paid' => $this->net_amount_paid,
             'is_cancelled' => $this->is_cancelled,
             'recieved_at' => $this->recieved_at
         ]);
@@ -83,7 +81,6 @@ class DvAucsSearch extends DvAucs
         $query->andFilterWhere(['like', 'dv_number', $this->dv_number])
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
             ->andFilterWhere(['like', 'particular', $this->particular])
-            ->andFilterWhere(['like', 'tax_withheld', $this->tax_withheld])
             ->andFilterWhere(['like', 'payee.account_name', $this->payee_id])
             ->andFilterWhere(['like', 'transaction_begin_time', $this->transaction_begin_time])
             ->andFilterWhere(['like', 'return_timestamp', $this->return_timestamp])
@@ -91,8 +88,7 @@ class DvAucsSearch extends DvAucs
             ->andFilterWhere(['like', 'out_timestamp', $this->out_timestamp])
             ->andFilterWhere(['like', 'created_at', $this->created_at])
             ->andFilterWhere(['like', 'mrd_classification.name', $this->mrd_classification_id])
-            ->andFilterWhere(['like', 'nature_of_transaction.name', $this->nature_of_transaction_id])
-            ->andFilterWhere(['like', 'other_trust_liability_withheld', $this->other_trust_liability_withheld]);
+            ->andFilterWhere(['like', 'nature_of_transaction.name', $this->nature_of_transaction_id]);
 
         return $dataProvider;
     }

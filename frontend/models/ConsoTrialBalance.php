@@ -31,6 +31,14 @@ class ConsoTrialBalance extends \yii\db\ActiveRecord
             [['reporting_period', 'entry_type', 'type'], 'required'],
             [['reporting_period'], 'string', 'max' => 20],
             [['entry_type', 'type'], 'string', 'max' => 255],
+            [[
+                'id',
+                'reporting_period',
+                'entry_type',
+                'type',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+
         ];
     }
 

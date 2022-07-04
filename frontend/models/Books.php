@@ -26,8 +26,16 @@ class Books extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name','type'], 'required'],
-            [['name','account_number','type'], 'string', 'max' => 255],
+            [['name', 'type'], 'required'],
+            [['name', 'account_number', 'type'], 'string', 'max' => 255],
+            [[
+                'id',
+                'name',
+                'account_number',
+                'type',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+
         ];
     }
 

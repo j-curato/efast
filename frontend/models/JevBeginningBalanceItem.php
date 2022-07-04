@@ -31,6 +31,14 @@ class JevBeginningBalanceItem extends \yii\db\ActiveRecord
             [['jev_beginning_balance_id'], 'integer'],
             [['debit', 'credit'], 'number'],
             [['object_code'], 'string', 'max' => 255],
+            [[
+                'id',
+                'jev_beginning_balance_id',
+                'object_code',
+                'debit',
+                'credit',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

@@ -12,9 +12,7 @@ use Yii;
  * @property int|null $raoud_id
  * @property string|null $dv_number
  * @property string|null $reporting_period
- * @property string|null $tax_withheld
- * @property string|null $other_trust_liability_withheld
- * @property float|null $net_amount_paid
+
  *
  * @property ProcessOrs $processOrs
  * @property Raouds $raoud
@@ -34,12 +32,41 @@ class DvAucs extends \yii\db\ActiveRecord
      */
     public function rules()
     {
+
+
+
+
         return [
-            [['net_amount_paid', 'tracking_sheet_id', 'is_payable'], 'number'],
-            [['dv_number', 'tax_withheld', 'other_trust_liability_withheld','object_code'], 'string', 'max' => 255],
+            [['tracking_sheet_id', 'is_payable'], 'number'],
+            [['dv_number', 'object_code'], 'string', 'max' => 255],
 
             [['reporting_period'], 'string', 'max' => 50],
             [['particular', 'payee_id'], 'required'],
+            [[
+
+                'id',
+                'dv_number',
+                'reporting_period',
+                'mrd_classification_id',
+                'nature_of_transaction_id',
+                'particular',
+                'payee_id',
+                'transaction_type',
+                'book_id',
+                'is_cancelled',
+                'created_at',
+                'dv_link',
+                'transaction_begin_time',
+                'return_timestamp',
+                'out_timestamp',
+                'accept_timestamp',
+                'tracking_sheet_id',
+                'in_timestamp',
+                'is_payable',
+                'recieved_at',
+                'payroll_id',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
 
         ];
     }
@@ -54,9 +81,6 @@ class DvAucs extends \yii\db\ActiveRecord
             'payee_id' => 'Payee',
             'dv_number' => 'Dv Number',
             'reporting_period' => 'Reporting Period',
-            'tax_withheld' => 'Tax Withheld',
-            'other_trust_liability_withheld' => 'Other Trust Liability Withheld',
-            'net_amount_paid' => 'Net Amount Paid',
             'transaction_begin_time' => 'Transaction Begin Time',
             'in_timestamp' => 'IN Timestamp',
             'tracking_sheet_id' => 'IN Timestamp',

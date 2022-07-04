@@ -31,6 +31,23 @@ class CheckRange extends \yii\db\ActiveRecord
             [['bank_account_id'], 'safe'],
             [['from', 'to', 'reporting_period'], 'required'],
             [['province', 'reporting_period'], 'string'],
+            [[
+                'id',
+                'from',
+                'to',
+                'province',
+                'reporting_period',
+                'begin_balance',
+                'bank_account_id',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+
+
+
+
+
+
+
         ];
     }
 

@@ -30,6 +30,19 @@ class FundCategoryAndClassificationCode extends \yii\db\ActiveRecord
             [['name', 'description'], 'required'],
             [['name', 'description'], 'string', 'max' => 255],
             [['from', 'to'], 'integer'],
+            [[
+                'id',
+                'name',
+                'description',
+                'from',
+                'to',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+
+
+
+
+
         ];
     }
 

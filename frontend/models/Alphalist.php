@@ -33,6 +33,15 @@ class Alphalist extends \yii\db\ActiveRecord
             [['alphalist_number', 'check_range', 'province'], 'string', 'max' => 255],
             [['alphalist_number'], 'unique'],
             [['status'], 'integer'],
+            [[
+                'id',
+                'alphalist_number',
+                'check_range',
+                'province',
+                'created_at',
+                'status',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

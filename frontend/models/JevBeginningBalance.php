@@ -30,6 +30,14 @@ class JevBeginningBalance extends \yii\db\ActiveRecord
     {
         return [
             [['year', 'book_id'], 'integer'],
+            [[
+                'id',
+                'year',
+                'book_id',
+                'created_at',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+
         ];
     }
 
@@ -52,7 +60,7 @@ class JevBeginningBalance extends \yii\db\ActiveRecord
     }
     public function getBook()
     {
-        
-        return $this->hasOne(Books::class,['id'=>'book_id']);
+
+        return $this->hasOne(Books::class, ['id' => 'book_id']);
     }
 }

@@ -31,6 +31,15 @@ class Fur extends \yii\db\ActiveRecord
             [['created_at', 'bank_account_id'], 'safe'],
             [['reporting_period'], 'string', 'max' => 50],
             [['province'], 'string', 'max' => 20],
+            [[
+                'id',
+                'reporting_period',
+                'province',
+                'created_at',
+                'document_link',
+                'bank_account_id',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

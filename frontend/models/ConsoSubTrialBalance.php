@@ -29,6 +29,15 @@ class ConsoSubTrialBalance extends \yii\db\ActiveRecord
         return [
             [['reporting_period', 'book_type'], 'required'],
             [['reporting_period'], 'string', 'max' => 20],
+            [[
+                'id',
+                'reporting_period',
+                'book_type',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+
+
+
         ];
     }
 

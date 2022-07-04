@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value'=>'rfq.rfq_number'
             ],
             'pr_date',
-
+            'created_at',
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

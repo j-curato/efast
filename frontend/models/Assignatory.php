@@ -26,7 +26,12 @@ class Assignatory extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name','position'], 'string', 'max' => 255],
+            [['name', 'position'], 'string', 'max' => 255],
+            [[
+                'id',
+                'name',
+                'position'
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

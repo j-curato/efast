@@ -28,6 +28,11 @@ class Holidays extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'date'], 'string', 'max' => 255],
+            [[
+                'id',
+                'name',
+                'date',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
