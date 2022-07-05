@@ -80,6 +80,20 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
 
             'property_number',
+            [
+                'attribute' => 'article',
+                'value' => function ($model) {
+                    $specs = preg_replace('#\[n\]#', "\n", $model->article);
+                    return   $specs;
+                }
+            ],
+            [
+                'attribute' => 'description',
+                'value' => function ($model) {
+                    $specs = preg_replace('#\[n\]#', "\n", $model->description);
+                    return   $specs;
+                }
+            ],
             'iar_number',
             [
                 'label' => 'Unit of Measure',
@@ -127,3 +141,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
+<style>
+    .grid-view td {
+        white-space: normal;
+        width: 2rem;
+    }
+</style>

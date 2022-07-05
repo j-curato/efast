@@ -17,7 +17,7 @@ class PropertySearch extends Property
     public function rules()
     {
         return [
-            [['book_id', 'unit_of_measure_id', 'employee_id', 'property_number', 'iar_number', 'article', 'model', 'serial_number'], 'safe'],
+            [['book_id', 'unit_of_measure_id', 'employee_id', 'property_number', 'iar_number', 'article', 'model', 'serial_number','description'], 'safe'],
             [['quantity'], 'integer'],
             [['acquisition_amount'], 'number'],
         ];
@@ -75,6 +75,7 @@ class PropertySearch extends Property
             ->andFilterWhere(['like', 'serial_number', $this->serial_number])
             ->andFilterWhere(['like', 'books.name', $this->book_id])
             ->andFilterWhere(['like', 'unit_of_emasure.unit_of_measure', $this->unit_of_measure_id])
+            ->andFilterWhere(['like', 'description', $this->description])
             ->andFilterWhere(['or',['like', 'employee.f_name', $this->employee_id],['like', 'employee.l_name', $this->employee_id]]);
 
         return $dataProvider;
