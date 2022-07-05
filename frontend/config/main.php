@@ -18,12 +18,26 @@ return [
 
 
     'components' => [
+        'response' => [
+            'on beforeSend' => function ($event) {
+                $event->sender->headers->add('x-frame-options', 'DENY');
+                $event->sender->headers->add('x-frame-options', 'nosniff');
+                $event->sender->headers->add('x-xss-protection', 0);
+                $event->sender->headers->add('strict-transport-security', 'max-age=15552000; preload');
+            },
+        ],
         'request' => [
             'csrfParam' => '_csrf-frontend',
             // 'csrfCookie' => [
             //     'httpOnly' => true,
             //     'path' => 'site/login',
             // ],
+
+            'csrfCookie' => [
+                'httpOnly' => true,
+                'secure' => true
+
+            ],
             'parsers' => [
                 'application/json' => JsonParser::class
             ]
@@ -39,6 +53,18 @@ return [
         //     'name' => 'PHPFRONTSESSID',
         //     'savePath' => sys_get_temp_dir(),
         // ],
+        'session' => [
+            'class' => 'yii\web\Session',
+            'httpOnly' => true,
+            'secure' => true
+
+        ],
+        'cookies' => [
+            'class' => 'yii\web\Cookie',
+            'httpOnly' => true,
+            'secure' => true
+
+        ],
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
