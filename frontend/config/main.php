@@ -23,7 +23,7 @@ return [
                 $event->sender->headers->add('x-frame-options', 'DENY');
                 $event->sender->headers->add('x-frame-options', 'nosniff');
                 $event->sender->headers->add('x-xss-protection', 0);
-                $event->sender->headers->add('strict-transport-security', 'max-age=15552000; preload');
+                $event->sender->headers->add('strict-transport-security', 'max-age=31536000; preload');
             },
         ],
         'request' => [
