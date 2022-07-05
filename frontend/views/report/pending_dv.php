@@ -37,7 +37,9 @@ $this->params['breadcrumbs'][] = $this->title;
         ->where("dv_aucs.id NOT IN 
         (SELECT DISTINCT cash_disbursement.dv_aucs_id from cash_disbursement WHERE cash_disbursement.dv_aucs_id IS NOT NULL)")
         ->andWhere('qwe.total_disbursed >0')
-        ->andWhere('dv_aucs.is_cancelled =0');
+        ->andWhere('dv_aucs.is_cancelled =0')
+        ->andWhere('dv_aucs.id !=9026')
+        ;
 
     // add conditions that should always apply here
 
