@@ -24,10 +24,16 @@ $this->params['breadcrumbs'][] = $this->title;
             echo   Html::a('AOQ Link ', $link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px'])
             ?>
         </p>
-        <?php foreach ($aoq_lowest as $index => $val) {
+        <?php
+        $row_number = 0;
+
+        foreach ($aoq_lowest as $index => $val) {
         ?>
 
             <?php
+            $alphabet = range('A', 'Z');
+            $po_number = $model->po_number . $alphabet[$row_number];
+            $row_number++;
             $payee =  $index;
             $payee_address =   !empty($val[0]['address']) ? $val[0]['address'] : '';
             $payee_tin_number =   !empty($val[0]['tin_number']) ? $val[0]['tin_number'] : '';
@@ -100,7 +106,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     Job Order No.:
                                 </span>
                                 <span>
-                                    <?php echo $model->po_number ?>
+                                    <?php echo $po_number ?>
                                 </span>
                             </th>
                         </tr>
@@ -256,7 +262,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </tr>
                         <tr>
                             <td class="center no-border">
-                                <span class="personel" style="text-decoration: underline;font-size:12px;white-space:nowrap;">
+                                <span class="personel" style="text-decoration: underline;">
                                     <?php echo $requested_by ?>
                                 </span>
                                 <br>
@@ -265,7 +271,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </span>
                             </td>
                             <td class="center no-border">
-                                <span class="personel" style="text-decoration: underline;font-size:12px;white-space:nowrap;">
+                                <span class="personel" style="text-decoration: underline;">
                                     <?php echo $auth_personel ?>
 
                                 </span>
@@ -277,18 +283,18 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </span>
                             </td>
                             <td class="center no-border">
-                                <span class="personel" style="text-decoration: underline;font-size:12px;white-space:nowrap;">
+                                <span class="personel" style="text-decoration: underline;">
                                     <?php echo $inspected_by ?>
 
                                 </span>
                                 <br>
                                 <span>
-                                    <?php echo $inspected_by_position ?>
+                                    <?php echo $requested_by_position ?>
 
                                 </span>
                             </td>
                             <td class="center no-border">
-                                <span class="personel" style="text-decoration: underline;font-size:12px;white-space:nowrap;">
+                                <span class="personel" style="text-decoration: underline;">
                                     <?php echo $accountant ?>
 
                                 </span>
@@ -335,7 +341,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             </td>
                             <td colspan="3">
                                 <span>P.O No.:</span>
-                                <span><?php echo $model->po_number ?></span>
+                                <span><?php echo $po_number ?></span>
                                 <br>
                                 <span>Date:</span>
                                 <span><?php

@@ -101,7 +101,9 @@ class PrPurchaseOrderController extends Controller
         LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
         LEFT JOIN unit_of_measure on pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
         WHERE pr_aoq_entries.pr_aoq_id = :id
-        AND $query", $params)
+        AND $query 
+        ORDER BY pr_aoq_entries.id ASC
+        ", $params)
             ->bindValue(':id', $fk_pr_aoq_id)
             ->queryAll();
 
