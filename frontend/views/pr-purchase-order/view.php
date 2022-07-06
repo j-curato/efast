@@ -256,7 +256,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </tr>
                         <tr>
                             <td class="center no-border">
-                                <span class="personel" style="text-decoration: underline;">
+                                <span class="personel" style="text-decoration: underline;font-size:12px;white-space:nowrap;">
                                     <?php echo $requested_by ?>
                                 </span>
                                 <br>
@@ -265,7 +265,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </span>
                             </td>
                             <td class="center no-border">
-                                <span class="personel" style="text-decoration: underline;">
+                                <span class="personel" style="text-decoration: underline;font-size:12px;white-space:nowrap;">
                                     <?php echo $auth_personel ?>
 
                                 </span>
@@ -277,7 +277,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </span>
                             </td>
                             <td class="center no-border">
-                                <span class="personel" style="text-decoration: underline;">
+                                <span class="personel" style="text-decoration: underline;font-size:12px;white-space:nowrap;">
                                     <?php echo $inspected_by ?>
 
                                 </span>
@@ -288,7 +288,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </span>
                             </td>
                             <td class="center no-border">
-                                <span class="personel" style="text-decoration: underline;">
+                                <span class="personel" style="text-decoration: underline;font-size:12px;white-space:nowrap;">
                                     <?php echo $accountant ?>
 
                                 </span>
