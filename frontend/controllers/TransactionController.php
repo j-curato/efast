@@ -143,10 +143,7 @@ class TransactionController extends Controller
 
             $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date);
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-
-            $whitelist = array('127.0.0.1', "::1", "10.20.17.35");
-
-            if ($_SERVER['REMOTE_ADDR'] === '210.1.103.26') {
+            if ($ip !== '10.20.17.35') {
                 $model->is_local = 0;
             }
             if ($model->save()) {
