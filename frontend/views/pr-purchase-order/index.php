@@ -29,7 +29,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'heading' => 'Purchase Order'
         ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
             'po_number',
             [
@@ -45,6 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'fk_pr_aoq_id',
                 'value' => 'aoq.aoq_number'
             ],
+            'created_at',
             //'place_of_delivery:ntext',
             //'delivery_date',
             //'payment_term',

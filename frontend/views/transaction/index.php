@@ -123,7 +123,7 @@ Modal::end();
         ],
         'pjax' => true,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            // ['class' => 'yii\grid\SerialColumn'],
             // [
             //     'class' => 'kartik\grid\ExpandRowColumn',
             //     'width' => '50px',
@@ -140,7 +140,7 @@ Modal::end();
             //     'expandOneOnly' => true
             // ],
 
-            'id',
+            // 'id',
 
             [
                 'label' => 'Responsibility Center',
