@@ -32,8 +32,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <?php
             $alphabet = range('A', 'Z');
-            $po_number = $model->po_number . $alphabet[$row_number];
-            $row_number++;
+
+            if (count($aoq_lowest) > 1) {
+                $po_number = $model->po_number . $alphabet[$row_number];
+                $row_number++;
+            } else {
+                $po_number = $model->po_number;
+            }
             $payee =  $index;
             $payee_address =   !empty($val[0]['address']) ? $val[0]['address'] : '';
             $payee_tin_number =   !empty($val[0]['tin_number']) ? $val[0]['tin_number'] : '';
