@@ -39,8 +39,8 @@ class ProcessOrs extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['transaction_id', 'document_recieve_id', 'mfo_pap_code_id', 'fund_source_id', 'book_id'], 'integer'],
-            [['reporting_period', 'serial_number', 'obligation_number'], 'string', 'max' => 255],
+            [['transaction_id', 'document_recieve_id', 'mfo_pap_code_id', 'fund_source_id', 'book_id', 'is_cancelled'], 'integer'],
+            [['reporting_period', 'serial_number', 'obligation_number', 'type'], 'string', 'max' => 255],
             [['funding_code'], 'string', 'max' => 50],
             [['transaction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Transaction::class, 'targetAttribute' => ['transaction_id' => 'id']],
             [[
@@ -80,6 +80,10 @@ class ProcessOrs extends \yii\db\ActiveRecord
             'mfo_pap_code_id' => 'Mfo Pap Code ID',
             'fund_source_id' => 'Fund Source ID',
             'book_id' => 'Book ID',
+            'date'=>'Date',
+            'is_cancelled' => 'Is Cancelled',
+            'type' => 'Type',
+            'created_at'=>'Created At',
             'transaction_begin_time' => 'Transaction Timestamp'
         ];
     }
