@@ -272,7 +272,7 @@ class ReportController extends \yii\web\Controller
 
         if ($_POST) {
 
-            $year = $_POST['year'];
+            $year = !empty($_POST['year']) ? $_POST['year'] : '';
             if (!empty($year)) {
                 $sql = '';
                 if ($check_table === 1) {
