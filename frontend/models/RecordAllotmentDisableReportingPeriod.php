@@ -29,6 +29,13 @@ class RecordAllotmentDisableReportingPeriod extends \yii\db\ActiveRecord
         return [
             [['created_at'], 'safe'],
             [['reporting_period'], 'string', 'max' => 20],
+            [[
+                'id',
+                'reporting_period',
+                'created_at',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+
         ];
     }
 

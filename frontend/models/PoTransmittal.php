@@ -29,8 +29,17 @@ class PoTransmittal extends \yii\db\ActiveRecord
         return [
             [['transmittal_number'], 'required'],
             [['date', 'created_at'], 'safe'],
-            [['transmittal_number','status'], 'string', 'max' => 255],
+            [['transmittal_number', 'status'], 'string', 'max' => 255],
             [['transmittal_number'], 'unique'],
+            [[
+
+                'transmittal_number',
+                'date',
+                'created_at',
+                'status',
+                'edited',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

@@ -34,8 +34,18 @@ class ProcessOrsEntries extends \yii\db\ActiveRecord
             [['chart_of_account_id', 'process_ors_id', 'amount'], 'required'],
             [['chart_of_account_id', 'process_ors_id'], 'integer'],
             [['amount'], 'number'],
-            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::className(), 'targetAttribute' => ['chart_of_account_id' => 'id']],
-            [['process_ors_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProcessOrs::className(), 'targetAttribute' => ['process_ors_id' => 'id']],
+            [[
+                'id',
+                'chart_of_account_id',
+                'process_ors_id',
+                'amount',
+                'reporting_period',
+                'record_allotment_entries_id',
+                'is_realign',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
+            [['process_ors_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProcessOrs::class, 'targetAttribute' => ['process_ors_id' => 'id']],
         ];
     }
 

@@ -31,6 +31,11 @@ class Rod extends \yii\db\ActiveRecord
             [['rod_number'], 'required'],
             [['rod_number', 'province'], 'string', 'max' => 255],
             [['rod_number'], 'unique'],
+            [[
+                'rod_number',
+                'province',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -52,6 +57,6 @@ class Rod extends \yii\db\ActiveRecord
      */
     public function getRodEntries()
     {
-        return $this->hasMany(RodEntries::className(), ['rod_number' => 'rod_number']);
+        return $this->hasMany(RodEntries::class, ['rod_number' => 'rod_number']);
     }
 }

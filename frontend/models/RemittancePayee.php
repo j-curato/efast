@@ -30,6 +30,13 @@ class RemittancePayee extends \yii\db\ActiveRecord
             [['payee_id', 'object_code'], 'required'],
             [['payee_id'], 'integer'],
             [['object_code'], 'string', 'max' => 255],
+            [[
+
+                'id',
+                'payee_id',
+                'object_code',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -51,6 +58,6 @@ class RemittancePayee extends \yii\db\ActiveRecord
     public function getGeneralLedger()
     {
 
-        return $this->hasOne(ChartOfAccounts::class, ['uacs'=> 'object_code']);
+        return $this->hasOne(ChartOfAccounts::class, ['uacs' => 'object_code']);
     }
 }

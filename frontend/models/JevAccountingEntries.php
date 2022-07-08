@@ -32,11 +32,25 @@ class JevAccountingEntries extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['chart_of_account_id', ], 'required'],
+
             [['jev_preparation_id', 'chart_of_account_id'], 'integer'],
             [['current_noncurrent'], 'string'],
             [['debit', 'credit'], 'number'],
-            [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
+            [['object_code'], 'string', 'max' => 255],
+            [['object_code'], 'filter', 'filter' => "\yii\helpers\HtmlPurifier::process"],
+            [[
+                'id',
+                'jev_preparation_id',
+                'cashflow_id',
+                'net_asset_equity_id',
+                'chart_of_account_id',
+                'debit',
+                'credit',
+                'closing_nonclosing',
+                'current_noncurrent',
+                'lvl',
+                'object_code',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
             [['jev_preparation_id'], 'exist', 'skipOnError' => true, 'targetClass' => JevPreparation::class, 'targetAttribute' => ['jev_preparation_id' => 'id']],
         ];
     }

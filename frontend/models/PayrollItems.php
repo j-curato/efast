@@ -35,6 +35,14 @@ class PayrollItems extends \yii\db\ActiveRecord
             [['amount'], 'number'],
             [['created_at'], 'safe'],
             [['object_code'], 'string', 'max' => 255],
+            [[
+                'id',
+                'payroll_id',
+                'object_code',
+                'amount',
+                'remittance_payee_id',
+                'created_at',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

@@ -32,12 +32,25 @@ class RoLiquidationReportItems extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fk_ro_liquidation_report_id','is_reimburse'], 'integer'],
+            [['fk_ro_liquidation_report_id', 'is_reimburse'], 'integer'],
             [['amount'], 'number'],
             [['created_at'], 'safe'],
             [['object_code'], 'string', 'max' => 255],
             [['reporting_period'], 'string', 'max' => 20],
-            [['fk_ro_liquidation_report_id'], 'exist', 'skipOnError' => true, 'targetClass' => RoLiquidationReport::className(), 'targetAttribute' => ['fk_ro_liquidation_report_id' => 'id']],
+            [[
+                'id',
+                'fk_ro_liquidation_report_id',
+                'fk_cash_disbursement_id',
+                'amount',
+                'object_code',
+                'reporting_period',
+                'created_at',
+                'is_deleted',
+                'deleted_at',
+                'is_reimburse',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [['fk_ro_liquidation_report_id'], 'exist', 'skipOnError' => true, 'targetClass' => RoLiquidationReport::class, 'targetAttribute' => ['fk_ro_liquidation_report_id' => 'id']],
         ];
     }
 
@@ -64,6 +77,6 @@ class RoLiquidationReportItems extends \yii\db\ActiveRecord
      */
     public function getFkRoLiquidationReport()
     {
-        return $this->hasOne(RoLiquidationReport::className(), ['id' => 'fk_ro_liquidation_report_id']);
+        return $this->hasOne(RoLiquidationReport::class, ['id' => 'fk_ro_liquidation_report_id']);
     }
 }

@@ -31,6 +31,15 @@ class PrOffice extends \yii\db\ActiveRecord
         return [
             [['created_at'], 'safe'],
             [['office', 'division', 'unit'], 'string', 'max' => 255],
+            [[
+                'id',
+                'office',
+                'division',
+                'unit',
+                'responsibility_code',
+                'created_at',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

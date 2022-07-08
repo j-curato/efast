@@ -32,6 +32,13 @@ class TrialBalance extends \yii\db\ActiveRecord
             [['book_id'], 'integer'],
             [['reporting_period'], 'string', 'max' => 20],
             [['entry_type'], 'string', 'max' => 255],
+            [[
+                'id',
+                'reporting_period',
+                'book_id',
+                'entry_type',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

@@ -26,7 +26,13 @@ class ReportType extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name','advance_type'], 'string', 'max' => 255],
+            [['name', 'advance_type'], 'string', 'max' => 255],
+            [[
+                'id',
+                'name',
+                'advance_type',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

@@ -27,7 +27,13 @@ class PoAsignatory extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'position','province'], 'string', 'max' => 255],
+            [['name', 'position', 'province'], 'string', 'max' => 255],
+            [[
+                'id',
+                'name',
+                'position',
+                'province',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -40,7 +46,7 @@ class PoAsignatory extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Name',
             'position' => 'Position',
-            'province'=>'Province'
+            'province' => 'Province'
         ];
     }
 }

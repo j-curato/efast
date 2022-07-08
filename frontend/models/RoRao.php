@@ -30,6 +30,14 @@ class RoRao extends \yii\db\ActiveRecord
             [['created_at'], 'safe'],
             [['is_final'], 'integer'],
             [['reporting_period'], 'string', 'max' => 20],
+            [[
+                'id',
+                'reporting_period',
+                'created_at',
+                'is_final',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+
         ];
     }
 

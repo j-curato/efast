@@ -27,6 +27,12 @@ class PrContractType extends \yii\db\ActiveRecord
     {
         return [
             [['contract_name'], 'string', 'max' => 255],
+            [[
+
+                'id',
+                'contract_name',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

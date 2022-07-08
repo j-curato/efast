@@ -27,6 +27,11 @@ class PpeCondition extends \yii\db\ActiveRecord
     {
         return [
             [['condition'], 'string', 'max' => 255],
+            [[
+                'id',
+                'condition',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

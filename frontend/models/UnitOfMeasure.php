@@ -27,6 +27,11 @@ class UnitOfMeasure extends \yii\db\ActiveRecord
     {
         return [
             [['unit_of_measure'], 'string', 'max' => 255],
+            [[
+                'id',
+                'unit_of_measure',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

@@ -34,6 +34,14 @@ class PrAoq extends \yii\db\ActiveRecord
             [['aoq_number'], 'string', 'max' => 255],
             [['aoq_number'], 'unique'],
             [['pr_date', 'pr_rfq_id'], 'required'],
+            [[
+                'id',
+                'aoq_number',
+                'pr_rfq_id',
+                'pr_date',
+                'created_at',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

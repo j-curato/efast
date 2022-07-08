@@ -30,6 +30,12 @@ class SubMajorAccounts2 extends \yii\db\ActiveRecord
             [['name', 'object_code'], 'required'],
             [['name'], 'string', 'max' => 255],
             [['object_code'], 'string', 'max' => 20],
+            [[
+                'id',
+                'name',
+                'object_code',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

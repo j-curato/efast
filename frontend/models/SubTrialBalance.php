@@ -32,6 +32,13 @@ class SubTrialBalance extends \yii\db\ActiveRecord
             [['book_id'], 'integer'],
             [['created_at'], 'safe'],
             [['reporting_period'], 'string', 'max' => 20],
+            [[
+                'id',
+                'reporting_period',
+                'book_id',
+                'created_at',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -49,6 +56,6 @@ class SubTrialBalance extends \yii\db\ActiveRecord
     }
     public function getBook()
     {
-        return $this->hasOne(Books::class,['id'=>'book_id']);
+        return $this->hasOne(Books::class, ['id' => 'book_id']);
     }
 }

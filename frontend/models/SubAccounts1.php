@@ -32,8 +32,18 @@ class SubAccounts1 extends \yii\db\ActiveRecord
     {
         return [
             [['chart_of_account_id', 'object_code', 'name'], 'required'],
-            [['chart_of_account_id','is_active'], 'integer'],
-            [['object_code', 'name','reporting_period'], 'string', 'max' => 255],
+            [['chart_of_account_id', 'is_active'], 'integer'],
+            [['object_code', 'name', 'reporting_period'], 'string', 'max' => 255],
+            [[
+
+                'id',
+                'chart_of_account_id',
+                'object_code',
+                'name',
+                'is_active',
+                'reporting_period',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
             [['chart_of_account_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChartOfAccounts::class, 'targetAttribute' => ['chart_of_account_id' => 'id']],
         ];
     }
@@ -49,7 +59,7 @@ class SubAccounts1 extends \yii\db\ActiveRecord
             'object_code' => 'Object Code',
             'name' => 'Name',
             'is_active' => 'Active',
-            'reporting_period'=>'Reporting Period'
+            'reporting_period' => 'Reporting Period'
         ];
     }
 

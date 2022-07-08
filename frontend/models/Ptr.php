@@ -43,6 +43,21 @@ class Ptr extends \yii\db\ActiveRecord
                 'employee_to'
             ], 'string'],
             [['ptr_number', 'par_number', 'employee_from', 'employee_to'], 'string', 'max' => 255],
+            [[
+                'ptr_number',
+                'id',
+                'fk_par_id',
+                'par_number',
+                'transfer_type_id',
+                'date',
+                'reason',
+                'employee_from',
+                'employee_to',
+                'agency_from_id',
+                'agency_to_id',
+                'created_at',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

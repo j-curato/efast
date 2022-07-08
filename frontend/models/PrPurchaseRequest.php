@@ -48,6 +48,20 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
                 'approved_by_id',
 
             ], 'required'],
+            [[
+                'id',
+                'pr_number',
+                'date',
+                'book_id',
+                'pr_project_procurement_id',
+                'purpose',
+                'requested_by_id',
+                'approved_by_id',
+                'created_at',
+                'is_final',
+                'is_cloud',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
 
         ];
     }

@@ -31,6 +31,11 @@ class PoTransmittalToCoaEntries extends \yii\db\ActiveRecord
     {
         return [
             [['po_transmittal_number', 'po_transmittal_to_coa_number'], 'string', 'max' => 255],
+            [[
+                'id',
+                'po_transmittal_number',
+                'po_transmittal_to_coa_number',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
             [['po_transmittal_number'], 'exist', 'skipOnError' => true, 'targetClass' => PoTransmittal::class, 'targetAttribute' => ['po_transmittal_number' => 'transmittal_number']],
             [['po_transmittal_to_coa_number'], 'exist', 'skipOnError' => true, 'targetClass' => PoTransmittalToCoa::class, 'targetAttribute' => ['po_transmittal_to_coa_number' => 'transmittal_number']],
         ];

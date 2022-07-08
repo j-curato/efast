@@ -32,6 +32,15 @@ class RemittanceItems extends \yii\db\ActiveRecord
             [['id', 'fk_remittance_id', 'fk_dv_acounting_entries_id'], 'integer'],
             [['created_at'], 'safe'],
             [['id'], 'unique'],
+            [[
+                'id',
+                'fk_remittance_id',
+                'fk_dv_acounting_entries_id',
+                'amount',
+                'is_removed',
+                'created_at',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

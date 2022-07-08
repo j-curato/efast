@@ -30,9 +30,17 @@ class RoAlphalist extends \yii\db\ActiveRecord
             [['id', 'alphalist_number'], 'required'],
             [['id'], 'integer'],
             [['created_at'], 'safe'],
-            [['alphalist_number','reporting_period'], 'string', 'max' => 255],
+            [['alphalist_number', 'reporting_period'], 'string', 'max' => 255],
             [['alphalist_number'], 'unique'],
             [['id'], 'unique'],
+            [[
+                'id',
+                'alphalist_number',
+                'reporting_period',
+                'created_at',
+                'is_final',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

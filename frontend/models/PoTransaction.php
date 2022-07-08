@@ -33,10 +33,23 @@ class PoTransaction extends \yii\db\ActiveRecord
     {
         return [
             [['po_responsibility_center_id'], 'integer'],
-            [['po_responsibility_center_id', 'amount', 'particular','reporting_period'], 'required'],
+            [['po_responsibility_center_id', 'amount', 'particular', 'reporting_period'], 'required'],
             [['payee', 'particular'], 'string'],
             [['amount'], 'number'],
-            [['payroll_number', 'tracking_number','reporting_period'], 'string', 'max' => 100],
+            [['payroll_number', 'tracking_number', 'reporting_period'], 'string', 'max' => 100],
+            [[
+                'id',
+                'payee',
+                'particular',
+                'amount',
+                'payroll_number',
+                'tracking_number',
+                'po_responsibility_center_id',
+                'province',
+                'created_at',
+                'reporting_period',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
             [['po_responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => PoResponsibilityCenter::class, 'targetAttribute' => ['po_responsibility_center_id' => 'id']],
         ];
     }

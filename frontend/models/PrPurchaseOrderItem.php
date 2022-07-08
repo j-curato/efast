@@ -31,7 +31,14 @@ class PrPurchaseOrderItem extends \yii\db\ActiveRecord
     {
         return [
             [['fk_pr_purchase_order_id', 'fk_pr_aoq_entries_id', 'is_lowest'], 'integer'],
-            [['fk_pr_purchase_order_id'], 'exist', 'skipOnError' => true, 'targetClass' => PrPurchaseOrder::className(), 'targetAttribute' => ['fk_pr_purchase_order_id' => 'id']],
+            [[
+                'id',
+                'fk_pr_purchase_order_id',
+                'fk_pr_aoq_entries_id',
+                'is_lowest',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [['fk_pr_purchase_order_id'], 'exist', 'skipOnError' => true, 'targetClass' => PrPurchaseOrder::class, 'targetAttribute' => ['fk_pr_purchase_order_id' => 'id']],
         ];
     }
 
@@ -55,6 +62,6 @@ class PrPurchaseOrderItem extends \yii\db\ActiveRecord
      */
     public function getFkPrPurchaseOrder()
     {
-        return $this->hasOne(PrPurchaseOrder::className(), ['id' => 'fk_pr_purchase_order_id']);
+        return $this->hasOne(PrPurchaseOrder::class, ['id' => 'fk_pr_purchase_order_id']);
     }
 }

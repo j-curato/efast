@@ -30,6 +30,14 @@ class PrIarItem extends \yii\db\ActiveRecord
         return [
             [['fk_pr_iar_id'], 'required'],
             [['fk_pr_iar_id', 'quantity', 'fk_pr_aoq_entry_id'], 'integer'],
+            [[
+                'id',
+                'fk_pr_iar_id',
+                'quantity',
+                'fk_pr_aoq_entry_id',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+
         ];
     }
 

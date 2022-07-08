@@ -33,6 +33,11 @@ class PoTransmittalToCoa extends \yii\db\ActiveRecord
             [['date', 'created_at'], 'safe'],
             [['transmittal_number'], 'string', 'max' => 255],
             [['transmittal_number'], 'unique'],
+            [[
+                'transmittal_number',
+                'date',
+                'created_at',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

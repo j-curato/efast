@@ -27,6 +27,11 @@ class TransferType extends \yii\db\ActiveRecord
     {
         return [
             [['type'], 'string', 'max' => 255],
+            [[
+                'id',
+                'type',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

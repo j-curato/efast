@@ -28,6 +28,12 @@ class PrRfqItem extends \yii\db\ActiveRecord
     {
         return [
             [['pr_rfq_id', 'pr_purchase_request_item_id'], 'integer'],
+            [[
+                'id',
+                'pr_rfq_id',
+                'pr_purchase_request_item_id',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -44,6 +50,6 @@ class PrRfqItem extends \yii\db\ActiveRecord
     }
     public function getPurchaseRequestItem()
     {
-        return $this->hasOne(PrPurchaseRequestItem::class, ['id'=> 'pr_purchase_request_item_id']);
+        return $this->hasOne(PrPurchaseRequestItem::class, ['id' => 'pr_purchase_request_item_id']);
     }
 }

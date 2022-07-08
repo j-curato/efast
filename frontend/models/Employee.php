@@ -32,7 +32,21 @@ class Employee extends \yii\db\ActiveRecord
     {
         return [
             [['property_custodian', 'employee_id'], 'integer'],
-            [['employee_number', 'f_name', 'l_name', 'm_name', 'status', 'position','suffix'], 'string', 'max' => 255],
+            [['employee_number', 'f_name', 'l_name', 'm_name', 'status', 'position', 'suffix'], 'string', 'max' => 255],
+            [[
+                'employee_id',
+                'f_name',
+                'l_name',
+                'm_name',
+                'status',
+                'property_custodian',
+                'position',
+                'office',
+                'created_at',
+                'employee_number',
+                'suffix',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

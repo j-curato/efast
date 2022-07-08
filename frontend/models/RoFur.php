@@ -32,6 +32,15 @@ class RoFur extends \yii\db\ActiveRecord
         return [
             [['created_at', 'document_recieve_id'], 'safe'],
             [['from_reporting_period', 'to_reporting_period', 'division'], 'string', 'max' => 20],
+            [[
+                'id',
+                'from_reporting_period',
+                'to_reporting_period',
+                'division',
+                'document_recieve_id',
+                'created_at',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

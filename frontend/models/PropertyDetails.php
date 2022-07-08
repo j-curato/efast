@@ -29,6 +29,13 @@ class PropertyDetails extends \yii\db\ActiveRecord
         return [
             [['created_at'], 'safe'],
             [['property_number'], 'string', 'max' => 255],
+            [[
+                'id',
+                'property_number',
+                'created_at',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+
         ];
     }
 

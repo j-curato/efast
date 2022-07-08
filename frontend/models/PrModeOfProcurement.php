@@ -27,6 +27,11 @@ class PrModeOfProcurement extends \yii\db\ActiveRecord
     {
         return [
             [['mode_name'], 'string', 'max' => 255],
+            [[
+                'id',
+                'mode_name',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

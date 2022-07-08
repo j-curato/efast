@@ -17,8 +17,29 @@ class JevPreparationSearch extends JevPreparation
     public function rules()
     {
         return [
-            [['id', 'responsibility_center_id', 'fund_cluster_code_id','book_id'], 'integer'],
-            [['check_ada_number','reporting_period', 'date', 'jev_number', 'dv_number', 'lddap_number' , 'explaination','ref_number','payee_id'], 'safe'],
+            [['id', 'responsibility_center_id', 'fund_cluster_code_id', 'book_id'], 'integer'],
+            [['check_ada_number', 'reporting_period', 'date', 'jev_number', 'dv_number', 'lddap_number', 'explaination', 'ref_number', 'payee_id'], 'safe'],
+            [[
+                'responsibility_center_id',
+                'fund_cluster_code_id',
+                'reporting_period',
+                'date',
+                'jev_number',
+                'lddap_number',
+                'explaination',
+                'ref_number',
+                'cash_flow_id',
+                'payee_id',
+                'mrd_classification_id',
+                'check_ada',
+                'cadadr_serial_number',
+                'check_ada_number',
+                'book_id',
+                'entry_type',
+                'cash_disbursement_id',
+                'check_ada_date',
+                'dv_number',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -75,7 +96,7 @@ class JevPreparationSearch extends JevPreparation
             ->andFilterWhere(['like', 'check_ada_number', $this->check_ada_number])
             ->andFilterWhere(['like', 'payee.account_name', $this->payee_id])
             // ->andFilterWhere(['like', 'jev_accounting_entries.chart_of_account_id', 2])
-            ;
+        ;
 
         return $dataProvider;
     }

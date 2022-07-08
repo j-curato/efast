@@ -39,6 +39,18 @@ class PreRepairInspection extends \yii\db\ActiveRecord
             [['serial_number'], 'string', 'max' => 255],
             [['serial_number'], 'unique'],
             [['id'], 'unique'],
+            [[
+                'id',
+                'serial_number',
+                'date',
+                'findings',
+                'recommendation',
+                'fk_requested_by',
+                'fk_accountable_person',
+                'equipment_type',
+                'created_at',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -60,10 +72,10 @@ class PreRepairInspection extends \yii\db\ActiveRecord
     }
     public function getRequestedBy()
     {
-        return $this->hasOne(Employee::class,['employee_id'=>'fk_requested_by']);
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_requested_by']);
     }
     public function getAccountablePerson()
     {
-        return $this->hasOne(Employee::class,['employee_id'=>'fk_accountable_person']);
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_accountable_person']);
     }
 }

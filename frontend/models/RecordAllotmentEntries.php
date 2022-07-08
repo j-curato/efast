@@ -31,6 +31,16 @@ class RecordAllotmentEntries extends \yii\db\ActiveRecord
             [['record_allotment_id', 'chart_of_account_id'], 'required'],
             [['record_allotment_id', 'chart_of_account_id'], 'integer'],
             [['amount'], 'number'],
+            [[
+                'id',
+                'record_allotment_id',
+                'chart_of_account_id',
+                'amount',
+                'lvl',
+                'object_code',
+                'report_type',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

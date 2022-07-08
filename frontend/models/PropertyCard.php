@@ -27,8 +27,18 @@ class PropertyCard extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['balance','fk_par_id'], 'number'],
+            [['balance', 'fk_par_id'], 'number'],
             [['pc_number', 'par_number'], 'string', 'max' => 255],
+            [[
+                'pc_number',
+                'balance',
+                'par_number',
+                'ptr_number',
+                'id',
+                'fk_par_id',
+                'created_at',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

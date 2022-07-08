@@ -32,6 +32,13 @@ class PoTransmittalEntries extends \yii\db\ActiveRecord
         return [
             [['liquidation_id'], 'integer'],
             [['po_transmittal_number'], 'string', 'max' => 255],
+            [[
+                'id',
+                'po_transmittal_number',
+                'liquidation_id',
+                'status',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
             [['liquidation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Liquidation::class, 'targetAttribute' => ['liquidation_id' => 'id']],
             [['po_transmittal_number'], 'exist', 'skipOnError' => true, 'targetClass' => PoTransmittal::class, 'targetAttribute' => ['po_transmittal_number' => 'transmittal_number']],
         ];

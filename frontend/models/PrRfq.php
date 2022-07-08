@@ -41,6 +41,19 @@ class PrRfq extends \yii\db\ActiveRecord
             [['rfq_number', 'employee_id', 'province'], 'string', 'max' => 255],
             [['rfq_number'], 'unique'],
             [['id'], 'unique'],
+            [[
+                'id',
+                'rfq_number',
+                'pr_purchase_request_id',
+                '_date',
+                'deadline',
+                'bac_composition_id',
+                'employee_id',
+                'province',
+                'project_location',
+                'created_at',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

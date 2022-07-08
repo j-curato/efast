@@ -37,6 +37,18 @@ class PrIar extends \yii\db\ActiveRecord
             [['fk_pr_purchase_order_id', 'fk_inspection_officer', 'fk_property_custodian'], 'integer'],
             [['reporting_period'], 'string', 'max' => 20],
             [['invoice_number'], 'string', 'max' => 255],
+            [[
+                'id',
+                '_date',
+                'reporting_period',
+                'invoice_number',
+                'invoice_date',
+                'fk_pr_purchase_order_id',
+                'fk_inspection_officer',
+                'fk_property_custodian',
+                'created_at',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

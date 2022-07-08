@@ -42,17 +42,42 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
                 'fk_accounting_unit',
                 'po_date'
             ], 'required'],
-            [['id', 'fk_contract_type_id', 'fk_mode_of_procurement_id', 'fk_pr_aoq_id', 
-            'fk_auth_official', 'fk_accounting_unit', 'fk_bac_composition_id'], 'integer'],
+            [[
+                'id', 'fk_contract_type_id', 'fk_mode_of_procurement_id', 'fk_pr_aoq_id',
+                'fk_auth_official', 'fk_accounting_unit', 'fk_bac_composition_id'
+            ], 'integer'],
             [['place_of_delivery'], 'string'],
-            [['delivery_date', 'bac_date','fk_requested_by','fk_inspected_by',
-            'date_work_begun',
-            'date_completed'
-        
-        ], 'safe'],
+            [[
+                'delivery_date', 'bac_date', 'fk_requested_by', 'fk_inspected_by',
+                'date_work_begun',
+                'date_completed'
+
+            ], 'safe'],
             [['po_number', 'payment_term', 'delivery_term', 'po_date'], 'string', 'max' => 255],
             [['po_number'], 'unique'],
             [['id'], 'unique'],
+            [[
+                'id',
+                'po_number',
+                'fk_contract_type_id',
+                'fk_mode_of_procurement_id',
+                'fk_pr_aoq_id',
+                'place_of_delivery',
+                'delivery_date',
+                'delivery_term',
+                'payment_term',
+                'fk_auth_official',
+                'fk_accounting_unit',
+                'created_at',
+                'fk_bac_composition_id',
+                'bac_date',
+                'po_date',
+                'fk_requested_by',
+                'fk_inspected_by',
+                'date_work_begun',
+                'date_completed',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -118,12 +143,12 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
     }
     public function getContractType()
     {
-        
-        return $this->hasOne(PrContractType::class,['id'=>'fk_contract_type_id']);
+
+        return $this->hasOne(PrContractType::class, ['id' => 'fk_contract_type_id']);
     }
     public function getAoq()
     {
-        
-        return $this->hasOne(PrAoq::class,['id'=>'fk_pr_aoq_id']);
+
+        return $this->hasOne(PrAoq::class, ['id' => 'fk_pr_aoq_id']);
     }
 }

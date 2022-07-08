@@ -34,6 +34,17 @@ class PrPurchaseRequestItem extends \yii\db\ActiveRecord
             [['unit_cost'], 'number'],
             [['specification'], 'text'],
             [['created_at'], 'safe'],
+            [[
+                'id',
+                'pr_purchase_request_id',
+                'pr_stock_id',
+                'quantity',
+                'unit_cost',
+                'specification',
+                'unit_of_measure_id',
+                'created_at',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

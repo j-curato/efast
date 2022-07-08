@@ -4,6 +4,10 @@
 /* @var $this yii\web\View */
 
 use aryelds\sweetalert\SweetAlertAsset;
+use dosamigos\chartjs\ChartJs;
+use dosamigos\chartjs\ChartJsAsset;
+use kartik\date\DatePicker;
+use kartik\widgets\DatePicker as WidgetsDatePicker;
 use yii\filters\Cors;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
@@ -70,26 +74,45 @@ $this->title = 'Dashboard';
 
     ?>
     <div class="body-content">
-        <div style="height:400px;width:400px" id="calendar">
-            <?php
-            // echo edofre\fullcalendar\Fullcalendar::widget([
-            //     'events' => $events,
-            //     'clientOptions' => [
-            //         'editable' => true,
-            //         'droppable' => true,
-            //         'eventDrop' => function ($data) {
-            //             ob_clean();
-            //             echo "<pre>";
-            //             var_dump($data);
-            //             echo "</pre>";
-            //             return ob_get_clean();
-            //         }
-            //     ],
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="panel panel-primary">
+                    <div class="panel-heading"><i class="fa fa-calendar"></i> Calendar of Events </div>
+                    <div class="panel-body">
+                        <div style="height:400px;width:400px" id="calendar"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Transmittal</div>
+                    <div class="panel-body">
+                        <?php
+                        echo DatePicker::widget([
+                            'id' => 'bar_filter',
+                            'name' => 'year',
+                            'pluginOptions' => [
+                                'autoclose' => true,
+                                'format' => 'yyyy',
+                                'minViewMode' => 'years'
 
-            // ]);
-            ?>
+                            ]
+                        ]);
+                        ?>
+                        <div id="chartContainer">
+                            <canvas id="myChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
+
+        <div class="row">
+
+
+
+        </div>
         <div class="row justify-content-around">
 
 
@@ -493,7 +516,9 @@ $this->title = 'Dashboard';
 
 
     </div>
+
 </div>
+
 <div id="dots5">
     <span></span>
     <span></span>
@@ -541,10 +566,10 @@ $this->title = 'Dashboard';
 <?php
 $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
 SweetAlertAsset::register($this);
-?>
-<?php
+ChartJsAsset::register($this);
 $csrfToken = Yii::$app->request->csrfToken;
 $csrfName = Yii::$app->request->csrfParam;
+
 ?>
 <script src='<?php echo yii::$app->request->baseUrl ?>/js/fullcalendar/main.min.js'></script>
 <link href='<?php echo yii::$app->request->baseUrl ?>/js/fullcalendar/main.min.css' rel='stylesheet' />
@@ -1183,6 +1208,74 @@ $csrfName = Yii::$app->request->csrfParam;
 
 
 $script = <<<JS
+    
+    async function BarChart(year =''){
+
+        const data = await getData(year)
+        document.getElementById("chartContainer").innerHTML = '&nbsp;';
+        document.getElementById("chartContainer").innerHTML = '<canvas id="myChart"></canvas>';
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'bar',
+
+            data: {
+                labels: data.reporting_period,
+                datasets: [{
+                    label: '# of DV`s',
+                    data: data.total_dv,
+                    backgroundColor: 
+                    'rgb(0, 82, 204)',
+                      
+                    borderColor: 
+                    'rgb(0, 82, 204)',
+                    borderWidth: 1
+                },{
+                    label: '# of Dv AT RO',
+                    data: data.dv_at_ro,
+                    backgroundColor: 
+                    'rgb(179, 0, 0)',
+                    borderColor: 
+                    'rgb(179, 0, 0)',
+                    borderWidth: 1
+                },{
+                    label: '# of Dv AT COA',
+                    data: data.dv_at_coa,
+                    backgroundColor: 
+                    'rgb(0, 128, 43)',
+              
+                    borderWidth: 1
+                }
+            ]
+            },
+   
+        });
+        myChart.update();
+   
+    }
+     async function getData(year=''){
+        const reporting_period = []
+        const dv_at_ro = []
+        const dv_at_coa = []
+        const total_dv = []
+       await $.ajax({
+            type:'POST',
+            url:window.location.pathname + '?r=report/dv-transmittal-summary',
+            data:{year:year},
+           success:function(data){
+            const res = JSON.parse(data)
+            $.each(res,function(key,val){
+                reporting_period.push(val.reporting_period)
+                dv_at_ro.push(val.dv_count_at_ro)
+                dv_at_coa.push(val.dv_count_at_coa)
+                total_dv.push(val.total_dv)
+            })
+           }
+        })
+        console.table({reporting_period,dv_at_ro,dv_at_coa,total_dv})
+        return {reporting_period,dv_at_ro,dv_at_coa,total_dv}
+    }
+    
+  
       function thousands_separators(num) {
 
             var number = Number(Math.round(num + 'e2') + 'e-2')
@@ -1192,7 +1285,11 @@ $script = <<<JS
         }
 
     $(document).ready(function(){
-
+        BarChart()
+        $('#bar_filter').change(function(){
+      
+            BarChart($(this).val())
+        })
         // CASH RECIEVED AND DISBURSEMENT
         $.ajax({
             type:'POST',

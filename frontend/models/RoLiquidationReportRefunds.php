@@ -38,7 +38,20 @@ class RoLiquidationReportRefunds extends \yii\db\ActiveRecord
             [['amount'], 'number'],
             [['reporting_period'], 'string', 'max' => 20],
             [['or_number'], 'string', 'max' => 255],
-            [['fk_ro_liquidation_report_id'], 'exist', 'skipOnError' => true, 'targetClass' => RoLiquidationReport::className(), 'targetAttribute' => ['fk_ro_liquidation_report_id' => 'id']],
+            [[
+                'id',
+                'fk_ro_liquidation_report_id',
+                'fk_cash_disbursement_id',
+                'reporting_period',
+                'or_number',
+                'or_date',
+                'amount',
+                'created_at',
+                'is_deleted',
+                'deleted_at',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [['fk_ro_liquidation_report_id'], 'exist', 'skipOnError' => true, 'targetClass' => RoLiquidationReport::class, 'targetAttribute' => ['fk_ro_liquidation_report_id' => 'id']],
         ];
     }
 
@@ -65,6 +78,6 @@ class RoLiquidationReportRefunds extends \yii\db\ActiveRecord
      */
     public function getFkRoLiquidationReport()
     {
-        return $this->hasOne(RoLiquidationReport::className(), ['id' => 'fk_ro_liquidation_report_id']);
+        return $this->hasOne(RoLiquidationReport::class, ['id' => 'fk_ro_liquidation_report_id']);
     }
 }

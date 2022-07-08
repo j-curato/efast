@@ -36,6 +36,17 @@ class PropertyDetailsEntry extends \yii\db\ActiveRecord
             [['salvage_value', 'monthly_depreciation'], 'number'],
             [['object_code'], 'string', 'max' => 50],
             [['first_month', 'last_month'], 'string', 'max' => 20],
+            [[
+                'id',
+                'property_details_id',
+                'object_code',
+                'first_month',
+                'last_month',
+                'salvage_value',
+                'monthly_depreciation',
+                'estimated_useful_life',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

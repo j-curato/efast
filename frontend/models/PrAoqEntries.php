@@ -33,6 +33,19 @@ class PrAoqEntries extends \yii\db\ActiveRecord
             [['pr_aoq_id', 'payee_id', 'is_lowest', 'pr_rfq_item_id'], 'integer'],
             [['amount'], 'number'],
             [['remark'], 'string'],
+            [[
+
+                'id',
+                'pr_aoq_id',
+                'payee_id',
+                'amount',
+                'remark',
+                'is_lowest',
+                'pr_rfq_item_id',
+                'no_bid',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
         ];
     }
 

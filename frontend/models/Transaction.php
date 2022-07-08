@@ -37,12 +37,27 @@ class Transaction extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['responsibility_center_id', 'payee_id', 'particular', 'gross_amount','transaction_date'], 'required'],
+            [['responsibility_center_id', 'payee_id', 'particular', 'gross_amount', 'transaction_date'], 'required'],
             [['responsibility_center_id', 'payee_id'], 'integer'],
             [['gross_amount'], 'number'],
             [['particular', 'tracking_number', 'earmark_no', 'payroll_number'], 'string', 'max' => 255],
             [['transaction_date'], 'string', 'max' => 50],
             [['transaction_time'], 'string', 'max' => 20],
+            [[
+                'id',
+                'responsibility_center_id',
+                'payee_id',
+                'particular',
+                'gross_amount',
+                'tracking_number',
+                'earmark_no',
+                'payroll_number',
+                'transaction_date',
+                'transaction_time',
+                'created_at',
+                'is_local',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
             [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::class, 'targetAttribute' => ['payee_id' => 'id']],
             [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
         ];

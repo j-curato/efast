@@ -38,6 +38,16 @@ class RoLiquidationReport extends \yii\db\ActiveRecord
             [['liquidation_report_number'], 'string', 'max' => 255],
             [['liquidation_report_number'], 'unique'],
             [['id'], 'unique'],
+            [[
+                'id',
+                'liquidation_report_number',
+                'date',
+                'reporting_period',
+                'updated_at',
+                'created_at',
+                'fk_dv_aucs_id',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

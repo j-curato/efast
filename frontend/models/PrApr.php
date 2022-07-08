@@ -31,6 +31,13 @@ class PrApr extends \yii\db\ActiveRecord
             [['pr_purchase_request_id'], 'integer'],
             [['created_at'], 'safe'],
             [['apr_number'], 'string', 'max' => 255],
+            [[
+                'id',
+                'pr_purchase_request_id',
+                'apr_number',
+                'created_at',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

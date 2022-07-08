@@ -42,6 +42,23 @@ class UnpaidObligation extends \yii\db\ActiveRecord
             [['is_cancelled'], 'integer'],
             [['reporting_period', 'serial_number', 'dv_number'], 'string', 'max' => 255],
             [['check_number'], 'string', 'max' => 100],
+            [[
+                'reporting_period',
+                'serial_number',
+                'total_amount',
+                'total_amount_disbursed',
+                'unpaid_obligation',
+                'dv_number',
+                'check_number',
+                'is_cancelled',
+                'amount_disbursed',
+                'vat_nonvat',
+                'ewt_goods_services',
+                'compensation',
+                'other_trust_liabilities',
+                'total_withheld',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

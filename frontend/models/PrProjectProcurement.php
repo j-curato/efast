@@ -36,8 +36,17 @@ class PrProjectProcurement extends \yii\db\ActiveRecord
                 'employee_id',
                 'amount'
             ], 'required'],
-            [['pr_office_id', 'employee_id'], 'integer'],
+            [['pr_office_id', 'employee_id','is_cloud'], 'integer'],
             [['amount'], 'number'],
+            [[
+                'id',
+                'title',
+                'pr_office_id',
+                'amount',
+                'employee_id',
+                'created_at',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -52,6 +61,7 @@ class PrProjectProcurement extends \yii\db\ActiveRecord
             'pr_office_id' => ' Office ',
             'amount' => 'Amount',
             'employee_id' => 'Prepared By',
+            'is_cloud' => 'Is Cloud',
         ];
     }
     public function getOffice()

@@ -43,6 +43,24 @@ class ProcessOrs extends \yii\db\ActiveRecord
             [['reporting_period', 'serial_number', 'obligation_number'], 'string', 'max' => 255],
             [['funding_code'], 'string', 'max' => 50],
             [['transaction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Transaction::class, 'targetAttribute' => ['transaction_id' => 'id']],
+            [[
+                'id',
+                'transaction_id',
+                'reporting_period',
+                'serial_number',
+                'obligation_number',
+                'funding_code',
+                'document_recieve_id',
+                'mfo_pap_code_id',
+                'fund_source_id',
+                'book_id',
+                'date',
+                'is_cancelled',
+                'type',
+                'created_at',
+                'transaction_begin_time',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -62,7 +80,7 @@ class ProcessOrs extends \yii\db\ActiveRecord
             'mfo_pap_code_id' => 'Mfo Pap Code ID',
             'fund_source_id' => 'Fund Source ID',
             'book_id' => 'Book ID',
-            'transaction_begin_time'=>'Transaction Timestamp'
+            'transaction_begin_time' => 'Transaction Timestamp'
         ];
     }
 
@@ -111,6 +129,6 @@ class ProcessOrs extends \yii\db\ActiveRecord
     }
     public function getBook()
     {
-        return $this->hasOne(Books::class,['id'=>'book_id']);
+        return $this->hasOne(Books::class, ['id' => 'book_id']);
     }
 }

@@ -31,7 +31,13 @@ class RodEntries extends \yii\db\ActiveRecord
         return [
             [['advances_entries_id'], 'integer'],
             [['rod_number'], 'string', 'max' => 255],
-            [['rod_number'], 'exist', 'skipOnError' => true, 'targetClass' => Rod::className(), 'targetAttribute' => ['rod_number' => 'rod_number']],
+            [[
+                'id',
+                'rod_number',
+                'advances_entries_id',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [['rod_number'], 'exist', 'skipOnError' => true, 'targetClass' => Rod::class, 'targetAttribute' => ['rod_number' => 'rod_number']],
         ];
     }
 

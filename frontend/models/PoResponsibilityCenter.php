@@ -28,9 +28,15 @@ class PoResponsibilityCenter extends \yii\db\ActiveRecord
     {
         return [
             [['description'], 'string'],
-            [['description','name','province'], 'required'],
+            [['description', 'name', 'province'], 'required'],
             [['name'], 'string', 'max' => 255],
             [['province'], 'string', 'max' => 20],
+            [[
+                'id',
+                'name',
+                'description',
+                'province',
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

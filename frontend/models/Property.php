@@ -38,12 +38,33 @@ class Property extends \yii\db\ActiveRecord
         return [
             [['property_number', 'date', 'book_id', 'unit_of_measure_id', 'quantity', 'acquisition_amount', 'employee_id', 'article'], 'required'],
             [['date'], 'string'],
-            [['book_id', 'unit_of_measure_id', 'quantity','estimated_life'], 'integer'],
-            [['acquisition_amount','salvage_value'], 'number'],
+            [['book_id', 'unit_of_measure_id', 'quantity', 'estimated_life'], 'integer'],
+            [['acquisition_amount', 'salvage_value'], 'number'],
             [['id'], 'unique'],
-            [['employee_id', 'article', 'description','object_code'], 'string'],
+            [['employee_id', 'article', 'description', 'object_code'], 'string'],
             [['property_number', 'iar_number', 'model', 'serial_number'], 'string', 'max' => 255],
+
             [['property_number'], 'unique'],
+            [[
+                'property_number',
+                'id',
+                'book_id',
+                'unit_of_measure_id',
+                'employee_id',
+                'iar_number',
+                'article',
+                'model',
+                'serial_number',
+                'quantity',
+                'date',
+                'acquisition_amount',
+                'created_at',
+                'description',
+                'object_code',
+                'salvage_value',
+                'estimated_life',
+
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -66,10 +87,10 @@ class Property extends \yii\db\ActiveRecord
             'acquisition_amount' => 'Acquisition Amount',
             'date' => 'Date',
             'id' => 'ID',
-            'object_code'=>'Object Code',
-            'salvage_value'=>'Salvage Value',
-            'estimated_life'=>'Estimated Useful Life',
-            
+            'object_code' => 'Object Code',
+            'salvage_value' => 'Salvage Value',
+            'estimated_life' => 'Estimated Useful Life',
+
         ];
     }
 
