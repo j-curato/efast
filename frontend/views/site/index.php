@@ -75,11 +75,11 @@ $this->title = 'Dashboard';
     ?>
     <div class="body-content">
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-5">
                 <div class="panel panel-primary">
                     <div class="panel-heading"><i class="fa fa-calendar"></i> Calendar of Events </div>
                     <div class="panel-body">
-                        <div style="height:350;width:350" id="calendar"></div>
+                        <div style="height:350;width:100%" id="calendar"></div>
                     </div>
                 </div>
             </div>
@@ -530,7 +530,7 @@ $this->title = 'Dashboard';
 </div>
 <style>
     canvas {
-   
+
         height: 343px !important;
 
     }
@@ -1170,6 +1170,8 @@ $csrfName = Yii::$app->request->csrfParam;
 
     })
     $(document).ready(function() {
+
+
         $.getJSON(window.location.pathname + '?r=site/q').then(function(data) {
             cal(data)
         })
@@ -1281,7 +1283,6 @@ $script = <<<JS
             })
            }
         })
-        console.table({reporting_period,dv_at_ro,dv_at_coa,total_dv})
         return {reporting_period,dv_at_ro,dv_at_coa,total_dv}
     }
     
@@ -1295,6 +1296,7 @@ $script = <<<JS
         }
 
     $(document).ready(function(){
+        $('.fc-prev-button').attr('class','fc-prev-button btn-xs btn-primary')
         BarChart()
         $('#bar_filter').change(function(){
       
