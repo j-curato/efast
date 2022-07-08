@@ -19,10 +19,7 @@ $this->title = 'Dashboard';
 <div class="site-index">
 
     <?php
-    if (Yii::$app->user->can('super-user')) {
-        echo " <button class='btn btn-success' id='update_cloud' style='margin-bottom:12px'>Update  Cloud</button>";
-        echo " <button class='btn btn-warning' id='update_lan'>Update LAN</button>";
-    }
+
     $query = (new \yii\db\Query())
         ->select([
             'SUM(raoud_entries.amount) as total_obligated',
@@ -73,7 +70,17 @@ $this->title = 'Dashboard';
 
 
     ?>
-    <div class="body-content">
+    <div class="body-content container-fluid">
+
+        <div class="row gap-0">
+
+            <?php
+            if (Yii::$app->user->can('super-user')) {
+                echo "  <div class='col-sm-1'><button class='btn btn-success' id='update_cloud' style='margin-bottom:12px'>Update Cloud</button> </div>";
+                echo "  <div class='col-sm-1' style='padding-left:0'><button class='btn btn-warning' id='update_lan'>Update LAN</button></div>";
+            } ?>
+
+        </div>
         <div class="row">
             <div class="col-sm-5">
                 <div class="panel panel-primary">
@@ -110,12 +117,6 @@ $this->title = 'Dashboard';
             <?php } ?>
         </div>
 
-
-        <div class="row">
-
-
-
-        </div>
         <div class="row justify-content-around">
 
 
@@ -1178,8 +1179,9 @@ $csrfName = Yii::$app->request->csrfParam;
     })
 
     function cal(data) {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
+        const calendarEl = document.getElementById('calendar');
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             themeSystem: 'bootstrap',
             height: 400,
@@ -1196,6 +1198,7 @@ $csrfName = Yii::$app->request->csrfParam;
             }
         });
         calendar.render();
+
     }
 
     function allowDrop(ev) {
