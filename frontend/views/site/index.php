@@ -75,16 +75,16 @@ $this->title = 'Dashboard';
     ?>
     <div class="body-content">
         <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-4">
                 <div class="panel panel-primary">
                     <div class="panel-heading"><i class="fa fa-calendar"></i> Calendar of Events </div>
                     <div class="panel-body">
-                        <div style="height:400px;width:400px" id="calendar"></div>
+                        <div style="height:350;width:350" id="calendar"></div>
                     </div>
                 </div>
             </div>
             <?php if (YIi::$app->user->can('super-user')) { ?>
-                <div class="col-sm-5">
+                <div class="col-sm-7">
                     <div class="panel panel-primary">
                         <div class="panel-heading">Transmittal</div>
                         <div class="panel-body">
@@ -529,6 +529,12 @@ $this->title = 'Dashboard';
     <span></span>
 </div>
 <style>
+    canvas {
+   
+        height: 343px !important;
+
+    }
+
     .panel {
         background-color: white;
         box-shadow: 20px;
@@ -1220,6 +1226,7 @@ $script = <<<JS
         const ctx = document.getElementById('myChart').getContext('2d');
         const myChart = new Chart(ctx, {
             type: 'bar',
+      
 
             data: {
                 labels: data.reporting_period,
