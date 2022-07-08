@@ -4598,7 +4598,10 @@ class ReportController extends \yii\web\Controller
             IFNULL(dv_at_coa.dv_count_at_coa,0) as dv_count_at_coa
             
             FROM 
-            (SELECT cash_disbursement.reporting_period, COUNT(cash_disbursement.id) as total_dv FROM cash_disbursement GROUP BY cash_disbursement.reporting_period) as total_dv
+            (SELECT cash_disbursement.reporting_period, COUNT(cash_disbursement.id) as total_dv 
+            FROM cash_disbursement
+            WHERE cash_disbursement.is_cancelled !=1
+             GROUP BY cash_disbursement.reporting_period) as total_dv
             LEFT JOIN 
             (
             SELECT 
@@ -4612,6 +4615,7 @@ class ReportController extends \yii\web\Controller
             WHERE 
             transmittal_entries.cash_disbursement_id = cash_disbursement.id
             GROUP BY transmittal_entries.cash_disbursement_id)
+            AND cash_disbursement.is_cancelled !=1
             GROUP BY cash_disbursement.reporting_period
             )  as dv_at_ro ON total_dv.reporting_period   = dv_at_ro.reporting_period
             
@@ -4622,6 +4626,7 @@ class ReportController extends \yii\web\Controller
             FROM 
             cash_disbursement
             INNER JOIN  (SELECT cash_disbursement_id FROM transmittal_entries GROUP BY cash_disbursement_id)as transmitted ON cash_disbursement.id = transmitted.cash_disbursement_id
+            
             GROUP BY
             cash_disbursement.reporting_period) as dv_at_coa ON   total_dv.reporting_period = dv_at_coa.reporting_period
             WHERE total_dv.reporting_period LIKE :_year
