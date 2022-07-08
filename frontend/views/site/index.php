@@ -88,6 +88,7 @@ $this->title = 'Dashboard';
                     <div class="panel panel-primary">
                         <div class="panel-heading">Transmittal</div>
                         <div class="panel-body">
+                            <label for="year">Year</label>
                             <?php
                             echo DatePicker::widget([
                                 'id' => 'bar_filter',
