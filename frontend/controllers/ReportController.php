@@ -70,7 +70,8 @@ class ReportController extends \yii\web\Controller
                     'dv-time-monitoring-summary',
                     'province-fund-source-balance',
                     'liquidation-report-annex',
-                    'dv-time-monitoring-export'
+                    'dv-time-monitoring-export',
+                    'dv-transmittal-summary'
 
                 ],
                 'rules' => [
@@ -96,7 +97,8 @@ class ReportController extends \yii\web\Controller
                             'dv-time-monitoring-summary',
                             'province-fund-source-balance',
                             'liquidation-report-annex',
-                            'dv-time-monitoring-export'
+                            'dv-time-monitoring-export',
+                            'dv-transmittal-summary'
 
 
                         ],
@@ -4542,9 +4544,93 @@ class ReportController extends \yii\web\Controller
             'dataProvider' => $dataProvider,
         ]);
     }
-    public function actionQ()
+    // public function actionQ()
+    // {
+    //     $cookies = Yii::$app->response->cookies;
+
+    //     // add a new cookie to the response to be sent
+
+    //     // $query = Yii::$app->db->createCommand("SELECT * FROM `dv_aucs` WHERE id = :id")->bindValue(':id', $id)->getRawSql();
+    //     // return json_encode($query);
+    //     // echo  Yii::$app->getSecurity()->decryptByPassword('MIOBSffkc1yR3VZM658Ef7ndQp0DdMzi', '$13$SkF5x6EUe/Qs95K3Hl5UZuRGfhZ6f9t1iCttNzw2P2fBvVEYEPLpu');
+    // }
+    // public function actionGetData()
+    // {
+    //     if (Yii::$app->request->isPost) {
+    //         $reporting_period = Yii::$app->getRequest()->getBodyParams()['reporting_period'];
+    //         if (empty($reporting_period)) {
+
+    //             $query = Yii::$app->db->createCommand("SELECT 
+    //                     dv_aucs.reporting_period,
+    //                     COUNT(dv_aucs.id) as dv
+    //                     FROM 
+    //                     dv_aucs
+    //                     LEFT JOIN cash_disbursement ON dv_aucs.id = cash_disbursement.dv_aucs_id
+    //                     WHERE
+    //                     dv_aucs.is_cancelled !=1
+    //                     GROUP BY dv_aucs.reporting_period
+    //                     ")->queryAll();
+    //         } else {
+    //             $query = Yii::$app->db->createCommand("SELECT 
+    //             dv_aucs.reporting_period,
+    //             COUNT(dv_aucs.id) as dv
+    //             FROM 
+    //             dv_aucs
+    //             LEFT JOIN cash_disbursement ON dv_aucs.id = cash_disbursement.dv_aucs_id
+    //             WHERE
+    //             dv_aucs.is_cancelled !=1
+    //             AND dv_aucs.reporting_period = :reporting_period
+    //             GROUP BY dv_aucs.reporting_period
+    //             ")
+    //                 ->bindValue(':reporting_period', $reporting_period)
+    //                 ->queryAll();
+    //         }
+    //         return json_encode($query);
+    //     }
+    // }
+    public function actionDvTransmittalSummary()
     {
-        echo  Yii::$app->getSecurity()->decryptByPassword('MIOBSffkc1yR3VZM658Ef7ndQp0DdMzi', '$13$SkF5x6EUe/Qs95K3Hl5UZuRGfhZ6f9t1iCttNzw2P2fBvVEYEPLpu');
+        if (Yii::$app->request->isPost) {
+            $year = !empty(Yii::$app->getRequest()->getBodyParams()['year']) ? Yii::$app->getRequest()->getBodyParams()['year'] : date('Y');
+            $query = Yii::$app->db->createCommand("SELECT 
+            total_dv.*,
+            IFNULL(dv_at_ro.dv_count_at_ro,0) as dv_count_at_ro ,
+            IFNULL(dv_at_coa.dv_count_at_coa,0) as dv_count_at_coa
+            
+            FROM 
+            (SELECT cash_disbursement.reporting_period, COUNT(cash_disbursement.id) as total_dv FROM cash_disbursement GROUP BY cash_disbursement.reporting_period) as total_dv
+            LEFT JOIN 
+            (
+            SELECT 
+            cash_disbursement.reporting_period,
+            COUNT(cash_disbursement.id) as dv_count_at_ro
+            FROM 
+            cash_disbursement
+            WHERE 
+            NOT EXISTS (SELECT transmittal_entries.cash_disbursement_id 
+            FROM transmittal_entries 
+            WHERE 
+            transmittal_entries.cash_disbursement_id = cash_disbursement.id
+            GROUP BY transmittal_entries.cash_disbursement_id)
+            GROUP BY cash_disbursement.reporting_period
+            )  as dv_at_ro ON total_dv.reporting_period   = dv_at_ro.reporting_period
+            
+            LEFT JOIN 
+            (SELECT 
+            cash_disbursement.reporting_period,
+            COUNT(cash_disbursement.id) as dv_count_at_coa
+            FROM 
+            cash_disbursement
+            INNER JOIN  (SELECT cash_disbursement_id FROM transmittal_entries GROUP BY cash_disbursement_id)as transmitted ON cash_disbursement.id = transmitted.cash_disbursement_id
+            GROUP BY
+            cash_disbursement.reporting_period) as dv_at_coa ON   total_dv.reporting_period = dv_at_coa.reporting_period
+            WHERE total_dv.reporting_period LIKE :_year
+            ")
+
+                ->bindValue(':_year', $year . '%')
+                ->queryAll();
+            return json_encode($query);
+        }
     }
 }
 

@@ -83,28 +83,30 @@ $this->title = 'Dashboard';
                     </div>
                 </div>
             </div>
-            <div class="col-sm-5">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">Transmittal</div>
-                    <div class="panel-body">
-                        <?php
-                        echo DatePicker::widget([
-                            'id' => 'bar_filter',
-                            'name' => 'year',
-                            'pluginOptions' => [
-                                'autoclose' => true,
-                                'format' => 'yyyy',
-                                'minViewMode' => 'years'
+            <?php if (YIi::$app->user->can('super-user')) { ?>
+                <div class="col-sm-5">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">Transmittal</div>
+                        <div class="panel-body">
+                            <?php
+                            echo DatePicker::widget([
+                                'id' => 'bar_filter',
+                                'name' => 'year',
+                                'pluginOptions' => [
+                                    'autoclose' => true,
+                                    'format' => 'yyyy',
+                                    'minViewMode' => 'years'
 
-                            ]
-                        ]);
-                        ?>
-                        <div id="chartContainer">
-                            <canvas id="myChart"></canvas>
+                                ]
+                            ]);
+                            ?>
+                            <div id="chartContainer">
+                                <canvas id="myChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            <?php } ?>
         </div>
 
 
