@@ -3940,8 +3940,7 @@ class ReportController extends \yii\web\Controller
             WHERE
 
             dv_aucs.is_cancelled !=1
-            AND dv_aucs.in_timestamp IS NOT NULL
-            AND dv_aucs.out_timestamp IS NOT NULL
+  
 
             AND 
             cash_disbursement.is_cancelled !=1
