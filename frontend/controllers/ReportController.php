@@ -98,7 +98,10 @@ class ReportController extends \yii\web\Controller
                             'province-fund-source-balance',
                             'liquidation-report-annex',
                             'dv-time-monitoring-export',
-                            'dv-transmittal-summary'
+                            'dv-transmittal-summary',
+                            'set-cookie',
+                            'show-cookie',
+                            'detailed-transmittal-summary'
 
 
                         ],
@@ -4635,6 +4638,63 @@ class ReportController extends \yii\web\Controller
                 ->queryAll();
             return json_encode($query);
         }
+    }
+    // public function actionSetCookie()
+    // {
+    //     $cookies = Yii::$app->response->cookies;
+
+    //     // add a new cookie to the response to be sent
+    //     $cookies->add(new \yii\web\Cookie([
+    //         'name' => 'test',
+    //         'value' => 'zh-CN',
+    //     ]));
+    // }
+    // public function actionShowCookie()
+    // {
+    //     if (Yii::$app->getRequest()->getCookies()->has('test')) {
+    //         print_r(Yii::$app->getRequest()->getCookies()->getValue('test'));
+    //     }
+    // }
+    public function actionDetailedTransmittalSummary($reporting_period = '')
+    {
+
+        $not_transmitted_query = Yii::$app->db->createCommand("SELECT 
+        cash_disbursement.check_or_ada_no,
+        cash_disbursement.issuance_date,
+        dv_aucs.dv_number,
+        dv_aucs.particular,
+        dv_amount.amount_disbursed
+        
+        
+         FROM 
+        cash_disbursement 
+        INNER JOIN dv_aucs on cash_disbursement.dv_aucs_id = dv_aucs.id
+        LEFT JOIN (SELECT SUM(dv_aucs_entries.amount_disbursed) as amount_disbursed,dv_aucs_entries.dv_aucs_id FROM dv_aucs_entries GROUP BY dv_aucs_entries.dv_aucs_id) as dv_amount ON dv_aucs.id  = dv_amount.dv_aucs_id
+        WHERE 
+        cash_disbursement.is_cancelled !=1
+        AND EXISTS (SELECT transmittal_entries.cash_disbursement_id FROM transmittal_entries WHERE transmittal_entries.cash_disbursement_id=  cash_disbursement.id GROUP BY transmittal_entries.cash_disbursement_id) 
+        AND cash_disbursement.reporting_period = :reporting_period
+        ORDER BY cash_disbursement.check_or_ada_no")
+            ->bindValue(':reporting_period', $reporting_period)
+            ->queryAll();
+        $transmitted_query = Yii::$app->db->createCommand("SELECT 
+        cash_disbursement.check_or_ada_no,
+        cash_disbursement.issuance_date,
+        dv_aucs.dv_number,
+        dv_aucs.particular
+         FROM 
+        cash_disbursement 
+        INNER JOIN dv_aucs on cash_disbursement.dv_aucs_id = dv_aucs.id
+        WHERE 
+        cash_disbursement.is_cancelled !=1
+        AND EXISTS (SELECT transmittal_entries.cash_disbursement_id FROM transmittal_entries WHERE transmittal_entries.cash_disbursement_id=  cash_disbursement.id GROUP BY transmittal_entries.cash_disbursement_id) 
+        ORDER BY cash_disbursement.check_or_ada_no")
+            ->bindValue(':reporting_period', $reporting_period)
+            ->queryAll();
+        return $this->render('detailed_transmittal_summary', [
+            'not_transmitted' => $not_transmitted_query,
+            'transmitted' => $transmitted_query,
+        ]);
     }
 }
 
