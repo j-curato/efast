@@ -4672,7 +4672,7 @@ class ReportController extends \yii\web\Controller
         LEFT JOIN (SELECT SUM(dv_aucs_entries.amount_disbursed) as amount_disbursed,dv_aucs_entries.dv_aucs_id FROM dv_aucs_entries GROUP BY dv_aucs_entries.dv_aucs_id) as dv_amount ON dv_aucs.id  = dv_amount.dv_aucs_id
         WHERE 
         cash_disbursement.is_cancelled !=1
-        AND EXISTS (SELECT transmittal_entries.cash_disbursement_id FROM transmittal_entries WHERE transmittal_entries.cash_disbursement_id=  cash_disbursement.id GROUP BY transmittal_entries.cash_disbursement_id) 
+        AND NOT EXISTS (SELECT transmittal_entries.cash_disbursement_id FROM transmittal_entries WHERE transmittal_entries.cash_disbursement_id=  cash_disbursement.id GROUP BY transmittal_entries.cash_disbursement_id) 
         AND cash_disbursement.reporting_period = :reporting_period
         ORDER BY cash_disbursement.check_or_ada_no")
             ->bindValue(':reporting_period', $reporting_period)

@@ -7,7 +7,7 @@ use aryelds\sweetalert\SweetAlertAsset;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = "Detailed Transmittal Summary";
+$this->title = "Not Transmitted DV,'s";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="transmittal-summary" style="background-color: white;">
