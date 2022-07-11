@@ -31,10 +31,7 @@ class LoginForm extends Model
             ['rememberMe', 'boolean'],
             // password is validated by validatePassword()
             ['password', 'validatePassword'],
-            ['captcha', 'captcha'],
-            [[
-                'username', 'password', 'captcha'
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            ['captcha', 'captcha']
         ];
     }
 
