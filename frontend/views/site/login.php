@@ -42,9 +42,10 @@ $fieldOptions2 = [
             ->passwordInput(['placeholder' => $model->getAttributeLabel('password'), 'options' => ['autocomplete' => 'off']]) ?>
         <?= $form->field($model, 'captcha')->widget(Captcha::class, [
             'template' => '<div class="row">
-            <div class="col-lg-3">{image}</div>
-            <div class="col-sm-1"></div>
-            <div class="col-lg-6">{input}</div>
+            <div class="col-sm-12">{image}</div>
+        </div>
+        <div class="row">
+        <div class="col-sm-12">{input}</div>
         </div>',
         ]) ?>
         <div class="row">
