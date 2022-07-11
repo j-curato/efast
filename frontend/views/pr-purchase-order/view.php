@@ -294,7 +294,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </span>
                                 <br>
                                 <span>
-                                    <?php echo $requested_by_position ?>
+                                    <?php echo $inspected_by_position ?>
 
                                 </span>
                             </td>
