@@ -1220,19 +1220,16 @@ $csrfName = Yii::$app->request->csrfParam;
 </script>
 <?php
 
-
+$url = Url::toRoute(['report/detailed-transmittal-summary', 'reporting_period' => '']);
 $script = <<<JS
     
     async function BarChart(year =''){
-
         const data = await getData(year)
         document.getElementById("chartContainer").innerHTML = '&nbsp;';
         document.getElementById("chartContainer").innerHTML = '<canvas id="myChart"></canvas>';
         const ctx = document.getElementById('myChart').getContext('2d');
         const myChart = new Chart(ctx, {
             type: 'bar',
-      
-
             data: {
                 labels: data.reporting_period,
                 datasets: [{
@@ -1262,9 +1259,36 @@ $script = <<<JS
                 }
             ]
             },
+                options: {
+                    // This chart will not respond to mousemove, etc
+                    onClick(e) {
+                        const activePoints = myChart.getElementsAtEvent(e)[0];
+                 
+                       if (activePoints !=undefined){
+                        console.log(myChart.data)
+                        console.log(myChart.data.labels[activePoints._index])
+                        const reporting_period = myChart.data.labels[activePoints._index]
+                        window.location.href = '$url' + reporting_period
+                       }
+                    }
+                }
    
         });
-        myChart.update();
+        function clickHandler(evt) {
+            const points = myChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+                console.log('qwe')
+            if (points.length) {
+                const firstPoint = points[0];
+                const label = myChart.data.labels[firstPoint.index];
+                const value = myChart.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+            }
+        }
+        ctx.onClick = clickHandler;
+        ctx.onclick = function(evt){
+            console.log('qwe')
+            var activePoints = myLineChart.getElementsAtEvent(evt);
+            // => activePoints is an array of points on the canvas that are at the same position as the click event.
+        };
    
     }
      async function getData(year=''){
