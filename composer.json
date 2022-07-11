@@ -22,7 +22,6 @@
         "php": ">=7.4.11",
         "yiisoft/yii2": "~2.0.14",
         "yiisoft/yii2-bootstrap": "~2.0.0",
-        "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
         "dmstr/yii2-adminlte-asset": "^2.1",
         "2amigos/yii2-chartjs-widget": "~2.0",
         "kartik-v/yii2-widgets": "*",
@@ -40,10 +39,9 @@
         "edofre/yii2-fullcalendar": "V1.0.11",
         "kartik-v/yii2-export": "@dev",
         "2amigos/qrcode-library": "^2.0",
-        "yii2tech/https": "*",
-        "yii2tech/ar-softdelete": "*",
         "2amigos/yii2-google-maps-library" : "*",
-        "vilochane/yii2-barcode-generator": "dev-master"
+        "vilochane/yii2-barcode-generator": "dev-master",
+        "softark/yii2-mb-captcha": "dev-master"
 
 
     },
@@ -63,7 +61,10 @@
         "fxp-asset": {
             "enabled": false
         },
-        "platform-check": false
+        "platform-check": false,
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true
+        }
     },
     "conflict": {
         "bower-asset/fullcalendar": "^4.3.0"

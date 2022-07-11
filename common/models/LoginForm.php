@@ -12,7 +12,7 @@ class LoginForm extends Model
 {
     public $username;
     public $password;
-
+    public $captcha;
     public $rememberMe = true;
 
     private $_user;
@@ -31,9 +31,9 @@ class LoginForm extends Model
             ['rememberMe', 'boolean'],
             // password is validated by validatePassword()
             ['password', 'validatePassword'],
-
+            ['captcha', 'captcha'],
             [[
-                'username', 'password'
+                'username', 'password', 'captcha'
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
