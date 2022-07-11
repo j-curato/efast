@@ -42,6 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
     th,
     td {
         border: 1px solid black;
+        padding: 5px;
     }
 
     @media print {
