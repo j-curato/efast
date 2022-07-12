@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
         }
         if (!empty($model->transmittal->transmittal_id)) {
             $transmittal_link = yii::$app->request->baseUrl . "/index.php?r=transmittal/view&id={$model->transmittal->transmittal_id}";
-            echo  Html::a('Transmittal ', $transmittal_link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px']);
+            echo  Html::a('Transmittal ', $transmittal_link, ['class' => 'btn btn-link ', 'style' => 'margin:3px']);
         }
         ?>
     </p>
