@@ -266,7 +266,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td class="no-border">Funds Availability </td>
                         </tr>
                         <tr>
-                            <td class="center no-border">
+                            <td class="center no-border" style="min-width: 200px;">
                                 <span class="personel" style="text-decoration: underline;font-size:12px">
                                     <?php echo $requested_by ?>
                                 </span>
@@ -275,7 +275,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <?php echo $requested_by_position ?>
                                 </span>
                             </td>
-                            <td class="center no-border">
+                            <td class="center no-border" style="min-width: 200px;">
                                 <span class="personel" style="text-decoration: underline;font-size:12px">
                                     <?php echo $auth_personel ?>
 
@@ -287,7 +287,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                                 </span>
                             </td>
-                            <td class="center no-border">
+                            <td class="center no-border" style="min-width: 200px;">
                                 <span class="personel" style="text-decoration: underline;font-size:12px">
                                     <?php echo $inspected_by ?>
 
@@ -298,7 +298,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                                 </span>
                             </td>
-                            <td class="center no-border">
+                            <td class="center no-border" style="min-width: 200px;">
                                 <span class="personel" style="text-decoration: underline;font-size:12px">
                                     <?php echo $accountant ?>
 
@@ -608,6 +608,9 @@ $this->params['breadcrumbs'][] = $this->title;
             page-break-after: auto;
         }
 
+        .no-border {
+            padding: 0;
+        }
 
     }
 </style>
