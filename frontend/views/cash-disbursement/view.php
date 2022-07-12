@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-    <?= Html::a('Create Cash Disbursement', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Cash Disbursement', ['create'], ['class' => 'btn btn-success']) ?>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
 
@@ -34,6 +34,10 @@ $this->params['breadcrumbs'][] = $this->title;
             $jev_link = yii::$app->request->baseUrl . "/index.php?r=jev-preparation/view&id={$model->jevPreparation->id}";
             echo  Html::a('JEV ', $jev_link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px']);
         }
+        if (!empty($model->transmittal->transmittal_id)) {
+            $transmittal_link = yii::$app->request->baseUrl . "/index.php?r=transmittal/view&id={$model->transmittal->transmittal_id}";
+            echo  Html::a('Transmittal ', $transmittal_link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px']);
+        }
         ?>
     </p>
 
@@ -49,7 +53,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'dvAucs.particular',
             'check_or_ada_no',
             'ada_number',
-         
+
             [
                 'label' => 'Cancelled',
                 'value' => function ($model) {
@@ -62,18 +66,18 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'issuance_date',
             [
-                'attribute'=>'begin_time',
-                'value'=>function($model){
-                    return date('h:i A',strtotime($model->begin_time));
+                'attribute' => 'begin_time',
+                'value' => function ($model) {
+                    return date('h:i A', strtotime($model->begin_time));
                 }
             ],
             [
-                'attribute'=>'out_time',
-                'value'=>function($model){
-                    return date('h:i A',strtotime($model->out_time));
+                'attribute' => 'out_time',
+                'value' => function ($model) {
+                    return date('h:i A', strtotime($model->out_time));
                 }
             ],
-            
+
         ],
     ]) ?>
 

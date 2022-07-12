@@ -104,4 +104,8 @@ class CashDisbursement extends \yii\db\ActiveRecord
     {
         return $this->hasOne(JevPreparation::class, ['cash_disbursement_id' => 'id']);
     }
+    public function getTransmittal()
+    {
+        return $this->hasOne(TransmittalEntries::class, ['cash_disbursement_id' => 'id']);
+    }
 }
