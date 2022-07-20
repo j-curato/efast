@@ -4726,60 +4726,59 @@ class ReportController extends \yii\web\Controller
                 liquidation.province,
                 liquidation.reporting_period) as liq_periods
                 LEFT JOIN 
-                (
-                
-                SELECT 
+                (SELECT 
                 liquidation.province,
                 liquidation.reporting_period,
-                COUNT(liquidation.id) dv_at_po_count
-                
+                COUNT(liquidation.id) as dv_at_po_count
                 FROM 
                 liquidation
-                LEFT JOIN (SELECT liquidation_entries.liquidation_id,SUM(liquidation_entries.withdrawals) as total_withdrawals FROM liquidation_entries GROUP BY liquidation_entries.liquidation_id) as 
-                liq_total ON liquidation.id = liq_total.liquidation_id
+                LEFT JOIN (SELECT liquidation_entries.liquidation_id,SUM(liquidation_entries.withdrawals) as total_withdrawals FROM liquidation_entries GROUP BY liquidation_entries.liquidation_id) as liq_entries ON liquidation.id = liq_entries.liquidation_id
                 WHERE
-                liquidation.is_cancelled !=1
-                AND liq_total.total_withdrawals >0
-                AND liquidation.`status` = 'at_po'
-                GROUP BY liquidation.province,
+                NOT EXISTS (SELECT 
+                po_transmittal_entries.liquidation_id
+                FROM po_transmittal_entries
+                LEFT JOIN po_transmittal ON po_transmittal_entries.po_transmittal_number = po_transmittal.transmittal_number
+                WHERE
+                po_transmittal.`status` IN ('at_ro','at_coa')
+                AND
+                po_transmittal_entries.`status` IS NULL
+                AND
+                po_transmittal_entries.liquidation_id = liquidation.id
+                )
+                AND liq_entries.total_withdrawals >0
+                GROUP BY 
+                liquidation.province,
                 liquidation.reporting_period) dv_at_po ON liq_periods.province = dv_at_po.province AND liq_periods.reporting_period = dv_at_po.reporting_period
                 
                 LEFT JOIN 
-                (
-                
-                SELECT 
+                (SELECT 
                 liquidation.province,
                 liquidation.reporting_period,
-                COUNT(liquidation.id) dv_at_ro_count
-                
+                COUNT(liquidation.id) as dv_at_ro_count
                 FROM 
-                liquidation
-                LEFT JOIN (SELECT liquidation_entries.liquidation_id,SUM(liquidation_entries.withdrawals) as total_withdrawals FROM liquidation_entries GROUP BY liquidation_entries.liquidation_id) as 
-                liq_total ON liquidation.id = liq_total.liquidation_id
-                WHERE
-                liquidation.is_cancelled !=1
-                AND liq_total.total_withdrawals >0
-                AND liquidation.`status` = 'at_ro'
-                GROUP BY liquidation.province,
-                liquidation.reporting_period) dv_at_ro ON liq_periods.province = dv_at_ro.province AND liq_periods.reporting_period = dv_at_ro.reporting_period
+                po_transmittal
+                LEFT JOIN `po_transmittal_entries` ON po_transmittal.transmittal_number = po_transmittal_entries.po_transmittal_number
+                LEFT JOIN liquidation ON po_transmittal_entries.liquidation_id = liquidation.id
+                LEFT JOIN (SELECT liquidation_entries.liquidation_id,SUM(liquidation_entries.withdrawals) as total_withdrawals FROM liquidation_entries GROUP BY liquidation_entries.liquidation_id) as liq_entries ON liquidation.id = liq_entries.liquidation_id 
+                WHERE  po_transmittal.status = 'at_ro'
+                AND po_transmittal_entries.status IS NULL  
+                AND liq_entries.total_withdrawals >0
+                GROUP BY liquidation.province,liquidation.reporting_period) dv_at_ro ON liq_periods.province = dv_at_ro.province AND liq_periods.reporting_period = dv_at_ro.reporting_period
                 LEFT JOIN 
-                (
-                
-                SELECT 
+                (SELECT 
                 liquidation.province,
                 liquidation.reporting_period,
-                COUNT(liquidation.id) dv_at_coa_count
-                
+                COUNT(liquidation.id) as dv_at_coa_count
                 FROM 
-                liquidation
-                LEFT JOIN (SELECT liquidation_entries.liquidation_id,SUM(liquidation_entries.withdrawals) as total_withdrawals FROM liquidation_entries GROUP BY liquidation_entries.liquidation_id) as 
-                liq_total ON liquidation.id = liq_total.liquidation_id
-                WHERE
-                liquidation.is_cancelled !=1
-                AND liq_total.total_withdrawals >0
-                AND liquidation.`status` = 'at_coa'
-                GROUP BY liquidation.province,
-                liquidation.reporting_period) dv_at_coa ON liq_periods.province = dv_at_coa.province AND liq_periods.reporting_period = dv_at_coa.reporting_period
+                po_transmittal
+                LEFT JOIN `po_transmittal_entries` ON po_transmittal.transmittal_number = po_transmittal_entries.po_transmittal_number
+                LEFT JOIN liquidation ON po_transmittal_entries.liquidation_id = liquidation.id
+                LEFT JOIN (SELECT liquidation_entries.liquidation_id,SUM(liquidation_entries.withdrawals) as total_withdrawals 
+                    FROM liquidation_entries GROUP BY liquidation_entries.liquidation_id) as liq_entries ON liquidation.id = liq_entries.liquidation_id 
+                WHERE  po_transmittal.status = 'at_coa'
+                AND po_transmittal_entries.status IS NULL  
+                AND liq_entries.total_withdrawals >0
+                GROUP BY liquidation.province,liquidation.reporting_period) dv_at_coa ON liq_periods.province = dv_at_coa.province AND liq_periods.reporting_period = dv_at_coa.reporting_period
                 WHERE liq_periods.reporting_period LIKE :_year
             ")
                 ->bindValue(':_year', $year.'%')
