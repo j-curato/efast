@@ -4708,8 +4708,9 @@ class ReportController extends \yii\web\Controller
             liquidation.reporting_period
             FROM liquidation
             WHERE liquidation.reporting_period LIKE :_year
-            GROUP  BY liquidation.reporting_period")
-                ->bindValue(':_year', $year.'%')
+            GROUP  BY liquidation.reporting_period
+            ORDER BY  liquidation.reporting_period ASC")
+                ->bindValue(':_year', $year . '%')
                 ->queryAll();
             $query = Yii::$app->db->createCommand("SELECT 
                 liq_periods.*,
@@ -4724,7 +4725,8 @@ class ReportController extends \yii\web\Controller
                 FROM liquidation
                 GROUP BY
                 liquidation.province,
-                liquidation.reporting_period) as liq_periods
+                liquidation.reporting_period
+                ) as liq_periods
                 LEFT JOIN 
                 (SELECT 
                 liquidation.province,
@@ -4781,7 +4783,7 @@ class ReportController extends \yii\web\Controller
                 GROUP BY liquidation.province,liquidation.reporting_period) dv_at_coa ON liq_periods.province = dv_at_coa.province AND liq_periods.reporting_period = dv_at_coa.reporting_period
                 WHERE liq_periods.reporting_period LIKE :_year
             ")
-                ->bindValue(':_year', $year.'%')
+                ->bindValue(':_year', $year . '%')
                 ->queryAll();
             $result = ArrayHelper::index($query, null, 'province');
             return json_encode(['data' => $result, 'reporting_periods' => $reporting_periods]);
