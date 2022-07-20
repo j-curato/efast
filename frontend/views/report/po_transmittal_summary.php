@@ -195,7 +195,10 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
         $('#data_table thead').append(head_row_items)
     }
     $(document).ready(function() {
-        $('#generate').click(function(e) {
+        $('#generate').on('click', function(e) {
+            $('#data_table').empty()
+            $('#data_table').append('<thead></thead>')
+            $('#data_table').append('<tbody></tbody>')
             $.ajax({
                 type: 'POST',
                 url: window.location.href,
@@ -203,7 +206,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
                     year: $("#year").val()
                 },
                 success: function(data) {
-                    $('#data_table thead').empty()
+
                     const res = JSON.parse(data)
                     // console.log(res)
                     displayData(res)
