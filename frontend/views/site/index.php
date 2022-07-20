@@ -1199,25 +1199,6 @@ $csrfName = Yii::$app->request->csrfParam;
 
     }
 
-    function updateCloudPayee() {
-        $.ajax({
-            type: "post",
-            url: 'https://fisdticaraga.com/index.php?r=payee-api/create',
-            contentType: "application/json",
-            data: JSON.stringify(d),
-            dataType: 'json',
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem('token')}`
-            },
-            success: function(newdata) {
-                res[0] = {
-                    payee: newdata
-                }
-                console.log(newdata)
-            }
-        })
-
-    }
 
     function updateCloudTransaction() {
         $.post(window.location.pathname + '?r=sync-database/transaction', // url
