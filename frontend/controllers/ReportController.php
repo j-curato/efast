@@ -71,7 +71,8 @@ class ReportController extends \yii\web\Controller
                     'province-fund-source-balance',
                     'liquidation-report-annex',
                     'dv-time-monitoring-export',
-                    'dv-transmittal-summary'
+                    'dv-transmittal-summary',
+                    'po-transmittal-summary',
 
                 ],
                 'rules' => [
@@ -101,7 +102,9 @@ class ReportController extends \yii\web\Controller
                             'dv-transmittal-summary',
                             'set-cookie',
                             'show-cookie',
-                            'detailed-transmittal-summary'
+                            'detailed-transmittal-summary',
+                            'po-transmittal-summary',
+
 
 
                         ],
@@ -4649,12 +4652,13 @@ class ReportController extends \yii\web\Controller
     //         'value' => 'zh-CN',
     //     ]));
     // }
-    // public function actionShowCookie()
-    // {
-    //     if (Yii::$app->getRequest()->getCookies()->has('test')) {
-    //         print_r(Yii::$app->getRequest()->getCookies()->getValue('test'));
-    //     }
-    // }
+    public function actionQqq()
+    {
+        return 'aaaa';
+        if (Yii::$app->getRequest()->getCookies()->has('test')) {
+            print_r(Yii::$app->getRequest()->getCookies()->getValue('test'));
+        }
+    }
     public function actionDetailedTransmittalSummary($reporting_period = '')
     {
 
@@ -4695,6 +4699,97 @@ class ReportController extends \yii\web\Controller
             'not_transmitted' => $not_transmitted_query,
             'transmitted' => $transmitted_query,
         ]);
+    }
+    public function actionPoTransmittalSummary()
+    {
+        if (YIi::$app->request->isPost) {
+            $year = $_POST['year'];
+            $reporting_periods = YIi::$app->db->createCommand(" SELECT
+            liquidation.reporting_period
+            FROM liquidation
+            WHERE liquidation.reporting_period LIKE :_year
+            GROUP  BY liquidation.reporting_period")
+                ->bindValue(':_year', $year.'%')
+                ->queryAll();
+            $query = Yii::$app->db->createCommand("SELECT 
+                liq_periods.*,
+                dv_at_po.dv_at_po_count,
+                dv_at_ro.dv_at_ro_count,
+                dv_at_coa.dv_at_coa_count
+                FROM 
+                (SELECT 
+                
+                liquidation.province,
+                liquidation.reporting_period
+                FROM liquidation
+                GROUP BY
+                liquidation.province,
+                liquidation.reporting_period) as liq_periods
+                LEFT JOIN 
+                (
+                
+                SELECT 
+                liquidation.province,
+                liquidation.reporting_period,
+                COUNT(liquidation.id) dv_at_po_count
+                
+                FROM 
+                liquidation
+                LEFT JOIN (SELECT liquidation_entries.liquidation_id,SUM(liquidation_entries.withdrawals) as total_withdrawals FROM liquidation_entries GROUP BY liquidation_entries.liquidation_id) as 
+                liq_total ON liquidation.id = liq_total.liquidation_id
+                WHERE
+                liquidation.is_cancelled !=1
+                AND liq_total.total_withdrawals >0
+                AND liquidation.`status` = 'at_po'
+                GROUP BY liquidation.province,
+                liquidation.reporting_period) dv_at_po ON liq_periods.province = dv_at_po.province AND liq_periods.reporting_period = dv_at_po.reporting_period
+                
+                LEFT JOIN 
+                (
+                
+                SELECT 
+                liquidation.province,
+                liquidation.reporting_period,
+                COUNT(liquidation.id) dv_at_ro_count
+                
+                FROM 
+                liquidation
+                LEFT JOIN (SELECT liquidation_entries.liquidation_id,SUM(liquidation_entries.withdrawals) as total_withdrawals FROM liquidation_entries GROUP BY liquidation_entries.liquidation_id) as 
+                liq_total ON liquidation.id = liq_total.liquidation_id
+                WHERE
+                liquidation.is_cancelled !=1
+                AND liq_total.total_withdrawals >0
+                AND liquidation.`status` = 'at_ro'
+                GROUP BY liquidation.province,
+                liquidation.reporting_period) dv_at_ro ON liq_periods.province = dv_at_ro.province AND liq_periods.reporting_period = dv_at_ro.reporting_period
+                LEFT JOIN 
+                (
+                
+                SELECT 
+                liquidation.province,
+                liquidation.reporting_period,
+                COUNT(liquidation.id) dv_at_coa_count
+                
+                FROM 
+                liquidation
+                LEFT JOIN (SELECT liquidation_entries.liquidation_id,SUM(liquidation_entries.withdrawals) as total_withdrawals FROM liquidation_entries GROUP BY liquidation_entries.liquidation_id) as 
+                liq_total ON liquidation.id = liq_total.liquidation_id
+                WHERE
+                liquidation.is_cancelled !=1
+                AND liq_total.total_withdrawals >0
+                AND liquidation.`status` = 'at_coa'
+                GROUP BY liquidation.province,
+                liquidation.reporting_period) dv_at_coa ON liq_periods.province = dv_at_coa.province AND liq_periods.reporting_period = dv_at_coa.reporting_period
+                WHERE liq_periods.reporting_period LIKE :_year
+            ")
+                ->bindValue(':_year', $year.'%')
+                ->queryAll();
+            $result = ArrayHelper::index($query, null, 'province');
+            return json_encode(['data' => $result, 'reporting_periods' => $reporting_periods]);
+        }
+
+
+        return $this->render('po_transmittal_summary');
     }
 }
 

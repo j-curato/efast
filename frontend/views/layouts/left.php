@@ -426,6 +426,7 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Alphalist', 'icon' => 'circle-o', 'url' => ['/alphalist'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'MLP', 'icon' => 'circle-o', 'url' => ['/monthly-liquidation-program'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Adequacy of Resource', 'icon' => 'circle-o', 'url' => ['/report/province-adequacy'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'PO Transmittal Summary', 'icon' => 'circle-o', 'url' => ['/report/po-transmittal-summary'],] : [],
 
                             ],
                         ] : ['label' => ''],
