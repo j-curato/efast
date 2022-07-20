@@ -204,6 +204,21 @@ class SyncDatabaseController extends \yii\web\Controller
     //         ]);
     //     }
     // }
+    public function actionBooks()
+    {
+
+        if ($_POST) {
+            $db = Yii::$app->db;
+            $source_books = $db->createCommand("SELECT * FROM `books`")->queryAll();
+            $target_books =  Yii::$app->cloud_db->createCommand("SELECT * FROM `books`")->queryAll();
+            $source_books_difference = array_map(
+                'unserialize',
+                array_diff(array_map('serialize', $source_books), array_map('serialize', $target_books))
+
+            );
+            return json_encode($source_books_difference);
+        }
+    }
     public function actionPrStocks()
     {
         if ($_POST) {

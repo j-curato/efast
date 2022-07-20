@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2b7169a84a9300a87677f461f5edf97d",
+    "content-hash": "ab52941fa68cf12751d1b975db850120",
     "packages": [
         {
             "name": "2amigos/qrcode-library",
@@ -4260,6 +4260,166 @@
                 "source": "https://github.com/ralouphie/getallheaders/tree/develop"
             },
             "time": "2019-03-08T08:55:37+00:00"
+        },
+        {
+            "name": "razonyang/token-bucket",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/razonyang/php-token-bucket.git",
+                "reference": "dac365adf3a59b4b5888e81db1b0d90c13864f27"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/razonyang/php-token-bucket/zipball/dac365adf3a59b4b5888e81db1b0d90c13864f27",
+                "reference": "dac365adf3a59b4b5888e81db1b0d90c13864f27",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1",
+                "psr/log": "^1.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7"
+            },
+            "suggest": {
+                "ext-memcached": "MemcachedManager require memcached extension",
+                "ext-redis": "RedisManager require redis extension"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "RazonYang\\TokenBucket\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Razon Yang",
+                    "email": "razonyang@gmail.com"
+                }
+            ],
+            "description": "PHP Token Bucket",
+            "keywords": [
+                "rate limiter",
+                "token bucket"
+            ],
+            "support": {
+                "issues": "https://github.com/razonyang/php-token-bucket/issues",
+                "source": "https://github.com/razonyang/php-token-bucket/tree/1.0.0"
+            },
+            "time": "2019-08-21T05:02:02+00:00"
+        },
+        {
+            "name": "razonyang/yii2-psr-log",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/razonyang/yii2-psr-log.git",
+                "reference": "9642d61dbde3f87a75eb09c7cf2299bad7e9a5e0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/razonyang/yii2-psr-log/zipball/9642d61dbde3f87a75eb09c7cf2299bad7e9a5e0",
+                "reference": "9642d61dbde3f87a75eb09c7cf2299bad7e9a5e0",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1",
+                "psr/log": "^1.1",
+                "yiisoft/yii2": "~2.0.13"
+            },
+            "require-dev": {
+                "codeception/codeception": "^3.0",
+                "codeception/verify": "^1.1",
+                "phpunit/phpunit": "^7"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "RazonYang\\Yii2\\Psr\\Log\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Razon Yang",
+                    "email": "razonyang@gmail.com"
+                }
+            ],
+            "description": "Yii2 PSR Logger Adapter",
+            "keywords": [
+                "logger",
+                "psr",
+                "yii2"
+            ],
+            "support": {
+                "issues": "https://github.com/razonyang/yii2-psr-log/issues",
+                "source": "https://github.com/razonyang/yii2-psr-log/tree/master"
+            },
+            "time": "2019-08-21T04:43:50+00:00"
+        },
+        {
+            "name": "razonyang/yii2-rate-limiter",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/razonyang/yii2-rate-limiter.git",
+                "reference": "bc8e898ed8880ed417df96288f1952659698bf75"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/razonyang/yii2-rate-limiter/zipball/bc8e898ed8880ed417df96288f1952659698bf75",
+                "reference": "bc8e898ed8880ed417df96288f1952659698bf75",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1",
+                "razonyang/token-bucket": "^1.0",
+                "razonyang/yii2-psr-log": "^1.0",
+                "yiisoft/yii2": "~2.0.13"
+            },
+            "require-dev": {
+                "codeception/codeception": "^3.0",
+                "codeception/verify": "^1.1",
+                "phpunit/phpunit": "^7",
+                "yiisoft/yii2-redis": "^2.0"
+            },
+            "suggest": {
+                "yiisoft/yii2-redis": "Yii2 Redis extension for RedisManager"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "RazonYang\\Yii2\\RateLimiter\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Razon Yang",
+                    "email": "razonyang@gmail.com"
+                }
+            ],
+            "description": "Yii2 Rate Limiter",
+            "keywords": [
+                "rate limiter",
+                "yii2"
+            ],
+            "support": {
+                "issues": "https://github.com/razonyang/yii2-rate-limiter/issues",
+                "source": "https://github.com/razonyang/yii2-rate-limiter/tree/1.0.0"
+            },
+            "time": "2019-08-21T04:46:23+00:00"
         },
         {
             "name": "rmrevin/yii2-fontawesome",

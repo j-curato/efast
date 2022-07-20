@@ -575,6 +575,7 @@ $this->title = 'Dashboard';
 </style>
 <?php
 $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/js/dataSync.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 SweetAlertAsset::register($this);
 ChartJsAsset::register($this);
 $csrfToken = Yii::$app->request->csrfToken;
@@ -1171,12 +1172,20 @@ $csrfName = Yii::$app->request->csrfParam;
 
     })
     $(document).ready(function() {
-
+        updateCloud()
 
         $.getJSON(window.location.pathname + '?r=site/q').then(function(data) {
             cal(data)
         })
     })
+
+    async function updateCloud() {
+        try {
+            const CloudBooks = await updateCloudBooks()
+        } catch (err) {
+            console.log(err)
+        }
+    }
 
     function cal(data) {
         const calendarEl = document.getElementById('calendar');
