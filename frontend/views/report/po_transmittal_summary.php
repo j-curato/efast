@@ -43,12 +43,10 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
     <table id="data_table">
         <thead>
-
-            <tr>
+            <!-- <tr>
                 <th rowspan="3">ReportingPeriod</th>
             </tr>
-            <!-- <tr>
-                <td colspan="4">ADN</td>
+            <tr>
                 <td colspan="4">ADN</td>
             </tr>
             <tr>
@@ -150,7 +148,10 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
     }
     async function displayData(result) {
         const data = result.data
-
+        $('#data_table thead').empty()
+        $('#data_table tbody').empty()
+        $("#data_table thead:not(:first)").remove();
+        $('#data_table thead').append(` <tr><th rowspan="3">ReportingPeriod</th></tr>`)
         let reporting_periods = []
         $.each(result.reporting_periods, function(key, val) {
             reporting_periods.push(val.reporting_period)
@@ -162,7 +163,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
         let col_number = 1
         $.each(data, function(key, val) {
             // console.log(col_number)
-            head_row += `<td colspan='4'>${key}</td>`
+            head_row += `<td colspan='4'>${key.toUpperCase()}</td>`
             head_row_items += `
                         <td>Total</td>
                         <td>at PO</td>
@@ -202,6 +203,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
                     year: $("#year").val()
                 },
                 success: function(data) {
+                    $('#data_table thead').empty()
                     const res = JSON.parse(data)
                     // console.log(res)
                     displayData(res)
