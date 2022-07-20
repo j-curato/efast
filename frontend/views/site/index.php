@@ -1172,21 +1172,30 @@ $csrfName = Yii::$app->request->csrfParam;
     // })
 
     function updateCloudPayee() {
-        $.ajax({
-            type: "post",
-            url: 'https://fisdticaraga.com/index.php?r=payee-api/create',
-            contentType: "application/json",
-            data: JSON.stringify(d),
-            dataType: 'json',
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem('token')}`
-            },
-            success: function(newdata) {
-                res[0] = {
-                    payee: newdata
-                }
-            }
-        })
+        $.post(window.location.pathname + '?r=sync-database/payee', // url
+            {
+                myData: ''
+            }, // data to be submit
+            function(data) { // success callback
+                var d = JSON.parse(data)
+                $.ajax({
+                    type: "post",
+                    url: 'https://fisdticaraga.com/index.php?r=payee-api/create',
+                    contentType: "application/json",
+                    data: JSON.stringify(d),
+                    dataType: 'json',
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem('token')}`
+                    },
+                    success: function(newdata) {
+
+                        res[0] = {
+                            payee: newdata
+                        }
+                        console.log(newdata)
+                    }
+                })
+            })
 
     }
 
@@ -1204,6 +1213,7 @@ $csrfName = Yii::$app->request->csrfParam;
                 res[0] = {
                     payee: newdata
                 }
+                console.log(newdata)
             }
         })
 
@@ -1215,7 +1225,8 @@ $csrfName = Yii::$app->request->csrfParam;
                 myData: ''
             }, // data to be submit
             function(data) { // success callback
-                var d = JSON.parse(data)
+                console.log(data)
+                const d = JSON.parse(data)
                 $.ajax({
                     type: "post",
                     url: 'https://fisdticaraga.com/index.php?r=transaction-api/create',
