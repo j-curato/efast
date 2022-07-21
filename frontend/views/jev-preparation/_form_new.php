@@ -48,6 +48,7 @@ $entry_row = 1;
     if (!empty($model->id)) {
     }
     ?>
+    <?= $form->field($model, 'form_token')->hiddenInput() ?>
     <div class="row">
         <div class="col-sm-3">
             <h4 id="have_jev" style='color:red'></h4>

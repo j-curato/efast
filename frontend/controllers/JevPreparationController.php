@@ -5,37 +5,27 @@ namespace frontend\controllers;
 use app\models\Books;
 use app\models\CashFlow;
 use app\models\ChartOfAccounts;
-use app\models\DvAucs;
-use app\models\FundClusterCode;
+
 use app\models\JevAccountingEntries;
 use Yii;
 use app\models\JevPreparation;
 use app\models\JevPreparationSearch;
-use app\models\MajorAccounts;
 use app\models\NetAssetEquity;
 use app\models\Payee;
 use app\models\SubAccounts1;
 use app\models\SubAccounts2;
-use app\models\SubMajorAccounts;
-use app\models\SubMajorAccounts2;
-use aryelds\sweetalert\SweetAlert;
+
 use DateTime;
 use ErrorException;
 use Exception;
-use frontend\models\Model;
-use InvalidArgumentException;
-use phpDocumentor\Reflection\Types\Nullable;
-use PhpOffice\PhpSpreadsheet\Chart\Chart;
-use yii\data\ActiveDataProvider;
+
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
-use yii\helpers\VarDumper;
 use yii\web\ForbiddenHttpException;
-use yii\web\UploadedFile;
 
 /**
  * JevPreparationController implements the CRUD actions for JevPreparation model.
@@ -134,6 +124,7 @@ class JevPreparationController extends Controller
     }
     public function beforeAction($action)
     {
+
         if ($action->id == 'ledger') {
             $this->enableCsrfValidation = false;
         } else if ($action->id == 'update-jev') {
@@ -141,8 +132,9 @@ class JevPreparationController extends Controller
         } else if ($action->id == 'is-current') {
             $this->enableCsrfValidation = false;
         }
+        $session = Yii::$app->session;
 
-
+        $session['jev_form_session'] = Yii::$app->getSecurity()->generateRandomString();
         return parent::beforeAction($action);
     }
 
@@ -490,7 +482,7 @@ class JevPreparationController extends Controller
     public function actionCreate()
     {
         $model = new JevPreparation();
-
+        $model->form_token = Yii::$app->session['jev_form_session'];
         // $modelJevItems = [new JevAccountingEntries()];
         if ($model->load(Yii::$app->request->post())) {
             $debits = $_POST['debit'];
@@ -527,8 +519,13 @@ class JevPreparationController extends Controller
             $model->ref_number = $reference;
             $model->jev_number = $reference;
             $model->jev_number .= '-' . $this->getJevNumber($model->book_id, $model->reporting_period, $reference, 1);
+        
+            if ($model->form_token !== Yii::$app->session['jev_form_session']) {
+                return $this->redirect('index');
+            }
             if ($model->validate()) {
                 if ($model->save(false)) {
+                    Yii::$app->session['jev_form_session'] = Yii::$app->getSecurity()->generateRandomString();
                     $this->insertEntries($model->id, $object_code, $debits, $credits);
                     return $this->redirect(['view', 'id' => $model->id]);
                 }

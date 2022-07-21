@@ -31,7 +31,7 @@ class JevPreparation extends \yii\db\ActiveRecord
     {
         return 'jev_preparation';
     }
-
+    public  $form_token;
     /**
      * {@inheritdoc}
      */
