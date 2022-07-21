@@ -10,6 +10,42 @@ $this->title = $model->po_number;
 $this->params['breadcrumbs'][] = ['label' => 'Pr Purchase Orders', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+$purpose =  $model->aoq->rfq->purchaseRequest->purpose;
+$auth_personel = strtoupper($model->authorizedOfficial->f_name . ' ' . $model->authorizedOfficial->m_name[0] . '. ' . $model->authorizedOfficial->l_name);
+$auth_personel_position =  $model->authorizedOfficial->position;
+$accountant = strtoupper($model->accountingUnit->f_name . ' ' . $model->accountingUnit->m_name[0] . '. ' . $model->accountingUnit->l_name);
+$accountant_position = $model->accountingUnit->position;
+$requested_by = '';
+$requested_by_position = '';
+
+$inspected_by = '';
+$inspected_by_position = '';
+
+
+if (!empty($model->requestedBy->f_name)) {
+    $requested_by = strtoupper($model->requestedBy->f_name . ' ' . $model->requestedBy->m_name[0] . '. ' . $model->requestedBy->l_name);
+    $requested_by_position = $model->requestedBy->position;
+}
+if (!empty($model->inspectedBy->f_name)) {
+    $inspected_by = strtoupper($model->inspectedBy->f_name . ' ' . $model->inspectedBy->m_name[0] . '. ' . $model->inspectedBy->l_name);
+    $inspected_by_position = $model->inspectedBy->position;
+}
+$po_date = '';
+if (!empty($model->po_date)) {
+
+    $po_date =  DateTime::createFromFormat('Y-m-d', $model->po_date)->format('F d, Y');
+}
+
+$date_begun = '';
+$date_completed = '';
+
+if (!empty($model->date_work_begun)) {
+    $date_begun  = DateTime::createFromFormat('Y-m-d', $model->date_work_begun)->format('F d, Y');
+}
+
+if (!empty($model->date_completed)) {
+    $date_completed  = DateTime::createFromFormat('Y-m-d', $model->date_completed)->format('F d, Y');
+}
 ?>
 <div class="pr-purchase-order-view">
 
@@ -27,19 +63,20 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php
         $row_number = 0;
 
-        foreach ($aoq_lowest as $index => $val) {
+        foreach ($po_items as $index => $val) {
         ?>
 
             <?php
-            $alphabet = range('A', 'Z');
+            $po_number = $index;
+            // $alphabet = range('A', 'Z');
 
-            if (count($aoq_lowest) > 1) {
-                $po_number = $model->po_number . $alphabet[$row_number];
-                $row_number++;
-            } else {
-                $po_number = $model->po_number;
-            }
-            $payee =  $index;
+            // if (count($aoq_lowest) > 1) {
+            //     $po_number = $model->po_number . $alphabet[$row_number];
+            //     $row_number++;
+            // } else {
+            //     $po_number = $model->po_number;
+            // }
+            $payee =  $val[0]['payee'];
             $payee_address =   !empty($val[0]['address']) ? $val[0]['address'] : '';
             $payee_tin_number =   !empty($val[0]['tin_number']) ? $val[0]['tin_number'] : '';
 
@@ -49,42 +86,7 @@ $this->params['breadcrumbs'][] = $this->title;
             $description = $val[0]['description'];
             $specification = $val[0]['specification'];
             $quantity = $val[0]['quantity'];
-            $purpose =  $model->aoq->rfq->purchaseRequest->purpose;
-            $auth_personel = strtoupper($model->authorizedOfficial->f_name . ' ' . $model->authorizedOfficial->m_name[0] . '. ' . $model->authorizedOfficial->l_name);
-            $auth_personel_position =  $model->authorizedOfficial->position;
-            $accountant = strtoupper($model->accountingUnit->f_name . ' ' . $model->accountingUnit->m_name[0] . '. ' . $model->accountingUnit->l_name);
-            $accountant_position = $model->accountingUnit->position;
-            $requested_by = '';
-            $requested_by_position = '';
 
-            $inspected_by = '';
-            $inspected_by_position = '';
-
-
-            if (!empty($model->requestedBy->f_name)) {
-                $requested_by = strtoupper($model->requestedBy->f_name . ' ' . $model->requestedBy->m_name[0] . '. ' . $model->requestedBy->l_name);
-                $requested_by_position = $model->requestedBy->position;
-            }
-            if (!empty($model->inspectedBy->f_name)) {
-                $inspected_by = strtoupper($model->inspectedBy->f_name . ' ' . $model->inspectedBy->m_name[0] . '. ' . $model->inspectedBy->l_name);
-                $inspected_by_position = $model->inspectedBy->position;
-            }
-            $po_date = '';
-            if (!empty($model->po_date)) {
-
-                $po_date =  DateTime::createFromFormat('Y-m-d', $model->po_date)->format('F d, Y');
-            }
-
-            $date_begun = '';
-            $date_completed = '';
-
-            if (!empty($model->date_work_begun)) {
-                $date_begun  = DateTime::createFromFormat('Y-m-d', $model->date_work_begun)->format('F d, Y');
-            }
-
-            if (!empty($model->date_completed)) {
-                $date_completed  = DateTime::createFromFormat('Y-m-d', $model->date_completed)->format('F d, Y');
-            }
             if (strtolower($model->contractType->contract_name) === 'jo') {
             ?>
                 <table>
@@ -617,3 +619,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     }
 </style>
+<script>
+    $(document).ready(function() {
+
+        console.log(<?= json_encode($po_items) ?>)
+    })
+</script>

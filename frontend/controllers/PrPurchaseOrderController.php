@@ -119,7 +119,34 @@ class PrPurchaseOrderController extends Controller
         $params = [];
         $sql = Yii::$app->db->getQueryBuilder()->buildCondition("pr_aoq_entries.is_lowest=1", $params);
         $aoq_lowest = $this->findLowest($model->fk_pr_aoq_id, $sql);
-
+        $query =YIi::$app->db->createCommand("SELECT 
+        pr_purchase_order_item.serial_number,
+        payee.account_name as payee,
+        IFNULL(payee.tin_number,'')as tin_number, 
+        IFNULL(payee.registered_address,'')as `address`, 
+        pr_aoq_entries.amount as unit_cost,
+        pr_aoq_entries.remark,
+        pr_purchase_request_item.quantity,
+        IFNULL(REPLACE( pr_purchase_request_item.specification, '[n]', '<br>'),'') as specification,
+        pr_stock.stock_title as `description`,
+        pr_stock.bac_code,
+        unit_of_measure.unit_of_measure,
+        pr_aoq_entries.amount * pr_purchase_request_item.quantity as total_cost
+        
+        FROM pr_purchase_order
+        LEFT JOIN pr_purchase_order_item ON pr_purchase_order.id = pr_purchase_order_item.fk_pr_purchase_order_id
+        LEFT JOIN pr_purchase_order_items_aoq_items ON pr_purchase_order_item.id  = pr_purchase_order_items_aoq_items.fk_purchase_order_item_id
+        LEFT JOIN  pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
+        LEFT JOIN payee ON pr_aoq_entries.payee_id  = payee.id
+        LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+        LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+        LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+        LEFT JOIN unit_of_measure on pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
+        WHERE pr_purchase_order.id = :id
+        ")
+        ->bindValue(':id',$id)
+        ->queryAll();
+        $res = ArrayHelper::index($query,null,'serial_number');
         // if (empty($aoq_lowest)) {
 
         //     $sql = Yii::$app->db->getQueryBuilder()->buildCondition("pr_aoq_entries.amount = (SELECT MIN(pr_aoq_entries.amount) FROM pr_aoq_entries WHERE pr_aoq_entries.pr_aoq_id = :id )", $params);
@@ -127,7 +154,8 @@ class PrPurchaseOrderController extends Controller
         // }
         return $this->render('view', [
             'model' => $model,
-            'aoq_lowest' => ArrayHelper::index($aoq_lowest, null, 'payee')
+            'aoq_lowest' => ArrayHelper::index($aoq_lowest, null, 'payee'),
+            'po_items'=>$res
 
         ]);
     }
