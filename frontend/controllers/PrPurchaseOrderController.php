@@ -119,7 +119,7 @@ class PrPurchaseOrderController extends Controller
         $params = [];
         $sql = Yii::$app->db->getQueryBuilder()->buildCondition("pr_aoq_entries.is_lowest=1", $params);
         $aoq_lowest = $this->findLowest($model->fk_pr_aoq_id, $sql);
-        $query =YIi::$app->db->createCommand("SELECT 
+        $query = YIi::$app->db->createCommand("SELECT 
         pr_purchase_order_item.serial_number,
         payee.account_name as payee,
         IFNULL(payee.tin_number,'')as tin_number, 
@@ -144,9 +144,9 @@ class PrPurchaseOrderController extends Controller
         LEFT JOIN unit_of_measure on pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
         WHERE pr_purchase_order.id = :id
         ")
-        ->bindValue(':id',$id)
-        ->queryAll();
-        $res = ArrayHelper::index($query,null,'serial_number');
+            ->bindValue(':id', $id)
+            ->queryAll();
+        $res = ArrayHelper::index($query, null, 'serial_number');
         // if (empty($aoq_lowest)) {
 
         //     $sql = Yii::$app->db->getQueryBuilder()->buildCondition("pr_aoq_entries.amount = (SELECT MIN(pr_aoq_entries.amount) FROM pr_aoq_entries WHERE pr_aoq_entries.pr_aoq_id = :id )", $params);
@@ -155,7 +155,7 @@ class PrPurchaseOrderController extends Controller
         return $this->render('view', [
             'model' => $model,
             'aoq_lowest' => ArrayHelper::index($aoq_lowest, null, 'payee'),
-            'po_items'=>$res
+            'po_items' => $res
 
         ]);
     }
@@ -183,7 +183,12 @@ class PrPurchaseOrderController extends Controller
             $pr_purchase_order_item = new PrPurchaseOrderItem();
             $pr_purchase_order_item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             $pr_purchase_order_item->fk_pr_purchase_order_id = $po_id;
-            $pr_purchase_order_item->serial_number = $po_number . $alphabet[$i];
+
+            if (count($result) > 1) {
+                $pr_purchase_order_item->serial_number = $po_number . $alphabet[$i];
+            } else {
+                $pr_purchase_order_item->serial_number = $po_number;
+            }
             if ($pr_purchase_order_item->save(false)) {
                 foreach ($val as $val2) {
                     $aoq_items = new PrPurchaseOrderItemsAoqItems();
