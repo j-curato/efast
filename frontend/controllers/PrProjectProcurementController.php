@@ -93,7 +93,7 @@ class PrProjectProcurementController extends Controller
         ]);
     }
 
-    /**
+    /**`
      * Creates a new PrProjectProcurement model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
@@ -104,7 +104,11 @@ class PrProjectProcurementController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-
+            $host = gethostname();
+            $ip = gethostbyname($host);
+            if ($ip !== '10.20.17.35') {
+                $model->is_cloud = 1;
+            }
             if ($model->save()) {
 
                 return $this->redirect(['view', 'id' => $model->id]);

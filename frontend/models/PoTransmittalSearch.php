@@ -83,7 +83,9 @@ class PoTransmittalSearch extends PoTransmittal
         ]);
 
         $query->andFilterWhere(['like', 'transmittal_number', $this->transmittal_number])
-            ->andFilterWhere(['like', 'status', $this->status]);
+            ->andFilterWhere(['like', 'status', $this->status])
+            ->andFilterWhere(['like', 'date', $this->date])
+            ;
 
         return $dataProvider;
     }

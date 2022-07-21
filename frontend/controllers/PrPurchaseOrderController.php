@@ -5,6 +5,8 @@ namespace frontend\controllers;
 use app\models\PrAoqEntries;
 use Yii;
 use app\models\PrPurchaseOrder;
+use app\models\PrPurchaseOrderItem;
+use app\models\PrPurchaseOrderItemsAoqItems;
 use app\models\PrPurchaseOrderSearch;
 use DateTime;
 use yii\db\Query;
@@ -135,6 +137,38 @@ class PrPurchaseOrderController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
+
+    public function insertItems($po_id, $po_number, $aoq_id)
+    {
+        $alphabet = range('A', 'Z');
+
+        $query = Yii::$app->db->createCommand("SELECT pr_aoq_entries.id,pr_aoq_entries.payee_id FROM pr_aoq_entries WHERE pr_aoq_entries.pr_aoq_id = :aoq_id
+        AND pr_aoq_entries.is_lowest = 1
+        ")
+            ->bindValue(':aoq_id', $aoq_id)
+            ->queryAll();
+        $i = 0;
+        $result = ArrayHelper::index($query, null, 'payee_id');
+
+        foreach ($result as $key => $val) {
+
+            $pr_purchase_order_item = new PrPurchaseOrderItem();
+            $pr_purchase_order_item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+            $pr_purchase_order_item->fk_pr_purchase_order_id = $po_id;
+            $pr_purchase_order_item->serial_number = $po_number . $alphabet[$i];
+            if ($pr_purchase_order_item->save(false)) {
+                foreach ($val as $val2) {
+                    $aoq_items = new PrPurchaseOrderItemsAoqItems();
+                    $aoq_items->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                    $aoq_items->fk_purchase_order_item_id = $pr_purchase_order_item->id;
+                    $aoq_items->fk_aoq_entries_id = $val2['id'];
+                    if ($aoq_items->save(false)) {
+                    }
+                }
+            }
+            $i++;
+        }
+    }
     public function actionCreate()
     {
         $model = new PrPurchaseOrder();
@@ -147,6 +181,7 @@ class PrPurchaseOrderController extends Controller
             $model->po_number = $this->generatePoNumber($model->fk_contract_type_id, $model->po_date);
 
             if ($model->save()) {
+                $this->insertItems($model->id, $model->po_number, $model->fk_pr_aoq_id);
                 if (!empty(array_unique($_POST['aoq_id']))) {
                     $this->newLowest(array_unique($_POST['aoq_id']), $model->fk_pr_aoq_id);
                 }
