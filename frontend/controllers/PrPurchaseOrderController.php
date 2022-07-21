@@ -181,10 +181,10 @@ class PrPurchaseOrderController extends Controller
             $model->po_number = $this->generatePoNumber($model->fk_contract_type_id, $model->po_date);
 
             if ($model->save()) {
-                $this->insertItems($model->id, $model->po_number, $model->fk_pr_aoq_id);
                 if (!empty(array_unique($_POST['aoq_id']))) {
                     $this->newLowest(array_unique($_POST['aoq_id']), $model->fk_pr_aoq_id);
                 }
+                $this->insertItems($model->id, $model->po_number, $model->fk_pr_aoq_id);
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         }
