@@ -3,6 +3,7 @@
 
 
 use aryelds\sweetalert\SweetAlertAsset;
+use kartik\export\ExportMenu;
 use kartik\grid\GridView;
 use kartik\select2\Select2;
 use yii\helpers\Html;
@@ -42,7 +43,27 @@ $columns =  [
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'toolbar' => [
+            [
+                'content' =>  ExportMenu::widget([
+                    'dataProvider' => $dataProvider,
+                    'columns' => $columns,
+                    'filename' => "PO Summary",
+                    'exportConfig' => [
+                        ExportMenu::FORMAT_CSV => false,
+                        ExportMenu::FORMAT_TEXT => false,
+                        ExportMenu::FORMAT_PDF => false,
+                        ExportMenu::FORMAT_HTML => false,
+                        ExportMenu::FORMAT_EXCEL => false,
 
+                    ]
+
+                ]),
+                'options' => [
+                    'class' => 'btn-group mr-2', 'style' => 'margin-right:20px'
+                ]
+            ]
+        ],
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
             'heading' => 'Summary',
