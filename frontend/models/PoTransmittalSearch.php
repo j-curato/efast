@@ -78,14 +78,12 @@ class PoTransmittalSearch extends PoTransmittal
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'date' => $this->date,
             'created_at' => $this->created_at,
         ]);
 
         $query->andFilterWhere(['like', 'transmittal_number', $this->transmittal_number])
             ->andFilterWhere(['like', 'status', $this->status])
-            ->andFilterWhere(['like', 'date', $this->date])
-            ;
+            ->andFilterWhere(['like', 'date', $this->date]);
 
         return $dataProvider;
     }
