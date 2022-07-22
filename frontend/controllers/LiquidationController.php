@@ -323,6 +323,7 @@ class LiquidationController extends Controller
             $model->check_range_id = $check_range_id;
             $model->check_number = $check_number;
             $model->po_transaction_id = $po_transaction_id;
+            $model->is_cancelled = 0;
 
             try {
                 $flag = true;
