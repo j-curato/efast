@@ -324,6 +324,7 @@ class LiquidationController extends Controller
             $model->check_number = $check_number;
             $model->po_transaction_id = $po_transaction_id;
             $model->is_cancelled = 0;
+            $model->status ='at_po';
 
             try {
                 $flag = true;
