@@ -15,7 +15,7 @@ class m220418_051319_update_liquidation_entries_view extends Migration
         $sql =<<<SQL
             DROP VIEW IF EXISTS liquidation_entries_view;
             CREATE VIEW liquidation_entries_view as 
-            SELECT 
+                    SELECT 
                 liquidation_entries.id,
                 liquidation.reporting_period as orig_reporting_period,
                 liquidation.dv_number,
@@ -23,8 +23,16 @@ class m220418_051319_update_liquidation_entries_view extends Migration
                 liquidation.check_date,
                 liquidation.check_number,
                 advances_entries.fund_source,
-                IFNULL(liquidation.particular,po_transaction.particular) as particular,
-                IFNULL(liquidation.payee , po_transaction.payee ) as payee,
+            
+                        (CASE 
+                        WHEN liquidation.particular='' OR liquidation.particular IS NULL THEN po_transaction.particular
+                            ELSE po_transaction.particular
+                        END) as particular,
+                        (CASE 
+                        WHEN liquidation.payee='' OR liquidation.payee IS NULL  THEN  po_transaction.payee
+                            ELSE liquidation.payee
+                        END) as payee,
+
                 CONCAT(bank_account.account_number,'-',bank_account.account_name) as bank_account,
                 (
                 CASE 
@@ -36,7 +44,7 @@ class m220418_051319_update_liquidation_entries_view extends Migration
                 (
                 CASE 
                 WHEN liquidation_entries.new_object_code IS NOT NULL THEN  accounting_codes.account_title
-                   WHEN liquidation_entries.new_chart_of_account_id IS NOT NULL THEN chart_of_account2.general_ledger
+                WHEN liquidation_entries.new_chart_of_account_id IS NOT NULL THEN chart_of_account2.general_ledger
                 ELSE chart_of_account1.general_ledger
                 END
                 ) as account_title,

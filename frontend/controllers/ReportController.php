@@ -12,6 +12,7 @@ use app\models\DvAucs;
 use app\models\Liquidation;
 use app\models\PoTransmittalsPendingSearch;
 use app\models\ProcurementSummarySearch;
+use app\models\PrSummarySearch;
 use app\models\RaoSearch;
 use app\models\TransactionArchiveSearch;
 use app\models\TransactionTracking;
@@ -104,6 +105,7 @@ class ReportController extends \yii\web\Controller
                             'show-cookie',
                             'detailed-transmittal-summary',
                             'po-transmittal-summary',
+                            'pr-summary'
 
 
 
@@ -4791,6 +4793,16 @@ class ReportController extends \yii\web\Controller
 
 
         return $this->render('po_transmittal_summary');
+    }
+    public function actionPrSummary()
+    {
+
+        $searchModel = new PrSummarySearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        return $this->render('pr_summary', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider
+        ]);
     }
 }
 
