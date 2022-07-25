@@ -18,27 +18,43 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Rfq Form', ['blank-view'], ['class' => 'btn btn-warning']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-        'panel'=>[
-            'type'=>GridView::TYPE_PRIMARY,
-            'heading'=>"RFQ's"
+        'panel' => [
+            'type' => GridView::TYPE_PRIMARY,
+            'heading' => "RFQ's"
         ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
             'rfq_number',
             [
-                'attribute'=>'pr_purchase_request_id',
-                'value'=>'purchaseRequest.pr_number'
+                'attribute' => 'pr_purchase_request_id',
+                'value' => 'purchaseRequest.pr_number'
             ],
             '_date',
+
             [
-                'attribute'=>'employee_id',
-                'value'=>'canvasser.f_name'
+
+                'attribute' => 'purpose',
+                'value' => 'purchaseRequest.purpose'
+            ],
+            [
+
+                'attribute' => 'project_title',
+                'value' => 'purchaseRequest.projectProcurement.title'
+            ],
+            [
+
+                'attribute' => 'office_unit',
+                'value' => 'purchaseRequest.projectProcurement.office.unit'
+            ],
+            [
+                'attribute' => 'employee_id',
+                'value' => 'canvasser.f_name'
             ],
             'created_at',
 

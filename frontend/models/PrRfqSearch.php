@@ -11,6 +11,9 @@ use app\models\PrRfq;
  */
 class PrRfqSearch extends PrRfq
 {
+    public $purpose;
+    public $office_unit;
+    public $project_title;
     /**
      * {@inheritdoc}
      */
@@ -18,7 +21,11 @@ class PrRfqSearch extends PrRfq
     {
         return [
             [['id',  'bac_composition_id'], 'integer'],
-            [['rfq_number', '_date', 'employee_id', 'created_at', 'pr_purchase_request_id'], 'safe'],
+            [[
+                'rfq_number', '_date', 'employee_id', 'created_at', 'pr_purchase_request_id', 'purpose',
+                'office_unit',
+                'project_title'
+            ], 'safe'],
         ];
     }
 
@@ -56,6 +63,8 @@ class PrRfqSearch extends PrRfq
             return $dataProvider;
         }
         $query->joinWith('purchaseRequest');
+        $query->join('LEFT JOIN', 'pr_project_procurement', 'pr_purchase_request.pr_project_procurement_id = pr_project_procurement.id');
+        $query->join('LEFT JOIN', 'pr_office', 'pr_project_procurement.pr_office_id = pr_office.id');
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
@@ -66,7 +75,10 @@ class PrRfqSearch extends PrRfq
 
         $query->andFilterWhere(['like', 'rfq_number', $this->rfq_number])
             ->andFilterWhere(['like', 'employee_id', $this->employee_id])
-            ->andFilterWhere(['like', 'pr_purchase_request.pr_number', $this->pr_purchase_request_id]);
+            ->andFilterWhere(['like', 'pr_purchase_request.pr_number', $this->pr_purchase_request_id])
+            ->andFilterWhere(['like', 'pr_purchase_request.purpose', $this->purpose])
+            ->andFilterWhere(['like', 'pr_project_procurement.title', $this->project_title])
+            ->andFilterWhere(['like', 'pr_office.unit', $this->office_unit]);
 
         return $dataProvider;
     }
