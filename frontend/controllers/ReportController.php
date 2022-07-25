@@ -4804,6 +4804,65 @@ class ReportController extends \yii\web\Controller
             'dataProvider' => $dataProvider
         ]);
     }
+    public function actionProcSummary()
+    {
+
+        if (Yii::$app->request->isPost) {
+
+
+            $query  = (new yii\db\Query())
+                ->select([
+                    'pr_purchase_request.pr_number',
+                    'pr_purchase_request.purpose',
+                    'pr_purchase_request.date as pr_date',
+
+                    'pr_rfq.rfq_number',
+                    'pr_aoq.aoq_number',
+                    'pr_purchase_order_item.serial_number as po_number',
+                    'po_payee.payee',
+                    'po_payee.total_cost'
+                ])
+                ->from('pr_purchase_request')
+                ->join('LEFT JOIN', 'pr_rfq', 'pr_purchase_request.id = pr_rfq.pr_purchase_request_id')
+                ->join('LEFT JOIN', 'pr_aoq', 'pr_rfq.id = pr_aoq.pr_rfq_id')
+                ->join('LEFT JOIN', 'pr_purchase_order', 'pr_aoq.id = pr_purchase_order.fk_pr_aoq_id')
+                ->join('LEFT JOIN', 'pr_purchase_order_item', 'pr_purchase_order.id = pr_purchase_order_item.fk_pr_purchase_order_id')
+                ->join('LEFT JOIN', "(SELECT pr_purchase_order_item.fk_pr_purchase_order_id,
+                                pr_purchase_order_items_aoq_items.fk_purchase_order_item_id,
+                                payee.account_name as payee,
+                                SUM(pr_aoq_entries.amount * pr_purchase_request_item.quantity) as total_cost
+                                FROM pr_purchase_order_items_aoq_items
+                                LEFT JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
+                                LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
+                                LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+                                LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+                                LEFT JOIN pr_purchase_order_item ON pr_purchase_order_items_aoq_items.fk_purchase_order_item_id = pr_purchase_order_item.id
+                                GROUP BY
+                                pr_purchase_order_items_aoq_items.fk_purchase_order_item_id,
+                                payee.account_name) as po_payee", "pr_purchase_order_item.id = po_payee.fk_purchase_order_item_id");
+
+            if (!empty($_POST['po_id'])) {
+                $query->andWhere('pr_purchase_order_item.id = :id', ['id' => $_POST['po_id']]);
+            }
+            if (!empty($_POST['rfq_id'])) {
+                $query->andWhere('pr_rfq.id = :id', ['id' => $_POST['rfq_id']]);
+            }
+            if (!empty($_POST['aoq_id'])) {
+                $query->andWhere('pr_aoq.id = :id', ['id' => $_POST['aoq_id']]);
+            }
+            if (!empty($_POST['pr_id'])) {
+                $query->andWhere('pr_purchase_request.id = :id', ['id' => $_POST['pr_id']]);
+            }
+            // $q =  $query->andWhere('pr_purchase_request.id = :id', ['id' => 99768695600971827])->all();
+
+            $q = $query->all();
+            $result = ArrayHelper::index($q, 'po_number', [function ($element) {
+                return $element['pr_number'] . '[/]' . $element['purpose'] . '[/]' . $element['pr_date'];
+            }, 'rfq_number', 'aoq_number']);
+            return json_encode($result);
+        }
+        return $this->render('proc_summary');
+    }
 }
 
 // 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

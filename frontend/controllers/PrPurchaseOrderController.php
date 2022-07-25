@@ -427,9 +427,9 @@ class PrPurchaseOrderController extends Controller
         if (!is_null($q)) {
             $query = new Query();
 
-            $query->select([" id, `po_number` as text"])
-                ->from('pr_purchase_order')
-                ->where(['like', 'po_number', $q]);
+            $query->select([" id, `serial_number` as text"])
+                ->from('pr_purchase_order_item')
+                ->where(['like', 'serial_number', $q]);
 
             $command = $query->createCommand();
             $data = $command->queryAll();
