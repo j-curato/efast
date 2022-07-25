@@ -217,17 +217,17 @@ $this->params['breadcrumbs'][] = $this->title;
             const pr_array = pr_number.split('[/]')
             console.log(pr_array)
             $.each(pr_array, function(key, val) {
-                pr_row += `<td>${val}</td>`
+                pr_row += `<th>${val}</th>`
             })
             pr_row += '<td></td><td></td><td></td></tr>'
             $('#data_table tbody').append(pr_row)
 
             $.each(pr_val, function(rfq_number, rfq_val) {
-                const rfq_row = `<tr><td></td><td>${rfq_number}</td><td></td><td></td><td></td><td></td></tr>`
+                const rfq_row = `<tr><td></td><th>RFQ#: ${rfq_number}</th><td></td><td></td><td></td><td></td></tr>`
                 $('#data_table tbody').append(rfq_row)
 
                 $.each(rfq_val, function(aoq_number, aoq_val) {
-                    const aoq_row = `<tr><td></td><td></td><td>${aoq_number}</td><td></td><td></td><td></td></tr>`
+                    const aoq_row = `<tr><td></td><td></td><td>AOQ#: ${aoq_number}</td><td></td><td></td><td></td></tr>`
                     $('#data_table tbody').append(aoq_row)
                     $.each(aoq_val, function(po_number, po_val) {
                         const po_row = `<tr>
