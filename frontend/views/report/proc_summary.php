@@ -131,9 +131,9 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row">
 
             <div class="col-sm-4">
-                <label for="from">From</label>
+                <label for="pr_from">PR From</label>
                 <?= DatePicker::widget([
-                    'name' => 'from',
+                    'name' => 'pr_from',
                     'pluginOptions' => [
                         'autoclose' => true,
                         'format' => 'yyyy-mm-dd'
@@ -146,9 +146,105 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
 
             <div class="col-sm-4">
-                <label for="to"> To</label>
+                <label for="pr_to">PR To</label>
                 <?= DatePicker::widget([
-                    'name' => 'to',
+                    'name' => 'pr_to',
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ],
+                    'options' => [
+                        'readonly' => true,
+                        'style' => 'background-color:white'
+                    ]
+                ]) ?>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-sm-4">
+                <label for="rfq_from">RFQ From</label>
+                <?= DatePicker::widget([
+                    'name' => 'rfq_from',
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ],
+                    'options' => [
+                        'readonly' => true,
+                        'style' => 'background-color:white'
+                    ]
+                ]) ?>
+            </div>
+
+            <div class="col-sm-4">
+                <label for="rfq_to">RFQ To</label>
+                <?= DatePicker::widget([
+                    'name' => 'rfq_to',
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ],
+                    'options' => [
+                        'readonly' => true,
+                        'style' => 'background-color:white'
+                    ]
+                ]) ?>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-sm-4">
+                <label for="aoq_from">AOQ From</label>
+                <?= DatePicker::widget([
+                    'name' => 'aoq_from',
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ],
+                    'options' => [
+                        'readonly' => true,
+                        'style' => 'background-color:white'
+                    ]
+                ]) ?>
+            </div>
+
+            <div class="col-sm-4">
+                <label for="aoq_to">AOQ To</label>
+                <?= DatePicker::widget([
+                    'name' => 'aoq_to',
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ],
+                    'options' => [
+                        'readonly' => true,
+                        'style' => 'background-color:white'
+                    ]
+                ]) ?>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-sm-4">
+                <label for="po_from">PO From</label>
+                <?= DatePicker::widget([
+                    'name' => 'po_from',
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ],
+                    'options' => [
+                        'readonly' => true,
+                        'style' => 'background-color:white'
+                    ]
+                ]) ?>
+            </div>
+
+            <div class="col-sm-4">
+                <label for="po_to">PO To</label>
+                <?= DatePicker::widget([
+                    'name' => 'po_to',
                     'pluginOptions' => [
                         'autoclose' => true,
                         'format' => 'yyyy-mm-dd'
