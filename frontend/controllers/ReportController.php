@@ -4853,21 +4853,21 @@ class ReportController extends \yii\web\Controller
                 $query->andWhere('pr_purchase_request.id = :id', ['id' => $_POST['pr_id']]);
             }
             if (!empty($_POST['pr_from']) && !empty($_POST['pr_to'])) {
-                $query->andWhere('pr_purchase_request.created_at >= :pr_from', ['pr_from' => $_POST['pr_from']]);
-                $query->andWhere('pr_purchase_request.created_at <= :pr_to', ['pr_to' => $_POST['pr_to']]);
+                $query->andWhere('pr_purchase_request.date >= :pr_from', ['pr_from' => $_POST['pr_from']]);
+                $query->andWhere('pr_purchase_request.date <= :pr_to', ['pr_to' => $_POST['pr_to']]);
             }
             if (!empty($_POST['rfq_from']) && !empty($_POST['rfq_to'])) {
 
-                $query->andWhere('pr_rfq._date >= :rfq_from', ['rfq_from' => $_POST['rfq_from']]);
-                $query->andWhere('pr_rfq._date <= :rfq_to', ['rfq_to' => $_POST['rfq_to']]);
+                $query->andWhere('pr_rfq.created_at >= :rfq_from', ['rfq_from' => $_POST['rfq_from']]);
+                $query->andWhere('pr_rfq.created_at <= :rfq_to', ['rfq_to' => $_POST['rfq_to']]);
             }
             if (!empty($_POST['aoq_from']) && !empty($_POST['aoq_to'])) {
-                $query->andWhere('pr_aoq.pr_date >= :aoq_from', ['aoq_from' => $_POST['aoq_from']]);
-                $query->andWhere('pr_aoq.pr_date <= :aoq_to', ['aoq_to' => $_POST['aoq_to']]);
+                $query->andWhere('pr_aoq.prcreated_at >= :aoq_from', ['aoq_from' => $_POST['aoq_from']]);
+                $query->andWhere('pr_aoq.prcreated_at <= :aoq_to', ['aoq_to' => $_POST['aoq_to']]);
             }
             if (!empty($_POST['po_from']) && !empty($_POST['po_to'])) {
-                $query->andWhere('pr_purchase_order.po_date >= :po_from', ['po_from' => $_POST['po_from']]);
-                $query->andWhere('pr_purchase_order.po_date <= :po_to', ['po_to' => $_POST['po_to']]);
+                $query->andWhere('pr_purchase_order.pocreated_at >= :po_from', ['po_from' => $_POST['po_from']]);
+                $query->andWhere('pr_purchase_order.pocreated_at <= :po_to', ['po_to' => $_POST['po_to']]);
             }
             // $q =  $query->andWhere('pr_purchase_request.id = :id', ['id' => 99768695600971827])->all();
 
