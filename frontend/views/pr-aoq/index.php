@@ -33,9 +33,19 @@ $this->params['breadcrumbs'][] = $this->title;
             'aoq_number',
             [
                 'attribute' => 'pr_rfq_id',
-                'value'=>'rfq.rfq_number'
+                'value' => 'rfq.rfq_number'
             ],
             'pr_date',
+            [
+                'label' => 'PR Number',
+                'attribute' => 'pr_number',
+                'value' => 'rfq.purchaseRequest.pr_number'
+            ],
+            [
+                'label' => 'purpose',
+                'attribute' => 'purpose',
+                'value' => 'rfq.purchaseRequest.purpose'
+            ],
             'created_at',
             ['class' => 'yii\grid\ActionColumn'],
         ],

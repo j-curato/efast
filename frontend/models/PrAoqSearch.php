@@ -11,6 +11,9 @@ use app\models\PrAoq;
  */
 class PrAoqSearch extends PrAoq
 {
+    public $purpose;
+    public $pr_number;
+
     /**
      * {@inheritdoc}
      */
@@ -18,7 +21,11 @@ class PrAoqSearch extends PrAoq
     {
         return [
             [['id'], 'integer'],
-            [['aoq_number', 'pr_date', 'created_at', 'pr_rfq_id'], 'safe'],
+            [[
+                'aoq_number', 'pr_date', 'created_at', 'pr_rfq_id',
+                'purpose',
+                'pr_number',
+            ], 'safe'],
         ];
     }
 
@@ -56,6 +63,7 @@ class PrAoqSearch extends PrAoq
             return $dataProvider;
         }
         $query->joinWith('rfq');
+        $query->join('LEFT JOIN', 'pr_purchase_request', 'pr_rfq.pr_purchase_request_id = pr_purchase_request.id');
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
@@ -65,7 +73,9 @@ class PrAoqSearch extends PrAoq
         ]);
 
         $query->andFilterWhere(['like', 'aoq_number', $this->aoq_number])
-            ->andFilterWhere(['like', 'pr_rfq.rfq_number', $this->pr_rfq_id]);
+            ->andFilterWhere(['like', 'pr_rfq.rfq_number', $this->pr_rfq_id])
+            ->andFilterWhere(['like', 'pr_purchase_request.pr_number', $this->pr_number])
+            ->andFilterWhere(['like', 'pr_purchase_request.purpose', $this->purpose]);
 
         return $dataProvider;
     }
