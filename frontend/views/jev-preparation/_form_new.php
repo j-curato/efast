@@ -48,31 +48,35 @@ $entry_row = 1;
     if (!empty($model->id)) {
     }
     ?>
-    <div class="row">
-        <?= Select2::widget([
-            'name' => 'cdr_id',
-            'id' => 'cdr_id',
-            'pluginOptions' => [
-                'allowClear' => true,
-                'minimumInputLength' => 1,
-                'language' => [
-                    'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                ],
-                'ajax' => [
-                    'url' => Yii::$app->request->baseUrl . '?r=cdr/search-cdr',
-                    'dataType' => 'json',
-                    'delay' => 250,
-                    'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                    'cache' => true
-                ],
-                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-            ],
 
-        ]) ?>
+    <?= $form->field($model, 'form_token')->hiddenInput()->label(false) ?>
+    <div class="row">
+        <div class="col-sm-3">
+            <label for="cdr_id">CDR Serial#</label>
+            <?= Select2::widget([
+                'name' => 'cdr_id',
+                'id' => 'cdr_id',
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=cdr/search-cdr',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
+
+            ]) ?>
+        </div>
     </div>
-    <?= $form->field($model, 'form_token')->hiddenInput() ?>
     <div class="row">
         <div class="col-sm-3">
             <h4 id="have_jev" style='color:red'></h4>
@@ -601,6 +605,7 @@ SweetAlertAsset::register($this);
                 success: function(data) {
                     const res = JSON.parse(data)
                     insertEntryFromDv(res)
+                    getTotal()
                 }
             })
         })
