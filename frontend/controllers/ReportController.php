@@ -4810,8 +4810,7 @@ class ReportController extends \yii\web\Controller
         if (Yii::$app->request->isPost) {
 
 
-            $query  = new \yii\db\Query;
-            $query
+            $query  = (new yii\db\Query())
                 ->select([
                     'pr_purchase_request.pr_number',
                     'pr_purchase_request.purpose',
