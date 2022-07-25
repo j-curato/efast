@@ -461,12 +461,12 @@ SweetAlertAsset::register($this);
                     </td>
                     <td style="width: 150px;">
                         <label for="debit">Debit</label>
-                        <input type="text" class="debit  mask-amount" placeholder="Debit" value='${debit}'>
+                        <input type="text" class="  mask-amount" placeholder="Debit" value='${debit}'>
                         <input type="hidden" name="debit[${row_number}]" class="debit main_amount" placeholder="Debit" value='${debit}'>
                     </td>
                     <td style="width: 150px;">
                         <label for="credit">Credit</label>
-                        <input type="text" class="credit  mask-amount" placeholder="Credit" value='${credit}'>
+                        <input type="text" class="  mask-amount" placeholder="Credit" value='${credit}'>
                         <input type="hidden" name="credit[${row_number}]" class="credit main_amount" placeholder="Credit" value='${credit}'>
                     </td>
                     <td style="width: 50px;">
