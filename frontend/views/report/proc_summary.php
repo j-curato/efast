@@ -6,6 +6,7 @@ use aryelds\sweetalert\SweetAlertAsset;
 use kartik\export\ExportMenu;
 use kartik\grid\GridView;
 use kartik\select2\Select2;
+use kartik\widgets\DatePicker;
 use yii\helpers\Html;
 use yii\web\JsExpression;
 /* @var $this yii\web\View */
@@ -47,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]) ?>
             </div>
             <div class="col-sm-3">
-            <label for="rfq_id"> RFQ</label>
+                <label for="rfq_id"> RFQ</label>
 
                 <?= Select2::widget(
                     [
@@ -74,7 +75,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ) ?>
             </div>
             <div class="col-sm-3">
-            <label for="aoq_id"> Aoq</label>
+                <label for="aoq_id"> Aoq</label>
 
                 <?= Select2::widget([
                     'name' => 'aoq_id',
@@ -99,7 +100,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]) ?>
             </div>
             <div class="col-sm-2">
-            <label for="po_id"> Purchase Order</label>
+                <label for="po_id"> Purchase Order</label>
 
                 <?= Select2::widget([
                     'options' => ['placeholder' => 'Search Purchase Order Number'],
@@ -124,11 +125,47 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]) ?>
 
             </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-sm-4">
+                <label for="from">From</label>
+                <?= DatePicker::widget([
+                    'name' => 'from',
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ],
+                    'options' => [
+                        'readonly' => true,
+                        'style' => 'background-color:white'
+                    ]
+                ]) ?>
+            </div>
+
+            <div class="col-sm-4">
+                <label for="to"> To</label>
+                <?= DatePicker::widget([
+                    'name' => 'to',
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ],
+                    'options' => [
+                        'readonly' => true,
+                        'style' => 'background-color:white'
+                    ]
+                ]) ?>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-sm-1">
+                <label for="submit"></label>
                 <button type="submit" class="btn btn-success">Generate</button>
             </div>
         </div>
-
     </form>
 
 
@@ -149,6 +186,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     table {
         width: 100%;
+        margin-top: 2rem;
     }
 </style>
 

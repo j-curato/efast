@@ -4853,6 +4853,11 @@ class ReportController extends \yii\web\Controller
             if (!empty($_POST['pr_id'])) {
                 $query->andWhere('pr_purchase_request.id = :id', ['id' => $_POST['pr_id']]);
             }
+            if (!empty($_POST['from']) && !empty($_POST['to'])) {
+
+                $query->andWhere('pr_purchase_request.date >= :from', ['from' => $_POST['from']]);
+                $query->andWhere('pr_purchase_request.date <= :to', ['to' => $_POST['to']]);
+            }
             // $q =  $query->andWhere('pr_purchase_request.id = :id', ['id' => 99768695600971827])->all();
 
             $q = $query->all();
