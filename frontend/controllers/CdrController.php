@@ -700,7 +700,40 @@ class CdrController extends Controller
                 GROUP BY
                 liquidation_entries.new_object_code
                 ) as cdr_conso
-                LEFT JOIN accounting_codes ON cdr_conso.new_object_code = accounting_codes.object_code")
+                LEFT JOIN accounting_codes ON cdr_conso.new_object_code = accounting_codes.object_code
+                UNION ALL 
+                SELECT 
+
+                '' as object_code,
+                '' as account_title,
+                0 as debit,
+                SUM(liquidation_entries.expanded_tax) +
+                SUM(liquidation_entries.vat_nonvat) as credit
+                FROM liquidation_entries
+                LEFT JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
+                LEFT JOIN check_range ON liquidation.check_range_id = check_range.id
+                LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id = advances_entries.id
+
+                WHERE
+                liquidation_entries.reporting_period = :reporting_period
+                AND check_range.bank_account_id =:bank_account_id
+                AND advances_entries.report_type = :report_type
+                UNION ALL 
+                SELECT 
+                '' as object_code,
+                '' as account_title,
+                0 as debit,
+                SUM(liquidation_entries.withdrawals) as credit
+                FROM liquidation_entries
+                LEFT JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
+                LEFT JOIN check_range ON liquidation.check_range_id = check_range.id
+                LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id = advances_entries.id
+                WHERE
+                liquidation_entries.reporting_period = :reporting_period
+                AND check_range.bank_account_id =:bank_account_id
+                AND advances_entries.report_type = :report_type
+                
+                ")
                     ->bindValue(':reporting_period', $cdr_details['reporting_period'])
                     ->bindValue(':report_type', $cdr_details['report_type'])
                     ->bindValue(':bank_account_id', $cdr_details['fk_bank_account_id'])
