@@ -63,7 +63,7 @@ class PrAoqSearch extends PrAoq
             return $dataProvider;
         }
         $query->joinWith('rfq');
-        $query->join('LEFT JOIN', 'pr_purchase_request', 'pr_rfq.pr_purchase_request_id = pr_purchase_request.id');
+        $query->joinWith('rfq.purchaseRequest');
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,

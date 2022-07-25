@@ -63,8 +63,9 @@ class PrRfqSearch extends PrRfq
             return $dataProvider;
         }
         $query->joinWith('purchaseRequest');
-        $query->join('LEFT JOIN', 'pr_project_procurement', 'pr_purchase_request.pr_project_procurement_id = pr_project_procurement.id');
-        $query->join('LEFT JOIN', 'pr_office', 'pr_project_procurement.pr_office_id = pr_office.id');
+        $query->joinWith('purchaseRequest.projectProcurement');
+        $query->joinWith('purchaseRequest.projectProcurement.office');
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
