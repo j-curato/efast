@@ -105,7 +105,8 @@ class ReportController extends \yii\web\Controller
                             'show-cookie',
                             'detailed-transmittal-summary',
                             'po-transmittal-summary',
-                            'pr-summary'
+                            'pr-summary',
+                            'roc-summary',
 
 
 
