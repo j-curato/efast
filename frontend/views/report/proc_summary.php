@@ -17,7 +17,7 @@ $this->title = "Summary";
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<div class="summary-index">
+<div class="summary-index" style="background-color:white;padding:1rem">
 
     <form id='filter'>
 
@@ -311,7 +311,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
 
     function displayData(data) {
         $('#data_table tbody').empty()
-
+        let i = 1
         $.each(data, function(pr_number, pr_val) {
 
             let pr_row = `<tr>`
@@ -343,7 +343,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                     })
                 })
             })
-
         })
 
     }
