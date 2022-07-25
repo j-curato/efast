@@ -227,7 +227,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 $('#data_table tbody').append(rfq_row)
 
                 $.each(rfq_val, function(aoq_number, aoq_val) {
-                    const aoq_row = `<tr><td></td><td></td><td>AOQ#: ${aoq_number}</td><td></td><td></td><td></td></tr>`
+                    const aoq_row = `<tr><td></td><td></td><th>AOQ#: ${aoq_number}</th><td></td><td></td><td></td></tr>`
                     $('#data_table tbody').append(aoq_row)
                     $.each(aoq_val, function(po_number, po_val) {
                         const po_row = `<tr>
