@@ -284,8 +284,14 @@ $this->params['breadcrumbs'][] = $this->title;
         width: 100%;
         margin-top: 2rem;
     }
-</style>
 
+    .amount {
+        text-align: right;
+    }
+</style>
+<?php
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+?>
 <script>
     $(document).ready(function() {
 
@@ -332,7 +338,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                             <td></td>
                                             <td>${po_number}</td>
                                             <td>${po_val.payee}</td>
-                                            <td>${po_val.total_cost}</td>
+                                            <td class='amount'>${thousands_separators(po_val.total_cost)}</td>
                                         </tr>`
                         $('#data_table tbody').append(po_row)
                     })

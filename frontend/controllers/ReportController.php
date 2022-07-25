@@ -4815,7 +4815,6 @@ class ReportController extends \yii\web\Controller
                     'pr_purchase_request.pr_number',
                     'pr_purchase_request.purpose',
                     'pr_purchase_request.date as pr_date',
-
                     'pr_rfq.rfq_number',
                     'pr_aoq.aoq_number',
                     'pr_purchase_order_item.serial_number as po_number',
@@ -4864,12 +4863,10 @@ class ReportController extends \yii\web\Controller
                 $query->andWhere('pr_rfq._date <= :rfq_to', ['rfq_to' => $_POST['rfq_to']]);
             }
             if (!empty($_POST['aoq_from']) && !empty($_POST['aoq_to'])) {
-
                 $query->andWhere('pr_aoq.pr_date >= :aoq_from', ['aoq_from' => $_POST['aoq_from']]);
                 $query->andWhere('pr_aoq.pr_date <= :aoq_to', ['aoq_to' => $_POST['aoq_to']]);
             }
             if (!empty($_POST['po_from']) && !empty($_POST['po_to'])) {
-
                 $query->andWhere('pr_purchase_order.po_date >= :po_from', ['po_from' => $_POST['po_from']]);
                 $query->andWhere('pr_purchase_order.po_date <= :po_to', ['po_to' => $_POST['po_to']]);
             }
