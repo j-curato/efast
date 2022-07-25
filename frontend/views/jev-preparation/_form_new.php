@@ -580,41 +580,41 @@ SweetAlertAsset::register($this);
 
 $script = <<< JS
 
-    $('#JevPreparation').on('submit',function(e){
-   
-        var \$form = $(this);
-        $.post(
-            \$form.attr("action"),
-            \$form.serialize()
-        )
-        .done(function(result){
-            const res = JSON.parse(result)
-            if (res.isSuccess){
-                swal( {
-                    icon: 'success',
-                    title: "Successfuly Added",
-                    type: "success",
-                    timer:3000,
-                    closeOnConfirm: false,
-                    closeOnCancel: false
-                },function(){
-                    window.location.href = window.location.pathname + "?r=transaction"
-                })
-            }else{
-                swal( {
-                    icon: 'error',
-                    title:'Error',
-                    text: res.error,
-                    type: "error",
-                    timer:10000,
-                    closeOnConfirm: false,
-                    closeOnCancel: false
-                })
-            }
-        })
+    // $('#JevPreparation').on('submit',function(e){
+    //     e.preventDefault()
+    //     var \$form = $(this);
+    //     $.post(
+    //         \$form.attr("action"),
+    //         \$form.serialize()
+    //     )
+    //     .done(function(result){
+    //         const res = JSON.parse(result)
+    //         if (res.isSuccess){
+    //             swal( {
+    //                 icon: 'success',
+    //                 title: "Successfuly Added",
+    //                 type: "success",
+    //                 timer:3000,
+    //                 closeOnConfirm: false,
+    //                 closeOnCancel: false
+    //             },function(){
+    //                 window.location.href = window.location.pathname + "?r=transaction"
+    //             })
+    //         }else{
+    //             swal( {
+    //                 icon: 'error',
+    //                 title:'Error',
+    //                 text: res.error,
+    //                 type: "error",
+    //                 timer:10000,
+    //                 closeOnConfirm: false,
+    //                 closeOnCancel: false
+    //             })
+    //         }
+    //     })
 
-        e.preventDefault()
-    })       
+      
+    // })       
 
 JS;
 $this->registerJs($script);

@@ -258,8 +258,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <div class="row">
             <div class="col-sm-1">
-                <label for="submit"></label>
-                <button type="submit" class="btn btn-success">Generate</button>
+                <button type="submit" class="btn btn-success" style="margin-top: 1rem;">Generate</button>
             </div>
         </div>
     </form>
