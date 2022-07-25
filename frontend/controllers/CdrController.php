@@ -8,6 +8,7 @@ use app\models\Cdr;
 use app\models\CdrSearch;
 use app\models\LiquidationReportingPeriod;
 use ErrorException;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -627,6 +628,88 @@ class CdrController extends Controller
             // exit;
         } else {
             return 'qweqweqw';
+        }
+    }
+    public function actionSearchCdr($q = null, $id = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $user_province = strtolower(Yii::$app->user->identity->province);
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if ($id > 0) {
+            // $out['results'] = ['id' => $id, 'text' => Payee::findOne($id)->account_name];
+        } else if (!is_null($q)) {
+            // $qu
+            // $query = (new yii\db\Query);
+            // $query->select('payee.id, payee.account_name AS text')
+            //     ->from('payee')
+            //     ->where(['like', 'payee.account_name', $q])
+            //     ->andWhere('payee.isEnable = 1');
+
+            // $command = $query->createCommand();
+            // $data = $command->queryAll();
+            $data = Yii::$app->cloud_db->createCommand("SELECT cdr.id, cdr.serial_number as `text` FROM cdr WHERE cdr.serial_number LIKE :cdr")
+                ->bindValue(':cdr', '%' . $q . '%')->queryAll();
+            $out['results'] = array_values($data);
+        }
+        return $out;
+    }
+    public function actionCdrEntries()
+    {
+
+        if (Yii::$app->request->isPost) {
+
+            $cdr_details = Yii::$app->cloud_db->createCommand("SELECT 
+                        reporting_period,
+                        report_type,
+                        fk_bank_account_id
+                        FROM cdr
+                        WHERE 
+                        cdr.id = :id
+            ")->bindValue(':id', $_POST['id'])
+                ->queryOne();
+            if (!empty($cdr_details)) {
+
+                $query = Yii::$app->cloud_db->createCommand("SELECT 
+                
+                accounting_codes.account_title,
+                cdr_conso.new_object_code as object_code,
+                cdr_conso.withdrawals +cdr_conso.vat_nonvat +cdr_conso.expanded_tax as debit,
+                0 as credit
+                FROM  
+                (
+                SELECT 
+                
+                liquidation_entries.new_object_code,
+                
+                SUM(liquidation_entries.withdrawals) as withdrawals,
+                SUM(liquidation_entries.vat_nonvat) as vat_nonvat,
+                SUM(liquidation_entries.expanded_tax) as expanded_tax
+                
+                FROM liquidation_entries
+                
+                LEFT JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
+                LEFT JOIN check_range ON liquidation.check_range_id = check_range.id
+                LEFT JOIN advances_entries ON liquidation_entries.advances_entries_id = advances_entries.id
+                
+                WHERE
+                liquidation_entries.reporting_period = :reporting_period
+                   AND check_range.bank_account_id =:bank_account_id
+                AND advances_entries.report_type = :report_type
+                GROUP BY
+                liquidation_entries.new_object_code
+                ) as cdr_conso
+                LEFT JOIN accounting_codes ON cdr_conso.new_object_code = accounting_codes.object_code")
+                    ->bindValue(':reporting_period', $cdr_details['reporting_period'])
+                    ->bindValue(':report_type', $cdr_details['report_type'])
+                    ->bindValue(':bank_account_id', $cdr_details['fk_bank_account_id'])
+                    ->queryAll();
+
+                return json_encode($query);
+            }
+        } else {
+            return json_encode('qwe');
         }
     }
 }
