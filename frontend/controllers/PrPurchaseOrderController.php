@@ -438,4 +438,46 @@ class PrPurchaseOrderController extends Controller
 
         return $out;
     }
+    public function actionSearchPurchaseOrderForRfi($q = null, $id = null, $province = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+
+            $query->select([" id, `serial_number` as text"])
+                ->from('pr_purchase_order_item')
+                ->andwhere(['like', 'serial_number', $q])
+                ->andwhere("NOT EXISTS (SELECT * FROM request_for_inspection_items WHERE request_for_inspection_items.fk_purchase_order_item_id  = pr_purchase_order_item.id)");
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+
+        return $out;
+    }
+    public function actionPoDetails()
+    {
+        if (YIi::$app->request->isPost) {
+            $id = $_POST['po_id'];
+            $query = Yii::$app->db->createCommand("SELECT 
+            pr_project_procurement.title as project_name,
+            pr_purchase_order.po_date
+            FROM pr_purchase_order_item
+            LEFT JOIN pr_purchase_order ON pr_purchase_order_item.fk_pr_purchase_order_id = pr_purchase_order.id
+            LEFT JOIN pr_aoq ON pr_purchase_order.fk_pr_aoq_id = pr_aoq.id
+            LEFT JOIN pr_rfq ON pr_aoq.pr_rfq_id = pr_rfq.id
+            LEFT JOIN pr_purchase_request ON pr_rfq.pr_purchase_request_id = pr_purchase_request.id
+            LEFT JOIN pr_project_procurement ON pr_purchase_request.pr_project_procurement_id = pr_project_procurement.id
+            WHERE 
+                pr_purchase_order_item.id = :id
+            ")
+                ->bindValue(':id', $id)
+                ->queryOne();
+            return json_encode($query);
+        }
+    }
 }

@@ -118,3 +118,22 @@ function employeeSelect() {
     },
   });
 }
+function rfiPurchaseOrderSelect() {
+  $(".purchase-order").select2({
+    ajax: {
+      url: base_url + "?r=pr-purchase-order/search-purchase-order-for-rfi",
+      dataType: "json",
+      data: function (params) {
+        return {
+          q: params.term,
+        };
+      },
+      processResults: function (data) {
+        // Transforms the top-level key of the response object from 'items' to 'results'
+        return {
+          results: data.results,
+        };
+      },
+    },
+  });
+}
