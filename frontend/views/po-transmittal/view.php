@@ -22,6 +22,11 @@ $this->params['breadcrumbs'][] = $this->title;
             <p>
                 <?= Html::a('Update', ['update', 'id' => $model->transmittal_number], ['class' => 'btn btn-primary']) ?>
                 <?php
+                if (!empty($model->poTransmittalToCoa->po_transmittal_to_coa_number) && YIi::$app->user->can('super-user')) {
+                    echo  Html::a('Transmittal to Coa Link', ['/po-transmittal-to-coa/view', 'id' => $model->poTransmittalToCoa->po_transmittal_to_coa_number], ['class' => 'btn btn-link']);
+                }
+                ?>
+                <?php
                 $color = '';
                 $action = '';
                 if (strtolower($model->status) == 'pending_at_ro') {

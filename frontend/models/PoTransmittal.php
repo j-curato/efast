@@ -59,4 +59,8 @@ class PoTransmittal extends \yii\db\ActiveRecord
     {
         return $this->hasMany(PoTransmittalEntries::class, ['po_transmittal_number' => 'transmittal_number']);
     }
+    public function getPoTransmittalToCoa()
+    {
+        return $this->hasOne(PoTransmittalToCoaEntries::class, ['po_transmittal_number' => 'transmittal_number']);
+    }
 }
