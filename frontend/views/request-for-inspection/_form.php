@@ -159,23 +159,24 @@ if (!empty($model->fk_requested_by)) {
 
 
 
+    <div class="container">
 
 
-    <table id="entry_table">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Activity/Project</th>
-                <th>Purchase Order Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
+        <table id="entry_table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Activity/Project</th>
+                    <th>Purchase Order Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
 
-            if (!empty($items)) {
+                if (!empty($items)) {
 
-                foreach ($items as $val) {
-                    echo "<tr>
+                    foreach ($items as $val) {
+                        echo "<tr>
                                 <td style='display:none'><input class='item_id' value='{$val['id']}' name='item_id[$entry_row]'/></td>
                             <td>
                                 <label for='purchase_order_id'> Purchase Order#</label>
@@ -198,32 +199,34 @@ if (!empty($model->fk_requested_by)) {
                                 <a class='remove btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
                             </td>
                         </tr>";
-                    $entry_row++;
-                }
-            } else {
+                        $entry_row++;
+                    }
+                } else {
 
-            ?>
-                <tr>
+                ?>
+                    <tr>
 
-                    <td>
-                        <label for='purchase_order_id'> Purchase Order#</label>
-                        <select required name='purchase_order_id[0]' class='purchase-order' style='width: 100%'>
-                        </select>
-                    </td>
-                    <td>
-                        <span class="activity_title"></span>
-                    </td>
-                    <td>
-                        <span class="po_date"></span>
-                    </td>
-                    <td style='float:left;'>
-                        <a class='add_row btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
-                        <a class='remove btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
-                    </td>
-                </tr>
-            <?php } ?>
-        </tbody>
-    </table>
+                        <td>
+                            <label for='purchase_order_id'> Purchase Order#</label>
+                            <select required name='purchase_order_id[0]' class='purchase-order' style='width: 80%'>
+                            </select>
+                        </td>
+                        <td>
+                            <span class="activity_title"></span>
+                        </td>
+                        <td>
+                            <span class="po_date"></span>
+                        </td>
+                        <td style='float:left;'>
+                            <a class='add_row btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
+                            <a class='remove btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+    </div>
+
 
     <div class="form-group" style="margin-top: 1rem;">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
@@ -235,6 +238,11 @@ if (!empty($model->fk_requested_by)) {
 <style>
     #entry_table {
         width: 100%;
+    }
+
+    td,
+    th {
+        padding: 5px;
     }
 </style>
 <?php
