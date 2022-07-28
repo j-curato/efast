@@ -400,6 +400,15 @@
 
                             ],
                         ] : [],
+                        Yii::$app->user->can('super-user') ?    [
+                            'label' => 'Inspection',
+                            'url' => '#',
+                            'items' => [
+
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Request for Inspection', 'icon' => 'circle-o', 'url' => ['/request-for-inspection'],] : [],
+
+                            ],
+                        ] : [],
                         Yii::$app->user->can('province') ? [
                             'label' => 'Province',
                             'url' => '#',
