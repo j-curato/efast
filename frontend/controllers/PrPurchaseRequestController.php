@@ -380,8 +380,7 @@ class PrPurchaseRequestController extends Controller
     public function getPrNumber($d, $pr_project_procurement_id)
     {
         $division = Yii::$app->db->createCommand("SELECT
-                    pr_office.division,
-                    pr_project_procurement.*
+                    pr_office.division
                     FROM pr_project_procurement
                     INNER JOIN pr_office ON pr_project_procurement.pr_office_id = pr_office.id
                     WHERE
