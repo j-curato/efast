@@ -17,11 +17,10 @@ class m210811_054106_create_cdr_advances_balance_view extends Migration
         CREATE VIEW cdr_advances_balance as 
             SELECT 
             advances.province,
+            advances.bank_account_id,
             advances_entries.reporting_period,
             advances_entries.report_type,
             SUM(advances_entries.amount) as balance
-
-
             FROM advances_entries
             LEFT JOIN advances ON advances_entries.advances_id=advances.id
             LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id=cash_disbursement.id
@@ -30,9 +29,9 @@ class m210811_054106_create_cdr_advances_balance_view extends Migration
             WHERE
             advances_entries.is_deleted NOT IN (1,9)
             GROUP BY advances.province,
+            advances.bank_account_id,
             advances_entries.reporting_period,
-            advances_entries.report_type
-
+            advances_entries.report_type 
         SQL;
         $this->execute($sql);
     }
