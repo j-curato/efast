@@ -1287,7 +1287,7 @@ class DvAucsController extends Controller
             FROM
             cash_disbursement 
             WHERE dv_aucs_id = :dv_id
-            AND is_cancelled =0) ")->bindValue(':dv_id', $model->id)
+            AND is_cancelled =1) ")->bindValue(':dv_id', $model->id)
                 ->queryScalar();
 
 
@@ -1301,8 +1301,8 @@ class DvAucsController extends Controller
             }
             $model->is_cancelled ? $model->is_cancelled = false : $model->is_cancelled = true;
             if ($model->is_cancelled === true) {
-                if (intval($q) === 1) {
-                    return json_encode(['isSuccess' => false, 'cancelled' => 'Cash Disbursment is not Cancelled']);
+                if (intval($q) === 0) {
+                    return json_encode(['isSuccess' => false, 'cancelled' => 'Cash Disbursment is not Cancelled. Please Cancel The Check  In Cancel Disbursment Module']);
                     die();
                 }
             }
