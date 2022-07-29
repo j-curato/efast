@@ -22,11 +22,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
         <?php
-        if ($model->is_cancelled) {
-            echo "<button class='btn btn-success' id='cancel' style='margin:5px'>Activate</button>";
-        } else {
-            echo "<button class='btn btn-danger' id='cancel' style='margin:5px'>Cancel</button>";
-        }
+        // if ($model->is_cancelled) {
+        //     echo "<button class='btn btn-success' id='cancel' style='margin:5px'>Activate</button>";
+        // } else {
+        //     echo "<button class='btn btn-danger' id='cancel' style='margin:5px'>Cancel</button>";
+        // }
         echo "<input type='text' id='cancel_id' value='$model->id' style='display:none;'/>";
         $t = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/view&id=$model->dv_aucs_id";
         echo  Html::a('DV Link', $t, ['class' => 'btn btn-info ', 'style' => 'margin:3px']);
