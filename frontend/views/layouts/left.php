@@ -405,6 +405,7 @@
                             'url' => '#',
                             'items' => [
 
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Divisions', 'icon' => 'circle-o', 'url' => ['/divisions'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Request for Inspection', 'icon' => 'circle-o', 'url' => ['/request-for-inspection'],] : [],
 
                             ],
