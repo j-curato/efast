@@ -1287,12 +1287,11 @@ class DvAucsController extends Controller
             //         die();
             //     }
             // }
-            $q = Yii::$app->db->createCommand("SELECT EXISTS(SELECT 
+            $check_if_has_cash = Yii::$app->db->createCommand("SELECT EXISTS(SELECT 
             *
             FROM
             cash_disbursement 
-            WHERE dv_aucs_id = :dv_id
-            AND is_cancelled =1) ")->bindValue(':dv_id', $model->id)
+            WHERE dv_aucs_id = :dv_id) ")->bindValue(':dv_id', $model->id)
                 ->queryScalar();
 
 
@@ -1306,9 +1305,20 @@ class DvAucsController extends Controller
             }
             $model->is_cancelled ? $model->is_cancelled = false : $model->is_cancelled = true;
             if ($model->is_cancelled === true) {
-                if (intval($q) === 0) {
-                    return json_encode(['isSuccess' => false, 'cancelled' => 'Cash Disbursment is not Cancelled. Please Cancel The Check  In Cancel Disbursment Module']);
-                    die();
+
+                if (intval($check_if_has_cash) === 1) {
+                    $q = Yii::$app->db->createCommand("SELECT EXISTS(SELECT 
+                        *
+                        FROM
+                        cash_disbursement 
+                        WHERE dv_aucs_id = :dv_id
+                        AND is_cancelled =1) ")
+                        ->bindValue(':dv_id', $model->id)
+                        ->queryScalar();
+                    if (intval($q) === 0) {
+                        return json_encode(['isSuccess' => false, 'cancelled' => 'Cash Disbursment is not Cancelled. Please Cancel The Check  In Cancel Disbursment Module']);
+                        die();
+                    }
                 }
             }
             if ($model->save(false)) {
