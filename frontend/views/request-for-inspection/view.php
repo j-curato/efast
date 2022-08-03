@@ -174,6 +174,9 @@ if (!empty($model->fk_requested_by_division)) {
     </div>
 </div>
 <style>
+    .container{
+        background-color: white;
+    }
     th,
     td {
 
