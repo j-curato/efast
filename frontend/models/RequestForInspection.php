@@ -33,8 +33,8 @@ class RequestForInspection extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'rfi_number', 'date'], 'required'],
-            [['id', 'fk_chairperson', 'fk_inspector', 'fk_property_unit', 'fk_requested_by'], 'integer'],
+            [['id', 'rfi_number', 'date','fk_requested_by_division'], 'required'],
+            [['id', 'fk_chairperson', 'fk_inspector', 'fk_property_unit', 'fk_requested_by_division'], 'integer'],
             [['date', 'created_at'], 'safe'],
             [['rfi_number'], 'string', 'max' => 255],
             [['rfi_number'], 'unique'],
@@ -54,7 +54,7 @@ class RequestForInspection extends \yii\db\ActiveRecord
             'fk_chairperson' => 'Chairperson',
             'fk_inspector' => 'Inspector',
             'fk_property_unit' => 'Property Unit',
-            'fk_requested_by' => 'Requested By',
+            'fk_requested_by_division' => 'Requested By',
             'created_at' => 'Created At',
 
 
