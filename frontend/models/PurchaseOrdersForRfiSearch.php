@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\PurchaseOrdersForRfi;
+use Yii;
 
 /**
  * PurchaseOrdersForRfiSearch represents the model behind the search form of `app\models\PurchaseOrdersForRfi`.
@@ -43,7 +44,9 @@ class PurchaseOrdersForRfiSearch extends PurchaseOrdersForRfi
     public function search($params)
     {
         $query = PurchaseOrdersForRfi::find();
-
+        if (!Yii::$app->user->can('super-user')) {
+            $query->andWhere('division = :division', ['division' => Yii::$app->user->identity->division]);
+        }
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([

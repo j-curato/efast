@@ -151,6 +151,13 @@
                                 Yii::$app->user->can('purchase_request') ?     ['label' => 'Purchase Request', 'icon' => 'circle-o', 'url' => ['/pr-purchase-request'],] : [],
                             ],
                         ],
+                        Yii::$app->user->can('department-offices') ?    [
+                            'label' => 'Inspection',
+                            'url' => '#',
+                            'items' => [
+                                Yii::$app->user->can('department-offices') ?     ['label' => 'Request for Inspection', 'icon' => 'circle-o', 'url' => ['/request-for-inspection'],] : [],
+                            ],
+                        ] : [],
 
 
 

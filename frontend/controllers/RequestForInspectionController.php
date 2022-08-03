@@ -44,7 +44,7 @@ class RequestForInspectionController extends Controller
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['request-for-inspection']
                     ]
                 ]
             ],
@@ -166,6 +166,13 @@ class RequestForInspectionController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $model->fk_property_unit = 99684622555676819;
         $model->fk_chairperson = 99684622555676844;
+        if (!Yii::$app->user->can('super-user')) {
+            $user_division = strtolower(Yii::$app->user->identity->division);
+            $division_id = Yii::$app->db->createCommand("SELECT id FROM divisions WHERE division=:division")
+                ->bindValue(':division', $user_division)
+                ->queryScalar();
+            $model->fk_requested_by_division = $division_id;
+        }
         if ($model->load(Yii::$app->request->post())) {
             if (!empty($_POST['purchase_order_id'])) {
 

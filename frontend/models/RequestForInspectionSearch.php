@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\RequestForInspection;
+use Yii;
 
 /**
  * RequestForInspectionSearch represents the model behind the search form of `app\models\RequestForInspection`.
@@ -41,7 +42,10 @@ class RequestForInspectionSearch extends RequestForInspection
     public function search($params)
     {
         $query = RequestForInspection::find();
-
+        $query->joinWith('division');
+        if (!yii::$app->user->can('super-user')) {
+            $query->andWhere('divisions.division = :division', ['division' => Yii::$app->user->identity->division]);
+        }
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([

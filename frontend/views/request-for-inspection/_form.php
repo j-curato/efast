@@ -59,31 +59,38 @@ if (!empty($model->fk_property_unit)) {
             </div>
         </div>
         <div class="row">
+            <?php
 
-            <div class="col-sm-3">
-                <?= $form->field($model, 'fk_requested_by_division')->widget(Select2::class, [
-                    'data' => $requested_by,
-                    'options' => ['placeholder' => 'Search for a Division ...'],
-                    // 'pluginOptions' => [
-                    //     'allowClear' => true,
-                    //     'minimumInputLength' => 1,
-                    //     'language' => [
-                    //         'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                    //     ],
-                    //     'ajax' => [
-                    //         'url' => Yii::$app->request->baseUrl . '?r=divisions/search-division',
-                    //         'dataType' => 'json',
-                    //         'delay' => 250,
-                    //         'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                    //         'cache' => true
-                    //     ],
-                    //     'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                    //     'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                    //     'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    // ],
+            if (YIi::$app->user->can('super-user')) {
 
-                ]) ?>
-            </div>
+            ?>
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'fk_requested_by_division')->widget(Select2::class, [
+                        'data' => $requested_by,
+                        'options' => ['placeholder' => 'Search for a Division ...'],
+                        // 'pluginOptions' => [
+                        //     'allowClear' => true,
+                        //     'minimumInputLength' => 1,
+                        //     'language' => [
+                        //         'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        //     ],
+                        //     'ajax' => [
+                        //         'url' => Yii::$app->request->baseUrl . '?r=divisions/search-division',
+                        //         'dataType' => 'json',
+                        //         'delay' => 250,
+                        //         'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                        //         'cache' => true
+                        //     ],
+                        //     'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        //     'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        //     'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        // ],
+
+                    ]) ?>
+                </div>
+            <?php
+            }
+            ?>
             <div class="col-sm-3">
 
 

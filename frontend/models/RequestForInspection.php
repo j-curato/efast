@@ -68,6 +68,10 @@ class RequestForInspection extends \yii\db\ActiveRecord
      */
     public function getRequestForInspectionItems()
     {
-        return $this->hasMany(RequestForInspectionItems::className(), ['fk_request_for_inspection_id' => 'id']);
+        return $this->hasMany(RequestForInspectionItems::class, ['fk_request_for_inspection_id' => 'id']);
+    }
+    public function getDivision()
+    {
+        return $this->hasOne(Divisions::class, ['id' => 'fk_requested_by_division']);
     }
 }
