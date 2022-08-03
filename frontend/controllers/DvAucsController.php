@@ -189,12 +189,17 @@ class DvAucsController extends Controller
     public function insertAccountingEntries($dv_id = '', $object_codes = [], $debits = [], $credits = [], $accounting_entries = [])
     {
 
-        // if (!empty($accounting_entries)) {
-        //     $params = [];
-        //     $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'dv_accounting_entries.id', $accounting_entries], $params);
-        //     Yii::$app->db->createCommand("DELETE FROM dv_accounting_entries WHERE $sql", $params)
-        //         ->query();
-        // } else {
+        if (!empty($accounting_entries)) {
+            $params = [];
+            $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'dv_accounting_entries.id', $accounting_entries], $params);
+            Yii::$app->db->createCommand("DELETE FROM dv_accounting_entries WHERE  dv_accounting_entries.dv_aucs_id =:dv_id 
+            AND dv_accounting_entries.payroll_id IS NULL
+            AND dv_accounting_entries.remittance_payee_id IS NULL
+            AND $sql", $params)
+                ->bindValue(':dv_id', $dv_id)
+                ->query();
+        }
+        // else {
         //     Yii::$app->db->createCommand("DELETE FROM dv_accounting_entries WHERE dv_aucs_id = :id",)
         //         ->bindValue(':id', $dv_id)
         //         ->query();
@@ -1312,7 +1317,7 @@ class DvAucsController extends Controller
                 return json_encode(['isSuccess' => false, 'cancelled' => 'save failed']);
             }
 
-            // ob_clean();
+            // ob_clean();  
             // echo "<pre>";
             // var_dump($model->cashDisbursement);
             // echo "</pre>";
