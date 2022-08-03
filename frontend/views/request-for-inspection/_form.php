@@ -19,7 +19,7 @@ $entry_row = 1;
 $chairperson = '';
 $inspector = '';
 $property_unit = '';
-$requested_by = '';
+$requested_by = ArrayHelper::map(Yii::$app->db->createCommand("SELECT id,UPPER(division) as division FROM divisions")->queryAll(), 'id', 'division');
 if (!empty($model->fk_chairperson)) {
     $chairpersonQuery = Yii::$app->db->createCommand("SELECT employee_name,employee_id FROM employee_search_view WHERE employee_id = :id")
         ->bindValue(':id', $model->fk_chairperson)->queryAll();
@@ -35,11 +35,11 @@ if (!empty($model->fk_property_unit)) {
         ->bindValue(':id', $model->fk_property_unit)->queryAll();
     $property_unit = ArrayHelper::map($property_unitQuery, 'employee_id', 'employee_name');
 }
-if (!empty($model->fk_requested_by_division)) {
-    $requested_by_query = Yii::$app->db->createCommand("SELECT UPPER(division) as division,id FROM divisions WHERE id = :id")
-        ->bindValue(':id', $model->fk_requested_by_division)->queryAll();
-    $requested_by = ArrayHelper::map($requested_by_query, 'id', 'division');
-}
+// if (!empty($model->fk_requested_by_division)) {
+//     $requested_by_query = Yii::$app->db->createCommand("SELECT UPPER(division) as division,id FROM divisions WHERE id = :id")
+//         ->bindValue(':id', $model->fk_requested_by_division)->queryAll();
+//     $requested_by = ArrayHelper::map($requested_by_query, 'id', 'division');
+// }
 ?>
 
 <div class="request-for-inspection-form">
@@ -64,23 +64,23 @@ if (!empty($model->fk_requested_by_division)) {
                 <?= $form->field($model, 'fk_requested_by_division')->widget(Select2::class, [
                     'data' => $requested_by,
                     'options' => ['placeholder' => 'Search for a Division ...'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=divisions/search-division',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    ],
+                    // 'pluginOptions' => [
+                    //     'allowClear' => true,
+                    //     'minimumInputLength' => 1,
+                    //     'language' => [
+                    //         'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    //     ],
+                    //     'ajax' => [
+                    //         'url' => Yii::$app->request->baseUrl . '?r=divisions/search-division',
+                    //         'dataType' => 'json',
+                    //         'delay' => 250,
+                    //         'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                    //         'cache' => true
+                    //     ],
+                    //     'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    //     'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    //     'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    // ],
 
                 ]) ?>
             </div>
