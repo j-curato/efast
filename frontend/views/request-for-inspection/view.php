@@ -30,9 +30,12 @@ if (!empty($model->fk_property_unit)) {
         ->bindValue(':id', $model->fk_property_unit)
         ->queryOne();
 }
-if (!empty($model->fk_requested_by)) {
-    $requested_by = Yii::$app->db->createCommand("SELECT employee_name,position FROM employee_search_view WHERE employee_id = :id")
-        ->bindValue(':id', $model->fk_requested_by)
+if (!empty($model->fk_requested_by_division)) {
+    $requested_by = Yii::$app->db->createCommand("SELECT employee_name,position FROM 
+    divisions
+    LEFT JOIN employee_search_view ON divisions.fk_division_chief =  employee_search_view.employee_id 
+    WHERE divisions.id = :id")
+        ->bindValue(':id', $model->fk_requested_by_division)
         ->queryOne();
 }
 ?>
@@ -66,7 +69,12 @@ if (!empty($model->fk_requested_by)) {
                     <br>
 
                     <span> Date:</span>
-                    <?= DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y') ?>
+                    <?php
+
+                    if (!empty($model->date)) {
+
+                        echo   DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
+                    } ?>
                 </td>
             </tr>
             <tr>
@@ -123,7 +131,7 @@ if (!empty($model->fk_requested_by)) {
                 foreach ($purchase_orders as $val) {
                     echo "<tr>
                             <td class='center'>{$val['po_number']}</td>
-                            <td class='center'>{$val['project_title']}</td>
+                            <td class='center'>{$val['project_name']}</td>
                             <td class='center'>{$val['place_of_delivery']}</td>
                             <td class='center'>{$val['po_date']}</td>
                         </tr>";
