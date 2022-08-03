@@ -1107,6 +1107,8 @@ SweetAlertAsset::register($this);
         $('#accountng_entry_table').on('click', '.remove_this_accounting_entry_row', function(event) {
             event.preventDefault();
             $(this).closest('tr').remove();
+            getDebitCreditTotal()
+
         });
 
 
@@ -1231,6 +1233,7 @@ SweetAlertAsset::register($this);
         })
         checkAmountDisbursed()
         getDebitCreditTotal()
+
 
     })
 
