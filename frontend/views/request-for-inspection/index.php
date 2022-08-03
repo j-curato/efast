@@ -35,7 +35,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'fk_chairperson',
             'fk_inspector',
             //'fk_property_unit',
-            //'created_at',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
