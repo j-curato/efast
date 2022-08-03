@@ -378,7 +378,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 <td  class='amount'></td>
                 <td  class='amount'></td>
                 <td class='amount' ></td>
-                <td  class='amount'>` + thousands_separators(balance) + `</td>
+                <td  class='amount'>` + thousands_separators(balance.toFixed(2)) + `</td>
                 </tr>`
         var total_nca_recieve = 0
         var total_check_issued = 0
@@ -428,7 +428,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 <td  class='amount'>` + thousands_separators(nca_recieve) + `</td>
                 <td  class='amount'>` + thousands_separators(check_issued) + `</td>
                 <td  class='amount'>` + thousands_separators(ada_issued) + `</td>
-                <td class='amount' >` + thousands_separators(balance) + `</td>
+                <td class='amount' >` + thousands_separators(balance.toFixed(2)) + `</td>
                   
                 </tr>`
             $('#cadadr tbody').append(row)
@@ -454,7 +454,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 <td  class='amount'>` + thousands_separators(total_nca_recieve.toFixed(2)) + `</td>
                 <td  class='amount'>` + thousands_separators(total_check_issued) + `</td>
                 <td class='amount' >` + thousands_separators(total_ada_issued) + `</td>
-                <td  class='amount'>` + thousands_separators(balance) + `</td>
+                <td  class='amount'>` + thousands_separators(balance.toFixed(2)) + `</td>
                   
                 </tr>`
         $('#cadadr tbody').append(row)
@@ -490,7 +490,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 <td  class='amount'>` + thousands_separators(b_balance.toFixed(2)) + `</td>
                 <td  class='amount'></td>
                 <td class='amount' >` + thousands_separators(adjust_amount) + `</td>
-                <td  class='amount'>` + thousands_separators(balance) + `</td>
+                <td  class='amount'>` + thousands_separators(balance.toFixed(2)) + `</td>
                   
                 </tr>`
             $('#cadadr tbody').append(row)
