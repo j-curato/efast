@@ -364,6 +364,12 @@ if (!Yii::$app->user->can('super-user')) {
 
 </div>
 <style>
+    .grid-view td {
+        white-space: normal;
+        width: 5rem;
+        padding: 0;
+    }
+
     .container {
         background-color: white;
         padding: 5px;
