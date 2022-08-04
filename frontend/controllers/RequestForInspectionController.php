@@ -146,6 +146,7 @@ class RequestForInspectionController extends Controller
     {
         if (!empty($po_ids)) {
             try {
+                $i = 1;
                 foreach ($po_ids as $index => $val) {
 
                     if (!empty($item_ids[$index])) {
@@ -173,7 +174,7 @@ class RequestForInspectionController extends Controller
                                 ->queryScalar();
 
                             if (intval($quantity[$index]) > intval($q)) {
-                                return ['isSuccess' => false, 'error_message' => "Quantity should not be greater than {$q} in line $index"];
+                                return ['isSuccess' => false, 'error_message' => "Quantity should not be greater than {$q} in line $i"];
                                 // return "Quantity should not be greater than {$q} in line $index";
                             }
                         }
@@ -200,7 +201,7 @@ class RequestForInspectionController extends Controller
                                 ->queryScalar();
 
                             if (intval($quantity[$index]) > intval($q)) {
-                                return ['isSuccess' => false, 'error_message' => "Quantity should not be greater than {$q} in line $index"];
+                                return ['isSuccess' => false, 'error_message' => "Quantity should not be greater than {$q} in line $i"];
                             }
                         }
                     }
@@ -221,6 +222,7 @@ class RequestForInspectionController extends Controller
                     } else {
                         return $item->errors;
                     }
+                    $i++;
                 }
                 // die();
             } catch (ErrorException $e) {
