@@ -156,7 +156,7 @@ if (!empty($model->fk_requested_by_division)) {
                 <td colspan="7"><br><br>Requested By</td>
             </tr>
             <tr>
-                <td colspan="5" class="center">
+                <td colspan="3" class="center">
                     <br>
                     <br>
                     <br>
@@ -164,7 +164,8 @@ if (!empty($model->fk_requested_by_division)) {
                     <br>
                     <span>Office/Division/Section/Unit Head</span>
                 </td>
-                <td colspan="2" class="center">
+                <td></td>
+                <td colspan="3" class="center">
                     <br>
                     <br>
                     <br>
@@ -174,8 +175,8 @@ if (!empty($model->fk_requested_by_division)) {
                 </td>
             </tr>
             <tr>
-                <td colspan="5"></td>
-                <td colspan="2" class="center">
+                <td colspan="4"></td>
+                <td colspan="3" class="center">
                     <br>
                     <br>
                     <br>
