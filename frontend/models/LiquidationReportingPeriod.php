@@ -28,7 +28,7 @@ class LiquidationReportingPeriod extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['is_locked'], 'integer'],
+            [['is_locked', 'bank_account_id'], 'integer'],
             [['reporting_period', 'province'], 'string', 'max' => 50],
         ];
     }
@@ -43,6 +43,7 @@ class LiquidationReportingPeriod extends \yii\db\ActiveRecord
             'reporting_period' => 'Reporting Period',
             'province' => 'Province',
             'is_locked' => 'Is Locked',
+            'bank_account_id' => 'Bank Account'
         ];
     }
 }
