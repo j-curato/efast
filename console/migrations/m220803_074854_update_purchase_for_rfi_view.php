@@ -31,7 +31,7 @@ class m220803_074854_update_purchase_for_rfi_view extends Migration
             pr_office.unit
 
             FROM pr_project_procurement 
-            INNER JOIN pr_purchase_request ON t.id = pr_purchase_request.pr_project_procurement_id
+            INNER JOIN pr_purchase_request ON pr_project_procurement.id = pr_purchase_request.pr_project_procurement_id
             INNER JOIN pr_purchase_request_item ON pr_purchase_request.id = pr_purchase_request_item.pr_purchase_request_id
             INNER JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
             INNER JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
@@ -49,7 +49,7 @@ class m220803_074854_update_purchase_for_rfi_view extends Migration
             FROM request_for_inspection_items GROUP BY request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id) as aoq_items_quantity ON pr_purchase_order_items_aoq_items.id = aoq_items_quantity.fk_pr_purchase_order_items_aoq_item_id
             WHERE pr_aoq_entries.is_lowest = 1;
     SQL;
-    $this->execute($sql);
+        $this->execute($sql);
     }
 
     /**
@@ -57,7 +57,6 @@ class m220803_074854_update_purchase_for_rfi_view extends Migration
      */
     public function safeDown()
     {
-       
     }
 
     /*
