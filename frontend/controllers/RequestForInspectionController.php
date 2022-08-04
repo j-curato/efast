@@ -106,8 +106,9 @@ class RequestForInspectionController extends Controller
                 request_for_inspection_items.from as date_from,
                 request_for_inspection_items.to as date_to,
                 pr_project_procurement.title as project_title,
-        pr_office.division,
-        pr_office.unit
+                pr_office.division,
+                pr_office.unit,
+                aoq_items_quantity.quantity as balance_quantity
         FROM 
         request_for_inspection_items						
         INNER JOIN pr_purchase_order_items_aoq_items ON request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id = pr_purchase_order_items_aoq_items.id
@@ -120,7 +121,11 @@ class RequestForInspectionController extends Controller
         LEFT JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
         LEFT JOIN pr_project_procurement ON pr_purchase_request.pr_project_procurement_id = pr_project_procurement.id
         LEFT JOIN pr_office ON pr_project_procurement.pr_office_id = pr_office.id
-        
+        LEFT JOIN (SELECT 
+            request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id,
+            SUM(request_for_inspection_items.quantity) as quantity
+            FROM request_for_inspection_items GROUP BY request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id) as aoq_items_quantity
+             ON pr_purchase_order_items_aoq_items.id = aoq_items_quantity.fk_pr_purchase_order_items_aoq_item_id
         
         
         

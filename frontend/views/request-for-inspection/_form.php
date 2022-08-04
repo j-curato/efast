@@ -215,7 +215,7 @@ if (!Yii::$app->user->can('super-user')) {
                         Unit
                     </th>
                     <th>
-                        Quantity
+                       Balance Quantity
                     </th>
                     <th>
                         From Date
@@ -251,7 +251,7 @@ if (!Yii::$app->user->can('super-user')) {
                                     <span class='activity' >{$val['payee']}</span>
                                 </td>
                                 <td>
-                                    <span class='activity' >{$val['quantity']}</span>
+                                    <span class='activity' >{$val['balance_quantity']}</span>
                                 </td>
                                 <td>
                                     <span class='activity' >{$val['division']}</span>
