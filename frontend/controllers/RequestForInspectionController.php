@@ -100,7 +100,7 @@ class RequestForInspectionController extends Controller
                 pr_purchase_order_item.serial_number as po_number,
                 payee.account_name as payee,
                 pr_stock.stock_title,
-                 REPLACE(pr_purchase_request_item.specification,'[n]','<br>') as specification,
+                REPLACE(REPLACE(pr_purchase_request_item.specification,'[n][n]','<br>'),'[n]','<br>') as specification,
                 pr_purchase_request.purpose,
                 request_for_inspection_items.quantity,
                 request_for_inspection_items.from as date_from,
