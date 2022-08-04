@@ -108,7 +108,7 @@ class RequestForInspectionController extends Controller
                 pr_project_procurement.title as project_title,
                 pr_office.division,
                 pr_office.unit,
-                aoq_items_quantity.quantity as balance_quantity
+                pr_purchase_request_item.quantity - IFNULL(aoq_items_quantity.quantity,0) as balance_quantity
         FROM 
         request_for_inspection_items						
         INNER JOIN pr_purchase_order_items_aoq_items ON request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id = pr_purchase_order_items_aoq_items.id
