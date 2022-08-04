@@ -7,12 +7,18 @@ use Yii;
 use app\models\RequestForInspection;
 use app\models\RequestForInspectionItems;
 use app\models\RequestForInspectionSearch;
+use aryelds\sweetalert\SweetAlert;
+use DateTime;
 use ErrorException;
+use kartik\form\ActiveForm;
+use PHPUnit\Util\Log\JSON as LogJSON;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Json;
+use yii\web\Response;
 
 /**
  * RequestForInspectionController implements the CRUD actions for RequestForInspection model.
@@ -88,28 +94,37 @@ class RequestForInspectionController extends Controller
     public function poDetails($id)
     {
 
-        $purchase_orders = Yii::$app->db->createCommand("SELECT 
-        request_for_inspection_items.id,
-        pr_purchase_order_item.id as po_id,
-        pr_purchase_order.po_number,
-        pr_purchase_order.po_date,
-        pr_purchase_order.place_of_delivery,
-        pr_purchase_request.purpose, 
-        pr_project_procurement.title as project_name,
-        payee.account_name as payee,
+        $purchase_orders = Yii::$app->db->createCommand("SELECT
+                request_for_inspection_items.id,
+                pr_purchase_order_items_aoq_items.id as po_aoq_item_id,
+                pr_purchase_order_item.serial_number as po_number,
+                payee.account_name as payee,
+                pr_stock.stock_title,
+                 REPLACE(pr_purchase_request_item.specification,'[n]','<br>') as specification,
+                pr_purchase_request.purpose,
+                request_for_inspection_items.quantity,
+                request_for_inspection_items.from as date_from,
+                request_for_inspection_items.to as date_to,
+                pr_project_procurement.title as project_title,
         pr_office.division,
         pr_office.unit
-         FROM `request_for_inspection_items`
-        LEFT JOIN pr_purchase_order_item ON request_for_inspection_items.fk_purchase_order_item_id = pr_purchase_order_item.id
-        LEFT JOIN pr_purchase_order ON pr_purchase_order_item.fk_pr_purchase_order_id  = pr_purchase_order.id
-        LEFT JOIN pr_aoq ON pr_purchase_order.fk_pr_aoq_id = pr_aoq.id
-        LEFT JOIN pr_rfq ON pr_aoq.pr_rfq_id = pr_rfq.id
-        LEFT JOIN pr_purchase_request ON pr_rfq.pr_purchase_request_id = pr_purchase_request.id
+        FROM 
+        request_for_inspection_items						
+        INNER JOIN pr_purchase_order_items_aoq_items ON request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id = pr_purchase_order_items_aoq_items.id
+        INNER JOIN pr_purchase_order_item ON pr_purchase_order_items_aoq_items.fk_purchase_order_item_id = pr_purchase_order_item.id
+        INNER JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
+        INNER JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+        INNER JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+        LEFT  JOIN  payee ON pr_aoq_entries.payee_id = payee.id
+        LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+        LEFT JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
         LEFT JOIN pr_project_procurement ON pr_purchase_request.pr_project_procurement_id = pr_project_procurement.id
-        LEFT JOIN pr_purchase_order_items_aoq_items ON pr_purchase_order_item.id  = pr_purchase_order_items_aoq_items.fk_purchase_order_item_id
-        LEFT JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
-        LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
         LEFT JOIN pr_office ON pr_project_procurement.pr_office_id = pr_office.id
+        
+        
+        
+        
+        
         WHERE request_for_inspection_items.fk_request_for_inspection_id = :id
         AND request_for_inspection_items.is_deleted !=1
         ")
@@ -122,24 +137,76 @@ class RequestForInspectionController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function insertItems($rfi_id, $po_ids = [], $item_ids = [])
+    public function insertItems($rfi_id, $po_ids = [], $item_ids = [], $quantity = [], $date_from = [], $date_to = [])
     {
-
         if (!empty($po_ids)) {
-
             try {
                 foreach ($po_ids as $index => $val) {
 
                     if (!empty($item_ids[$index])) {
 
                         $item = RequestForInspectionItems::findOne($item_ids[$index]);
+                        if (!empty($quantity[$index])) {
+                            $q = YIi::$app->db->createCommand("SELECT 
+                            pr_purchase_request_item.quantity - IFNULL(aoq_items_quantity.quantity,0) as remaining_quantity
+                            FROM 
+                            pr_purchase_order_items_aoq_items
+                            INNER JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
+                            INNER JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+                            INNER JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+                            LEFT JOIN (SELECT 
+                                            request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id,
+                                            SUM(request_for_inspection_items.quantity) as quantity
+                                            FROM request_for_inspection_items 
+                                            WHERE request_for_inspection_items.id !=:rfi_id
+                            GROUP BY request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id) as aoq_items_quantity 
+                            ON pr_purchase_order_items_aoq_items.id = aoq_items_quantity.fk_pr_purchase_order_items_aoq_item_id
+                            WHERE 
+                            pr_purchase_order_items_aoq_items.id  = :id")
+                                ->bindValue(':id', $val)
+                                ->bindValue(':rfi_id', $item->id)
+                                ->queryScalar();
+
+                            if (intval($quantity[$index]) > intval($q)) {
+                                return ['isSuccess' => false, 'error_message' => "Quantity should not be greater than {$q} in line $index"];
+                                // return "Quantity should not be greater than {$q} in line $index";
+                            }
+                        }
                     } else {
 
                         $item = new RequestForInspectionItems();
+                        if (!empty($quantity[$index])) {
+                            $q = YIi::$app->db->createCommand("SELECT 
+                            pr_purchase_request_item.quantity - IFNULL(aoq_items_quantity.quantity,0) as remaining_quantity
+                            FROM 
+                            pr_purchase_order_items_aoq_items
+                            INNER JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
+                            INNER JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+                            INNER JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+                            LEFT JOIN (SELECT 
+                                            request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id,
+                                            SUM(request_for_inspection_items.quantity) as quantity
+                                            FROM request_for_inspection_items 
+                            GROUP BY request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id) as aoq_items_quantity 
+                            ON pr_purchase_order_items_aoq_items.id = aoq_items_quantity.fk_pr_purchase_order_items_aoq_item_id
+                            WHERE 
+                            pr_purchase_order_items_aoq_items.id  = :id")
+                                ->bindValue(':id', $val)
+                                ->queryScalar();
+
+                            if (intval($quantity[$index]) > intval($q)) {
+                                return ['isSuccess' => false, 'error_message' => "Quantity should not be greater than {$q} in line $index"];
+                            }
+                        }
                     }
 
+
+
                     $item->fk_request_for_inspection_id = $rfi_id;
-                    $item->fk_purchase_order_item_id = $val;
+                    $item->fk_pr_purchase_order_items_aoq_item_id = $val;
+                    $item->quantity = !empty($quantity[$index]) ? $quantity[$index] : 0;
+                    $item->from = !empty($date_from[$index]) ?  $date_from[$index] : null;
+                    $item->to = !empty($date_to[$index]) ?  $date_to[$index] : null;
                     if ($item->validate()) {
 
                         if ($item->save(false)) {
@@ -155,9 +222,7 @@ class RequestForInspectionController extends Controller
                 return $e->getMessage();
             }
         }
-
-
-        return true;
+        return ['isSuccess' => true];
     }
     public function actionCreate()
     {
@@ -173,16 +238,44 @@ class RequestForInspectionController extends Controller
                 ->queryScalar();
             $model->fk_requested_by_division = $division_id;
         }
-        if ($model->load(Yii::$app->request->post())) {
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             if (!empty($_POST['purchase_order_id'])) {
-
                 $po_ids = $_POST['purchase_order_id'];
+                $date_from = $_POST['date_from'];
+                $date_to = $_POST['date_to'];
+                $quantity = $_POST['quantity'];
                 $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
                 $model->rfi_number = $this->rfiNumber();
-                if ($model->save(false)) {
-                    $this->insertItems($model->id, array_unique($po_ids));
+                $transaction = Yii::$app->db->beginTransaction();
+                try {
+                    if ($model->validate()) {
+                        if ($flag = $model->save(false)) {
+                            $success = $this->insertItems(
+                                $model->id,
+                                array_unique($po_ids),
+                                [],
+                                $quantity,
+                                $date_from,
+                                $date_to
+                            );
+                            if ($success['isSuccess']) {
+                                $transaction->commit();
+                                return $this->redirect(['view', 'id' => $model->id]);
+                            } else {
+                                $transaction->rollBack();
+                                return JSON::encode(array('isSuccess' => false, 'error_message' => $success['error_message']));
+                            }
+                        }
+                        if ($flag) {
+                            $transaction->commit();
+                        }
+                    } else {
+                        Yii::$app->response->format = Response::FORMAT_JSON;
+                        return ActiveForm::validate($model);
+                    }
+                } catch (ErrorException $e) {
+                    return $e->getMessage();
                 }
-                return $this->redirect(['view', 'id' => $model->id]);
             }
         }
 
@@ -203,29 +296,70 @@ class RequestForInspectionController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
+    // public function actionValidate($id)
+    // {
+    //     $model = $this->findModel($id);
+    //     if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+    //         $model->company_id = Yii::$app->user->identity->company_id;
+    //         $model->created_at = time();
+    //         \Yii::$app->response->format = Response::FORMAT_JSON;
+    //         return ActiveForm::validate($model);
+    //     }
+    // }
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
         $searchModel = new PurchaseOrdersForRfiSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        // if (YIi::$app->request->isAjax){
+        //     return 1;
+        // }
         if ($model->load(Yii::$app->request->post())) {
             $po_ids = $_POST['purchase_order_id'];
+            $date_from = $_POST['date_from'];
+            $date_to = $_POST['date_to'];
+            $quantity = $_POST['quantity'];
 
             $item_ids = !empty($_POST['item_id']) ? $_POST['item_id'] : [];
+            $transaction = Yii::$app->db->beginTransaction();
             // return json_encode($item_ids);
-            if ($model->save(false)) {
-                if (!empty($item_ids)) {
+            try {
 
-                    $params = [];
-                    $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $item_ids], $params);
-                    Yii::$app->db->createCommand("UPDATE request_for_inspection_items SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE 
-                        $sql AND request_for_inspection_items.fk_request_for_inspection_id = :id", $params)
-                        ->bindValue(':id', $model->id)->query();
+                if ($model->validate()) {
+                    if ($flag = $model->save(false)) {
+                        if (!empty($item_ids)) {
+
+                            $params = [];
+                            $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $item_ids], $params);
+                            Yii::$app->db->createCommand("UPDATE request_for_inspection_items SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE 
+                                $sql AND request_for_inspection_items.fk_request_for_inspection_id = :id", $params)
+                                ->bindValue(':id', $model->id)->query();
+                        }
+                        $success = $this->insertItems(
+                            $model->id,
+                            array_unique($po_ids),
+                            $item_ids,
+                            $quantity,
+                            $date_from,
+                            $date_to
+                        );
+                        if ($success['isSuccess']) {
+                            $transaction->commit();
+                            return $this->redirect(['view', 'id' => $model->id]);
+                        } else {
+                            $transaction->rollBack();
+                            return JSON::encode(array('isSuccess' => false, 'error_message' => $success['error_message']));
+                        }
+                    }
+                } else {
+                    $transaction->rollBack();
+                    Yii::$app->response->format = Response::FORMAT_JSON;
+                    return ActiveForm::validate($model);
                 }
-                $this->insertItems($model->id, array_unique($po_ids), $item_ids);
+            } catch (ErrorException $e) {
+                return $e->getMessage();
             }
-            return $this->redirect(['view', 'id' => $model->id]);
         }
 
 

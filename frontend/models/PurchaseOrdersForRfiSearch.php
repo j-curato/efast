@@ -18,10 +18,19 @@ class PurchaseOrdersForRfiSearch extends PurchaseOrdersForRfi
     public function rules()
     {
         return [
-            [['id'], 'integer'],
-            [['project_name'], 'string'],
-            [['po_date'], 'safe'],
-            [['po_number', 'payee', 'division', 'unit'], 'string', 'max' => 255],
+            [['po_aoq_item_id'], 'integer'],
+            [['project_title'], 'string'],
+            [[
+                'po_number', 'payee', 'division', 'unit',
+                'po_number',
+                'project_title',
+                'pr_requested_by',
+                'purpose',
+                'stock_title',
+                'specification',
+                'unit_of_measure',
+
+            ], 'string', 'max' => 255],
         ];
     }
 
@@ -44,6 +53,7 @@ class PurchaseOrdersForRfiSearch extends PurchaseOrdersForRfi
     public function search($params)
     {
         $query = PurchaseOrdersForRfi::find();
+        $query->andWhere('quantity >0');
         if (!Yii::$app->user->can('super-user')) {
             $query->andWhere('division = :division', ['division' => Yii::$app->user->identity->division]);
         }
@@ -65,8 +75,7 @@ class PurchaseOrdersForRfiSearch extends PurchaseOrdersForRfi
         $query->andFilterWhere([]);
 
         $query->andFilterWhere(['like', 'po_number', $this->po_number])
-            ->andFilterWhere(['like', 'project_name', $this->project_name])
-            ->andFilterWhere(['like', 'po_date', $this->po_date])
+            ->andFilterWhere(['like', 'project_title', $this->project_title])
             ->andFilterWhere(['like', 'payee', $this->payee])
             ->andFilterWhere(['like', 'unit', $this->unit])
             ->andFilterWhere(['like', 'division', $this->division]);

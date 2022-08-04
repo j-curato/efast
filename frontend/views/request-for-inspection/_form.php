@@ -1,7 +1,9 @@
 <?php
 
 use app\models\PurchaseOrdersForRfiSearch;
+use aryelds\sweetalert\SweetAlert;
 use aryelds\sweetalert\SweetAlertAsset;
+use kartik\date\DatePicker as DateDatePicker;
 use kartik\grid\GridView;
 use kartik\widgets\DatePicker;
 use kartik\widgets\Select2;
@@ -15,6 +17,15 @@ use yii\widgets\ActiveForm;
 /* @var $model app\models\RequestForInspection */
 /* @var $form yii\widgets\ActiveForm */
 
+if (!empty($error)) {
+
+    echo SweetAlert::widget([
+        'options' => [
+            'title' => "Failed",
+            'type' => 'error'
+        ]
+    ]);
+}
 $entry_row = 1;
 $chairperson = '';
 $inspector = '';
@@ -51,130 +62,129 @@ if (!Yii::$app->user->can('super-user')) {
 ?>
 
 <div class="request-for-inspection-form">
-    <div class="container">
-        <?php $form = ActiveForm::begin([
-            'id' => $model->formName(),
-        ]); ?>
-        <div class="row">
-            <div class="col-sm-3">
-                <?= $form->field($model, 'date')->widget(DatePicker::class, [
-                    'name' => 'date',
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'format' => 'yyyy-mm-dd'
-                    ]
-                ]) ?>
-            </div>
+    <?php $form = ActiveForm::begin([
+        'id' => $model->formName(),
+        'enableAjaxValidation' => false,
+    ]); ?>
+    <div class="row">
+        <div class="col-sm-3">
+            <?= $form->field($model, 'date')->widget(DatePicker::class, [
+                'name' => 'date',
+                'pluginOptions' => [
+                    'autoclose' => true,
+                    'format' => 'yyyy-mm-dd'
+                ]
+            ]) ?>
         </div>
-        <div class="row">
-            <?php
+    </div>
+    <div class="row">
+        <?php
 
-            // if (YIi::$app->user->can('super-user')) {
+        // if (YIi::$app->user->can('super-user')) {
 
-            ?>
-            <div class="col-sm-3">
-                <?= $form->field($model, 'fk_requested_by_division')->widget(Select2::class, [
-                    'data' => $requested_by,
-                    'options' => ['placeholder' => 'Search for a Division ...'],
-                    // 'pluginOptions' => [
-                    //     'allowClear' => true,
-                    //     'minimumInputLength' => 1,
-                    //     'language' => [
-                    //         'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                    //     ],
-                    //     'ajax' => [
-                    //         'url' => Yii::$app->request->baseUrl . '?r=divisions/search-division',
-                    //         'dataType' => 'json',
-                    //         'delay' => 250,
-                    //         'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                    //         'cache' => true
-                    //     ],
-                    //     'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                    //     'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                    //     'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    // ],
+        ?>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'fk_requested_by_division')->widget(Select2::class, [
+                'data' => $requested_by,
+                'options' => ['placeholder' => 'Search for a Division ...'],
+                // 'pluginOptions' => [
+                //     'allowClear' => true,
+                //     'minimumInputLength' => 1,
+                //     'language' => [
+                //         'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                //     ],
+                //     'ajax' => [
+                //         'url' => Yii::$app->request->baseUrl . '?r=divisions/search-division',
+                //         'dataType' => 'json',
+                //         'delay' => 250,
+                //         'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                //         'cache' => true
+                //     ],
+                //     'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                //     'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                //     'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                // ],
 
-                ]) ?>
-            </div>
-            <?php
-            // }
-            ?>
-            <div class="col-sm-3">
+            ]) ?>
+        </div>
+        <?php
+        // }
+        ?>
+        <div class="col-sm-3">
 
 
-                <?= $form->field($model, 'fk_chairperson')->widget(Select2::class, [
-                    'data' => $chairperson,
-                    'options' => ['placeholder' => 'Search for a Employee ...'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+            <?= $form->field($model, 'fk_chairperson')->widget(Select2::class, [
+                'data' => $chairperson,
+                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
                     ],
-
-                ]) ?>
-
-            </div>
-            <div class="col-sm-3">
-                <?= $form->field($model, 'fk_inspector')->widget(Select2::class, [
-                    'data' => $inspector,
-                    'options' => ['placeholder' => 'Search for a Employee ...'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                        'cache' => true
                     ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
 
-                ]) ?>
-            </div>
-            <div class="col-sm-3">
-                <?= $form->field($model, 'fk_property_unit')->widget(Select2::class, [
-                    'data' => $property_unit,
-                    'options' => ['placeholder' => 'Search for a Employee ...'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+            ]) ?>
+
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'fk_inspector')->widget(Select2::class, [
+                'data' => $inspector,
+                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
                     ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
 
-                ]) ?>
+            ]) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'fk_property_unit')->widget(Select2::class, [
+                'data' => $property_unit,
+                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
 
-            </div>
+            ]) ?>
+
         </div>
 
         <table id="entry_table">
@@ -187,10 +197,16 @@ if (!Yii::$app->user->can('super-user')) {
                         Project Name
                     </th>
                     <th>
-                        Po Date
+                        Stock Name
+                    </th>
+                    <th>
+                        Specification
                     </th>
                     <th>
                         Payee
+                    </th>
+                    <th>
+                        Quantity
                     </th>
                     <th>
                         Division
@@ -198,42 +214,65 @@ if (!Yii::$app->user->can('super-user')) {
                     <th>
                         Unit
                     </th>
+                    <th>
+                        Quantity
+                    </th>
+                    <th>
+                        From Date
+                    </th>
+                    <th>
+                        To Date
+                    </th>
 
                 </tr>
             </thead>
             <tbody>
                 <?php
 
+
                 if (!empty($items)) {
                     foreach ($items as $val) {
                         echo "<tr>
                                 <td style='display:none'><input class='item_id' value='{$val['id']}' name='item_id[$entry_row]'/></td>
+                               <td style='display:none'><input class='po_aoq_item_id' value='{$val['po_aoq_item_id']}' name='purchase_order_id[$entry_row]'/></td>
+                                <td>
+                                    <span class='activity' >{$val['po_number']}</span>
+                                </td>
+                                <td>
+                                    <span class='activity' >{$val['project_title']}</span>
+                                </td>
+                                <td>
+                                    <span class='activity' >{$val['stock_title']}</span>
+                                </td>
+                                <td>
+                                    <span class='activity' >{$val['specification']}</span>
+                                </td>
+                                <td>
+                                    <span class='activity' >{$val['payee']}</span>
+                                </td>
+                                <td>
+                                    <span class='activity' >{$val['quantity']}</span>
+                                </td>
+                                <td>
+                                    <span class='activity' >{$val['division']}</span>
+                                </td>
+                                <td>
+                                    <span class='activity' >{$val['unit']}</span>
+                                </td>
+                                <td>
+                                <input value='{$val['quantity']}'  class='quantity form-control' type='text' name='quantity[$entry_row]'/>
+                                </td>
+                                <td>
+                                 <input   name='date_from[$entry_row]' class='date_from form-control' type='date'  value='{$val['date_from']}' required />
+                                </td>
+                                <td>
+                                <input name='date_to[$entry_row]'  class='date_to form-control' type='date'  value='{$val['date_to']}' required/>
+                                </td>
                             
-                               <td style='display:none'><input class='item_id' value='{$val['po_id']}' name='purchase_order_id[$entry_row]'/></td>
-                            
-                            <td>
-                                <span class='activity' >{$val['po_number']}</span>
-                            </td>
-                            
-                            <td>
-                                <span class='activity' >{$val['project_name']}</span>
-                            </td>
-                            <td>
-                                 <span >{$val['po_date']}</span>
-                            </td>
-                            <td>
-                                 <span >{$val['payee']}</span>
-                            </td>
-                            <td>
-                                 <span >{$val['division']}</span>
-                            </td>
-                            <td>
-                                 <span >{$val['unit']}</span>
-                            </td>
-                            <td style='float:left;'>
-                                <a class='add_row btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
-                                <a class='remove btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
-                            </td>
+                                <td style='float:left;'>
+                                    <a class='add_row btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
+                                    <a class='remove btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                                </td>
                         </tr>";
                         $entry_row++;
                     }
@@ -280,15 +319,42 @@ if (!Yii::$app->user->can('super-user')) {
                 'format' => 'raw',
                 'hidden' => true,
                 'value' => function ($model) {
-                    return "<input value='{$model->id}'  class='po_id' type='hidden'/>";
+                    return "<input value='{$model->po_aoq_item_id}'  class='po_id' type='hidden'/>";
                 }
             ],
             'po_number',
-            'project_name',
-            'po_date',
+            'project_title',
+            'stock_title',
+            'specification',
             'payee',
+            'quantity',
             'division',
             'unit',
+            [
+                'label' => 'Action',
+                'format' => 'raw',
+                'hidden' => true,
+                'value' => function ($model) {
+                    return "<input value='{$model->quantity}'  class='quantity form-control' type='hidden'/>";
+                }
+            ],
+            [
+                'label' => 'Action',
+                'format' => 'raw',
+                'hidden' => true,
+                'value' => function ($model) {
+                    return "<input   class='date_from form-control' type='date'/>";
+                }
+            ],
+            [
+                'label' => 'Action',
+                'format' => 'raw',
+                'hidden' => true,
+                'value' => function ($model) {
+                    return "<input  class='date_to form-control' type='date'/>";
+                }
+            ],
+
         ],
     ]); ?>
 
@@ -324,9 +390,24 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
     let entry_row = <?= $entry_row ?>;
     $(document).ready(function() {
         $('.add').on('click', function() {
-            console.log('click')
             const source = $(this).closest('tr')
             const clone = source.clone()
+            clone.find('.quantity').attr('type', 'text')
+            clone.find('.quantity').parent().attr('class', '')
+            clone.find('.quantity').attr('name', `quantity[${entry_row}]`)
+
+            clone.find('.date_from').parent().attr('class', '')
+            clone.find('.date_from').prop('required', true)
+            clone.find('.date_from').attr('name', `date_from[${entry_row}]`)
+
+
+            clone.find('.date_to').parent().attr('class', '')
+            clone.find('.date_to').prop('required', true)
+            clone.find('.date_to').attr('name', `date_to[${entry_row}]`)
+
+
+
+
             clone.find('.add').parent().remove()
             clone.find('.po_id').attr('name', `purchase_order_id[${entry_row}]`)
             clone.append(` <td style='float:left;'>
@@ -370,6 +451,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
             clone.find('.purchase-order').val('')
             clone.find('.activity_title').text('')
             clone.find('.po_date').text('')
+
+            clone.find('.po_date').text('')
             clone.find('.item_id').remove()
             clone.find('.purchase-order').attr('name', `purchase_order_id[${entry_row}]`)
             $('#entry_table tbody').append(clone)
@@ -383,47 +466,34 @@ SweetAlertAsset::register($this);
 
 $script = <<< JS
 
-    // $('#RequestForInspection').on('beforeSubmit',function(e){
-    //     e.preventDefault()
-    //     console.log('qwe')
-    //     // return false;
-    //     var \$form = $(this);
-    //     if (\$form.find('.has-error').length) 
-    //         {
-    //             return false;
-    //         }
-    //     $.post(
-    //         \$form.attr("action"),
-    //         \$form.serialize()
-    //     )
-    //     .done(function(result){
-    //         const res = JSON.parse(result)
-    //         if (res.isSuccess){
-    //             swal( {
-    //                 icon: 'success',
-    //                 title: "Successfuly Added",
-    //                 type: "success",
-    //                 timer:3000,
-    //                 closeOnConfirm: false,
-    //                 closeOnCancel: false
-    //             },function(){
-    //                 window.location.href = window.location.pathname + "?r=transaction"
-    //             })
-    //         }else{
-    //             swal( {
-    //                 icon: 'error',
-    //                 title:'Error',
-    //                 text: res.error,
-    //                 type: "error",
-    //                 timer:10000,
-    //                 closeOnConfirm: false,
-    //                 closeOnCancel: false
-    //             })
-    //         }
-    //     })
+    $('#RequestForInspection').on('beforeSubmit',function(e){
+        e.preventDefault()
+        var \$form = $(this);
+        if (\$form.find('.has-error').length) 
+            {
+                return false;
+            }
+        $.ajax({
+            type:'POST',
+            url:\$form.attr("action"),
+            data: \$form.serialize(),
+            success:function(data){
+                const res  =JSON.parse(data)
+                 if (!res.isSuccess){
+                    swal( {
+                        icon: 'error',
+                        title: res.error_message,
+                        type: "error",
+                        timer:3000,
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    })
+                }
+            },
 
-      
-    // })       
+        })
+        return false;
+    })       
 
 JS;
 $this->registerJs($script);

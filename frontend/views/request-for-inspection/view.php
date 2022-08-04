@@ -122,18 +122,33 @@ if (!empty($model->fk_requested_by_division)) {
             <tr>
                 <th class="center">PO No.</th>
                 <th class="center">Name of Activity</th>
-                <th class="center">Location</th>
-                <th class="center">Date</th>
+                <th class="center">Payee</th>
+                <th class="center">Description</th>
+                <th class="center">Quantity</th>
+                <th class="center">From Date</th>
+                <th class="center">To Date</th>
             </tr>
             <?php
             if (!empty($purchase_orders)) {
 
                 foreach ($purchase_orders as $val) {
+
+                    $from_date = DateTime::createFromFormat('Y-m-d', $val['date_from'])->format('F d, Y');
+                    $to_date = DateTime::createFromFormat('Y-m-d', $val['date_to'])->format('F d, Y');
                     echo "<tr>
-                            <td class='center'>{$val['po_number']}</td>
-                            <td class='center'>{$val['project_name']}</td>
-                            <td class='center'>{$val['place_of_delivery']}</td>
-                            <td class='center'>{$val['po_date']}</td>
+                            <td class='center v-align-top' >{$val['po_number']}</td>
+                            <td class='center'>{$val['project_title']}</td>
+                            <td class='center'>{$val['payee']}</td>
+                            <td class='center'>
+                            
+                            <span class='bold'>{$val['stock_title']}</span>
+                            <br>
+                            {$val['specification']}
+                            </td>
+                            <td class='center'>{$val['quantity']}</td>
+                            <td class='center'>{$from_date}</td>
+                            <td class='center'>{$to_date}</td>
+                         
                         </tr>";
                 }
             }
@@ -174,9 +189,10 @@ if (!empty($model->fk_requested_by_division)) {
     </div>
 </div>
 <style>
-    .container{
+    .container {
         background-color: white;
     }
+
     th,
     td {
 

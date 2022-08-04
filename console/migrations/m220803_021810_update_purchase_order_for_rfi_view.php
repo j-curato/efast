@@ -12,40 +12,44 @@ class m220803_021810_update_purchase_order_for_rfi_view extends Migration
      */
     public function safeUp()
     {
-        $sql = <<<SQL
-        DROP VIEW IF EXISTS purchase_orders_for_rfi ;
-        CREATE VIEW purchase_orders_for_rfi as 
+        $sql = <<< SQL
+            DROP VIEW IF EXISTS purchase_orders_for_rfi ;
+            CREATE VIEW purchase_orders_for_rfi as 
             SELECT 
-            pr_purchase_order_item.id,
-            pr_purchase_order_item.serial_number as po_number,
-            pr_project_procurement.title as project_name,
-            pr_purchase_order.po_date,
-            payee.account_name as payee,
-            pr_office.division,
-            pr_office.unit
-            FROM pr_purchase_order_item
-            LEFT JOIN pr_purchase_order ON pr_purchase_order_item.fk_pr_purchase_order_id = pr_purchase_order.id
-            LEFT JOIN pr_aoq ON pr_purchase_order.fk_pr_aoq_id = pr_aoq.id
-            LEFT JOIN pr_rfq ON pr_aoq.pr_rfq_id = pr_rfq.id
-            LEFT JOIN pr_purchase_request ON pr_rfq.pr_purchase_request_id = pr_purchase_request.id
-            LEFT JOIN pr_project_procurement ON pr_purchase_request.pr_project_procurement_id = pr_project_procurement.id
-            LEFT JOIN (SELECT
-                pr_purchase_order_items_aoq_items.fk_purchase_order_item_id,
-                pr_aoq_entries.payee_id
-                FROM pr_purchase_order_items_aoq_items
-                LEFT JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
+                pr_purchase_order_items_aoq_items.id as po_aoq_item_id,
+                pr_purchase_order_item.serial_number as po_number,
+                pr_project_procurement.title as project_title,
 
-                GROUP BY 
-                pr_purchase_order_items_aoq_items.fk_purchase_order_item_id,
-                pr_aoq_entries.payee_id
-                ) as po_aoq_items ON pr_purchase_order_item.id  = po_aoq_items.fk_purchase_order_item_id
+                requested_by.employee_name as pr_requested_by,
 
-    
-            LEFT JOIN payee ON po_aoq_items.payee_id = payee.id
-            LEFT JOIN pr_office ON pr_project_procurement.pr_office_id = pr_office.id
-            WHERE 
-            NOT EXISTS (SELECT id FROM request_for_inspection_items WHERE  request_for_inspection_items.is_deleted !=1 AND  request_for_inspection_items.fk_purchase_order_item_id = pr_purchase_order_item.id )
-            ORDER BY pr_office.division 
+                pr_purchase_request.purpose,
+                pr_stock.stock_title,
+                REPLACE(pr_purchase_request_item.specification,'[n]',' ') as specification,
+                unit_of_measure.unit_of_measure,
+                pr_purchase_request_item.quantity - IFNULL(aoq_items_quantity.quantity,0) as quantity,
+                pr_purchase_request_item.unit_cost,
+                payee.account_name as payee,
+                    pr_office.division,
+                pr_office.unit
+
+                FROM pr_project_procurement 
+                INNER JOIN pr_purchase_request ON pr_project_procurement.id = pr_purchase_request.pr_project_procurement_id
+                INNER JOIN pr_purchase_request_item ON pr_purchase_request.id = pr_purchase_request_item.pr_purchase_request_id
+                INNER JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+                INNER JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
+                INNER JOIN pr_rfq_item ON pr_purchase_request_item.id = pr_rfq_item.pr_purchase_request_item_id
+                INNER JOIN pr_aoq_entries ON pr_rfq_item.id = pr_aoq_entries.pr_rfq_item_id
+                INNER JOIN payee ON pr_aoq_entries.payee_id = payee.id
+                INNER JOIN pr_aoq ON pr_aoq_entries.pr_aoq_id = pr_aoq.id
+                INNER JOIN pr_purchase_order_items_aoq_items ON pr_aoq_entries.id = pr_purchase_order_items_aoq_items.fk_aoq_entries_id
+                INNER JOIN pr_purchase_order_item ON pr_purchase_order_items_aoq_items.fk_purchase_order_item_id = pr_purchase_order_item.id
+                LEFT JOIN employee_search_view as requested_by ON pr_purchase_request.requested_by_id = requested_by.employee_id
+                LEFT JOIN pr_office ON pr_project_procurement.pr_office_id = pr_office.id
+                LEFT JOIN (SELECT 
+                request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id,
+                SUM(request_for_inspection_items.quantity) as quantity
+                FROM request_for_inspection_items GROUP BY request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id) as aoq_items_quantity ON pr_purchase_order_items_aoq_items.id = aoq_items_quantity.fk_pr_purchase_order_items_aoq_item_id
+                WHERE pr_aoq_entries.is_lowest = 1;
         SQL;
         $this->execute($sql);
     }
@@ -55,9 +59,6 @@ class m220803_021810_update_purchase_order_for_rfi_view extends Migration
      */
     public function safeDown()
     {
-        echo "m220803_021810_update_purchase_order_for_rfi_view cannot be reverted.\n";
-
-        return false;
     }
 
     /*
