@@ -206,7 +206,7 @@ if (!Yii::$app->user->can('super-user')) {
                         Payee
                     </th>
                     <th>
-                        Quantity
+                        Balance Quantity
                     </th>
                     <th>
                         Division
@@ -215,7 +215,7 @@ if (!Yii::$app->user->can('super-user')) {
                         Unit
                     </th>
                     <th>
-                       Balance Quantity
+                        Quantity
                     </th>
                     <th>
                         From Date
