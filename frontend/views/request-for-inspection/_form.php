@@ -250,7 +250,7 @@ if (!Yii::$app->user->can('super-user')) {
                                 <td>
                                     <span class='activity' >{$val['payee']}</span>
                                 </td>
-                                <td>
+                                <td class='center'>
                                     <span class='activity' >{$val['balance_quantity']}</span>
                                 </td>
                                 <td>
@@ -364,6 +364,10 @@ if (!Yii::$app->user->can('super-user')) {
 
 </div>
 <style>
+    .center {
+        text-align: center;
+    }
+
     .grid-view td {
         white-space: normal;
         width: 5rem;
