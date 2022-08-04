@@ -238,13 +238,13 @@ if (!Yii::$app->user->can('super-user')) {
                                 <td>
                                     <span class='activity' >{$val['po_number']}</span>
                                 </td>
-                                <td>
+                                <td class='limit-width'>
                                     <span class='activity' >{$val['project_title']}</span>
                                 </td>
-                                <td>
+                                <td class='limit-width'>
                                     <span class='activity' >{$val['stock_title']}</span>
                                 </td>
-                                <td>
+                                <td class='limit-width'>
                                     <span class='activity' >{$val['specification']}</span>
                                 </td>
                                 <td>
@@ -391,6 +391,10 @@ if (!Yii::$app->user->can('super-user')) {
     td,
     th {
         padding: 5px;
+    }
+
+    .limit-width {
+        max-width: 8rem;
     }
 </style>
 <?php
