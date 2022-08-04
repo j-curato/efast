@@ -78,7 +78,18 @@ class PurchaseOrdersForRfiSearch extends PurchaseOrdersForRfi
             ->andFilterWhere(['like', 'project_title', $this->project_title])
             ->andFilterWhere(['like', 'payee', $this->payee])
             ->andFilterWhere(['like', 'unit', $this->unit])
-            ->andFilterWhere(['like', 'division', $this->division]);
+            ->andFilterWhere(['like', 'division', $this->division])
+            ->andFilterWhere(['like', 'project_title', $this->division])
+            ->andFilterWhere(['like', 'pr_requested_by', $this->division])
+            ->andFilterWhere(['like', 'purpose', $this->division])
+            ->andFilterWhere(['like', 'stock_title', $this->division])
+            ->andFilterWhere(['like', 'specification', $this->division])
+            ->andFilterWhere(['like', 'unit_of_measure', $this->division])
+            ->andFilterWhere(['like', 'quantity', $this->division])
+            ->andFilterWhere(['like', 'unit_cost', $this->division])
+            ->andFilterWhere(['like', 'unit_cost', $this->division])
+            
+            ;
 
         return $dataProvider;
     }
