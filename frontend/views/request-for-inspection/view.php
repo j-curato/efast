@@ -57,14 +57,14 @@ if (!empty($model->fk_requested_by_division)) {
     <div class="container">
         <table>
             <tr>
-                <th colspan="4" class="center">
+                <th colspan="7" class="center">
                     FOR INSPECTION AND ACCEPTANCE
                     <hr>
 
                 </th>
             </tr>
             <tr>
-                <td colspan="3"></td>
+                <td colspan="6"></td>
                 <td>
                     <br>
 
@@ -78,21 +78,21 @@ if (!empty($model->fk_requested_by_division)) {
                 </td>
             </tr>
             <tr>
-                <td colspan="3"></td>
+                <td colspan="6"></td>
                 <td>
                     <span>No.:</span>
                     <?= $model->rfi_number ?>
                 </td>
             </tr>
             <tr>
-                <th colspan="4" class="center">REQUEST FOR INSPECTION
+                <th colspan="7" class="center">REQUEST FOR INSPECTION
                     <br>
                     <br>
 
                 </th>
             </tr>
             <tr>
-                <td colspan="4">
+                <td colspan="7">
 
                     <span style="font-weight: bold;"><?= $chairperson['employee_name'] ?></span>
                     <br>
@@ -110,10 +110,10 @@ if (!empty($model->fk_requested_by_division)) {
                     <br>
 
                 </td>
-                <td colspan="3"></td>
+                <td colspan="6"></td>
             </tr>
             <tr>
-                <td colspan="4">
+                <td colspan="7">
                     <span>This is to request inspection for the following:</span>
                     <br>
                     <br>
@@ -154,10 +154,10 @@ if (!empty($model->fk_requested_by_division)) {
             }
             ?>
             <tr>
-                <td colspan="4"><br><br>Requested By</td>
+                <td colspan="7"><br><br>Requested By</td>
             </tr>
             <tr>
-                <td colspan="2" class="center">
+                <td colspan="5" class="center">
                     <br>
                     <br>
                     <br>
@@ -175,7 +175,7 @@ if (!empty($model->fk_requested_by_division)) {
                 </td>
             </tr>
             <tr>
-                <td colspan="2"></td>
+                <td colspan="5"></td>
                 <td colspan="2" class="center">
                     <br>
                     <br>
@@ -195,7 +195,6 @@ if (!empty($model->fk_requested_by_division)) {
 
     th,
     td {
-
         padding: 5px;
     }
 
