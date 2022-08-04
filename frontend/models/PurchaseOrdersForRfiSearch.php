@@ -79,17 +79,14 @@ class PurchaseOrdersForRfiSearch extends PurchaseOrdersForRfi
             ->andFilterWhere(['like', 'payee', $this->payee])
             ->andFilterWhere(['like', 'unit', $this->unit])
             ->andFilterWhere(['like', 'division', $this->division])
-            ->andFilterWhere(['like', 'project_title', $this->division])
-            ->andFilterWhere(['like', 'pr_requested_by', $this->division])
-            ->andFilterWhere(['like', 'purpose', $this->division])
-            ->andFilterWhere(['like', 'stock_title', $this->division])
-            ->andFilterWhere(['like', 'specification', $this->division])
-            ->andFilterWhere(['like', 'unit_of_measure', $this->division])
-            ->andFilterWhere(['like', 'quantity', $this->division])
-            ->andFilterWhere(['like', 'unit_cost', $this->division])
-            ->andFilterWhere(['like', 'unit_cost', $this->division])
-            
-            ;
+            ->andFilterWhere(['like', 'project_title', $this->project_title])
+            ->andFilterWhere(['like', 'pr_requested_by', $this->pr_requested_by])
+            ->andFilterWhere(['like', 'purpose', $this->purpose])
+            ->andFilterWhere(['like', 'stock_title', $this->stock_title])
+            ->andFilterWhere(['like', 'specification', $this->specification])
+            ->andFilterWhere(['like', 'unit_of_measure', $this->unit_of_measure])
+            ->andFilterWhere(['like', 'quantity', $this->quantity])
+            ->andFilterWhere(['like', 'unit_cost', $this->unit_cost]);
 
         return $dataProvider;
     }
