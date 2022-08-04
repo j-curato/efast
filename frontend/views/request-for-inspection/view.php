@@ -123,7 +123,7 @@ if (!empty($model->fk_requested_by_division)) {
                 <th class="center">PO No.</th>
                 <th class="center">Name of Activity</th>
                 <th class="center">Payee</th>
-                <th class="center">Description</th>
+                <th>Description</th>
                 <th class="center">Quantity</th>
                 <th class="center">From Date</th>
                 <th class="center">To Date</th>
