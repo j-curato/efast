@@ -139,8 +139,7 @@ if (!empty($model->fk_requested_by_division)) {
                             <td class='center v-align-top' >{$val['po_number']}</td>
                             <td class='center'>{$val['project_title']}</td>
                             <td class='center'>{$val['payee']}</td>
-                            <td class='center'>
-                            
+                            <td >
                             <span class='bold'>{$val['stock_title']}</span>
                             <br>
                             {$val['specification']}
