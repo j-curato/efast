@@ -66,7 +66,6 @@ if (!empty($model->fk_requested_by_division)) {
             <tr>
                 <td colspan="6"></td>
                 <td>
-                    <br>
 
                     <span> Date:</span>
                     <?php
@@ -218,6 +217,11 @@ if (!empty($model->fk_requested_by_division)) {
 
         .main-footer {
             display: none;
+        }
+
+        th,
+        td {
+            padding: 3px;
         }
     }
 </style>
