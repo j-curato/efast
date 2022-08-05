@@ -203,10 +203,16 @@ if (!Yii::$app->user->can('super-user')) {
                         Specification
                     </th>
                     <th>
+                        Unit of Measure
+                    </th>
+                    <th>
                         Payee
                     </th>
                     <th>
                         Balance Quantity
+                    </th>
+                    <th>
+                        Unit Cost
                     </th>
                     <th>
                         Division
@@ -247,11 +253,17 @@ if (!Yii::$app->user->can('super-user')) {
                                 <td class='limit-width'>
                                     <span class='activity' >{$val['specification']}</span>
                                 </td>
+                                <td class='limit-width'>
+                                    <span class='activity' >{$val['unit_of_measure']}</span>
+                                </td>
                                 <td>
                                     <span class='activity' >{$val['payee']}</span>
                                 </td>
                                 <td class='center'>
                                     <span class='activity' >{$val['balance_quantity']}</span>
+                                </td>
+                                <td class='center'>
+                                    <span class='activity' >{$val['unit_cost']}</span>
                                 </td>
                                 <td>
                                     <span class='activity' >{$val['division']}</span>
@@ -311,7 +323,7 @@ if (!Yii::$app->user->can('super-user')) {
                 'label' => 'Action',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return Button::widget(['label' => '+', 'options' => ['class' => 'add btn-xs btn-primary']]);
+                    return Button::widget(['label' => '+', 'options' => ['class' => 'add btn-xs btn-primary', 'onClick' => 'add(this)']]);
                 }
             ],
             [
@@ -326,8 +338,10 @@ if (!Yii::$app->user->can('super-user')) {
             'project_title',
             'stock_title',
             'specification',
+            'unit_of_measure',
             'payee',
             'quantity',
+            'unit_cost',
             'division',
             'unit',
             [
@@ -402,36 +416,65 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
 ?>
 <script>
     let entry_row = <?= $entry_row ?>;
-    $(document).ready(function() {
-        $('.add').on('click', function() {
-            const source = $(this).closest('tr')
-            const clone = source.clone()
-            clone.find('.quantity').attr('type', 'text')
-            clone.find('.quantity').parent().attr('class', '')
-            clone.find('.quantity').attr('name', `quantity[${entry_row}]`)
 
-            clone.find('.date_from').parent().attr('class', '')
-            clone.find('.date_from').prop('required', true)
-            clone.find('.date_from').attr('name', `date_from[${entry_row}]`)
+    function add(row) {
+        const source = $(row).closest('tr')
+        const clone = source.clone()
+        clone.find('.quantity').attr('type', 'text')
+        clone.find('.quantity').parent().attr('class', '')
+        clone.find('.quantity').attr('name', `quantity[${entry_row}]`)
 
-
-            clone.find('.date_to').parent().attr('class', '')
-            clone.find('.date_to').prop('required', true)
-            clone.find('.date_to').attr('name', `date_to[${entry_row}]`)
+        clone.find('.date_from').parent().attr('class', '')
+        clone.find('.date_from').prop('required', true)
+        clone.find('.date_from').attr('name', `date_from[${entry_row}]`)
 
 
+        clone.find('.date_to').parent().attr('class', '')
+        clone.find('.date_to').prop('required', true)
+        clone.find('.date_to').attr('name', `date_to[${entry_row}]`)
 
 
-            clone.find('.add').parent().remove()
-            clone.find('.po_id').attr('name', `purchase_order_id[${entry_row}]`)
-            clone.append(` <td style='float:left;'>
+
+
+        clone.find('.add').parent().remove()
+        clone.find('.po_id').attr('name', `purchase_order_id[${entry_row}]`)
+        clone.append(` <td style='float:left;'>
                             <a class='add_row btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
                             <a class='remove btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
                         </td>`)
-            $('#entry_table tbody').append(clone)
-            entry_row++
+        $('#entry_table tbody').append(clone)
+        entry_row++
+    }
+    $(document).ready(function() {
+        // $('.add').on('click', function() {
+        //     const source = $(this).closest('tr')
+        //     const clone = source.clone()
+        //     clone.find('.quantity').attr('type', 'text')
+        //     clone.find('.quantity').parent().attr('class', '')
+        //     clone.find('.quantity').attr('name', `quantity[${entry_row}]`)
 
-        })
+        //     clone.find('.date_from').parent().attr('class', '')
+        //     clone.find('.date_from').prop('required', true)
+        //     clone.find('.date_from').attr('name', `date_from[${entry_row}]`)
+
+
+        //     clone.find('.date_to').parent().attr('class', '')
+        //     clone.find('.date_to').prop('required', true)
+        //     clone.find('.date_to').attr('name', `date_to[${entry_row}]`)
+
+
+
+
+        //     clone.find('.add').parent().remove()
+        //     clone.find('.po_id').attr('name', `purchase_order_id[${entry_row}]`)
+        //     clone.append(` <td style='float:left;'>
+        //                     <a class='add_row btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
+        //                     <a class='remove btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+        //                 </td>`)
+        //     $('#entry_table tbody').append(clone)
+        //     entry_row++
+
+        // })
         rfiPurchaseOrderSelect()
         $('#entry_table').on('click', '.remove', function(event) {
             event.preventDefault();

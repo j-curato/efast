@@ -1,5 +1,6 @@
 <?php
 
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 
@@ -38,19 +39,31 @@ if (!empty($model->fk_requested_by_division)) {
         ->bindValue(':id', $model->fk_requested_by_division)
         ->queryOne();
 }
+// $query = Yii::$app->db->createCommand("SELECT 
+// request_for_inspection_items.id as rfi_item_id,
+// pr_purchase_order_items_aoq_items.fk_purchase_order_item_id as po_id,
+// CONCAT(request_for_inspection_items.`from`,'-',request_for_inspection_items.`to`) as inspection_date
+//  FROM `request_for_inspection_items`
+// INNER JOIN pr_purchase_order_items_aoq_items ON request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id = pr_purchase_order_items_aoq_items.id
+// WHERE 
+// request_for_inspection_items.fk_request_for_inspection_id = :id
+// ")
+//     ->bindValue(':id', $model->id)
+//     ->queryAll();
+
+// $res = ArrayHelper::index($query, null, [function ($element) {
+//     return $element['po_id'];
+// }, 'inspection_date']);
+// echo count($res);
+// echo '<br>';
+// var_dump($res);
 ?>
 <div class="request-for-inspection-view">
 
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
+        
     </p>
 
 
@@ -222,6 +235,10 @@ if (!empty($model->fk_requested_by_division)) {
         th,
         td {
             padding: 3px;
+        }
+
+        .link {
+            display: none;
         }
     }
 </style>
