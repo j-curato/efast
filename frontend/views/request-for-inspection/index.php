@@ -35,8 +35,18 @@ $this->params['breadcrumbs'][] = $this->title;
             'fk_chairperson',
             'fk_inspector',
             //'fk_property_unit',
+            [
+                'label' => 'Action',
+                'format' => 'raw',
 
-            ['class' => 'yii\grid\ActionColumn'],
+                'value' => function ($model) {
+                    $btns = Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id], []);
+                    if (!$model->is_final) {
+                        $btns .= ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], []);
+                    }
+                    return  $btns;
+                }
+            ],
         ],
     ]); ?>
 

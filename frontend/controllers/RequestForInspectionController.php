@@ -2,6 +2,8 @@
 
 namespace frontend\controllers;
 
+use app\models\InspectionReport;
+use app\models\InspectionReportItems;
 use app\models\PurchaseOrdersForRfiSearch;
 use Yii;
 use app\models\RequestForInspection;
@@ -17,6 +19,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\web\Response;
 
@@ -28,6 +31,7 @@ class RequestForInspectionController extends Controller
     /**
      * {@inheritdoc}
      */
+
     public function behaviors()
     {
         return [
@@ -38,7 +42,7 @@ class RequestForInspectionController extends Controller
                     'index',
                     'create',
                     'update',
-                    'delete',
+                    'final',
                 ],
                 'rules' => [
                     [
@@ -47,7 +51,7 @@ class RequestForInspectionController extends Controller
                             'index',
                             'create',
                             'update',
-                            'delete',
+                            'final',
                         ],
                         'allow' => true,
                         'roles' => ['request-for-inspection']
@@ -84,11 +88,33 @@ class RequestForInspectionController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
+    public function irLinks($id)
+    {
+
+        return  YIi::$app->db->createCommand("SELECT 
+
+        inspection_report.id,
+        inspection_report.ir_number
+        FROM request_for_inspection
+        INNER JOIN request_for_inspection_items ON request_for_inspection.id = request_for_inspection_items.fk_request_for_inspection_id
+        INNER JOIN inspection_report_items ON request_for_inspection_items.id = inspection_report_items.fk_request_for_inspection_item_id
+        INNER JOIN inspection_report ON inspection_report_items.fk_inspection_report_id = inspection_report.id
+        WHERE 
+        request_for_inspection.id = :id
+        GROUP BY 
+        inspection_report.id,
+        inspection_report.ir_number
+
+        ")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
     public function actionView($id)
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
-            'purchase_orders' => $this->poDetails($id)
+            'purchase_orders' => $this->poDetails($id),
+            'ir_links' => $this->irLinks($id)
         ]);
     }
     public function poDetails($id)
@@ -108,7 +134,10 @@ class RequestForInspectionController extends Controller
                 pr_project_procurement.title as project_title,
                 pr_office.division,
                 pr_office.unit,
-                pr_purchase_request_item.quantity - IFNULL(aoq_items_quantity.quantity,0) as balance_quantity
+                pr_purchase_request_item.quantity - IFNULL(aoq_items_quantity.quantity,0) as balance_quantity,
+                unit_of_measure.unit_of_measure,
+                pr_aoq_entries.amount as unit_cost
+               
         FROM 
         request_for_inspection_items						
         INNER JOIN pr_purchase_order_items_aoq_items ON request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id = pr_purchase_order_items_aoq_items.id
@@ -121,6 +150,8 @@ class RequestForInspectionController extends Controller
         LEFT JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
         LEFT JOIN pr_project_procurement ON pr_purchase_request.pr_project_procurement_id = pr_project_procurement.id
         LEFT JOIN pr_office ON pr_project_procurement.pr_office_id = pr_office.id
+        LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
+    
         LEFT JOIN (SELECT 
             request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id,
             SUM(request_for_inspection_items.quantity) as quantity
@@ -148,9 +179,7 @@ class RequestForInspectionController extends Controller
             try {
                 $i = 1;
                 foreach ($po_ids as $index => $val) {
-
                     if (!empty($item_ids[$index])) {
-
                         $item = RequestForInspectionItems::findOne($item_ids[$index]);
                         if (!empty($quantity[$index])) {
                             $q = YIi::$app->db->createCommand("SELECT 
@@ -213,11 +242,15 @@ class RequestForInspectionController extends Controller
                     $item->quantity = !empty($quantity[$index]) ? $quantity[$index] : 0;
                     $item->from = !empty($date_from[$index]) ?  $date_from[$index] : null;
                     $item->to = !empty($date_to[$index]) ?  $date_to[$index] : null;
+                    $new_record = $item->isNewRecord;
                     if ($item->validate()) {
 
                         if ($item->save(false)) {
                             // echo $item->fk_purchase_order_item_id;
                             // echo '<br>';
+                            if ($new_record) {
+                                // $this->insertInspectionReport($item->id);
+                            }
                         }
                     } else {
                         return $item->errors;
@@ -229,6 +262,56 @@ class RequestForInspectionController extends Controller
                 return $e->getMessage();
             }
         }
+        return ['isSuccess' => true];
+    }
+    public function insertInspectionReport($rfi_id)
+    {
+        $query = Yii::$app->db->createCommand("SELECT 
+        request_for_inspection_items.id as rfi_item_id,
+        pr_purchase_order_items_aoq_items.fk_purchase_order_item_id as po_id,
+        CONCAT(request_for_inspection_items.`from`,'-',request_for_inspection_items.`to`) as inspection_date
+         FROM `request_for_inspection_items`
+        INNER JOIN pr_purchase_order_items_aoq_items ON request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id = pr_purchase_order_items_aoq_items.id
+        WHERE 
+        request_for_inspection_items.fk_request_for_inspection_id = :id
+        ")
+            ->bindValue(':id', $rfi_id)
+            ->queryAll();
+
+        $res = ArrayHelper::index($query, null, [function ($element) {
+            return $element['po_id'];
+        }, 'inspection_date']);
+        // var_dump($res);
+        // die();
+
+        try {
+            foreach ($res as $po_id_items) {
+
+                foreach ($po_id_items as $val) {
+
+                    $ir = new InspectionReport();
+                    $ir->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                    $ir->ir_number = YIi::$app->memem->irNumber();
+                    if ($ir->validate()) {
+                        if ($ir->save(false)) {
+                            foreach ($val  as $val2) {
+                                $ir_item = new InspectionReportItems();
+                                $ir_item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                                $ir_item->fk_inspection_report_id = $ir->id;
+                                $ir_item->fk_request_for_inspection_item_id = $val2['rfi_item_id'];
+                                if ($ir_item->save(false)) {
+                                }
+                            }
+                        }
+                    } else {
+                        return ['isSuccess' => false, 'error_message' => $ir->errors];
+                    }
+                }
+            }
+        } catch (ErrorException $e) {
+            return ['isSuccess' => false, 'error_message' => $e->getMessage()];
+        }
+
         return ['isSuccess' => true];
     }
     public function actionCreate()
@@ -266,8 +349,16 @@ class RequestForInspectionController extends Controller
                                 $date_to
                             );
                             if ($success['isSuccess']) {
+
+                                // $insert_ir = $this->insertInspectionReport($model->id, $model->rfi_number);
+                                // if ($insert_ir['isSuccess']) {
+
                                 $transaction->commit();
                                 return $this->redirect(['view', 'id' => $model->id]);
+                                // } else {
+                                //     $transaction->rollBack();
+                                //     return JSON::encode(array('isSuccess' => false, 'error_message' => $insert_ir['error_message']));
+                                // }
                             } else {
                                 $transaction->rollBack();
                                 return JSON::encode(array('isSuccess' => false, 'error_message' => $success['error_message']));
@@ -322,6 +413,9 @@ class RequestForInspectionController extends Controller
         // if (YIi::$app->request->isAjax){
         //     return 1;
         // }
+        if ($model->is_final) {
+            return $this->redirect(['index']);
+        }
         if ($model->load(Yii::$app->request->post())) {
             $po_ids = $_POST['purchase_order_id'];
             $date_from = $_POST['date_from'];
@@ -385,12 +479,17 @@ class RequestForInspectionController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    // public function actionDelete($id)
-    // {
-    //     $this->findModel($id)->delete();
+    public function actionFinal($id)
+    {
+        $model = $this->findModel($id);
+        $model->is_final = 1;
+        if ($model->save(false)) {
 
-    //     return $this->redirect(['index']);
-    // }
+            $this->insertInspectionReport($model->id);
+        }
+
+        return $this->redirect(['view', 'id' => $model->id]);
+    }
 
     /**
      * Finds the RequestForInspection model based on its primary key value.
