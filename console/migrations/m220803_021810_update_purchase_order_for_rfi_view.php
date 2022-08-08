@@ -27,7 +27,7 @@ class m220803_021810_update_purchase_order_for_rfi_view extends Migration
                 REPLACE(pr_purchase_request_item.specification,'[n]',' ') as specification,
                 unit_of_measure.unit_of_measure,
                 pr_purchase_request_item.quantity - IFNULL(aoq_items_quantity.quantity,0) as quantity,
-                pr_purchase_request_item.unit_cost,
+                pr_aoq_entries.amount as unit_cost,
                 payee.account_name as payee,
                     pr_office.division,
                 pr_office.unit
