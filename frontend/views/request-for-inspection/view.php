@@ -158,7 +158,7 @@ if (!empty($model->fk_requested_by_division)) {
                             {$val['specification']}
                             </td>
                             <td class='center'>{$val['quantity']}</td>
-                            <td class='center'>{$val['unit_cost']}</td>
+                            <td class='center'>" . number_format($val['unit_cost'], 2) . "</td>
                             <td class='center'>{$from_date}</td>
                             <td class='center'>{$to_date}</td>
                          
