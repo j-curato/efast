@@ -34,7 +34,7 @@ class RequestForInspection extends \yii\db\ActiveRecord
     {
         return [
             [['id', 'rfi_number', 'date', 'fk_requested_by_division'], 'required'],
-            [['id', 'fk_chairperson', 'fk_inspector', 'fk_property_unit', 'fk_requested_by_division'], 'integer'],
+            [['id', 'fk_chairperson', 'fk_inspector', 'fk_property_unit', 'fk_requested_by_division','is_final'], 'integer'],
             [['date', 'created_at'], 'safe'],
             [['rfi_number'], 'string', 'max' => 255],
             [['rfi_number'], 'unique'],
@@ -56,6 +56,7 @@ class RequestForInspection extends \yii\db\ActiveRecord
             'fk_property_unit' => 'Property Unit',
             'fk_requested_by_division' => 'Requested By Division',
             'created_at' => 'Created At',
+            'is_final'=>'Final'
 
 
         ];

@@ -60,7 +60,7 @@ class RequestForInspectionItems extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getFkRequestForInspection()
+    public function getRequestForInspection()
     {
         return $this->hasOne(RequestForInspection::class, ['id' => 'fk_request_for_inspection_id']);
     }
