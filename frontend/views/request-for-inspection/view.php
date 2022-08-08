@@ -137,6 +137,7 @@ if (!empty($model->fk_requested_by_division)) {
                 <th class="center">Payee</th>
                 <th>Description</th>
                 <th class="center">Quantity</th>
+                <th class="center">Unit Cost</th>
                 <th class="center">From Date</th>
                 <th class="center">To Date</th>
             </tr>
@@ -157,6 +158,7 @@ if (!empty($model->fk_requested_by_division)) {
                             {$val['specification']}
                             </td>
                             <td class='center'>{$val['quantity']}</td>
+                            <td class='center'>{$val['unit_cost']}</td>
                             <td class='center'>{$from_date}</td>
                             <td class='center'>{$to_date}</td>
                          
@@ -246,6 +248,7 @@ if (!empty($model->fk_requested_by_division)) {
 
     .center {
         text-align: center;
+        max-width: 10rem;
     }
 
     .bold {
@@ -264,7 +267,7 @@ if (!empty($model->fk_requested_by_division)) {
 
         th,
         td {
-            padding: 3px;
+            padding: 2px;
         }
 
         .link {
