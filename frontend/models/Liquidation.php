@@ -47,7 +47,7 @@ class Liquidation extends \yii\db\ActiveRecord
             [['check_range_id',], 'required', 'when' => function ($model) {
                 return strtotime($model->reporting_period) > strtotime('2021-10');
             }],
-            [['dv_number',], 'string', 'max' => 100],
+            [['dv_number', 'created_at'], 'string', 'max' => 100],
             [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::class, 'targetAttribute' => ['payee_id' => 'id']],
             [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
             [['po_transaction_id'], 'exist', 'skipOnError' => true, 'targetClass' => PoTransaction::class, 'targetAttribute' => ['po_transaction_id' => 'id']],
@@ -97,6 +97,7 @@ class Liquidation extends \yii\db\ActiveRecord
             'payee' => 'Payee',
             'check_range_id' => 'Check Range',
             'cancel_reporting_period' => 'Cancel Reporting Period',
+            'created_at' => 'Created At'
         ];
     }
 
