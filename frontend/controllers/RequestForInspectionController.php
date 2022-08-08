@@ -274,6 +274,7 @@ class RequestForInspectionController extends Controller
         INNER JOIN pr_purchase_order_items_aoq_items ON request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id = pr_purchase_order_items_aoq_items.id
         WHERE 
         request_for_inspection_items.fk_request_for_inspection_id = :id
+        AND request_for_inspection_items.is_deleted = 0
         ")
             ->bindValue(':id', $rfi_id)
             ->queryAll();
