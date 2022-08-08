@@ -93,7 +93,7 @@ if (!empty($signatories)) {
             <?php
             for ($i = 0; $i <= 4; $i++) {
                 echo "<tr>
-                <td colspan='2' style='padding-top: 12px;padding-bottom:0;padding-left:2rem;border-bottom:1px solid black;'>
+                <td colspan='2' style='padding-top: 16px;padding-bottom:0;padding-left:2rem;border-bottom:1px solid black;'>
                   
                 </td>
             </tr>";
