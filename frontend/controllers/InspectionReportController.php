@@ -61,7 +61,6 @@ class InspectionReportController extends Controller
     {
         $searchModel = new InspectionReportSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -78,33 +77,72 @@ class InspectionReportController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
-            'itemDetails' => $this->itemDetails($id)
+            'itemDetails' => $this->itemDetails($id),
+            'signatories' => $this->signatories($id),
         ]);
     }
     public function itemDetails($id)
     {
         $query = Yii::$app->db->createCommand("SELECT 
-        payee.account_name as payee,
-        pr_project_procurement.title as project_title,
-        request_for_inspection_items.`from` as from_date,
-        request_for_inspection_items.`to` as to_date,
-        pr_stock.stock_title,
-        REPLACE(pr_purchase_request_item.specification,'[n]','<br>') as specification
-        FROM `inspection_report`
-        LEFT JOIN inspection_report_items ON inspection_report.id = inspection_report_items.fk_inspection_report_id
-        LEFT JOIN request_for_inspection_items ON inspection_report_items.fk_request_for_inspection_item_id = request_for_inspection_items.id
-        LEFT JOIN pr_purchase_order_items_aoq_items ON request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id = pr_purchase_order_items_aoq_items.id
-        LEFT JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
-        LEFT JOIN pr_rfq_item  ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
-        LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
-        LEFT JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
-        LEFT JOIN pr_project_procurement ON pr_purchase_request.pr_project_procurement_id = pr_project_procurement.id
-        LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
-        LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
-        WHERE inspection_report.id = :id        
+    pr_stock.stock_title,
+    IFNULL(REPLACE(pr_purchase_request_item.specification,'[n]','<br>'),'') as specification
+    FROM inspection_report
+    LEFT  JOIN inspection_report_items ON inspection_report.id = inspection_report_items.fk_inspection_report_id
+    LEFT JOIN request_for_inspection_items ON inspection_report_items.fk_request_for_inspection_item_id = request_for_inspection_items.id
+    LEFT JOIN pr_purchase_order_items_aoq_items ON request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id = pr_purchase_order_items_aoq_items.id
+    LEFT JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id =pr_aoq_entries.id
+    LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id =pr_rfq_item.id
+    LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+    LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+    WHERE inspection_report.id = :id
     ")
             ->bindValue(':id', $id)
             ->queryAll();
+        return $query;
+    }
+    public function signatories($id)
+    {
+        $query  = Yii::$app->db->createCommand("SELECT 
+        division_chief.employee_name as division_chief,
+        chairperson.employee_name as chairperson,
+        inspector.employee_name as inspector,
+        property_unit.employee_name as property_unit,
+        payee.account_name as payee,
+        pr_project_procurement.title as project_title,
+         DATE_FORMAT(request_for_inspection_items.`from`,'%M %d, %Y') as from_date,
+        DATE_FORMAT(request_for_inspection_items.`to`,'%M %d, %Y') as to_date
+        
+        FROM inspection_report
+        LEFT JOIN inspection_report_items ON inspection_report.id = inspection_report_items.fk_inspection_report_id
+        LEFT JOIN request_for_inspection_items ON inspection_report_items.fk_request_for_inspection_item_id = request_for_inspection_items.id
+        LEFT JOIN request_for_inspection ON request_for_inspection_items.fk_request_for_inspection_id = request_for_inspection.id
+        LEFT JOIN employee_search_view  as property_unit ON request_for_inspection.fk_property_unit = property_unit.employee_id
+        LEFT JOIN employee_search_view as chairperson ON request_for_inspection.fk_chairperson = chairperson.employee_id
+        LEFT JOIN employee_search_view as inspector ON request_for_inspection.fk_inspector = inspector.employee_id
+        LEFT JOIN divisions ON request_for_inspection.fk_requested_by_division = divisions.id
+        LEFT JOIN employee_search_view as division_chief ON divisions.fk_division_chief = division_chief.employee_id
+        LEFT JOIN pr_purchase_order_items_aoq_items ON request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id = pr_purchase_order_items_aoq_items.id
+        LEFT JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
+        LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
+        LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+        LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+        LEFT JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id  = pr_purchase_request.id
+        LEFT JOIN pr_project_procurement ON pr_purchase_request.pr_project_procurement_id = pr_project_procurement.id
+        
+        WHERE inspection_report.id = :id
+        GROUP BY 
+        division_chief.employee_name,
+        chairperson.employee_name,
+        inspector.employee_name,
+        property_unit.employee_name,
+        payee.account_name,
+        pr_project_procurement.title,
+         DATE_FORMAT(request_for_inspection_items.`from`,'%M %d, %Y'),
+        DATE_FORMAT(request_for_inspection_items.`to`,'%M %d, %Y')
+        
+        ")
+            ->bindValue(':id', $id)
+            ->queryOne();
         return $query;
     }
     /**
