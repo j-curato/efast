@@ -138,6 +138,7 @@ class MyComponent extends Component
             return '';
         }
     }
+
     public function createSubAccount1($account_title, $id)
     {
         $model = new SubAccounts1();
@@ -420,5 +421,25 @@ class MyComponent extends Component
         }
 
         return intval($workdays);
+    }
+    public function irNumber()
+    {
+
+        $num = 1;
+        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(ir_number,'-',-1) AS UNSIGNED) as last_num FROM inspection_report ORDER BY last_num DESC LIMIT 1")->queryScalar();
+        if (!empty($query)) {
+            $num = intval($query) + 1;
+        }
+        $zero = '';
+        for ($i = strlen($num); $i <= 4; $i++) {
+            $zero .= 0;
+        }
+        return date('Y') . '-' . $zero . $num;
+    }
+    public function employeeName($id)
+    {
+        return Yii::$app->db->createCommand("SELECT employee_name,position FROM employee_search_view WHERE employee_id = :id")
+            ->bindValue(':id', $id)
+            ->queryOne();
     }
 }
