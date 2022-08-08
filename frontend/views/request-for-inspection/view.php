@@ -248,7 +248,7 @@ if (!empty($model->fk_requested_by_division)) {
 
     .center {
         text-align: center;
-        max-width: 10rem;
+        max-width: 20rem;
     }
 
     .bold {
