@@ -94,7 +94,7 @@ if (!empty($signatories)) {
             for ($i = 0; $i <= 4; $i++) {
                 echo "<tr>
                 <td colspan='2' style='padding-top: 0;padding-bottom:0;padding-left:2rem;border-bottom:1px solid black;'>
-                    <span>Attendance Sheet:</span>
+                  
                 </td>
             </tr>";
             }
