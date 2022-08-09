@@ -18,7 +18,7 @@ class PrOfficeSearch extends PrOffice
     {
         return [
             [['id'], 'integer'],
-            [['office', 'division', 'unit', 'created_at'], 'safe'],
+            [['office', 'division', 'unit', 'created_at', 'fk_unit_head'], 'safe'],
         ];
     }
 
