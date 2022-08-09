@@ -12,8 +12,7 @@ class m220803_074854_update_purchase_for_rfi_view extends Migration
      */
     public function safeUp()
     {
-        $sql = <<< SQL
-        DROP VIEW IF EXISTS purchase_orders_for_rfi ;
+        Yii::$app->db->createCommand("DROP VIEW IF EXISTS purchase_orders_for_rfi ;
         CREATE VIEW purchase_orders_for_rfi as 
         SELECT 
             pr_purchase_order_items_aoq_items.id as po_aoq_item_id,
@@ -47,9 +46,7 @@ class m220803_074854_update_purchase_for_rfi_view extends Migration
             request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id,
             SUM(request_for_inspection_items.quantity) as quantity
             FROM request_for_inspection_items GROUP BY request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id) as aoq_items_quantity ON pr_purchase_order_items_aoq_items.id = aoq_items_quantity.fk_pr_purchase_order_items_aoq_item_id
-            WHERE pr_aoq_entries.is_lowest = 1;
-    SQL;
-        $this->execute($sql);
+            WHERE pr_aoq_entries.is_lowest = 1;")->query();
     }
 
     /**
