@@ -44,7 +44,7 @@ class RequestForInspectionSearch extends RequestForInspection
         $query = RequestForInspection::find();
         $query->joinWith('division');
         if (!yii::$app->user->can('super-user')) {
-            $query->andWhere('divisions.division = :division', ['division' => Yii::$app->user->identity->division]);
+            $query->andWhere('pr_office.division = :division', ['division' => Yii::$app->user->identity->division]);
         }
         // add conditions that should always apply here
 

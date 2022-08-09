@@ -52,11 +52,11 @@ if (!empty($model->fk_property_unit)) {
 //     $requested_by = ArrayHelper::map($requested_by_query, 'id', 'division');
 // }
 if (!Yii::$app->user->can('super-user')) {
-    $requested_by = ArrayHelper::map(Yii::$app->db->createCommand("SELECT id,UPPER(division) as division FROM divisions WHERE division = :division")
+    $requested_by = ArrayHelper::map(Yii::$app->db->createCommand("SELECT id,UPPER(CONCAT(division,'-',unit)) as division FROM pr_office WHERE division = :division")
         ->bindValue(':division', Yii::$app->user->identity->division)
         ->queryAll(), 'id', 'division');
 } else {
-    $requested_by = ArrayHelper::map(Yii::$app->db->createCommand("SELECT id,UPPER(division) as division FROM divisions")->queryAll(), 'id', 'division');
+    $requested_by = ArrayHelper::map(Yii::$app->db->createCommand("SELECT id,UPPER(CONCAT(division,'-',unit))  as division FROM pr_office")->queryAll(), 'id', 'division');
 }
 
 ?>
@@ -84,7 +84,7 @@ if (!Yii::$app->user->can('super-user')) {
 
         ?>
         <div class="col-sm-3">
-            <?= $form->field($model, 'fk_requested_by_division')->widget(Select2::class, [
+            <?= $form->field($model, 'fk_pr_office_id')->widget(Select2::class, [
                 'data' => $requested_by,
                 'options' => ['placeholder' => 'Search for a Division ...'],
                 // 'pluginOptions' => [

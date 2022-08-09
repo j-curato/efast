@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\models\Iar;
 use app\models\InspectionReport;
 use app\models\InspectionReportItems;
 use app\models\PurchaseOrdersForRfiSearch;
@@ -294,6 +295,12 @@ class RequestForInspectionController extends Controller
                     $ir->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
                     $ir->ir_number = YIi::$app->memem->irNumber();
                     if ($ir->validate()) {
+                        $iar = new Iar();
+                        $iar->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                        $iar->iar_number = Yii::$app->memem->iarNumber();
+                        $iar->fk_ir_id = $ir->id;
+                        if ($iar->save(false)) {
+                        }
                         if ($ir->save(false)) {
                             foreach ($val  as $val2) {
                                 $ir_item = new InspectionReportItems();
