@@ -436,6 +436,20 @@ class MyComponent extends Component
         }
         return date('Y') . '-' . $zero . $num;
     }
+    public function iarNumber()
+    {
+
+        $num = 1;
+        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(iar_number,'-',-1) AS UNSIGNED) as last_num FROM iar ORDER BY last_num DESC LIMIT 1")->queryScalar();
+        if (!empty($query)) {
+            $num = intval($query) + 1;
+        }
+        $zero = '';
+        for ($i = strlen($num); $i < 4; $i++) {
+            $zero .= 0;
+        }
+        return date('Y') . '-' . $zero . $num;
+    }
     public function employeeName($id)
     {
         return Yii::$app->db->createCommand("SELECT employee_name,position FROM employee_search_view WHERE employee_id = :id")
