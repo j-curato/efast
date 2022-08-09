@@ -31,6 +31,7 @@ class PrOffice extends \yii\db\ActiveRecord
         return [
             [['created_at'], 'safe'],
             [['office', 'division', 'unit'], 'string', 'max' => 255],
+            [['fk_unit_head'], 'integer',],
             [[
                 'id',
                 'office',
@@ -54,6 +55,11 @@ class PrOffice extends \yii\db\ActiveRecord
             'division' => 'Division',
             'unit' => 'Unit',
             'created_at' => 'Created At',
+            'fk_unit_head' => 'Unit Head',
         ];
+    }
+    public function getUnitHead()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_unit_head']);
     }
 }

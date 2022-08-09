@@ -89,6 +89,16 @@ $this->params['breadcrumbs'][] = $this->title;
             'division',
             'unit',
             'responsibility_code',
+            [
+                'attribute' => 'fk_unit_head',
+                'value' => function ($model) {
+                    $employee = '';
+                    if (!empty($model->fk_unit_head)) {
+                        $employee = $model->unitHead->f_name . ' ' . $model->unitHead->m_name[0] . '. ' . $model->unitHead->l_name;
+                    }
+                    return $employee;
+                }
+            ],
 
             [
 

@@ -55,7 +55,7 @@ class PrOfficeSearch extends PrOffice
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->joinWith('unitHead');
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,

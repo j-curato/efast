@@ -3,6 +3,7 @@
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -27,6 +28,12 @@ $division = [
     'SDD' => 'SDD',
     'MSSU' => 'MSSU',
 ];
+$unit_head = [];
+if (!empty($model->fk_unit_head)) {
+    $unit_headQuery = Yii::$app->db->createCommand("SELECT employee_name,employee_id FROM employee_search_view WHERE employee_id = :id")
+        ->bindValue(':id', $model->fk_unit_head)->queryAll();
+    $unit_head = ArrayHelper::map($unit_headQuery, 'employee_id', 'employee_name');
+}
 
 ?>
 
@@ -52,7 +59,28 @@ $division = [
     ]) ?>
 
     <?= $form->field($model, 'unit')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'fk_unit_head')->widget(Select2::class, [
+        'data' => $unit_head,
+        'options' => ['placeholder' => 'Search for a Employee ...'],
+        'pluginOptions' => [
+            'allowClear' => true,
+            'minimumInputLength' => 1,
+            'language' => [
+                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+            ],
+            'ajax' => [
+                'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                'dataType' => 'json',
+                'delay' => 250,
+                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                'cache' => true
+            ],
+            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+        ],
 
+    ]) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

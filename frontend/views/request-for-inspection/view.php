@@ -31,20 +31,16 @@ if (!empty($model->fk_property_unit)) {
         ->bindValue(':id', $model->fk_property_unit)
         ->queryOne();
 }
-if (!empty($model->fk_requested_by_division)) {
+if (!empty($model->fk_pr_office_id)) {
     $requested_by = Yii::$app->db->createCommand("SELECT employee_name,position FROM 
-    divisions
-    LEFT JOIN employee_search_view ON divisions.fk_division_chief =  employee_search_view.employee_id 
-    WHERE divisions.id = :id")
-        ->bindValue(':id', $model->fk_requested_by_division)
+    pr_office
+    LEFT JOIN employee_search_view ON pr_office.fk_unit_head =  employee_search_view.employee_id 
+    WHERE pr_office.id = :id")
+        ->bindValue(':id', $model->fk_pr_office_id)
         ->queryOne();
 }
 ?>
 <div class="request-for-inspection-view">
-
-
-
-
     <div class="container">
         <h5 class='note'>
             *Note:
