@@ -73,7 +73,7 @@ if (!Yii::$app->user->can('super-user')) {
                 'pluginOptions' => [
                     'autoclose' => true,
                     'format' => 'yyyy-mm-dd'
-                ]
+                ] 
             ]) ?>
         </div>
     </div>

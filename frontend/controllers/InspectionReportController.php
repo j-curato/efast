@@ -79,6 +79,8 @@ class InspectionReportController extends Controller
             'model' => $this->findModel($id),
             'itemDetails' => $this->itemDetails($id),
             'signatories' => $this->signatories($id),
+            'rfi_id' => $this->rfiId($id),
+            'iar_id' => $this->iarId($id),
         ]);
     }
     public function itemDetails($id)
@@ -144,6 +146,35 @@ class InspectionReportController extends Controller
             ->bindValue(':id', $id)
             ->queryOne();
         return $query;
+    }
+    public function rfiId($id)
+    {
+        $q = Yii::$app->db->createCommand("SELECT 
+
+        request_for_inspection.id
+        FROM inspection_report_items
+        LEFT JOIN request_for_inspection_items ON inspection_report_items.fk_request_for_inspection_item_id = request_for_inspection_items.id
+        LEFT JOIN request_for_inspection ON request_for_inspection_items.fk_request_for_inspection_id = request_for_inspection.id
+        WHERE inspection_report_items.fk_inspection_report_id = :id
+        GROUP BY
+        request_for_inspection.id")
+            ->bindValue(':id', $id)
+            ->queryScalar();
+        return $q;
+    }
+    public function iarId($id)
+    {
+
+        return  YIi::$app->db->createCommand("SELECT 
+				iar.id as iar_id
+        FROM inspection_report 
+		LEFT JOIN iar ON inspection_report.id = iar.fk_ir_id
+        WHERE 
+        inspection_report.id = :id
+
+        ")
+            ->bindValue(':id', $id)
+            ->queryScalar();
     }
     /**
      * Creates a new InspectionReport model.

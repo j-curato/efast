@@ -36,6 +36,14 @@ if (!empty($signatories)) {
 <div class="inspection-report-view">
 
     <div class="container">
+        <?php
+        if (!empty($rfi_id)) {
+            echo Html::a('RFI Link', ['request-for-inspection/view', 'id' => $rfi_id], ['class' => 'btn btn-primary']);
+        }
+        if (!empty($iar_id)) {
+            echo ' ' . Html::a('IAR Link', ['iar/view', 'id' => $iar_id], ['class' => 'btn btn-warning']);
+        }
+        ?>
         <table>
             <tr>
                 <th colspan="2" class="center">

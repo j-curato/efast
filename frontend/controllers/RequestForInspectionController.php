@@ -93,19 +93,22 @@ class RequestForInspectionController extends Controller
     {
 
         return  YIi::$app->db->createCommand("SELECT 
-
-        inspection_report.id,
-        inspection_report.ir_number
+                inspection_report.id,
+                inspection_report.ir_number,
+				iar.iar_number,
+				iar.id as iar_id
         FROM request_for_inspection
         INNER JOIN request_for_inspection_items ON request_for_inspection.id = request_for_inspection_items.fk_request_for_inspection_id
         INNER JOIN inspection_report_items ON request_for_inspection_items.id = inspection_report_items.fk_request_for_inspection_item_id
         INNER JOIN inspection_report ON inspection_report_items.fk_inspection_report_id = inspection_report.id
+		LEFT JOIN iar ON inspection_report.id = iar.fk_ir_id
         WHERE 
         request_for_inspection.id = :id
         GROUP BY 
-        inspection_report.id,
-        inspection_report.ir_number
-
+            inspection_report.id,
+            inspection_report.ir_number,
+			iar.iar_number,
+			iar.id 
         ")
             ->bindValue(':id', $id)
             ->queryAll();

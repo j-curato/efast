@@ -8,3 +8,15 @@
 .italic{
     font-style: italic;
 }
+.udl_txt{
+    padding-left: 8px;
+    padding-right: 8px;
+    border-bottom: 1px solid black;
+}
+@media print{
+
+    .main-footer, .btn{
+        display: none;
+    }
+
+}
