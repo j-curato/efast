@@ -19,6 +19,7 @@ use app\models\TransactionTracking;
 use app\models\TransactionTrackingSearch;
 use app\models\UnpaidObligationSearch;
 use app\models\WithholdingAndRemittanceSummarySearch;
+use common\models\UploadForm;
 use Da\QrCode\QrCode;
 use DateTime;
 use Yii;
@@ -27,6 +28,7 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
+use yii\web\UploadedFile;
 
 class ReportController extends \yii\web\Controller
 {
@@ -4879,6 +4881,34 @@ class ReportController extends \yii\web\Controller
             return json_encode($result);
         }
         return $this->render('proc_summary');
+    }
+    // yii2 upload
+    public function actionFile()
+    {
+
+        $model = new UploadForm();
+        if (Yii::$app->request->isPost) {
+            // $q = $_FILES['file'];
+            if (isset($_FILES['file'])) {
+                $file = $_FILES;
+                $file = \yii\web\UploadedFile::getInstanceByName('file');
+                $model->file = $file;
+                if ($model->validate()) {
+                    if ($model->upload()) {
+                        return json_encode('success');
+                    } else {
+                        return var_dump($model->errors);
+                    }
+                } else {
+                    return var_dump($model->errors);
+                }
+                // if ($model->upload()) {
+                //     // file is uploaded successfully
+                //     return 'succes';
+                // }
+            }
+        }
+        return $this->render('file_upload', ['model' => $model]);
     }
 }
 
