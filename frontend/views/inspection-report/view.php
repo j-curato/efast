@@ -226,8 +226,14 @@ if (!empty($signatories)) {
     }
 
     @media print {
+
         .main-footer {
             display: none;
         }
+
+        .btn {
+            display: none;
+        }
+
     }
 </style>

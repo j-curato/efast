@@ -59,7 +59,7 @@ if (!empty($signatories['inspection_from_date'])) {
 <div class="iar-view">
 
     <div class="container">
-
+        <?= Html::a('IR Link', ['inspection-report/view', 'id' => $model->fk_ir_id], ['class' => 'btn btn-primary']) ?>
         <table class="iar">
 
             <tbody>
@@ -192,5 +192,17 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
 
     table {
         width: 100%;
+    }
+
+    @media print {
+
+        .main-footer {
+            display: none;
+        }
+
+        .btn {
+            display: none;
+        }
+
     }
 </style>

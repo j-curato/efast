@@ -15,7 +15,10 @@
 }
 @media print{
 
-    .main-footer, .btn{
+    .main-footer{
+        display: none;
+    }
+    .btn{
         display: none;
     }
 
