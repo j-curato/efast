@@ -70,8 +70,8 @@ class Transaction extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'responsibility_center_id' => 'Responsibility Center ID',
-            'payee_id' => 'Payee ID',
+            'responsibility_center_id' => 'Responsibility Center ',
+            'payee_id' => 'Payee ',
             'particular' => 'Particular',
             'gross_amount' => 'Gross Amount',
             'tracking_number' => 'Tracking Number',

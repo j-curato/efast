@@ -7,16 +7,12 @@ use kartik\grid\GridView;
 /* @var $searchModel app\models\IarSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Iars';
+$this->title = "IAR's";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="iar-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Create Iar', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>
@@ -30,7 +26,6 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
 
-            'id',
             'iar_number',
             'created_at',
 
