@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <div class="row" style="margin-top: 130px;">
             <div class="row head" style=" margin-bottom:2rem"><?php echo date('F d, Y', strtotime($model->date)) ?></div>
-            <div class="row head" style="font-weight: bold;">MARION T. HORMILLADA</div>
+            <div class="row head" style="font-weight: bold;">ADA JUNE M. HORMILLADA</div>
             <div class="row head">State Auditor III</div>
             <div class="row head">OIC - Audit Team Leader</div>
             <div class="row head">COA - DTI Caraga</div>
