@@ -30,7 +30,7 @@ class InspectionReport extends \yii\db\ActiveRecord
             [['id', 'ir_number'], 'required'],
             [['id'], 'integer'],
             [['created_at'], 'safe'],
-            [['ir_number', ], 'string', 'max' => 255],
+            [['ir_number',], 'string', 'max' => 255],
             [['ir_number'], 'unique'],
             [['id'], 'unique'],
         ];
@@ -44,9 +44,12 @@ class InspectionReport extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'ir_number' => 'Ir Number',
-           
+
             'created_at' => 'Created At',
         ];
     }
-
+    public function getInspectionReportItems()
+    {
+        return $this->hasMany(InspectionReportItems::class, ['fk_inspection_report_id' => 'id']);
+    }
 }

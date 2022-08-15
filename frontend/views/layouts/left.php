@@ -156,6 +156,8 @@
                             'url' => '#',
                             'items' => [
                                 Yii::$app->user->can('department-offices') ?     ['label' => 'Request for Inspection', 'icon' => 'circle-o', 'url' => ['/request-for-inspection'],] : [],
+                                Yii::$app->user->can('department-offices') ?     ['label' => 'Inspection Report', 'icon' => 'circle-o', 'url' => ['/inspection-report'],] : [],
+                                Yii::$app->user->can('department-offices') ?     ['label' => 'IAR', 'icon' => 'circle-o', 'url' => ['/iar'],] : [],
                             ],
                         ] : [],
 
@@ -390,7 +392,6 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'RFQ', 'icon' => 'circle-o', 'url' => ['/pr-rfq'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'AOQ', 'icon' => 'circle-o', 'url' => ['/pr-aoq'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Purchase Order', 'icon' => 'circle-o', 'url' => ['/pr-purchase-order'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'IAR', 'icon' => 'circle-o', 'url' => ['/pr-iar'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Procurement Summary', 'icon' => 'circle-o', 'url' => ['/report/procurement-summary'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'PO Summary', 'icon' => 'circle-o', 'url' => ['/report/pr-summary'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Procurement Search', 'icon' => 'circle-o', 'url' => ['/report/proc-summary'],] : [],

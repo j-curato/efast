@@ -48,4 +48,8 @@ class Iar extends \yii\db\ActiveRecord
             'fk_ir_id' => 'IR ID',
         ];
     }
+    public function getInspetionReport()
+    {
+        return $this->hasOne(InspectionReport::class, ['id' => 'fk_ir_id']);
+    }
 }

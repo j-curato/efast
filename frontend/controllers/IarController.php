@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use Yii;
 use app\models\Iar;
+use app\models\IarIndexSearch;
 use app\models\IarSearch;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -130,7 +131,7 @@ class IarController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new IarSearch();
+        $searchModel = new IarIndexSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [

@@ -57,6 +57,10 @@ class InspectionReportItems extends \yii\db\ActiveRecord
      */
     public function getFkInspectionReport()
     {
-        return $this->hasOne(InspectionReport::className(), ['id' => 'fk_inspection_report_id']);
+        return $this->hasOne(InspectionReport::class, ['id' => 'fk_inspection_report_id']);
+    }
+    public function getRequestForInspectionItem()
+    {
+        return $this->hasOne(RequestForInspectionItems::class, ['id' => 'fk_request_for_inspection_item_id']);
     }
 }

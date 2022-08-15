@@ -4,12 +4,13 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\InspectionReport;
+use app\models\InspectionReportIndex;
+use Yii;
 
 /**
- * InspectionReportSearch represents the model behind the search form of `app\models\InspectionReport`.
+ * InspectionReportIndexSearch represents the model behind the search form of `app\models\InspectionReportIndex`.
  */
-class InspectionReportSearch extends InspectionReport
+class InspectionReportIndexSearch extends InspectionReportIndex
 {
     public $rfi_number;
     /**
@@ -19,8 +20,19 @@ class InspectionReportSearch extends InspectionReport
     {
         return [
             [['id'], 'integer'],
-            [['ir_number',  'created_at', 'rfi_number'], 'safe'],
-        ]; 
+            [[
+                'ir_number',
+                'rfi_number',
+                'division',
+                'unit',
+                'po_number',
+                'unit_head',
+                'inspector',
+                'chairperson',
+                'property_unit',
+                'payee'
+            ], 'safe'],
+        ];
     }
 
     /**
@@ -41,11 +53,13 @@ class InspectionReportSearch extends InspectionReport
      */
     public function search($params)
     {
-        $query = InspectionReport::find();
+        $query = InspectionReportIndex::find();
 
 
 
-
+        if (!Yii::$app->user->can('super-user')) {
+            $query->where('division =:division', ['division' => Yii::$app->user->identity->division]);
+        }
 
         // add conditions that should always apply here
 
@@ -60,25 +74,11 @@ class InspectionReportSearch extends InspectionReport
             // $query->where('0=1');
             return $dataProvider;
         }
-        // $query->joinWith('inspectionReportItems')
-        //     ->joinWith('inspectionReportItems.requestForInspectionItem')
-        //     ->joinWith('inspectionReportItems.requestForInspectionItem.requestForInspection')
-        //     ->joinWith('inspectionReportItems.requestForInspectionItem.requestForInspection.office')
-        //     ->joinWith('inspectionReportItems.requestForInspectionItem.requestForInspection.office.unitHead as unit_head')
-        //     ->groupBy([
-        //         'inspection_report.id',
-        //         'inspection_report.ir_number',
-        //         'request_for_inspection.rfi_number',
-        //         'pr_office.division',
-        //         'pr_office.unit',
-        //         "CONCAT(unit_head.f_name,' ',LEFT(unit_head.m_name,1),'. ',unit_head.l_name,' ',IFNULL(unit_head.suffix,''))"
-        //     ]);
 
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'created_at' => $this->created_at,
         ]);
 
         $query->andFilterWhere(['like', 'ir_number', $this->ir_number]);

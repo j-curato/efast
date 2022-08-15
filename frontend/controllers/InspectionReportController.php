@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use Yii;
 use app\models\InspectionReport;
+use app\models\InspectionReportIndexSearch;
 use app\models\InspectionReportSearch;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -59,7 +60,7 @@ class InspectionReportController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new InspectionReportSearch();
+        $searchModel = new InspectionReportIndexSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render('index', [
             'searchModel' => $searchModel,

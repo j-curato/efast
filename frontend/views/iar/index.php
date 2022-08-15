@@ -24,11 +24,18 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => 'primary',
             'heading' => "IAR's"
         ],
+        'pjax' => true,
         'columns' => [
-
-            'iar_number',
-            'created_at',
-
+            'ir_number',
+            'rfi_number',
+            'division',
+            'unit',
+            'unit_head',
+            'inspector',
+            'chairperson',
+            'property_unit',
+            'po_number',
+            'payee',
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

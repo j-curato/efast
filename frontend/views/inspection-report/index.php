@@ -23,9 +23,19 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => 'primary',
             'heading' => 'Inspection Reports'
         ],
+        'pjax' => true,
         'columns' => [
 
             'ir_number',
+            'rfi_number',
+            'division',
+            'unit',
+            'po_number',
+            'unit_head',
+            'inspector',
+            'chairperson',
+            'property_unit',
+            'payee',
             [
                 'label' => 'Action',
                 'format' => 'raw',
