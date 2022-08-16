@@ -21,6 +21,7 @@ class RequestForInspection extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
+     * 
      */
     public static function tableName()
     {
@@ -81,7 +82,20 @@ class RequestForInspection extends \yii\db\ActiveRecord
     {
         return $this->hasMany(RequestForInspectionItems::class, ['fk_request_for_inspection_id' => 'id']);
     }
-    public function getDivision()
+
+    public function getChairperson()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_chairperson']);
+    }
+    public function getInspector()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_inspector']);
+    }
+    public function getPropertyUnit()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_property_unit']);
+    }
+    public function getOffice()
     {
         return $this->hasOne(PrOffice::class, ['id' => 'fk_pr_office_id']);
     }

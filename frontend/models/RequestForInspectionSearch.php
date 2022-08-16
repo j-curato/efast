@@ -15,11 +15,33 @@ class RequestForInspectionSearch extends RequestForInspection
     /**
      * {@inheritdoc}
      */
+    public $unit_head;
     public function rules()
     {
         return [
-            [['id', 'fk_chairperson', 'fk_inspector', 'fk_property_unit'], 'integer'],
-            [['rfi_number', 'date', 'created_at'], 'safe'],
+            [['id',], 'integer'],
+            [[
+                'rfi_number',
+                'date',
+                'created_at',
+                'fk_chairperson',
+                'fk_inspector',
+                'fk_property_unit',
+                'fk_pr_office_id',
+                'unit_head',
+            ], 'safe'],
+            // [[
+            //     'rfi_number',
+            //     'date',
+            //     'created_at',
+            //     'fk_chairperson',
+            //     'fk_inspector',
+            //     'fk_property_unit',
+            //     'fk_pr_office_id',
+            //     'unit_head',
+
+
+            // ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process']
         ];
     }
 
@@ -42,7 +64,7 @@ class RequestForInspectionSearch extends RequestForInspection
     public function search($params)
     {
         $query = RequestForInspection::find();
-        $query->joinWith('division');
+        $query->joinWith('office');
         if (!yii::$app->user->can('super-user')) {
             $query->andWhere('pr_office.division = :division', ['division' => Yii::$app->user->identity->division]);
         }
@@ -60,17 +82,50 @@ class RequestForInspectionSearch extends RequestForInspection
             return $dataProvider;
         }
 
+
+
+
+        $query->joinWith('chairperson as chairperson');
+        $query->joinWith('inspector as inspector');
+        $query->joinWith('propertyUnit as property_unit');
+        $query->joinWith('office.unitHead as unit_head');
+
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
             'date' => $this->date,
-            'fk_chairperson' => $this->fk_chairperson,
-            'fk_inspector' => $this->fk_inspector,
-            'fk_property_unit' => $this->fk_property_unit,
             'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['like', 'rfi_number', $this->rfi_number]);
+        $query->andFilterWhere(['like', 'rfi_number', $this->rfi_number])
+            ->andFilterWhere([
+                'or', ['like', 'chairperson.f_name', $this->fk_chairperson],
+                ['like', 'chairperson.m_name', $this->fk_chairperson],
+                ['like', 'chairperson.l_name', $this->fk_chairperson]
+            ])
+            ->andFilterWhere([
+                'or', ['like', 'inspector.f_name', $this->fk_inspector],
+                ['like', 'inspector.m_name', $this->fk_inspector],
+                ['like', 'inspector.l_name', $this->fk_inspector]
+            ])
+            ->andFilterWhere([
+                'or', ['like', 'property_unit.f_name', $this->fk_property_unit],
+                ['like', 'property_unit.m_name', $this->fk_property_unit],
+                ['like', 'property_unit.l_name', $this->fk_property_unit]
+            ])
+            ->andFilterWhere([
+                'or', ['like', 'unit_head.f_name', $this->unit_head],
+                ['like', 'unit_head.m_name', $this->unit_head],
+                ['like', 'unit_head.l_name', $this->unit_head]
+            ])
+            ->andFilterWhere([
+                'or', ['like', 'pr_office.division', $this->fk_pr_office_id],
+                ['like', 'pr_office.unit', $this->fk_pr_office_id],
+            ]);
+
+        // print_r($query->createCommand()->getRawSql());
+        // die();
 
         return $dataProvider;
     }
