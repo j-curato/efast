@@ -36,7 +36,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'property_unit',
             'po_number',
             'payee',
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Action',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]);
+                }
+            ]
         ],
     ]); ?>
 
