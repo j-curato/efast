@@ -408,7 +408,7 @@ if (!Yii::$app->user->can('super-user')) {
     }
 
     .limit-width {
-        max-width: 8rem;
+        max-width: 20rem;
     }
 </style>
 <?php
