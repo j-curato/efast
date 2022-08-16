@@ -18,6 +18,20 @@ use yii\helpers\ArrayHelper;
 
 $this->title = "Adequacy of Resource";
 $this->params['breadcrumbs'][] = $this->title;
+$province = [];
+
+if (!Yii::$app->user->can('super-user')) {
+    $user_province = YIi::$app->user->identity->province;
+    $province = [$user_province => strtoupper($user_province)];
+} else {
+    $province = [
+        'adn' => 'ADN',
+        'ads' => 'ADS',
+        'pdi' => 'PDI',
+        'sdn' => 'SDN',
+        'sds' => 'SDS',
+    ];
+}
 ?>
 <div class="jev-preparation-index">
 
@@ -32,13 +46,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php
                     echo Select2::widget([
                         'name' => 'province',
-                        'data' => [
-                            'adn' => 'ADN',
-                            'ads' => 'ADS',
-                            'pdi' => 'PDI',
-                            'sdn' => 'SDN',
-                            'sds' => 'SDS',
-                        ],
+                        'data' => $province,
                         'pluginOptions' => [
                             'placeholder' => 'Select Province'
                         ]
