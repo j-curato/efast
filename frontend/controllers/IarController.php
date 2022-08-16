@@ -6,6 +6,7 @@ use Yii;
 use app\models\Iar;
 use app\models\IarIndexSearch;
 use app\models\IarSearch;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -181,18 +182,18 @@ class IarController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    // public function actionUpdate($id)
-    // {
-    //     $model = $this->findModel($id);
+    public function actionUpdate($id)
+    {
+        $model = $this->findModel($id);
 
-    //     if ($model->load(Yii::$app->request->post()) && $model->save()) {
-    //         return $this->redirect(['view', 'id' => $model->id]);
-    //     }
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
 
-    //     return $this->render('update', [
-    //         'model' => $model,
-    //     ]);
-    // }
+        return $this->renderAjax('update', [
+            'model' => $model,
+        ]);
+    }
 
     /**
      * Deletes an existing Iar model.
@@ -222,5 +223,24 @@ class IarController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    public function actionSearchIar($q = null, $id = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if ($id > 0) {
+        } else if (!is_null($q)) {
+            $query = new Query();
+            $query->select('iar.id, iar.iar_number AS text')
+                ->from('iar')
+                ->where(['like', 'iar.iar_number', $q]);
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        return $out;
     }
 }

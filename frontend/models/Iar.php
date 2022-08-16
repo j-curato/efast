@@ -28,7 +28,7 @@ class Iar extends \yii\db\ActiveRecord
     {
         return [
             [['id', 'iar_number'], 'required'],
-            [['id', 'fk_ir_id'], 'integer'],
+            [['id', 'fk_ir_id', 'fk_end_user'], 'integer'],
             [['created_at'], 'safe'],
             [['iar_number'], 'string', 'max' => 255],
             [['iar_number'], 'unique'],
@@ -46,6 +46,7 @@ class Iar extends \yii\db\ActiveRecord
             'iar_number' => 'Iar Number',
             'created_at' => 'Created At',
             'fk_ir_id' => 'IR ID',
+            'fk_end_user' => 'End User',
         ];
     }
     public function getInspetionReport()
