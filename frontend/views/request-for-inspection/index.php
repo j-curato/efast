@@ -32,18 +32,62 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'rfi_number',
             'date',
-            'division',
-            'unit',
-            'unit_head',
-            'inspector',
-            'chairperson',
-            'property_unit',
-            'po_number',
-            'payee',
-            'purpose',
-            'project_name',
+            [
+                'attribute' => 'fk_pr_office_id',
+                'value' => function ($model) {
+                    $emp = '';
+                    if (!empty($model->fk_pr_office_id)) {
+                        $dvsn = !empty($model->office->division) ? $model->office->division : '';
+                        $unit = !empty($model->office->unit) ? $model->office->unit : '';
+                        $emp =  $dvsn . '-' .  $unit;
+                    }
+                    return $emp;
+                }
+            ],
+            [
+                'attribute' => 'unit_head',
+                'value' => function ($model) {
+                    $emp = '';
+                    if (!empty($model->office->id)) {
 
-
+                        if (!empty($model->office->unitHead->f_name)) {
+                            $emp = $model->office->unitHead->f_name . ' ' .  $model->office->unitHead->m_name[0] . '. ' .  $model->office->unitHead->l_name;
+                        }
+                        // $emp = $model->office->unitHead->f_name;
+                    }
+                    return $emp;
+                }
+            ],
+            [
+                'attribute' => 'fk_chairperson',
+                'value' => function ($model) {
+                    $emp = '';
+                    if (!empty($model->fk_chairperson)) {
+                        $emp = $model->chairperson->f_name . ' ' .  $model->chairperson->m_name[0] . '. ' .  $model->chairperson->l_name;
+                    }
+                    return $emp;
+                }
+            ],
+            [
+                'attribute' => 'fk_inspector',
+                'value' => function ($model) {
+                    $emp = '';
+                    if (!empty($model->fk_inspector)) {
+                         $emp = $model->inspector->f_name . ' ' .  $model->inspector->m_name[0] . '. ' .  $model->inspector->l_name;
+                    }
+                    return $emp;
+                }
+            ],
+            [
+                'attribute' => 'fk_property_unit',
+                'value' => function ($model) {
+                    $emp = '';
+                    if (!empty($model->fk_property_unit)) {
+                        $emp = $model->propertyUnit->f_name . ' ' .  $model->propertyUnit->m_name[0] . '. ' .  $model->propertyUnit->l_name;
+                    }
+                    return $emp;
+                }
+            ],
             [
                 'label' => 'Action',
                 'format' => 'raw',
@@ -61,10 +105,3 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
-<style>
-    .grid-view td {
-        white-space: normal;
-        width: 70rem;
-        padding: 0;
-    }
-</style>
