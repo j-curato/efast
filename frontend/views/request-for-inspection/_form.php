@@ -73,7 +73,7 @@ if (!Yii::$app->user->can('super-user')) {
                 'pluginOptions' => [
                     'autoclose' => true,
                     'format' => 'yyyy-mm-dd'
-                ] 
+                ]
             ]) ?>
         </div>
     </div>
@@ -238,6 +238,7 @@ if (!Yii::$app->user->can('super-user')) {
 
                 if (!empty($items)) {
                     foreach ($items as $val) {
+                        $unit_cost = number_format($val['unit_cost'], 2);
                         echo "<tr>
                                 <td style='display:none'><input class='item_id' value='{$val['id']}' name='item_id[$entry_row]'/></td>
                                <td style='display:none'><input class='po_aoq_item_id' value='{$val['po_aoq_item_id']}' name='purchase_order_id[$entry_row]'/></td>
@@ -263,7 +264,7 @@ if (!Yii::$app->user->can('super-user')) {
                                     <span class='activity' >{$val['balance_quantity']}</span>
                                 </td>
                                 <td class='center'>
-                                    <span class='activity' >{$val['unit_cost']}</span>
+                                    <span class='activity' >{$unit_cost}</span>
                                 </td>
                                 <td>
                                     <span class='activity' >{$val['division']}</span>
