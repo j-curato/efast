@@ -8,6 +8,7 @@ use app\models\InspectionReportItems;
 use app\models\PurchaseOrdersForRfiSearch;
 use Yii;
 use app\models\RequestForInspection;
+use app\models\RequestForInspectionIndexSearch;
 use app\models\RequestForInspectionItems;
 use app\models\RequestForInspectionSearch;
 use aryelds\sweetalert\SweetAlert;
@@ -74,7 +75,7 @@ class RequestForInspectionController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new RequestForInspectionSearch();
+        $searchModel = new RequestForInspectionIndexSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
