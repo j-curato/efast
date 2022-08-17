@@ -63,8 +63,7 @@ if (!empty($signatories['inspection_from_date'])) {
 <div class="iar-view">
     <div class="container">
         <p>
-            <?= Html::a('IR Link', ['inspection-report/view', 'id' => $model->fk_ir_id], ['class' => 'btn btn-primary','style' => 'margin-bottom:2rem']) ?>
-
+            <?= Html::a('IR Link', ['inspection-report/view', 'id' => $model->fk_ir_id], ['class' => 'btn btn-link','style' => 'margin-bottom:2rem']) ?>
             <?= Html::a('Add End-User', ['update', 'id' => $model->id], ['class' => 'btn btn-primary', 'title' => 'Update', 'style' => 'margin-bottom:2rem']); ?>
         </p>
 
