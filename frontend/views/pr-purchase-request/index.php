@@ -51,6 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => Gridview::TYPE_PRIMARY,
             'heading' => 'Purchase Requests'
         ],
+        'pjax' => true,
         'columns' => [
 
             'pr_number',

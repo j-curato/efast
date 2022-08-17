@@ -28,6 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => GridView::TYPE_PRIMARY,
             'heading' => 'AOQ'
         ],
+        'pjax' => true,
         'columns' => [
 
             'aoq_number',

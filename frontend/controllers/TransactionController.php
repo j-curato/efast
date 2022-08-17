@@ -7,6 +7,7 @@ use app\models\ResponsibilityCenter;
 use app\models\SubAccounts1;
 use Yii;
 use app\models\Transaction;
+use app\models\TransactionIars;
 use app\models\TransactionSearch;
 use DateTime;
 use yii\db\Query;
@@ -79,6 +80,17 @@ class TransactionController extends Controller
             ],
         ];
     }
+    public function insertTransactionIar($transaction_id = '', $iars = [])
+    {
+        foreach ($iars as $val) {
+
+            $item = new TransactionIars();
+            $item->fk_transaction_id = $transaction_id;
+            $item->fk_iar_id = $val;
+            if ($item->save(false)) {
+            }
+        }
+    }
 
     /**
      * Lists all Transaction models.
@@ -120,20 +132,23 @@ class TransactionController extends Controller
 
         $model = new Transaction();
         date_default_timezone_set('Asia/Manila');
-
-
         if ($model->load(Yii::$app->request->post())) {
-
             // if ($_SERVER['REMOTE_ADDR'] === '210.1.103.26' || Yii::$app->user->can('super-user')) {
-
+            // return var_dump($_POST['multiple_iar']);
             $division = strtolower(Yii::$app->user->identity->division);
             $user = strtolower(Yii::$app->user->identity->province);
-
             $host = gethostname();
             $ip = gethostbyname($host);
             // if ($division == 'sdd' &&  $ip !== '10.20.17.35') {
             //     return $this->actionIndex();
             // }
+            $iars = [];
+
+            if ($model->type == 'multiple') {
+                $iars = !empty($_POST['multiple_iar']) ? $_POST['multiple_iar'] : [];
+            } else if ($model->type == 'single') {
+                $iars = !empty($_POST['single_iar']) ? [$_POST['single_iar']] : [];
+            }
             if (!Yii::$app->user->can('super-user')) {
                 $r_center = Yii::$app->db->createCommand("SELECT `id` FROM responsibility_center WHERE `name`=:division")
                     ->bindValue(':division', $division)
@@ -147,6 +162,8 @@ class TransactionController extends Controller
                 $model->is_local = 0;
             }
             if ($model->save()) {
+
+                $this->insertTransactionIar($model->id, $iars);
                 return $this->redirect(['view', 'id' => $model->id]);
             }
             // }
@@ -193,13 +210,20 @@ class TransactionController extends Controller
                 // var_dump($model->tracking_number);
                 // die();
             }
+            $iars = [];
 
+            if ($model->type == 'multiple') {
+                $iars = !empty($_POST['multiple_iar']) ? $_POST['multiple_iar'] : [];
+            } else if ($model->type == 'single') {
+                $iars = !empty($_POST['single_iar']) ? [$_POST['single_iar']] : [];
+            }
 
             // return json_encode(
             //     $model->tracking_number
             // );
             if ($model->save(false)) {
-
+                Yii::$app->db->createCommand("DELETE FROM transaction_iars WHERE fk_transaction_id = :id")->bindValue(':id', $model->id)->query();
+                $this->insertTransactionIar($model->id, $iars);
                 return $this->redirect(['view', 'id' => $model->id]);
             }
             // }
@@ -530,5 +554,37 @@ class TransactionController extends Controller
         //     $out['results'] = ['id' => $id, 'text' => AdvancesEntries::find($id)->fund_source];
         // }
         return $out;
+    }
+    public function actionIarDetails()
+    {
+        if (Yii::$app->request->isPost) {
+            $id = $_POST['id'];
+            $query = YIi::$app->db->createCommand("SELECT 
+            payee.id,
+            payee.account_name as payee,
+            pr_purchase_request.purpose,
+            SUM(pr_aoq_entries.amount * request_for_inspection_items.quantity) as amount
+            FROM iar
+            LEFT JOIN inspection_report ON iar.fk_ir_id  = inspection_report.id
+            LEFT JOIN inspection_report_items ON inspection_report.id = inspection_report_items.fk_inspection_report_id
+            LEFT JOIN request_for_inspection_items ON inspection_report_items.fk_request_for_inspection_item_id  = request_for_inspection_items.id
+            LEFT JOIN request_for_inspection ON request_for_inspection_items.fk_request_for_inspection_id = request_for_inspection.id
+            LEFT JOIN pr_office ON request_for_inspection.fk_pr_office_id = pr_office.id
+            LEFT JOIN pr_purchase_order_items_aoq_items ON request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id  = pr_purchase_order_items_aoq_items.id
+            LEFT JOIN pr_purchase_order_item ON pr_purchase_order_items_aoq_items.fk_purchase_order_item_id = pr_purchase_order_item.id
+            LEFT JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
+            LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
+            LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+            LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+            LEFT JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
+            WHERE iar.id = :id
+            GROUP BY
+            payee.id,
+            payee.account_name
+            ")
+                ->bindValue(':id', $id)
+                ->queryOne();
+            return json_encode($query);
+        }
     }
 }

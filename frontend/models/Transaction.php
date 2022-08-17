@@ -40,7 +40,7 @@ class Transaction extends \yii\db\ActiveRecord
             [['responsibility_center_id', 'payee_id', 'particular', 'gross_amount', 'transaction_date'], 'required'],
             [['responsibility_center_id', 'payee_id'], 'integer'],
             [['gross_amount'], 'number'],
-            [['particular', 'tracking_number', 'earmark_no', 'payroll_number'], 'string', 'max' => 255],
+            [['particular', 'tracking_number', 'earmark_no', 'payroll_number', 'type'], 'string', 'max' => 255],
             [['transaction_date'], 'string', 'max' => 50],
             [['transaction_time'], 'string', 'max' => 20],
             [[
@@ -80,6 +80,7 @@ class Transaction extends \yii\db\ActiveRecord
             'transaction_date' => 'Transaction Date',
             'transaction_time' => 'Transaction Time',
             'created_at' => 'created_at',
+            'type' => 'Type',
         ];
     }
 
