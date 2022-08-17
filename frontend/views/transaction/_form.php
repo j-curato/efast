@@ -60,7 +60,7 @@ if ($model->type == 'single' || $model->type == 'multiple') {
     <?= $form->field($model, 'type')->widget(Select2::class, [
         'name' => 'float_state_01',
         'data' => ['no-iar' => 'No IAR', 'single' => 'Single IAR', 'multiple' => 'Multiple Iar'],
-        'options' => ['placeholder' => 'Select a state...'],
+        'options' => ['placeholder' => 'Select Transaction Type...'],
         'pluginOptions' => ['allowClear' => true],
     ]); ?>
     <div class="row" id="multiple">
