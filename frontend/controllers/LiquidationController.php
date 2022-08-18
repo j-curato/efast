@@ -261,7 +261,9 @@ class LiquidationController extends Controller
     }
     public function validateReportingPeriod($reporting_period = '', $province = '', $bank_account_id = '')
     {
-
+        if (empty($bank_account_id)) {
+            return 'No Bank Account in Selected Check Range';
+        }
         if (empty($reporting_period) || empty($province) || empty($bank_account_id)) {
             return false;
         }
@@ -273,7 +275,7 @@ class LiquidationController extends Controller
             ->andWhere('liquidation_reporting_period.bank_account_id = :bank_account_id', ['bank_account_id' => $bank_account_id])
             ->one();
         if (!empty($query)) {
-            return false;
+            return 'Reporting Period is Disabled';
         } else {
             return true;
         }
@@ -324,7 +326,7 @@ class LiquidationController extends Controller
             $model->check_number = $check_number;
             $model->po_transaction_id = $po_transaction_id;
             $model->is_cancelled = 0;
-            $model->status ='at_po';
+            $model->status = 'at_po';
 
             try {
                 $flag = true;
@@ -339,13 +341,14 @@ class LiquidationController extends Controller
                     }
 
                     $validateReportingPeriod = $this->validateReportingPeriod($reporting_period, $province, $model->checkRange->bank_account_id);
-                    if ($validateReportingPeriod === false) {
+                    if ($validateReportingPeriod !== true) {
                         $transaction->rollBack();
-                        return json_encode(['check_error' => 'Reporting Period is Disabled']);
-                    } else if ($validateReportingPeriod === 'empty') {
-                        $transaction->rollBack();
-                        return json_encode(['check_error' => 'No Reporting Period']);
+                        return json_encode(['check_error' => $validateReportingPeriod]);
                     }
+                    // else if ($validateReportingPeriod === 'empty') {
+                    //     $transaction->rollBack();
+                    //     return json_encode(['check_error' => 'No Reporting Period']);
+                    // }
 
 
                     if ($model->save(false)) {
