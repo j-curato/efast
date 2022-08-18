@@ -69,7 +69,7 @@ $property_custodian_position = $model->property->employee->position
                             <br>
                             <br>
                             <br>
-                        
+
                         </th>
                     </tr>
                     <tr>
@@ -148,7 +148,7 @@ $property_custodian_position = $model->property->employee->position
                             <span>Position/Office</span>
                             <br>
                             <br>
-                            <span style="border-bottom: 1px solid black;"><?php echo DateTime::createFromFormat('Y-m-d',$model->date)->format('F d, Y')?></span>
+                            <span style="border-bottom: 1px solid black;"><?php echo DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y') ?></span>
                             <br>
                             <span>Date</span>
                         </td>
@@ -178,14 +178,14 @@ $property_custodian_position = $model->property->employee->position
         } else {
         ?>
             <table>
-          
+
                 <tbody>
                     <tr>
                         <th colspan="6" style="text-align: center;">
-                        <br>
-                        PROPERTY ACKNOWLEDGEMENT RECIEPT
-                        <br>
-                    </th>
+                            <br>
+                            PROPERTY ACKNOWLEDGEMENT RECIEPT
+                            <br>
+                        </th>
                     </tr>
                     <tr>
                         <th colspan="6">
@@ -303,7 +303,7 @@ $property_custodian_position = $model->property->employee->position
                     if (!empty($model->actual_user)) {
                         $user_name = "{$model->actualUser->f_name} {$model->actualUser->m_name[0]}. {$model->actualUser->l_name} ";
                         echo "        <tr>
-                    <th class='foot' colspan='3' style='text-align:center;padding-top:5rem'>
+                    <th class='foot' colspan='3' style='text-align:center;padding-top:5rem;border-bottom: 1px solid black;'>
                         <span style='text-decoration:underline'>
                             <span>$user_name </span>
                            
@@ -311,7 +311,7 @@ $property_custodian_position = $model->property->employee->position
                         <br>
                         <span> Signatue over Printed Name of Actual User</span>
                     </th>
-                    <th class='foot' colspan='3' style='text-align:center;padding-top:5rem'>
+                    <th class='foot' colspan='3' style='text-align:center;padding-top:5rem;border-bottom: 1px solid black;'>
                 
                     </th>
 
@@ -335,9 +335,11 @@ $property_custodian_position = $model->property->employee->position
         padding: 12px;
         border: 1px solid black;
     }
-.no-border{
-    border: none;
-}
+
+    .no-border {
+        border: none;
+    }
+
     .center {
         text-align: center;
     }
