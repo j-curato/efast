@@ -23,9 +23,13 @@ if ($model->type == 'single' || $model->type == 'multiple') {
     $iar_data = ArrayHelper::map($query, 'fk_iar_id', 'iar_number');
     // var_dump();
     if ($model->type == 'multiple') {
-        $iar_val = array_column($query, 'fk_iar_id');
+        if (!empty($query)) {
+            $iar_val = array_column($query, 'fk_iar_id');
+        }
     } else if ($model->type == 'single') {
-        $iar_val = key($iar_data);
+        if (!empty($query)) {
+            $iar_val = key($iar_data);
+        }
     }
 }
 ?>
