@@ -327,7 +327,8 @@ class LiquidationController extends Controller
             $model->po_transaction_id = $po_transaction_id;
             $model->is_cancelled = 0;
             $model->status = 'at_po';
-
+            $model->particular = null;
+            $model->payee = null;
             try {
                 $flag = true;
                 if ($model->validate()) {
