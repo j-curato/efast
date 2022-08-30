@@ -580,7 +580,8 @@ class TransactionController extends Controller
             WHERE iar.id = :id
             GROUP BY
             payee.id,
-            payee.account_name
+            payee.account_name,
+            pr_purchase_request.purpose
             ")
                 ->bindValue(':id', $id)
                 ->queryOne();
