@@ -88,13 +88,16 @@ class IarController extends Controller
         WHERE iar.id = :id
         GROUP BY 
         unit_head.employee_name,
-        chairperson.employee_name,
-        inspector.employee_name,
-        property_unit.employee_name,
-        payee.account_name,
-        pr_project_procurement.title,
-         DATE_FORMAT(request_for_inspection_items.`from`,'%M %d, %Y'),
-        DATE_FORMAT(request_for_inspection_items.`to`,'%M %d, %Y')")
+        chairperson.employee_name ,
+        inspector.employee_name ,
+        property_unit.employee_name ,
+        payee.account_name ,
+        pr_project_procurement.title ,
+         DATE_FORMAT(request_for_inspection_items.`from`,'%M %d, %Y') ,
+        DATE_FORMAT(request_for_inspection_items.`to`,'%M %d, %Y') ,
+        DATE_FORMAT(iar.created_at,'%M %d, %Y') ,
+        DATE_FORMAT(pr_purchase_order.po_date,'%M %d, %Y') ,
+        CONCAT(pr_office.division,'-',pr_office.unit)")
             ->bindValue(':id', $id)
             ->queryOne();
         return $query;
