@@ -46,18 +46,23 @@ if (!empty($model->fk_property_unit)) {
         ->bindValue(':id', $model->fk_property_unit)->queryAll();
     $property_unit = ArrayHelper::map($property_unitQuery, 'employee_id', 'employee_name');
 }
+if (!empty($model->fk_requested_by)) {
+    $requested_byQuery = Yii::$app->db->createCommand("SELECT employee_name,employee_id FROM employee_search_view WHERE employee_id = :id")
+        ->bindValue(':id', $model->fk_requested_by)->queryAll();
+    $requested_by = ArrayHelper::map($requested_byQuery, 'employee_id', 'employee_name');
+}
 // if (!empty($model->fk_requested_by_division)) {
 //     $requested_by_query = Yii::$app->db->createCommand("SELECT UPPER(division) as division,id FROM divisions WHERE id = :id")
 //         ->bindValue(':id', $model->fk_requested_by_division)->queryAll();
 //     $requested_by = ArrayHelper::map($requested_by_query, 'id', 'division');
 // }
-if (!Yii::$app->user->can('super-user')) {
-    $requested_by = ArrayHelper::map(Yii::$app->db->createCommand("SELECT id,UPPER(CONCAT(division,'-',unit)) as division FROM pr_office WHERE office='RO' AND  division = :division")
-        ->bindValue(':division', Yii::$app->user->identity->division)
-        ->queryAll(), 'id', 'division');
-} else {
-    $requested_by = ArrayHelper::map(Yii::$app->db->createCommand("SELECT id,UPPER(CONCAT(division,'-',unit))  as division FROM pr_office WHERE office='RO'")->queryAll(), 'id', 'division');
-}
+// if (!Yii::$app->user->can('super-user')) {
+//     $requested_by = ArrayHelper::map(Yii::$app->db->createCommand("SELECT id,UPPER(CONCAT(division,'-',unit)) as division FROM pr_office WHERE office='RO' AND  division = :division")
+//         ->bindValue(':division', Yii::$app->user->identity->division)
+//         ->queryAll(), 'id', 'division');
+// } else {
+//     $requested_by = ArrayHelper::map(Yii::$app->db->createCommand("SELECT id,UPPER(CONCAT(division,'-',unit))  as division FROM pr_office WHERE office='RO'")->queryAll(), 'id', 'division');
+// }
 
 ?>
 
@@ -84,26 +89,26 @@ if (!Yii::$app->user->can('super-user')) {
 
         ?>
         <div class="col-sm-3">
-            <?= $form->field($model, 'fk_pr_office_id')->widget(Select2::class, [
+            <?= $form->field($model, 'fk_requested_by')->widget(Select2::class, [
                 'data' => $requested_by,
-                'options' => ['placeholder' => 'Search for a Division ...'],
-                // 'pluginOptions' => [
-                //     'allowClear' => true,
-                //     'minimumInputLength' => 1,
-                //     'language' => [
-                //         'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                //     ],
-                //     'ajax' => [
-                //         'url' => Yii::$app->request->baseUrl . '?r=divisions/search-division',
-                //         'dataType' => 'json',
-                //         'delay' => 250,
-                //         'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                //         'cache' => true
-                //     ],
-                //     'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                //     'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                //     'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                // ],
+                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
 
             ]) ?>
         </div>

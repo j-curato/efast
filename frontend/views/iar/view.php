@@ -21,8 +21,8 @@ $po_date = '';
 $date_generated = '';
 $date_inspected = '';
 $end_user = '';
-if (!empty($model->fk_end_user)) {
-    $end_user = YIi::$app->db->createCommand("SELECT employee_name FROM employee_search_view WHERE employee_id = :id")->bindValue(':id', $model->fk_end_user)->queryScalar();
+if (!empty($model->inspectionReport->fk_end_user)) {
+    $end_user = YIi::$app->db->createCommand("SELECT employee_name FROM employee_search_view WHERE employee_id = :id")->bindValue(':id', $model->inspectionReport->fk_end_user)->queryScalar();
 }
 if (!empty($signatories['chairperson'])) {
     $chairperson = $signatories['chairperson'];
@@ -63,8 +63,8 @@ if (!empty($signatories['inspection_from_date'])) {
 <div class="iar-view">
     <div class="container">
         <p>
-            <?= Html::a('IR Link', ['inspection-report/view', 'id' => $model->fk_ir_id], ['class' => 'btn btn-link','style' => 'margin-bottom:2rem']) ?>
-            <?= Html::a('Add End-User', ['update', 'id' => $model->id], ['class' => 'btn btn-primary', 'title' => 'Update', 'style' => 'margin-bottom:2rem']); ?>
+            <?= Html::a('IR Link', ['inspection-report/view', 'id' => $model->fk_ir_id], ['class' => 'btn btn-link', 'style' => 'margin-bottom:2rem']) ?>
+            <!-- <?= Html::a('Add End-User', ['update', 'id' => $model->id], ['class' => 'btn btn-primary', 'title' => 'Update', 'style' => 'margin-bottom:2rem']); ?> -->
         </p>
 
         <table class="iar">

@@ -7,52 +7,45 @@ use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\InspectionReport */
+/* @var $model app\models\Iar */
 /* @var $form yii\widgets\ActiveForm */
 
-$rfi = [];
-if (!empty($model->fk_request_for_inspection_item_id)) {
+$end_user = '';
 
-    $rfi_query = YIi::$app->db->createCommand("SELECT id,rfi_number FROM request_for_inspection WHERE id =:id")
-        ->bindValue(':id', $model->fk_request_for_inspection_item_id)
-        ->queryAll();
-    $rfi = ArrayHelper::map($rfi_query, 'id', 'rfi_number');
+if (!empty($model->fk_end_user)) {
+    $query = Yii::$app->db->createCommand("SELECT employee_id,employee_name FROM employee_search_view WHERE employee_id = :id ")->bindValue(':id', $model->fk_end_user)->queryAll();
+    $end_user = ArrayHelper::map($query, 'employee_id', 'employee_name');
 }
 ?>
 
-<div class="inspection-report-form">
+<div class="iar-form">
 
     <?php $form = ActiveForm::begin(); ?>
 
 
-    <div class="row">
+    <?= $form->field($model, 'fk_end_user')->widget(Select2::class, [
+        'data' => $end_user,
+        'options' => ['placeholder' => 'Search for a Employee ...'],
+        'pluginOptions' => [
+            'allowClear' => true,
+            'minimumInputLength' => 1,
+            'language' => [
+                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+            ],
+            'ajax' => [
+                'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                'dataType' => 'json',
+                'delay' => 250,
+                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                'cache' => true
+            ],
+            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+        ],
 
-        <div class="col-sm-3">
-            <?= $form->field($model, 'fk_request_for_inspection_item_id')->widget(Select2::class, [
-                'data' => $rfi,
-                'options' => ['placeholder' => 'Search for a RFI ...'],
-                'pluginOptions' => [
-                    'allowClear' => true,
-                    'minimumInputLength' => 1,
-                    'language' => [
-                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                    ],
-                    'ajax' => [
-                        'url' => Yii::$app->request->baseUrl . '?r=request-for-inspection/search-rfi',
-                        'dataType' => 'json',
-                        'delay' => 250,
-                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                        'cache' => true
-                    ],
-                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                ],
+    ]) ?>
 
-            ]) ?>
-
-        </div>
-    </div>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

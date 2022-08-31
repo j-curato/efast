@@ -32,6 +32,10 @@ if (!empty($signatories)) {
         $inspect_date = $signatories['from_date'];
     }
 }
+$end_user = '';
+if (!empty($model->fk_end_user)) {
+    $end_user = YIi::$app->db->createCommand("SELECT employee_name FROM employee_search_view WHERE employee_id = :id")->bindValue(':id', $model->fk_end_user)->queryScalar();
+}
 ?>
 <div class="inspection-report-view">
 
@@ -43,6 +47,8 @@ if (!empty($signatories)) {
         if (!empty($iar_id)) {
             echo ' ' . Html::a('IAR Link', ['iar/view', 'id' => $iar_id], ['class' => 'btn btn-warning']);
         }
+        echo ' ' . Html::a('Add End-User', ['update', 'id' => $model->id], ['class' => 'btn btn-success', 'title' => 'Update']);
+
         ?>
         <table>
             <tr>
@@ -114,11 +120,11 @@ if (!empty($signatories)) {
             </tr>
             <tr>
                 <td colspan="2">
-                    <span class='box'></span>
+                    <span class='check_box'></span>
                     <span>For Full Acceptance</span><br>
-                    <span class='box'></span>
+                    <span class='check_box'></span>
                     <span>For Partial Acceptance/Rejection</span><br>
-                    <span class='box'></span>
+                    <span class='check_box'></span>
                     <span>For Rejection</span><br>
                 </td>
             </tr>
@@ -140,6 +146,14 @@ if (!empty($signatories)) {
                     <br>
                     <span>Chairperson, Inspection Commitee</span>
                 </td>
+            </tr>
+            <tr>
+                <td class="center" style="padding-top: 6rem;">
+                    <span class="bold"><?= $end_user ?></span>
+                    <br>
+                    <span>End-User</span>
+                </td>
+
             </tr>
             <tr>
                 <td style="text-align: right;  padding-right:5rem;padding-top:5rem;" colspan='2'>
@@ -207,7 +221,7 @@ if (!empty($signatories)) {
         /* border: 1px solid black; */
     }
 
-    .box {
+    .check_box {
         height: 4px;
         border: 1px solid black;
         padding-left: 15px;
@@ -237,3 +251,16 @@ if (!empty($signatories)) {
 
     }
 </style>
+<?php
+$js = <<<JS
+    $(document).ready(function(){
+
+        $('a[title=Update]').click(function(e){
+            e.preventDefault();
+            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
+        });
+    })
+JS;
+$this->registerJs($js);
+
+?>

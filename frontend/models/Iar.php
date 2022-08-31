@@ -49,7 +49,7 @@ class Iar extends \yii\db\ActiveRecord
             'fk_end_user' => 'End User',
         ];
     }
-    public function getInspetionReport()
+    public function getInspectionReport()
     {
         return $this->hasOne(InspectionReport::class, ['id' => 'fk_ir_id']);
     }
