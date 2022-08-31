@@ -116,8 +116,18 @@ class TransactionController extends Controller
      */
     public function actionView($id)
     {
+
+        $iars_query  = Yii::$app->db->createCommand("SELECT iar.iar_number FROM `transaction` 
+        INNER JOIN transaction_iars ON `transaction`.id = transaction_iars.fk_transaction_id
+        INNER JOIN iar ON transaction_iars.fk_iar_id = iar.id
+        WHERE `transaction`.id = :id")
+            ->bindValue(':id', $id)
+            ->queryAll();
+        $iars =    !empty($iars_query) ? 'IAR#:(' . implode(',', array_column($iars_query, 'iar_number')) . ')' : '';
+        // return json_encode($iars);
         return $this->render('ors_form', [
             'model' => $this->findModel($id),
+            'iars' => $iars
         ]);
     }
 

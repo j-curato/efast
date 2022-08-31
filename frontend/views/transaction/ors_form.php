@@ -12,6 +12,7 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 $this->title = 'Transaction Forms';
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="jev-preparation-index" id='doc'>
 
@@ -118,7 +119,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         ?>
                     </td>
                     <td colspan='2' style="padding-bottom: 10rem;max-width:250px">
-                        <?php echo $model->particular ?>
+                        <?php
+                        echo $model->particular . ' ' . $iars;
+                        ?>
                     </td>
                     <td colspan='2' style="min-width: 150px;">
                     </td>
@@ -389,7 +392,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <td colspan='2' style='padding-bottom:10rem'>
-                        <?php echo $model->particular ?>
+                        <?php echo $model->particular . ' ' . $iars; ?>
                     </td>
                     <td colspan="3">
                     </td>
