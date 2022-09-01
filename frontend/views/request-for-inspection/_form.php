@@ -31,6 +31,7 @@ $chairperson = '';
 $inspector = '';
 $property_unit = '';
 $requested_by = '';
+$rspnse_center = '';
 if (!empty($model->fk_chairperson)) {
     $chairpersonQuery = Yii::$app->db->createCommand("SELECT employee_name,employee_id FROM employee_search_view WHERE employee_id = :id")
         ->bindValue(':id', $model->fk_chairperson)->queryAll();
@@ -50,6 +51,12 @@ if (!empty($model->fk_requested_by)) {
     $requested_byQuery = Yii::$app->db->createCommand("SELECT employee_name,employee_id FROM employee_search_view WHERE employee_id = :id")
         ->bindValue(':id', $model->fk_requested_by)->queryAll();
     $requested_by = ArrayHelper::map($requested_byQuery, 'employee_id', 'employee_name');
+}
+if (!empty($model->fk_responsibility_center_id)) {
+
+    $rspnse_centerQuery = Yii::$app->db->createCommand("SELECT id,responsibility_center.`name` FROM responsibility_center WHERE responsibility_center.id = :id")
+        ->bindValue(':id', $model->fk_responsibility_center_id)->queryAll();
+    $rspnse_center = ArrayHelper::map($rspnse_centerQuery, 'id', 'name');
 }
 // if (!empty($model->fk_requested_by_division)) {
 //     $requested_by_query = Yii::$app->db->createCommand("SELECT UPPER(division) as division,id FROM divisions WHERE id = :id")
@@ -81,6 +88,38 @@ if (!empty($model->fk_requested_by)) {
                 ]
             ]) ?>
         </div>
+        <?php
+        if (YIi::$app->user->can('super-user')) {
+
+        ?>
+            <div class="col-sm-3">
+
+
+                <?= $form->field($model, 'fk_responsibility_center_id')->widget(Select2::class, [
+                    'data' => $rspnse_center,
+                    'options' => ['placeholder' => 'Search for a Responsibility Center ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Yii::$app->request->baseUrl . '?r=responsibility-center/search-responsibility-center',
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
+
+                ]) ?>
+
+            </div>
+        <?php } ?>
     </div>
     <div class="row">
         <?php

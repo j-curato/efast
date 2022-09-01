@@ -65,6 +65,10 @@ if (!empty($model->fk_requested_by)) {
                         'method' => 'post',
                     ],
                 ]);
+            } else {
+                if (Yii::$app->user->can('super-user')) {
+                    echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) . ' ';
+                }
             }
             ?>
         </p>

@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\ResponsibilityCenter;
 use app\models\ResponsibilityCenterSearch;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -161,5 +162,26 @@ class ResponsibilityCenterController extends Controller
     {
         $rc = Yii::$app->db->createCommand("SELECT * FROM responsibility_center ")->queryAll();
         return json_encode($rc);
+    }
+
+    public function actionSearchResponsibilityCenter($q = null, $id = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $user_province = strtolower(Yii::$app->user->identity->province);
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if ($id > 0) {
+        } else if (!is_null($q)) {
+            $query = new Query();
+            $query->select('responsibility_center.id, UPPER(responsibility_center.name) AS text')
+                ->from('responsibility_center')
+                ->where(['like', 'responsibility_center.name', $q]);
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        return $out;
     }
 }

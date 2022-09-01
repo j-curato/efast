@@ -67,9 +67,9 @@ class RequestForInspectionIndexSearch extends RequestForInspectionIndex
     public function search($params)
     {
         $query = RequestForInspectionIndex::find();
-        if (!yii::$app->user->can('super-user')) {
-            $query->andWhere('division = :division', ['division' => Yii::$app->user->identity->division]);
-        }
+        // if (!yii::$app->user->can('super-user')) {
+        //     $query->andWhere('division = :division', ['division' => Yii::$app->user->identity->division]);
+        // }
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
@@ -86,7 +86,8 @@ class RequestForInspectionIndexSearch extends RequestForInspectionIndex
 
 
 
-
+        var_dump($query->all());
+        die();
 
 
         // grid filtering conditions

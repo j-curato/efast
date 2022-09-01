@@ -29,6 +29,7 @@ class RequestForInspectionSearch extends RequestForInspection
                 'fk_property_unit',
                 'fk_pr_office_id',
                 'unit_head',
+                'fk_responsibility_center_id'
             ], 'safe'],
             // [[
             //     'rfi_number',
@@ -64,9 +65,9 @@ class RequestForInspectionSearch extends RequestForInspection
     public function search($params)
     {
         $query = RequestForInspection::find();
-        $query->joinWith('office');
+        $query->joinWith('responsibilityCenter');
         if (!yii::$app->user->can('super-user')) {
-            $query->andWhere('pr_office.division = :division', ['division' => Yii::$app->user->identity->division]);
+            $query->andWhere('responsibility_center.name = :division', ['division' => Yii::$app->user->identity->division]);
         }
         // add conditions that should always apply here
 
@@ -98,7 +99,7 @@ class RequestForInspectionSearch extends RequestForInspection
             'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['like', 'rfi_number', $this->rfi_number])
+        $query->andFilterWhere(['like', 'responsibility_center.name', $this->fk_responsibility_center_id])
             ->andFilterWhere([
                 'or', ['like', 'chairperson.f_name', $this->fk_chairperson],
                 ['like', 'chairperson.m_name', $this->fk_chairperson],

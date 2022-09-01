@@ -34,7 +34,7 @@ class RequestForInspection extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'rfi_number', 'date', 'fk_requested_by'], 'required'],
+            [['id', 'rfi_number', 'date', 'fk_requested_by', 'fk_responsibility_center_id'], 'required'],
             [['id', 'fk_chairperson', 'fk_inspector', 'fk_property_unit', 'fk_pr_office_id', 'is_final', 'fk_requested_by'], 'integer'],
             [['date', 'created_at'], 'safe'],
             [['rfi_number'], 'string', 'max' => 255],
@@ -48,7 +48,7 @@ class RequestForInspection extends \yii\db\ActiveRecord
                 'fk_inspector',
                 'fk_property_unit',
                 'fk_requested_by',
-
+                'fk_responsibility_center_id',
 
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
@@ -70,6 +70,7 @@ class RequestForInspection extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'is_final' => 'Final',
             'fk_requested_by' => 'Requested By',
+            'fk_responsibility_center_id' => 'Division',
 
 
         ];
@@ -100,5 +101,9 @@ class RequestForInspection extends \yii\db\ActiveRecord
     public function getOffice()
     {
         return $this->hasOne(PrOffice::class, ['id' => 'fk_pr_office_id']);
+    }
+    public function getResponsibilityCenter()
+    {
+        return $this->hasOne(ResponsibilityCenter::class, ['id' => 'fk_responsibility_center_id']);
     }
 }

@@ -33,31 +33,17 @@ $this->params['breadcrumbs'][] = $this->title;
             'rfi_number',
             'date',
             [
-                'attribute' => 'fk_pr_office_id',
+                'attribute' => 'fk_responsibility_center_id',
                 'value' => function ($model) {
                     $emp = '';
-                    if (!empty($model->fk_pr_office_id)) {
-                        $dvsn = !empty($model->office->division) ? $model->office->division : '';
-                        $unit = !empty($model->office->unit) ? $model->office->unit : '';
-                        $emp =  $dvsn . '-' .  $unit;
+                    if (!empty($model->responsibilityCenter->id)) {
+                        $dvsn = !empty($model->responsibilityCenter->name) ? $model->responsibilityCenter->name : '';
+                        $emp =  $dvsn;
                     }
                     return $emp;
                 }
             ],
-            [
-                'attribute' => 'unit_head',
-                'value' => function ($model) {
-                    $emp = '';
-                    if (!empty($model->office->id)) {
 
-                        if (!empty($model->office->unitHead->f_name)) {
-                            $emp = $model->office->unitHead->f_name . ' ' .  $model->office->unitHead->m_name[0] . '. ' .  $model->office->unitHead->l_name;
-                        }
-                        // $emp = $model->office->unitHead->f_name;
-                    }
-                    return $emp;
-                }
-            ],
             [
                 'attribute' => 'fk_chairperson',
                 'value' => function ($model) {
@@ -73,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function ($model) {
                     $emp = '';
                     if (!empty($model->fk_inspector)) {
-                         $emp = $model->inspector->f_name . ' ' .  $model->inspector->m_name[0] . '. ' .  $model->inspector->l_name;
+                        $emp = $model->inspector->f_name . ' ' .  $model->inspector->m_name[0] . '. ' .  $model->inspector->l_name;
                     }
                     return $emp;
                 }
