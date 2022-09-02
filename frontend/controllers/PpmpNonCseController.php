@@ -65,7 +65,7 @@ class PpmpNonCseController extends Controller
         ppmp_non_cse_items.target_month,
         fund_source.`name` as fund_source_name,
         CONCAT(mfo_pap_code.`code` ,'-',mfo_pap_code.`name`) as mfo_name,
-        employee_search_view.employee_name,
+        responsibility_center.`name` end_user,
         
         
         pr_stock_type.type,
@@ -73,9 +73,10 @@ class PpmpNonCseController extends Controller
         FROM ppmp_non_cse_items
         LEFT JOIN ppmp_non_cse_item_categories ON ppmp_non_cse_items.id = ppmp_non_cse_item_categories.ppmp_non_cse_item_id
         LEFT JOIN pr_stock_type ON ppmp_non_cse_item_categories.fk_stock_type = pr_stock_type.id
-        LEFT JOIN employee_search_view ON ppmp_non_cse_items.fk_end_user = employee_search_view.employee_id
+        LEFT JOIN responsibility_center ON ppmp_non_cse_items.fk_responsibility_center_id = responsibility_center.id
         LEFT JOIN mfo_pap_code ON ppmp_non_cse_items.fk_pap_code_id = mfo_pap_code.id
         LEFT JOIN fund_source ON ppmp_non_cse_items.fk_fund_source_id = fund_source.id
+        
         
         WHERE 
         
@@ -117,7 +118,7 @@ class PpmpNonCseController extends Controller
                 $item->fk_pap_code_id = !empty($pap_code[$index]) ? $pap_code[$index] : '';
                 $item->fk_ppmp_non_cse_id = $ppm_id;
                 $item->description = !empty($description[$index]) ? $description[$index] : '';
-                $item->fk_end_user = !empty($end_user[$index]) ? $end_user[$index] : '';
+                $item->fk_responsibility_center_id = !empty($end_user[$index]) ? $end_user[$index] : '';
                 if ($item->validate()) {
                     if ($item->save(false)) {
                         foreach ($stock_type[$index] as $stock_index => $stck_id) {
@@ -206,15 +207,18 @@ class PpmpNonCseController extends Controller
          ppmp_non_cse_items.target_month,
          ppmp_non_cse_items.fk_fund_source_id,
          ppmp_non_cse_items.fk_pap_code_id,
-         employee_search_view.employee_name,
-         employee_search_view.employee_id,
+         mfo_pap_code.name as mfo_pap_name,
+         responsibility_center.id as responsibility_center_id,
+         responsibility_center.name as responsibility_center_name,
          pr_stock_type.id as stock_id,
          pr_stock_type.type,
+         ppmp_non_cse_item_categories.id as category_id,
          ppmp_non_cse_item_categories.budget
          FROM ppmp_non_cse_items
          LEFT JOIN ppmp_non_cse_item_categories ON ppmp_non_cse_items.id = ppmp_non_cse_item_categories.ppmp_non_cse_item_id
          LEFT JOIN pr_stock_type ON ppmp_non_cse_item_categories.fk_stock_type = pr_stock_type.id
-         LEFT JOIN employee_search_view ON ppmp_non_cse_items.fk_end_user = employee_search_view.employee_id
+         LEFT JOIN responsibility_center ON ppmp_non_cse_items.fk_responsibility_center_id = responsibility_center.id
+         LEFT JOIN mfo_pap_code ON ppmp_non_cse_items.fk_pap_code_id = mfo_pap_code.id
          WHERE 
          
           ppmp_non_cse_items.fk_ppmp_non_cse_id = :id")

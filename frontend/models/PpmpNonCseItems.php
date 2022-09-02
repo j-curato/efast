@@ -14,7 +14,7 @@ use Yii;
  * @property int $fk_pap_code_id
  * @property int|null $fk_ppmp_non_cse_id
  * @property string $description
- * @property int $fk_end_user
+ * @property int $fk_responsibility_center_id
  * @property string $created_at
  *
  * @property PpmpNonCseItemCategories[] $ppmpNonCseItemCategories
@@ -36,8 +36,8 @@ class PpmpNonCseItems extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'project_name', 'target_month', 'fk_fund_source_id', 'fk_pap_code_id', 'description', 'fk_end_user'], 'required'],
-            [['id', 'fk_fund_source_id', 'fk_pap_code_id', 'fk_ppmp_non_cse_id', 'fk_end_user'], 'integer'],
+            [['id', 'project_name', 'target_month', 'fk_fund_source_id', 'fk_pap_code_id', 'description', 'fk_responsibility_center_id'], 'required'],
+            [['id', 'fk_fund_source_id', 'fk_pap_code_id', 'fk_ppmp_non_cse_id', 'fk_responsibility_center_id'], 'integer'],
             [['project_name', 'description'], 'string'],
             [['target_month', 'created_at'], 'safe'],
             [['id'], 'unique'],
@@ -58,7 +58,7 @@ class PpmpNonCseItems extends \yii\db\ActiveRecord
             'fk_pap_code_id' => 'Fk Pap Code ID',
             'fk_ppmp_non_cse_id' => 'Fk Ppmp Non Cse ID',
             'description' => 'Description',
-            'fk_end_user' => 'Fk End User',
+            'fk_responsibility_center_id' => 'Fk End User',
             'created_at' => 'Created At',
         ];
     }

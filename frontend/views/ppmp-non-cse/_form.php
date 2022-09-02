@@ -1,17 +1,18 @@
 <?php
 
 use aryelds\sweetalert\SweetAlertAsset;
-use kartik\date\DatePicker;
-use kartik\money\MaskMoneyAsset;
+
 use kartik\select2\Select2Asset;
+use kartik\date\DatePicker;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use kartik\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PpmpNonCse */
 /* @var $form yii\widgets\ActiveForm */
 
 $ppmp_item_counter = 1;
+
 ?>
 
 <div class="ppmp-non-cse-form bg-white">
@@ -21,17 +22,22 @@ $ppmp_item_counter = 1;
         'enableAjaxValidation' => false,
     ]); ?>
 
-    <div class="row">
-        <div class="col-sm-3">
-            <?= $form->field($model, 'date')->widget(DatePicker::class, [
-                'pluginOptions' => [
-                    'format' => 'yyyy-mm-dd'
-                ]
-            ]) ?>
-        </div>
-    </div>
+
 
     <ul id="ppmp_items">
+        <li class="panel panel-default">
+            <div class="row">
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'date')->widget(DatePicker::class, [
+                        'options' => ['placeholder' => 'Enter Date ...'],
+                        'pluginOptions' => [
+                            'format' => 'yyyy-mm-dd',
+                            'autoclose' => true
+                        ]
+                    ]) ?>
+                </div>
+            </div>
+        </li>
 
         <?php
         if (!empty($items)) {
@@ -50,69 +56,63 @@ $ppmp_item_counter = 1;
                 $project_name = $val[$min_key]['project_name'];
                 $description = $val[$min_key]['description'];
                 $target_month = $val[$min_key]['target_month'];
-                $employee_id = $val[$min_key]['employee_id'];
-                $employee_name = $val[$min_key]['employee_name'];
+                $responsibility_center_id = $val[$min_key]['responsibility_center_id'];
+                $responsibility_center_name = $val[$min_key]['responsibility_center_name'];
                 $fund_source_id = $val[$min_key]['fk_fund_source_id'];
                 $mfo_id = $val[$min_key]['fk_pap_code_id'];
+                $mfo_pap_name = $val[$min_key]['mfo_pap_name'];
+                $category_id = $val[$min_key]['category_id'];
+                $item_id = $val[$min_key]['item_id'];
 
-                echo "<li>
-            <div class='row'>
-                <div class='col-sm-3 col-sm-offset-9'>
-                    <h5>Add/Remove Project</h5>
-                    <button type='button' class='add btn btn-success '><i class='glyphicon glyphicon-plus'></i></button>
-                    <button type='button' class='remove_item btn btn-danger '><i class='fa fa-times fa-fw'></i></button>
+                echo "<li class='panel panel-default'>
+                <input type='text' class='form-control update_item_id' name='itemId[$ppmp_item_counter]'  value='$item_id' required>
+                <div class='row'>
+                    <div class='col-sm-3'>
+                        <h5>Add/Remove Project</h5>
+                        <button type='button' class='add btn-xs btn-success '><i class='glyphicon glyphicon-plus'></i></button>
+                        <button type='button' class='remove_item btn-xs btn-danger '><i class='fa fa-times fa-fw'></i></button>
+                    </div>
                 </div>
-            </div>
+                <div class='row'>
+                    <div class='col-sm-12 form-group'>
+                        <label for='project_name'> Project Name</label>
+                        <input type='text' class='form-control project_name' name='project_name[$ppmp_item_counter]'  value='$project_name' required>
+                    </div>
+                </div>
+                <div class='row'>
+                    <div class='col-sm-12 form-group'>
+                        <label for='description'> Description</label>
+                        <textarea class='form-control description' name='description[$ppmp_item_counter]' cols='30' rows='1' style='max-width: 100%;' required>$description</textarea>
+                    <div>
+                </div>
+                <div class='row'>
+            
+             
+                    <div class='col-sm-12 form-group'>
+                        <label for='target_month'> Target Month</label>
+                        <input type='input' class='form-control target_month' name='target_month[$ppmp_item_counter]'  value='$target_month' required>
+                    </div>
+                </div>
             <div class='row'>
                 <div class='col-sm-4 form-group'>
-                    <label for='project_name'> Project Name</label>
-                    <input type='text' class='form-control project_name' name='project_name[$ppmp_item_counter]'  value='$project_name' required>
-                </div>
-                <div class='col-sm-6 form-group'>
-                    <label for='description'> Description</label>
-                    <textarea class='form-control description' name='description[$ppmp_item_counter]' cols='30' rows='1' style='max-width: 100%;' required>$description</textarea>
-                </div>
-                <div class='col-sm-2 form-group'>
-                    <label for='target_month'> Target Month</label>
-                    <input type='date' class='form-control target_month' name='target_month[$ppmp_item_counter]'  value='$target_month' required>
-                </div>
-            </div>
-            <div class='row'>
-                <div class='col-sm-3 form-group'>
                     <label for='fund_source'> Fund Source</label>
                     <select name='fund_source[$ppmp_item_counter]' class='fund_source form-control'>
-                        <option>Select Fund Source</option>";
-                foreach ($fund_source as $fund_source_val) {
-                    $selected = '';
-                    if ($fund_source_id === $fund_source_val['id']) {
-                        $selected = 'selected';
-                    }
-                    echo "<option value='{$fund_source_val['id']}' $selected>{$fund_source_val['name']}</option>";
-                }
-                echo "</select>
+                        <option>Select Fund Source</option></select>
                 </div>
-                <div class='col-sm-3' class='form-group'>
+                <div class='col-sm-4' class='form-group'>
                     <label for='pap_code'> PAP Code</label>
-                    <select name='pap_code[$ppmp_item_counter]' class='pap_code form-control'>
-                        <option>Select Fund Source</option>";
-                foreach ($mfo as $mfo_val) {
-                    $selected = '';
-                    if ($mfo_id === $mfo_val['id']) {
-                        $selected = 'selected';
-                    }
-                    echo "<option value='{$mfo_val['id']}' $selected>{$mfo_val['name']}</option>";
-                }
-                echo "</select>
+                    <select name='pap_code[$ppmp_item_counter]' class='pap_code mfo_pap_code form-control'>
+                        <option value='$mfo_id'>$mfo_pap_name</option>
+                        </select>
                 </div>
-                <div class='col-sm-3' class='form-group'>
+                <div class='col-sm-4' class='form-group'>
                     <label for='end_user'> End User</label>
                     <select name='end_user[$ppmp_item_counter]' class='employee_select end_user form-control'>
-                        <option value='$employee_id'>$employee_name</option>
+                        <option value='$responsibility_center_id'>$responsibility_center_name</option>
                     </select>
                 </div>
 
             </div>
-            <div class='col-sm-12'>
                 <table class=''>
                     <thead>
                         <th colspan='3'>Add Category <button type='button' class='btn-xs btn-primary add_category'  row='$ppmp_item_counter'><i class='glyphicon glyphicon-plus'></i></button></th>
@@ -153,38 +153,44 @@ $ppmp_item_counter = 1;
                     </tbody>
 
                 </table>
-            </div>
-
+<hr>
         </li>";
                 $ppmp_item_counter++;
             }
         } else {
 
         ?>
-            <li>
+            <li class="panel panel-default">
                 <div class="row">
-                    <div class="col-sm-3 col-sm-offset-9">
+                    <div class="col-sm-3 ">
                         <h5>Add/Remove Project</h5>
-                        <button type="button" class='add btn btn-success '><i class="glyphicon glyphicon-plus"></i></button>
-                        <button type="button" class='remove_item btn btn-danger '><i class='fa fa-times fa-fw'></i></button>
+                        <button type="button" class='add btn-xs btn-success '><i class="glyphicon glyphicon-plus"></i></button>
+                        <button type="button" class='remove_item btn-xs btn-danger '><i class='fa fa-times fa-fw'></i></button>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-4 form-group">
+                    <div class="col-sm-12 form-group">
                         <label for="project_name"> Project Name</label>
                         <input type="text" class="form-control project_name" name="project_name[0]" required>
                     </div>
-                    <div class="col-sm-6 form-group">
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 form-group">
                         <label for="description"> Description</label>
                         <textarea class="form-control description" name="description[0]" cols="30" rows="1" style="max-width: 100%;" required></textarea>
                     </div>
-                    <div class="col-sm-2 form-group">
+                </div>
+
+
+                <div class="row">
+                    <div class="col-sm-12 form-group">
                         <label for="target_month"> Target Month</label>
-                        <input type="date" class="form-control target_month" name="target_month[0]" required>
+                        <input type="text" class="form-control target_month" name="target_month[0]" required>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-3 form-group">
+
+                    <div class="col-sm-4 form-group">
                         <label for="fund_source"> Fund Source</label>
                         <select name="fund_source[0]" class="fund_source form-control">
                             <option>Select Fund Source</option>
@@ -196,38 +202,31 @@ $ppmp_item_counter = 1;
                             ?>
                         </select>
                     </div>
-                    <div class="col-sm-3" class="form-group">
+                    <div class="col-sm-4" class="form-group">
                         <label for="pap_code"> PAP Code</label>
-                        <select name="pap_code[0]" class="pap_code form-control">
-                            <option>Select Fund Source</option>
-                            <?php
-                            $fund_source = Yii::$app->db->createCommand("SELECT * FROM mfo_pap_code ")->queryAll();
-                            foreach ($fund_source as $val) {
-                                echo "  <option value='{$val['id']}'>{$val['name']}</option>";
-                            }
-                            ?>
+                        <select name="pap_code[0]" class="pap_code  mfo_pap_code form-control">
+                            <option>Select PAP Code</option>
+
                         </select>
                     </div>
-                    <div class="col-sm-3" class="form-group">
+                    <div class="col-sm-4" class="form-group">
                         <label for="end_user"> End User</label>
-                        <select name="end_user[0]" class="employee_select end_user form-control">
-                            <option>Select Fund Source</option>
+                        <select name="end_user[0]" class="end_user form-control">
+                            <option>Select End User</option>
                         </select>
                     </div>
 
                 </div>
-                <div class="col-sm-12">
-                    <table class="">
-                        <thead>
-                            <th colspan="3">Add Category <button type='button' class='btn-xs btn-primary add_category' row='0'><i class="glyphicon glyphicon-plus"></i></button></th>
-                        </thead>
-                        <tbody class="body">
+                <table class="">
+                    <thead>
+                        <th colspan="3">Add Category <button type='button' class='btn-xs btn-primary add_category' row='0'><i class="glyphicon glyphicon-plus"></i></button></th>
+                    </thead>
+                    <tbody class="body">
 
-                        </tbody>
+                    </tbody>
 
-                    </table>
-                </div>
-
+                </table>
+                <hr>
             </li>
         <?php } ?>
     </ul>
@@ -246,7 +245,16 @@ $ppmp_item_counter = 1;
 
     #ppmp_items li {
         padding: 3rem;
+        margin: 12px 0 12px 0;
     }
+
+    /* #ppmp_items li {
+        background: green;
+    }
+
+    #ppmp_items li:nth-child(odd) {
+        background: red;
+    } */
 
     table {
         width: 60%;
@@ -269,12 +277,48 @@ Select2Asset::register($this);
 
 ?>
 <script>
+    let responsibility_centers = []
+    let pap_codes = []
+    async function r_centers() {
+        const res = await getAllResponsibilityCenter()
+        responsibility_centers = res.responsibility_center
+        endUserSelect()
+
+
+    }
+    async function papCodes() {
+        const res = await getAllMfo()
+        pap_codes = res.mfo
+        console.log(pap_codes)
+        mfoPapSelect()
+
+
+    }
+
+    function mfoPapSelect() {
+        $('.mfo_pap_code').select2({
+            data: pap_codes,
+            placeholder: 'Select MFO/PAP Code'
+        })
+    }
+
+    function endUserSelect() {
+        $('.end_user').select2({
+            data: responsibility_centers,
+            placeholder: 'Select Responsibility Center'
+        })
+    }
+
     $(document).ready(function() {
+
+        r_centers()
+        papCodes()
         let ppmp_item_counter = <?php echo $ppmp_item_counter ?>;
-        employeeSelect()
+
         maskAmount()
         $('#ppmp_items').on('click', '.add', function(event) {
-            $('.employee_select').select2('destroy')
+            $('.end_user').select2('destroy')
+            $('.mfo_pap_code').select2('destroy')
             const source = $(this).closest('li');
             const clone = source.clone(true);
             clone.find('.project_name').attr('name', 'project_name[' + ppmp_item_counter + ']')
@@ -284,9 +328,11 @@ Select2Asset::register($this);
             clone.find('.pap_code').attr('name', 'pap_code[' + ppmp_item_counter + ']')
             clone.find('.end_user').attr('name', 'end_user[' + ppmp_item_counter + ']')
             clone.find('.add_category').attr('row', ppmp_item_counter)
+            clone.find('.update_item_id').remove()
             clone.find('table tbody').html('')
             $('#ppmp_items').append(clone)
-            employeeSelect()
+            endUserSelect()
+            mfoPapSelect()
             ppmp_item_counter++
         });
         $('.add_category').on('click', function() {
@@ -299,7 +345,7 @@ Select2Asset::register($this);
                                 <label for='stock-type '>Stock Type</label>
                                  <br>
                                 <select name='stock_type[${row_number}][]' class='stock-type form-control'>
-                                    <option >Select Fund Source</option>
+                                    <option >Select Stock Type</option>
                                 </select>
                             </div>
                             </td>
@@ -319,6 +365,7 @@ Select2Asset::register($this);
 
             closest_tr.closest('table').find('.body').append(row);
             stockTypeSelect()
+
             maskAmount()
 
         })

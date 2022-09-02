@@ -157,6 +157,60 @@ function stockTypeSelect() {
   });
 }
 
+// async function getAllResponsibilityCenter() {
+//   let responsibility_center = [];
+//   await $.getJSON(
+//     window.location.pathname +
+//       "/frontend/web/index.php?r=responsibility-center/get-responsibility-center"
+//   ).then(function (data) {
+//     $.each(data, function (key, val) {
+//       responsibility_center.push({
+//         id: val.id,
+//         text: val.name,
+//       });
+//     });
+//   });
+//   console.log(responsibility_center);
+//   return { responsibility_center };
+// }
+async function getAllResponsibilityCenter() {
+  const responsibility_center = [];
+
+  await $.ajax({
+    type: "GET",
+    url:
+      window.location.pathname +
+      "?r=responsibility-center/get-responsibility-center",
+    success: function (data) {
+      const res = JSON.parse(data);
+      $.each(res, function (key, val) {
+        responsibility_center.push({
+          id: val.id,
+          text: val.name,
+        });
+      });
+    },
+  });
+  return { responsibility_center };
+}
+async function getAllMfo() {
+  const mfo = [];
+  await $.ajax({
+    type: "GET",
+    url: window.location.pathname + "?r=mfo-pap-code/get-mfo-pap-codes",
+    success: function (data) {
+      const res = JSON.parse(data);
+      $.each(res, function (key, val) {
+        mfo.push({
+          id: val.id,
+          text: val.name,
+        });
+      });
+    },
+  });
+  return { mfo };
+}
+
 $(".mask-amount").on("keyup change", () => {
   $(".main-amount").val($(this).maskMoney("unmasked"));
 });

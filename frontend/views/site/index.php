@@ -1234,6 +1234,8 @@ $script = <<<JS
     
     async function BarChart(year =''){
         const data = await getData(year)
+     
+        console.log(   data.reporting_period)
         document.getElementById("chartContainer").innerHTML = '&nbsp;';
         document.getElementById("chartContainer").innerHTML = '<canvas id="myChart"></canvas>';
         const ctx = document.getElementById('myChart').getContext('2d');
