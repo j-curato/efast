@@ -137,3 +137,26 @@ function rfiPurchaseOrderSelect() {
     },
   });
 }
+function stockTypeSelect() {
+  $(".stock-type").select2({
+    ajax: {
+      url: base_url + "?r=pr-stock-type/search-stock-type",
+      dataType: "json",
+      data: function (params) {
+        return {
+          q: params.term,
+        };
+      },
+      processResults: function (data) {
+        // Transforms the top-level key of the response object from 'items' to 'results'
+        return {
+          results: data.results,
+        };
+      },
+    },
+  });
+}
+
+$(".mask-amount").on("keyup change", () => {
+  $(".main-amount").val($(this).maskMoney("unmasked"));
+});

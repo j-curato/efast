@@ -8,6 +8,10 @@
 .italic{
     font-style: italic;
 }
+
+.no-border{
+    border: 0;
+}
 .udl_txt{
     padding-left: 8px;
     padding-right: 8px;
