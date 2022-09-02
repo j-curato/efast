@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\PrStockType;
 use app\models\PrStockTypeSearch;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -147,5 +148,26 @@ class PrStockTypeController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    public function actionSearchStockType($q = null, $id = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $user_province = strtolower(Yii::$app->user->identity->province);
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if ($id > 0) {
+            $out['results'] = [];
+        } else if (!is_null($q)) {
+            $query = new Query();
+            $query->select('pr_stock_type.id, pr_stock_type.type AS text')
+                ->from('pr_stock_type')
+                ->where(['like', 'pr_stock_type.type', $q]);
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        return $out;
     }
 }
