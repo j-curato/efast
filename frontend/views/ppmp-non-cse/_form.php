@@ -313,6 +313,7 @@ Select2Asset::register($this);
 
         r_centers()
         papCodes()
+        stockTypeSelect()
         let ppmp_item_counter = <?php echo $ppmp_item_counter ?>;
 
         maskAmount()
