@@ -113,11 +113,11 @@ $ppmp_item_counter = 1;
 
             </div>
             <div class='col-sm-12'>
-                <table class='>
+                <table class=''>
                     <thead>
-                        <th colspan='3'>Add Category <input type='button' class='btn-xs btn-primary add_category' value='+' row='$ppmp_item_counter'></th>
+                        <th colspan='3'>Add Category <button type='button' class='btn-xs btn-primary add_category'  row='$ppmp_item_counter'><i class='glyphicon glyphicon-plus'></i></button></th>
                     </thead>
-                    <tbody>
+                    <tbody class='body'>
                     ";
 
                 foreach ($val as $category) {
@@ -219,9 +219,9 @@ $ppmp_item_counter = 1;
                 <div class="col-sm-12">
                     <table class="">
                         <thead>
-                            <th colspan="3">Add Category <input type='button' class='btn-xs btn-primary add_category' value='+' row='0'></th>
+                            <th colspan="3">Add Category <button type='button' class='btn-xs btn-primary add_category' row='0'><i class="glyphicon glyphicon-plus"></i></button></th>
                         </thead>
-                        <tbody>
+                        <tbody class="body">
 
                         </tbody>
 
@@ -317,7 +317,7 @@ Select2Asset::register($this);
                                 </td>
                            </tr>`
 
-            closest_tr.closest('table').append(row);
+            closest_tr.closest('table').find('.body').append(row);
             stockTypeSelect()
             maskAmount()
 
