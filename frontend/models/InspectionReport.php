@@ -28,7 +28,7 @@ class InspectionReport extends \yii\db\ActiveRecord
     {
         return [
             [['id', 'ir_number'], 'required'],
-            [['id'], 'integer'],
+            [['id', 'fk_end_user'], 'integer'],
             [['created_at'], 'safe'],
             [['ir_number',], 'string', 'max' => 255],
             [['ir_number'], 'unique'],
