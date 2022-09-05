@@ -496,7 +496,7 @@ class RequestForInspectionController extends Controller
         $model = $this->findModel($id);
         $model->is_final = 1;
         if ($model->save(false)) {
-            $insert = $this->insertInspectionReport($model->id);
+            $insert = $this->insertInspectionReport($model->id)['isSuccess'];
             if ($insert === true) {
                 return $this->redirect(['view', 'id' => $model->id]);
             } else {
