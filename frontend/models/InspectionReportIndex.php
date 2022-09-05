@@ -37,8 +37,8 @@ class InspectionReportIndex extends \yii\db\ActiveRecord
         return [
             [['id', 'ir_number'], 'required'],
             [['id'], 'integer'],
-            [['unit_head', 'inspector', 'chairperson', 'property_unit'], 'string'],
-            [['ir_number', 'rfi_number', 'division', 'unit', 'po_number', 'payee'], 'string', 'max' => 255],
+            [['inspector', 'chairperson', 'property_unit'], 'string'],
+            [['ir_number', 'rfi_number', 'division',  'po_number', 'payee'], 'string', 'max' => 255],
         ];
     }
 
@@ -52,8 +52,7 @@ class InspectionReportIndex extends \yii\db\ActiveRecord
             'ir_number' => 'Ir Number',
             'rfi_number' => 'Rfi Number',
             'division' => 'Division',
-            'unit' => 'Unit',
-            'unit_head' => 'Unit Head',
+
             'inspector' => 'Inspector',
             'chairperson' => 'Chairperson',
             'property_unit' => 'Property Unit',
