@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $chairperson = '';
 $inspector = '';
-$division_chief = '';
+$requested_by = '';
 $payee = '';
 $project_title = '';
 $inspect_date = '';
@@ -22,7 +22,7 @@ if (!empty($signatories)) {
 
     $chairperson = strtoupper($signatories['chairperson']);
     $inspector = strtoupper($signatories['inspector']);
-    $division_chief = strtoupper($signatories['division_chief']);
+    $requested_by = strtoupper($signatories['requested_by']);
     $payee = $signatories['payee'];
     $project_title = $signatories['project_title'];
     $property_unit = $signatories['property_unit'];
@@ -59,7 +59,7 @@ if (!empty($model->fk_end_user)) {
             <tr>
                 <td colspan="2">
                     <span class="fnt-large" style="font-size:16px">
-                        This is to certify that per request of <span class='bdr-btm'><?= $division_chief ?></span> the Undersigned inspected the
+                        This is to certify that per request of <span class='bdr-btm'><?= $requested_by ?></span> the Undersigned inspected the
                         <span class='bdr-btm'><?= $project_title ?></span> last <span class='bdr-btm'><?= $inspect_date ?></span> The following is /are findings and recommendation/s.
                     </span>
                 </td>

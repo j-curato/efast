@@ -434,6 +434,8 @@ class RequestForInspectionController extends Controller
             $quantity = $_POST['quantity'];
 
             $item_ids = !empty($_POST['item_id']) ? $_POST['item_id'] : [];
+            // if ($model->is_final !== true) {
+
             $transaction = Yii::$app->db->beginTransaction();
             // return json_encode($item_ids);
             try {
@@ -472,6 +474,7 @@ class RequestForInspectionController extends Controller
             } catch (ErrorException $e) {
                 return $e->getMessage();
             }
+            // }
         }
 
 

@@ -106,7 +106,7 @@ class InspectionReportController extends Controller
     public function signatories($id)
     {
         $query  = Yii::$app->db->createCommand("SELECT 
-        division_chief.employee_name as division_chief,
+        requested_by.employee_name as requested_by,
         chairperson.employee_name as chairperson,
         inspector.employee_name as inspector,
         property_unit.employee_name as property_unit,
@@ -123,7 +123,7 @@ class InspectionReportController extends Controller
         LEFT JOIN employee_search_view as chairperson ON request_for_inspection.fk_chairperson = chairperson.employee_id
         LEFT JOIN employee_search_view as inspector ON request_for_inspection.fk_inspector = inspector.employee_id
         LEFT JOIN pr_office ON request_for_inspection.fk_pr_office_id = pr_office.id
-        LEFT JOIN employee_search_view as division_chief ON pr_office.fk_unit_head = division_chief.employee_id
+        LEFT JOIN employee_search_view as requested_by ON request_for_inspection.fk_requested_by = requested_by.employee_id
         LEFT JOIN pr_purchase_order_items_aoq_items ON request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id = pr_purchase_order_items_aoq_items.id
         LEFT JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
         LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
@@ -134,7 +134,7 @@ class InspectionReportController extends Controller
         
         WHERE inspection_report.id = :id
         GROUP BY 
-        division_chief.employee_name,
+        requested_by.employee_name,
         chairperson.employee_name,
         inspector.employee_name,
         property_unit.employee_name,
