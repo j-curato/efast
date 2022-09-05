@@ -223,6 +223,7 @@ class PpmpNonCseController extends Controller
                             // die();
                             $category->ppmp_non_cse_item_id =  $item->id;
                             $category->fk_stock_type =  $stck_id;
+                            $category->is_deleted =  0;
                             $category->budget =  !empty($categoriesAmount[$index][$stock_index]) ? $categoriesAmount[$index][$stock_index] : 0;
                             if ($category->save(false)) {
                             }
