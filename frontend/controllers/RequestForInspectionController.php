@@ -286,8 +286,8 @@ class RequestForInspectionController extends Controller
         $res = ArrayHelper::index($query, null, [function ($element) {
             return $element['po_id'];
         }, 'inspection_date']);
-        // var_dump($res);
-        // die();
+        var_dump($res);
+        die();
 
         try {
             foreach ($res as $po_id_items) {
@@ -492,14 +492,15 @@ class RequestForInspectionController extends Controller
      */
     public function actionFinal($id)
     {
+
         $model = $this->findModel($id);
         $model->is_final = 1;
         if ($model->save(false)) {
-
-            $this->insertInspectionReport($model->id);
+            $insert = $this->insertInspectionReport($model->id);
+            if ($insert === true) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
-
-        return $this->redirect(['view', 'id' => $model->id]);
     }
 
     /**
