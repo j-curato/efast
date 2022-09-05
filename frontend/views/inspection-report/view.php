@@ -137,19 +137,19 @@ if (!empty($model->fk_end_user)) {
             </tr>
             <tr>
                 <td class="center">
-                    <span class="bold"><?= $inspector ?></span>
+                    <span class="bold underlined"><?= $inspector ?></span>
                     <br>
                     <span>Inspector</span>
                 </td>
                 <td class="center">
-                    <span class="bold"><?= $chairperson ?></span>
+                    <span class="bold underlined"><?= $chairperson ?></span>
                     <br>
                     <span>Chairperson, Inspection Commitee</span>
                 </td>
             </tr>
             <tr>
                 <td class="center" style="padding-top: 6rem;">
-                    <span class="bold"><?= $end_user ?></span>
+                    <span class="bold underlined"><?= $end_user ?></span>
                     <br>
                     <span>End-User</span>
                 </td>
@@ -172,6 +172,10 @@ if (!empty($model->fk_end_user)) {
 
     .bold {
         font-weight: bold;
+    }
+
+    .underlined {
+        text-decoration: underline;
     }
 
     .no-bdr-btm {
