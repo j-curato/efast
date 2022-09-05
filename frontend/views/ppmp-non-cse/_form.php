@@ -97,12 +97,14 @@ $ppmp_item_counter = 1;
                 <div class='col-sm-4' class='form-group'>
                     <label for='pap_code'> PAP Code</label>
                     <select name='pap_code[$ppmp_item_counter]' class='pap_code mfo_pap_code form-control'>
+                    <option>Select PAP Code</option>
                         <option value='$mfo_id'>$mfo_pap_name</option>
                         </select>
                 </div>
                 <div class='col-sm-4' class='form-group'>
                     <label for='end_user'> End User</label>
                     <select name='end_user[$ppmp_item_counter]' class='employee_select end_user form-control'>
+                    <option>Select End User</option>
                         <option value='$responsibility_center_id'>$responsibility_center_name</option>
                     </select>
                 </div>
@@ -256,7 +258,8 @@ $ppmp_item_counter = 1;
         max-width: 400px;
         min-width: 400px;
     }
-    .add_category{
+
+    .add_category {
         margin: 12px 0 5px 0
     }
 </style>
@@ -317,10 +320,14 @@ Select2Asset::register($this);
             const source = $(this).closest('li');
             const clone = source.clone(true);
             clone.find('.project_name').attr('name', 'project_name[' + ppmp_item_counter + ']')
+            clone.find('.project_name').val('')
+            clone.find('.description').val('')
             clone.find('.description').attr('name', 'description[' + ppmp_item_counter + ']')
+            clone.find('.target_month').val('')
             clone.find('.target_month').attr('name', 'target_month[' + ppmp_item_counter + ']')
             clone.find('.fund_source').attr('name', 'fund_source[' + ppmp_item_counter + ']')
             clone.find('.pap_code').attr('name', 'pap_code[' + ppmp_item_counter + ']')
+            clone.find('.pap_code').val('').trigger('change')
             clone.find('.end_user').attr('name', 'end_user[' + ppmp_item_counter + ']')
             clone.find('.add_category').attr('row', ppmp_item_counter)
             clone.find('.update_item_id').remove()
