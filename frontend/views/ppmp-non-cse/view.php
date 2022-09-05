@@ -16,13 +16,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
     </p>
 
 
@@ -88,6 +81,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $project_name = $val[$min_key]['project_name'];
                     $description = $val[$min_key]['description'];
                     $target_month = $val[$min_key]['target_month'];
+                    $mfo_code = $val[$min_key]['mfo_code'];
                     $mfo_name = $val[$min_key]['mfo_name'];
                     $employee_name = $val[$min_key]['end_user'];
                     echo "<tr>
@@ -95,8 +89,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td></td>
                             <td>$description</td>
                             <td>$target_month</td>
-                            <td></td>
                             <td>$mfo_name</td>
+                            <td>$mfo_code</td>
                             <td>$employee_name</td>
                             <td></td>
                             <td></td>
@@ -114,7 +108,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td>$budget</td>
+                            <td class='amount'>" . number_format($budget, 2) . "</td>
                             <td></td>
                             <td></td>
                         </tr>";

@@ -9,6 +9,8 @@ use app\models\PpmpNonCseItems;
 use app\models\PpmpNonCseSearch;
 use ErrorException;
 use yii\db\ForeignKeyConstraint;
+use yii\debug\models\router\RouterRules;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -25,8 +27,31 @@ class PpmpNonCseController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'update',
+                    'view',
+                    'delete',
+                    'create',
+                    'index',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'update',
+                            'view',
+                            'delete',
+                            'create',
+                            'index',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -63,8 +88,8 @@ class PpmpNonCseController extends Controller
         ppmp_non_cse_items.project_name,
         ppmp_non_cse_items.description,
         ppmp_non_cse_items.target_month,
-        fund_source.`name` as fund_source_name,
-        CONCAT(mfo_pap_code.`code` ,'-',mfo_pap_code.`name`) as mfo_name,
+        mfo_pap_code.`code`  as mfo_code,
+        mfo_pap_code.`name` as mfo_name,
         responsibility_center.`name` end_user,
         
         
@@ -75,11 +100,13 @@ class PpmpNonCseController extends Controller
         LEFT JOIN pr_stock_type ON ppmp_non_cse_item_categories.fk_stock_type = pr_stock_type.id
         LEFT JOIN responsibility_center ON ppmp_non_cse_items.fk_responsibility_center_id = responsibility_center.id
         LEFT JOIN mfo_pap_code ON ppmp_non_cse_items.fk_pap_code_id = mfo_pap_code.id
-        LEFT JOIN fund_source ON ppmp_non_cse_items.fk_fund_source_id = fund_source.id
         
         
         WHERE 
-        
+        ppmp_non_cse_items.is_deleted !=1
+        AND
+        ppmp_non_cse_item_categories.is_deleted !=1
+        AND
          ppmp_non_cse_items.fk_ppmp_non_cse_id = :id")
             ->bindValue(':id', $id)
             ->queryAll();
@@ -95,39 +122,108 @@ class PpmpNonCseController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
+    public function removeItems($ppmp_id, $item_id = [])
+    {
+        $query = Yii::$app->db->createCommand("SELECT id FROM ppmp_non_cse_items WHERE ppmp_non_cse_items.fk_ppmp_non_cse_id = :id")
+            ->bindValue(':id', $ppmp_id)
+            ->queryAll();
+
+        $diff = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', array_column($query, 'id')), array_map('serialize', $item_id))
+
+        );
+        $params = [];
+        $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'ppmp_non_cse_items.id', $diff], $params);
+        $delete_query = Yii::$app->db->createCommand("UPDATE ppmp_non_cse_items SET is_deleted = 1
+        WHERE ppmp_non_cse_items.fk_ppmp_non_cse_id = :ppmp_id 
+        AND  $sql", $params)
+            ->bindValue(':ppmp_id', $ppmp_id)
+            ->query();
+
+        // var_dump($delete_query->getRawSql());
+        // die();
+    }
+    public function removeCategories($ppmp_id, $categories_id = [])
+    {
+
+        $conso_category_ids = [];
+        foreach ($categories_id as $items) {
+            foreach ($items as $val) {
+                $conso_category_ids[] = $val;
+            }
+        }
+
+        $query = Yii::$app->db->createCommand("SELECT ppmp_non_cse_item_categories.id FROM ppmp_non_cse_items 
+        LEFT JOIN ppmp_non_cse_item_categories ON ppmp_non_cse_items.id = ppmp_non_cse_item_categories.ppmp_non_cse_item_id
+        WHERE 
+        ppmp_non_cse_items.is_deleted !=1
+        AND
+        ppmp_non_cse_items.fk_ppmp_non_cse_id = :id")
+            ->bindValue(':id', $ppmp_id)
+            ->queryAll();
+
+        $diff = array_map(
+            'unserialize',
+            array_diff(array_map('serialize', array_column($query, 'id')), array_map('serialize', $conso_category_ids))
+
+        );
+        $params = [];
+        $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'ppmp_non_cse_item_categories.id', $diff], $params);
+        Yii::$app->db->createCommand("UPDATE ppmp_non_cse_item_categories SET is_deleted = 1
+        WHERE   $sql", $params)
+            ->query();
+    }
     public function insertItems(
         $ppm_id,
         $project_name = [],
         $description = [],
         $target_month = [],
-        $fund_source = [],
         $pap_code = [],
         $end_user = [],
         $stock_type = [],
-        $categoriesAmount = []
+        $categoriesAmount = [],
+        $item_ids = [],
+        $category_ids = []
     ) {
 
         try {
+            // var_dump($category_ids);
+            // die();
             foreach ($project_name as $index => $pjct_name) {
 
-                $item = new PpmpNonCseItems();
-                $item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                if (!empty($item_ids[$index])) {
+                    $item = PpmpNonCseItems::findOne($item_ids[$index]);
+                } else {
+
+                    $item = new PpmpNonCseItems();
+                    $item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                }
+
                 $item->project_name = $pjct_name;
                 $item->target_month = !empty($target_month[$index]) ? $target_month[$index] : '';
-                $item->fk_fund_source_id = !empty($fund_source[$index]) ? $fund_source[$index] : '';
                 $item->fk_pap_code_id = !empty($pap_code[$index]) ? $pap_code[$index] : '';
                 $item->fk_ppmp_non_cse_id = $ppm_id;
                 $item->description = !empty($description[$index]) ? $description[$index] : '';
                 $item->fk_responsibility_center_id = !empty($end_user[$index]) ? $end_user[$index] : '';
+                $item->is_deleted = 0;
+
+
                 if ($item->validate()) {
                     if ($item->save(false)) {
                         foreach ($stock_type[$index] as $stock_index => $stck_id) {
-                            $category = new PpmpNonCseItemCategories();
+                            if (!empty($category_ids[$index][$stock_index])) {
+                                $category = PpmpNonCseItemCategories::findOne($category_ids[$index][$stock_index]);
+                                // return $category_ids[$index][$stock_index];
+                            } else {
+
+                                $category = new PpmpNonCseItemCategories();
+                            }
                             // var_dump($categoriesAmount[$stock_index]);
                             // die();
                             $category->ppmp_non_cse_item_id =  $item->id;
                             $category->fk_stock_type =  $stck_id;
-                            $category->budget =  !empty($categoriesAmount[$index][$stock_index]) ? $categoriesAmount[$index][$stock_index] : '';
+                            $category->budget =  !empty($categoriesAmount[$index][$stock_index]) ? $categoriesAmount[$index][$stock_index] : 0;
                             if ($category->save(false)) {
                             }
                         }
@@ -150,7 +246,6 @@ class PpmpNonCseController extends Controller
             $project_name = !empty($_POST['project_name']) ? $_POST['project_name'] : [];
             $description = !empty($_POST['description']) ? $_POST['description'] : [];
             $target_month = !empty($_POST['target_month']) ? $_POST['target_month'] : [];
-            $fund_source = !empty($_POST['fund_source']) ? $_POST['fund_source'] : [];
             $pap_code = !empty($_POST['pap_code']) ? $_POST['pap_code'] : [];
             $end_user = !empty($_POST['end_user']) ? $_POST['end_user'] : [];
             $stock_type = !empty($_POST['stock_type']) ? $_POST['stock_type'] : [];
@@ -164,7 +259,6 @@ class PpmpNonCseController extends Controller
                     $project_name,
                     $description,
                     $target_month,
-                    $fund_source,
                     $pap_code,
                     $end_user,
                     $stock_type,
@@ -175,7 +269,7 @@ class PpmpNonCseController extends Controller
                     $transaction->commit();
                     return $this->redirect(['view', 'id' => $model->id]);
                 } else {
-                    return json_encode(['isSuccess' => false, 'error_message' => 'Error']);
+                    return json_encode(['isSuccess' => false, 'error_message' => json_encode($q)]);
                 }
             }
         }
@@ -196,8 +290,45 @@ class PpmpNonCseController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if (Yii::$app->request->isAjax &&  $model->load(Yii::$app->request->post())) {
+            $item_ids =  !empty($_POST['itemId']) ? $_POST['itemId'] : [];
+
+            // var_dump($item_ids);
+            // die();
+            $category_ids =  !empty($_POST['categoryId']) ? $_POST['categoryId'] : [];
+            $project_name = !empty($_POST['project_name']) ? $_POST['project_name'] : [];
+            $description = !empty($_POST['description']) ? $_POST['description'] : [];
+            $target_month = !empty($_POST['target_month']) ? $_POST['target_month'] : [];
+            $pap_code = !empty($_POST['pap_code']) ? $_POST['pap_code'] : [];
+            $end_user = !empty($_POST['end_user']) ? $_POST['end_user'] : [];
+            $stock_type = !empty($_POST['stock_type']) ? $_POST['stock_type'] : [];
+            $categoriesAmount = !empty($_POST['categoriesAmount']) ? $_POST['categoriesAmount'] : [];
+
+            $transaction = YIi::$app->db->beginTransaction();
+            if ($model->save(false)) {
+                $this->removeItems($model->id, $item_ids);
+                $this->removeCategories($model->id, $category_ids);
+                $q = $this->insertItems(
+                    $model->id,
+                    $project_name,
+                    $description,
+                    $target_month,
+                    $pap_code,
+                    $end_user,
+                    $stock_type,
+                    $categoriesAmount,
+                    $item_ids,
+                    $category_ids
+                );
+
+                if ($q === true) {
+
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
+                } else {
+                    return json_encode(['isSuccess' => false, 'error_message' => json_encode($q)]);
+                }
+            }
         }
 
         $items_query = Yii::$app->db->createCommand("SELECT 
@@ -205,7 +336,6 @@ class PpmpNonCseController extends Controller
          ppmp_non_cse_items.project_name,
          ppmp_non_cse_items.description,
          ppmp_non_cse_items.target_month,
-         ppmp_non_cse_items.fk_fund_source_id,
          ppmp_non_cse_items.fk_pap_code_id,
          mfo_pap_code.name as mfo_pap_name,
          responsibility_center.id as responsibility_center_id,
@@ -220,7 +350,10 @@ class PpmpNonCseController extends Controller
          LEFT JOIN responsibility_center ON ppmp_non_cse_items.fk_responsibility_center_id = responsibility_center.id
          LEFT JOIN mfo_pap_code ON ppmp_non_cse_items.fk_pap_code_id = mfo_pap_code.id
          WHERE 
-         
+         ppmp_non_cse_items.is_deleted !=1
+         AND
+         ppmp_non_cse_item_categories.is_deleted !=1
+        AND
           ppmp_non_cse_items.fk_ppmp_non_cse_id = :id")
             ->bindValue(':id', $id)
             ->queryAll();
@@ -238,12 +371,12 @@ class PpmpNonCseController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    // public function actionDelete($id)
+    // {
+    //     $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
-    }
+    //     return $this->redirect(['index']);
+    // }
 
     /**
      * Finds the PpmpNonCse model based on its primary key value.

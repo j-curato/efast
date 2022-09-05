@@ -58,14 +58,13 @@ $ppmp_item_counter = 1;
                 $target_month = $val[$min_key]['target_month'];
                 $responsibility_center_id = $val[$min_key]['responsibility_center_id'];
                 $responsibility_center_name = $val[$min_key]['responsibility_center_name'];
-                $fund_source_id = $val[$min_key]['fk_fund_source_id'];
                 $mfo_id = $val[$min_key]['fk_pap_code_id'];
                 $mfo_pap_name = $val[$min_key]['mfo_pap_name'];
                 $category_id = $val[$min_key]['category_id'];
                 $item_id = $val[$min_key]['item_id'];
 
                 echo "<li class='panel panel-default'>
-                <input type='text' class='form-control update_item_id' name='itemId[$ppmp_item_counter]'  value='$item_id' required>
+                <input type='hidden' class='form-control update_item_id' name='itemId[$ppmp_item_counter]'  value='$item_id' required>
                 <div class='row'>
                     <div class='col-sm-3'>
                         <h5>Add/Remove Project</h5>
@@ -94,11 +93,7 @@ $ppmp_item_counter = 1;
                     </div>
                 </div>
             <div class='row'>
-                <div class='col-sm-4 form-group'>
-                    <label for='fund_source'> Fund Source</label>
-                    <select name='fund_source[$ppmp_item_counter]' class='fund_source form-control'>
-                        <option>Select Fund Source</option></select>
-                </div>
+          
                 <div class='col-sm-4' class='form-group'>
                     <label for='pap_code'> PAP Code</label>
                     <select name='pap_code[$ppmp_item_counter]' class='pap_code mfo_pap_code form-control'>
@@ -120,16 +115,18 @@ $ppmp_item_counter = 1;
                     <tbody class='body'>
                     ";
 
-                foreach ($val as $category) {
+                foreach ($val as $category_counter => $category) {
                     $amount = $category['budget'];
                     $stock_id = $category['stock_id'];
                     $stock_type = $category['type'];
+                    $category_id = $category['category_id'];
                     echo "<tr>
                         <td class='center'>
+                        <input type='hidden' class='form-control categoryId' name='categoryId[$ppmp_item_counter][$category_counter]' value='$category_id'>
                             <div class='form-group'>
                                 <label for='stock-type '>Stock Type</label>
                                  <br>
-                                <select name='stock_type[$ppmp_item_counter][]' class='stock-type form-control'>
+                                <select name='stock_type[$ppmp_item_counter][$category_counter]' class='stock-type form-control'>
                                     <option value='$stock_id' >$stock_type</option>
                                 </select>
                             </div>
@@ -138,7 +135,7 @@ $ppmp_item_counter = 1;
                             <div class='form-group'>
                                 <label for='categoriesAmount'>Amount</label>
                                 <input type='text' class='mask-amount form-control' value='$amount'>
-                                <input type='hidden' class='form-control categoriesAmount main-amount' name='categoriesAmount[$ppmp_item_counter][]' value='$amount'>
+                                <input type='hidden' class='form-control categoriesAmount main-amount' name='categoriesAmount[$ppmp_item_counter][$category_counter]' value='$amount'>
                             </div>
                         </td>
                         <td>
@@ -190,18 +187,7 @@ $ppmp_item_counter = 1;
                 </div>
                 <div class="row">
 
-                    <div class="col-sm-4 form-group">
-                        <label for="fund_source"> Fund Source</label>
-                        <select name="fund_source[0]" class="fund_source form-control">
-                            <option>Select Fund Source</option>
-                            <?php
-                            $fund_source = Yii::$app->db->createCommand("SELECT * FROM fund_source ")->queryAll();
-                            foreach ($fund_source as $val) {
-                                echo "  <option value='{$val['id']}'>{$val['name']}</option>";
-                            }
-                            ?>
-                        </select>
-                    </div>
+
                     <div class="col-sm-4" class="form-group">
                         <label for="pap_code"> PAP Code</label>
                         <select name="pap_code[0]" class="pap_code  mfo_pap_code form-control">
@@ -231,10 +217,12 @@ $ppmp_item_counter = 1;
         <?php } ?>
     </ul>
 
-
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="row panel panel-default" style="margin: 12px 0 12px 4rem;   padding: 3rem;">
+        <div class=" col-sm-2 col-sm-offset-5">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
+        </div>
     </div>
+
 
     <?php ActiveForm::end(); ?>
 </div>
@@ -279,6 +267,7 @@ Select2Asset::register($this);
 <script>
     let responsibility_centers = []
     let pap_codes = []
+    let fund_sources = []
     async function r_centers() {
         const res = await getAllResponsibilityCenter()
         responsibility_centers = res.responsibility_center
@@ -295,6 +284,7 @@ Select2Asset::register($this);
 
     }
 
+
     function mfoPapSelect() {
         $('.mfo_pap_code').select2({
             data: pap_codes,
@@ -308,6 +298,7 @@ Select2Asset::register($this);
             placeholder: 'Select Responsibility Center'
         })
     }
+
 
     $(document).ready(function() {
 

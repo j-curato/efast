@@ -37,11 +37,11 @@ class PpmpNonCseItems extends \yii\db\ActiveRecord
     {
         return [
             [['id', 'project_name', 'target_month', 'fk_pap_code_id', 'description', 'fk_responsibility_center_id'], 'required'],
-            [['id', 'fk_pap_code_id', 'fk_ppmp_non_cse_id', 'fk_responsibility_center_id'], 'integer'],
+            [['id', 'fk_pap_code_id', 'fk_ppmp_non_cse_id', 'fk_responsibility_center_id', 'is_deleted'], 'integer'],
             [['project_name', 'description'], 'string'],
             [['target_month', 'created_at'], 'safe'],
             [['id'], 'unique'],
-            [['fk_ppmp_non_cse_id'], 'exist', 'skipOnError' => true, 'targetClass' => PpmpNonCse::className(), 'targetAttribute' => ['fk_ppmp_non_cse_id' => 'id']],
+            [['fk_ppmp_non_cse_id'], 'exist', 'skipOnError' => true, 'targetClass' => PpmpNonCse::class, 'targetAttribute' => ['fk_ppmp_non_cse_id' => 'id']],
         ];
     }
 
@@ -59,6 +59,7 @@ class PpmpNonCseItems extends \yii\db\ActiveRecord
             'description' => 'Description',
             'fk_responsibility_center_id' => ' End User',
             'created_at' => 'Created At',
+            'is_deleted' => 'is Deleted',
         ];
     }
 

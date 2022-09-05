@@ -62,7 +62,6 @@ LEFT JOIN responsibility_center ON request_for_inspection.fk_responsibility_cent
      */
     public function safeDown()
     {
-
     }
 
     /*
