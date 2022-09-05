@@ -31,11 +31,11 @@ class PpmpNonCseItemCategories extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['ppmp_non_cse_item_id', 'fk_stock_type'], 'integer'],
+            [['ppmp_non_cse_item_id', 'fk_stock_type','is_deleted'], 'integer'],
             [['fk_stock_type'], 'required'],
             [['budget'], 'number'],
             [['created_at'], 'safe'],
-            [['ppmp_non_cse_item_id'], 'exist', 'skipOnError' => true, 'targetClass' => PpmpNonCseItems::className(), 'targetAttribute' => ['ppmp_non_cse_item_id' => 'id']],
+            [['ppmp_non_cse_item_id'], 'exist', 'skipOnError' => true, 'targetClass' => PpmpNonCseItems::class, 'targetAttribute' => ['ppmp_non_cse_item_id' => 'id']],
         ];
     }
 
@@ -50,6 +50,7 @@ class PpmpNonCseItemCategories extends \yii\db\ActiveRecord
             'fk_stock_type' => 'Fk Stock Type',
             'budget' => 'Budget',
             'created_at' => 'Created At',
+            'is_deleted' => 'Deleted',
         ];
     }
 
@@ -60,6 +61,6 @@ class PpmpNonCseItemCategories extends \yii\db\ActiveRecord
      */
     public function getPpmpNonCseItem()
     {
-        return $this->hasOne(PpmpNonCseItems::className(), ['id' => 'ppmp_non_cse_item_id']);
+        return $this->hasOne(PpmpNonCseItems::class, ['id' => 'ppmp_non_cse_item_id']);
     }
 }
