@@ -162,7 +162,8 @@ class PrStockTypeController extends Controller
             $query = new Query();
             $query->select('pr_stock_type.id, pr_stock_type.type AS text')
                 ->from('pr_stock_type')
-                ->where(['like', 'pr_stock_type.type', $q]);
+                ->andwhere(['like', 'pr_stock_type.type', $q])
+                ->andwhere("pr_stock_type.part = 'part-3'");
 
             $command = $query->createCommand();
             $data = $command->queryAll();
