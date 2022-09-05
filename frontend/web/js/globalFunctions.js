@@ -210,7 +210,24 @@ async function getAllMfo() {
   });
   return { mfo };
 }
+async function getAllFundSource() {
+  const fund_sources = [];
+  await $.ajax({
+    type: "GET",
+    url: window.location.pathname + "?r=fund-source/get-fund-sources",
+    success: function (data) {
+      const res = JSON.parse(data);
+      $.each(res, function (key, val) {
+        fund_sources.push({
+          id: val.id,
+          text: val.name,
+        });
+      });
+    },
+  });
+  return { fund_sources };
+}
 
-$(".mask-amount").on("keyup change", () => {
-  $(".main-amount").val($(this).maskMoney("unmasked"));
-});
+// $(".mask-amount").on("keyup change", () => {
+//   $(".main-amount").val($(this).maskMoney("unmasked"));
+// });

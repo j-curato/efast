@@ -36,8 +36,8 @@ class PpmpNonCseItems extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'project_name', 'target_month', 'fk_fund_source_id', 'fk_pap_code_id', 'description', 'fk_responsibility_center_id'], 'required'],
-            [['id', 'fk_fund_source_id', 'fk_pap_code_id', 'fk_ppmp_non_cse_id', 'fk_responsibility_center_id'], 'integer'],
+            [['id', 'project_name', 'target_month', 'fk_pap_code_id', 'description', 'fk_responsibility_center_id'], 'required'],
+            [['id', 'fk_pap_code_id', 'fk_ppmp_non_cse_id', 'fk_responsibility_center_id'], 'integer'],
             [['project_name', 'description'], 'string'],
             [['target_month', 'created_at'], 'safe'],
             [['id'], 'unique'],
@@ -46,7 +46,7 @@ class PpmpNonCseItems extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritdoc}fk_fund_source_id
      */
     public function attributeLabels()
     {
@@ -54,11 +54,10 @@ class PpmpNonCseItems extends \yii\db\ActiveRecord
             'id' => 'ID',
             'project_name' => 'Project Name',
             'target_month' => 'Target Month',
-            'fk_fund_source_id' => 'Fk Fund Of Source ID',
-            'fk_pap_code_id' => 'Fk Pap Code ID',
-            'fk_ppmp_non_cse_id' => 'Fk Ppmp Non Cse ID',
+            'fk_pap_code_id' => ' Pap Code ',
+            'fk_ppmp_non_cse_id' => ' Ppmp Non Cse ',
             'description' => 'Description',
-            'fk_responsibility_center_id' => 'Fk End User',
+            'fk_responsibility_center_id' => ' End User',
             'created_at' => 'Created At',
         ];
     }

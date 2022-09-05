@@ -88,7 +88,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     $project_name = $val[$min_key]['project_name'];
                     $description = $val[$min_key]['description'];
                     $target_month = $val[$min_key]['target_month'];
-                    $fund_source_name = $val[$min_key]['fund_source_name'];
                     $mfo_name = $val[$min_key]['mfo_name'];
                     $employee_name = $val[$min_key]['end_user'];
                     echo "<tr>
@@ -96,7 +95,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td></td>
                             <td>$description</td>
                             <td>$target_month</td>
-                            <td>$fund_source_name</td>
+                            <td></td>
                             <td>$mfo_name</td>
                             <td>$employee_name</td>
                             <td></td>

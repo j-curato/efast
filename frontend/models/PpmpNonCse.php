@@ -32,7 +32,7 @@ class PpmpNonCse extends \yii\db\ActiveRecord
     {
         return [
             [['id'], 'required'],
-            [['id'], 'integer'],
+            [['id', 'is_deleted'], 'integer'],
             [['created_at', 'date'], 'safe'],
             [['id'], 'unique'],
         ];
@@ -45,8 +45,8 @@ class PpmpNonCse extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-
             'date' => 'Date',
+            'is_deleted' => 'Is Deleted',
             'created_at' => 'Created At',
         ];
     }
