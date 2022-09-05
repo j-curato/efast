@@ -256,6 +256,9 @@ $ppmp_item_counter = 1;
         max-width: 400px;
         min-width: 400px;
     }
+    .add_category{
+        margin: 12px 0 5px 0
+    }
 </style>
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
