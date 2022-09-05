@@ -246,7 +246,7 @@ $ppmp_item_counter = 1;
         background: red;
     } */
 
-    table {
+    #ppmp_items table {
         width: 60%;
     }
 
