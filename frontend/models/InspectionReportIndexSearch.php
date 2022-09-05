@@ -28,6 +28,7 @@ class InspectionReportIndexSearch extends InspectionReportIndex
                 'inspector',
                 'chairperson',
                 'property_unit',
+                'requested_by',
                 'payee'
             ], 'safe'],
         ];

@@ -30,6 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'rfi_number',
             'division',
             'po_number',
+            'requested_by',
             'inspector',
             'chairperson',
             'property_unit',

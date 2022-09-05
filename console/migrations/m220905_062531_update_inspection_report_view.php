@@ -3,23 +3,26 @@
 use yii\db\Migration;
 
 /**
- * Class m220905_061157_update_inspection_report_index_view
+ * Class m220905_062531_update_inspection_report_view
  */
-class m220905_061157_update_inspection_report_index_view extends Migration
+class m220905_062531_update_inspection_report_view extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        Yii::$app->db->createCommand("DROP VIEW IF EXISTS request_for_inspection_index; 
-        CREATE VIEW  inspection_report_index AS 
-        SELECT 
+        Yii::$app->db->createCommand("DROP VIEW IF EXISTS inspection_report_index ;
+        CREATE VIEW inspection_report_index as SELECT 
+
+
         inspection_report.id,
         inspection_report.ir_number,
         request_for_inspection.rfi_number,
         responsibility_center.`name` as division,
-         CONCAT(requested_by.f_name,' ',LEFT(requested_by.m_name,1),'. ',requested_by.l_name,' ',IFNULL(requested_by.suffix,'')) as requested_by,
+
+
+       CONCAT(requested_by.f_name,' ',LEFT(requested_by.m_name,1),'. ',requested_by.l_name,' ',IFNULL(requested_by.suffix,'')) as requested_by,
         CONCAT(inspector.f_name,' ',LEFT(inspector.m_name,1),'. ',inspector.l_name,' ',IFNULL(inspector.suffix,'')) as inspector,
         CONCAT(chairperson.f_name,' ',LEFT(chairperson.m_name,1),'. ',chairperson.l_name,' ',IFNULL(chairperson.suffix,'')) as chairperson,
         CONCAT(property_unit.f_name,' ',LEFT(property_unit.m_name,1),'. ',property_unit.l_name,' ',IFNULL(property_unit.suffix,'')) as property_unit,
@@ -59,6 +62,7 @@ LEFT JOIN responsibility_center ON request_for_inspection.fk_responsibility_cent
      */
     public function safeDown()
     {
+
     }
 
     /*
@@ -70,7 +74,7 @@ LEFT JOIN responsibility_center ON request_for_inspection.fk_responsibility_cent
 
     public function down()
     {
-        echo "m220905_061157_update_inspection_report_index_view cannot be reverted.\n";
+        echo "m220905_062531_update_inspection_report_view cannot be reverted.\n";
 
         return false;
     }

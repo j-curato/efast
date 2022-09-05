@@ -44,6 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
 
+
             [
                 'attribute' => 'fk_chairperson',
                 'value' => function ($model) {
