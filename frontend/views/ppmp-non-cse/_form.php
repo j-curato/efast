@@ -73,43 +73,37 @@ $ppmp_item_counter = 1;
                     </div>
                 </div>
                 <div class='row'>
-                    <div class='col-sm-12 form-group'>
+                    <div class='col-sm-3 form-group'>
                         <label for='project_name'> Project Name</label>
-                        <input type='text' class='form-control project_name' name='project_name[$ppmp_item_counter]'  value='$project_name' required>
+                        <textarea class='form-control project_name' name='project_name[$ppmp_item_counter]' rows='1' required>$project_name</textarea>
                     </div>
-                </div>
-                <div class='row'>
-                    <div class='col-sm-12 form-group'>
+       
+                    <div class='col-sm-3 form-group'>
                         <label for='description'> Description</label>
                         <textarea class='form-control description' name='description[$ppmp_item_counter]' cols='30' rows='1' style='max-width: 100%;' required>$description</textarea>
-                    <div>
-                </div>
-                <div class='row'>
-            
-             
-                    <div class='col-sm-12 form-group'>
-                        <label for='target_month'> Target Month</label>
-                        <input type='input' class='form-control target_month' name='target_month[$ppmp_item_counter]'  value='$target_month' required>
                     </div>
-                </div>
-            <div class='row'>
-          
-                <div class='col-sm-4' class='form-group'>
-                    <label for='pap_code'> PAP Code</label>
-                    <select name='pap_code[$ppmp_item_counter]' class='pap_code mfo_pap_code form-control'>
-                    <option>Select PAP Code</option>
-                        <option value='$mfo_id'>$mfo_pap_name</option>
+             
+                    <div class='col-sm-2 form-group'>
+                        <label for='target_month'> Target Month</label>
+                        <textarea class='form-control target_month' name='target_month[$ppmp_item_counter]' rows='1' required>$target_month</textarea>
+                    </div>
+                    <div class='col-sm-2' class='form-group'>
+                        <label for='pap_code'> PAP Code</label>
+                        <select name='pap_code[$ppmp_item_counter]' class='pap_code mfo_pap_code form-control' required>
+                        <option value=''>Select PAP Code</option>
+                            <option value='$mfo_id' selected>$mfo_pap_name</option>
+                            </select>
+                    </div>
+                    <div class='col-sm-2' class='form-group'>
+                        <label for='end_user'> End User</label>
+                        <select name='end_user[$ppmp_item_counter]' class='employee_select end_user form-control' required>
+                            <option value=''>Select End User</option>
+                            <option value='$responsibility_center_id' selected>$responsibility_center_name</option>
                         </select>
-                </div>
-                <div class='col-sm-4' class='form-group'>
-                    <label for='end_user'> End User</label>
-                    <select name='end_user[$ppmp_item_counter]' class='employee_select end_user form-control'>
-                    <option>Select End User</option>
-                        <option value='$responsibility_center_id'>$responsibility_center_name</option>
-                    </select>
-                </div>
+                    </div>
 
-            </div>
+                </div>
+            
                 <table class=''>
                     <thead>
                         <th colspan='3'>Add Category <button type='button' class='btn-xs btn-primary add_category'  row='$ppmp_item_counter'><i class='glyphicon glyphicon-plus'></i></button></th>
@@ -168,42 +162,32 @@ $ppmp_item_counter = 1;
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-12 form-group">
+                    <div class="col-sm-3 form-group">
                         <label for="project_name"> Project Name</label>
-                        <input type="text" class="form-control project_name" name="project_name[0]" required>
+                        <textarea class="form-control project_name" name="project_name[0]" rows="1" required></textarea>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12 form-group">
+                    <div class="col-sm-3 form-group">
                         <label for="description"> Description</label>
-                        <textarea class="form-control description" name="description[0]" cols="30" rows="1" style="max-width: 100%;" required></textarea>
+                        <textarea class="form-control description" name="description[0]" cols="30" rows="1" style="max-width: 100%;"></textarea>
                     </div>
-                </div>
-
-
-                <div class="row">
-                    <div class="col-sm-12 form-group">
+                    <div class="col-sm-2 form-group">
                         <label for="target_month"> Target Month</label>
-                        <input type="text" class="form-control target_month" name="target_month[0]" required>
+                        <textarea class="form-control target_month" name="target_month[0]" rows="1" required></textarea>
                     </div>
-                </div>
-                <div class="row">
 
-
-                    <div class="col-sm-4" class="form-group">
+                    <div class="col-sm-2" class="form-group">
                         <label for="pap_code"> PAP Code</label>
-                        <select name="pap_code[0]" class="pap_code  mfo_pap_code form-control">
-                            <option>Select PAP Code</option>
+                        <select name="pap_code[0]" class="pap_code  mfo_pap_code form-control" required>
+                            <option value=''>Select PAP Code</option>
 
                         </select>
                     </div>
-                    <div class="col-sm-4" class="form-group">
+                    <div class="col-sm-2" class="form-group">
                         <label for="end_user"> End User</label>
-                        <select name="end_user[0]" class="end_user form-control">
-                            <option>Select End User</option>
+                        <select name="end_user[0]" class="end_user form-control" required>
+                            <option value=''>Select End User</option>
                         </select>
                     </div>
-
                 </div>
                 <table class="">
                     <thead>
@@ -229,6 +213,10 @@ $ppmp_item_counter = 1;
     <?php ActiveForm::end(); ?>
 </div>
 <style>
+    textarea {
+        max-width: 100%;
+    }
+
     #ppmp_items {
         list-style-type: none;
     }

@@ -36,7 +36,7 @@ class PpmpNonCseItems extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'project_name', 'target_month', 'fk_pap_code_id', 'description', 'fk_responsibility_center_id'], 'required'],
+            [['id', 'project_name', 'target_month', 'fk_pap_code_id', 'fk_responsibility_center_id'], 'required'],
             [['id', 'fk_pap_code_id', 'fk_ppmp_non_cse_id', 'fk_responsibility_center_id', 'is_deleted'], 'integer'],
             [['project_name', 'description'], 'string'],
             [['target_month', 'created_at'], 'safe'],
