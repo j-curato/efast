@@ -27,7 +27,7 @@ class InspectionReport extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'ir_number', 'fk_end_user'], 'required'],
+            [['id', 'ir_number'], 'required'],
             [['id'], 'integer'],
             [['created_at'], 'safe'],
             [['ir_number',], 'string', 'max' => 255],

@@ -499,6 +499,8 @@ class RequestForInspectionController extends Controller
             $insert = $this->insertInspectionReport($model->id);
             if ($insert === true) {
                 return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                return var_dump($insert);
             }
         }
     }
