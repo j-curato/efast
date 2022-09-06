@@ -100,6 +100,7 @@
                             ],
                         ],
 
+                        Yii::$app->user->can('super-user') ?     ['label' => 'PPMP Non-CSE', 'icon' => 'circle-o', 'url' => ['/ppmp-non-cse'],] : [],
 
                     ],
 
@@ -162,6 +163,7 @@
                             ],
                         ] : [],
 
+                        Yii::$app->user->can('super-user') ?     ['label' => 'PPMP Non-CSE', 'icon' => 'circle-o', 'url' => ['/ppmp-non-cse'],] : [],
 
 
                     ],
