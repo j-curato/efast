@@ -241,6 +241,12 @@ class PpmpNonCseController extends Controller
     public function actionCreate()
     {
         $model = new PpmpNonCse();
+        $user_province = Yii::$app->user->identity->province;
+        if ($user_province === 'ro') {
+            $model->responsible_center = Yii::$app->user->identity->division;
+        } else {
+            $model->responsible_center = $user_province;
+        }
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
 
 
@@ -251,7 +257,7 @@ class PpmpNonCseController extends Controller
             $end_user = !empty($_POST['end_user']) ? $_POST['end_user'] : [];
             $stock_type = !empty($_POST['stock_type']) ? $_POST['stock_type'] : [];
             $categoriesAmount = !empty($_POST['categoriesAmount']) ? $_POST['categoriesAmount'] : [];
-
+            $model->ppmp_number = $this->ppmpNumber($model->responsible_center);
             $transaction = YIi::$app->db->beginTransaction();
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             if ($model->save(false)) {
@@ -393,5 +399,24 @@ class PpmpNonCseController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    public function ppmpNumber($responsible_center)
+    {
+        $year = date('Y');
+        $last_no = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(ppmp_non_cse.ppmp_number,'-',-1) AS UNSIGNED) as last_number FROM `ppmp_non_cse`
+        WHERE ppmp_non_cse.responsible_center = :responsible_center
+        ORDER BY last_number DESC LIMIT 1")
+            ->bindValue(':responsible_center', $responsible_center)
+            ->queryScalar();
+        if (!empty($last_no)) {
+            $last_no++;
+        } else {
+            $last_no = 1;
+        }
+        $zero = '';
+        for ($i = strlen($last_no); $i <= 4; $i++) {
+            $zero .= 0;
+        }
+        return strtoupper($responsible_center) . '-' . $year . '-' . $zero . $last_no;
     }
 }

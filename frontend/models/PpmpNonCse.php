@@ -35,6 +35,7 @@ class PpmpNonCse extends \yii\db\ActiveRecord
             [['id', 'is_deleted'], 'integer'],
             [['created_at', 'date'], 'safe'],
             [['id'], 'unique'],
+            [['responsible_center'], 'string'],
         ];
     }
 
@@ -48,6 +49,7 @@ class PpmpNonCse extends \yii\db\ActiveRecord
             'date' => 'Date',
             'is_deleted' => 'Is Deleted',
             'created_at' => 'Created At',
+            'responsible_center' => 'Responsible Center',
         ];
     }
 }

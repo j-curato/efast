@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\PpmpNonCse;
+use Yii;
 
 /**
  * PpmpNonCseSearch represents the model behind the search form of `app\models\PpmpNonCse`.
@@ -41,6 +42,15 @@ class PpmpNonCseSearch extends PpmpNonCse
     public function search($params)
     {
         $query = PpmpNonCse::find();
+        if (!Yii::$app->user->can('super-user')) {
+            $user_province = Yii::$app->user->identity->province;
+            if ($user_province === 'ro') {
+                $query->andWhere("responsible_center  = :r_center", ['r_center' => Yii::$app->user->identity->division]);
+            } else {
+                $query->andWhere("responsible_center  = :r_center", ['r_center' => $user_province]);
+            }
+        }
+
 
         // add conditions that should always apply here
 

@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
 
-            'id',
+            'ppmp_number',
 
 
             ['class' => 'yii\grid\ActionColumn'],
