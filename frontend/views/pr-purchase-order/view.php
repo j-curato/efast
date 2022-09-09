@@ -525,6 +525,7 @@ if (!empty($model->date_completed)) {
 
 
 
+
         <table id="rfi_links">
             <thead>
                 <tr class="bg-danger">
@@ -665,6 +666,8 @@ if (!empty($model->date_completed)) {
         #rfi_links {
             display: none;
         }
+
+
     }
 </style>
 <script>
