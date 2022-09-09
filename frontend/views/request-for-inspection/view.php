@@ -165,9 +165,12 @@ if (!empty($model->fk_requested_by)) {
                             <td class='center'>{$val['quantity']}</td>
                             <td class='center'>" . number_format($val['unit_cost'], 2) . "</td>
                             <td class='center'>{$from_date}</td>
-                            <td class='center'>{$to_date}</td>
-                         
-                        </tr>";
+                            <td class='center'>{$to_date}</td>";
+
+                    if (Yii::$app->user->can('super-user')) {
+                        echo "<td>" . HTML::a('PO Link', ['pr-purchase-order/view', 'id' => $val['po_id']], ['class' => 'btn btn-link']) . "</td>";
+                    }
+                    echo " </tr>";
                 }
             }
             ?>
@@ -204,6 +207,9 @@ if (!empty($model->fk_requested_by)) {
                 </td>
             </tr>
         </table>
+
+
+
 
         <table class="link table table-striped" style="margin-top: 5rem;">
 

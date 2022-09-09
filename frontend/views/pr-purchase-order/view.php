@@ -523,6 +523,46 @@ if (!empty($model->date_completed)) {
             <p style='page-break-after:always;'></p>
         <?php } ?>
 
+
+
+        <table id="rfi_links">
+            <thead>
+                <tr class="bg-danger">
+                    <th colspan="5">
+                        RFI LINKS
+                    </th>
+                </tr>
+                <th>PO#</th>
+                <th>Stock Name</th>
+                <th>RFI Number</th>
+                <th>Quantity</th>
+                <th>Link</th>
+            </thead>
+            <tbody>
+
+                <?php
+
+                foreach ($rfi_links as $rfi) {
+                    $stock_title = $rfi['stock_title'];
+                    $quantity = $rfi['quantity'];
+                    $id = $rfi['fk_request_for_inspection_id'];
+                    $rfi_number = $rfi['rfi_number'];
+                    $po_number = $rfi['po_number'];
+
+                    echo "<tr>
+                                <td>$po_number</td>
+                                <td>$stock_title</td>
+                                <td>$rfi_number</td>
+                                <td>$quantity</td>
+                                <td>";
+                    echo    HTMl::a('Link', ['request-for-inspection/view', 'id' => $id], ['class' => 'btn btn-link']);
+                    echo "</td></tr>";
+                }
+
+
+                ?>
+            </tbody>
+        </table>
     </div>
 
 
@@ -588,6 +628,12 @@ if (!empty($model->date_completed)) {
         text-align: center;
     }
 
+    #rfi_links td,
+    #rfi_links th {
+        border: none;
+        text-align: center;
+    }
+
     @media print {
         .btn {
             display: none;
@@ -616,7 +662,9 @@ if (!empty($model->date_completed)) {
             padding-bottom: 0;
         }
 
-
+        #rfi_links {
+            display: none;
+        }
     }
 </style>
 <script>
