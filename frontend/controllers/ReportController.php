@@ -1751,7 +1751,7 @@ class ReportController extends \yii\web\Controller
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id=  advances.id')
                 ->join('LEFT JOIN', 'fund_source_type', 'advances_entries.fund_source_type = fund_source_type.`name`')
                 ->where(' advances_entries.reporting_period < :from_reporting_period ', ['from_reporting_period' => $from_reporting_period])
-                ->andWhere("advances_entries.is_deleted !=1");
+                ->andWhere("advances_entries.is_deleted NOT IN(1,9)");
             if ($province !== 'all') {
                 $prev_advances->andWhere("advances.province =:province", ['province' => $province]);
             }
@@ -4913,66 +4913,66 @@ class ReportController extends \yii\web\Controller
         return $this->render('file_upload', ['model' => $model]);
     }
 
-//     public function actionTransaction()
-//     {
+    //     public function actionTransaction()
+    //     {
 
-//         $db = Yii::$app->test_db;
-//         $source_transaction = $db->createCommand("SELECT 
-//         id,
-// payee_id,
-// responsibility_center_id,
-// check_date,
-// check_number,
-// dv_number,
-// particular,
-// reporting_period,
-// is_cancelled,
-// po_transaction_id,
-// check_range_id,
-// is_locked,
-// `status`,
-// province,
-// payee,
-// is_final,
-// document_link,
-// cancel_reporting_period,
-// exclude_in_raaf,
-// bank_account_id
+    //         $db = Yii::$app->test_db;
+    //         $source_transaction = $db->createCommand("SELECT 
+    //         id,
+    // payee_id,
+    // responsibility_center_id,
+    // check_date,
+    // check_number,
+    // dv_number,
+    // particular,
+    // reporting_period,
+    // is_cancelled,
+    // po_transaction_id,
+    // check_range_id,
+    // is_locked,
+    // `status`,
+    // province,
+    // payee,
+    // is_final,
+    // document_link,
+    // cancel_reporting_period,
+    // exclude_in_raaf,
+    // bank_account_id
 
-//         FROM `liquidation`")->queryAll();
-//         $target_transaction =  Yii::$app->restore_db->createCommand("SELECT 
-//         id,
-// payee_id,
-// responsibility_center_id,
-// check_date,
-// check_number,
-// dv_number,
-// particular,
-// reporting_period,
-// is_cancelled,
-// po_transaction_id,
-// check_range_id,
-// is_locked,
-// `status`,
-// province,
-// payee,
-// is_final,
-// document_link,
-// cancel_reporting_period,
-// exclude_in_raaf,
-// bank_account_id FROM `liquidation`")->queryAll();
-//         $source_transaction_difference = array_map(
-//             'unserialize',
-//             array_diff(array_map('serialize', $source_transaction), array_map('serialize', $target_transaction))
+    //         FROM `liquidation`")->queryAll();
+    //         $target_transaction =  Yii::$app->restore_db->createCommand("SELECT 
+    //         id,
+    // payee_id,
+    // responsibility_center_id,
+    // check_date,
+    // check_number,
+    // dv_number,
+    // particular,
+    // reporting_period,
+    // is_cancelled,
+    // po_transaction_id,
+    // check_range_id,
+    // is_locked,
+    // `status`,
+    // province,
+    // payee,
+    // is_final,
+    // document_link,
+    // cancel_reporting_period,
+    // exclude_in_raaf,
+    // bank_account_id FROM `liquidation`")->queryAll();
+    //         $source_transaction_difference = array_map(
+    //             'unserialize',
+    //             array_diff(array_map('serialize', $source_transaction), array_map('serialize', $target_transaction))
 
-//         );
-//         $q = array_map(
-//             'unserialize',
-//             array_diff(array_map('serialize',  $target_transaction), array_map('serialize', $source_transaction))
+    //         );
+    //         $q = array_map(
+    //             'unserialize',
+    //             array_diff(array_map('serialize',  $target_transaction), array_map('serialize', $source_transaction))
 
-//         );
-//         return json_encode($q);
-//     }
+    //         );
+    //         return json_encode($q);
+    //     }
 }
 
 // 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
