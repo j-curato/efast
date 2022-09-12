@@ -170,6 +170,7 @@ class PrPurchaseOrderController extends Controller
  
         WHERE 
         pr_purchase_order_item.fk_pr_purchase_order_id = :id
+        AND request_for_inspection_items.is_deleted !=1
         
         ")
             ->bindValue(':id', $id)
