@@ -109,7 +109,7 @@ class IarController extends Controller
         pr_stock.stock_title,
         unit_of_measure.unit_of_measure,
         pr_aoq_entries.amount,
-        pr_purchase_request_item.quantity,
+        request_for_inspection_items.quantity,
         IFNULL(REPLACE(pr_purchase_request_item.specification,'[n]','<br>'),'') as specification
         FROM iar
 
