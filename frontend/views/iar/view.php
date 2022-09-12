@@ -21,6 +21,7 @@ $po_date = '';
 $date_generated = '';
 $date_inspected = '';
 $end_user = '';
+$po_number = '';
 if (!empty($model->inspectionReport->fk_end_user)) {
     $end_user = YIi::$app->db->createCommand("SELECT employee_name FROM employee_search_view WHERE employee_id = :id")->bindValue(':id', $model->inspectionReport->fk_end_user)->queryScalar();
 }
@@ -44,6 +45,9 @@ if (!empty($signatories['department'])) {
 }
 if (!empty($signatories['po_date'])) {
     $po_date = $signatories['po_date'];
+}
+if (!empty($signatories['po_number'])) {
+    $po_number = $signatories['po_number'];
 }
 if (!empty($signatories['date_generated'])) {
     $date_generated = $signatories['date_generated'];
@@ -87,7 +91,7 @@ if (!empty($signatories['inspection_from_date'])) {
                         <span class="udl_txt"><?= $payee ?></span>
                         <br>
                         <span class="bold">PO No./Date:</span>
-                        <span class="udl_txt"><?= $po_date ?></span>
+                        <span class="udl_txt"><?= $po_number.'; '.$po_date ?></span>
                         <br>
                         <span class="bold"> Requisitioning Office/Dept:</span>
                         <span class="udl_txt"><?= $department ?></span>

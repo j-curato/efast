@@ -62,6 +62,7 @@ class IarController extends Controller
         DATE_FORMAT(request_for_inspection_items.`to`,'%M %d, %Y') as inspection_to_date,
         DATE_FORMAT(iar.created_at,'%M %d, %Y') as date_generated,
         DATE_FORMAT(pr_purchase_order.po_date,'%M %d, %Y') as po_date,
+        pr_purchase_order.po_number,
         CONCAT(pr_office.division,'-',pr_office.unit) as department
 
 					
