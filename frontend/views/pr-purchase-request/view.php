@@ -23,14 +23,16 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <?php
 
-            if (!$model->is_final) {
+            if (!$model->is_final && !Yii::$app->user->can('super-user')) {
                 $check_rfqs = YIi::$app->db->createCommand("SELECT id FROM pr_rfq WHERE pr_purchase_request_id = :id")
                     ->bindValue(':id', $model->id)
                     ->queryAll();
-                if (empty($check_rfqs)) {
+                if (empty($check_rfqs) && !Yii::$app->user->can('super-user')) {
                     echo     Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
                 }
-            } ?>
+            }
+
+            ?>
             <button type="button" class="print btn btn-warning">Print</button>
             <?php
 
@@ -41,6 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 if ($model->is_final) {
                     $btn_color = 'btn btn-success';
                 }
+                echo     Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) . ' ';
                 echo  Html::a('Final', ['final', 'id' => $model->id], [
                     'class' => $btn_color,
                     'data' => [
