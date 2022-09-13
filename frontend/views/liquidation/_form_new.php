@@ -1,23 +1,11 @@
 <?php
 
-use app\models\AdvancesEntriesForLiquidationSearch;
-use app\models\AdvancesEntriesSearch;
-use app\models\CheckRange;
-use app\models\Payee;
-use app\models\PoTransaction;
-use aryelds\sweetalert\SweetAlert;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\grid\GridView;
-use kartik\money\MaskMoney;
 use kartik\select2\Select2;
-use Mpdf\Tag\Select;
-use yii\db\Query;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
 use yii\web\JsExpression;
-use kartik\form\ActiveForm;
-use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Liquidation */
@@ -724,10 +712,8 @@ SweetAlertAsset::register($this);
                 }
             });
         })
-        $('#add').click(function(e) {
-            e.preventDefault();
-
-            $.ajax({
+        async function addEntry() {
+            await $.ajax({
                 type: 'POST',
                 url: window.location.pathname + '?r=liquidation/add-advances',
                 data: $('#add_data').serialize(),
@@ -737,6 +723,11 @@ SweetAlertAsset::register($this);
 
                 }
             })
+        }
+        $('#add').click(function(e) {
+            e.preventDefault();
+            addEntry()
+
         })
 
         $('#liquidation_form').on('submit', function(event) {
