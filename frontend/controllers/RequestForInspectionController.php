@@ -262,7 +262,7 @@ class RequestForInspectionController extends Controller
                                             request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id,
                                             SUM(request_for_inspection_items.quantity) as quantity
                                             FROM request_for_inspection_items 
-                                            AND request_for_inspection_items.is_deleted !=1
+                                            WHERE request_for_inspection_items.is_deleted !=1
                             GROUP BY request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id) as aoq_items_quantity 
                             ON pr_purchase_order_items_aoq_items.id = aoq_items_quantity.fk_pr_purchase_order_items_aoq_item_id
                             WHERE 

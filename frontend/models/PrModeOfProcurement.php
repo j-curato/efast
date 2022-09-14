@@ -27,6 +27,7 @@ class PrModeOfProcurement extends \yii\db\ActiveRecord
     {
         return [
             [['mode_name'], 'string', 'max' => 255],
+            [['description'], 'string'],
             [[
                 'id',
                 'mode_name',
@@ -43,6 +44,7 @@ class PrModeOfProcurement extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'mode_name' => 'Mode Name',
+            'description' => 'Description',
         ];
     }
 }

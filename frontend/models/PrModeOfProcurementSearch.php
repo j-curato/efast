@@ -18,7 +18,7 @@ class PrModeOfProcurementSearch extends PrModeOfProcurement
     {
         return [
             [['id'], 'integer'],
-            [['mode_name'], 'safe'],
+            [['mode_name', 'description'], 'safe'],
         ];
     }
 
@@ -61,7 +61,8 @@ class PrModeOfProcurementSearch extends PrModeOfProcurement
             'id' => $this->id,
         ]);
 
-        $query->andFilterWhere(['like', 'mode_name', $this->mode_name]);
+        $query->andFilterWhere(['like', 'mode_name', $this->mode_name])
+            ->andFilterWhere(['like', 'description', $this->description]);
 
         return $dataProvider;
     }
