@@ -25,10 +25,11 @@ class InspectionReportIndexSearch extends InspectionReportIndex
                 'rfi_number',
                 'po_number',
                 'inspector_name',
-                'property_unit',
+                'end_user',
                 'requested_by_name',
-                'payee',
-                'responsible_center'
+                'payee_name',
+                'responsible_center',
+                'purpose',
             ], 'safe'],
         ];
     }
@@ -77,7 +78,17 @@ class InspectionReportIndexSearch extends InspectionReportIndex
             'id' => $this->id,
         ]);
 
-        $query->andFilterWhere(['like', 'ir_number', $this->ir_number]);
+        $query->andFilterWhere(['like', 'ir_number', $this->ir_number])
+            ->andFilterWhere(['like', 'rfi_number', $this->rfi_number])
+            ->andFilterWhere(['like', 'po_number', $this->po_number])
+            ->andFilterWhere(['like', 'inspector_name', $this->inspector_name])
+            ->andFilterWhere(['like', 'end_user', $this->end_user])
+            ->andFilterWhere(['like', 'requested_by_name', $this->requested_by_name])
+            ->andFilterWhere(['like', 'payee_name', $this->payee_name])
+            ->andFilterWhere(['like', 'purpose', $this->purpose])
+            ->andFilterWhere(['like', 'responsible_center', $this->responsible_center]);
+
+
         $query->orderBy('ir_number');
         // print_r($query->createCommand()->queryAll());
         // die();

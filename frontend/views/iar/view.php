@@ -190,7 +190,7 @@ $date_inspected = !empty($GLOBALS['date_inspected']) ? $GLOBALS['date_inspected'
                     <td colspan="2" class="center  " style="padding-top:5rem;border-top:none;border-bottom: none;">
 
                         <span class="bold bdr-btm udl_txt"><?= $inspector ?></span><br>
-                        <span>IInspection Committee, Member</span>
+                        <span>Inspection Committee, Member</span>
                     </td>
                     <td colspan="2" style="padding-top:5rem;border-top:none;border-bottom: none;">
                     </td>

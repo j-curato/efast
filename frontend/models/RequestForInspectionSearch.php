@@ -100,6 +100,7 @@ class RequestForInspectionSearch extends RequestForInspection
         ]);
 
         $query->andFilterWhere(['like', 'responsibility_center.name', $this->fk_responsibility_center_id])
+            ->andFilterWhere(['like', 'rfi_number', $this->rfi_number])
             ->andFilterWhere([
                 'or', ['like', 'chairperson.f_name', $this->fk_chairperson],
                 ['like', 'chairperson.m_name', $this->fk_chairperson],
