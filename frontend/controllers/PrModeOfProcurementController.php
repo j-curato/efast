@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\PrModeOfProcurement;
 use app\models\PrModeOfProcurementSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,8 +21,31 @@ class PrModeOfProcurementController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'view',
+                    'index',
+                    'update',
+                    'delete',
+                    'create',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'view',
+                            'index',
+                            'update',
+                            'delete',
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['super-user']
+                    ]
+                ]
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
