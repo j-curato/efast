@@ -50,17 +50,15 @@ class IarIndex extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'iar_number' => 'Iar Number',
-            'ir_number' => 'Ir Number',
-            'rfi_number' => 'Rfi Number',
-            'division' => 'Division',
-            'unit' => 'Unit',
-            'unit_head' => 'Unit Head',
-            'inspector' => 'Inspector',
-            'chairperson' => 'Chairperson',
-            'property_unit' => 'Property Unit',
+            'iar_number' => 'IAR Number',
+            'ir_number' => 'IR Number',
+            'rfi_number' => 'RFI Number',
+            'responsible_center' => 'Division',
+            'inspector_name' => 'Inspector',
+            'requested_by_name' => 'Requested By',
+            'end_user' => 'End-User',
             'po_number' => 'Po Number',
-            'payee' => 'Payee',
+            'payee_name' => 'Payee',
         ];
     }
 }

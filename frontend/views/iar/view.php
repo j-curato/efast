@@ -11,57 +11,73 @@ $this->params['breadcrumbs'][] = ['label' => 'Iars', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 
-$chairperson = '';
-$inspector = '';
-$property_unit = '';
-$unit_head = '';
-$payee = '';
-$department = '';
-$po_date = '';
-$date_generated = '';
-$date_inspected = '';
-$end_user = '';
-$po_number = '';
+$end_user='';
 if (!empty($model->inspectionReport->fk_end_user)) {
     $end_user = YIi::$app->db->createCommand("SELECT employee_name FROM employee_search_view WHERE employee_id = :id")->bindValue(':id', $model->inspectionReport->fk_end_user)->queryScalar();
 }
-if (!empty($signatories['chairperson'])) {
-    $chairperson = $signatories['chairperson'];
-}
-if (!empty($signatories['unit_head'])) {
-    $unit_head = $signatories['unit_head'];
-}
-if (!empty($signatories['inspector'])) {
-    $inspector = $signatories['inspector'];
-}
-if (!empty($signatories['property_unit'])) {
-    $property_unit = $signatories['property_unit'];
-}
-if (!empty($signatories['payee'])) {
-    $payee = $signatories['payee'];
-}
-if (!empty($signatories['department'])) {
-    $department = $signatories['department'];
-}
-if (!empty($signatories['po_date'])) {
-    $po_date = $signatories['po_date'];
-}
-if (!empty($signatories['po_number'])) {
-    $po_number = $signatories['po_number'];
-}
-if (!empty($signatories['date_generated'])) {
-    $date_generated = $signatories['date_generated'];
-}
-if (!empty($signatories['inspection_from_date'])) {
-    $date_generated = $signatories['date_generated'];
-    if ($signatories['inspection_from_date'] != $signatories['inspection_to_date']) {
 
-        $date_inspected = $signatories['inspection_from_date'] . ' to ' . $signatories['inspection_to_date'];
-    } else {
+function details($sig)
+{
+    if (!empty($sig['chairperson'])) {
 
-        $date_inspected = $signatories['inspection_from_date'];
+        $GLOBALS['chairperson'] = $sig['chairperson'];
+    }
+
+    if (!empty($sig['inspector'])) {
+        $GLOBALS['inspector'] = $sig['inspector'];
+    }
+    if (!empty($sig['property_unit'])) {
+        $GLOBALS['property_unit'] = $sig['property_unit'];
+    }
+    if (!empty($sig['payee'])) {
+        $GLOBALS['payee'] = $sig['payee'];
+    }
+    if (!empty($sig['department'])) {
+
+        $GLOBALS['department'] = $sig['department'];
+    }
+    if (!empty($sig['po_date'])) {
+
+        $GLOBALS['po_date'] = $sig['po_date'];
+    }
+    if (!empty($sig['po_number'])) {
+
+        $GLOBALS['po_number'] = $sig['po_number'];
+    }
+    if (!empty($sig['date_generated'])) {
+
+        $GLOBALS['date_generated'] = $sig['date_generated'];
+    }
+    if (!empty($sig['inspection_from_date'])) {
+        $date_generated = $sig['date_generated'];
+        if ($sig['inspection_from_date'] != $sig['inspection_to_date']) {
+
+
+            $GLOBALS['date_inspected'] = $sig['inspection_from_date'] . ' to ' . $sig['inspection_to_date'];
+        } else {
+
+            $GLOBALS['date_inspected'] = $sig['inspection_from_date'];
+        }
     }
 }
+if (!empty($signatories)) {
+
+    details($signatories);
+} else if (!empty($noPOsignatories)) {
+    details($noPOsignatories);
+}
+
+
+$chairperson = !empty($GLOBALS['chairperson']) ? $GLOBALS['chairperson'] : '';
+$inspector = !empty($GLOBALS['inspector']) ? $GLOBALS['inspector'] : '';
+$property_unit = !empty($GLOBALS['property_unit']) ? $GLOBALS['property_unit'] : '';
+$payee = !empty($GLOBALS['payee']) ? $GLOBALS['payee'] : '';
+$department = !empty($GLOBALS['department']) ? $GLOBALS['department'] : '';
+$po_date = !empty($GLOBALS['po_date']) ? $GLOBALS['po_date'] : '';
+$po_number = !empty($GLOBALS['po_number']) ? $GLOBALS['po_number'] : '';
+$date_generated = !empty($GLOBALS['date_generated']) ? $GLOBALS['date_generated'] : '';
+$date_inspected = !empty($GLOBALS['date_inspected']) ? $GLOBALS['date_inspected'] : '';
+
 
 ?>
 <div class="iar-view">
@@ -91,7 +107,7 @@ if (!empty($signatories['inspection_from_date'])) {
                         <span class="udl_txt"><?= $payee ?></span>
                         <br>
                         <span class="bold">PO No./Date:</span>
-                        <span class="udl_txt"><?= $po_number.'; '.$po_date ?></span>
+                        <span class="udl_txt"><?= $po_number . '; ' . $po_date ?></span>
                         <br>
                         <span class="bold"> Requisitioning Office/Dept:</span>
                         <span class="udl_txt"><?= $department ?></span>
@@ -124,6 +140,19 @@ if (!empty($signatories['inspection_from_date'])) {
 
                 if (!empty($items)) {
                     foreach ($items as $val) {
+                        echo "<tr>
+                            <td>{$val['bac_code']}</td>
+                            <td>
+                                <span class='bold'>{$val['stock_title']}</span><br>
+                                <span class='italic'>{$val['specification']}</span>
+                            </td>
+                            <td>{$val['unit_of_measure']}</td>
+                            <td>{$val['quantity']}</td>
+                        </tr>";
+                    }
+                } else if (!empty($noPOItems)) {
+
+                    foreach ($noPOItems as $val) {
                         echo "<tr>
                             <td>{$val['bac_code']}</td>
                             <td>

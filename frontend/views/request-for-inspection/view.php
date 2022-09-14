@@ -137,7 +137,12 @@ if (!empty($model->fk_requested_by)) {
                 </td>
             </tr>
             <tr>
-                <th class="center">PO No.</th>
+                <?php
+                if ($model->transaction_type === 'with_po') {
+                    echo '  <th class="center">PO No.</th>';
+                }
+                ?>
+
                 <th class="center">Name of Activity</th>
                 <th class="center">Payee</th>
                 <th>Description</th>
@@ -147,7 +152,7 @@ if (!empty($model->fk_requested_by)) {
                 <th class="center">To Date</th>
             </tr>
             <?php
-            if (!empty($purchase_orders)) {
+            if (!empty($purchase_orders) && $model->transaction_type === 'with_po') {
 
                 foreach ($purchase_orders as $val) {
 
@@ -172,7 +177,35 @@ if (!empty($model->fk_requested_by)) {
                     }
                     echo " </tr>";
                 }
+            } else {
+                foreach ($no_po_items as $item) {
+
+                    $project_name = $item['project_name'];
+                    $specification_view = str_replace('[n]', '<br>', $item['specification']);
+                    $unit_of_measure = $item['unit_of_measure'];
+                    $payee_name = $item['payee_name'];
+                    $unit_cost = $item['unit_cost'];
+                    $quantity = $item['quantity'];
+                    $from_date = $item['from_date'];
+                    $to_date = $item['to_date'];
+                    $stock_title = $item['stock_title'];
+
+                    echo "<tr>
+   
+                    <td class='center'>{$project_name}</td>
+                    <td class='center'>{$payee_name}</td>
+                    <td >
+                    <span class='bold'>{$stock_title}</span>
+                    <br>
+                    {$specification_view}
+                    </td>
+                    <td class='center'>{$quantity}</td>
+                    <td class='center'>" . number_format($unit_cost, 2) . "</td>
+                    <td class='center'>{$from_date}</td>
+                    <td class='center'>{$to_date}</td>";
+                }
             }
+
             ?>
             <tr>
                 <td colspan="7"><br><br>Requested By</td>

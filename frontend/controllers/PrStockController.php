@@ -300,7 +300,7 @@ class PrStockController extends Controller
         if (!is_null($q)) {
             $query = new Query();
 
-            $query->select([" id, `stock_title` as text"])
+            $query->select([" id, UPPER(`stock_title`) as text"])
                 ->from('pr_stock')
                 ->where(['like', 'stock_title', $q])
                 // ->andwhere('pr_stock.is_final = 1')

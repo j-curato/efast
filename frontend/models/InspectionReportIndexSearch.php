@@ -23,13 +23,12 @@ class InspectionReportIndexSearch extends InspectionReportIndex
             [[
                 'ir_number',
                 'rfi_number',
-                'division',
                 'po_number',
-                'inspector',
-                'chairperson',
+                'inspector_name',
                 'property_unit',
-                'requested_by',
-                'payee'
+                'requested_by_name',
+                'payee',
+                'responsible_center'
             ], 'safe'],
         ];
     }
@@ -54,10 +53,8 @@ class InspectionReportIndexSearch extends InspectionReportIndex
     {
         $query = InspectionReportIndex::find();
 
-
-
         if (!Yii::$app->user->can('super-user')) {
-            $query->where('division =:division', ['division' => Yii::$app->user->identity->division]);
+            $query->where('responsible_center =:division', ['division' => Yii::$app->user->identity->division]);
         }
 
         // add conditions that should always apply here
@@ -81,6 +78,7 @@ class InspectionReportIndexSearch extends InspectionReportIndex
         ]);
 
         $query->andFilterWhere(['like', 'ir_number', $this->ir_number]);
+        $query->orderBy('ir_number');
         // print_r($query->createCommand()->queryAll());
         // die();
 

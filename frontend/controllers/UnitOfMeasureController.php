@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\UnitOfMeasure;
 use app\models\UnitOfMeasureSearch;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -158,5 +159,27 @@ class UnitOfMeasureController extends Controller
         $query = Yii::$app->db->createCommand("SELECT  * FROM unit_of_measure")->queryAll();
 
         return json_encode($query);
+    }
+    public function actionSearchUnitOfMeasure($q = null, $id = null, $province = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+
+            $query->select([" id, UPPER(`unit_of_measure`) as text"])
+                ->from('unit_of_measure')
+                ->where(['like', 'unit_of_measure', $q])
+                // ->andwhere('pr_stock.is_final = 1')
+            ;
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+
+        return $out;
     }
 }

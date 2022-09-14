@@ -19,7 +19,6 @@ $project_title = '';
 $inspect_date = '';
 $property_unit = '';
 if (!empty($signatories)) {
-
     $chairperson = strtoupper($signatories['chairperson']);
     $inspector = strtoupper($signatories['inspector']);
     $requested_by = strtoupper($signatories['requested_by']);
@@ -30,6 +29,18 @@ if (!empty($signatories)) {
         $inspect_date = $signatories['from_date'] . ' to ' . $signatories['to_date'];
     } else {
         $inspect_date = $signatories['from_date'];
+    }
+} else {
+    $chairperson = strtoupper($no_po_signatories['chairperson']);
+    $inspector = strtoupper($no_po_signatories['inspector']);
+    $requested_by = strtoupper($no_po_signatories['requested_by']);
+    $payee = $no_po_signatories['payee'];
+    $project_title = $no_po_signatories['project_title'];
+    $property_unit = $no_po_signatories['property_unit'];
+    if ($no_po_signatories['from_date'] != $no_po_signatories['to_date']) {
+        $inspect_date = $no_po_signatories['from_date'] . ' to ' . $no_po_signatories['to_date'];
+    } else {
+        $inspect_date = $no_po_signatories['from_date'];
     }
 }
 $end_user = '';
@@ -73,14 +84,27 @@ if (!empty($model->fk_end_user)) {
 
 
                     <?php
-                    foreach ($itemDetails as $val) {
+                    if (!empty($itemDetails)) {
 
-                        echo "<span class='bold'>{$val['stock_title']}</span>
+                        foreach ($itemDetails as $val) {
+
+                            echo "<span class='bold'>{$val['stock_title']}</span>
                         <br>
                         <span class='italic' >{$val['specification']}</span>
                         <br>
                         ";
+                        }
+                    } else {
+                        foreach ($noPoItemDetails as $val) {
+
+                            echo "<span class='bold'>{$val['stock_title']}</span>
+                        <br>
+                        <span class='italic' >{$val['specification']}</span>
+                        <br>
+                        ";
+                        }
                     }
+
                     ?>
                 </td>
             </tr>

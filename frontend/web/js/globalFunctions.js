@@ -156,6 +156,44 @@ function stockTypeSelect() {
     },
   });
 }
+function stockSelect() {
+  $(".stock").select2({
+    ajax: {
+      url: base_url + "?r=pr-stock/search-stock",
+      dataType: "json",
+      data: function (params) {
+        return {
+          q: params.term,
+        };
+      },
+      processResults: function (data) {
+        // Transforms the top-level key of the response object from 'items' to 'results'
+        return {
+          results: data.results,
+        };
+      },
+    },
+  });
+}
+function unitOfMeasureSelect() {
+  $(".unit-of-measure").select2({
+    ajax: {
+      url: base_url + "?r=unit-of-measure/search-unit-of-measure",
+      dataType: "json",
+      data: function (params) {
+        return {
+          q: params.term,
+        };
+      },
+      processResults: function (data) {
+        // Transforms the top-level key of the response object from 'items' to 'results'
+        return {
+          results: data.results,
+        };
+      },
+    },
+  });
+}
 
 // async function getAllResponsibilityCenter() {
 //   let responsibility_center = [];

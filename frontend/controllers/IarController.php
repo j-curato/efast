@@ -63,14 +63,14 @@ class IarController extends Controller
         DATE_FORMAT(iar.created_at,'%M %d, %Y') as date_generated,
         DATE_FORMAT(pr_purchase_order.po_date,'%M %d, %Y') as po_date,
         pr_purchase_order.po_number,
-        CONCAT(pr_office.division,'-',pr_office.unit) as department
+        responsibility_center.name as department
 
 					
         FROM iar
-        LEFT JOIN  inspection_report ON iar.fk_ir_id = inspection_report.id
-        LEFT JOIN inspection_report_items ON inspection_report.id = inspection_report_items.fk_inspection_report_id
-        LEFT JOIN request_for_inspection_items ON inspection_report_items.fk_request_for_inspection_item_id = request_for_inspection_items.id
-        LEFT JOIN request_for_inspection ON request_for_inspection_items.fk_request_for_inspection_id = request_for_inspection.id
+        INNER JOIN  inspection_report ON iar.fk_ir_id = inspection_report.id
+        INNER JOIN inspection_report_items ON inspection_report.id = inspection_report_items.fk_inspection_report_id
+        INNER JOIN request_for_inspection_items ON inspection_report_items.fk_request_for_inspection_item_id = request_for_inspection_items.id
+        INNER JOIN request_for_inspection ON request_for_inspection_items.fk_request_for_inspection_id = request_for_inspection.id
         LEFT JOIN employee_search_view  as property_unit ON request_for_inspection.fk_property_unit = property_unit.employee_id
         LEFT JOIN employee_search_view as chairperson ON request_for_inspection.fk_chairperson = chairperson.employee_id
         LEFT JOIN employee_search_view as inspector ON request_for_inspection.fk_inspector = inspector.employee_id
@@ -85,7 +85,7 @@ class IarController extends Controller
         LEFT JOIN pr_project_procurement ON pr_purchase_request.pr_project_procurement_id = pr_project_procurement.id
 		LEFT JOIN pr_purchase_order_item ON pr_purchase_order_items_aoq_items.fk_purchase_order_item_id = pr_purchase_order_item.id
         LEFT JOIN pr_purchase_order ON pr_purchase_order_item.fk_pr_purchase_order_id = pr_purchase_order.id
-        
+        LEFT JOIN responsibility_center ON request_for_inspection.fk_responsibility_center_id = responsibility_center.id
         WHERE iar.id = :id
         GROUP BY 
         unit_head.employee_name,
@@ -103,6 +103,47 @@ class IarController extends Controller
             ->queryOne();
         return $query;
     }
+    public function noPOsignatories($id)
+    {
+        return YIi::$app->db->createCommand("SELECT 
+
+        chairperson.employee_name as chairperson,
+        inspector.employee_name as inspector,
+        property_unit.employee_name as property_unit,
+        payee.account_name as payee,
+        rfi_without_po_items.project_name as project_title,
+         DATE_FORMAT(rfi_without_po_items.`from_date`,'%M %d, %Y') as inspection_from_date,
+        DATE_FORMAT(rfi_without_po_items.`to_date`,'%M %d, %Y') as inspection_to_date,
+        DATE_FORMAT(iar.created_at,'%M %d, %Y') as date_generated,
+        responsibility_center.name as department
+      
+					
+        FROM iar
+        INNER JOIN  inspection_report ON iar.fk_ir_id = inspection_report.id
+        INNER JOIN inspection_report_no_po_items ON inspection_report.id = inspection_report_no_po_items.fk_inspection_report_id
+        INNER JOIN rfi_without_po_items ON inspection_report_no_po_items.fk_rfi_without_po_item_id = rfi_without_po_items.id
+        INNER JOIN request_for_inspection ON rfi_without_po_items.fk_request_for_inspection_id = request_for_inspection.id
+        LEFT JOIN responsibility_center ON request_for_inspection.fk_responsibility_center_id = responsibility_center.id
+        LEFT JOIN employee_search_view  as property_unit ON request_for_inspection.fk_property_unit = property_unit.employee_id
+        LEFT JOIN employee_search_view as chairperson ON request_for_inspection.fk_chairperson = chairperson.employee_id
+        LEFT JOIN employee_search_view as inspector ON request_for_inspection.fk_inspector = inspector.employee_id 
+        LEFT JOIN payee ON rfi_without_po_items.fk_payee_id = payee.id
+        
+        
+
+        GROUP BY 
+        
+        chairperson.employee_name ,
+        inspector.employee_name ,
+        property_unit.employee_name ,
+        payee.account_name ,
+        rfi_without_po_items.project_name ,
+         DATE_FORMAT(rfi_without_po_items.`from_date`,'%M %d, %Y') ,
+        DATE_FORMAT(rfi_without_po_items.`to_date`,'%M %d, %Y') ,
+        DATE_FORMAT(iar.created_at,'%M %d, %Y') 
+     ")->bindValue(':id', $id)
+            ->queryOne();
+    }
     public function items($id)
     {
         $query = Yii::$app->db->createCommand("SELECT 
@@ -114,9 +155,9 @@ class IarController extends Controller
         IFNULL(REPLACE(pr_purchase_request_item.specification,'[n]','<br>'),'') as specification
         FROM iar
 
-    LEFT JOIN  inspection_report ON iar.fk_ir_id = inspection_report.id
-    LEFT  JOIN inspection_report_items ON inspection_report.id = inspection_report_items.fk_inspection_report_id
-    LEFT JOIN request_for_inspection_items ON inspection_report_items.fk_request_for_inspection_item_id = request_for_inspection_items.id
+    INNER JOIN  inspection_report ON iar.fk_ir_id = inspection_report.id
+    INNER  JOIN inspection_report_items ON inspection_report.id = inspection_report_items.fk_inspection_report_id
+    INNER JOIN request_for_inspection_items ON inspection_report_items.fk_request_for_inspection_item_id = request_for_inspection_items.id
     LEFT JOIN pr_purchase_order_items_aoq_items ON request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id = pr_purchase_order_items_aoq_items.id
     LEFT JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id =pr_aoq_entries.id
     LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id =pr_rfq_item.id
@@ -128,6 +169,27 @@ class IarController extends Controller
             ->bindValue(':id', $id)
             ->queryAll();
         return $query;
+    }
+    public function noPOItems($id)
+    {
+        return Yii::$app->db->createCommand("SELECT 
+                iar.iar_number,
+                pr_stock.bac_code,
+                pr_stock.stock_title,
+                unit_of_measure.unit_of_measure,
+                rfi_without_po_items.unit_cost,
+                rfi_without_po_items.quantity,
+                IFNULL(REPLACE(rfi_without_po_items.specification,'[n]','<br>'),'') as specification
+                FROM iar
+        
+            INNER JOIN  inspection_report ON iar.fk_ir_id = inspection_report.id
+            INNER  JOIN inspection_report_no_po_items ON inspection_report.id = inspection_report_no_po_items.fk_inspection_report_id
+            INNER JOIN rfi_without_po_items ON inspection_report_no_po_items.fk_rfi_without_po_item_id = rfi_without_po_items.id
+            LEFT JOIN pr_stock ON rfi_without_po_items.fk_stock_id= pr_stock.id
+            LEFT JOIN unit_of_measure ON rfi_without_po_items.fk_unit_of_measure_id= unit_of_measure.id
+            WHERE iar.id = :id")
+            ->bindValue(':id', $id)
+            ->queryAll();
     }
 
     /**
@@ -156,7 +218,11 @@ class IarController extends Controller
         return $this->render('view', [
             'model' => $this->findModel($id),
             'items' => $this->items($id),
-            'signatories' => $this->signatories($id)
+            'signatories' => $this->signatories($id),
+            'noPOItems' => $this->noPOItems($id),
+            'noPOsignatories' => $this->noPOsignatories($id)
+
+
 
         ]);
     }

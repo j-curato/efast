@@ -24,14 +24,12 @@ class IarIndexSearch extends IarIndex
                 'iar_number',
                 'ir_number',
                 'rfi_number',
-                'division',
-                'unit',
-                'unit_head',
-                'inspector',
-                'chairperson',
-                'property_unit',
+                'responsible_center',
+                'inspector_name',
+                'requested_by_name',
+                'end_user',
                 'po_number',
-                'payee',
+                'payee_name',
             ], 'safe'],
         ];
     }
@@ -59,7 +57,7 @@ class IarIndexSearch extends IarIndex
 
 
         if (!Yii::$app->user->can('super-user')) {
-            $query->where('division =:division', ['division' => Yii::$app->user->identity->division]);
+            $query->where('responsible_center =:division', ['division' => Yii::$app->user->identity->division]);
         }
 
         // add conditions that should always apply here
@@ -83,17 +81,16 @@ class IarIndexSearch extends IarIndex
         ]);
 
         $query->andFilterWhere(['like', 'iar_number', $this->iar_number])
-            ->andFilterWhere(['like', 'rfi_number', $this->rfi_number])
-            ->andFilterWhere(['like', 'division', $this->division])
-            ->andFilterWhere(['like', 'unit', $this->unit])
-            ->andFilterWhere(['like', 'unit_head', $this->unit_head])
-            ->andFilterWhere(['like', 'inspector', $this->inspector])
-            ->andFilterWhere(['like', 'chairperson', $this->chairperson])
-            ->andFilterWhere(['like', 'property_unit', $this->property_unit])
-            ->andFilterWhere(['like', 'po_number', $this->po_number])
-            ->andFilterWhere(['like', 'payee', $this->payee]);
+            ->andFilterWhere(['like', 'ir_number', $this->iar_number])
+            ->andFilterWhere(['like', 'rfi_number', $this->iar_number])
+            ->andFilterWhere(['like', 'responsible_center', $this->iar_number])
+            ->andFilterWhere(['like', 'inspector_name', $this->iar_number])
+            ->andFilterWhere(['like', 'requested_by_name', $this->iar_number])
+            ->andFilterWhere(['like', 'end_user', $this->iar_number])
+            ->andFilterWhere(['like', 'po_number', $this->iar_number])
+            ->andFilterWhere(['like', 'payee_name', $this->iar_number]);
 
-
+        $query->orderBy('iar_number');
         return $dataProvider;
     }
 }

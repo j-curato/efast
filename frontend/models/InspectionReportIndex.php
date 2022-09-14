@@ -37,7 +37,7 @@ class InspectionReportIndex extends \yii\db\ActiveRecord
         return [
             [['id', 'ir_number'], 'required'],
             [['id'], 'integer'],
-            [['inspector', 'chairperson', 'property_unit', 'requested_by'], 'string'],
+            [['inspector', 'chairperson', 'property_unit', 'requested_by_name'], 'string'],
             [['ir_number', 'rfi_number', 'division',  'po_number', 'payee'], 'string', 'max' => 255],
         ];
     }
@@ -48,17 +48,17 @@ class InspectionReportIndex extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'ir_number' => 'Ir Number',
-            'rfi_number' => 'Rfi Number',
-            'division' => 'Division',
 
-            'inspector' => 'Inspector',
-            'chairperson' => 'Chairperson',
-            'property_unit' => 'Property Unit',
-            'po_number' => 'Po Number',
-            'payee' => 'Payee',
-            'requested_by' => 'Requested By',
+            'id' => 'ID',
+            'ir_number' => 'IR Number',
+            'rfi_number' => 'RFI Number',
+            'end_user' => 'End User',
+            'purpose' => 'Purpose',
+            'inspector_name' => 'Inspector',
+            'responsible_center' => 'Responsibile Center',
+            'po_number' => 'PO Number',
+            'payee_name' => 'Payee',
+            'requested_by_name' => 'Requested By',
         ];
     }
 }
