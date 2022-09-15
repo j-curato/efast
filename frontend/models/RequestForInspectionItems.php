@@ -31,6 +31,7 @@ class RequestForInspectionItems extends \yii\db\ActiveRecord
     {
         return [
             [['fk_request_for_inspection_id', 'fk_pr_purchase_order_items_aoq_item_id'], 'integer'],
+            [['from', 'to'], 'required'],
             [[
                 'created_at',
                 'from',

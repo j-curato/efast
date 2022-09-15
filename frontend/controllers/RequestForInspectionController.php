@@ -284,6 +284,12 @@ class RequestForInspectionController extends Controller
                     $item->from = !empty($date_from[$index]) ?  $date_from[$index] : null;
                     $item->to = !empty($date_to[$index]) ?  $date_to[$index] : null;
                     $new_record = $item->isNewRecord;
+                    if (empty($date_from[$index])) {
+                        return ['isSuccess' => false, 'error_message' => "From Date is Required in line $i"];
+                    }
+                    if (empty($date_to[$index])) {
+                        return ['isSuccess' => false, 'error_message' => "To Date is Required in line $i"];
+                    }
                     if ($item->validate()) {
 
                         if ($item->save(false)) {
