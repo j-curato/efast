@@ -597,9 +597,8 @@ class RequestForInspectionController extends Controller
             $model->fk_inspector =  $fk_inspector;
             $model->fk_property_unit = $fk_property_unit;
             $model->fk_requested_by =  $fk_requested_by;
-            if (Yii::$app->user->can('super-user')){
-            $model->fk_responsibility_center_id =  $fk_responsibility_center_id;
-
+            if (Yii::$app->user->can('super-user')) {
+                $model->fk_responsibility_center_id =  $fk_responsibility_center_id;
             }
             $model->transaction_type = $transaction_type;
             $transaction = Yii::$app->db->beginTransaction();
@@ -748,7 +747,9 @@ class RequestForInspectionController extends Controller
             $model->fk_inspector =  $fk_inspector;
             $model->fk_property_unit = $fk_property_unit;
             $model->fk_requested_by =  $fk_requested_by;
-            $model->fk_responsibility_center_id =  $fk_responsibility_center_id;
+            if (Yii::$app->user->can('super-user')) {
+                $model->fk_responsibility_center_id =  $fk_responsibility_center_id;
+            }
             $model->transaction_type = $transaction_type;
             $no_po_item_id = !empty($_POST['no_po_item_ids']) ? $_POST['no_po_item_ids'] : [];
 
