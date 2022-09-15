@@ -740,7 +740,6 @@ class RequestForInspectionController extends Controller
             $fk_property_unit = !empty($_POST['fk_property_unit']) ? $_POST['fk_property_unit'] : '';
             // return JSON::encode(array('isSuccess' => false, 'error_message' => 'qwe'));
             // return $this->redirect(['view', 'id' => $model->id]);
-            $model->rfi_number = $this->rfiNumber();
             $model->date =  $date;
             $model->fk_chairperson = $fk_chairperson;
             $model->fk_inspector =  $fk_inspector;
