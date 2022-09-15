@@ -882,6 +882,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
 
                 },
                 errorPlacement: function(error, element) {
+                    console.log()
                     if (element.is(":radio")) {
                         error.appendTo(element.parents('.gender'));
                     } else if (element.is(":checkbox")) {
@@ -889,6 +890,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                     } else if (element.is("select")) {
                         error.appendTo(element.parents('.hobbies'));
                         element.parent().append(error)
+                    } else if (element.is('.date_from') || element.is('.date_to')) {
+                        error.insertAfter(element);
                     } else {
 
                         element.parent().parent().append(error)
