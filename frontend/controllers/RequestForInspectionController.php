@@ -562,6 +562,9 @@ class RequestForInspectionController extends Controller
             ->bindValue(':id', $rfi_id)
             ->queryAll();
     }
+    public function checkInputs()
+    {
+    }
     public function actionCreate()
     {
         $model = new RequestForInspection();
@@ -569,6 +572,7 @@ class RequestForInspectionController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $model->fk_property_unit = 99684622555676819;
         $model->fk_chairperson = 99684622555676844;
+
         if (!Yii::$app->user->can('super-user')) {
             $user_division = strtolower(Yii::$app->user->identity->division);
             $division_id = Yii::$app->db->createCommand("SELECT id FROM responsibility_center WHERE responsibility_center.name=:division")
@@ -576,10 +580,25 @@ class RequestForInspectionController extends Controller
                 ->queryScalar();
             $model->fk_responsibility_center_id = $division_id;
         }
-        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
-
+        if (Yii::$app->request->isPost) {
+            $date = !empty($_POST['date']) ? $_POST['date'] : '';
+            $fk_responsibility_center_id = !empty($_POST['fk_responsibility_center_id']) ? $_POST['fk_responsibility_center_id'] : '';
+            $transaction_type = !empty($_POST['transaction_type']) ? $_POST['transaction_type'] : '';
+            $fk_requested_by = !empty($_POST['fk_requested_by']) ? $_POST['fk_requested_by'] : '';
+            $fk_chairperson = !empty($_POST['fk_chairperson']) ? $_POST['fk_chairperson'] : '';
+            $fk_inspector = !empty($_POST['fk_inspector']) ? $_POST['fk_inspector'] : '';
+            $fk_property_unit = !empty($_POST['fk_property_unit']) ? $_POST['fk_property_unit'] : '';
+            // return JSON::encode(array('isSuccess' => false, 'error_message' => 'qwe'));
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+            // return $this->redirect(['view', 'id' => $model->id]);
             $model->rfi_number = $this->rfiNumber();
+            $model->date =  $date;
+            $model->fk_chairperson = $fk_chairperson;
+            $model->fk_inspector =  $fk_inspector;
+            $model->fk_property_unit = $fk_property_unit;
+            $model->fk_requested_by =  $fk_requested_by;
+            $model->fk_responsibility_center_id =  $fk_responsibility_center_id;
+            $model->transaction_type = $transaction_type;
             $transaction = Yii::$app->db->beginTransaction();
 
             try {
@@ -625,6 +644,10 @@ class RequestForInspectionController extends Controller
                             $date_from = !empty($_POST['date_from']) ? $_POST['date_from'] : [];
                             $date_to = !empty($_POST['date_to']) ? $_POST['date_to'] : [];
                             $quantity = !empty($_POST['quantity']) ? $_POST['quantity'] : [];
+                            if (empty($po_ids)) {
+                                $transaction->rollBack();
+                                return JSON::encode(array('isSuccess' => false, 'error_message' => 'Select PO'));
+                            }
                             $success = $this->insertItems(
                                 $model->id,
                                 array_unique($po_ids),
@@ -652,13 +675,10 @@ class RequestForInspectionController extends Controller
                     }
                     if ($flag) {
                         $transaction->commit();
-                    } else {
-                        $transaction->rollBack();
-                        return JSON::encode(array('isSuccess' => false, 'error_message' => $model->errors));
                     }
                 } else {
-                    Yii::$app->response->format = Response::FORMAT_JSON;
-                    return ActiveForm::validate($model);
+                    $transaction->rollBack();
+                    return JSON::encode(array('isSuccess' => false, 'error_message' => $model->errors));
                 }
             } catch (ErrorException $e) {
                 return JSON::encode(array('isSuccess' => false, 'error_message' => $e->getMessage()));
@@ -672,6 +692,7 @@ class RequestForInspectionController extends Controller
             'model' => $model,
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'action' => 'request-for-inspection/create',
         ]);
     }
 
@@ -704,14 +725,28 @@ class RequestForInspectionController extends Controller
         if ($model->is_final && !Yii::$app->user->can('super-user')) {
             return $this->redirect(['index']);
         }
-        if ($model->load(Yii::$app->request->post())) {
-            $po_ids = !empty($_POST['purchase_order_id']) ? $_POST['purchase_order_id'] : [];
-            $date_from = !empty($_POST['date_from']) ? $_POST['date_from'] : [];
-            $date_to = !empty($_POST['date_to']) ? $_POST['date_to'] : [];
-            $quantity = !empty($_POST['quantity']) ? $_POST['quantity'] : [];
+        if (YIi::$app->request->isPost) {
 
-            $item_ids = !empty($_POST['item_id']) ? $_POST['item_id'] : [];
             // if ($model->is_final !== true) {
+
+            $date = !empty($_POST['date']) ? $_POST['date'] : '';
+            $fk_responsibility_center_id = !empty($_POST['fk_responsibility_center_id']) ? $_POST['fk_responsibility_center_id'] : '';
+            $transaction_type = !empty($_POST['transaction_type']) ? $_POST['transaction_type'] : '';
+            $fk_requested_by = !empty($_POST['fk_requested_by']) ? $_POST['fk_requested_by'] : '';
+            $fk_chairperson = !empty($_POST['fk_chairperson']) ? $_POST['fk_chairperson'] : '';
+            $fk_inspector = !empty($_POST['fk_inspector']) ? $_POST['fk_inspector'] : '';
+            $fk_property_unit = !empty($_POST['fk_property_unit']) ? $_POST['fk_property_unit'] : '';
+            // return JSON::encode(array('isSuccess' => false, 'error_message' => 'qwe'));
+            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+            // return $this->redirect(['view', 'id' => $model->id]);
+            $model->rfi_number = $this->rfiNumber();
+            $model->date =  $date;
+            $model->fk_chairperson = $fk_chairperson;
+            $model->fk_inspector =  $fk_inspector;
+            $model->fk_property_unit = $fk_property_unit;
+            $model->fk_requested_by =  $fk_requested_by;
+            $model->fk_responsibility_center_id =  $fk_responsibility_center_id;
+            $model->transaction_type = $transaction_type;
             $no_po_item_id = !empty($_POST['no_po_item_ids']) ? $_POST['no_po_item_ids'] : [];
 
             $transaction = Yii::$app->db->beginTransaction();
@@ -773,6 +808,15 @@ class RequestForInspectionController extends Controller
                                 return JSON::encode(array('isSuccess' => false, 'error_message' => $res['error_message']));
                             }
                         } else {
+                            $po_ids = !empty($_POST['purchase_order_id']) ? $_POST['purchase_order_id'] : [];
+                            $date_from = !empty($_POST['date_from']) ? $_POST['date_from'] : [];
+                            $date_to = !empty($_POST['date_to']) ? $_POST['date_to'] : [];
+                            $quantity = !empty($_POST['quantity']) ? $_POST['quantity'] : [];
+                            $item_ids = !empty($_POST['item_id']) ? $_POST['item_id'] : [];
+                            if (empty($po_ids)) {
+                                $transaction->rollBack();
+                                return JSON::encode(array('isSuccess' => false, 'error_message' => 'Select PO'));
+                            }
                             $success = $this->insertItems(
                                 $model->id,
                                 array_unique($po_ids),
@@ -806,7 +850,7 @@ class RequestForInspectionController extends Controller
             'model' => $model,
             'items' => $this->poDetails($id),
             'no_po_items' => $this->noPo_items($id),
-
+            'action' => 'request-for-inspection/update',
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);

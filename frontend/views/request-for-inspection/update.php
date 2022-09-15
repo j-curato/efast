@@ -19,6 +19,7 @@ $this->params['breadcrumbs'][] = 'Update';
         'no_po_items' => $no_po_items,
         'searchModel' => $searchModel,
         'dataProvider' => $dataProvider,
+        'action' => $action,
     ]) ?>
 
 </div>
