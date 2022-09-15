@@ -597,7 +597,10 @@ class RequestForInspectionController extends Controller
             $model->fk_inspector =  $fk_inspector;
             $model->fk_property_unit = $fk_property_unit;
             $model->fk_requested_by =  $fk_requested_by;
+            if (Yii::$app->user->can('super-user')){
             $model->fk_responsibility_center_id =  $fk_responsibility_center_id;
+
+            }
             $model->transaction_type = $transaction_type;
             $transaction = Yii::$app->db->beginTransaction();
 
