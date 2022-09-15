@@ -156,8 +156,8 @@ if (!empty($model->fk_requested_by)) {
 
                 foreach ($purchase_orders as $val) {
 
-                    $from_date = DateTime::createFromFormat('Y-m-d', $val['date_from'])->format('F d, Y');
-                    $to_date = DateTime::createFromFormat('Y-m-d', $val['date_to'])->format('F d, Y');
+                    $from_date = !empty($val['date_from']) ? DateTime::createFromFormat('Y-m-d', $val['date_from'])->format('F d, Y') : '';
+                    $to_date = !empty($val['date_to']) ? DateTime::createFromFormat('Y-m-d', $val['date_to'])->format('F d, Y') : '';
                     echo "<tr>
                             <td class='center v-align-top' >{$val['po_number']}</td>
                             <td class='center'>{$val['project_title']}</td>
