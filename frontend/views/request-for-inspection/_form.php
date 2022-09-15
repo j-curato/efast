@@ -479,7 +479,12 @@ if (!empty($model->transaction_type)) {
                 </tbody>
             </table>
         </div>
-        <?= Html::submitButton('Send', ['class' => 'btn btn-info',]); ?>
+        <div class="row">
+            <div class="col-sm-3 col-md-offset-4">
+
+                <?= Html::submitButton('Send', ['class' => 'btn btn-info', 'style' => 'width:100%;margin:3rem 0 4rem 0']); ?>
+            </div>
+        </div>
         <?= Html::endForm(); ?>
     </div>
 
