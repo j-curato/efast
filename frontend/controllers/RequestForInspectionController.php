@@ -739,7 +739,6 @@ class RequestForInspectionController extends Controller
             $fk_inspector = !empty($_POST['fk_inspector']) ? $_POST['fk_inspector'] : '';
             $fk_property_unit = !empty($_POST['fk_property_unit']) ? $_POST['fk_property_unit'] : '';
             // return JSON::encode(array('isSuccess' => false, 'error_message' => 'qwe'));
-            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             // return $this->redirect(['view', 'id' => $model->id]);
             $model->rfi_number = $this->rfiNumber();
             $model->date =  $date;
