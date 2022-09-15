@@ -860,24 +860,24 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                 },
                 messages: {
                     date: {
-                        required: 'Please enter date!'
+                        required: 'Date is Required!'
                     },
                     fk_responsibility_center_id: {
-                        required: 'Please Select Responsibility Center!'
+                        required: '  Responsibility Center is Required'
                     },
                     transaction_type: {
-                        required: 'Please S!',
+                        required: 'Transaction Type is Required',
 
                     },
                     fk_requested_by: {
-                        required: 'Please enter fk_requested_by!'
+                        required: 'Requested BY is Required'
                     },
 
                     fk_chairperson: {
-                        required: 'Please enter fk_chairperson!'
+                        required: 'Chairperson is Required!'
                     },
                     fk_property_unit: {
-                        required: 'Please enterfk_property_unit'
+                        required: 'Property Unit is Required'
                     },
 
                 },
