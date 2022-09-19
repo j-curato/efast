@@ -128,7 +128,7 @@ class IarController extends Controller
         LEFT JOIN employee_search_view as chairperson ON request_for_inspection.fk_chairperson = chairperson.employee_id
         LEFT JOIN employee_search_view as inspector ON request_for_inspection.fk_inspector = inspector.employee_id 
         LEFT JOIN payee ON rfi_without_po_items.fk_payee_id = payee.id
-        
+        WHERE iar.id = :id
         
 
         GROUP BY 
