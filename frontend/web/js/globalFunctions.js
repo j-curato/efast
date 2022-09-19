@@ -21,10 +21,13 @@ function accountingCodesSelect() {
   });
 }
 function liquidationAccountingCodesSelect() {
+  console.log(base_url);
   $(".liquidation-chart-of-accounts").select2({
     ajax: {
       url: base_url + "?r=chart-of-accounts/search-liquidation-accounting-code",
       dataType: "json",
+      cache: true,
+      async: false,
       data: function (params) {
         return {
           q: params.term,
