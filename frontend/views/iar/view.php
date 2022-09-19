@@ -11,7 +11,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Iars', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 
-$end_user='';
+$end_user = '';
 if (!empty($model->inspectionReport->fk_end_user)) {
     $end_user = YIi::$app->db->createCommand("SELECT employee_name FROM employee_search_view WHERE employee_id = :id")->bindValue(':id', $model->inspectionReport->fk_end_user)->queryScalar();
 }
@@ -167,7 +167,7 @@ $date_inspected = !empty($GLOBALS['date_inspected']) ? $GLOBALS['date_inspected'
                 ?>
 
                 <tr>
-                    <th class='center' colspan="2">INSEPECTION</th>
+                    <th class='center' colspan="2">INSPECTION</th>
                     <th class='center' colspan="2">ACCEPTANCE</th>
                 </tr>
                 <tr>
