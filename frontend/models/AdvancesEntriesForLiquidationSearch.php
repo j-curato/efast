@@ -25,7 +25,7 @@ class AdvancesEntriesForLiquidationSearch extends AdvancesEntriesForLiquidation
 
 
             [['amount', 'balance'], 'number'],
-            [['fund_source', 'total_liquidation', 'reporting_period', 'particular', 'bank_account_name', 'bank_account_id'], 'safe'],
+            [['fund_source', 'total_liquidation', 'reporting_period', 'particular', 'bank_account_name', 'bank_account_id','book_name'], 'safe'],
         ];
     }
 
@@ -77,6 +77,7 @@ class AdvancesEntriesForLiquidationSearch extends AdvancesEntriesForLiquidation
             ->andFilterWhere(['like', 'particular', $this->particular])
             ->andFilterWhere(['like', 'bank_account_id', $this->bank_account_id])
             ->andFilterWhere(['like', 'bank_account_name', $this->bank_account_name])
+            ->andFilterWhere(['like', 'book_name', $this->book_name])
             ->andFilterWhere(['like', 'total_liquidation', $this->total_liquidation]);
         // var_dump( $query->createCommand()->getRawSql());
         // die();

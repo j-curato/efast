@@ -3,7 +3,9 @@
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\grid\GridView;
+use kartik\helpers\Html;
 use kartik\select2\Select2;
+use yii\bootstrap\Button;
 use yii\helpers\ArrayHelper;
 use yii\web\JsExpression;
 
@@ -56,13 +58,12 @@ if (!empty($model->id)) {
 
 ?>
 <div class="liquidation-form">
-
     <form id='liquidation_form'>
         <input type="hidden" id="model_id" value='<?= $id ?>' />
 
         <div class="row">
             <div class="col-sm-2">
-                <label for="reporting_period"> Reporting_period</label>
+                <label for="reporting_period"> Reporting Period</label>
                 <?= DatePicker::widget([
                     'name' => 'reporting_period',
                     'value' => $reporting_period,
@@ -291,65 +292,96 @@ if (!empty($model->id)) {
             <div class="col-sm-5"></div>
         </div>
     </form>
-    <form id="add_data">
+    <!-- <form id="add_data"> -->
 
-        <?php
+    <?php
 
-        $gridColumn = [
-            [
-                'hAlign' => 'center',
-                'class' => '\kartik\grid\CheckboxColumn',
-                'checkboxOptions' => function ($model, $key, $index, $column) {
-                    return [
-                        'value' => $model->id,
-                        'style' => 'width:20px;',
-                        'name' => 'check',
-                        'class' => 'checkbox', ''
-                    ];
-                }
-            ],
-            'province',
-            'fund_source',
-            [
-                'label' => 'Gross Amount',
-                'attribute' => 'amount',
-                'format' => ['decimal', 2]
-            ],
-            [
-                'attribute' => 'total_liquidation',
-                'format' => ['decimal', 2]
-            ],
-            [
-                'label' => 'Balance',
-                'attribute' => 'balance',
-                'format' => ['decimal', 2]
-            ],
-            'particular'
+    $gridColumn = [
+        [
+            'label' => 'Action',
+            'format' => 'raw',
+            'value' => function ($model) {
+                return "<button 
+                            class = 'add_row btn-xs btn-primary'
+                            type = 'button'
+                            onclick = 'addEntryRow(this)'
+                            data-value = '{$model->id}'
+                    ><i class='fa fa-plus'></i></button>";
+                // return Button::widget([
+                //     'label' => '<i class="bi bi-plus"></i>',
+                //     'options' => [
+                //         'class' => ' add_row btn-xs btn-primary',
+                //         'type' => 'button',
+                //         'onclick' => 'qwe(this)',
+                //         'data-value' => $model->id
+                //     ]
+                // ]);
+            }
+        ],
+        [
+            'format' => 'raw',
+            'attribute' => 'province',
+            'value' => function ($model) {
+                return "<span class='province'> {$model->province}</span>";
+            }
+        ],
+        [
+            'format' => 'raw',
+            'attribute' => 'book_name',
+            'value' => function ($model) {
+                // $q = "<span>{$model->book_name}</span>";
+                return "<span class='book_name'> {$model->book_name}</span>";
+            }
+        ],
+        [
+            'format' => 'raw',
+            'attribute' => 'fund_source',
+            'value' => function ($model) {
+                // $q = "<span>{$model->book_name}</span>";
+                return "<span class='fund_source'> {$model->fund_source}</span>";
+            }
+        ],
+
+        [
+            'label' => 'Gross Amount',
+            'attribute' => 'amount',
+            'format' => ['decimal', 2]
+        ],
+        [
+            'attribute' => 'total_liquidation',
+            'format' => ['decimal', 2]
+        ],
+        [
+            'label' => 'Balance',
+            'attribute' => 'balance',
+            'format' => ['decimal', 2]
+        ],
+        'particular'
 
 
 
-        ];
-        ?>
-        <?= GridView::widget([
-            'dataProvider' => $dataProvider,
-            'filterModel' => $searchModel,
-            'panel' => [
-                'type' => Gridview::TYPE_PRIMARY,
-                'heading' => 'List of Advances'
-            ],
-            'pjax' => true,
-            'pjaxSettings' => [
-                'options' => [
-                    'id' => 'pjax_advances'
+    ];
+    ?>
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
+        'panel' => [
+            'type' => Gridview::TYPE_PRIMARY,
+            'heading' => 'List of Advances'
+        ],
+        'pjax' => true,
+        'pjaxSettings' => [
+            'options' => [
+                'id' => 'pjax_advances'
 
-                ]
-            ],
+            ]
+        ],
 
-            'columns' => $gridColumn
-        ]); ?>
+        'columns' => $gridColumn
+    ]); ?>
 
-        <button class="btn btn-primary" id="add" type="text">Add</button>
-    </form>
+    <!-- <button class="btn btn-primary" id="add" type="text">Add</button>
+    </form> -->
 
 
 
@@ -660,16 +692,75 @@ SweetAlertAsset::register($this);
         getTotalAmounts()
     }
 
+    function addEntryRow(row) {
+        // console.log($(q).closest('tr').children().find('.book_name').text())
+        const this_row = $(row)
+        let disabled_input = ''
+
+        const book_name = this_row.closest('tr').children().find('.book_name').text()
+        const fund_source = this_row.closest('tr').children().find('.fund_source').text()
+        const province = this_row.closest('tr').children().find('.province').text()
+        const advances_entry_id = this_row.attr('data-value')
+        if (book_name.trim().toLowerCase() === 'rapid lp') {
+            disabled_input = 'disabled'
+            console.log(disabled_input)
+        }
+        const add_row = `<tr>
+            <td style='display:none;'>
+            <label for='advances_entries_id'></label>
+            <input value='${advances_entry_id}'  class='advances_entries_id' type='hidden' name='advances_entries_id[${entries_row}]'/>
+            </td>
+            <td > <input type='month'data-date='' ${disable_reporting_period} data-date-format='yyyy-mm' name='new_reporting_period[${entries_row}]' class='new_reporting_period' required /></td>
+            <td > ${province}</td>
+            <td > ${fund_source}</td>
+            <td> 
+
+                <label for='liquidation-chart-of-accounts'></label>
+                    <select  name="object_codes[${entries_row}]" required class="liquidation-chart-of-accounts" style="width: 200px">
+                        <option></option>
+                    </select>
+                </td>
+
+                <td> 
+                    <input type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control liq_damages amount mask-amount' >
+                    <input type='hidden'  class='liq_damages_main main_amount' name='liq_damages[${entries_row}]'>
+                </td>
+                <td> 
+                    <input type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)' class='form-control withdrawal amount mask-amount' >
+                    <input type='hidden'  class='withdrawal_main main_amount' name='withdrawal[${entries_row}]'>
+                </td>
+                <td> 
+
+                        <input type='text' onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control amount mask-amount' ${disabled_input}>
+                        <input type='hidden'  class='vat_nonvat_main main_amount' name='vat_nonvat[${entries_row}]'>
+
+                </td>
+
+                <td> 
+                    <input type='text'  onkeyup='unmaskAmount(this)' onchange='unmaskAmount(this)'  class='form-control expanded_tax amount mask-amount' ${disabled_input}>
+                    <input type='hidden'  class='expanded_tax_main main_amount' name='expanded_tax[${entries_row}]'>
+
+                </td>
+                <td>
+                <a class='add_new_row btn btn-primary btn-xs' onclick='copyRow(this)' type='button'><i class='fa fa-copy fa-fw'></i> </a>
+                <a class='remove_this_row btn btn-danger btn-xs ' onclick='removeRow(this)' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                </td>
+        </tr>`
+
+        $('#entries_table tbody').append(add_row);
+        entries_row++;
+        liquidationAccountingCodesSelect()
+        maskAmount()
+    }
 
     $(document).ready(function() {
-        console.log(entries_row)
+
         if (update_type == 'create') {
             disable_reporting_period = 'disabled';
             $("#po_transaction_id").trigger('change')
         }
 
-        console.log(update_type)
-        console.log(disable_reporting_period)
+        $
         liquidationAccountingCodesSelect()
         maskAmount()
         getTotalAmounts()
@@ -712,7 +803,7 @@ SweetAlertAsset::register($this);
                 }
             });
         })
-        async function addEntry() {
+        async function addEntry(e) {
             await $.ajax({
                 type: 'POST',
                 url: window.location.pathname + '?r=liquidation/add-advances',
@@ -724,7 +815,7 @@ SweetAlertAsset::register($this);
                 }
             })
         }
-        $('#add').click(function(e) {
+        $('#add').on('click', function(e) {
             e.preventDefault();
             addEntry()
 
@@ -794,7 +885,7 @@ SweetAlertAsset::register($this);
 $script = <<<JS
  
     $(document).ready(function(){
-   
+       
     })
 JS;
 $this->registerJs($script);
