@@ -576,6 +576,7 @@ $this->title = 'Dashboard';
 <?php
 $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/js/dataSync.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/updateCloud.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 SweetAlertAsset::register($this);
 ChartJsAsset::register($this);
 $csrfToken = Yii::$app->request->csrfToken;
@@ -615,6 +616,7 @@ $csrfName = Yii::$app->request->csrfParam;
             })
         }
     })
+
 
     $('#update_cloud').click(function(e) {
         e.preventDefault();
@@ -1334,6 +1336,12 @@ $script = <<<JS
         }
 
     $(document).ready(function(){
+       
+        $('#update_payee').click((e)=>{
+            e.preventDefault()
+            updateCloudPayeeApi()
+            
+        })
         $('.fc-prev-button').attr('class','fc-prev-button btn-xs btn-primary')
         BarChart()
         $('#bar_filter').change(function(){
