@@ -100,7 +100,7 @@
                             ],
                         ],
 
-                      ['label' => 'PPMP Non-CSE', 'icon' => 'circle-o', 'url' => ['/ppmp-non-cse'],] ,
+                        ['label' => 'PPMP Non-CSE', 'icon' => 'circle-o', 'url' => ['/ppmp-non-cse'],],
 
                     ],
 
@@ -163,7 +163,7 @@
                             ],
                         ] : [],
 
-                    ['label' => 'PPMP Non-CSE', 'icon' => 'circle-o', 'url' => ['/ppmp-non-cse'],],
+                        ['label' => 'PPMP Non-CSE', 'icon' => 'circle-o', 'url' => ['/ppmp-non-cse'],],
 
 
                     ],
@@ -382,22 +382,47 @@
                             'label' => 'Procurement',
                             'url' => '#',
                             'items' => [
+                                [
+                                    'label' => 'Master Records',
+                                    'icon' => 'circle-o',
+                                    'url' => '#',
+                                    'items' => [
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Stock Type', 'icon' => 'circle-o', 'url' => ['/pr-stock-type'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Contract Type', 'icon' => 'circle-o', 'url' => ['/pr-contract-type'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Mode of Procurment', 'icon' => 'circle-o', 'url' => ['/pr-mode-of-procurement'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Office/Section', 'icon' => 'circle-o', 'url' => ['/pr-office'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Stock/Property', 'icon' => 'circle-o', 'url' => ['/pr-stock'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'BAC', 'icon' => 'circle-o', 'url' => ['/bac-composition'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'BAC position', 'icon' => 'circle-o', 'url' => ['/bac-position'],] : [],
+                                    ],
+                                ],
+                                [
+                                    'label' => 'Transaction',
+                                    'icon' => 'circle-o',
+                                    'url' => '#',
+                                    'items' => [
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Activity/Project Procurement', 'icon' => 'circle-o', 'url' => ['/pr-project-procurement'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Purchase Request', 'icon' => 'circle-o', 'url' => ['/pr-purchase-request'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'RFQ', 'icon' => 'circle-o', 'url' => ['/pr-rfq'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'AOQ', 'icon' => 'circle-o', 'url' => ['/pr-aoq'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Purchase Order', 'icon' => 'circle-o', 'url' => ['/pr-purchase-order'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Transmittal', 'icon' => 'circle-o', 'url' => ['/purchase-order-transmittal'],] : [],
 
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Stock Type', 'icon' => 'circle-o', 'url' => ['/pr-stock-type'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Contract Type', 'icon' => 'circle-o', 'url' => ['/pr-contract-type'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Mode of Procurment', 'icon' => 'circle-o', 'url' => ['/pr-mode-of-procurement'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Office/Section', 'icon' => 'circle-o', 'url' => ['/pr-office'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Stock/Property', 'icon' => 'circle-o', 'url' => ['/pr-stock'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'BAC', 'icon' => 'circle-o', 'url' => ['/bac-composition'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'BAC position', 'icon' => 'circle-o', 'url' => ['/bac-position'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Activity/Project Procurement', 'icon' => 'circle-o', 'url' => ['/pr-project-procurement'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Purchase Request', 'icon' => 'circle-o', 'url' => ['/pr-purchase-request'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'RFQ', 'icon' => 'circle-o', 'url' => ['/pr-rfq'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'AOQ', 'icon' => 'circle-o', 'url' => ['/pr-aoq'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Purchase Order', 'icon' => 'circle-o', 'url' => ['/pr-purchase-order'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Procurement Summary', 'icon' => 'circle-o', 'url' => ['/report/procurement-summary'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'PO Summary', 'icon' => 'circle-o', 'url' => ['/report/pr-summary'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Procurement Search', 'icon' => 'circle-o', 'url' => ['/report/proc-summary'],] : [],
+                                    ],
+                                ],
+                                [
+                                    'label' => 'Reports',
+                                    'icon' => 'circle-o',
+                                    'url' => '#',
+                                    'items' => [
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Procurement Summary', 'icon' => 'circle-o', 'url' => ['/report/procurement-summary'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'PO Summary', 'icon' => 'circle-o', 'url' => ['/report/pr-summary'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Procurement Search', 'icon' => 'circle-o', 'url' => ['/report/proc-summary'],] : [],
+                                    ],
+                                ],
+
+
+
 
                             ],
                         ] : [],
