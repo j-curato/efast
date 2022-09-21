@@ -128,7 +128,7 @@ class PropertyController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->property_number]);
+            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('update', [
