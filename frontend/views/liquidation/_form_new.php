@@ -137,7 +137,7 @@ if (!empty($model->id)) {
                             'url' => Yii::$app->request->baseUrl . '?r=po-transaction/search-po-transaction',
                             'dataType' => 'json',
                             'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'data' => new JsExpression('function(params) { return {q:params.term,page:params.page || 1}; }'),
                             'cache' => true
                         ],
                         'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),

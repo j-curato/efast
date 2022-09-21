@@ -363,8 +363,10 @@ class PoTransactionController extends Controller
             return ob_get_clean();
         }
     }
-    public function actionSearchPoTransaction($q = null, $id = null)
+    public function actionSearchPoTransaction($page, $q = null, $id = null)
     {
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
         $user_province = strtolower(Yii::$app->user->identity->province);
@@ -385,10 +387,12 @@ class PoTransactionController extends Controller
             ) {
                 $query->andWhere('po_transaction.province = :province', ['province' => $user_province]);
             }
-            $query->limit(20);
+            $query->offset($offset)
+                ->limit($limit);
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
+            $out['pagination'] = ['more' => !empty($data) ? true : false];
         }
         return $out;
     }
