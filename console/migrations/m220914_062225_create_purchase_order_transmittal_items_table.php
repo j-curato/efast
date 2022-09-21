@@ -18,7 +18,7 @@ class m220914_062225_create_purchase_order_transmittal_items_table extends Migra
         $this->createTable('{{%purchase_order_transmittal_items}}', [
             'id' => $this->primaryKey(),
             'fk_purchase_order_transmittal_id' => $this->bigInteger()->notNull(),
-            'fk_purchase_order_id' => $this->bigInteger()->notNull()
+            'fk_purchase_order_item_id' => $this->bigInteger()->notNull()
         ]);
 
         // creates index for column `fk_purchase_order_transmittal_id`
@@ -46,13 +46,13 @@ class m220914_062225_create_purchase_order_transmittal_items_table extends Migra
     {
         // drops foreign key for table `{{%purchase_order_transmittal}}`
         $this->dropForeignKey(
-            '{{%fk-purchase_order_transmittal_items-fk_purchase_order_transmittal_id}}',
+            '{{%fk_purchase_order_transmittal_id}}',
             '{{%purchase_order_transmittal_items}}'
         );
 
         // drops index for column `fk_purchase_order_transmittal_id`
         $this->dropIndex(
-            '{{%idx-purchase_order_transmittal_items-fk_purchase_order_transmittal_id}}',
+            '{{%idx-fk_purchase_order_transmittal_id}}',
             '{{%purchase_order_transmittal_items}}'
         );
 

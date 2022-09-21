@@ -543,7 +543,7 @@ class RequestForInspectionController extends Controller
         return Yii::$app->db->createCommand("SELECT  
         rfi_without_po_items.id,
         rfi_without_po_items.project_name,
-       pr_stock.stock_title,
+       IFNULL(pr_stock.stock_title,'') as stock_title,
        pr_stock.id as stock_id,
        rfi_without_po_items.specification,
        REPLACE(rfi_without_po_items.specification,'[n]','\n') as specification_view,
