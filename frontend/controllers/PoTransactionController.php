@@ -385,6 +385,7 @@ class PoTransactionController extends Controller
             ) {
                 $query->andWhere('po_transaction.province = :province', ['province' => $user_province]);
             }
+            $query->limit(20);
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
