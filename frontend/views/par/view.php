@@ -27,9 +27,9 @@ $quantity = intval($model->property->quantity);
 $aquisition_amount = floatval($model->property->acquisition_amount);
 $total_cost = $quantity * $aquisition_amount;
 
-$recieved_by =  strtoupper($model->employee->f_name) . ' ' . strtoupper(substr($model->employee->m_name, 0, 1)) . ' ' . strtoupper($model->employee->l_name);
+$recieved_by =  strtoupper($model->employee->f_name) . ' ' . strtoupper(substr($model->employee->m_name, 0, 1)) . '. ' . strtoupper($model->employee->l_name);
 $recieved_by_position = $model->employee->position;
-$property_custodian = strtoupper($model->property->employee->f_name) . ' ' . strtoupper(substr($model->property->employee->m_name, 0, 1)) . ' ' .
+$property_custodian = strtoupper($model->property->employee->f_name) . ' ' . strtoupper(substr($model->property->employee->m_name, 0, 1)) . '. ' .
     strtoupper($model->property->employee->l_name);
 $property_custodian_position = $model->property->employee->position
 

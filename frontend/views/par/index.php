@@ -30,37 +30,24 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
 
-            'par_number',
-
-            [
-                'label' => 'Property',
-                'attribute' => 'fk_property_id',
-                'value' => function ($model) {
-                    $property = '';
-                    if (!empty($model->property->property_number) && !empty($model->property->article)) {
-                        $property = $model->property->property_number . ' - ' . $model->property->article;
-                    }
-                    return $property;
-                }
-            ],
-
+            'recieved_by',
+            'actual_user',
             'date',
+            'par_number',
+            'property_number',
+            'unit_of_measure',
+            'book_name',
             [
-                'label' => 'Recieved By',
-                'attribute' => 'employee_id',
+                'label' => 'Action',
+                'format' => 'raw',
+
                 'value' => function ($model) {
-                    $emp = '';
-                    if (!empty($model->employee->f_name)) {
-                        $f_name = !empty($model->employee->f_name) ? $model->employee->f_name : '';
-                        $m_name = !empty($model->employee->m_name[0]) ? $model->employee->m_name[0] : '';
-                        $l_name = !empty($model->employee->l_name) ? $model->employee->l_name : '';
-                        $emp =   $f_name . ' ' .  $m_name . '. ' .  $l_name;
-                    }
-                    return $emp;
+                    $btns = Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id], []);
+                    $btns .= ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['title'=>'Update']);
+                    return  $btns;
                 }
             ],
 
-            ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 

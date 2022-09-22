@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use Yii;
 use app\models\Par;
+use app\models\ParIndexSearch;
 use app\models\ParSearch;
 use app\models\PropertyCard;
 use Da\QrCode\QrCode;
@@ -75,7 +76,7 @@ class ParController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new ParSearch();
+        $searchModel = new ParIndexSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [

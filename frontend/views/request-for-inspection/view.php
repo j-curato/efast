@@ -279,9 +279,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
         background-color: white;
     }
 
-    .v-align-top {
-        vertical-align: text-top;
-    }
+
 
     .note {
         color: red;
