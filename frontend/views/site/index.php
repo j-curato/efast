@@ -78,6 +78,7 @@ $this->title = 'Dashboard';
             if (Yii::$app->user->can('super-user')) {
                 echo "  <div class='col-sm-1'><button class='btn btn-success' id='update_cloud' style='margin-bottom:12px'>Update Cloud</button> </div>";
                 echo "  <div class='col-sm-1' style='padding-left:0'><button class='btn btn-warning' id='update_lan'>Update LAN</button></div>";
+                echo "  <div class='col-sm-1' style='padding-left:0'><button class='btn btn-warning' id='update_payee'>update_payee</button></div>";
             } ?>
 
         </div>
@@ -1340,7 +1341,6 @@ $script = <<<JS
         $('#update_payee').click((e)=>{
             e.preventDefault()
             updateCloudPayeeApi()
-            
         })
         $('.fc-prev-button').attr('class','fc-prev-button btn-xs btn-primary')
         BarChart()
