@@ -45,55 +45,36 @@ class TransactionApiController extends \yii\rest\ActiveController
             array_diff(array_map('serialize', $source_transaction), array_map('serialize', $target_transaction))
 
         );
-        // return json_encode($source_transaction_difference);
-
-        // var_dump($source_transaction_difference);
-        // return json_encode($source_transaction_difference);
-
         if (!empty($source_transaction_difference)) {
             try {
 
                 if ($flag = true) {
-
                     foreach ($source_transaction_difference as $val) {
                         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `transaction` WHERE id = :id)")
                             ->bindValue(':id', $val['id'])
                             ->queryScalar();
                         if (intval($query) === 1) {
-                            $update_transaction = transaction::findOne($val['id']);
-                            $update_transaction->responsibility_center_id = $val['responsibility_center_id'];
-                            $update_transaction->payee_id = $val['payee_id'];
-                            $update_transaction->particular = $val['particular'];
-                            $update_transaction->gross_amount = $val['gross_amount'];
-                            $update_transaction->tracking_number = $val['tracking_number'];
-                            $update_transaction->earmark_no = $val['earmark_no'];
-                            $update_transaction->payroll_number = $val['payroll_number'];
-                            $update_transaction->transaction_date = $val['transaction_date'];
-                            $update_transaction->transaction_time = $val['transaction_time'];
-                            $update_transaction->created_at = $val['created_at'];
-                            if ($update_transaction->save(false)) {
-                            } else {
-                                $transaction->rollBack();
-                                return false;
-                            }
+                            $transaction_tbl = transaction::findOne($val['id']);
                         } else {
-                            $new_transaction = new transaction();
-                            $new_transaction->id = $val['id'];
-                            $new_transaction->responsibility_center_id = $val['responsibility_center_id'];
-                            $new_transaction->payee_id = $val['payee_id'];
-                            $new_transaction->particular = $val['particular'];
-                            $new_transaction->gross_amount = $val['gross_amount'];
-                            $new_transaction->tracking_number = $val['tracking_number'];
-                            $new_transaction->earmark_no = $val['earmark_no'];
-                            $new_transaction->payroll_number = $val['payroll_number'];
-                            $new_transaction->transaction_date = $val['transaction_date'];
-                            $new_transaction->transaction_time = $val['transaction_time'];
-                            $new_transaction->created_at = $val['created_at'];
-                            if ($new_transaction->save(false)) {
-                            } else {
-                                $transaction->rollBack();
-                                return false;
-                            }
+                            $transaction_tbl = new transaction();
+                            $transaction_tbl->id = $val['id'];
+                        }
+                        $transaction_tbl->responsibility_center_id = $val['responsibility_center_id'];
+                        $transaction_tbl->payee_id = $val['payee_id'];
+                        $transaction_tbl->particular = $val['particular'];
+                        $transaction_tbl->gross_amount = $val['gross_amount'];
+                        $transaction_tbl->tracking_number = $val['tracking_number'];
+                        $transaction_tbl->earmark_no = $val['earmark_no'];
+                        $transaction_tbl->payroll_number = $val['payroll_number'];
+                        $transaction_tbl->transaction_date = $val['transaction_date'];
+                        $transaction_tbl->transaction_time = $val['transaction_time'];
+                        $transaction_tbl->created_at = $val['created_at'];
+                        $transaction_tbl->is_local = $val['is_local'];
+                        $transaction_tbl->type = $val['type'];
+                        if ($transaction_tbl->save(false)) {
+                        } else {
+                            $transaction->rollBack();
+                            return false;
                         }
                     }
                 }
