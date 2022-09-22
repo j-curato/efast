@@ -1338,7 +1338,7 @@ $script = <<<JS
 
     $(document).ready(function(){
        
-        $('#update_payee').click((e)=>{
+        $('#update_payee').click(async (e)=>{
             e.preventDefault()
            await updateCloudPayeeApi()
            await updateCloudTransactionsApi()
