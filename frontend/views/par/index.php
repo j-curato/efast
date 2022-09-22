@@ -30,10 +30,10 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
 
+            'par_number',
             'recieved_by',
             'actual_user',
             'date',
-            'par_number',
             'property_number',
             'unit_of_measure',
             'book_name',
@@ -43,7 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 'value' => function ($model) {
                     $btns = Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id], []);
-                    $btns .= ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['title'=>'Update']);
+                    $btns .= ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['title' => 'Update']);
                     return  $btns;
                 }
             ],
