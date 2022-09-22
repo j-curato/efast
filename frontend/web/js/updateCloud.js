@@ -1,4 +1,4 @@
-async function getApi(link) {
+async function getDifference(link) {
   const res = await $.post(
     window.location.pathname + "?r=sync-database/" + link,
     {
@@ -7,7 +7,7 @@ async function getApi(link) {
   );
   return res;
 }
-async function createApi(link, data) {
+async function createDifference(link, data) {
   const url = "https://fisdticaraga.com/index.php?r=" + link + "/create";
   await $.ajax({
     type: "post",
@@ -24,133 +24,31 @@ async function createApi(link, data) {
   });
 }
 async function updateCloudPayeeApi() {
-  const payee_difference = await getApi("payee");
-  await createApi("payee-api", payee_difference);
+  const payee_difference = await getDifference("payee");
+  await createDifference("payee-api", payee_difference);
 }
 async function updateCloudTransactionsApi() {
-  const transactions = await $.post(
-    window.location.pathname + "?r=sync-database/transaction",
-    {
-      myData: "",
-    }
-  );
-  await $.ajax({
-    type: "post",
-    url: "https://fisdticaraga.com/index.php?r=transaction-api/create",
-    contentType: "application/json",
-    data: transactions,
-    dataType: "json",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-    success: function (newdata) {
-      console.log(newdata);
-    },
-  });
+  const transactions_difference = await getDifference("transaction");
+  await createDifference("transaction-api", transactions_difference);
 }
 async function updateCloudProcessOrsApi() {
-  const process_ors = await $.post(
-    window.location.pathname + "?r=sync-database/process-ors",
-    {
-      myData: "",
-    }
-  );
-  await $.ajax({
-    type: "post",
-    url: "https://fisdticaraga.com/index.php?r=process-ors-api/create",
-    contentType: "application/json",
-    data: process_ors,
-    dataType: "json",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-    success: function (newdata) {
-      console.log(newdata);
-    },
-  });
+  const process_ors_difference = await getDifference("process-ors");
+  await createDifference("process-ors-api", process_ors_difference);
 }
 async function updateCloudRecordAllotmentApi() {
-  const process_ors = await $.post(
-    window.location.pathname + "?r=sync-database/record-allotment",
-    {
-      myData: "",
-    }
-  );
-  await $.ajax({
-    type: "post",
-    url: "https://fisdticaraga.com/index.php?r=record-allotment-api/create",
-    contentType: "application/json",
-    data: process_ors,
-    dataType: "json",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-    success: function (newdata) {
-      console.log(newdata);
-    },
-  });
+  const record_allotment_difference = await getDifference("record-allotment");
+  await createDifference("record-allotment-api", record_allotment_difference);
 }
 async function updateCloudCashDisbursementApi() {
-  const process_ors = await $.post(
-    window.location.pathname + "?r=sync-database/cash-disbursement",
-    {
-      myData: "",
-    }
-  );
-  await $.ajax({
-    type: "post",
-    url: "https://fisdticaraga.com/index.php?r=cash-disbursement-api/create",
-    contentType: "application/json",
-    data: process_ors,
-    dataType: "json",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-    success: function (newdata) {
-      console.log(newdata);
-    },
-  });
+  const cash_disbursement_difference = await getDifference("cash-disbursement");
+  await createDifference("cash-disbursement-api", cash_disbursement_difference);
 }
 
 async function updateCloudAdvancesApi() {
-  const process_ors = await $.post(
-    window.location.pathname + "?r=sync-database/advances",
-    {
-      myData: "",
-    }
-  );
-  await $.ajax({
-    type: "post",
-    url: "https://fisdticaraga.com/index.php?r=advances-api/create",
-    contentType: "application/json",
-    data: process_ors,
-    dataType: "json",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-    success: function (newdata) {
-      console.log(newdata);
-    },
-  });
+  const advances_difference = await getDifference("advances");
+  await createDifference("advances-api", advances_difference);
 }
 async function updateCloudAdvancesEntriesApi() {
-  const process_ors = await $.post(
-    window.location.pathname + "?r=sync-database/advances-entries",
-    {
-      myData: "",
-    }
-  );
-  await $.ajax({
-    type: "post",
-    url: "https://fisdticaraga.com/index.php?r=advances-entries-api/create",
-    contentType: "application/json",
-    data: process_ors,
-    dataType: "json",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-    success: function (newdata) {
-      console.log(newdata);
-    },
-  });
+  const advances_entries_difference = await getDifference("/advances-entries");
+  await createDifference("/advances-entries-api", advances_entries_difference);
 }
