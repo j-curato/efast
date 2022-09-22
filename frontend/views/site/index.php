@@ -1340,7 +1340,8 @@ $script = <<<JS
        
         $('#update_payee').click((e)=>{
             e.preventDefault()
-            updateCloudPayeeApi()
+           await updateCloudPayeeApi()
+           await updateCloudTransactionsApi()
         })
         $('.fc-prev-button').attr('class','fc-prev-button btn-xs btn-primary')
         BarChart()
