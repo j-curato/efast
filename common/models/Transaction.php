@@ -40,11 +40,10 @@ class Transaction extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['responsibility_center_id', 'payee_id'], 'integer'],
-            [['payee_id', 'particular', 'gross_amount'], 'required'],
+            [['responsibility_center_id', 'payee_id', 'particular', 'gross_amount', 'transaction_date'], 'required'],
+            [['responsibility_center_id', 'payee_id', 'is_local'], 'integer'],
             [['gross_amount'], 'number'],
-            [['created_at'], 'safe'],
-            [['particular', 'tracking_number', 'earmark_no', 'payroll_number'], 'string', 'max' => 255],
+            [['particular', 'tracking_number', 'earmark_no', 'payroll_number', 'type'], 'string', 'max' => 255],
             [['transaction_date'], 'string', 'max' => 50],
             [['transaction_time'], 'string', 'max' => 20],
             [[
@@ -59,6 +58,8 @@ class Transaction extends \yii\db\ActiveRecord
                 'transaction_date',
                 'transaction_time',
                 'created_at',
+                'is_local',
+
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
             [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::class, 'targetAttribute' => ['payee_id' => 'id']],
             [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
@@ -72,8 +73,8 @@ class Transaction extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'responsibility_center_id' => 'Responsibility Center ID',
-            'payee_id' => 'Payee ID',
+            'responsibility_center_id' => 'Responsibility Center ',
+            'payee_id' => 'Payee ',
             'particular' => 'Particular',
             'gross_amount' => 'Gross Amount',
             'tracking_number' => 'Tracking Number',
@@ -81,7 +82,9 @@ class Transaction extends \yii\db\ActiveRecord
             'payroll_number' => 'Payroll Number',
             'transaction_date' => 'Transaction Date',
             'transaction_time' => 'Transaction Time',
-            'created_at' => 'Created At',
+            'created_at' => 'created_at',
+            'type' => 'Type',
+            'is_local' => 'is Local',
         ];
     }
 

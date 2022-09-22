@@ -28,10 +28,13 @@ class TransactionApiController extends \yii\rest\ActiveController
     {
         $actions = parent::actions();
         unset($actions['create']);
+        unset($actions['update']);
+        unset($actions['delete']);
+        unset($actions['view']);
+        unset($actions['index']);
     }
     public function actionCreate()
     {
-
 
         $transaction = Yii::$app->db->beginTransaction();
         $source_jason = Yii::$app->getRequest()->getBodyParams();
@@ -72,7 +75,6 @@ class TransactionApiController extends \yii\rest\ActiveController
                             } else {
                                 $transaction->rollBack();
                                 return false;
-
                             }
                         } else {
                             $new_transaction = new transaction();
