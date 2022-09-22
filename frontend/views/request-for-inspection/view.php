@@ -160,17 +160,17 @@ if (!empty($model->fk_requested_by)) {
                     $to_date = !empty($val['date_to']) ? DateTime::createFromFormat('Y-m-d', $val['date_to'])->format('F d, Y') : '';
                     echo "<tr>
                             <td class='center v-align-top' >{$val['po_number']}</td>
-                            <td class='center'>{$val['project_title']}</td>
-                            <td class='center'>{$val['payee']}</td>
+                            <td class='center v-align-top'>{$val['project_title']}</td>
+                            <td class='center v-align-top'>{$val['payee']}</td>
                             <td >
                             <span class='bold'>{$val['stock_title']}</span>
                             <br>
                             {$val['specification']}
                             </td>
-                            <td class='center'>{$val['quantity']}</td>
-                            <td class='center'>" . number_format($val['unit_cost'], 2) . "</td>
-                            <td class='center'>{$from_date}</td>
-                            <td class='center'>{$to_date}</td>";
+                            <td class='center v-align-top'>{$val['quantity']}</td>
+                            <td class='center v-align-top'>" . number_format($val['unit_cost'], 2) . "</td>
+                            <td class='center v-align-top'>{$from_date}</td>
+                            <td class='center v-align-top'>{$to_date}</td>";
 
                     if (Yii::$app->user->can('super-user')) {
                         echo "<td>" . HTML::a('PO Link', ['pr-purchase-order/view', 'id' => $val['po_id']], ['class' => 'btn btn-link']) . "</td>";
@@ -192,17 +192,17 @@ if (!empty($model->fk_requested_by)) {
 
                     echo "<tr>
    
-                    <td class='center'>{$project_name}</td>
-                    <td class='center'>{$payee_name}</td>
+                    <td class='center v-align-top'>{$project_name}</td>
+                    <td class='center v-align-top'>{$payee_name}</td>
                     <td >
                     <span class='bold'>{$stock_title}</span>
                     <br>
                     {$specification_view}
                     </td>
-                    <td class='center'>{$quantity}</td>
-                    <td class='center'>" . number_format($unit_cost, 2) . "</td>
-                    <td class='center'>{$from_date}</td>
-                    <td class='center'>{$to_date}</td>";
+                    <td class='center v-align-top'>{$quantity}</td>
+                    <td class='center v-align-top'>" . number_format($unit_cost, 2) . "</td>
+                    <td class='center v-align-top'>{$from_date}</td>
+                    <td class='center v-align-top'>{$to_date}</td>";
                 }
             }
 
@@ -271,9 +271,16 @@ if (!empty($model->fk_requested_by)) {
         </table>
     </div>
 </div>
+<?php
+$this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['depends' => [\yii\web\JqueryAsset::class]]);
+?>
 <style>
     .container {
         background-color: white;
+    }
+
+    .v-align-top {
+        vertical-align: text-top;
     }
 
     .note {

@@ -913,7 +913,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
 
         $('#rfi_form').on('submit', function(e) {
             e.preventDefault()
-            console.log(with_error)
             const form = $(this)
             if (with_error === 0) {
                 $.ajax({
@@ -922,8 +921,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                     data: form.serialize(),
                     success: function(data) {
                         const res = JSON.parse(data)
-                        console.log(res.error_message)
-                        console.log(typeof res.error_message)
                         if (!res.isSuccess) {
 
                             if (typeof res.error_message === 'object') {

@@ -141,26 +141,26 @@ $date_inspected = !empty($GLOBALS['date_inspected']) ? $GLOBALS['date_inspected'
                 if (!empty($items)) {
                     foreach ($items as $val) {
                         echo "<tr>
-                            <td>{$val['bac_code']}</td>
+                            <td class='v-align-top'>{$val['bac_code']}</td>
                             <td>
                                 <span class='bold'>{$val['stock_title']}</span><br>
                                 <span class='italic'>{$val['specification']}</span>
                             </td>
-                            <td>{$val['unit_of_measure']}</td>
-                            <td>{$val['quantity']}</td>
+                            <td class='v-align-top'>{$val['unit_of_measure']}</td>
+                            <td class='v-align-top'>{$val['quantity']}</td>
                         </tr>";
                     }
                 } else if (!empty($noPOItems)) {
 
                     foreach ($noPOItems as $val) {
                         echo "<tr>
-                            <td>{$val['bac_code']}</td>
+                            <td class='v-align-top'>{$val['bac_code']}</td>
                             <td>
                                 <span class='bold'>{$val['stock_title']}</span><br>
                                 <span class='italic'>{$val['specification']}</span>
                             </td>
-                            <td>{$val['unit_of_measure']}</td>
-                            <td>{$val['quantity']}</td>
+                            <td class='v-align-top'>{$val['unit_of_measure']}</td>
+                            <td class='v-align-top'>{$val['quantity']}</td>
                         </tr>";
                     }
                 }

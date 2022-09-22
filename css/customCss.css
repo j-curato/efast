@@ -20,6 +20,9 @@
 .amount{
     text-align: right;
 }
+.v-align-top {
+    vertical-align: text-top;
+}
 @media print{
 
     .main-footer{
