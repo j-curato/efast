@@ -84,7 +84,7 @@ class PayeeApiController extends \yii\rest\ActiveController
                 //     $transaction->commit();
                 //     return 'success s';
                 // }
-                $db = \Yii::$app->afms_dev;
+                $db = \Yii::$app->db;
 
 
                 $columns = [
