@@ -7,6 +7,7 @@ use ErrorException;
 use Yii;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
+use yii\helpers\Html;
 
 class PayeeApiController extends \yii\rest\ActiveController
 {
@@ -48,39 +49,86 @@ class PayeeApiController extends \yii\rest\ActiveController
         // var_dump($source_payee_difference);
         // return json_encode($source_payee_difference);
 
+
         if (!empty($source_payee)) {
             try {
-                if ($flag = true) {
+                // if ($flag = true) {
 
 
-                    foreach ($source_payee as $val) {
-                        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM payee WHERE payee.id = :id)")
-                            ->bindValue(':id', $val['id'])
-                            ->queryScalar();
-                        if (intval($query) === 1) {
-                            $payee_tbl = Payee::findOne($val['id']);
-                        } else {
-                            $payee_tbl = new Payee();
-                        }
-                        $payee_tbl->id = $val['id'];
-                        $payee_tbl->account_name = $val['account_name'];
-                        $payee_tbl->registered_name = $val['registered_name'];
-                        $payee_tbl->contact_person = $val['contact_person'];
-                        $payee_tbl->registered_address = $val['registered_address'];
-                        $payee_tbl->contact = $val['contact'];
-                        $payee_tbl->remark = $val['remark'];
-                        $payee_tbl->tin_number = $val['tin_number'];
-                        $payee_tbl->isEnable = $val['isEnable'];
-                        if ($payee_tbl->save(false)) {
-                        } else {
-                            $transaction->rollBack();
-                            return 'failed';
-                        }
-                    }
+                //     foreach ($source_payee as $val) {
+                //         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM payee WHERE payee.id = :id)")
+                //             ->bindValue(':id', $val['id'])
+                //             ->queryScalar();
+                //         if (intval($query) === 1) {
+                //             $payee_tbl = Payee::findOne($val['id']);
+                //         } else {
+                //             $payee_tbl = new Payee();
+                //         }
+                //         $payee_tbl->id = $val['id'];
+                //         $payee_tbl->account_name = $val['account_name'];
+                //         $payee_tbl->registered_name = $val['registered_name'];
+                //         $payee_tbl->contact_person = $val['contact_person'];
+                //         $payee_tbl->registered_address = $val['registered_address'];
+                //         $payee_tbl->contact = $val['contact'];
+                //         $payee_tbl->remark = $val['remark'];
+                //         $payee_tbl->tin_number = $val['tin_number'];
+                //         $payee_tbl->isEnable = $val['isEnable'];
+                //         if ($payee_tbl->save(false)) {
+                //         } else {
+                //             $transaction->rollBack();
+                //             return 'failed';
+                //         }
+                //     }
+                // }
+                // if ($flag) {
+                //     $transaction->commit();
+                //     return 'success s';
+                // }
+                $db = \Yii::$app->db;
+
+
+                $columns = [
+                    'id',
+                    'account_name',
+                    'registered_name',
+                    'contact_person',
+                    'registered_address',
+                    'contact',
+                    'remark',
+                    'tin_number',
+                    'isEnable',
+                ];
+                $data = [];
+
+                foreach ($source_payee as $val) {
+
+                    $data[] = [
+                        Html::encode($val['id']),
+                        Html::encode($val['account_name']),
+                        Html::encode($val['registered_name']),
+                        Html::encode($val['contact_person']),
+                        Html::encode($val['registered_address']),
+                        Html::encode($val['contact']),
+                        Html::encode($val['remark']),
+                        Html::encode($val['tin_number']),
+                        Html::encode($val['isEnable']),
+                    ];
                 }
-                if ($flag) {
+                if (!empty($data)) {
+
+                    $sql = $db->queryBuilder->batchInsert('payee', $columns, $data);
+                    $db->createCommand($sql . "ON DUPLICATE KEY UPDATE
+                        account_name=VALUES(account_name)
+                        registered_name=VALUES(registered_name)
+                        contact_person=VALUES(contact_person)
+                        registered_address=VALUES(registered_address)
+                        contact=VALUES(contact)
+                        remark=VALUES(remark)
+                        tin_number=VALUES(tin_number)
+                        isEnable=VALUES(isEnable)
+                ")->execute();
                     $transaction->commit();
-                    return 'success s';
+                    return json_encode('succcecs');
                 }
             } catch (ErrorException $e) {
                 return json_encode($e->getMessage());
