@@ -84,7 +84,7 @@ class PayeeApiController extends \yii\rest\ActiveController
                 //     $transaction->commit();
                 //     return 'success s';
                 // }
-                $db = \Yii::$app->db;
+                $db = \Yii::$app->afms_dev;
 
 
                 $columns = [
@@ -103,28 +103,29 @@ class PayeeApiController extends \yii\rest\ActiveController
                 foreach ($source_payee as $val) {
 
                     $data[] = [
-                        Html::encode($val['id']),
-                        Html::encode($val['account_name']),
-                        Html::encode($val['registered_name']),
-                        Html::encode($val['contact_person']),
-                        Html::encode($val['registered_address']),
-                        Html::encode($val['contact']),
-                        Html::encode($val['remark']),
-                        Html::encode($val['tin_number']),
-                        Html::encode($val['isEnable']),
+                        'id' => Html::encode($val['id']),
+                        'account_name' => Html::encode($val['account_name']),
+                        'registered_name' => Html::encode($val['registered_name']),
+                        'contact_person' => Html::encode($val['contact_person']),
+                        'registered_address' => Html::encode($val['registered_address']),
+                        'contact' => Html::encode($val['contact']),
+                        'remark' => Html::encode($val['remark']),
+                        'tin_number' => Html::encode($val['tin_number']),
+                        'isEnable' => Html::encode($val['isEnable']),
                     ];
                 }
+
                 if (!empty($data)) {
 
                     $sql = $db->queryBuilder->batchInsert('payee', $columns, $data);
                     $db->createCommand($sql . "ON DUPLICATE KEY UPDATE
-                        account_name=VALUES(account_name)
-                        registered_name=VALUES(registered_name)
-                        contact_person=VALUES(contact_person)
-                        registered_address=VALUES(registered_address)
-                        contact=VALUES(contact)
-                        remark=VALUES(remark)
-                        tin_number=VALUES(tin_number)
+                        account_name=VALUES(account_name),
+                        registered_name=VALUES(registered_name),
+                        contact_person=VALUES(contact_person),
+                        registered_address=VALUES(registered_address),
+                        contact=VALUES(contact),
+                        remark=VALUES(remark),
+                        tin_number=VALUES(tin_number),
                         isEnable=VALUES(isEnable)
                 ")->execute();
                     $transaction->commit();
