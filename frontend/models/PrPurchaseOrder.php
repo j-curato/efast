@@ -88,10 +88,10 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'po_number' => 'Po Number',
+            'po_number' => 'PO Number',
             'fk_contract_type_id' => ' Contract Type ',
             'fk_mode_of_procurement_id' => ' Mode Of Procurement ',
-            'fk_pr_aoq_id' => ' Aoq Number',
+            'fk_pr_aoq_id' => ' AOQ Number',
             'place_of_delivery' => 'Place Of Delivery',
             'delivery_date' => 'Delivery Date',
             'payment_term' => 'Payment Term',

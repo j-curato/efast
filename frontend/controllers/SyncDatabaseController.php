@@ -274,8 +274,8 @@ class SyncDatabaseController extends \yii\web\Controller
         if ($_POST) {
 
             $db = Yii::$app->db;
-            $source_transaction = $db->createCommand("SELECT * FROM `transaction`")->queryAll();
-            $target_transaction =  Yii::$app->cloud_db->createCommand("SELECT * FROM `transaction`")->queryAll();
+            $source_transaction = $db->createCommand("SELECT * FROM `transaction` WHERE is_local=1")->queryAll();
+            $target_transaction =  Yii::$app->cloud_db->createCommand("SELECT * FROM `transaction` WHERE is_local=1")->queryAll();
             $source_transaction_difference = array_map(
                 'unserialize',
                 array_diff(array_map('serialize', $source_transaction), array_map('serialize', $target_transaction))
