@@ -6,27 +6,37 @@ use common\models\Payee;
 use ErrorException;
 use Yii;
 use yii\filters\auth\HttpBearerAuth;
-use yii\filters\Cors;
 use yii\helpers\Html;
 
 class PayeeApiController extends \yii\rest\ActiveController
 {
     public $modelClass = Payee::class;
-
+    public static function allowedDomains()
+    {
+        return [
+            // '*',                        // star allows all domains
+            'http://test1.example.com',
+            'http://norman/afms/',
+        ];
+    }
     public function behaviors()
     {
         $behaviors = parent::behaviors();
-        $auth = $behaviors['authenticator'];
-        unset($behaviors['authenticator']);
         $behaviors['corsFilter'] = [
             'class' => Cors::class,
+            'cors'  => [
+                // restrict access to domains:
+                'Origin'                           => static::allowedDomains(),
+                'Access-Control-Request-Method'    => ['POST'],
+                'Access-Control-Allow-Credentials' => true,
+                'Access-Control-Max-Age'           => 3600,                 // Cache (seconds)
+            ],
         ];
-        $behaviors['authenticator'] = $auth;
         $behaviors['authenticator']['only'] = ['create', 'delete', 'view', 'index', 'update'];
         $behaviors['authenticator']['authMethods'] = [
             HttpBearerAuth::class
         ];
-        return $behaviors;
+        return array_merge(['corsFilter' => Cors::class], $behaviors);
     }
 
     public function actions()
