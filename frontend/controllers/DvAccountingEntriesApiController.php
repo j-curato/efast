@@ -35,7 +35,6 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
     {
         $source_json = Yii::$app->getRequest()->getBodyParams();
         $source_dv_accounting_entries = $source_json['new_dv_accounting_entries'];
-        return json_encode($source_dv_accounting_entries);
         // $target_dv_accounting_entries = Yii::$app->db->createCommand("SELECT * FROM `dv_accounting_entries`")->queryAll();
         // $source_dv_accounting_entries_difference = array_map(
         //     'unserialize',
@@ -128,6 +127,7 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
 
                 ];
                 $data = [];
+                return json_encode($source_dv_accounting_entries);
 
                 foreach ($source_dv_accounting_entries as $val) {
 
