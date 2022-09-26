@@ -99,7 +99,7 @@ $this->title = 'Dashboard';
                     <div class="panel panel-primary">
                         <div class="panel-heading">Transmittal</div>
                         <div class="panel-body">
-                            <label for="year">Year</label>
+                            <label for="bar_filter">Year</label>
                             <?php
                             echo DatePicker::widget([
                                 'id' => 'bar_filter',
@@ -107,7 +107,8 @@ $this->title = 'Dashboard';
                                 'pluginOptions' => [
                                     'autoclose' => true,
                                     'format' => 'yyyy',
-                                    'minViewMode' => 'years'
+                                    'minViewMode' => 'years',
+                                    'placeholder'=>'Select Year'
 
                                 ]
                             ]);
