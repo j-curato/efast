@@ -30,16 +30,18 @@ class PayeeApiController extends \yii\rest\ActiveController
             'class' => Cors::class,
             'cors'  => [
                 // restrict access to domains:
-                'Origin'                           => static::allowedDomains(),
+                'Origin'                           => ['*'],
                 'Access-Control-Request-Method'    => ['POST'],
                 'Access-Control-Allow-Credentials' => true,
-                'Access-Control-Max-Age'           => 3600,                 // Cache (seconds)
+                'Access-Control-Max-Age'           => 3600,
+                'Access-Control-Request-Headers' => ['*'],           // Cache (seconds)
             ],
         ];
         $behaviors['authenticator'] = $auth;
         $behaviors['authenticator']['only'] = ['create', 'delete', 'view', 'index', 'update'];
         $behaviors['authenticator']['authMethods'] = [
-            HttpBearerAuth::class
+            HttpBearerAuth::class,
+            'except' => ['options'],
         ];
         return $behaviors;
     }
