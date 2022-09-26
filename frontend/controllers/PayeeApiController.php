@@ -12,34 +12,21 @@ use yii\helpers\Html;
 class PayeeApiController extends \yii\rest\ActiveController
 {
     public $modelClass = Payee::class;
-    public static function allowedDomains()
-    {
-        return [
-            // '*',                        // star allows all domains
-            'http://localhost:3000',
-            'https://norman/afms/',
-        ];
-    }
 
     public function behaviors()
     {
         $behaviors = parent::behaviors();
+        $auth = $behaviors['authenticator'];
+        unset($behaviors['authenticator']);
+        $behaviors['corsFilter'] = [
+            'class' => Cors::class,
+        ];
+        $behaviors['authenticator'] = $auth;
         $behaviors['authenticator']['only'] = ['create', 'delete', 'view', 'index', 'update'];
         $behaviors['authenticator']['authMethods'] = [
             HttpBearerAuth::class
         ];
-        return array_merge([
-            'corsFilter' => [
-                'class' => Cors::class,
-                'cors'  => [
-                    // restrict access to domains:
-                    'Origin'                           => static::allowedDomains(),
-                    'Access-Control-Request-Method'    => ['POST'],
-                    'Access-Control-Allow-Credentials' => true,
-                    'Access-Control-Max-Age'           => 3600,                 // Cache (seconds)
-                ]
-            ]
-        ], $behaviors);
+        return $behaviors;
     }
 
     public function actions()
