@@ -133,7 +133,7 @@ class TransactionApiController extends \yii\rest\ActiveController
                     created_at=VALUES(created_at),
                     is_local=VALUES(is_local),
                     type=VALUES(type)
-                ")->query();
+                ")->execute();
                     // $transaction->commit();
                     return json_encode('succcecs');
                 }
