@@ -7,6 +7,7 @@ use ErrorException;
 use Yii;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
+use yii\helpers\Html;
 
 class DvAucsEntriesApiController extends \yii\rest\ActiveController
 {
@@ -61,57 +62,108 @@ class DvAucsEntriesApiController extends \yii\rest\ActiveController
 
             try {
 
-                if ($flag = true) {
+                // if ($flag = true) {
 
-                    foreach ($source_dv_aucs_entries as $val) {
-                        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `dv_aucs_entries` WHERE id = :id)")
-                            ->bindValue(':id', $val['id'])
-                            ->queryScalar();
-                        if (intval($query) === 1) {
-                            $update_dv_aucs_entries = DvAucsEntries::findOne($val['id']);
+                //     foreach ($source_dv_aucs_entries as $val) {
+                //         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `dv_aucs_entries` WHERE id = :id)")
+                //             ->bindValue(':id', $val['id'])
+                //             ->queryScalar();
+                //         if (intval($query) === 1) {
+                //             $update_dv_aucs_entries = DvAucsEntries::findOne($val['id']);
 
-                            $update_dv_aucs_entries->dv_aucs_id = $val['dv_aucs_id'];
-                            $update_dv_aucs_entries->raoud_id = $val['raoud_id'];
-                            $update_dv_aucs_entries->amount_disbursed = $val['amount_disbursed'];
-                            $update_dv_aucs_entries->vat_nonvat = $val['vat_nonvat'];
-                            $update_dv_aucs_entries->ewt_goods_services = $val['ewt_goods_services'];
-                            $update_dv_aucs_entries->compensation = $val['compensation'];
-                            $update_dv_aucs_entries->other_trust_liabilities = $val['other_trust_liabilities'];
-                            $update_dv_aucs_entries->total_withheld = $val['total_withheld'];
-                            $update_dv_aucs_entries->process_ors_id = $val['process_ors_id'];
+                //             $update_dv_aucs_entries->dv_aucs_id = $val['dv_aucs_id'];
+                //             $update_dv_aucs_entries->raoud_id = $val['raoud_id'];
+                //             $update_dv_aucs_entries->amount_disbursed = $val['amount_disbursed'];
+                //             $update_dv_aucs_entries->vat_nonvat = $val['vat_nonvat'];
+                //             $update_dv_aucs_entries->ewt_goods_services = $val['ewt_goods_services'];
+                //             $update_dv_aucs_entries->compensation = $val['compensation'];
+                //             $update_dv_aucs_entries->other_trust_liabilities = $val['other_trust_liabilities'];
+                //             $update_dv_aucs_entries->total_withheld = $val['total_withheld'];
+                //             $update_dv_aucs_entries->process_ors_id = $val['process_ors_id'];
 
-                            if ($update_dv_aucs_entries->save(false)) {
-                            } else {
-                                $transaction->rollBack();
-                                $flag = false;
-                                return false;
-                            }
-                        } else {
-                            $new_dv_aucs_entries = new DvAucsEntries();
-                            $new_dv_aucs_entries->id = $val['id'];
-                            $new_dv_aucs_entries->dv_aucs_id = $val['dv_aucs_id'];
-                            $new_dv_aucs_entries->raoud_id = $val['raoud_id'];
-                            $new_dv_aucs_entries->amount_disbursed = $val['amount_disbursed'];
-                            $new_dv_aucs_entries->vat_nonvat = $val['vat_nonvat'];
-                            $new_dv_aucs_entries->ewt_goods_services = $val['ewt_goods_services'];
-                            $new_dv_aucs_entries->compensation = $val['compensation'];
-                            $new_dv_aucs_entries->other_trust_liabilities = $val['other_trust_liabilities'];
-                            $new_dv_aucs_entries->total_withheld = $val['total_withheld'];
-                            $new_dv_aucs_entries->process_ors_id = $val['process_ors_id'];
+                //             if ($update_dv_aucs_entries->save(false)) {
+                //             } else {
+                //                 $transaction->rollBack();
+                //                 $flag = false;
+                //                 return false;
+                //             }
+                //         } else {
+                //             $new_dv_aucs_entries = new DvAucsEntries();
+                //             $new_dv_aucs_entries->id = $val['id'];
+                //             $new_dv_aucs_entries->dv_aucs_id = $val['dv_aucs_id'];
+                //             $new_dv_aucs_entries->raoud_id = $val['raoud_id'];
+                //             $new_dv_aucs_entries->amount_disbursed = $val['amount_disbursed'];
+                //             $new_dv_aucs_entries->vat_nonvat = $val['vat_nonvat'];
+                //             $new_dv_aucs_entries->ewt_goods_services = $val['ewt_goods_services'];
+                //             $new_dv_aucs_entries->compensation = $val['compensation'];
+                //             $new_dv_aucs_entries->other_trust_liabilities = $val['other_trust_liabilities'];
+                //             $new_dv_aucs_entries->total_withheld = $val['total_withheld'];
+                //             $new_dv_aucs_entries->process_ors_id = $val['process_ors_id'];
 
-                            if ($new_dv_aucs_entries->save(false)) {
-                            } else {
-                                $transaction->rollBack();
-                                $flag = false;
-                                return false;
-                            }
-                        }
-                    }
+                //             if ($new_dv_aucs_entries->save(false)) {
+                //             } else {
+                //                 $transaction->rollBack();
+                //                 $flag = false;
+                //                 return false;
+                //             }
+                //         }
+                //     }
+                // }
+
+                // if ($flag) {
+                //     $transaction->commit();
+                //     return 'success ss';
+                // }
+                $db = \Yii::$app->db;
+
+
+                $columns = [
+                    'id',
+                    'dv_aucs_id',
+                    'raoud_id',
+                    'amount_disbursed',
+                    'vat_nonvat',
+                    'ewt_goods_services',
+                    'compensation',
+                    'other_trust_liabilities',
+                    'total_withheld',
+                    'process_ors_id',
+
+                ];
+                $data = [];
+
+                foreach ($source_dv_aucs_entries as $val) {
+
+                    $data[] = [
+                        'id' => !empty($val['id']) ? Html::encode($val['id']) : null,
+                        'dv_aucs_id' => !empty($val['dv_aucs_id']) ? Html::encode($val['dv_aucs_id']) : null,
+                        'raoud_id' => !empty($val['raoud_id']) ? Html::encode($val['raoud_id']) : null,
+                        'amount_disbursed' => !empty($val['amount_disbursed']) ? Html::encode($val['amount_disbursed']) : null,
+                        'vat_nonvat' => !empty($val['vat_nonvat']) ? Html::encode($val['vat_nonvat']) : null,
+                        'ewt_goods_services' => !empty($val['ewt_goods_services']) ? Html::encode($val['ewt_goods_services']) : null,
+                        'compensation' => !empty($val['compensation']) ? Html::encode($val['compensation']) : null,
+                        'other_trust_liabilities' => !empty($val['other_trust_liabilities']) ? Html::encode($val['other_trust_liabilities']) : null,
+                        'total_withheld' => !empty($val['total_withheld']) ? Html::encode($val['total_withheld']) : null,
+                        'process_ors_id' => !empty($val['process_ors_id']) ? Html::encode($val['process_ors_id']) : null,
+                    ];
                 }
+                if (!empty($data)) {
 
-                if ($flag) {
+                    $sql = $db->queryBuilder->batchInsert('dv_aucs_entries', $columns, $data);
+                    $db->createCommand($sql . "ON DUPLICATE KEY UPDATE
+                    dv_aucs_id=VALUES(dv_aucs_id),
+                    raoud_id=VALUES(raoud_id),
+                    amount_disbursed=VALUES(amount_disbursed),
+                    vat_nonvat=VALUES(vat_nonvat),
+                    ewt_goods_services=VALUES(ewt_goods_services),
+                    compensation=VALUES(compensation),
+                    other_trust_liabilities=VALUES(other_trust_liabilities),
+                    total_withheld=VALUES(total_withheld),
+                    process_ors_id=VALUES(process_ors_id)
+
+                        ")->execute();
                     $transaction->commit();
-                    return 'success ss';
+                    return json_encode('succcecs');
                 }
             } catch (ErrorException $e) {
                 return json_encode($e->getMessage());
