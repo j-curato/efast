@@ -106,7 +106,7 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
                 // if ($flag) {
                 //     $transaction->commit();
                 // }
-                $db = \Yii::$app->afms_dev;
+                $db = \Yii::$app->afms;
 
 
                 $columns = [
