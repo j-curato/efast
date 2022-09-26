@@ -38,7 +38,7 @@ class RecordAllotmentApiController extends \yii\rest\ActiveController
     }
     public function actionCreate()
     {
-        $transaction = Yii::$app->db->beginTransaction();
+
         $source_json = Yii::$app->getRequest()->getBodyParams();
 
         $source_record_allotment = $source_json['record_allotments'];
@@ -55,7 +55,7 @@ class RecordAllotmentApiController extends \yii\rest\ActiveController
 
         if (!empty($source_record_allotment)) {
             try {
-
+                $ors_transaction = Yii::$app->db->beginTransaction();
 
                 // foreach ($source_record_allotment as $val) {
                 //     $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `record_allotments` WHERE id = :id)")
@@ -187,14 +187,14 @@ class RecordAllotmentApiController extends \yii\rest\ActiveController
                         funding_code=VALUES(funding_code),
                         responsibility_center_id=VALUES(responsibility_center_id)
                     ")->execute();
-                    $transaction->commit();
+                    $ors_transaction->commit();
                     return json_encode('succcecs');
                 }
             } catch (ErrorException $e) {
                 return json_encode($e->getMessage());
             }
         }
-        $transaction = Yii::$app->db->beginTransaction();
+
         $source_record_allotment_entries = $source_json['record_allotment_entries'];
         // $target_record_allotment_entries = Yii::$app->db->createCommand("SELECT * FROM `record_allotment_entries`")->queryAll();
         // $source_record_allotment_entries_difference = array_map(
@@ -205,7 +205,7 @@ class RecordAllotmentApiController extends \yii\rest\ActiveController
 
         if (!empty($source_record_allotment_entries)) {
             try {
-
+                $entry_transaction = Yii::$app->db->beginTransaction();
 
                 // foreach ($source_record_allotment_entries as $val) {
                 //     $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `record_allotment_entries` WHERE id = :id)")
@@ -274,7 +274,7 @@ class RecordAllotmentApiController extends \yii\rest\ActiveController
                     object_code=VALUES(object_code),
                     report_type=VALUES(report_type)
                     ")->execute();
-                    $transaction->commit();
+                    $entry_transaction->commit();
                     return json_encode('succcecs');
                 }
             } catch (ErrorException $e) {
