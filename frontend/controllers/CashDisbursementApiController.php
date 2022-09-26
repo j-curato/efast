@@ -45,59 +45,6 @@ class CashDisbursementApiController extends \yii\rest\ActiveController
         if (!empty($source_cash_disbursement)) {
             try {
 
-                // if ($flag = true) {
-
-                //     foreach ($source_cash_disbursement as $val) {
-                //         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `cash_disbursement` WHERE id = :id)")
-                //             ->bindValue(':id', $val['id'])
-                //             ->queryScalar();
-                //         if (intval($query) === 1) {
-                //             $update_cash_disbursement = CashDisbursement::findOne($val['id']);
-                //             $update_cash_disbursement->book_id = $val['book_id'];
-                //             $update_cash_disbursement->dv_aucs_id = $val['dv_aucs_id'];
-                //             $update_cash_disbursement->reporting_period = $val['reporting_period'];
-                //             $update_cash_disbursement->mode_of_payment = $val['mode_of_payment'];
-                //             $update_cash_disbursement->check_or_ada_no = $val['check_or_ada_no'];
-                //             $update_cash_disbursement->is_cancelled = $val['is_cancelled'];
-                //             $update_cash_disbursement->issuance_date = $val['issuance_date'];
-                //             $update_cash_disbursement->ada_number = $val['ada_number'];
-                //             $update_cash_disbursement->begin_time = $val['begin_time'];
-                //             $update_cash_disbursement->out_time = $val['out_time'];
-                //             $update_cash_disbursement->parent_disbursement = $val['parent_disbursement'];
-                //             if ($update_cash_disbursement->save(false)) {
-                //             } else {
-                //                 $transaction->rollBack();
-                //                 $flag=false;
-                //                 return false;
-                //             }
-                //         } else {
-                //             $new_cash_disbursement = new CashDisbursement();
-                //             $new_cash_disbursement->id = $val['id'];
-                //             $new_cash_disbursement->book_id = $val['book_id'];
-                //             $new_cash_disbursement->dv_aucs_id = $val['dv_aucs_id'];
-                //             $new_cash_disbursement->reporting_period = $val['reporting_period'];
-                //             $new_cash_disbursement->mode_of_payment = $val['mode_of_payment'];
-                //             $new_cash_disbursement->check_or_ada_no = $val['check_or_ada_no'];
-                //             $new_cash_disbursement->is_cancelled = $val['is_cancelled'];
-                //             $new_cash_disbursement->issuance_date = $val['issuance_date'];
-                //             $new_cash_disbursement->ada_number = $val['ada_number'];
-                //             $new_cash_disbursement->begin_time = $val['begin_time'];
-                //             $new_cash_disbursement->out_time = $val['out_time'];
-                //             $new_cash_disbursement->parent_disbursement = $val['parent_disbursement'];
-                //             if ($new_cash_disbursement->save(false)) {
-                //             } else {
-                //                 $transaction->rollBack();
-                //                 $flag=false;
-                //                 return false;
-                //             }
-                //         }
-                //     }
-                // }
-
-                // if ($flag) {
-                //     $transaction->commit();
-                //     return 'success s';
-                // }
                 $db = \Yii::$app->db;
 
 
@@ -128,7 +75,7 @@ class CashDisbursementApiController extends \yii\rest\ActiveController
                         'reporting_period' => !empty($val['reporting_period']) ? Html::encode($val['reporting_period']) : null,
                         'mode_of_payment' => !empty($val['mode_of_payment']) ? Html::encode($val['mode_of_payment']) : null,
                         'check_or_ada_no' => !empty($val['check_or_ada_no']) ? Html::encode($val['check_or_ada_no']) : null,
-                        'is_cancelled' => !empty($val['is_cancelled']) ? Html::encode($val['is_cancelled']) : null,
+                        'is_cancelled' => Html::encode($val['is_cancelled']),
                         'issuance_date' => !empty($val['issuance_date']) ? Html::encode($val['issuance_date']) : null,
                         'ada_number' => !empty($val['ada_number']) ? Html::encode($val['ada_number']) : null,
                         'begin_time' => !empty($val['begin_time']) ? Html::encode($val['begin_time']) : null,
