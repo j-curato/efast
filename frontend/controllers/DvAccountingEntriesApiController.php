@@ -145,26 +145,26 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
                         'remittance_payee_id' => !empty($val['remittance_payee_id']) ? Html::encode($val['remittance_payee_id']) : null,
                     ];
                 }
-                if (!empty($data)) {
+                // if (!empty($data)) {
 
-                    $sql = $db->queryBuilder->batchInsert('dv_accounting_entries', $columns, $data);
-                    $db->createCommand($sql . "ON DUPLICATE KEY UPDATE
-                    dv_aucs_id=VALUES(dv_aucs_id),
-                    cashflow_id=VALUES(cashflow_id),
-                    net_asset_equity_id=VALUES(net_asset_equity_id),
-                    chart_of_account_id=VALUES(chart_of_account_id),
-                    debit=VALUES(debit),
-                    credit=VALUES(credit),
-                    closing_nonclosing=VALUES(closing_nonclosing),
-                    current_noncurrent=VALUES(current_noncurrent),
-                    object_code=VALUES(object_code),
-                    payroll_id=VALUES(payroll_id),
-                    remittance_payee_id=VALUES(remittance_payee_id)
+                //     $sql = $db->queryBuilder->batchInsert('dv_accounting_entries', $columns, $data);
+                //     $db->createCommand($sql . "ON DUPLICATE KEY UPDATE
+                //     dv_aucs_id=VALUES(dv_aucs_id),
+                //     cashflow_id=VALUES(cashflow_id),
+                //     net_asset_equity_id=VALUES(net_asset_equity_id),
+                //     chart_of_account_id=VALUES(chart_of_account_id),
+                //     debit=VALUES(debit),
+                //     credit=VALUES(credit),
+                //     closing_nonclosing=VALUES(closing_nonclosing),
+                //     current_noncurrent=VALUES(current_noncurrent),
+                //     object_code=VALUES(object_code),
+                //     payroll_id=VALUES(payroll_id),
+                //     remittance_payee_id=VALUES(remittance_payee_id)
 
-                        ")->execute();
-                    $transaction->commit();
-                    return json_encode('succcecs');
-                }
+                //         ")->execute();
+                //     $transaction->commit();
+                //     return json_encode('succcecs');
+                // }
             } catch (ErrorException $e) {
                 return json_encode($e->getMessage());
             }
