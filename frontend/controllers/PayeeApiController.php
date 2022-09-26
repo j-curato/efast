@@ -105,12 +105,12 @@ class PayeeApiController extends \yii\rest\ActiveController
                     $data[] = [
                         'id' => !empty($val['id']) ? Html::encode($val['id']) : null,
                         'account_name' => !empty($val['account_name']) ? Html::encode($val['account_name']) : null,
-                        'registered_name' => !empty($val['registered_name']) ? Html::encode($val['registered_name']) : '',
-                        'contact_person' => !empty($val['contact_person']) ? Html::encode($val['contact_person']) : '',
-                        'registered_address' => !empty($val['registered_address']) ? Html::encode($val['registered_address']) : '',
-                        'contact' => !empty($val['contact']) ? Html::encode($val['contact']) : '',
-                        'remark' => !empty($val['remark']) ? Html::encode($val['remark']) : '',
-                        'tin_number' => !empty($val['tin_number']) ? Html::encode($val['tin_number']) : '',
+                        'registered_name' => !empty($val['registered_name']) ? Html::encode($val['registered_name']) : null,
+                        'contact_person' => !empty($val['contact_person']) ? Html::encode($val['contact_person']) : null,
+                        'registered_address' => !empty($val['registered_address']) ? Html::encode($val['registered_address']) : null,
+                        'contact' => !empty($val['contact']) ? Html::encode($val['contact']) : null,
+                        'remark' => !empty($val['remark']) ? Html::encode($val['remark']) : null,
+                        'tin_number' => !empty($val['tin_number']) ? Html::encode($val['tin_number']) : null,
                         'isEnable' => Html::encode($val['isEnable']),
                     ];
                 }
