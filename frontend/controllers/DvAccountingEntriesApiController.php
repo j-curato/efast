@@ -52,10 +52,7 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
             try {
                 $transaction = Yii::$app->db->beginTransaction();
 
-                $db = Yii::$app->afms;
-                return json_encode($source_dv_accounting_entries);
-
-
+                $db = \Yii::$app->db;
                 $columns = [
                     'id',
                     'dv_aucs_id',
