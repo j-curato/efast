@@ -10,7 +10,7 @@ async function getDifference(link) {
 async function createDifference(link, data) {
   const url = "https://fisdticaraga.com/index.php?r=" + link + "/create";
   await $.ajax({
-    type: "POST",
+    type: "post",
     url: url,
     contentType: "application/json",
     data: data,

@@ -108,7 +108,7 @@ $this->title = 'Dashboard';
                                     'autoclose' => true,
                                     'format' => 'yyyy',
                                     'minViewMode' => 'years',
-                                    'placeholder'=>'Select Year'
+                                    'placeholder' => 'Select Year'
 
                                 ]
                             ]);
