@@ -138,7 +138,7 @@ class ProcessOrsApiController extends \yii\rest\ActiveController
                         'fund_source_id' => !empty($val['fund_source_id']) ? Html::encode($val['fund_source_id']) : null,
                         'book_id' => !empty($val['book_id']) ? Html::encode($val['book_id']) : null,
                         'date' => !empty($val['date']) ? Html::encode($val['date']) : null,
-                        'is_cancelled' => !empty($val['is_cancelled']) ? Html::encode($val['is_cancelled']) : null,
+                        'is_cancelled' => Html::encode($val['is_cancelled']),
                         'type' => !empty($val['type']) ? Html::encode($val['type']) : null,
                         'created_at' => !empty($val['created_at']) ? Html::encode($val['created_at']) : null,
                         'transaction_begin_time' => !empty($val['transaction_begin_time']) ? Html::encode($val['transaction_begin_time']) : null,

@@ -256,10 +256,8 @@ class RecordAllotmentApiController extends \yii\rest\ActiveController
                         'chart_of_account_id' => !empty($val['chart_of_account_id']) ? Html::encode($val['chart_of_account_id']) : null,
                         'amount' => !empty($val['amount']) ? Html::encode($val['amount']) : null,
                         'lvl' => !empty($val['lvl']) ? Html::encode($val['lvl']) : null,
-                        'object_code' => !empty($val['object_code']) ? Html::encode($val['object_code']) : null,
-                        'report_type' => !empty($val['report_type']) ? Html::encode($val['report_type']) : null,
-
-
+                        'object_code' => !empty($val['object_code']) ? Html::encode($val['object_code']) : '',
+                        'report_type' => !empty($val['report_type']) ? Html::encode($val['report_type']) : '',
                     ];
                 }
 

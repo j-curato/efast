@@ -15,6 +15,12 @@ use yii\helpers\Url;
 
 $this->title = 'Dashboard';
 // echo Url::base(); 
+
+if (!empty('0')){
+echo 1;
+}else{
+echo 0;
+}
 ?>
 
 <div class="site-index">
