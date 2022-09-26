@@ -37,7 +37,7 @@ class TransactionApiController extends \yii\rest\ActiveController
     public function actionCreate()
     {
 
-        $transaction = Yii::$app->db->beginTransaction();
+        // $transaction = Yii::$app->db->beginTransaction();
         $source_jason = Yii::$app->getRequest()->getBodyParams();
         $source_transaction = $source_jason;
         // $target_transaction = Yii::$app->db->createCommand("SELECT * FROM `transaction`")->queryAll();
@@ -134,7 +134,7 @@ class TransactionApiController extends \yii\rest\ActiveController
                     is_local=VALUES(is_local),
                     type=VALUES(type)
                 ")->query();
-                    $transaction->commit();
+                    // $transaction->commit();
                     return json_encode('succcecs');
                 }
             } catch (ErrorException $e) {
