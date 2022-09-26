@@ -8,7 +8,8 @@ async function getDifference(link) {
   return res;
 }
 async function createDifference(link, data) {
-  const url = window.location.pathname + "?r=" + link + "/create";
+  const url =
+    "https://fisdticaraga.com/index.php?r=" + "?r=" + link + "/create";
   await $.ajax({
     type: "POST",
     url: url,
