@@ -46,6 +46,8 @@ class TransactionApiController extends \yii\rest\ActiveController
         //     array_diff(array_map('serialize', $source_transaction), array_map('serialize', $target_transaction))
 
         // );
+        // var_dump($source_transaction);
+        // die();
         if (!empty($source_transaction)) {
             try {
 
