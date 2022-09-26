@@ -120,7 +120,7 @@ class TransactionApiController extends \yii\rest\ActiveController
                 if (!empty($data)) {
 
                     $sql = $db->queryBuilder->batchInsert('transaction', $columns, $data);
-                    $db->createCommand($sql . "AS new_val ON DUPLICATE KEY UPDATE
+                    $db->createCommand($sql . "ON DUPLICATE KEY UPDATE
                     responsibility_center_id=VALUES(responsibility_center_id),
                     payee_id=VALUES(payee_id),
                     particular=VALUES(particular),
