@@ -6,54 +6,31 @@ use common\models\Payee;
 use ErrorException;
 use Yii;
 use yii\filters\auth\HttpBearerAuth;
+use yii\filters\Cors;
 use yii\helpers\Html;
 
 class PayeeApiController extends \yii\rest\ActiveController
 {
-    public $enableCsrfValidation = false;
     public $modelClass = Payee::class;
-    public static function allowedDomains()
-    {
-        return [
-            // '*',                        // star allows all domains
-            'http://test1.example.com',
-            'http://norman/afms/',
-        ];
-    }
     public function behaviors()
     {
         $behaviors = parent::behaviors();
-        $auth = $behaviors['authenticator'];
-        unset($behaviors['authenticator']);
-
-        $behaviors['corsFilter'] = [
-            'class' => Cors::class,
-            'cors'  => [
-                // restrict access to domains:
-                'Origin'                           => ['*'],
-                'Access-Control-Request-Method'    => ['POST'],
-                'Access-Control-Allow-Credentials' => true,
-                'Access-Control-Max-Age'           => 3600,
-                'Access-Control-Request-Headers' => ['*'],           // Cache (seconds)
-            ],
-        ];
-        $behaviors['authenticator'] = $auth;
-        $behaviors['authenticator']['only'] = ['create', 'delete', 'view', 'index', 'update'];
+        $behaviors['authenticator']['only'] = ['create', 'delete', 'update'];
         $behaviors['authenticator']['authMethods'] = [
-            HttpBearerAuth::class,
-            'except' => ['options'],
+            HttpBearerAuth::class
         ];
-        return $behaviors;
+        return array_merge([
+            'corsFilter' => Cors::class,
+        ], $behaviors);
     }
-
     public function actions()
     {
         $actions = parent::actions();
         unset($actions['create']);
         unset($actions['update']);
         unset($actions['delete']);
-        unset($actions['index']);
         unset($actions['view']);
+        unset($actions['index']);
     }
     public function actionCreate()
     {
