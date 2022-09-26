@@ -10,6 +10,7 @@ use kartik\date\DatePicker;
 use kartik\widgets\DatePicker as WidgetsDatePicker;
 use yii\filters\Cors;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\helpers\Url;
 
 $this->title = 'Dashboard';
@@ -1340,8 +1341,13 @@ $script = <<<JS
        
         $('#update_payee').click(async (e)=>{
             e.preventDefault()
-           await updateCloudPayeeApi()
-           await updateCloudTransactionsApi()
+            await updateCloudPayeeApi()
+            await updateCloudTransactionsApi()
+            await updateCloudRecordAllotmentApi()
+            await updateCloudProcessOrsApi()
+            await updateCloudCashDisbursementApi()
+            await updateCloudAdvancesApi()
+            await updateCloudAdvancesEntriesApi()
         })
         $('.fc-prev-button').attr('class','fc-prev-button btn-xs btn-primary')
         BarChart()
