@@ -51,64 +51,9 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
         if (!empty($source_dv_accounting_entries)) {
             try {
                 $transaction = Yii::$app->db->beginTransaction();
-                return json_encode($source_dv_accounting_entries);
 
-                // if ($flag = true) {
-
-                //     foreach ($source_dv_accounting_entries as $val) {
-                //         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `dv_accounting_entries` WHERE id = :id)")
-                //             ->bindValue(':id', $val['id'])
-                //             ->queryScalar();
-                //         if (intval($query) === 1) {
-                //             $update_dv_accounting_entries = DvAccountingEntries::findOne($val['id']);
-
-
-                //             $update_dv_accounting_entries->dv_aucs_id = $val['dv_aucs_id'];
-                //             $update_dv_accounting_entries->cashflow_id = $val['cashflow_id'];
-                //             $update_dv_accounting_entries->net_asset_equity_id = $val['net_asset_equity_id'];
-                //             $update_dv_accounting_entries->chart_of_account_id = $val['chart_of_account_id'];
-                //             $update_dv_accounting_entries->debit = $val['debit'];
-                //             $update_dv_accounting_entries->credit = $val['credit'];
-                //             $update_dv_accounting_entries->closing_nonclosing = $val['closing_nonclosing'];
-                //             $update_dv_accounting_entries->current_noncurrent = $val['current_noncurrent'];
-                //             $update_dv_accounting_entries->lvl = $val['lvl'];
-                //             $update_dv_accounting_entries->object_code = $val['object_code'];
-
-
-
-                //             if ($update_dv_accounting_entries->save(false)) {
-                //             } else {
-                //                 $transaction->rollBack();
-                //                 $flag = false;
-                //                 return false;
-                //             }
-                //         } else {
-                //             $new_dv_accounting_entries = new DvAccountingEntries();
-                //             $new_dv_accounting_entries->id = $val['id'];
-                //             $new_dv_accounting_entries->dv_aucs_id = $val['dv_aucs_id'];
-                //             $new_dv_accounting_entries->cashflow_id = $val['cashflow_id'];
-                //             $new_dv_accounting_entries->net_asset_equity_id = $val['net_asset_equity_id'];
-                //             $new_dv_accounting_entries->chart_of_account_id = $val['chart_of_account_id'];
-                //             $new_dv_accounting_entries->debit = $val['debit'];
-                //             $new_dv_accounting_entries->credit = $val['credit'];
-                //             $new_dv_accounting_entries->closing_nonclosing = $val['closing_nonclosing'];
-                //             $new_dv_accounting_entries->current_noncurrent = $val['current_noncurrent'];
-                //             $new_dv_accounting_entries->lvl = $val['lvl'];
-                //             $new_dv_accounting_entries->object_code = $val['object_code'];
-
-                //             if ($new_dv_accounting_entries->save(false)) {
-                //             } else {
-                //                 $transaction->rollBack();
-                //                 $flag = false;
-                //                 return false;
-                //             }
-                //         }
-                //     }
-                // }
-                // if ($flag) {
-                //     $transaction->commit();
-                // }
                 $db = Yii::$app->afms;
+                return json_encode($source_dv_accounting_entries);
 
 
                 $columns = [
@@ -147,26 +92,26 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
                         'remittance_payee_id' => !empty($val['remittance_payee_id']) ? Html::encode($val['remittance_payee_id']) : null,
                     ];
                 }
-                // if (!empty($data)) {
+                if (!empty($data)) {
 
-                //     $sql = $db->queryBuilder->batchInsert('dv_accounting_entries', $columns, $data);
-                //     $db->createCommand($sql . "ON DUPLICATE KEY UPDATE
-                //     dv_aucs_id=VALUES(dv_aucs_id),
-                //     cashflow_id=VALUES(cashflow_id),
-                //     net_asset_equity_id=VALUES(net_asset_equity_id),
-                //     chart_of_account_id=VALUES(chart_of_account_id),
-                //     debit=VALUES(debit),
-                //     credit=VALUES(credit),
-                //     closing_nonclosing=VALUES(closing_nonclosing),
-                //     current_noncurrent=VALUES(current_noncurrent),
-                //     object_code=VALUES(object_code),
-                //     payroll_id=VALUES(payroll_id),
-                //     remittance_payee_id=VALUES(remittance_payee_id)
+                    $sql = $db->queryBuilder->batchInsert('dv_accounting_entries', $columns, $data);
+                    $db->createCommand($sql . "ON DUPLICATE KEY UPDATE
+                    dv_aucs_id=VALUES(dv_aucs_id),
+                    cashflow_id=VALUES(cashflow_id),
+                    net_asset_equity_id=VALUES(net_asset_equity_id),
+                    chart_of_account_id=VALUES(chart_of_account_id),
+                    debit=VALUES(debit),
+                    credit=VALUES(credit),
+                    closing_nonclosing=VALUES(closing_nonclosing),
+                    current_noncurrent=VALUES(current_noncurrent),
+                    object_code=VALUES(object_code),
+                    payroll_id=VALUES(payroll_id),
+                    remittance_payee_id=VALUES(remittance_payee_id)
 
-                //         ")->execute();
-                //     $transaction->commit();
-                //     return json_encode('succcecs');
-                // }
+                        ")->execute();
+                    $transaction->commit();
+                    return json_encode('succcecs');
+                }
             } catch (ErrorException $e) {
                 return json_encode($e->getMessage());
             }
