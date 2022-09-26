@@ -8,9 +8,9 @@ async function getDifference(link) {
   return res;
 }
 async function createDifference(link, data) {
-  const url = "https://fisdticaraga.com/index.php?r=" + link + "/create";
+  const url = window.location.pathname + "?r=" + link + "/create";
   await $.ajax({
-    type: "post",
+    type: "POST",
     url: url,
     contentType: "application/json",
     data: data,
@@ -51,4 +51,21 @@ async function updateCloudAdvancesApi() {
 async function updateCloudAdvancesEntriesApi() {
   const advances_entries_difference = await getDifference("/advances-entries");
   await createDifference("/advances-entries-api", advances_entries_difference);
+}
+async function updateCloudDvAucsApi() {
+  const advances_entries_difference = await getDifference("/dv-aucs");
+  await createDifference("/dv-aucs-api", advances_entries_difference);
+}
+async function updateCloudDvAucsEntriesApi() {
+  const advances_entries_difference = await getDifference("/dv-aucs-entries");
+  await createDifference("/dv-aucs-entries-api", advances_entries_difference);
+}
+async function updateCloudDvAccountingEntriessApi() {
+  const advances_entries_difference = await getDifference(
+    "/dv-accounting-entries"
+  );
+  await createDifference(
+    "/dv-accounting-entries-api",
+    advances_entries_difference
+  );
 }
