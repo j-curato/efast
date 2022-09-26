@@ -8,6 +8,7 @@ use Yii;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
 use yii\helpers\Html;
+use yii\helpers\HtmlPurifier;
 
 class PayeeApiController extends \yii\rest\ActiveController
 {
@@ -104,13 +105,13 @@ class PayeeApiController extends \yii\rest\ActiveController
 
                     $data[] = [
                         'id' => !empty($val['id']) ? Html::encode($val['id']) : null,
-                        'account_name' => !empty($val['account_name']) ? Html::encode($val['account_name']) : null,
-                        'registered_name' => !empty($val['registered_name']) ? Html::encode($val['registered_name']) : null,
-                        'contact_person' => !empty($val['contact_person']) ? Html::encode($val['contact_person']) : null,
-                        'registered_address' => !empty($val['registered_address']) ? Html::encode($val['registered_address']) : null,
-                        'contact' => !empty($val['contact']) ? Html::encode($val['contact']) : null,
-                        'remark' => !empty($val['remark']) ? Html::encode($val['remark']) : null,
-                        'tin_number' => !empty($val['tin_number']) ? Html::encode($val['tin_number']) : null,
+                        'account_name' => !empty($val['account_name']) ? HtmlPurifier::process($val['account_name']) : null,
+                        'registered_name' => !empty($val['registered_name']) ? HtmlPurifier::process($val['registered_name']) : null,
+                        'contact_person' => !empty($val['contact_person']) ? HtmlPurifier::process($val['contact_person']) : null,
+                        'registered_address' => !empty($val['registered_address']) ? HtmlPurifier::process($val['registered_address']) : null,
+                        'contact' => !empty($val['contact']) ? HtmlPurifier::process($val['contact']) : null,
+                        'remark' => !empty($val['remark']) ? HtmlPurifier::process($val['remark']) : null,
+                        'tin_number' => !empty($val['tin_number']) ? HtmlPurifier::process($val['tin_number']) : null,
                         'isEnable' => Html::encode($val['isEnable']),
                     ];
                 }

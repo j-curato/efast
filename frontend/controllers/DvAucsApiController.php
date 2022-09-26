@@ -8,6 +8,7 @@ use Yii;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
 use yii\helpers\Html;
+use yii\helpers\HtmlPurifier;
 
 class DvAucsApiController extends \yii\rest\ActiveController
 {
@@ -158,7 +159,7 @@ class DvAucsApiController extends \yii\rest\ActiveController
                         'reporting_period' => !empty($val['reporting_period']) ? Html::encode($val['reporting_period']) : null,
                         'mrd_classification_id' => !empty($val['mrd_classification_id']) ? Html::encode($val['mrd_classification_id']) : null,
                         'nature_of_transaction_id' => !empty($val['nature_of_transaction_id']) ? Html::encode($val['nature_of_transaction_id']) : null,
-                        'particular' => !empty($val['particular']) ? Html::encode($val['particular']) : null,
+                        'particular' => !empty($val['particular']) ? HtmlPurifier::process($val['particular']) : null,
                         'payee_id' => !empty($val['payee_id']) ? Html::encode($val['payee_id']) : null,
                         'transaction_type' => !empty($val['transaction_type']) ? Html::encode($val['transaction_type']) : null,
                         'book_id' => !empty($val['book_id']) ? Html::encode($val['book_id']) : null,
@@ -176,7 +177,7 @@ class DvAucsApiController extends \yii\rest\ActiveController
                         'payroll_id' => !empty($val['payroll_id']) ? Html::encode($val['payroll_id']) : null,
                         'fk_remittance_id' => !empty($val['fk_remittance_id']) ? Html::encode($val['fk_remittance_id']) : null,
                         'fk_ro_alphalist_id' => !empty($val['fk_ro_alphalist_id']) ? Html::encode($val['fk_ro_alphalist_id']) : null,
-                        'object_code' => !empty($val['object_code']) ? Html::encode($val['object_code']) : '',
+                        'object_code' => !empty($val['object_code']) ? HtmlPurifier::process($val['object_code']) : '',
 
 
                     ];
