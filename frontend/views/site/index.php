@@ -104,11 +104,12 @@ $this->title = 'Dashboard';
                             echo DatePicker::widget([
                                 'id' => 'bar_filter',
                                 'name' => 'year',
+                                'title' => 'bar_filer',
                                 'pluginOptions' => [
                                     'autoclose' => true,
                                     'format' => 'yyyy',
-                                    'minViewMode' => 'years'
-
+                                    'minViewMode' => 'years',
+                                    'placeholder' => 'Select year'
                                 ]
                             ]);
                             ?>
