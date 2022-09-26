@@ -120,19 +120,19 @@ class TransactionApiController extends \yii\rest\ActiveController
                 if (!empty($data)) {
 
                     $sql = $db->queryBuilder->batchInsert('transaction', $columns, $data);
-                    $db->createCommand($sql . "ON DUPLICATE KEY UPDATE
-                    responsibility_center_id=VALUES(responsibility_center_id),
-                    payee_id=VALUES(payee_id),
-                    particular=VALUES(particular),
-                    gross_amount=VALUES(gross_amount),
-                    tracking_number=VALUES(tracking_number),
-                    earmark_no=VALUES(earmark_no),
-                    payroll_number=VALUES(payroll_number),
-                    transaction_date=VALUES(transaction_date),
-                    transaction_time=VALUES(transaction_time),
-                    created_at=VALUES(created_at),
-                    is_local=VALUES(is_local),
-                    type=VALUES(type)
+                    $db->createCommand($sql . "AS new_val ON DUPLICATE KEY UPDATE
+                    responsibility_center_id=new_val.responsibility_center_id,
+                    payee_id=new_val.payee_id,
+                    particular=new_val.particular,
+                    gross_amount=new_val.gross_amount,
+                    tracking_number=new_val.tracking_number,
+                    earmark_no=new_val.earmark_no,
+                    payroll_number=new_val.payroll_number,
+                    transaction_date=new_val.transaction_date,
+                    transaction_time=new_val.transaction_time,
+                    created_at=new_val.created_at,
+                    is_local=new_val.is_local,
+                    type=new_val.type
                 ")->execute();
                     $transaction->commit();
                     return json_encode('succcecs');
