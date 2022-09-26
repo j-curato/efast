@@ -111,7 +111,7 @@ class PayeeApiController extends \yii\rest\ActiveController
                         'contact' => !empty($val['contact']) ? Html::encode($val['contact']) : '',
                         'remark' => !empty($val['remark']) ? Html::encode($val['remark']) : '',
                         'tin_number' => !empty($val['tin_number']) ? Html::encode($val['tin_number']) : '',
-                        'isEnable' => !empty($val['isEnable']) ? Html::encode($val['isEnable']) : '',
+                        'isEnable' => Html::encode($val['isEnable']),
                     ];
                 }
 

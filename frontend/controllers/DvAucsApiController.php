@@ -171,12 +171,12 @@ class DvAucsApiController extends \yii\rest\ActiveController
                         'accept_timestamp' => !empty($val['accept_timestamp']) ? Html::encode($val['accept_timestamp']) : null,
                         'tracking_sheet_id' => !empty($val['tracking_sheet_id']) ? Html::encode($val['tracking_sheet_id']) : null,
                         'in_timestamp' => !empty($val['in_timestamp']) ? Html::encode($val['in_timestamp']) : null,
-                        'is_payable' => !empty($val['is_payable']) ? Html::encode($val['is_payable']) : null,
+                        'is_payable' =>  Html::encode($val['is_payable']),
                         'recieved_at' => !empty($val['recieved_at']) ? Html::encode($val['recieved_at']) : null,
                         'payroll_id' => !empty($val['payroll_id']) ? Html::encode($val['payroll_id']) : null,
                         'fk_remittance_id' => !empty($val['fk_remittance_id']) ? Html::encode($val['fk_remittance_id']) : null,
                         'fk_ro_alphalist_id' => !empty($val['fk_ro_alphalist_id']) ? Html::encode($val['fk_ro_alphalist_id']) : null,
-                        'object_code' => !empty($val['object_code']) ? Html::encode($val['object_code']) : null,
+                        'object_code' => !empty($val['object_code']) ? Html::encode($val['object_code']) : '',
 
 
                     ];
