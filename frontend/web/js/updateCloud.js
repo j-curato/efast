@@ -49,23 +49,23 @@ async function updateCloudAdvancesApi() {
   await createDifference("advances-api", advances_difference);
 }
 async function updateCloudAdvancesEntriesApi() {
-  const advances_entries_difference = await getDifference("/advances-entries");
-  await createDifference("/advances-entries-api", advances_entries_difference);
+  const advances_entries_difference = await getDifference("advances-entries");
+  await createDifference("advances-entries-api", advances_entries_difference);
 }
 async function updateCloudDvAucsApi() {
-  const advances_entries_difference = await getDifference("/dv-aucs");
-  await createDifference("/dv-aucs-api", advances_entries_difference);
+  const advances_entries_difference = await getDifference("dv-aucs");
+  await createDifference("dv-aucs-api", advances_entries_difference);
 }
 async function updateCloudDvAucsEntriesApi() {
-  const advances_entries_difference = await getDifference("/dv-aucs-entries");
-  await createDifference("/dv-aucs-entries-api", advances_entries_difference);
+  const advances_entries_difference = await getDifference("dv-aucs-entries");
+  await createDifference("dv-aucs-entries-api", advances_entries_difference);
 }
 async function updateCloudDvAccountingEntriessApi() {
   const advances_entries_difference = await getDifference(
-    "/dv-accounting-entries"
+    "dv-accounting-entries"
   );
   await createDifference(
-    "/dv-accounting-entries-api",
+    "dv-accounting-entries-api",
     advances_entries_difference
   );
 }
