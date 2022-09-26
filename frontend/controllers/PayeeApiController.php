@@ -22,6 +22,9 @@ class PayeeApiController extends \yii\rest\ActiveController
     public function behaviors()
     {
         $behaviors = parent::behaviors();
+        $auth = $behaviors['authenticator'];
+        unset($behaviors['authenticator']);
+
         $behaviors['corsFilter'] = [
             'class' => Cors::class,
             'cors'  => [
@@ -32,11 +35,12 @@ class PayeeApiController extends \yii\rest\ActiveController
                 'Access-Control-Max-Age'           => 3600,                 // Cache (seconds)
             ],
         ];
+        $behaviors['authenticator'] = $auth;
         $behaviors['authenticator']['only'] = ['create', 'delete', 'view', 'index', 'update'];
         $behaviors['authenticator']['authMethods'] = [
             HttpBearerAuth::class
         ];
-        return array_merge(['corsFilter' => Cors::class], $behaviors);
+        return $behaviors;
     }
 
     public function actions()
