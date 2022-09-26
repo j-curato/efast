@@ -33,7 +33,7 @@ class ProcessOrsApiController extends \yii\rest\ActiveController
     }
     public function actionCreate()
     {
-        $transaction = Yii::$app->db->beginTransaction();
+
         $source_json = Yii::$app->getRequest()->getBodyParams();
 
         $source_process_ors = $source_json['process_ors'];
@@ -45,6 +45,8 @@ class ProcessOrsApiController extends \yii\rest\ActiveController
         // );
         if (!empty($source_process_ors)) {
             try {
+
+                $ors_transaction = Yii::$app->db->beginTransaction();
                 // if ($flag = true) {
                 //     foreach ($source_process_ors as $val) {
                 //         $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `process_ors` WHERE id = :id)")
@@ -164,7 +166,7 @@ class ProcessOrsApiController extends \yii\rest\ActiveController
                     created_at=VALUES(created_at),
                     transaction_begin_time=VALUES(transaction_begin_time)
                         ")->execute();
-                    $transaction->commit();
+                    $ors_transaction->commit();
                     return json_encode('succcecs');
                 }
             } catch (ErrorException $e) {
@@ -172,7 +174,7 @@ class ProcessOrsApiController extends \yii\rest\ActiveController
             }
         }
 
-        $transaction = Yii::$app->db->beginTransaction();
+
         $source_process_ors_entries = $source_json['process_ors_entries'];
         // $target_process_ors_entries = Yii::$app->db->createCommand("SELECT * FROM `process_ors_entries`")->queryAll();
         // $source_process_ors_entries_difference = array_map(
@@ -183,88 +185,41 @@ class ProcessOrsApiController extends \yii\rest\ActiveController
 
 
         if (!empty($source_process_ors_entries)) {
-            // try {
-
-            //     if ($flag = true) {
-
-            //         foreach ($process_ors_entries as $val) {
-            //             $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `process_ors_entries` WHERE id = :id)")
-            //                 ->bindValue(':id', $val['id'])
-            //                 ->queryScalar();
-            //             if (intval($query) === 1) {
-            //                 $update_process_ors_entries = ProcessOrsEntries::findOne($val['id']);
-
-            //                 $update_process_ors_entries->chart_of_account_id = $val['chart_of_account_id'];
-            //                 $update_process_ors_entries->process_ors_id = $val['process_ors_id'];
-            //                 $update_process_ors_entries->amount = $val['amount'];
-            //                 $update_process_ors_entries->reporting_period = $val['reporting_period'];
-            //                 $update_process_ors_entries->record_allotment_entries_id = $val['record_allotment_entries_id'];
-            //                 $update_process_ors_entries->is_realign = $val['is_realign'];
+            try {
+                $entry_transaction = Yii::$app->db->beginTransaction();
+                $db = \Yii::$app->db;
 
 
-            //                 if ($update_process_ors_entries->save(false)) {
-            //                 } else {
-            //                     $transaction->rollBack();
-            //                     return false;
-            //                 }
-            //             } else {
-            //                 $new_process_ors_entries = new ProcessOrsEntries();
-            //                 $new_process_ors_entries->id = $val['id'];
-            //                 $new_process_ors_entries->chart_of_account_id = $val['chart_of_account_id'];
-            //                 $new_process_ors_entries->process_ors_id = $val['process_ors_id'];
-            //                 $new_process_ors_entries->amount = $val['amount'];
-            //                 $new_process_ors_entries->reporting_period = $val['reporting_period'];
-            //                 $new_process_ors_entries->record_allotment_entries_id = $val['record_allotment_entries_id'];
-            //                 $new_process_ors_entries->is_realign = $val['is_realign'];
-            //                 if ($new_process_ors_entries->save(false)) {
-            //                 } else {
-            //                     $transaction->rollBack();
-            //                     return false;
-            //                 }
-            //             }
-            //         }
-            //     }
-
-            //     if ($flag) {
-            //         $transaction->commit();
-            //         return 'success s';
-            //     }
-            // } catch (ErrorException $e) {
-            //     return json_encode('entries' . $e->getMessage());
-            // }
-            $db = \Yii::$app->db;
+                $columns = [
+                    'id',
+                    'chart_of_account_id',
+                    'process_ors_id',
+                    'amount',
+                    'reporting_period',
+                    'record_allotment_entries_id',
+                    'is_realign',
 
 
-            $columns = [
-                'id',
-                'chart_of_account_id',
-                'process_ors_id',
-                'amount',
-                'reporting_period',
-                'record_allotment_entries_id',
-                'is_realign',
-
-
-            ];
-            $data = [];
-
-            foreach ($source_process_ors_entries as $val) {
-
-                $data[] = [
-                    'id' => !empty($val['id']) ? Html::encode($val['id']) : null,
-                    'chart_of_account_id' => !empty($val['chart_of_account_id']) ? Html::encode($val['chart_of_account_id']) : null,
-                    'process_ors_id' => !empty($val['process_ors_id']) ? Html::encode($val['process_ors_id']) : null,
-                    'amount' => !empty($val['amount']) ? Html::encode($val['amount']) : null,
-                    'reporting_period' => !empty($val['reporting_period']) ? Html::encode($val['reporting_period']) : null,
-                    'record_allotment_entries_id' => !empty($val['record_allotment_entries_id']) ? Html::encode($val['record_allotment_entries_id']) : null,
-                    'is_realign' => !empty($val['is_realign']) ? Html::encode($val['is_realign']) : null,
                 ];
-            }
+                $data = [];
 
-            if (!empty($data)) {
+                foreach ($source_process_ors_entries as $val) {
 
-                $sql = $db->queryBuilder->batchInsert('process_ors_entries', $columns, $data);
-                $db->createCommand($sql . "ON DUPLICATE KEY UPDATE
+                    $data[] = [
+                        'id' => !empty($val['id']) ? Html::encode($val['id']) : null,
+                        'chart_of_account_id' => !empty($val['chart_of_account_id']) ? Html::encode($val['chart_of_account_id']) : null,
+                        'process_ors_id' => !empty($val['process_ors_id']) ? Html::encode($val['process_ors_id']) : null,
+                        'amount' => !empty($val['amount']) ? Html::encode($val['amount']) : null,
+                        'reporting_period' => !empty($val['reporting_period']) ? Html::encode($val['reporting_period']) : null,
+                        'record_allotment_entries_id' => !empty($val['record_allotment_entries_id']) ? Html::encode($val['record_allotment_entries_id']) : null,
+                        'is_realign' => Html::encode($val['is_realign']),
+                    ];
+                }
+
+                if (!empty($data)) {
+
+                    $sql = $db->queryBuilder->batchInsert('process_ors_entries', $columns, $data);
+                    $db->createCommand($sql . "ON DUPLICATE KEY UPDATE
                 chart_of_account_id=VALUES(chart_of_account_id),
                 process_ors_id=VALUES(process_ors_id),
                 amount=VALUES(amount),
@@ -272,8 +227,11 @@ class ProcessOrsApiController extends \yii\rest\ActiveController
                 record_allotment_entries_id=VALUES(record_allotment_entries_id),
                 is_realign=VALUES(is_realign)
                     ")->execute();
-                $transaction->commit();
-                return json_encode('succcecs');
+                    $entry_transaction->commit();
+                    return json_encode('succcecs');
+                }
+            } catch (ErrorException $e) {
+                return json_encode('entries' . $e->getMessage());
             }
         }
         return 'success';
