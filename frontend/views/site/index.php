@@ -1178,7 +1178,7 @@ $csrfName = Yii::$app->request->csrfParam;
 
     })
     $(document).ready(function() {
-        updateCloud()
+        // updateCloud()
 
         $.getJSON(window.location.pathname + '?r=site/q').then(function(data) {
             cal(data)

@@ -10,6 +10,7 @@ use yii\helpers\Html;
 
 class PayeeApiController extends \yii\rest\ActiveController
 {
+    public $enableCsrfValidation = false;
     public $modelClass = Payee::class;
     public static function allowedDomains()
     {
