@@ -147,6 +147,7 @@ class AdvancesApiController extends \yii\rest\ActiveController
             } catch (ErrorException $e) {
                 return json_encode($e->getMessage());
             }
+            return json_encode('succces');
         }
     }
 }
