@@ -50,8 +50,8 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
 
         if (!empty($source_dv_accounting_entries)) {
             try {
-                return json_encode($source_dv_accounting_entries);
                 $transaction = Yii::$app->db->beginTransaction();
+                return json_encode($source_dv_accounting_entries);
 
                 // if ($flag = true) {
 
@@ -108,7 +108,7 @@ class DvAccountingEntriesApiController extends \yii\rest\ActiveController
                 // if ($flag) {
                 //     $transaction->commit();
                 // }
-                $db = \Yii::$app->afms;
+                $db = Yii::$app->afms;
 
 
                 $columns = [
