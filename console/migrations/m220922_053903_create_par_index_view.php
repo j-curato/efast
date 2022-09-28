@@ -12,7 +12,8 @@ class m220922_053903_create_par_index_view extends Migration
      */
     public function safeUp()
     {
-        Yii::$app->db->createCommand("DROP VIEW IF EXISTS par_index;
+        Yii::$app->db->createCommand(
+            "DROP VIEW IF EXISTS par_index;
         CREATE VIEW par_index as 
         SELECT 
         par.id,
@@ -22,13 +23,17 @@ class m220922_053903_create_par_index_view extends Migration
         actual_user.employee_name as actual_user,
         recieved_by.employee_name as recieved_by,
         unit_of_measure.unit_of_measure,
-        books.`name` as book_name
+        books.`name` as book_name,
+		property.article,
+        property.iar_number,
+        property.acquisition_amount
         FROM par
         LEFT JOIN property ON par.fk_property_id = property.id
         LEFT JOIN employee_search_view as actual_user ON par.actual_user = actual_user.employee_id
         LEFT JOIN employee_search_view as recieved_by ON par.employee_id = recieved_by.employee_id
         LEFT JOIN books ON property.book_id = books.id
-        LEFT JOIN unit_of_measure ON property.unit_of_measure_id = unit_of_measure")
+        LEFT JOIN unit_of_measure ON property.unit_of_measure_id = unit_of_measure"
+        )
             ->query();
     }
 

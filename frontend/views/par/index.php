@@ -18,6 +18,9 @@ $columns = [
     'actual_user',
     'date',
     'property_number',
+    'article',
+    'iar_number',
+    'acquisition_amount',
     'unit_of_measure',
     'book_name',
     [

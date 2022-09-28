@@ -26,7 +26,10 @@ class ParIndexSearch extends ParIndex
                     'par_number',
                     'property_number',
                     'unit_of_measure',
-                    'book_name'
+                    'book_name',
+                    'article',
+                    'iar_number',
+                    'acquisition_amount',
                 ],
                 'safe'
             ],
@@ -78,6 +81,8 @@ class ParIndexSearch extends ParIndex
             ->andFilterWhere(['like', 'actual_user', $this->actual_user])
             ->andFilterWhere(['like', 'recieved_by', $this->recieved_by])
             ->andFilterWhere(['like', 'unit_of_measure', $this->unit_of_measure])
+            ->andFilterWhere(['like', 'article', $this->article])
+            ->andFilterWhere(['like', 'iar_number', $this->iar_number])
             ->andFilterWhere(['like', 'book_name', $this->book_name]);
 
         return $dataProvider;
