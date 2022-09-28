@@ -278,6 +278,6 @@ class IrTransmittalController extends Controller
         for ($i = strlen($last_num); $i < 4; $i++) {
             $zero .= 0;
         }
-        return $year . '-' . $zero . $last_num;
+        return 'RO-' . $year . '-' . $zero . $last_num;
     }
 }
