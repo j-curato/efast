@@ -303,9 +303,9 @@ class IarController extends Controller
         if ($id > 0) {
         } else if (!is_null($q)) {
             $query = new Query();
-            $query->select('iar.id, iar.iar_number AS text')
-                ->from('iar')
-                ->where(['like', 'iar.iar_number', $q]);
+            $query->select('iar_index.id, iar_index.iar_number AS text')
+                ->from('iar_index')
+                ->where(['like', 'iar_index.iar_number', $q]);
 
             $command = $query->createCommand();
             $data = $command->queryAll();

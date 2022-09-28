@@ -571,28 +571,15 @@ class TransactionController extends Controller
         if (Yii::$app->request->isPost) {
             $id = $_POST['id'];
             $query = YIi::$app->db->createCommand("SELECT 
-            payee.id,
-            payee.account_name as payee,
-            pr_purchase_request.purpose,
-            SUM(pr_aoq_entries.amount * request_for_inspection_items.quantity) as amount
-            FROM iar
-            LEFT JOIN inspection_report ON iar.fk_ir_id  = inspection_report.id
-            LEFT JOIN inspection_report_items ON inspection_report.id = inspection_report_items.fk_inspection_report_id
-            LEFT JOIN request_for_inspection_items ON inspection_report_items.fk_request_for_inspection_item_id  = request_for_inspection_items.id
-            LEFT JOIN request_for_inspection ON request_for_inspection_items.fk_request_for_inspection_id = request_for_inspection.id
-            LEFT JOIN pr_office ON request_for_inspection.fk_pr_office_id = pr_office.id
-            LEFT JOIN pr_purchase_order_items_aoq_items ON request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id  = pr_purchase_order_items_aoq_items.id
-            LEFT JOIN pr_purchase_order_item ON pr_purchase_order_items_aoq_items.fk_purchase_order_item_id = pr_purchase_order_item.id
-            LEFT JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
-            LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
-            LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
-            LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
-            LEFT JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
-            WHERE iar.id = :id
-            GROUP BY
-            payee.id,
-            payee.account_name,
-            pr_purchase_request.purpose
+            iar_index.payee_id as id,
+            iar_index.payee_name,
+            iar_index.purpose,
+            iar_index.total_amount as amount
+           
+            FROM iar_index
+            
+            WHERE iar_index.id = :id
+           
             ")
                 ->bindValue(':id', $id)
                 ->queryOne();
