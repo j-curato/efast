@@ -41,9 +41,9 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="row head" style="padding-top: 2rem;padding-bottom: 2rem;">Dear Ma’am Hormillada:</div>
             <p style="font-size: 12pt;">
 
-                We are hereby submitting the following POs, with assigned Transmittal # <?php
-                                                                                        // echo $model->transmittal_number; 
-                                                                                        ?> of DTI Regional Office:
+                We are hereby submitting the following Purchase Orders, with assigned Transmittal # <?php
+                                                                                                    echo $model->serial_number;
+                                                                                                    ?> of DTI Regional Office:
             </p>
         </div>
 

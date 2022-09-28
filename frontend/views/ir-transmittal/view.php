@@ -16,7 +16,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="purchase-order-transmittal-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -40,9 +39,9 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="row head" style="padding-top: 2rem;padding-bottom: 2rem;">Dear Ma’am Hormillada:</div>
             <p style="font-size: 12pt;">
 
-                We are hereby submitting the following IRs, with assigned Transmittal # <?php
-                                                                                        // echo $model->transmittal_number; 
-                                                                                        ?> of DTI Regional Office:
+                We are hereby submitting the following Inspection Reports, with assigned Transmittal # <?php
+                                                                                                        echo $model->serial_number;
+                                                                                                        ?> of DTI Regional Office:
             </p>
         </div>
 
@@ -200,6 +199,10 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", []);
     }
 
     @media print {
+        .btn {
+            display: none;
+        }
+
         td {
             font-size: 10px;
         }
