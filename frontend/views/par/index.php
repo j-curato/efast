@@ -1,5 +1,6 @@
 <?php
 
+use kartik\export\ExportMenu;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\helpers\Url;
@@ -10,6 +11,27 @@ use yii\helpers\Url;
 
 $this->title = 'PAR';
 $this->params['breadcrumbs'][] = $this->title;
+$columns = [
+
+    'par_number',
+    'recieved_by',
+    'actual_user',
+    'date',
+    'property_number',
+    'unit_of_measure',
+    'book_name',
+    [
+        'label' => 'Action',
+        'format' => 'raw',
+        'hiddenFromExport' => true,
+        'value' => function ($model) {
+            $btns = Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id], []);
+            $btns .= ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['title' => 'Update']);
+            return  $btns;
+        }
+    ],
+
+];
 ?>
 <div class="par-index">
 
@@ -28,27 +50,29 @@ $this->params['breadcrumbs'][] = $this->title;
         'export' => [
             'fontAwesome' => true
         ],
-        'columns' => [
-
-            'par_number',
-            'recieved_by',
-            'actual_user',
-            'date',
-            'property_number',
-            'unit_of_measure',
-            'book_name',
+        'toolbar' => [
             [
-                'label' => 'Action',
-                'format' => 'raw',
+                'content' => ExportMenu::widget([
+                    'dataProvider' => $dataProvider,
+                    'columns' => $columns,
+                    'filename' => "DV",
+                    'exportConfig' => [
+                        ExportMenu::FORMAT_CSV => false,
+                        ExportMenu::FORMAT_TEXT => false,
+                        ExportMenu::FORMAT_PDF => false,
+                        ExportMenu::FORMAT_HTML => false,
+                        ExportMenu::FORMAT_EXCEL => false,
 
-                'value' => function ($model) {
-                    $btns = Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id], []);
-                    $btns .= ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['title' => 'Update']);
-                    return  $btns;
-                }
-            ],
+                    ]
 
+                ]),
+                'options' => [
+                    'class' => 'btn-group mr-2', 'style' => 'margin-right:20px'
+                ]
+            ]
         ],
+        'pjax' => true,
+        'columns' => $columns
     ]); ?>
 
 
