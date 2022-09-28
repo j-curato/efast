@@ -84,7 +84,7 @@ $columns = [
 <style>
     .grid-view td {
         white-space: normal;
-        width: 10rem;
+        max-width: 250rem;
         padding: 0;
     }
 </style>
