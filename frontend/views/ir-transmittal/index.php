@@ -30,7 +30,6 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
 
-            'id',
             'serial_number',
             'date',
 

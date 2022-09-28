@@ -17,11 +17,11 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="purchase-order-transmittal-view">
 
 
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-
-    </p>
     <div class="container">
+
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        </p>
         <div class="row as">
 
 
