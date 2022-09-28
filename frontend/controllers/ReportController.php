@@ -4642,7 +4642,7 @@ class ReportController extends \yii\web\Controller
             FROM 
             (SELECT 
                 cash.reporting_period,
-                COUNT(cash.id) as c
+                COUNT(cash.id) as total_dv
                 FROM cash_disbursement as cash
                 WHERE
                 NOT EXISTS (SELECT * FROM cash_disbursement WHERE cash_disbursement.check_or_ada_no = cash.check_or_ada_no AND cash_disbursement.dv_aucs_id = cash.dv_aucs_id AND cash_disbursement.is_cancelled = 1)
