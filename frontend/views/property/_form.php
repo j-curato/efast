@@ -55,7 +55,20 @@ use yii\widgets\ActiveForm;
                 ]) ?>
             </div>
             <div class="col-sm-3">
-                <?= $form->field($model, 'serial_number')->textInput(['maxlength' => true]) ?>
+                <?= $form->field($model, 'province')->widget(Select2::class, [
+                    'data' => [
+                        'ro' => 'RO',
+                        'adn' => 'ADN',
+                        'ads' => 'ADS',
+                        'pdi' => 'PDI',
+                        'sdn' => 'SDN',
+                        'sds' => 'SDS',
+                    ],
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Province'
+                    ]
+                ]) ?>
+
 
             </div>
         </div>

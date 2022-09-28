@@ -100,7 +100,7 @@ class PropertyController extends Controller
         $model = new Property();
 
         if ($model->load(Yii::$app->request->post())) {
-            $model->property_number = $this->getPropertyNumber();
+            $model->property_number = $this->getPropertyNumber($model->date, $model->province);
             $model->id = Yii::$app->db->createCommand('SELECT UUID_SHORT()')->queryScalar();
             if ($model->validate()) {
                 if ($model->save(false)) {
@@ -165,19 +165,30 @@ class PropertyController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function getPropertyNumber()
+    public function getPropertyNumber($date = '', $province = '')
     {
 
+        $year = DateTime::createFromFormat('Y-m-d', $date)->format('Y');
         $query = Yii::$app->db->createCommand("SELECT
-        SUBSTRING_INDEX(property.property_number,'-',-1) as p_number
-        FROM property
-        ORDER BY  p_number DESC LIMIT 1")->queryScalar();
+        CAST(SUBSTRING_INDEX(property.property_number,'-',-1)AS UNSIGNED) as p_number
+                FROM property
+                WHERE property.province = :province
+                AND property.date LIKE :_year
+                ORDER BY  p_number DESC LIMIT 1")
+            ->bindValue(':province', $province)
+            ->bindValue(':_year', $year . '%')
+            ->queryScalar();
         $num = 1;
         if (!empty($query)) {
             $num = intval($query) + 1;
         }
-        $new_num = substr(str_repeat(0, 5) . $num, -5);
-        $string = 'DTI-XIII-' . $new_num;
+        $zero = '';
+        $num_len =  4 - strlen($num);
+        if ($num_len > 0) {
+            $zero = str_repeat(0, $num_len);
+        }
+
+        $string = strtoupper($province) . '-' . $year . '-' . $zero . $num;
         return $string;
     }
     public function actionSearchProperty($q = null, $id = null, $province = null)
@@ -244,9 +255,7 @@ class PropertyController extends Controller
             $excel = $reader->load($file);
             $excel->setActiveSheetIndexByName('Property');
             $worksheet = $excel->getActiveSheet();
-
             $data = [];
-
             foreach ($worksheet->getRowIterator(2) as $key => $row) {
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
@@ -283,11 +292,10 @@ class PropertyController extends Controller
                     $quantity = $cells[6];
                     $article = $cells[7];
                     $amount =  $cells[8];
-                    // return $book_id;
 
 
                     $p = new Property();
-                    $p->property_number = $this->getPropertyNumber();
+                    $p->property_number = $this->getPropertyNumber($date);
                     $p->book_id = $book_id;
                     $p->unit_of_measure_id = $unit_measure;
                     $p->employee_id = 'ro-1';
