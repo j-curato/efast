@@ -183,7 +183,7 @@ $property_custodian_position = $model->property->employee->position
                     <tr>
                         <th colspan="6" style="text-align: center;">
                             <br>
-                            PROPERTY ACKNOWLEDGEMENT RECIEPT
+                            PROPERTY ACKNOWLEDGMENT RECIEPT
                             <br>
                         </th>
                     </tr>
@@ -243,7 +243,7 @@ $property_custodian_position = $model->property->employee->position
                     ?>
 
                     <tr>
-                        <th class='foot' colspan="3">Recieved By</th>
+                        <th class='foot' colspan="3">Received By</th>
                         <th class='foot' colspan="3">Issued By</th>
                     </tr>
                     <tr>
