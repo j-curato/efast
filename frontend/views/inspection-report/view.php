@@ -189,6 +189,9 @@ if (!empty($model->fk_end_user)) {
 
     </div>
 </div>
+<?php
+$this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['depends' => [\yii\web\JqueryAsset::class]]);
+?>
 <style>
     .italic {
         font-style: italic;
