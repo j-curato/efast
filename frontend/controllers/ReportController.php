@@ -4717,22 +4717,37 @@ class ReportController extends \yii\web\Controller
     {
 
         $not_transmitted_query = Yii::$app->db->createCommand("SELECT 
-        cash_disbursement.check_or_ada_no,
-        cash_disbursement.issuance_date,
+        all_good_cash.check_or_ada_no,
+        all_good_cash.issuance_date,
         dv_aucs.dv_number,
         dv_aucs.particular,
         dv_amount.amount_disbursed
-        
-        
          FROM 
-        cash_disbursement 
-        INNER JOIN dv_aucs on cash_disbursement.dv_aucs_id = dv_aucs.id
-        LEFT JOIN (SELECT SUM(dv_aucs_entries.amount_disbursed) as amount_disbursed,dv_aucs_entries.dv_aucs_id FROM dv_aucs_entries GROUP BY dv_aucs_entries.dv_aucs_id) as dv_amount ON dv_aucs.id  = dv_amount.dv_aucs_id
-        WHERE 
-        cash_disbursement.is_cancelled !=1
-        AND NOT EXISTS (SELECT transmittal_entries.cash_disbursement_id FROM transmittal_entries WHERE transmittal_entries.cash_disbursement_id=  cash_disbursement.id GROUP BY transmittal_entries.cash_disbursement_id) 
-        AND cash_disbursement.reporting_period = :reporting_period
-        ORDER BY cash_disbursement.check_or_ada_no")
+        (SELECT 
+        cash.id,
+        cash.dv_aucs_id,
+        cash.check_or_ada_no,
+        cash.issuance_date,
+        cash.reporting_period
+        FROM cash_disbursement as cash
+        WHERE
+
+        NOT EXISTS (SELECT * FROM cash_disbursement 
+        WHERE cash_disbursement.check_or_ada_no = cash.check_or_ada_no
+        AND cash_disbursement.dv_aucs_id = cash.dv_aucs_id
+        AND cash_disbursement.is_cancelled = 1)
+        AND cash.is_cancelled = 0 ) as all_good_cash
+                INNER JOIN dv_aucs on all_good_cash.dv_aucs_id = dv_aucs.id
+                LEFT JOIN (SELECT SUM(dv_aucs_entries.amount_disbursed) as amount_disbursed,dv_aucs_entries.dv_aucs_id FROM dv_aucs_entries GROUP BY dv_aucs_entries.dv_aucs_id) as dv_amount ON dv_aucs.id  = dv_amount.dv_aucs_id
+                WHERE 
+            NOT EXISTS 
+        (SELECT transmittal_entries.cash_disbursement_id
+        FROM transmittal_entries 
+        WHERE transmittal_entries.cash_disbursement_id=
+        all_good_cash.id 
+        GROUP BY transmittal_entries.cash_disbursement_id) 
+        AND all_good_cash.reporting_period = :reporting_period
+        ORDER BY all_good_cash.check_or_ada_no")
             ->bindValue(':reporting_period', $reporting_period)
             ->queryAll();
         $transmitted_query = Yii::$app->db->createCommand("SELECT 
