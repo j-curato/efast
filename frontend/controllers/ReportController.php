@@ -1706,7 +1706,7 @@ class ReportController extends \yii\web\Controller
                 ->from('advances_entries')
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id=  advances.id')
                 ->join('LEFT JOIN', 'fund_source_type', 'advances_entries.fund_source_type=  fund_source_type.`name`')
-                ->where('is_deleted != 1');
+                ->where('is_deleted NOT IN (1,9)');
             if ($province !== 'all') {
                 $budget_fur->andWhere("advances.province =:province", ['province' => $province]);
             }
@@ -1730,7 +1730,7 @@ class ReportController extends \yii\web\Controller
                 ->join('LEFT JOIN', 'fund_source_type', 'advances_entries.fund_source_type = fund_source_type.`name`')
                 ->where("advances_entries.reporting_period >=:from_reporting_period", ['from_reporting_period' => $from_reporting_period])
                 ->andWhere("advances_entries.reporting_period <=:to_reporting_period", ['to_reporting_period' => $to_reporting_period])
-                ->andWhere("advances_entries.is_deleted !=1");
+                ->andWhere("advances_entries.is_deleted NOT IN (1,9)");
             if ($province !== 'all') {
                 $current_advances->andWhere("advances.province =:province", ['province' => $province]);
             }
@@ -1761,6 +1761,7 @@ class ReportController extends \yii\web\Controller
             $prev_advances->groupBy("`year`,advances.province, fund_source_type.division,fund_source_type.`name` ");
 
             $current_liquidation  = new Query();
+
             $current_liquidation->select([
                 "substring_index(liquidation_entries.reporting_period,'-',1) as `year`",
                 "liquidation.province",
@@ -1783,10 +1784,34 @@ class ReportController extends \yii\web\Controller
             }
             $current_liquidation->groupBy("`year`,liquidation.province,fund_source_type.division,fund_source_type.`name`");
 
+            $prev_liquidation  = new Query();
+            $prev_liquidation->select([
+                "substring_index(liquidation_entries.reporting_period,'-',1) as `year`",
+                "liquidation.province",
+                "fund_source_type.division",
+                "fund_source_type.`name` as fund_type",
+                "SUM(liquidation_entries.withdrawals) as total_withdrawals"
+
+            ])
+                ->from('liquidation_entries')
+                ->join('LEFT JOIN', 'liquidation', 'liquidation_entries.liquidation_id  = liquidation.id')
+                ->join('LEFT JOIN', 'advances_entries', 'liquidation_entries.advances_entries_id = advances_entries.id')
+                ->join('LEFT JOIN', 'fund_source_type', 'advances_entries.fund_source_type = fund_source_type.`name`')
+                ->where("liquidation_entries.reporting_period >= :from_reporting_period", ['from_reporting_period' => DateTime::createFromFormat('Y-m', $from_reporting_period)->format('y') . '-01'])
+                ->andWhere("liquidation_entries.reporting_period <= :to_reporting_period", ['to_reporting_period' => $to_reporting_period]);
+            if ($province !== 'all') {
+                $prev_liquidation->andWhere("liquidation.province =:province", ['province' => $province]);
+            }
+            if ($division !== 'all') {
+                $prev_liquidation->andWhere("fund_source_type.division =:division", ['division' => $division]);
+            }
+            $prev_liquidation->groupBy("`year`,liquidation.province,fund_source_type.division,fund_source_type.`name`");
+
             $budget_fur_query = $budget_fur->createCommand()->getRawSql();
             $current_advances_query = $current_advances->createCommand()->getRawSql();
             $prev_advances_query = $prev_advances->createCommand()->getRawSql();
             $current_liquidation_query = $current_liquidation->createCommand()->getRawSql();
+            $prev_liquidation_query = $prev_liquidation->createCommand()->getRawSql();
 
 
 
@@ -1818,6 +1843,12 @@ class ReportController extends \yii\web\Controller
              AND budget_year.fund_type = prev_advances.fund_type
              )
             LEFT JOIN ($current_liquidation_query) as current_liquidation 
+             ON (budget_year.`year` = current_liquidation.`year` 
+             AND budget_year.province = current_liquidation.province 
+              AND budget_year.division = current_liquidation.division
+              AND budget_year.fund_type = current_liquidation.fund_type
+              )
+            LEFT JOIN ($prev_liquidation_query) as prev_liquidation 
              ON (budget_year.`year` = current_liquidation.`year` 
              AND budget_year.province = current_liquidation.province 
               AND budget_year.division = current_liquidation.division
@@ -4608,39 +4639,55 @@ class ReportController extends \yii\web\Controller
             total_dv.*,
             IFNULL(dv_at_ro.dv_count_at_ro,0) as dv_count_at_ro ,
             IFNULL(dv_at_coa.dv_count_at_coa,0) as dv_count_at_coa
-            
             FROM 
-            (SELECT cash_disbursement.reporting_period, COUNT(cash_disbursement.id) as total_dv 
-            FROM cash_disbursement
-            WHERE cash_disbursement.is_cancelled !=1
-             GROUP BY cash_disbursement.reporting_period) as total_dv
+            (SELECT 
+                cash.reporting_period,
+                COUNT(cash.id) as c
+                FROM cash_disbursement as cash
+                WHERE
+                NOT EXISTS (SELECT * FROM cash_disbursement WHERE cash_disbursement.check_or_ada_no = cash.check_or_ada_no AND cash_disbursement.dv_aucs_id = cash.dv_aucs_id AND cash_disbursement.is_cancelled = 1)
+                AND cash.is_cancelled = 0 
+                GROUP BY
+                cash.reporting_period) as total_dv
             LEFT JOIN 
             (
-            SELECT 
-            cash_disbursement.reporting_period,
-            COUNT(cash_disbursement.id) as dv_count_at_ro
-            FROM 
-            cash_disbursement
-            WHERE 
-            NOT EXISTS (SELECT transmittal_entries.cash_disbursement_id 
-            FROM transmittal_entries 
-            WHERE 
-            transmittal_entries.cash_disbursement_id = cash_disbursement.id
-            GROUP BY transmittal_entries.cash_disbursement_id)
-            AND cash_disbursement.is_cancelled !=1
-            GROUP BY cash_disbursement.reporting_period
+                SELECT
+                all_good_cash.reporting_period,
+                COUNT(all_good_cash.id) as dv_count_at_ro
+                FROM 
+                (SELECT 
+                cash.id,
+                cash.reporting_period
+                FROM cash_disbursement as cash
+                WHERE
+
+                NOT EXISTS (SELECT * FROM cash_disbursement WHERE cash_disbursement.check_or_ada_no = cash.check_or_ada_no AND cash_disbursement.dv_aucs_id = cash.dv_aucs_id AND cash_disbursement.is_cancelled = 1)
+                
+                AND cash.is_cancelled = 0 ) as all_good_cash
+                WHERE 
+
+                NOT EXISTS (SELECT cash_disbursement_id FROM transmittal_entries WHERE transmittal_entries.cash_disbursement_id  =  all_good_cash.id)
+                GROUP BY 
+                all_good_cash.reporting_period
             )  as dv_at_ro ON total_dv.reporting_period   = dv_at_ro.reporting_period
             
             LEFT JOIN 
-            (SELECT 
-            cash_disbursement.reporting_period,
-            COUNT(cash_disbursement.id) as dv_count_at_coa
+            (SELECT
+            all_good_cash.reporting_period,
+            COUNT(all_good_cash.id) as dv_count_at_coa
             FROM 
-            cash_disbursement
-            INNER JOIN  (SELECT cash_disbursement_id FROM transmittal_entries GROUP BY cash_disbursement_id)as transmitted ON cash_disbursement.id = transmitted.cash_disbursement_id
+            (SELECT 
+            cash.id,
+            cash.reporting_period
+            FROM cash_disbursement as cash
+            WHERE
+
+            NOT EXISTS (SELECT * FROM cash_disbursement WHERE cash_disbursement.check_or_ada_no = cash.check_or_ada_no AND cash_disbursement.dv_aucs_id = cash.dv_aucs_id AND cash_disbursement.is_cancelled = 1)
             
-            GROUP BY
-            cash_disbursement.reporting_period) as dv_at_coa ON   total_dv.reporting_period = dv_at_coa.reporting_period
+            AND cash.is_cancelled = 0 ) as all_good_cash
+            INNER JOIN  (SELECT cash_disbursement_id FROM transmittal_entries GROUP BY cash_disbursement_id)as transmitted ON all_good_cash.id = transmitted.cash_disbursement_id
+            GROUP BY 
+            all_good_cash.reporting_period) as dv_at_coa ON   total_dv.reporting_period = dv_at_coa.reporting_period
             WHERE total_dv.reporting_period LIKE :_year
             ")
 
