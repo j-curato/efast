@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="row head" style="padding-top: 2rem;padding-bottom: 2rem;">Dear Ma’am Hormillada:</div>
             <p style="font-size: 12pt;">
 
-                We are hereby submitting the following DVs, with assigned Transmittal # <?php
+                We are hereby submitting the following POs, with assigned Transmittal # <?php
                                                                                         // echo $model->transmittal_number; 
                                                                                         ?> of DTI Regional Office:
             </p>
@@ -80,7 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <td colspan="4" style="font-weight: bold;text-align:center"> Total</td>
                     <td style='text-align:right'> <?php
-                                                    echo number_format($total, 2); 
+                                                    echo number_format($total, 2);
                                                     ?></td>
                 </tr>
             </tbody>
