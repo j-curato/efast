@@ -25,6 +25,7 @@ class m220922_053903_create_par_index_view extends Migration
         unit_of_measure.unit_of_measure,
         books.`name` as book_name,
 		property.article,
+		property.description,
         property.iar_number,
         property.acquisition_amount
         FROM par

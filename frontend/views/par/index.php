@@ -19,6 +19,7 @@ $columns = [
     'date',
     'property_number',
     'article',
+    'description',
     'iar_number',
     'acquisition_amount',
     'unit_of_measure',

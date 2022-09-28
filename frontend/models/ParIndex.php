@@ -54,7 +54,8 @@ class ParIndex extends \yii\db\ActiveRecord
             'recieved_by' => 'Recieved By',
             'unit_of_measure' => 'Unit Of Measure',
             'book_name' => 'Book Name',
-            'article' => 'Description',
+            'article' => 'Article',
+            'description' => 'Description',
             'iar_number' => 'IAR Number',
             'acquisition_amount' => 'Acquisition Amount'
         ];
