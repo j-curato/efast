@@ -161,19 +161,19 @@ if (!empty($model->fk_end_user)) {
             </tr>
             <tr>
                 <td class="center">
-                    <span class="bold underlined"><?= $inspector ?></span>
+                    <span class="bold underlined upper-case"><?= $inspector ?></span>
                     <br>
                     <span>Inspector</span>
                 </td>
                 <td class="center">
-                    <span class="bold underlined"><?= $chairperson ?></span>
+                    <span class="bold underlined upper-case"><?= $chairperson ?></span>
                     <br>
                     <span>Chairperson, Inspection Commitee</span>
                 </td>
             </tr>
             <tr>
                 <td class="center" style="padding-top: 6rem;">
-                    <span class="bold underlined"><?= $end_user ?></span>
+                    <span class="bold underlined upper-case"><?= $end_user ?></span>
                     <br>
                     <span>End-User</span>
                 </td>

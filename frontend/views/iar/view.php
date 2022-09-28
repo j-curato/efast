@@ -182,21 +182,21 @@ $date_inspected = !empty($GLOBALS['date_inspected']) ? $GLOBALS['date_inspected'
                     </td>
                     <td colspan="2" class="center  " style="padding-top:5rem;border-top:none;border-bottom: none;">
 
-                        <span class="bold bdr-btm udl_txt"><?= $property_unit ?></span><br>
+                        <span class="bold bdr-btm udl_txt upper-case"><?= $property_unit ?></span><br>
                         <span>Supply and/or Property Custodian</span>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2" class="center  " style="padding-top:5rem;border-top:none;border-bottom: none;">
 
-                        <span class="bold bdr-btm udl_txt"><?= $inspector ?></span><br>
+                        <span class="bold bdr-btm udl_txt upper-case"><?= $inspector ?></span><br>
                         <span>Inspection Committee, Member</span>
                     </td>
                     <td colspan="2" style="padding-top:5rem;border-top:none;border-bottom: none;">
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2" class="center  " style="padding-top:5rem;border-top:none">
+                    <td colspan="2" class="center upper-case " style="padding-top:5rem;border-top:none">
 
                         <span class="bold bdr-btm udl_txt "><?= $end_user ?></span><br>
                         <span>End-User/ Project Management Office (PMO)</span>
