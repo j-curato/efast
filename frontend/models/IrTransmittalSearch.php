@@ -18,7 +18,7 @@ class IrTransmittalSearch extends IrTransmittal
     {
         return [
             [['id'], 'integer'],
-            [['date', 'created_at'], 'safe'],
+            [['date', 'created_at', 'serial_number'], 'safe'],
         ];
     }
 
@@ -62,6 +62,7 @@ class IrTransmittalSearch extends IrTransmittal
             'date' => $this->date,
             'created_at' => $this->created_at,
         ]);
+        $query->andFilterWhere(['like', 'serial_number', $this->serial_number]);
 
         return $dataProvider;
     }
