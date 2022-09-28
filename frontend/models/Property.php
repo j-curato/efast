@@ -36,13 +36,13 @@ class Property extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['property_number', 'date', 'book_id', 'unit_of_measure_id', 'quantity', 'acquisition_amount', 'employee_id', 'article'], 'required'],
+            [['property_number', 'date', 'book_id', 'unit_of_measure_id', 'quantity', 'acquisition_amount', 'employee_id', 'article', 'province'], 'required'],
             [['date'], 'string'],
             [['book_id', 'unit_of_measure_id', 'quantity', 'estimated_life'], 'integer'],
             [['acquisition_amount', 'salvage_value'], 'number'],
             [['id'], 'unique'],
             [['employee_id', 'article', 'description', 'object_code'], 'string'],
-            [['property_number', 'iar_number', 'model', 'serial_number'], 'string', 'max' => 255],
+            [['property_number', 'iar_number', 'model', 'serial_number', 'province'], 'string', 'max' => 255],
 
             [['property_number'], 'unique'],
             [[
@@ -63,6 +63,7 @@ class Property extends \yii\db\ActiveRecord
                 'object_code',
                 'salvage_value',
                 'estimated_life',
+                'province',
 
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
@@ -90,6 +91,7 @@ class Property extends \yii\db\ActiveRecord
             'object_code' => 'Object Code',
             'salvage_value' => 'Salvage Value',
             'estimated_life' => 'Estimated Useful Life',
+            'province' => 'Province',
 
         ];
     }
