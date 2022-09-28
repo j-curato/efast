@@ -108,7 +108,7 @@ class PropertyController extends Controller
             } else {
                 return json_encode($model->errors);
             }
-            return $this->redirect(['view', 'id' => $model->property_number]);
+            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [
