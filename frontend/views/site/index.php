@@ -11,11 +11,11 @@ use kartik\widgets\DatePicker as WidgetsDatePicker;
 use yii\filters\Cors;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\HtmlPurifier;
 use yii\helpers\Url;
 
 $this->title = 'Dashboard';
 // echo Url::base(); 
-
 
 ?>
 
@@ -79,10 +79,11 @@ $this->title = 'Dashboard';
 
             <?php
             if (Yii::$app->user->can('super-user')) {
-                echo "  <div class='col-sm-1'><button class='btn btn-success' id='update_cloud' style='margin-bottom:12px'>Update Cloud</button> </div>";
+                echo "  <div class='col-sm-1' style='padding-left:0'><button class='btn btn-success' id='update_payee'>Update Cloud</button></div>";
                 echo "  <div class='col-sm-1' style='padding-left:0'><button class='btn btn-warning' id='update_lan'>Update LAN</button></div>";
-                echo "  <div class='col-sm-1' style='padding-left:0'><button class='btn btn-warning' id='update_payee'>update_payee</button></div>";
-            } ?>
+            }
+            // echo "  <div class='col-sm-1'><button class='btn btn-success' id='update_cloud' style='margin-bottom:12px'>Update Cloud</button> </div>";
+            ?>
 
         </div>
         <div class="row">
