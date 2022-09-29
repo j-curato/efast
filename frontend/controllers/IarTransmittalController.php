@@ -2,12 +2,11 @@
 
 namespace frontend\controllers;
 
-use app\models\InspectionReportIndex;
-use app\models\InspectionReportIndexSearch;
+use app\models\IarIndexSearch;
 use Yii;
-use app\models\IrTransmittal;
-use app\models\IrTransmittalItems;
-use app\models\IrTransmittalSearch;
+use app\models\IarTransmittal;
+use app\models\IarTransmittalItems;
+use app\models\IarTransmittalSearch;
 use DateTime;
 use ErrorException;
 use yii\filters\AccessControl;
@@ -16,9 +15,9 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * IrTransmittalController implements the CRUD actions for IrTransmittal model.
+ * IarTransmittalController implements the CRUD actions for IarTransmittal model.
  */
-class IrTransmittalController extends Controller
+class IarTransmittalController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -29,20 +28,20 @@ class IrTransmittalController extends Controller
             'access' => [
                 'class' => AccessControl::class,
                 'only' => [
-                    'index',
                     'view',
-                    'delete',
+                    'index',
                     'update',
                     'create',
+                    'delete',
                 ],
                 'rules' => [
                     [
                         'actions' => [
-                            'index',
                             'view',
-                            'delete',
+                            'index',
                             'update',
                             'create',
+                            'delete',
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
@@ -59,12 +58,12 @@ class IrTransmittalController extends Controller
     }
 
     /**
-     * Lists all IrTransmittal models.
+     * Lists all IarTransmittal models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new IrTransmittalSearch();
+        $searchModel = new IarTransmittalSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -74,7 +73,7 @@ class IrTransmittalController extends Controller
     }
 
     /**
-     * Displays a single IrTransmittal model.
+     * Displays a single IarTransmittal model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -86,23 +85,40 @@ class IrTransmittalController extends Controller
             'items' => $this->transmittalItems($id),
         ]);
     }
+    public function transmittalItems($id)
+    {
+        return Yii::$app->db->createCommand("SELECT 
+        iar_transmittal_items.id as item_id,
+        iar_index.*
+        FROM 
+        
+        iar_transmittal_items
+        INNER JOIN iar_index ON iar_transmittal_items.fk_iar_id = iar_index.id
+        WHERE iar_transmittal_items.fk_iar_transmittal_id = :id
+        AND iar_transmittal_items.is_deleted = 0
+        ")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
 
     /**
-     * Creates a new IrTransmittal model.
+     * Creates a new IarTransmittal model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
+
     public function insertItems($id, $po_item_ids = [], $item_id = [])
     {
         foreach ($po_item_ids as $index => $val) {
 
             if (!empty($item_id[$index])) {
-                $item = IrTransmittalItems::findOne($item_id[$index]);
+                $item = IarTransmittalItems::findOne($item_id[$index]);
             } else {
-                $item = new IrTransmittalItems();
+                $item = new IarTransmittalItems();
             }
-            $item->fk_ir_transmittal_id = $id;
-            $item->fk_ir_id = $val;
+
+            $item->fk_iar_transmittal_id = $id;
+            $item->fk_iar_id = $val;
             if ($item->save(false)) {
             } else {
                 return ['isSuccess' => true, 'error_message' => $item->errors];
@@ -112,13 +128,13 @@ class IrTransmittalController extends Controller
     }
     public function actionCreate()
     {
-        $model = new IrTransmittal();
-        $searchModel = new InspectionReportIndexSearch();
+        $model = new IarTransmittal();
+        $searchModel = new IarIndexSearch();
 
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->query->andWhere('NOT EXISTS (SELECT * FROM ir_transmittal_items WHERE ir_transmittal_items.fk_ir_id = inspection_report_index.id ) ');
+        $dataProvider->query->andWhere('NOT EXISTS (SELECT * FROM iar_transmittal_items WHERE iar_transmittal_items.fk_iar_id = iar_index.id AND iar_transmittal_items.is_deleted =0) ');
         if (Yii::$app->request->isPost) {
-            $items  = !empty($_POST['ir_ids']) ? array_unique($_POST['ir_ids']) : [];
+            $items  = !empty($_POST['iar_ids']) ? array_unique($_POST['iar_ids']) : [];
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             $model->date = $_POST['date'];
             $model->serial_number = $this->serialNumber($model->date);
@@ -152,12 +168,12 @@ class IrTransmittalController extends Controller
             'model' => $model,
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'action' => 'ir-transmittal/create',
+            'action' => 'iar-transmittal/create',
         ]);
     }
 
     /**
-     * Updates an existing IrTransmittal model.
+     * Updates an existing IarTransmittal model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -166,11 +182,11 @@ class IrTransmittalController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $searchModel = new InspectionReportIndexSearch();
+        $searchModel = new IarIndexSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->query->andWhere('NOT EXISTS (SELECT * FROM ir_transmittal_items WHERE ir_transmittal_items.fk_ir_id = inspection_report_index.id AND ir_transmittal_items.is_deleted =0) ');
+        $dataProvider->query->andWhere('NOT EXISTS (SELECT * FROM iar_transmittal_items WHERE iar_transmittal_items.fk_iar_id = iar_index.id AND iar_transmittal_items.is_deleted =0) ');
         if (Yii::$app->request->isPost) {
-            $items  = !empty($_POST['ir_ids']) ? array_unique($_POST['ir_ids']) : [];
+            $items  = !empty($_POST['iar_ids']) ? array_unique($_POST['iar_ids']) : [];
             $item_id  = !empty($_POST['item_id']) ? $_POST['item_id'] : [];
             $model->date = $_POST['date'];
             $transaction = YIi::$app->db->beginTransaction();
@@ -178,13 +194,16 @@ class IrTransmittalController extends Controller
                 if ($model->validate()) {
                     if ($model->save(false)) {
                         $params = [];
-                        $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'ir_transmittal_items.id', $item_id], $params);
-                        YIi::$app->db->createCommand("UPDATE ir_transmittal_items SET is_deleted = 1   
+                        if (!empty($item_id)) {
+
+                            $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'iar_transmittal_items.id', $item_id], $params);
+                            YIi::$app->db->createCommand("UPDATE iar_transmittal_items SET is_deleted = 1   
                         WHERE 
-                        ir_transmittal_items.fk_ir_transmittal_id = :id
+                        iar_transmittal_items.fk_iar_transmittal_id = :id
                         AND $sql
                         ", $params)
-                            ->bindValue(':id', $model->id)->query();
+                                ->bindValue(':id', $model->id)->query();
+                        }
 
                         $insert_entry = $this->insertItems($model->id, $items, $item_id);
                         if ($insert_entry['isSuccess']) {
@@ -212,26 +231,12 @@ class IrTransmittalController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'items' => $this->transmittalItems($id),
-            'action' => 'ir-transmittal/update',
+            'action' => 'iar-transmittal/update',
         ]);
     }
-    public function transmittalItems($id)
-    {
-        return Yii::$app->db->createCommand("SELECT 
-        ir_transmittal_items.id as item_id,
-        inspection_report_index.*
-        FROM 
-        
-        ir_transmittal_items
-        INNER JOIN inspection_report_index ON ir_transmittal_items.fk_ir_id = inspection_report_index.id
-        WHERE ir_transmittal_items.fk_ir_transmittal_id = :id
-        AND ir_transmittal_items.is_deleted = 0
-        ")
-            ->bindValue(':id', $id)
-            ->queryAll();
-    }
+
     /**
-     * Deletes an existing IrTransmittal model.
+     * Deletes an existing IarTransmittal model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -245,15 +250,15 @@ class IrTransmittalController extends Controller
     // }
 
     /**
-     * Finds the IrTransmittal model based on its primary key value.
+     * Finds the IarTransmittal model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return IrTransmittal the loaded model
+     * @return IarTransmittal the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = IrTransmittal::findOne($id)) !== null) {
+        if (($model = IarTransmittal::findOne($id)) !== null) {
             return $model;
         }
 
@@ -264,7 +269,7 @@ class IrTransmittalController extends Controller
         $year = DateTime::createFromFormat('Y-m-d', $date)->format('Y');
 
         $last_num = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(serial_number,'-',-1) AS UNSIGNED) as last_num 
-        FROM ir_transmittal
+        FROM iar_transmittal
         ORDER BY last_num DESC LIMIT 1
         
         ")

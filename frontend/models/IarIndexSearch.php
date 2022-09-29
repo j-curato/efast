@@ -30,6 +30,7 @@ class IarIndexSearch extends IarIndex
                 'end_user',
                 'po_number',
                 'payee_name',
+                'purpose',
             ], 'safe'],
         ];
     }
@@ -81,14 +82,15 @@ class IarIndexSearch extends IarIndex
         ]);
 
         $query->andFilterWhere(['like', 'iar_number', $this->iar_number])
-            ->andFilterWhere(['like', 'ir_number', $this->iar_number])
-            ->andFilterWhere(['like', 'rfi_number', $this->iar_number])
-            ->andFilterWhere(['like', 'responsible_center', $this->iar_number])
-            ->andFilterWhere(['like', 'inspector_name', $this->iar_number])
-            ->andFilterWhere(['like', 'requested_by_name', $this->iar_number])
-            ->andFilterWhere(['like', 'end_user', $this->iar_number])
-            ->andFilterWhere(['like', 'po_number', $this->iar_number])
-            ->andFilterWhere(['like', 'payee_name', $this->iar_number]);
+            ->andFilterWhere(['like', 'ir_number', $this->ir_number])
+            ->andFilterWhere(['like', 'rfi_number', $this->rfi_number])
+            ->andFilterWhere(['like', 'responsible_center', $this->responsible_center])
+            ->andFilterWhere(['like', 'inspector_name', $this->inspector_name])
+            ->andFilterWhere(['like', 'requested_by_name', $this->requested_by_name])
+            ->andFilterWhere(['like', 'end_user', $this->end_user])
+            ->andFilterWhere(['like', 'po_number', $this->po_number])
+            ->andFilterWhere(['like', 'purpose', $this->purpose])
+            ->andFilterWhere(['like', 'payee_name', $this->payee_name]);
 
         $query->orderBy('iar_number');
         return $dataProvider;

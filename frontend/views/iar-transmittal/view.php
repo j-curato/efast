@@ -10,7 +10,7 @@ use yii\helpers\Html;
 /* @var $model app\models\PurchaseOrderTransmittal */
 
 $this->title = $model->serial_number;
-$this->params['breadcrumbs'][] = ['label' => 'IR Transmittals', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'IAR Transmittals', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
@@ -50,6 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <table class="">
             <thead style="border-top: 1px solid black;">
                 <th>No.</th>
+                <th>IAR Number</th>
                 <th>IR Number</th>
                 <th>RFI Number</th>
                 <th>End-User</th>
@@ -67,6 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 $total = 0;
                 foreach ($items as $i => $val) {
 
+                    $iar_number = $val['iar_number'];
                     $ir_number = $val['ir_number'];
                     $rfi_number = $val['rfi_number'];
                     $end_user = $val['end_user'];
@@ -79,6 +81,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $i++;
                     echo "<tr>
                         <td>$i</td>
+                        <td>$iar_number</td>
                         <td>$ir_number</td>
                         <td>$rfi_number</td>
                         <td>$end_user</td>
