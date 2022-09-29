@@ -445,6 +445,7 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Inspection Report', 'icon' => 'circle-o', 'url' => ['/inspection-report'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'IAR', 'icon' => 'circle-o', 'url' => ['/iar'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'IR Transmittal', 'icon' => 'circle-o', 'url' => ['/ir-transmittal'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'IAR Transmittal', 'icon' => 'circle-o', 'url' => ['/iar-transmittal'],] : [],
 
                             ],
                         ] : [],
