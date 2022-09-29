@@ -393,20 +393,20 @@ class RequestForInspectionController extends Controller
             foreach ($res as $items) {
 
                 foreach ($items as $val) {
+                    foreach ($val  as $val2) {
 
-                    $ir = new InspectionReport();
-                    $ir->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-                    $ir->ir_number = YIi::$app->memem->irNumber();
-                    if ($ir->validate()) {
+                        $ir = new InspectionReport();
+                        $ir->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                        $ir->ir_number = YIi::$app->memem->irNumber();
+                        if ($ir->validate()) {
 
-                        if ($ir->save(false)) {
-                            $iar = new Iar();
-                            $iar->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-                            $iar->iar_number = Yii::$app->memem->iarNumber();
-                            $iar->fk_ir_id = $ir->id;
-                            if ($iar->save(false)) {
-                            }
-                            foreach ($val  as $val2) {
+                            if ($ir->save(false)) {
+                                $iar = new Iar();
+                                $iar->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                                $iar->iar_number = Yii::$app->memem->iarNumber();
+                                $iar->fk_ir_id = $ir->id;
+                                if ($iar->save(false)) {
+                                }
 
                                 foreach ($val2 as $val3) {
 
@@ -418,9 +418,9 @@ class RequestForInspectionController extends Controller
                                     }
                                 }
                             }
+                        } else {
+                            return ['isSuccess' => false, 'error_message' => $ir->errors];
                         }
-                    } else {
-                        return ['isSuccess' => false, 'error_message' => $ir->errors];
                     }
                 }
             }
