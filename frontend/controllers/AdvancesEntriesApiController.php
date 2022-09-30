@@ -8,6 +8,7 @@ use Yii;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
 use yii\helpers\Html;
+use yii\helpers\HtmlPurifier;
 
 class AdvancesEntriesApiController extends \yii\rest\ActiveController
 {
@@ -127,16 +128,16 @@ class AdvancesEntriesApiController extends \yii\rest\ActiveController
                         'advances_id' => !empty($val['advances_id']) ? Html::encode($val['advances_id']) : null,
                         'cash_disbursement_id' => !empty($val['cash_disbursement_id']) ? Html::encode($val['cash_disbursement_id']) : null,
                         'sub_account1_id' => !empty($val['sub_account1_id']) ? Html::encode($val['sub_account1_id']) : null,
-                        'amount' => !empty($val['amount']) ? Html::encode($val['amount']) : null,
+                        'amount' => Html::encode($val['amount']),
                         'object_code' => !empty($val['object_code']) ? Html::encode($val['object_code']) : null,
-                        'fund_source' => !empty($val['fund_source']) ? Html::encode($val['fund_source']) : null,
+                        'fund_source' => !empty($val['fund_source']) ? HtmlPurifier::process($val['fund_source']) : null,
                         'book_id' => !empty($val['book_id']) ? Html::encode($val['book_id']) : null,
                         'reporting_period' => !empty($val['reporting_period']) ? Html::encode($val['reporting_period']) : null,
-                        'fund_source_type' => !empty($val['fund_source_type']) ? Html::encode($val['fund_source_type']) : null,
+                        'fund_source_type' => !empty($val['fund_source_type']) ? HtmlPurifier::process($val['fund_source_type']) : null,
                         'division' => !empty($val['division']) ? Html::encode($val['division']) : null,
-                        'advances_type' => !empty($val['advances_type']) ? Html::encode($val['advances_type']) : null,
-                        'report_type' => !empty($val['report_type']) ? Html::encode($val['report_type']) : null,
-                        'is_deleted' => !empty($val['is_deleted']) ? Html::encode($val['is_deleted']) : null,
+                        'advances_type' => !empty($val['advances_type']) ? HtmlPurifier::process($val['advances_type']) : null,
+                        'report_type' => !empty($val['report_type']) ? HtmlPurifier::process($val['report_type']) : null,
+                        'is_deleted' =>  Html::encode($val['is_deleted']),
                     ];
                 }
                 if (!empty($data)) {
