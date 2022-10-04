@@ -456,6 +456,7 @@ $csrfToken = Yii::$app->request->csrfToken;
             },
             success: function(data) {
                 const res = JSON.parse(data)
+                $('#dv_details_table tbody').html('')
                 const details_row = `<tr>
                         <td>${res.payee}</td>
                         <td>${res.check_number}</td>
