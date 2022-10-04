@@ -4,6 +4,7 @@ use app\models\Raouds;
 use app\models\SubAccounts1;
 use app\models\SubAccounts2;
 use aryelds\sweetalert\SweetAlertAsset;
+use kartik\file\FileInput;
 use kartik\form\ActiveForm;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
@@ -18,7 +19,53 @@ $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="dv-aucs-view">
+    <p>
+        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
+    </p>
+    <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">UPLOAD SCANNED COPY</h4>
+                </div>
+                <div class='modal-body'>
 
+                    <?php
+
+                    $form = ActiveForm::begin([
+                        // 'action' => ['transaction/import-transaction'],
+                        // 'method' => 'POST',
+                        'id' => 'import',
+                        'options' => [
+                            'enctype' => 'multipart/form-data',
+                        ], // important
+                    ]);
+
+                    // echo '<input type="file">';
+                    echo "<br>";
+                    echo "<input type='hidden' value='$model->id' name='id'>";
+                    echo FileInput::widget([
+                        'name' => 'file',
+                        // 'options' => ['multiple' => true],
+                        'id' => 'fileupload',
+                        'pluginOptions' => [
+                            'showPreview' => true,
+                            'showCaption' => true,
+                            'showRemove' => true,
+                            'showUpload' => true,
+                        ]
+                    ]);
+
+
+                    ActiveForm::end();
+
+                    ?>
+
+                </div>
+            </div>
+        </div>
+    </div>
     <h1><?= Html::encode($this->title) ?></h1>
     <div class="container panel panel-default">
         <p>
@@ -223,6 +270,7 @@ $this->params['breadcrumbs'][] = $this->title;
           LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
           LEFT JOIN bank_account ON advances.bank_account_id = bank_account.id
           WHERE advances.dv_aucs_id = :dv_id
+          AND advances_entries.is_deleted !=1
            ")
         ->bindValue(':dv_id', $model->id)
         ->queryAll();
@@ -344,7 +392,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </table>
         <table class='assig' style="border: 0;">
             <thead>
-                <tr >
+                <tr>
 
                     <td class='q' style="text-align: center;">
 
@@ -466,7 +514,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 font-size: 10px;
             }
 
-     
+
 
             @page {
                 size: auto;
@@ -500,7 +548,7 @@ $this->params['breadcrumbs'][] = $this->title;
             .assig td {
                 border: 0;
             }
-            
+
             .assig {
                 border: 0;
             }
@@ -652,6 +700,74 @@ $script = <<<JS
             } 
         })
     })
+JS;
+$this->registerJs($script);
+?>
+
+<?php
+$script = <<<JS
+            var i=false;
+            $('#import').on('beforeSubmit',function(e){
+                // $(this).unbind();
+                e.preventDefault();
+                    
+                //  $("#employee").on("pjax:success", function(data) {
+                    //   console.log(data)
+                    // });
+                    
+                    if (!i){
+                        i=true;
+                        $.ajax({
+                            url: window.location.pathname + "?r=dv-aucs/file",
+                            type:'POST',
+                            data:  new FormData(this),
+                            contentType: false,
+                            cache: false,
+                            processData:false,
+                            success:function(data){
+                                console.log(data)
+                                var res = JSON.parse(data)
+                        //         // break;
+                        //         // $('#uploadmodal').close()
+                        //         console.log(i)
+                                
+                        if (res.isSuccess){
+                            swal( {
+                                icon: 'success',
+                                title: "Successfuly Added",
+                                type: "success",
+                                timer:3000,
+                                closeOnConfirm: false,
+                                closeOnCancel: false
+                            },function(){
+                                window.location.href = window.location.pathname + "?r=transaction"
+                            })
+                        }
+                        else{
+                            swal( {
+                                icon: 'error',
+                                title: res.error,
+                                type: "error",
+                                timer:10000,
+                                closeOnConfirm: false,
+                                closeOnCancel: false
+                            })
+                            i=false;
+                        }
+                    },
+                    
+                    
+                    
+                    // data:$('#import').serialize()
+                })
+                
+                 return false; 
+                }
+                
+            })
+
+             
+        
 JS;
 $this->registerJs($script);
 ?>
