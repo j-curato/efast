@@ -138,4 +138,8 @@ class DvAucs extends \yii\db\ActiveRecord
     {
         return $this->hasOne(TrackingSheet::class, ['id' => 'tracking_sheet_id']);
     }
+    public function getDvAucsFile()
+    {
+        return $this->hasOne(DvAucsFile::class, ['fk_dv_aucs_id' => 'id']);
+    }
 }

@@ -7,6 +7,7 @@ use aryelds\sweetalert\SweetAlertAsset;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\DetailView;
 use yii\widgets\Pjax;
 
@@ -19,9 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="dv-aucs-view">
-    <p>
-        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
-    </p>
+
     <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -91,6 +90,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 $dv_link = $model->dv_link;
                 echo Html::a('Soft Copy Link', $dv_link, ['class' => 'btn btn-info ']);
             }
+
             ?>
             <?php
             $jev_link = yii::$app->request->baseUrl . "/index.php?r=jev-preparation/dv-to-jev&id={$model->id}";
@@ -112,7 +112,13 @@ $this->params['breadcrumbs'][] = $this->title;
             } else {
                 echo "<button class='btn btn-danger' id='is_payable' style='margin:5px'>Payable</button>";
             }
-
+            if (!empty($model->dvAucsFile->id)) {
+                $dv_number =  "/scanned-dv" . "/" . $model->dv_number;
+                $path =  Url::base() . "/frontend"  . $dv_number . "/" . $model->dvAucsFile->file_name;
+                echo Html::a('Download Soft Copy ', $path, ['class' => 'btn btn-link ']);
+            } else {
+                echo '<button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload Soft Copy</button>';
+            }
             ?>
 
         </p>
@@ -725,35 +731,31 @@ $script = <<<JS
                             cache: false,
                             processData:false,
                             success:function(data){
-                                console.log(data)
                                 var res = JSON.parse(data)
-                        //         // break;
-                        //         // $('#uploadmodal').close()
-                        //         console.log(i)
-                                
-                        if (res.isSuccess){
-                            swal( {
-                                icon: 'success',
-                                title: "Successfuly Added",
-                                type: "success",
-                                timer:3000,
-                                closeOnConfirm: false,
-                                closeOnCancel: false
-                            },function(){
-                                window.location.href = window.location.pathname + "?r=transaction"
-                            })
-                        }
-                        else{
-                            swal( {
-                                icon: 'error',
-                                title: res.error,
-                                type: "error",
-                                timer:10000,
-                                closeOnConfirm: false,
-                                closeOnCancel: false
-                            })
-                            i=false;
-                        }
+                                if (res.isSuccess){
+                                    swal( {
+                                        icon: 'success',
+                                        title: "Successfuly Added",
+                                        type: "success",
+                                        timer:3000,
+                                        closeOnConfirm: false,
+                                        closeOnCancel: false
+                                    },function(){
+                                        location.reload();
+                                    })
+                                }
+                                else{
+                                    const error_message = res.error_message.file[0]
+                                    swal( {
+                                        icon: 'error',
+                                        title: error_message,
+                                        type: "error",
+                                        timer:10000,
+                                        closeOnConfirm: false,
+                                        closeOnCancel: false
+                                    })
+                                    i=false;
+                                }
                     },
                     
                     

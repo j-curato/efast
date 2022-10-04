@@ -22,16 +22,18 @@ class UploadForm extends Model
     public function rules()
     {
         return [
-            [['file'], 'file', 'skipOnEmpty' => false, 'extensions' => 'xlsx, xls'],
+            // [['file'], 'file', 'skipOnEmpty' => false, 'extensions' => 'xlsx, xls'],
+            [['file'], 'file', 'skipOnEmpty' => false, 'extensions' => 'pdf'],
         ];
     }
-    public function upload()
+    public function upload($path)
     {
+
         if ($this->validate()) {
-            foreach ($this->file as $f) {
-                $f->saveAs('uploads/' . $f->baseName . '.' . $f->extension);
-            }
-            return true;
+
+            $newFileName = \Yii::$app->security->generateRandomString(8) . '.' . $this->file->extension;
+            $this->file->saveAs($path . "\\" . $newFileName);
+            return $newFileName;
         } else {
             return false;
         }

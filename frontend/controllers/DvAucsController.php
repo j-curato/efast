@@ -22,8 +22,12 @@ use app\models\ProcessOrsSearch;
 use app\models\ProcessOrsEntries;
 use yii\web\NotFoundHttpException;
 use app\models\DvAccountingEntries;
+use app\models\DvAucsFile;
 use app\models\TrackingSheetIndexSearch;
+use common\models\UploadForm;
 use phpDocumentor\Reflection\PseudoTypes\False_;
+use yii\helpers\FileHelper;
+use yii\helpers\Url;
 
 /**
  * DvAucsController implements the CRUD actions for DvAucs model.
@@ -1802,5 +1806,41 @@ class DvAucsController extends Controller
 
             'model' => $model
         ]);
+    }
+    public function actionFile()
+    {
+
+        $model = new UploadForm();
+        if (Yii::$app->request->isPost) {
+            // $q = $_FILES['file'];
+            if (isset($_FILES['file']) && isset($_POST['id'])) {
+                $dv = DvAucs::findOne($_POST['id']);
+                $dv_number =  "\scanned-dv\\" . $dv->dv_number;
+                $file = $_FILES;
+                $file = \yii\web\UploadedFile::getInstanceByName('file');
+                $model->file = $file;
+                $path =  Yii::$app->basePath . $dv_number;
+                FileHelper::createDirectory($path);
+                if ($model->validate()) {
+                    if ($file_name = $model->upload($path)) {
+                        $dv_file = new DvAucsFile();
+                        $dv_file->fk_dv_aucs_id = $dv->id;
+                        $dv_file->file_name  = $file_name;
+                        if ($dv_file->save(false)) {
+                            return json_encode(['isSuccess' => true]);
+                        }
+                    } else {
+                        return json_encode(['isSuccess' => false, 'error_message' => $model->errors]);
+                    }
+                } else {
+                    return json_encode(['isSuccess' => false, 'error_message' => $model->errors]);
+                }
+                // if ($model->upload()) {
+                //     // file is uploaded successfully
+                //     return 'succes';
+                // }
+            }
+        }
+        // return $this->render('file_upload', ['model' => $model]);
     }
 }

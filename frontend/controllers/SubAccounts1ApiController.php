@@ -7,6 +7,8 @@ use ErrorException;
 use Yii;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
+use yii\helpers\Html;
+use yii\helpers\HtmlPurifier;
 
 class SubAccounts1ApiController extends \yii\rest\ActiveController
 {
@@ -19,13 +21,17 @@ class SubAccounts1ApiController extends \yii\rest\ActiveController
         $behaviors['authenticator']['authMethods'] = [
             HttpBearerAuth::class
         ];
-        return array_merge(['corsFilter'=>Cors::class],$behaviors);
+        return array_merge(['corsFilter' => Cors::class], $behaviors);
     }
 
     public function actions()
     {
         $actions = parent::actions();
         unset($actions['create']);
+        unset($actions['index']);
+        unset($actions['view']);
+        unset($actions['delete']);
+        unset($actions['update']);
     }
     public function actionCreate()
     {
@@ -33,47 +39,40 @@ class SubAccounts1ApiController extends \yii\rest\ActiveController
         $transaction = Yii::$app->db->beginTransaction();
 
         $source_sub_account1 = Yii::$app->getRequest()->getBodyParams();
-        // $target_sub_account1 = Yii::$app->db->createCommand('SELECT * FROM sub_accounts1')->queryAll();
-        // $source_sub_account1_diff = array_map(
-        //     'unserialize',
-        //     array_diff(array_map('serialize', $source_sub_account1), array_map('serialize', $target_sub_account1))
-        // );
         if (!empty($source_sub_account1)) {
             try {
-                if ($flag=true)
-                foreach ($source_sub_account1 as $val) {
-                    $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM sub_accounts1 WHERE sub_accounts1.id = :id)")
-                        ->bindValue(':id', $val['id'])
-                        ->queryScalar();
-                    if (intval($query) === 1) {
-                        $update_subAccount1 = SubAccounts1::findOne($val['id']);
-                        $update_subAccount1->chart_of_account_id = $val['chart_of_account_id'];
-                        $update_subAccount1->object_code = $val['object_code'];
-                        $update_subAccount1->name = $val['name'];
-                        $update_subAccount1->is_active = $val['is_active'];
 
-                        if ($update_subAccount1->save(false)) {
-                        } else {
-                            $transaction->rollBack();
-                            return json_encode('wala na save');
-                        }
-                    } else {
-                        $new_subAccounts1 = new SubAccounts1();
-                        $new_subAccounts1->id = $val['id'];
-                        $new_subAccounts1->chart_of_account_id = $val['chart_of_account_id'];
-                        $new_subAccounts1->object_code = $val['object_code'];
-                        $new_subAccounts1->name = $val['name'];
-                        $new_subAccounts1->is_active = $val['is_active'];
-                        if ($new_subAccounts1->save(false)) {
-                        } else {
-                            $transaction->rollBack();
-                            return 'wala na sulod  sa chart of accounts';
-                        }
-                    }
+                $db = \Yii::$app->db;
+                $columns = [
+                    'id',
+                    'chart_of_account_id',
+                    'object_code',
+                    'name',
+                    'is_active',
+                ];
+                $data = [];
+                foreach ($source_sub_account1 as $val) {
+
+                    $data[] = [
+                        'id' => !empty($val['id']) ? Html::encode($val['id']) : null,
+                        'chart_of_account_id' => !empty($val['chart_of_account_id']) ? Html::encode($val['chart_of_account_id']) : null,
+                        'object_code' => !empty($val['object_code']) ? Html::encode($val['object_code']) : null,
+                        'name' => !empty($val['name']) ? HtmlPurifier::process($val['name']) : null,
+                        'is_active' => Html::encode($val['is_active']),
+                    ];
                 }
-                if ($flag){
+
+                if (!empty($data)) {
+
+                    $sql = $db->queryBuilder->batchInsert('sub_accounts1', $columns, $data);
+                    $db->createCommand($sql . "ON DUPLICATE KEY UPDATE
+                        chart_of_account_id=VALUES(chart_of_account_id),
+                        object_code=VALUES(object_code),
+                        name=VALUES(name),
+                        is_active=VALUES(is_active)
+                        ")->execute();
                     $transaction->commit();
-                    return 'success';
+                    return json_encode('succcecs');
                 }
             } catch (ErrorException $e) {
                 return json_encode($e->getMessage());
