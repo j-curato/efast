@@ -1243,7 +1243,6 @@ $script = <<<JS
     async function BarChart(year =''){
         const data = await getData(year)
      
-        console.log(   data.reporting_period)
         document.getElementById("chartContainer").innerHTML = '&nbsp;';
         document.getElementById("chartContainer").innerHTML = '<canvas id="myChart"></canvas>';
         const ctx = document.getElementById('myChart').getContext('2d');
@@ -1295,7 +1294,6 @@ $script = <<<JS
         });
         function clickHandler(evt) {
             const points = myChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
-                console.log('qwe')
             if (points.length) {
                 const firstPoint = points[0];
                 const label = myChart.data.labels[firstPoint.index];
@@ -1345,6 +1343,8 @@ $script = <<<JS
        
         $('#update_payee').click(async (e)=>{
             e.preventDefault()
+            $('.site-index').hide();
+            $('#dots5').show()
             await updateCloudPayeeApi()
             await updateCloudTransactionsApi()
             await updateCloudRecordAllotmentApi()
@@ -1355,6 +1355,8 @@ $script = <<<JS
             await updateCloudCashDisbursementApi()
             await updateCloudAdvancesApi()
             await updateCloudAdvancesEntriesApi()
+            $('.site-index').show();
+            $('#dots5').hide()
         })
         $('.fc-prev-button').attr('class','fc-prev-button btn-xs btn-primary')
         BarChart()
