@@ -33,9 +33,14 @@ class UploadForm extends Model
 
             // $newFileName = \Yii::$app->security->generateRandomString(8) . '.' . $this->file->extension;
             $newFileName = $file_name . '.' . $this->file->extension;
+            $p = "C:\Users\USER\Desktop\q\\" . $newFileName;
+
             $this->file->saveAs($path . "\\" . $newFileName);
-            // $this->file->saveAs('C:\Users\USER\Desktop\q' . "\\" . $newFileName);
-            // system("cmd /c C:\Users\USER\Desktop\cloud_backup_to_dropbox.bat");
+            $this->file->saveAs($p);
+            // system("cmd robocopy C:\xampp\htdocs\q\frontend\scanned-dv C:\Users\USER\Dropbox\scanned_dv /s /purge");
+            // $f = Yii::$app->getResponse()->sendFile($path . "\\" . $newFileName);
+            // move_uploaded_file($newFileName, "C:\Users\USER\Desktop\q\\" . $newFileName);
+            copy($path . "\\" . $newFileName, "C:\Users\USER\Dropbox\scanned_dv\\" . $newFileName);
             return $newFileName;
         } else {
             return false;
