@@ -1822,7 +1822,7 @@ class DvAucsController extends Controller
                 $path =  Yii::$app->basePath . $dv_number;
                 FileHelper::createDirectory($path);
                 if ($model->validate()) {
-                    if ($file_name = $model->upload($path)) {
+                    if ($file_name = $model->upload($path, $dv->dv_number)) {
                         $dv_file = new DvAucsFile();
                         $dv_file->fk_dv_aucs_id = $dv->id;
                         $dv_file->file_name  = $file_name;
