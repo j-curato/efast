@@ -32,15 +32,12 @@ class UploadForm extends Model
         if ($this->validate()) {
 
             // $newFileName = \Yii::$app->security->generateRandomString(8) . '.' . $this->file->extension;
+            $file_name = str_replace(' ', '_', $file_name);
             $newFileName = $file_name . '.' . $this->file->extension;
-            $p = "C:\Users\USER\Desktop\q\\" . $newFileName;
-
-            $this->file->saveAs($path . "\\" . $newFileName);
-            $this->file->saveAs($p);
-            // system("cmd robocopy C:\xampp\htdocs\q\frontend\scanned-dv C:\Users\USER\Dropbox\scanned_dv /s /purge");
-            // $f = Yii::$app->getResponse()->sendFile($path . "\\" . $newFileName);
-            // move_uploaded_file($newFileName, "C:\Users\USER\Desktop\q\\" . $newFileName);
-            copy($path . "\\" . $newFileName, "C:\Users\USER\Dropbox\scanned_dv\\" . $newFileName);
+            $file_path = $path . "\\" . $newFileName;
+            $this->file->saveAs($file_path);
+            $dropbox_path = "C:\Users\USER\Dropbox\scanned_dv\\" . $newFileName;
+            copy($file_path, $dropbox_path);
             return $newFileName;
         } else {
             return false;
