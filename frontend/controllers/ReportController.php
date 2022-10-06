@@ -22,11 +22,13 @@ use app\models\WithholdingAndRemittanceSummarySearch;
 use common\models\UploadForm;
 use Da\QrCode\QrCode;
 use DateTime;
+use ErrorException;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\helpers\FileHelper;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
 
@@ -4952,28 +4954,134 @@ class ReportController extends \yii\web\Controller
 
         $model = new UploadForm();
         if (Yii::$app->request->isPost) {
-            // $q = $_FILES['file'];
-            if (isset($_FILES['file'])) {
-                $file = $_FILES;
-                $file = \yii\web\UploadedFile::getInstanceByName('file');
-                $model->file = $file;
-                if ($model->validate()) {
-                    if ($model->upload()) {
-                        return json_encode('success');
-                    } else {
-                        return var_dump($model->errors);
-                    }
+            // // $q = $_FILES['file'];
+            // if (isset($_FILES['file'])) {
+            //     $file = $_FILES;
+            //     $file = \yii\web\UploadedFile::getInstanceByName('file');
+            //     $model->file = $file;
+            //     if ($model->validate()) {
+            //         if ($model->upload('uploads')) {
+            //             return json_encode('success');
+            //         } else {
+            //             return var_dump($model->errors);
+            //         }
+            //     } else {
+            //         return var_dump($model->errors);
+            //     }
+            //     // if ($model->upload()) {
+            //     //     // file is uploaded successfully
+            //     //     return 'succes';
+            //     // }
+            // }
+            if (!empty($_POST)) {
+                $name = $_FILES["file"]["name"];
+
+
+                $id = uniqid();
+                $file = "jev/{$id}_{$name}";;
+                if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
                 } else {
-                    return var_dump($model->errors);
+                    return "ERROR 2: MOVING FILES FAILED.";
+                    die();
                 }
-                // if ($model->upload()) {
-                //     // file is uploaded successfully
-                //     return 'succes';
+
+                $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+                $excel = $reader->load($file);
+                // $excel->setActiveSheetIndexByName('Conso-For upload');
+                $worksheet = $excel->getActiveSheet();
+                $reader->setReadDataOnly(FALSE);
+                $transaction = Yii::$app->db->beginTransaction();
+                foreach ($worksheet->getRowIterator(3) as $key => $row) {
+                    $cellIterator = $row->getCellIterator();
+                    $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                    $cells = [];
+                    $y = 0;
+                    foreach ($cellIterator as $x => $cell) {
+                        $cells[] = $cell->getValue();
+                    }
+                    if (!empty($cells)) {
+                        $uacs = $cells[0];
+                        $ppe_type = $cells[1];
+                        $depreciation = $cells[2];
+                        $impairment = $cells[3];
+                        $depreciation_id = null;
+                        $impairment_id = null;
+                        $ppe_type_id = null;
+                        if (!empty($depreciation)) {
+                            $depreciation_id = Yii::$app->db->createCommand("SELECT id FROM chart_of_accounts WHERE uacs = :depreciation")
+                                ->bindValue(':depreciation', $depreciation)->queryScalar();
+                        }
+                        if (!empty($impairment)) {
+                            $impairment_id = Yii::$app->db->createCommand("SELECT id FROM chart_of_accounts WHERE uacs = :impairment")
+                                ->bindValue(':impairment', $impairment)->queryScalar();
+                        }
+                        if (!empty($ppe_type)) {
+                            $ppe_type_id = Yii::$app->db->createCommand("SELECT id FROM ppe_useful_life WHERE `name` = :ppe_type")
+                                ->bindValue(':ppe_type', $ppe_type)->queryScalar();
+                        }
+                        $chart_of_account = ChartOfAccounts::find()->where('uacs = :uacs', ['uacs' => $uacs])->one();
+
+                        if (!empty($depreciation_id)) {
+                            $chart_of_account->fk_depreciation_id = $depreciation_id;
+                        }
+                        if (!empty($impairment_id)) {
+                            $chart_of_account->fk_impairment_id = $impairment_id;
+                        }
+                        $chart_of_account->fk_ppe_useful_life_id = $ppe_type_id;
+                        if ($chart_of_account->save(false)) {
+                        }
+                    }
+                }
+                $transaction->commit();
+                // JEV ACCOUNTING ENTRIES COLUMNS
+                $column = [
+                    'jev_preparation_id',
+                    // 'chart_of_account_id',
+                    'debit',
+                    'credit',
+                    'current_noncurrent',
+                    'closing_nonclosing',
+                    'cashflow_id',
+                    'net_asset_equity_id',
+                    'object_code',
+                    'lvl',
+
+                ];
+
+
+
+                // try {
+
+                //     // Yii::$app->db->createCommand()->batchInsert('jev_accounting_entries', $column, $jev_entries)->execute();
+                //     $transaction->commit();
+                // } catch (ErrorException $error) {
+                //     $transaction->rollback();
                 // }
+                // ob_clean();
+                echo '<pre>';
+                var_dump("Success");
+                echo '</pre>';
             }
         }
         return $this->render('file_upload', ['model' => $model]);
     }
+    // public function actionQ()
+    // {
+    //     // ob_clean();
+    //     // \Yii::$app->response->sendFile('E:\doc1.pdf')->send();
+    //     // FileHelper::unlink('@frontend/scanned-dv/Fund 01-2022-07-1555A/Fund_01-2022-07-1555A');
+    //     // unlink('C:\xampp\htdocs\q\frontend\scanned-dv\Fund 01-2022-07-1555A');
+    //     if ($_POST) {
+    //         $url  = $_POST['url'];
+    //         \Yii::$app->response->sendFile($url)->send();
+    //         return json_encode($url);
+    //     }
+    //     // $directory = Yii::getAlias('@app') . '\scanned-dv\Fund 01-2022-07-1555A';
+    //     // echo $directory;
+    //     // // die();
+    //     // FileHelper::removeDirectory($directory);
+    // }
 
     //     public function actionTransaction()
     //     {

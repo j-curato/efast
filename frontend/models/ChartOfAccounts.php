@@ -37,7 +37,12 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
     {
         return [
             [['uacs', 'general_ledger', 'major_account_id', 'sub_major_account', 'account_group', 'current_noncurrent', 'enable_disable', 'normal_balance'], 'required'],
-            [['major_account_id', 'sub_major_account', 'is_active'], 'integer'],
+            [[
+                'major_account_id', 'sub_major_account', 'is_active',
+                'fk_depreciation_id',
+                'fk_impairment_id',
+                'fk_ppe_useful_life_id'
+            ], 'integer'],
             [['uacs', 'normal_balance'], 'string', 'max' => 30],
             [['is_province_visible'], 'integer'],
             [['general_ledger', 'account_group', 'current_noncurrent', 'enable_disable'], 'string', 'max' => 255],
@@ -76,6 +81,10 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
             'enable_disable' => 'Enable Disable',
             'is_active' => 'Active',
             'is_province_visible' => 'Select  Usable in Province',
+            'fk_depreciation_id' => 'Depreciation',
+            'fk_impairment_id' => 'Impairment',
+            'fk_ppe_useful_life_id' => 'Useful Life'
+
         ];
     }
 
