@@ -104,21 +104,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <div class="row" style="margin-top: 20px;">
             <div class="col-sm-3">
-                <?php
-
-
-                $resultsJs = <<< JS
-               function (data, params) {
-                   params.page = params.page || 1;
-                //    return {
-                //        results: data.items,
-                //        pagination: {
-                //            more: (params.page * 30) < data.total_count
-                //        }
-                //    };
-               }
-               JS;
-                ?>
+                <label for="employee">Select Signatory</label>
                 <?= Select2::widget([
                     'name' => 'employee',
                     'id' => 'employee',
