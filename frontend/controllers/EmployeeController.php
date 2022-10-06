@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\Employee;
 use app\models\EmployeeSearch;
+use app\models\EmployeeSearchView;
 use ErrorException;
 use frontend\models\SignupForm;
 use yii\db\Query;
@@ -195,8 +196,7 @@ class EmployeeController extends Controller
     public function actionSearchEmployee($q = null, $id = null, $province = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $user_province = strtolower(Yii::$app->user->identity->province);
-
+        // $user_province = strtolower(Yii::$app->user->identity->province);
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
             $query = new Query();
@@ -207,10 +207,11 @@ class EmployeeController extends Controller
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
+        } elseif ($id > 0) {
+            // return $id;
+            $emp = EmployeeSearchView::find()->where('employee_id = :id', ['id' => $id])->one();
+            $out['results'] = ['id' => $id, 'text' => $emp->employee_name, 'position' => $emp->position];
         }
-        // elseif ($id > 0) {
-        //     $out['results'] = ['id' => $id, 'text' => ChartOfAccounts::find($id)->uacs];
-        // }
         return $out;
     }
     public function actionImport()
