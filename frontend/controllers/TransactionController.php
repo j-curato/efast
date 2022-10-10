@@ -497,19 +497,6 @@ class TransactionController extends Controller
             ->bindValue(':r_center', $responsibility_center['name'])
             ->bindValue(':new_year', '%' . $date)
             ->queryScalar();
-        // } else {
-
-        //     $latest_tracking_no = Yii::$app->db->createCommand("SELECT 
-        // CAST(SUBSTRING_INDEX(`transaction`.tracking_number,'-',-1) AS UNSIGNED) as last_number
-        // FROM `transaction`
-        // WHERE 
-        // `transaction`.transaction_date LIKE :new_year
-        // ORDER BY last_number DESC
-        // LIMIT 1")
-        //         ->bindValue(':new_year', '%' . $date)
-        //         ->queryScalar();
-        // }
-
         if ($latest_tracking_no) {
             // $x = explode('-', $latest_tracking_no['tracking_number']);
             $last_number = intval($latest_tracking_no) + $to_add;
@@ -519,6 +506,29 @@ class TransactionController extends Controller
         $final_number = '';
         for ($y = strlen($last_number); $y < 3; $y++) {
             $final_number .= 0;
+        }
+        $liq = Yii::$app->db->createCommand(" SELECT CAST( substring_index(substring(tracking_number, instr(tracking_number, '-')+1), '-', -1) as UNSIGNED) as num
+        from `transaction`
+        LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id = responsibility_center.id
+        WHERE responsibility_center.`name` = :r_center
+        AND `transaction`.transaction_date LIKE :new_year
+        ORDER BY num
+        ")
+            ->bindValue(':r_center', $responsibility_center['name'])
+            ->bindValue(':new_year', '%' . $date)
+            ->queryAll();
+        if (!empty($liq)) {
+            $number_sequnce = [];
+            foreach (range(1, max($liq)['num']) as $val) {
+                $number_sequnce[] = $val;
+            }
+
+            $diff = array_diff($number_sequnce, array_column($liq, 'num'));
+            // return json_encode($diff);
+            if (!empty($diff)) {
+                $last_number = $diff[min(array_keys($diff))];
+                // return $num;
+            }
         }
         $final_number .= $last_number;
         $tracking_number = strtoupper($responsibility_center['name']) . '-' . $q->format('Y-m') . '-' . $final_number;
