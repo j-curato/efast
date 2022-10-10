@@ -582,25 +582,25 @@ class SyncDatabaseController extends \yii\web\Controller
                     ->bindValue(':id', $val['id'])
                     ->queryScalar();
                 if (intval($query) === 1) {
-                    $update_transaction = transaction::findOne($val['id']);
+                    // $update_transaction = transaction::findOne($val['id']);
                 } else {
                     $update_transaction = new Transaction();
                     $update_transaction->id = $val['id'];
-                }
-                $update_transaction->responsibility_center_id = $val['responsibility_center_id'];
-                $update_transaction->payee_id = $val['payee_id'];
-                $update_transaction->particular = $val['particular'];
-                $update_transaction->gross_amount = $val['gross_amount'];
-                $update_transaction->tracking_number = $val['tracking_number'];
-                $update_transaction->earmark_no = $val['earmark_no'];
-                $update_transaction->payroll_number = $val['payroll_number'];
-                $update_transaction->transaction_date = $val['transaction_date'];
-                $update_transaction->transaction_time = $val['transaction_time'];
-                $update_transaction->created_at = $val['created_at'];
-                $update_transaction->is_local = $val['is_local'];
-                if ($update_transaction->save(false)) {
-                } else {
-                    return 'error';
+                    $update_transaction->responsibility_center_id = $val['responsibility_center_id'];
+                    $update_transaction->payee_id = $val['payee_id'];
+                    $update_transaction->particular = $val['particular'];
+                    $update_transaction->gross_amount = $val['gross_amount'];
+                    $update_transaction->tracking_number = $val['tracking_number'];
+                    $update_transaction->earmark_no = $val['earmark_no'];
+                    $update_transaction->payroll_number = $val['payroll_number'];
+                    $update_transaction->transaction_date = $val['transaction_date'];
+                    $update_transaction->transaction_time = $val['transaction_time'];
+                    $update_transaction->created_at = $val['created_at'];
+                    $update_transaction->is_local = $val['is_local'];
+                    if ($update_transaction->save(false)) {
+                    } else {
+                        return 'error';
+                    }
                 }
             }
 
@@ -1696,11 +1696,11 @@ class SyncDatabaseController extends \yii\web\Controller
 
 
 
-                            // if ($update_liquidation->save(false)) {
-                            // } else {
-                            //     $transaction->rollBack();
-                            //     return false;
-                            // }
+                            if ($update_liquidation->save(false)) {
+                            } else {
+                                $transaction->rollBack();
+                                return false;
+                            }
                         } else {
                             $new_liquidation = new Liquidation();
                             $new_liquidation->id = $val['id'];
