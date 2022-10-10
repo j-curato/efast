@@ -102,7 +102,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="head" id='ass' style="font-weight: bold;"></div>
             <div class="head" id="oic_position_text"></div>
         </div>
-        <div class="row" style="margin-top: 20px;">
+        <div class="row select_row" style="margin-top: 20px;">
             <div class="col-sm-3">
                 <label for="employee">Select Signatory</label>
                 <?= Select2::widget([
@@ -171,6 +171,10 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", []);
     @media print {
         td {
             font-size: 10px;
+        }
+
+        .select_row {
+            display: none;
         }
 
         .as {
