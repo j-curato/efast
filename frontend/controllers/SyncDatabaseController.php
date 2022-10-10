@@ -1696,11 +1696,11 @@ class SyncDatabaseController extends \yii\web\Controller
 
 
 
-                            if ($update_liquidation->save(false)) {
-                            } else {
-                                $transaction->rollBack();
-                                return false;
-                            }
+                            // if ($update_liquidation->save(false)) {
+                            // } else {
+                            //     $transaction->rollBack();
+                            //     return false;
+                            // }
                         } else {
                             $new_liquidation = new Liquidation();
                             $new_liquidation->id = $val['id'];
