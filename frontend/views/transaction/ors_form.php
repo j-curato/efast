@@ -892,7 +892,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depe
         if (_division == 'sdd') {
             $("#form1_box_a_signatory").val('JASMIN B. FAELNAR').trigger('change')
             $("#form2_box_a_signatory").val('JASMIN B. FAELNAR').trigger('change')
-        } else if (_division == 'idd') {
+        } else if (_division == 'idd' || _division == 'rapid') {
             $("#form1_box_a_signatory").val('MARSON JAN S. DOLENDO').trigger('change')
             $("#form2_box_a_signatory").val('MARSON JAN S. DOLENDO').trigger('change')
         } else if (_division == 'cpd') {
