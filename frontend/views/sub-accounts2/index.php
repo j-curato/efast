@@ -97,8 +97,6 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
 
-            'id',
-            'sub_accounts1_id',
 
             'object_code',
             'name',
@@ -119,7 +117,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             ['class' => 'yii\grid\ActionColumn'],
-            
+
         ],
     ]); ?>
 
@@ -127,7 +125,7 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <?php
-$script =<<<JS
+$script = <<<JS
     $('a[title=Update]').click(function(e){
         e.preventDefault();
         

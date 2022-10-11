@@ -89,12 +89,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'position' => 'absolute',
         ],
         'columns' => [
-            'id',
-            'chart_of_account_id',
             'object_code',
             [
 
-                'label' => 'Object Code',
+                'label' => 'Account Title',
                 'attribute' => 'name',
                 'options' => [
                     'style' => 'word-wrap: break-word; width: 100px'
@@ -109,8 +107,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'data-toggle' => "modal", 'class' => '"btn btn-info btn-xs add-sub',
                         'data-toggle' => "modal", 'data-target' => "#myModal",
                         'value' => $model->id,
-                    ])
-                    ;
+                    ]);
                 },
                 'hiddenFromExport' => true,
             ],
