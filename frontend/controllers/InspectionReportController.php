@@ -161,7 +161,7 @@ class InspectionReportController extends Controller
         inspector.employee_name as inspector,
         property_unit.employee_name as property_unit,
         payee.account_name as payee,
-        pr_project_procurement.title as project_title,
+        pr_purchase_request.purpose as project_title,
          DATE_FORMAT(request_for_inspection_items.`from`,'%M %d, %Y') as from_date,
         DATE_FORMAT(request_for_inspection_items.`to`,'%M %d, %Y') as to_date
         
