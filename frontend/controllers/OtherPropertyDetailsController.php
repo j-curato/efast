@@ -148,13 +148,17 @@ class OtherPropertyDetailsController extends Controller
             try {
                 if ($model->validate()) {
                     if ($model->save(false)) {
-                        $insert_item = $this->insertItems($model->id, $items);
-                        if ($insert_item['isSuccess'] === true) {
-                            $transaction->commit();
-                            return $this->redirect(['view', 'id' => $model->id]);
-                        } else {
-                            return json_encode(['isSuccess' => false, 'error_message' => $insert_item]);
+                        if ($model->depreciation_schedule === 1) {
+
+                            $insert_item = $this->insertItems($model->id, $items);
+                            if ($insert_item['isSuccess'] === true) {
+                            } else {
+                                $transaction->rollBack();
+                                return json_encode(['isSuccess' => false, 'error_message' => $insert_item]);
+                            }
                         }
+                        $transaction->commit();
+                        return $this->redirect(['view', 'id' => $model->id]);
                     }
                 } else {
                     $transaction->rollBack();
