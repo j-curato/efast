@@ -40,6 +40,28 @@ function liquidationAccountingCodesSelect() {
     },
   });
 }
+let books = [];
+async function getAllBooks() {
+  if (books.length === 0) {
+
+   await $.getJSON(
+      window.location.pathname + "/frontend/web/index.php?r=books/get-books"
+    ).then(function (data) {
+      var array = [];
+      $.each(data, function (key, val) {
+        array.push({
+          id: val.id,
+          text: val.name,
+        });
+      });
+      books = array;
+    });
+  }
+  $(".book").select2({
+    data: books,
+    placeholder: "Select Books",
+  });
+}
 
 // PAYEE SELECT2
 function payeeSelect() {
@@ -50,14 +72,20 @@ function payeeSelect() {
       data: function (params) {
         return {
           q: params.term,
+          page: params.page || 1,
         };
       },
-      processResults: function (data) {
-        // Transforms the top-level key of the response object from 'items' to 'results'
-        return {
-          results: data.results,
-        };
-      },
+      // processResults: function (data, params) {
+      //   params.page = params.page || 1;
+
+      //   // Transforms the top-level key of the response object from 'items' to 'results'
+      //   return {
+      //     results: data.results,
+      //     pagination: {
+      //       more: params.page * 10 < data.count_filtered,
+      //     },
+      //   };
+      // },
     },
     // placeholder: "Search for a Payee",
   });
@@ -270,3 +298,13 @@ async function getAllFundSource() {
 // $(".mask-amount").on("keyup change", () => {
 //   $(".main-amount").val($(this).maskMoney("unmasked"));
 // });
+// put comma in numbers
+$.fn.digits = function () {
+  return this.each(function () {
+    $(this).text(
+      $(this)
+        .text()
+        .replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,")
+    );
+  });
+};
