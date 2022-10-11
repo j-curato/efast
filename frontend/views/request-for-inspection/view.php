@@ -160,7 +160,7 @@ if (!empty($model->fk_requested_by)) {
                     $to_date = !empty($val['date_to']) ? DateTime::createFromFormat('Y-m-d', $val['date_to'])->format('F d, Y') : '';
                     echo "<tr>
                             <td class='center v-align-top' >{$val['po_number']}</td>
-                            <td class='center v-align-top'>{$val['project_title']}</td>
+                            <td class='center v-align-top'>{$val['purpose']}</td>
                             <td class='center v-align-top'>{$val['payee']}</td>
                             <td >
                             <span class='bold'>{$val['stock_title']}</span>
