@@ -102,7 +102,7 @@ BarcodeGenerator::widget($optionsArray);
                     </td>
 
                 </tr>
-               
+
                 <tr>
 
                     <th>Property No.: </th>
@@ -489,7 +489,7 @@ BarcodeGenerator::widget($optionsArray);
         text-align: right;
     }
 
-    .par_form  {
+    .par_form {
         margin-left: auto;
         margin-right: auto;
         width: 100%;
@@ -569,8 +569,8 @@ BarcodeGenerator::widget($optionsArray);
         }
 
         #sticker_table td {
-            max-width: 450px;
-            min-width: 100px;
+            max-width: 200px;
+            min-width: 200px;
             font-size: 10px;
             padding: 2px;
         }
