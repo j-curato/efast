@@ -90,6 +90,7 @@ class ParIndexSearch extends ParIndex
             ->andFilterWhere(['like', 'location', $this->location])
             ->andFilterWhere(['like', 'accountable_officer', $this->accountable_officer])
             ->andFilterWhere(['like', 'issued_by', $this->issued_by])
+            ->andFilterWhere(['like', 'ppe_type', $this->ppe_type])
             ->andFilterWhere(['like', 'remarks', $this->remarks]);
 
 
