@@ -197,8 +197,8 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
         }
 
         td {
-            max-width: 200px;
-            min-width: 200px;
+            max-width: 160px;
+            min-width: 160px;
         }
 
         table {
