@@ -53,7 +53,7 @@ class Par extends \yii\db\ActiveRecord
                 'remarks'
 
             ], 'string'],
-            [['par_number', 'property_number'], 'string', 'max' => 255],
+            [['par_number',], 'string', 'max' => 255],
             [['par_number'], 'unique'],
             [[
                 'par_number',
@@ -77,7 +77,6 @@ class Par extends \yii\db\ActiveRecord
     {
         return [
             'par_number' => 'Par Number',
-            'property_number' => 'Property Number',
             'date' => 'Date',
             'employee_id' => 'Recieved By',
             'agency_id' => ' Agency',

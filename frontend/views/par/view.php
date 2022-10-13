@@ -1,5 +1,7 @@
 <?php
 
+use barcode\barcode\BarcodeGenerator;
+use Da\QrCode\QrCode;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
@@ -7,37 +9,63 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Par */
 
-$this->title = $model->property_number;
+$this->title = $model->par_number;
 $this->params['breadcrumbs'][] = ['label' => 'Pars', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
-
-
-
 $d = new DateTime($model->property->date);
 $dateAquired = $d->format('F d, Y');
 $description = preg_replace('#\[n\]#', "<br>", $model->property->description);
 
 $article = $model->property->article;
-
-$book = $model->property->book->name;
+// $book = $model->property->book->name;
 $par_number = $model->par_number;
+$property_number = $stickerDetails['property_number'];
+$old_par_number = $stickerDetails['old_par_number'];
+$par_date = !empty($model->date) ? $model->date : '';
+$location = !empty($model->location) ? $model->location : '';
+$province = $stickerDetails['province'];
+$accountable_officer = $stickerDetails['accountable_officer'];
+$actual_user = $stickerDetails['actual_user'];
+$issued_by = $stickerDetails['issued_by'];
+$remarks = $stickerDetails['remarks'];
 
 $quantity = intval($model->property->quantity);
 $aquisition_amount = floatval($model->property->acquisition_amount);
 $total_cost = $quantity * $aquisition_amount;
+$recieved_by = '';
+//   strtoupper($model->employee->f_name) . ' ' . strtoupper(substr($model->employee->m_name, 0, 1)) . '. ' . strtoupper($model->employee->l_name);
+$recieved_by_position = '';
+// $model->employee->position;
+$property_custodian = '';
+//  strtoupper($model->property->employee->f_name) . ' ' . strtoupper(substr($model->property->employee->m_name, 0, 1)) . '. ' .
+//     strtoupper($model->property->employee->l_name);
+$property_custodian_position = '';
+// $model->property->employee->position
 
-$recieved_by =  strtoupper($model->employee->f_name) . ' ' . strtoupper(substr($model->employee->m_name, 0, 1)) . '. ' . strtoupper($model->employee->l_name);
-$recieved_by_position = $model->employee->position;
-$property_custodian = strtoupper($model->property->employee->f_name) . ' ' . strtoupper(substr($model->property->employee->m_name, 0, 1)) . '. ' .
-    strtoupper($model->property->employee->l_name);
-$property_custodian_position = $model->property->employee->position
 
+
+$qrcode_filename = Yii::$app->request->baseurl . "/frontend/views/par/qrcodes/$model->par_number.png";
+// GENERATE QR CODE
+if (!file_exists($qrcode_filename)) {
+    $text = $model->id;
+    $path = 'qr_codes';
+    $qrCode = (new QrCode($text))
+        ->setSize(150);
+    header('Content-Type: ' . $qrCode->getContentType());
+    $base_path =  \Yii::getAlias('@webroot');
+    $qrCode->writeFile($base_path . "/frontend/views/par/qrcodes/$model->par_number.png");
+}
+// GENERATE BARCODE
+$optionsArray = array(
+    'elementId' => 'barcodeTarget', /* div or canvas id*/
+    'value' => $model->id, /* value for EAN 13 be careful to set right values for each barcode type */
+    'type' => 'code128',/*supported types ean8, ean13, upc, std25, int25, code11, code39, code93, code128, codabar, msi, datamatrix*/
+
+);
+BarcodeGenerator::widget($optionsArray);
 ?>
 <div class="par-view">
-
-
-
 
 
     <div class="container">
@@ -51,7 +79,98 @@ $property_custodian_position = $model->property->employee->position
                 echo  Html::a('Property Card Link', $t, ['class' => 'btn btn-link ']);
             }
             ?>
+            <button id="print_sticker" type="button" class="btn btn-success">Print Sticker</button>
+            <button id="print_form" type="button" class="btn btn-warning">Print Form</button>
         </p>
+        <div class="cut_line sticker_table">
+
+            <table id="sticker_table">
+                <tr>
+
+                    <td style="text-align: left;" class="no-border">
+
+                        <span style="width: 100%;">
+                            <?php echo Html::img("@web/frontend/web/dti3.png", ['style' => 'width:50px']) ?>
+                        </span>
+
+                        <span>
+                            <?php echo Html::img($qrcode_filename, ['class' => 'qr', 'style' => 'float:right']) ?>
+                        </span>
+                    </td>
+                    <td colspan='2' class="no-border" style="text-align: right;">
+                        <div id="barcodeTarget" class="barcodeTarget"></div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <th>qwe</th>
+                    <th>qwe</th>
+                </tr>
+                <tr>
+
+                    <th>Property No.: </th>
+                    <td colspan=''>
+                        <?= $property_number ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>New PAR No.: </th>
+                    <td colspan=''>
+                        <?= $par_number ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Old PAR No.</th>
+                    <td colspan=''>
+                        <?= $old_par_number ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>PAR Date.</th>
+                    <td colspan=''>
+                        <?= $par_date ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Office</th>
+                    <td colspan=''>
+                        <?= $province ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Location <br>
+                        (Provincial Office, indicate the Division, Name of City/Municipality in the case of NC or others, Name of Cooperator in the case of SSF)</th>
+                    <td colspan=''>
+                        <?= $location ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Received by (Accountable Officer)</th>
+                    <td colspan=''>
+                        <?= $accountable_officer ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Received by (JO/COS) (leave blank if not JO/COS)</th>
+                    <td colspan=''>
+                        <?= $actual_user ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Issued by (Property Officer)</th>
+                    <td colspan=''>
+                        <?= $issued_by ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Serviceable / Unserviceable</th>
+                    <td colspan=''>
+                        <?= $remarks ?>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
         <?php
 
         if ($model->property->acquisition_amount < 1500) {
@@ -61,7 +180,7 @@ $property_custodian_position = $model->property->employee->position
 
 
         ?>
-            <table>
+            <table class="par_form">
                 <tbody>
                     <tr>
                         <th colspan="7" class="center no-border">
@@ -177,7 +296,7 @@ $property_custodian_position = $model->property->employee->position
         <?php
         } else {
         ?>
-            <table>
+            <table class="par_form">
 
                 <tbody>
                     <tr>
@@ -200,7 +319,9 @@ $property_custodian_position = $model->property->employee->position
                     <tr>
                         <th colspan="3">
                             <span>Fund Cluster:</span>
-                            <span><?php echo $model->property->book->name; ?></span>
+                            <span><?php
+                                    // echo $model->property->book->name;
+                                    ?></span>
                         </th>
                         <th colspan="3">
                             <span>PAR No:</span>
@@ -217,19 +338,19 @@ $property_custodian_position = $model->property->employee->position
                     </tr>
                     <?php
 
-                    echo "<tr>
-                        <td>{$model->property->quantity}</td>
-                        <td>{$model->property->unitOfMeasure->unit_of_measure}</td>
-                        <td>
-                        <span style='font-weight:bold;'>{$article}</span>
-                        <br>
-                        <span style='font-style:italic;'>$description</span>
-                        
-                        </td>
-                        <td>{$model->property->property_number}</td>
-                        <td>{$dateAquired}</td>
-                        <td class='amount'>" . number_format($model->property->acquisition_amount, 2) . "</td>
-                    </tr>";
+                    // echo "<tr>
+                    //     <td>{$model->property->quantity}</td>
+                    //     <td>{$model->property->unitOfMeasure->unit_of_measure}</td>
+                    //     <td>
+                    //     <span style='font-weight:bold;'>{$article}</span>
+                    //     <br>
+                    //     <span style='font-style:italic;'>$description</span>
+
+                    //     </td>
+                    //     <td>{$model->property->property_number}</td>
+                    //     <td>{$dateAquired}</td>
+                    //     <td class='amount'>" . number_format($model->property->acquisition_amount, 2) . "</td>
+                    // </tr>";
                     for ($i = 0; $i < 4; $i++) {
                         echo "<tr>
                         <td></td>
@@ -249,18 +370,37 @@ $property_custodian_position = $model->property->employee->position
                     <tr>
                         <th class='foot' colspan="3">
                             <span style="text-decoration:underline">
-                                <span><?php echo strtoupper($model->employee->f_name); ?> </span>
-                                <span><?php echo strtoupper(substr($model->employee->m_name, 0, 1)); ?>. </span>
-                                <span><?php echo strtoupper($model->employee->l_name); ?></span>
+                                <span><?php
+                                        // echo strtoupper($model->employee->f_name); 
+                                        ?>
+                                </span>
+                                <span><?php
+                                        // echo strtoupper(substr($model->employee->m_name, 0, 1)); 
+                                        ?>
+                                    . </span>
+                                <span><?php
+                                        // echo strtoupper($model->employee->l_name); 
+                                        ?>
+                                </span>
                             </span>
                             <br>
                             <span> Signatue over Printed Name of End User</span>
                         </th>
                         <th class='foot' colspan="3">
                             <span style="text-decoration:underline">
-                                <span><?php echo strtoupper($model->property->employee->f_name); ?> </span>
-                                <span><?php echo strtoupper(substr($model->property->employee->m_name, 0, 1)); ?>. </span>
-                                <span><?php echo strtoupper($model->property->employee->l_name); ?></span>
+                                <span><?php
+                                        // echo strtoupper($model->property->employee->f_name); 
+                                        ?>
+                                </span>
+                                <span><?php
+                                        // echo strtoupper(substr($model->property->employee->m_name, 0, 1)); 
+                                        ?>
+                                    .
+                                </span>
+                                <span><?php
+                                        // echo strtoupper($model->property->employee->l_name);
+                                        ?>
+                                </span>
                             </span>
                             <br>
                             <span> Signatue over Printed Name of Supply and/or </span>
@@ -271,13 +411,17 @@ $property_custodian_position = $model->property->employee->position
                     </tr>
                     <tr>
                         <th class='foot' colspan="3">
-                            <span style="text-decoration: underline;"><?php echo strtoupper($model->employee->position); ?></span>
+                            <span style="text-decoration: underline;"><?php
+                                                                        // echo strtoupper($model->employee->position);
+                                                                        ?></span>
                             <br>
                             <span>Position</span>
                         </th>
                         <th class='foot' colspan="3">
 
-                            <span style="text-decoration: underline;"><?php echo strtoupper($model->property->employee->position); ?></span>
+                            <span style="text-decoration: underline;"><?php
+                                                                        // echo strtoupper($model->property->employee->position);
+                                                                        ?></span>
                             <br>
                             <span>Position</span>
                         </th>
@@ -348,7 +492,7 @@ $property_custodian_position = $model->property->employee->position
         text-align: right;
     }
 
-    table {
+    .par_form  {
         margin-left: auto;
         margin-right: auto;
         width: 100%;
@@ -363,6 +507,41 @@ $property_custodian_position = $model->property->employee->position
     .container {
         background-color: white;
         padding: 20px;
+    }
+
+    .cut_line {
+        max-width: 100%;
+        position: relative;
+        padding: 3px;
+        border-radius: 10px;
+        border: 1px solid black;
+        float: left;
+        margin-bottom: 5px;
+    }
+
+    #sticker_table td {
+        text-transform: uppercase;
+        padding: 5px;
+        font-size: 10px;
+
+    }
+
+    #sticker_table th {
+        padding: 5px;
+        max-width: 250px;
+        font-size: 10px;
+    }
+
+
+    #sticker_table {
+        margin: 20px;
+        border: 0;
+    }
+
+
+    .qr {
+        margin-left: auto;
+        width: 50px;
     }
 
     @media print {
@@ -391,5 +570,66 @@ $property_custodian_position = $model->property->employee->position
             display: none;
 
         }
+
+        #sticker_table td {
+            max-width: 450px;
+            min-width: 100px;
+            font-size: 10px;
+            padding: 2px;
+        }
+
+        #sticker_table th {
+            font-size: 10px;
+            padding: 2px;
+        }
+
+
     }
 </style>
+
+<style>
+    @media print {
+
+        /* #detail_table,
+        .main-footer,
+        .btn {
+            display: none;
+        }
+
+        td,
+        th {
+            font-size: 10px;
+            padding: 2px;
+        }
+
+        td {
+            max-width: 350px;
+            min-width: 100px;
+        }
+
+        table {
+            border: 1px solid black;
+        } */
+
+
+    }
+</style>
+<script>
+    $(document).ready(function() {
+
+        $("#print_sticker").click((e) => {
+            e.preventDefault()
+
+            $(".par_form").hide()
+            window.print()
+            $(".par_form").show()
+        })
+        $("#print_form").click((e) => {
+            e.preventDefault()
+
+            $(".sticker_table").hide()
+            window.print()
+            $(".sticker_table").show()
+        })
+    })
+</script>

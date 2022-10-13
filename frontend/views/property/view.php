@@ -71,35 +71,35 @@ BarcodeGenerator::widget($optionsArray);
 
                     <tr>
                         <th>Property No.: </th>
-                        <td colspan="3"><?php echo $model->property_number ?></td>
+                        <td colspan="2"><?php echo $model->property_number ?></td>
                     </tr>
                     <tr>
                         <th>SSF/Non-SSF</th>
-                        <td colspan="3"><?php echo $model->ppe_type ?></td>
+                        <td colspan="2"><?php echo $model->ppe_type ?></td>
                     </tr>
                     <tr>
                         <th>SSF SP No.</th>
-                        <td colspan="3"><?php echo !empty($model->ssfCategory->ssf_number) ? $model->ssfCategory->ssf_number : '' ?></td>
+                        <td colspan="2"><?php echo !empty($model->ssfCategory->ssf_number) ? $model->ssfCategory->ssf_number : '' ?></td>
                     </tr>
                     <tr>
                         <th>Date Acquired</th>
-                        <td colspan="3"><?php echo !empty($model->date) ? DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y') : '' ?></td>
+                        <td colspan="2"><?php echo !empty($model->date) ? DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y') : '' ?></td>
                     </tr>
                     <tr>
                         <th>Article</th>
-                        <td colspan="3"><?php echo $model->article ?></td>
+                        <td colspan="2"><?php echo $model->article ?></td>
                     </tr>
                     <tr>
                         <th>ITEM/BRAND/MODEL</th>
-                        <td colspan="3"><?php echo str_replace("[n]","<br>",$model->description)  ?></td>
+                        <td colspan="2"><?php echo str_replace("[n]","<br>",$model->description)  ?></td>
                     </tr>
                     <tr>
                         <th>Serial Number</th>
-                        <td colspan="3"><?php echo $model->serial_number ?></td>
+                        <td colspan="2"><?php echo $model->serial_number ?></td>
                     </tr>
                     <tr>
                         <th>Total Acquisition Amount</th>
-                        <td colspan="3"><?php echo number_format($model->acquisition_amount, 2)  ?></td>
+                        <td colspan="2"><?php echo number_format($model->acquisition_amount, 2)  ?></td>
                     </tr>
 
                 </tbody>
