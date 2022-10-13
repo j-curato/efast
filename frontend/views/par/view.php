@@ -510,7 +510,6 @@ BarcodeGenerator::widget($optionsArray);
         max-width: 100%;
         position: relative;
         padding: 3px;
-        border-radius: 10px;
         border: 1px solid black;
         float: left;
         margin-bottom: 5px;
@@ -569,8 +568,8 @@ BarcodeGenerator::widget($optionsArray);
         }
 
         #sticker_table td {
-            max-width: 200px;
-            min-width: 200px;
+            max-width: 160px;
+            min-width: 160px;
             font-size: 10px;
             padding: 2px;
         }
@@ -580,6 +579,11 @@ BarcodeGenerator::widget($optionsArray);
             padding: 2px;
         }
 
+        .cut_line {
+            padding: .5px;
+            border: 2px solid black;
+            float: left;
+        }
 
     }
 </style>
