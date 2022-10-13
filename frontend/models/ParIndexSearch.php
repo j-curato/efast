@@ -22,6 +22,7 @@ class ParIndexSearch extends ParIndex
                     'id',
                     'par_number',
                     'property_number',
+                    'unit_of_measure',
                     'article',
                     'description',
                     'province',
@@ -32,6 +33,7 @@ class ParIndexSearch extends ParIndex
                     'actual_user',
                     'issued_by',
                     'remarks',
+                    'ppe_type',
                 ],
                 'safe'
             ],

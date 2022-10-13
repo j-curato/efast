@@ -15,6 +15,7 @@ $columns = [
 
     'par_number',
     'property_number',
+    'ppe_type',
     'unit_of_measure',
     'article',
     'description',
