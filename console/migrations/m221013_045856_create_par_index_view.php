@@ -18,7 +18,7 @@ class m221013_045856_create_par_index_view extends Migration
         par.par_number,
         property.property_number,
         property.article,
-        property.description,
+        REPLACE(property.description,'[n]','') as description,
         property.province,
         property.acquisition_amount,
         par.date,
