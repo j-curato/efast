@@ -9,12 +9,17 @@ use Yii;
  *
  * @property int $id
  * @property string $par_number
- * @property string|null $date
  * @property string|null $property_number
+ * @property string|null $article
+ * @property string|null $description
+ * @property string|null $province
+ * @property float|null $acquisition_amount
+ * @property string|null $date
+ * @property string|null $location
+ * @property string|null $accountable_officer
  * @property string|null $actual_user
- * @property string|null $recieved_by
- * @property string|null $unit_of_measure
- * @property string|null $book_name
+ * @property string|null $issued_by
+ * @property string|null $remarks
  */
 class ParIndex extends \yii\db\ActiveRecord
 {
@@ -34,9 +39,9 @@ class ParIndex extends \yii\db\ActiveRecord
         return [
             [['id', 'par_number'], 'required'],
             [['id'], 'integer'],
-            [['date'], 'safe'],
-            [['actual_user', 'recieved_by'], 'string'],
-            [['par_number', 'property_number', 'unit_of_measure', 'book_name'], 'string', 'max' => 255],
+            [['article', 'description', 'accountable_officer', 'actual_user', 'issued_by'], 'string'],
+            [['acquisition_amount'], 'number'],
+            [['par_number', 'property_number', 'province', 'date', 'location', 'remarks'], 'string', 'max' => 255],
         ];
     }
 
@@ -48,16 +53,17 @@ class ParIndex extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'par_number' => 'Par Number',
-            'date' => 'Date',
             'property_number' => 'Property Number',
-            'actual_user' => 'Actual User',
-            'recieved_by' => 'Recieved By',
-            'unit_of_measure' => 'Unit Of Measure',
-            'book_name' => 'Book Name',
             'article' => 'Article',
             'description' => 'Description',
-            'iar_number' => 'IAR Number',
-            'acquisition_amount' => 'Acquisition Amount'
+            'province' => 'Province',
+            'acquisition_amount' => 'Acquisition Amount',
+            'date' => 'Date',
+            'location' => 'Location',
+            'accountable_officer' => 'Accountable Officer',
+            'actual_user' => 'Actual User',
+            'issued_by' => 'Issued By',
+            'remarks' => 'Remarks',
         ];
     }
 }

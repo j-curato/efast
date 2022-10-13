@@ -20,17 +20,18 @@ class ParIndexSearch extends ParIndex
             [
                 [
                     'id',
-                    'recieved_by',
-                    'actual_user',
-                    'date',
                     'par_number',
                     'property_number',
-                    'unit_of_measure',
-                    'book_name',
                     'article',
-                    'iar_number',
                     'description',
+                    'province',
                     'acquisition_amount',
+                    'date',
+                    'location',
+                    'accountable_officer',
+                    'actual_user',
+                    'issued_by',
+                    'remarks',
                 ],
                 'safe'
             ],
@@ -80,12 +81,16 @@ class ParIndexSearch extends ParIndex
             ->andFilterWhere(['like', 'date', $this->date])
             ->andFilterWhere(['like', 'property_number', $this->property_number])
             ->andFilterWhere(['like', 'actual_user', $this->actual_user])
-            ->andFilterWhere(['like', 'recieved_by', $this->recieved_by])
             ->andFilterWhere(['like', 'unit_of_measure', $this->unit_of_measure])
             ->andFilterWhere(['like', 'article', $this->article])
             ->andFilterWhere(['like', 'description', $this->description])
-            ->andFilterWhere(['like', 'iar_number', $this->iar_number])
-            ->andFilterWhere(['like', 'book_name', $this->book_name]);
+            ->andFilterWhere(['like', 'province', $this->province])
+            ->andFilterWhere(['like', 'location', $this->location])
+            ->andFilterWhere(['like', 'accountable_officer', $this->accountable_officer])
+            ->andFilterWhere(['like', 'issued_by', $this->issued_by])
+            ->andFilterWhere(['like', 'remarks', $this->remarks]);
+
+
 
         return $dataProvider;
     }
