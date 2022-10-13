@@ -30,10 +30,29 @@ class Par extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['property_number', 'agency_id', 'fk_property_id'], 'required'],
-            [['agency_id'], 'integer'],
+            [[
+                // 'property_number',
+                //  'agency_id', 
+                //  'fk_property_id'
+            ], 'required'],
+            [[
+                'agency_id',
+                'fk_accountable_officer_id',
+                'fk_recieve_by_jocos_id',
+                'fk_issued_by_id',
+            ], 'integer'],
             [['date', 'fk_property_id'], 'safe'],
-            [['employee_id', 'actual_user'], 'string'],
+            [[
+                'employee_id', 'actual_user',
+                'old_par_number',
+                'location',
+                'accountable_officer',
+                'recieve_by_jocos',
+                'issued_by',
+                'issued_to',
+                'remarks'
+
+            ], 'string'],
             [['par_number', 'property_number'], 'string', 'max' => 255],
             [['par_number'], 'unique'],
             [[
@@ -63,7 +82,17 @@ class Par extends \yii\db\ActiveRecord
             'employee_id' => 'Recieved By',
             'agency_id' => ' Agency',
             'actual_user' => 'Actual User',
-            'fk_property_id' => 'Property Number'
+            'fk_property_id' => 'Property Number',
+            'old_par_number' => 'old_par_number',
+            'location' => 'location',
+            'accountable_officer' => 'accountable_officer',
+            'fk_accountable_officer_id' => 'fk_accountable_officer_id',
+            'fk_recieve_by_jocos_id' => 'fk_recieve_by_jocos_id',
+            'recieve_by_jocos' => 'recieve_by_jocos',
+            'issued_by' => 'issued_by',
+            'fk_issued_by_id' => 'fk_issued_by_id',
+            'issued_to' => 'issued_to',
+            'remarks' => 'remarks',
         ];
     }
 

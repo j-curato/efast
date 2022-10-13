@@ -38,11 +38,11 @@ class Property extends \yii\db\ActiveRecord
         return [
             [['property_number', 'date', 'book_id', 'unit_of_measure_id', 'quantity', 'acquisition_amount', 'employee_id', 'article', 'province'], 'required'],
             [['date'], 'string'],
-            [['book_id', 'unit_of_measure_id', 'quantity', 'estimated_life'], 'integer'],
+            [['book_id', 'unit_of_measure_id', 'quantity', 'estimated_life', 'fk_ssf_category_id', 'id'], 'integer'],
             [['acquisition_amount', 'salvage_value'], 'number'],
             [['id'], 'unique'],
             [['employee_id', 'article', 'description', 'object_code'], 'string'],
-            [['property_number', 'iar_number', 'model', 'serial_number', 'province'], 'string', 'max' => 255],
+            [['property_number', 'iar_number', 'model', 'serial_number', 'province', 'ppe_type'], 'string', 'max' => 255],
 
             [['property_number'], 'unique'],
             [[
@@ -92,6 +92,8 @@ class Property extends \yii\db\ActiveRecord
             'salvage_value' => 'Salvage Value',
             'estimated_life' => 'Estimated Useful Life',
             'province' => 'Province',
+            'ppe_type' => 'ppe_type',
+            'fk_ssf_category_id' => 'fk_ssf_category_id',
 
         ];
     }
@@ -117,5 +119,9 @@ class Property extends \yii\db\ActiveRecord
     public function getUnitOfMeasure()
     {
         return $this->hasOne(UnitOfMeasure::class, ['id' => 'unit_of_measure_id']);
+    }
+    public function getSsfCategory()
+    {
+        return $this->hasOne(SsfCategory::class, ['id' => 'fk_ssf_category_id']);
     }
 }

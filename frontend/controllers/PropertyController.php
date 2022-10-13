@@ -2,10 +2,15 @@
 
 namespace frontend\controllers;
 
+use app\models\Par;
 use Yii;
 use app\models\Property;
 use app\models\PropertySearch;
+use barcode\barcode\BarcodeGenerator;
 use DateTime;
+use ErrorException;
+use kartik\mpdf\Pdf;
+use phpDocumentor\Reflection\Types\Null_;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -70,7 +75,13 @@ class PropertyController extends Controller
     {
         $searchModel = new PropertySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $optionsArray = array(
+            'elementId' => 'q', /* div or canvas id*/
+            'value' => '127361827178263718', /* value for EAN 13 be careful to set right values for each barcode type */
+            'type' => 'code128',/*supported types ean8, ean13, upc, std25, int25, code11, code39, code93, code128, codabar, msi, datamatrix*/
 
+        );
+        BarcodeGenerator::widget($optionsArray);
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -173,10 +184,10 @@ class PropertyController extends Controller
         CAST(SUBSTRING_INDEX(property.property_number,'-',-1)AS UNSIGNED) as p_number
                 FROM property
                 WHERE property.province = :province
-                AND property.date LIKE :_year
+                -- AND property.date LIKE :_year
                 ORDER BY  p_number DESC LIMIT 1")
             ->bindValue(':province', $province)
-            ->bindValue(':_year', $year . '%')
+            // ->bindValue(':_year', $year . '%')
             ->queryScalar();
         $num = 1;
         if (!empty($query)) {
@@ -253,74 +264,107 @@ class PropertyController extends Controller
             $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
             $excel = $reader->load($file);
-            $excel->setActiveSheetIndexByName('Property');
+            $excel->setActiveSheetIndexByName('PPE for Norman');
             $worksheet = $excel->getActiveSheet();
             $data = [];
-            foreach ($worksheet->getRowIterator(2) as $key => $row) {
-                $cellIterator = $row->getCellIterator();
-                $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
-                $cells = [];
-                $y = 0;
-                foreach ($cellIterator as $x => $cell) {
-                    $q = '';
-                    if (
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
 
-                        $y === 0 ||
-                        $y === 1 ||
-                        $y === 2
-                        || $y === 3
-                        || $y === 4
-                        || $y === 5
-                        || $y === 6
-                        || $y === 7
-                        || $y === 8
-                    ) {
-                        $cells[] = $cell->getFormattedValue();
-                    } else {
-                        $cells[] =   $cell->getValue();
+                foreach ($worksheet->getRowIterator(2) as $key => $row) {
+                    $cellIterator = $row->getCellIterator();
+                    $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                    $cells = [];
+                    $y = 0;
+                    foreach ($cellIterator as $x => $cell) {
+
+
+                        if ($x === 'D' || $x === 'O') {
+                            $cells[] = $cell->getFormattedValue();
+                        } else {
+                            $cells[] =   $cell->getValue();
+                        }
+                        // echo $x;
                     }
-                    $y++;
-                }
-                if (!empty($cells)) {
-                    $d = new DateTime($cells[0]);
-                    $date =  $d->format('Y-m-d');
-                    $book_id =  $cells[1];
-                    $unit_measure = $cells[2];
-                    $serial = $cells[3];
-                    $model = $cells[4];
-                    $iar = $cells[5];
-                    $quantity = $cells[6];
-                    $article = $cells[7];
-                    $amount =  $cells[8];
+                    if (!empty($cells)) {
+                        $d = new DateTime($cells[3]);
+                        $date_acquired =  $d->format('Y-m-d');
+                        $ppe_type =  $cells[1];
+                        $ssf_category_number =  $cells[2];
+                        $article =  $cells[4];
+                        $description =  $cells[5];
+                        $serial_number =  $cells[6];
+                        $quantity =  $cells[7];
+                        $unit_of_measure =  $cells[8];
+                        $acquisition_amount =  $cells[9];
+                        $province =  $cells[15];
+                        $ssf_category_id = null;
+                        $unit_of_measure_id = null;
 
+                        $par_number = $cells[12];
+                        $old_par_number = $cells[13];
+                        // $par_date_format =  new DateTime($cells[14]);
+                        $par_date = $cells[14];
+                        $par_location = $cells[16];
+                        $accountable_officer = $cells[18];
+                        $recieve_by_jocos = $cells[20];
+                        $par_issued_by = $cells[21];
+                        $par_issued_to = $cells[22];
+                        $par_remarks = $cells[23];
+                        $db = Yii::$app->db;
+                        if (!empty($ssf_category_number)) {
 
-                    $p = new Property();
-                    $p->property_number = $this->getPropertyNumber($date);
-                    $p->book_id = $book_id;
-                    $p->unit_of_measure_id = $unit_measure;
-                    $p->employee_id = 'ro-1';
-                    $p->iar_number = $iar;
-                    $p->article = $article;
-                    $p->model = $model;
-                    $p->serial_number = $serial;
-                    $p->quantity = $quantity;
-                    $p->acquisition_amount = $amount;
-                    $p->date = $date;
-                    if ($p->save(false)) {
+                            $ssf_category_id = $db->createCommand("SELECT id FROM ssf_category WHERE ssf_number = :ssf_number ")
+                                ->bindValue(':ssf_number', $ssf_category_number)
+                                ->queryScalar();
+                        }
+                        if (!empty($unit_of_measure)) {
+                            $unit_of_measure_id = $db->createCommand('SELECT id FROM unit_of_measure WHERE unit_of_measure = :unit_of_measure')
+                                ->bindValue(':unit_of_measure', $unit_of_measure)
+                                ->queryScalar();
+                        }
+                        $property = new Property();
+                        $property->id = $db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                        $property->property_number = $this->getPropertyNumber($date_acquired, $province);
+                        $property->property_number = $cells[0];
+                        $property->unit_of_measure_id = $unit_of_measure_id;
+                        $property->employee_id = 'ro-1';
+                        $property->article = $article;
+                        $property->serial_number = $serial_number;
+                        $property->quantity = $quantity;
+                        $property->acquisition_amount = $acquisition_amount;
+                        $property->date = $date_acquired;
+                        $property->province = $province;
+                        $property->ppe_type = $ppe_type;
+                        $property->fk_ssf_category_id = $ssf_category_id;
+                        $property->description = $description;
+
+                        if ($property->save(false)) {
+                            $par = new Par();
+                            $par->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                            $par->par_number = $par_number;
+                            // $par->par_number = $this->parNumber($par_date, $province);
+                            $par->date = $par_date;
+                            $par->employee_id = null;
+                            $par->agency_id = null;
+                            $par->actual_user = null;
+                            $par->fk_property_id = $property->id;
+                            $par->old_par_number = $old_par_number;
+                            $par->location = $par_location;
+                            $par->accountable_officer = $accountable_officer;
+                            $par->recieve_by_jocos = $recieve_by_jocos;
+                            $par->issued_by = $par_issued_by;
+                            $par->issued_to = $par_issued_to;
+                            $par->remarks = $par_remarks;
+                            if ($par->save(false)) {
+                            }
+                        }
                     }
-                    $data[] = [
-                        $date,
-                        $book_id,
-                        $unit_measure,
-                        $serial,
-                        $model,
-                        $quantity,
-                        $article,
-                        $amount,
-
-                    ];
                 }
+            } catch (ErrorException $e) {
+                $transaction->rollBack();
+                return json_encode($e->getMessage());
             }
+            $transaction->commit();
 
             $column = [
                 'book_id',
@@ -338,9 +382,37 @@ class PropertyController extends Controller
             // return json_encode(['isSuccess' => true]);
             ob_clean();
             echo "<pre>";
-            var_dump($data);
+            var_dump('success');
             echo "</pre>";
             return ob_get_clean();
         }
+    }
+    public function parNumber($date, $province)
+    {
+
+        $year = DateTime::createFromFormat('Y-m-d', $date)->format('Y');
+        $query = Yii::$app->db->createCommand("SELECT
+                     CAST(SUBSTRING_INDEX(par.par_number,'-',-1)AS UNSIGNED) as p_number
+                    FROM `par`
+                    INNER JOIN property ON par.fk_property_id = property.id 
+                    WHERE 
+                    property.province = :province
+                -- AND property.date LIKE :_year
+                ORDER BY  p_number DESC LIMIT 1")
+            ->bindValue(':province', $province)
+            // ->bindValue(':_year', $year . '%')
+            ->queryScalar();
+        $num = 1;
+        if (!empty($query)) {
+            $num = intval($query) + 1;
+        }
+        $zero = '';
+        $num_len =  4 - strlen($num);
+        if ($num_len > 0) {
+            $zero = str_repeat(0, $num_len);
+        }
+
+        $string = strtoupper($province) . '-' . $year . '-' . $zero . $num;
+        return $string;
     }
 }
