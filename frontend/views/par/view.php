@@ -102,10 +102,7 @@ BarcodeGenerator::widget($optionsArray);
                     </td>
 
                 </tr>
-                <tr>
-                    <th>qwe</th>
-                    <th>qwe</th>
-                </tr>
+               
                 <tr>
 
                     <th>Property No.: </th>
