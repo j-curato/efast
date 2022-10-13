@@ -91,7 +91,7 @@ BarcodeGenerator::widget($optionsArray);
                     </tr>
                     <tr>
                         <th>ITEM/BRAND/MODEL</th>
-                        <td colspan="2"><?php echo str_replace("[n]","<br>",$model->description)  ?></td>
+                        <td colspan="2"><?php echo str_replace("[n]", "<br>", $model->description)  ?></td>
                     </tr>
                     <tr>
                         <th>Serial Number</th>
@@ -153,7 +153,6 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
         max-width: 100%;
         position: relative;
         padding: 1px;
-        border-radius: 10px;
         border: 1px solid black;
         float: left;
     }
@@ -198,14 +197,18 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
         }
 
         td {
-            max-width: 350px;
-            min-width: 100px;
+            max-width: 20px;
+            min-width: 200px;
         }
 
         table {
             border: 1px solid black;
         }
 
+        .cut_line {
+            padding: .5px;
+            border: 2px solid black;
+        }
 
     }
 </style>
