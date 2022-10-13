@@ -44,64 +44,67 @@ BarcodeGenerator::widget($optionsArray);
         ]) ?>
     </p>
     <div class="container">
-        <table id="qr_table">
-            <tbody>
-                <tr>
+        <div class="cut_line">
+
+            <table id="qr_table">
+                <tbody>
+                    <tr>
 
 
-                    <td style="text-align: left;" class="no-border">
+                        <td style="text-align: left;" class="no-border">
 
-                        <span style="width: 100%;">
-                            <?php echo Html::img("@web/frontend/web/dti3.png", ['style' => 'width:50px']) ?>
-                        </span>
-                    </td>
-                    <td class="no-border ">
-                        <span>
-                            <?php echo Html::img($qrcode_filename, ['class' => 'qr', 'style' => 'float-right']) ?>
-                        </span>
-                    </td>
-                    <td class="no-border" style="text-align: right;">
-                        <div id="barcodeTarget" class="barcodeTarget"></div>
-                    </td>
+                            <span style="width: 100%;">
+                                <?php echo Html::img("@web/frontend/web/dti3.png", ['style' => 'width:50px']) ?>
+                            </span>
+                        </td>
+                        <td class="no-border">
+                            <span>
+                                <?php echo Html::img($qrcode_filename, ['class' => 'qr', 'style' => 'float-right']) ?>
+                            </span>
+                        </td>
+                        <td class="no-border" style="text-align: right;">
+                            <div id="barcodeTarget" class="barcodeTarget"></div>
+                        </td>
 
-                </tr>
+                    </tr>
 
 
-                <tr>
-                    <th>Property No.: </th>
-                    <td colspan="3"><?php echo $model->property_number ?></td>
-                </tr>
-                <tr>
-                    <th>SSF/Non-SSF</th>
-                    <td colspan="3"><?php echo $model->ppe_type ?></td>
-                </tr>
-                <tr>
-                    <th>SSF SP No.</th>
-                    <td colspan="3"><?php echo !empty($model->ssfCategory->ssf_number) ? $model->ssfCategory->ssf_number : '' ?></td>
-                </tr>
-                <tr>
-                    <th>Date Acquired</th>
-                    <td colspan="3"><?php echo !empty($model->date) ? DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y') : '' ?></td>
-                </tr>
-                <tr>
-                    <th>Article</th>
-                    <td colspan="3"><?php echo $model->article ?></td>
-                </tr>
-                <tr>
-                    <th>ITEM/BRAND/MODEL</th>
-                    <td colspan="3"><?php echo $model->description ?></td>
-                </tr>
-                <tr>
-                    <th>Serial Number</th>
-                    <td colspan="3"><?php echo $model->serial_number ?></td>
-                </tr>
-                <tr>
-                    <th>Total Acquisition Amount</th>
-                    <td colspan="3"><?php echo $model->acquisition_amount  ?></td>
-                </tr>
+                    <tr>
+                        <th>Property No.: </th>
+                        <td colspan="3"><?php echo $model->property_number ?></td>
+                    </tr>
+                    <tr>
+                        <th>SSF/Non-SSF</th>
+                        <td colspan="3"><?php echo $model->ppe_type ?></td>
+                    </tr>
+                    <tr>
+                        <th>SSF SP No.</th>
+                        <td colspan="3"><?php echo !empty($model->ssfCategory->ssf_number) ? $model->ssfCategory->ssf_number : '' ?></td>
+                    </tr>
+                    <tr>
+                        <th>Date Acquired</th>
+                        <td colspan="3"><?php echo !empty($model->date) ? DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y') : '' ?></td>
+                    </tr>
+                    <tr>
+                        <th>Article</th>
+                        <td colspan="3"><?php echo $model->article ?></td>
+                    </tr>
+                    <tr>
+                        <th>ITEM/BRAND/MODEL</th>
+                        <td colspan="3"><?php echo $model->description ?></td>
+                    </tr>
+                    <tr>
+                        <th>Serial Number</th>
+                        <td colspan="3"><?php echo $model->serial_number ?></td>
+                    </tr>
+                    <tr>
+                        <th>Total Acquisition Amount</th>
+                        <td colspan="3"><?php echo number_format($model->acquisition_amount, 2)  ?></td>
+                    </tr>
 
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
 
         <?= DetailView::widget([
             'model' => $model,
@@ -145,6 +148,16 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
         background-color: white;
     }
 
+
+    .cut_line {
+        max-width: 100%;
+        position: relative;
+        padding: 1px;
+        border-radius: 10px;
+        border: 1px solid black;
+        float: left;
+    }
+
     table,
     th,
     td {
@@ -170,8 +183,6 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
         width: 50px;
     }
 
-
-
     @media print {
 
         #detail_table,
@@ -189,6 +200,10 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
         td {
             max-width: 350px;
             min-width: 100px;
+        }
+
+        table {
+            border: 1px solid black;
         }
 
 
