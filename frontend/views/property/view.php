@@ -91,7 +91,7 @@ BarcodeGenerator::widget($optionsArray);
                     </tr>
                     <tr>
                         <th>ITEM/BRAND/MODEL</th>
-                        <td colspan="3"><?php echo $model->description ?></td>
+                        <td colspan="3"><?php echo str_replace("[n]","<br>",$model->description)  ?></td>
                     </tr>
                     <tr>
                         <th>Serial Number</th>

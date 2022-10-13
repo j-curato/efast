@@ -87,13 +87,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     return   $specs;
                 }
             ],
-            // [
-            //     'attribute' => 'description',
-            //     'value' => function ($model) {
-            //         $specs = preg_replace('#\[n\]#', "\n", $model->description);
-            //         return   $specs;
-            //     }
-            // ],
+            [
+                'attribute' => 'description',
+                'value' => function ($model) {
+                    $specs = preg_replace('#\[n\]#', "\n", $model->description);
+                    return   $specs;
+                }
+            ],
+            'province',
+            'ppe_type',
             'iar_number',
             [
                 'label' => 'Unit of Measure',
