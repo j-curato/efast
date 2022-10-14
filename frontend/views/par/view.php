@@ -136,7 +136,12 @@ BarcodeGenerator::widget($optionsArray);
                 </tr>
                 <tr>
                     <th>Location <br>
-                        (Provincial Office, indicate the Division, Name of City/Municipality in the case of NC or others, Name of Cooperator in the case of SSF)</th>
+                        <span style="font-size: 8px;"> (Provincial Office, indicate the Division,
+                            Name of City/Municipality in the case
+                            of NC or others,
+                            Name of Cooperator in the case of SSF)
+                        </span>
+                    </th>
                     <td colspan=''>
                         <?= $location ?>
                     </td>
