@@ -93,8 +93,11 @@ BarcodeGenerator::widget($optionsArray);
                             <?php echo Html::img("@web/frontend/web/dti3.png", ['style' => 'width:50px']) ?>
                         </span>
 
+                    </td>
+                    <td class="no-border">
+
                         <span>
-                            <?php echo Html::img($qrcode_filename, ['class' => 'qr', 'style' => 'float:right']) ?>
+                            <?php echo Html::img($qrcode_filename, ['class' => 'qr', 'style' => 'float:left']) ?>
                         </span>
                     </td>
                     <td colspan='2' class="no-border" style="text-align: right;">
@@ -106,31 +109,31 @@ BarcodeGenerator::widget($optionsArray);
                 <tr>
 
                     <th>Property No.: </th>
-                    <td colspan=''>
+                    <td colspan='2'>
                         <?= $property_number ?>
                     </td>
                 </tr>
                 <tr>
                     <th>New PAR No.: </th>
-                    <td colspan=''>
+                    <td colspan='2'>
                         <?= $par_number ?>
                     </td>
                 </tr>
                 <tr>
                     <th>Old PAR No.</th>
-                    <td colspan=''>
+                    <td colspan='2'>
                         <?= $old_par_number ?>
                     </td>
                 </tr>
                 <tr>
                     <th>PAR Date.</th>
-                    <td colspan=''>
+                    <td colspan='2'>
                         <?= $par_date ?>
                     </td>
                 </tr>
                 <tr>
                     <th>Office</th>
-                    <td colspan=''>
+                    <td colspan='2'>
                         <?= $province ?>
                     </td>
                 </tr>
@@ -142,31 +145,31 @@ BarcodeGenerator::widget($optionsArray);
                             Name of Cooperator in the case of SSF)
                         </span>
                     </th>
-                    <td colspan=''>
+                    <td colspan='2'>
                         <?= $location ?>
                     </td>
                 </tr>
                 <tr>
                     <th>Received by (Accountable Officer)</th>
-                    <td colspan=''>
+                    <td colspan='2'>
                         <?= $accountable_officer ?>
                     </td>
                 </tr>
                 <tr>
                     <th>Received by (JO/COS) (leave blank if not JO/COS)</th>
-                    <td colspan=''>
+                    <td colspan='2'>
                         <?= $actual_user ?>
                     </td>
                 </tr>
                 <tr>
                     <th>Issued by (Property Officer)</th>
-                    <td colspan=''>
+                    <td colspan='2'>
                         <?= $issued_by ?>
                     </td>
                 </tr>
                 <tr>
                     <th>Serviceable / Unserviceable</th>
-                    <td colspan=''>
+                    <td colspan='2'>
                         <?= $remarks ?>
                     </td>
                 </tr>
@@ -476,63 +479,32 @@ BarcodeGenerator::widget($optionsArray);
 
 </div>
 <style>
+    .container {
+        background-color: white;
+    }
+
+
+    .cut_line {
+        max-width: 100%;
+        position: relative;
+        padding: 1px;
+        border: 1px solid black;
+        float: left;
+    }
+
+    table,
     th,
     td {
         padding: 12px;
         border: 1px solid black;
     }
 
-    .no-border {
-        border: none;
-    }
-
-    .center {
-        text-align: center;
-    }
-
-    .amount {
-        text-align: right;
-    }
-
-    .par_form {
-        margin-left: auto;
-        margin-right: auto;
-        width: 100%;
-    }
-
-    .foot {
-        text-align: center;
-        border-bottom: 0;
-        border-top: 0;
-    }
-
-    .container {
-        background-color: white;
-        padding: 20px;
-    }
-
-    .cut_line {
-        max-width: 100%;
-        position: relative;
-        padding: 3px;
-        border: 1px solid black;
-        float: left;
-        margin-bottom: 5px;
-    }
 
     #sticker_table td {
         text-transform: uppercase;
         padding: 5px;
-        font-size: 10px;
 
     }
-
-    #sticker_table th {
-        padding: 5px;
-        max-width: 250px;
-        font-size: 10px;
-    }
-
 
     #sticker_table {
         margin: 20px;
@@ -550,40 +522,28 @@ BarcodeGenerator::widget($optionsArray);
             display: none;
         }
 
-        .container {
-            background-color: white;
-            padding: 0;
-            border: none;
-        }
-
-
-        th,
-        td {
-            padding: 1rem;
-            border: 1px solid black;
-        }
-
-        table {
-            padding: 0;
-        }
 
         .main-footer {
             display: none;
 
         }
 
-        #sticker_table td {
-            max-width: 160px;
-            min-width: 160px;
+        #sticker_table th {
             font-size: 10px;
             padding: 2px;
         }
 
-        #sticker_table th {
+        #sticker_table td {
+            max-width: 150px;
+            min-width: 150px;
             font-size: 10px;
             padding: 2px;
-            max-width: 160px;
-            min-width: 160px;
+        }
+
+        table {
+            border: 1px solid black;
+            max-width: 150px;
+            min-width: 150px;
         }
 
         .cut_line {
@@ -594,33 +554,7 @@ BarcodeGenerator::widget($optionsArray);
     }
 </style>
 
-<style>
-    @media print {
 
-        /* #detail_table,
-        .main-footer,
-        .btn {
-            display: none;
-        }
-
-        td,
-        th {
-            font-size: 10px;
-            padding: 2px;
-        }
-
-        td {
-            max-width: 350px;
-            min-width: 100px;
-        }
-
-        table {
-            border: 1px solid black;
-        } */
-
-
-    }
-</style>
 <script>
     $(document).ready(function() {
 
