@@ -589,7 +589,6 @@ BarcodeGenerator::widget($optionsArray);
         .cut_line {
             padding: .5px;
             border: 2px solid black;
-            float: left;
         }
 
     }
