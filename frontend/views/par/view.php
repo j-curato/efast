@@ -577,6 +577,8 @@ BarcodeGenerator::widget($optionsArray);
         #sticker_table th {
             font-size: 10px;
             padding: 2px;
+            max-width: 160px;
+            min-width: 160px;
         }
 
         .cut_line {
