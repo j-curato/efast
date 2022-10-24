@@ -35,6 +35,7 @@ class PayrollController extends Controller
                     'create',
                     'view',
                     'delete',
+                    'remove-row'
                 ],
                 'rules' => [
                     [
@@ -44,9 +45,10 @@ class PayrollController extends Controller
                             'update',
                             'create',
                             'delete',
+                            'remove-row'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],
@@ -54,6 +56,7 @@ class PayrollController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                    'remove-row' => ['POST'],
                 ],
             ],
         ];
@@ -485,7 +488,7 @@ class PayrollController extends Controller
     }
     public function actionRemoveRow($id)
     {
-        if ($_POST) {
+        if (Yii::$app->request->isPost) {
             DvAccountingEntries::findOne($id)->delete();
             return json_encode(['isSuccess' => true]);
         }
