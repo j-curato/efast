@@ -220,7 +220,7 @@ class CdrController extends Controller
             $query = Yii::$app->db->createCommand("SELECT 
                         liquidation.check_date,
                         liquidation.check_number,
-                        IFNULL(liquidation.particular,po_transaction.particular) as particular,
+                       po_transaction.particular,
                         0 as amount,
                         IFNULL(liq.withdrawals,0) as withdrawals,
                         IFNULL(liq.vat_nonvat,0)as vat_nonvat,
