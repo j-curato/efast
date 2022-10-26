@@ -21,7 +21,9 @@ class ChartOfAccountsApiController extends \yii\rest\ActiveController
         $behaviors['authenticator']['authMethods'] = [
             HttpBearerAuth::class
         ];
-        return array_merge(['corsFilter' => Cors::class], $behaviors);
+        return array_merge([
+            'corsFilter' => Cors::class,
+        ], $behaviors);
     }
     public function actions()
     {
