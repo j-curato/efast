@@ -484,7 +484,7 @@ class SyncDatabaseController extends \yii\web\Controller
             return json_encode($source_cash_recieve_diff);
         }
     }
-    public function actionChartOfAccount()
+    public function actionChartOfAccounts()
     {
         if ($_POST) {
             $db = Yii::$app->db;

@@ -29,10 +29,10 @@ class ChartOfAccountsApiController extends \yii\rest\ActiveController
     {
         $actions = parent::actions();
         unset($actions['create']);
-        unset($actions['index']);
-        unset($actions['view']);
-        unset($actions['delete']);
         unset($actions['update']);
+        unset($actions['delete']);
+        unset($actions['view']);
+        unset($actions['index']);
     }
 
     public function actionCreate()
