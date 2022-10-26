@@ -14,6 +14,8 @@ class m221006_005251_add_depreciation_id_and_impairment_id_in_chart_of_accounts_
     {
         $this->addColumn('chart_of_accounts', 'fk_depreciation_id', $this->integer());
         $this->addColumn('chart_of_accounts', 'fk_impairment_id', $this->integer());
+
+
         $this->createIndex(
             '{{%idx-chart_of_accounts-fk_depreciation_id}}',
             '{{%chart_of_accounts}}',
@@ -26,7 +28,7 @@ class m221006_005251_add_depreciation_id_and_impairment_id_in_chart_of_accounts_
             '{{%chart_of_accounts}}',
             'fk_depreciation_id',
             '{{%chart_of_accounts}}',
-            'id',
+            'id'
         );
         $this->createIndex(
             '{{%idx-chart_of_accounts-fk_impairment_id}}',
@@ -40,7 +42,7 @@ class m221006_005251_add_depreciation_id_and_impairment_id_in_chart_of_accounts_
             '{{%chart_of_accounts}}',
             'fk_impairment_id',
             '{{%chart_of_accounts}}',
-            'id',
+            'id'
         );
     }
 
