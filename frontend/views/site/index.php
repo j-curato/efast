@@ -1348,6 +1348,11 @@ $script = <<<JS
             await updateCloudPayeeApi()
             await updateCloudTransactionsApi()
             await updateCloudRecordAllotmentApi()
+
+            await updateCloudChartOfAccount()
+            await updateCloudSubAccount1()
+            await updateCloudSubAccount2()
+            
             await updateCloudProcessOrsApi()
             await updateCloudDvAucsApi()
             await updateCloudDvAucsEntriesApi()
@@ -1355,6 +1360,7 @@ $script = <<<JS
             await updateCloudCashDisbursementApi()
             await updateCloudAdvancesApi()
             await updateCloudAdvancesEntriesApi()
+
             $('.site-index').show();
             $('#dots5').hide()
         })

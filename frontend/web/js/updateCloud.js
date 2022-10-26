@@ -56,6 +56,7 @@ async function updateCloudDvAucsApi() {
   const advances_entries_difference = await getDifference("dv-aucs");
   await createDifference("dv-aucs-api", advances_entries_difference);
 }
+
 async function updateCloudDvAucsEntriesApi() {
   const advances_entries_difference = await getDifference("dv-aucs-entries");
   await createDifference("dv-aucs-entries-api", advances_entries_difference);
@@ -68,4 +69,17 @@ async function updateCloudDvAccountingEntriessApi() {
     "dv-accounting-entries-api",
     advances_entries_difference
   );
+}
+
+async function updateCloudChartOfAccount() {
+  const chart_of_account_difference = await getDifference("chart-of-account");
+  await createDifference("chart-of-account-api", chart_of_account_difference);
+}
+async function updateCloudSubAccount1() {
+  const sub_account_1_difference = await getDifference("sub-account1");
+  await createDifference("sub-account1-api", sub_account_1_difference);
+}
+async function updateCloudSubAccount2() {
+  const sub_account_2_difference = await getDifference("sub-account2");
+  await createDifference("sub-account2-api", sub_account_2_difference);
 }

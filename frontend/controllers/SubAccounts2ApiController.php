@@ -7,6 +7,8 @@ use ErrorException;
 use Yii;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
+use yii\helpers\Html;
+use yii\helpers\HtmlPurifier;
 
 class SubAccounts2ApiController extends \yii\rest\ActiveController
 {
@@ -35,49 +37,39 @@ class SubAccounts2ApiController extends \yii\rest\ActiveController
 
         $transaction = Yii::$app->db->beginTransaction();
         $source_sub_account2 = Yii::$app->getRequest()->getBodyParams();
-        // $target_sub_account2 = Yii::$app->db->createCommand('SELECT * FROM sub_accounts2')->queryAll();
-        // $source_sub_account2_diff = array_map(
-        //     'unserialize',
-        //     array_diff(array_map('serialize', $source_sub_account2), array_map('serialize', $target_sub_account2))
-        // );
         if (!empty($source_sub_account2)) {
             try {
-                if ($flag = true) {
 
-                    foreach ($source_sub_account2 as $val) {
-                        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM sub_accounts2 WHERE sub_accounts2.id = :id)")
-                            ->bindValue(':id', $val['id'])
-                            ->queryScalar();
-                        if (intval($query) === 1) {
-                            $update_sub_account2 = SubAccounts2::findOne($val['id']);
-                            $update_sub_account2->sub_accounts1_id = $val['sub_accounts1_id'];
-                            $update_sub_account2->object_code = $val['object_code'];
-                            $update_sub_account2->name = $val['name'];
-                            $update_sub_account2->is_active = $val['is_active'];
-                            if ($update_sub_account2->save(false)) {
-                            } else {
-                                $transaction->rollBack();
-                                return json_encode('wala na save sa Document Recieve update');
-                            }
-                        } else {
-                            $new_sub_account2 = new SubAccounts2();
-                            $new_sub_account2->id = $val['id'];
-                            $new_sub_account2->sub_accounts1_id = $val['sub_accounts1_id'];
-                            $new_sub_account2->object_code = $val['object_code'];
-                            $new_sub_account2->name = $val['name'];
-                            $new_sub_account2->is_active = $val['is_active'];
-                            if ($new_sub_account2->save(false)) {
-                            } else {
-                                $transaction->rollBack();
-                                return 'wala na sulod  sa Document Recieve ';
-                            }
-                        }
-                    }
+                $db = \Yii::$app->db;
+                $columns = [
+                    'id',
+                    'sub_accounts1_id',
+                    'object_code',
+                    'name',
+                    'is_active',
+                ];
+                $data = [];
+                foreach ($source_sub_account2 as $val) {
+
+                    $data[] = [
+                        'id' => !empty($val['id']) ? Html::encode($val['id']) : null,
+                        'sub_accounts1_id' => !empty($val['sub_accounts1_id']) ? Html::encode($val['sub_accounts1_id']) : null,
+                        'object_code' => !empty($val['object_code']) ? Html::encode($val['object_code']) : null,
+                        'name' => !empty($val['name']) ? HtmlPurifier::process($val['name']) : null,
+                        'is_active' => Html::encode($val['is_active']),
+                    ];
                 }
 
-                if ($flag) {
+                if (!empty($data)) {
+                    $sql = $db->queryBuilder->batchInsert('sub_accounts2', $columns, $data);
+                    $db->createCommand($sql . "ON DUPLICATE KEY UPDATE
+                        sub_accounts1_id=VALUES(sub_accounts1_id),
+                        object_code=VALUES(object_code),
+                        name=VALUES(name),
+                        is_active=VALUES(is_active)
+                        ")->execute();
                     $transaction->commit();
-                    return 'success';
+                    return json_encode('succcecs');
                 }
             } catch (ErrorException $e) {
                 return json_encode($e->getMessage());

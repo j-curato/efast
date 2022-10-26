@@ -7,6 +7,8 @@ use ErrorException;
 use yii\filters\Cors;
 use common\models\ChartOfAccounts;
 use yii\filters\auth\HttpBearerAuth;
+use yii\helpers\Html;
+use yii\helpers\HtmlPurifier;
 
 class ChartOfAccountsApiController extends \yii\rest\ActiveController
 {
@@ -25,69 +27,82 @@ class ChartOfAccountsApiController extends \yii\rest\ActiveController
     {
         $actions = parent::actions();
         unset($actions['create']);
+        unset($actions['index']);
+        unset($actions['view']);
+        unset($actions['delete']);
+        unset($actions['update']);
     }
 
     public function actionCreate()
-
     {
 
         $transaction = Yii::$app->db->beginTransaction();
-        $source_chart_of_accounts = Yii::$app->getRequest()->getBodyParams();
-        // $target_chart_of_accounts = Yii::$app->db->createCommand('SELECT * FROM chart_of_accounts')->queryAll();
-        // $source_chart_of_accounts_diff = array_map(
-        //     'unserialize',
-        //     array_diff(array_map('serialize', $source_chart_of_accounts), array_map('serialize', $target_chart_of_accounts))
-        // );
-        if (!empty($source_chart_of_accounts)) {
+        $chart_of_accounts = Yii::$app->getRequest()->getBodyParams();
+        if (!empty($chart_of_accounts)) {
             try {
-                if ($flag = true) {
-                    foreach ($source_chart_of_accounts as $val) {
-                        $query = Yii::$app->db->createCommand("SELECT EXISTS (SELECT * FROM chart_of_accounts WHERE chart_of_accounts.id = :id)")
-                            ->bindValue(':id', $val['id'])
-                            ->queryScalar();
-                        if (intval($query) === 1) {
-                            $p = ChartOfAccounts::findOne($val['id']);
-                            $p->uacs = $val['uacs'];
-                            $p->general_ledger = $val['general_ledger'];
-                            $p->major_account_id = $val['major_account_id'];
-                            $p->sub_major_account = $val['sub_major_account'];
-                            $p->sub_major_account_2_id = $val['sub_major_account_2_id'];
-                            $p->account_group = $val['account_group'];
-                            $p->current_noncurrent = $val['current_noncurrent'];
-                            $p->enable_disable = $val['enable_disable'];
-                            $p->normal_balance = $val['normal_balance'];
-                            $p->is_active = $val['is_active'];
-                            if ($p->save(false)) {
-                            } else {
-                                $flag = false;
-                                return 'wala na save';
-                            }
-                        } else {
-                            $new_chart = new ChartOfAccounts();
 
-                            $new_chart->id = $val['id'];
-                            $new_chart->uacs = $val['uacs'];
-                            $new_chart->general_ledger = $val['general_ledger'];
-                            $new_chart->major_account_id = $val['major_account_id'];
-                            $new_chart->sub_major_account = $val['sub_major_account'];
-                            $new_chart->sub_major_account_2_id = $val['sub_major_account_2_id'];
-                            $new_chart->account_group = $val['account_group'];
-                            $new_chart->current_noncurrent = $val['current_noncurrent'];
-                            $new_chart->enable_disable = $val['enable_disable'];
-                            $new_chart->normal_balance = $val['normal_balance'];
-                            $new_chart->is_active = $val['is_active'];
+                $db = \Yii::$app->db;
+                $columns = [
+                    'id',
+                    'uacs',
+                    'general_ledger',
+                    'major_account_id',
+                    'sub_major_account',
+                    'sub_major_account_2_id',
+                    'account_group',
+                    'current_noncurrent',
+                    'enable_disable',
+                    'normal_balance',
+                    'is_active',
+                    'is_province_visible',
+                    'fk_depreciation_id',
+                    'fk_impairment_id',
+                    'fk_ppe_useful_life_id',
 
-                            if ($new_chart->save(false)) {
-                            } else {
-                                $flag = false;
-                                return 'wala na sulod  sa chart of accounts';
-                            }
-                        }
-                    }
+                ];
+                $data = [];
+                foreach ($chart_of_accounts as $val) {
+
+                    $data[] = [
+                        'id' => !empty($val['id']) ? Html::encode($val['id']) : null,
+                        'uacs' => !empty($val['uacs']) ? HtmlPurifier::process($val['uacs']) : null,
+                        'general_ledger' => !empty($val['general_ledger']) ? HtmlPurifier::process($val['general_ledger']) : null,
+                        'major_account_id' => !empty($val['major_account_id']) ? Html::encode($val['major_account_id']) : null,
+                        'sub_major_account' => !empty($val['sub_major_account']) ? Html::encode($val['sub_major_account']) : null,
+                        'sub_major_account_2_id' => !empty($val['sub_major_account_2_id']) ? Html::encode($val['sub_major_account_2_id']) : null,
+                        'account_group' => !empty($val['account_group']) ? HtmlPurifier::process($val['account_group']) : null,
+                        'current_noncurrent' => !empty($val['current_noncurrent']) ? HtmlPurifier::process($val['current_noncurrent']) : null,
+                        'enable_disable' => Html::encode($val['enable_disable']),
+                        'normal_balance' => !empty($val['normal_balance']) ? HtmlPurifier::process($val['normal_balance']) : null,
+                        'is_active' => Html::encode($val['is_active']),
+                        'is_province_visible' => Html::encode($val['is_province_visible']),
+                        'fk_depreciation_id' => !empty($val['fk_depreciation_id']) ? Html::encode($val['fk_depreciation_id']) : null,
+                        'fk_impairment_id' => !empty($val['fk_impairment_id']) ? Html::encode($val['fk_impairment_id']) : null,
+                        'fk_ppe_useful_life_id' => !empty($val['fk_ppe_useful_life_id']) ? Html::encode($val['fk_ppe_useful_life_id']) : null,
+
+                    ];
                 }
-                if ($flag) {
+
+                if (!empty($data)) {
+                    $sql = $db->queryBuilder->batchInsert('chart_of_accountrs', $columns, $data);
+                    $db->createCommand($sql . "ON DUPLICATE KEY UPDATE
+                        uacs=VALUES(uacs),
+                        general_ledger=VALUES(general_ledger),
+                        major_account_id=VALUES(major_account_id),
+                        sub_major_account=VALUES(sub_major_account),
+                        sub_major_account_2_id=VALUES(sub_major_account_2_id),
+                        account_group=VALUES(account_group),
+                        current_noncurrent=VALUES(current_noncurrent),
+                        enable_disable=VALUES(enable_disable),
+                        normal_balance=VALUES(normal_balance),
+                        is_active=VALUES(is_active),
+                        is_province_visible=VALUES(is_province_visible),
+                        fk_depreciation_id=VALUES(fk_depreciation_id),
+                        fk_impairment_id=VALUES(fk_impairment_id),
+                        fk_ppe_useful_life_id=VALUES(fk_ppe_useful_life_id)
+                        ")->execute();
                     $transaction->commit();
-                    return 'success';
+                    return json_encode('succcecs');
                 }
             } catch (ErrorException $e) {
                 return json_encode($e->getMessage());
