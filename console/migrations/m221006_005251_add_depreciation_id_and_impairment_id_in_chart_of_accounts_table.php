@@ -23,27 +23,27 @@ class m221006_005251_add_depreciation_id_and_impairment_id_in_chart_of_accounts_
         );
 
         // add foreign key for table `{{%dv_aucs}}`
-        // $this->addForeignKey(
-        //     '{{%fk-chart_of_accounts-fk_depreciation_id}}',
-        //     '{{%chart_of_accounts}}',
-        //     'fk_depreciation_id',
-        //     '{{%chart_of_accounts}}',
-        //     'id'
-        // );
-        // $this->createIndex(
-        //     '{{%idx-chart_of_accounts-fk_impairment_id}}',
-        //     '{{%chart_of_accounts}}',
-        //     'fk_impairment_id'
-        // );
+        $this->addForeignKey(
+            '{{%fk-chart_of_accounts-fk_depreciation_id}}',
+            '{{%chart_of_accounts}}',
+            'fk_depreciation_id',
+            '{{%chart_of_accounts}}',
+            'id'
+        );
+        $this->createIndex(
+            '{{%idx-chart_of_accounts-fk_impairment_id}}',
+            '{{%chart_of_accounts}}',
+            'fk_impairment_id'
+        );
 
-        // // add foreign key for table `{{%dv_aucs}}`
-        // $this->addForeignKey(
-        //     '{{%fk-chart_of_accounts-fk_impairment_id}}',
-        //     '{{%chart_of_accounts}}',
-        //     'fk_impairment_id',
-        //     '{{%chart_of_accounts}}',
-        //     'id'
-        // );
+        // add foreign key for table `{{%dv_aucs}}`
+        $this->addForeignKey(
+            '{{%fk-chart_of_accounts-fk_impairment_id}}',
+            '{{%chart_of_accounts}}',
+            'fk_impairment_id',
+            '{{%chart_of_accounts}}',
+            'id'
+        );
     }
 
     /**
