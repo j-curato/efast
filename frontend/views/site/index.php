@@ -1350,8 +1350,8 @@ $script = <<<JS
             await updateCloudRecordAllotmentApi()
 
             // await updateCloudChartOfAccount()
-            await updateCloudSubAccount1()
-            await updateCloudSubAccount2()
+            // await updateCloudSubAccount1()
+            // await updateCloudSubAccount2()
 
             await updateCloudProcessOrsApi()
             await updateCloudDvAucsApi()
