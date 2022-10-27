@@ -100,7 +100,7 @@ BarcodeGenerator::widget($optionsArray);
                     </tr>
                     <tr>
                         <th>Total Acquisition Amount</th>
-                        <td colspan="2"><?php echo number_format($model->acquisition_amount, 2)  ?></td>
+                        <td colspan="2"><?php echo !empty($model->acquisition_amount)?number_format($model->acquisition_amount, 2):''  ?></td>
                     </tr>
 
                 </tbody>
