@@ -118,6 +118,7 @@ use yii\widgets\ActiveForm;
             $description = !empty($model->description) ? preg_replace('#\[n\]#', "\n", $model->description) : '';;
         }
         ?>
+        <?= $form->field($model, 'serial_number')->textInput() ?>
         <?= $form->field($model, 'article')->textarea(['maxlength' => true,]) ?>
         <?= $form->field($model, 'description')->textarea(['maxlength' => true, 'style' => 'display:none;']) ?>
         <textarea id="description" cols="30" rows="5" style="max-width:100%;width:100%"><?php echo $description; ?></textarea>
