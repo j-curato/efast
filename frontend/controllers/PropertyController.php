@@ -415,4 +415,40 @@ class PropertyController extends Controller
         $string = strtoupper($province) . '-' . $year . '-' . $zero . $num;
         return $string;
     }
+    public function actionBlankSticker()
+    {
+        return $this->render('property_sticker');
+    }
+    public function actionCreateBlank()
+    {
+
+        $query = Yii::$app->db->createCommand("SELECT
+        CAST(SUBSTRING_INDEX(property.property_number,'-',-1)AS UNSIGNED) as p_number
+                FROM property
+                -- AND property.date LIKE :_year
+                ORDER BY  p_number DESC LIMIT 1")
+            ->queryScalar();
+
+
+
+        $num  = 1400;
+        $zero = '';
+        $num_len =  5 - strlen($num);
+        if ($num_len > 0) {
+            $zero = str_repeat(0, $num_len);
+        }
+        for ($i = 0; $i < 100; $i++) {
+            $property_number = 'PPE-' . $zero . $num;
+            $property = new Property();
+            $property->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+            $property->property_number = $property_number;
+            if ($property->save(false)) {
+            }
+            else{
+                return 'failed';
+            }
+            $num++;
+        }
+        return 'success';
+    }
 }
