@@ -436,11 +436,13 @@ class PropertyController extends Controller
 
         $num  = 1400;
         $zero = '';
-        $num_len =  5 - strlen($num);
-        if ($num_len > 0) {
-            $zero = str_repeat(0, $num_len);
-        }
+
+
         for ($i = 0; $i < 100; $i++) {
+            $num_len =  5 - strlen($num);
+            if ($num_len > 0) {
+                $zero = str_repeat(0, $num_len);
+            }
             $property_number = 'PPE-' . $zero . $num;
 
             $check = YIi::$app->db->createCommand("SELECT id FROm property WHERE property_number = :property_number")
@@ -455,10 +457,19 @@ class PropertyController extends Controller
             }
 
             if ($property->save(false)) {
-                $par = new Par();
-                $par->par_number = $property_number;
-                $par->fk_property_id = $property->id;
-                $par->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+
+                $check_par = YIi::$app->db->createCommand("SELECT id FROM par WHERE fk_property_id = :property_id")
+                    ->bindValue(':property_id', $property->id)
+                    ->queryScalar();
+                if (!empty($check_par)) {
+                    $par  = Par::findOne($check_par);
+                } else {
+
+                    $par = new Par();
+                    $par->fk_property_id = $property->id;
+                    $par->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                }
+                $par->par_number = 'PAR-' . $zero . $num;
                 if ($par->save(false)) {
                 }
             } else {
