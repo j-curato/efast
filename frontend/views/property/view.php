@@ -212,7 +212,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
         }
 
         #qr_table .item {
-            padding-bottom: 50px;
+            padding-bottom: 20px;
         }
 
 
