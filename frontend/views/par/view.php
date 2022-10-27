@@ -18,7 +18,7 @@ $dateAquired = $d->format('F d, Y');
 $description = preg_replace('#\[n\]#', "<br>", $model->property->description);
 
 $article = $model->property->article;
-// $book = $model->property->book->name;
+$book = '';
 $par_number = $model->par_number;
 $property_number = $stickerDetails['property_number'];
 $old_par_number = $stickerDetails['old_par_number'];
@@ -134,7 +134,10 @@ BarcodeGenerator::widget($optionsArray);
                 <tr>
                     <th>Office</th>
                     <td colspan='2'>
-                        <?= $province ?>
+                        <?php 
+                        // echo
+                        //  $province 
+                        ?>
                     </td>
                 </tr>
                 <tr>
@@ -228,20 +231,20 @@ BarcodeGenerator::widget($optionsArray);
                     </tr>
                     <?php
 
-                    echo "<tr>
-                        <td>{$model->property->quantity}</td>
-                        <td>{$model->property->unitOfMeasure->unit_of_measure}</td>
-                        <td class='amount'>" . number_format($model->property->acquisition_amount, 2) . "</td>
-                        <td class='amount'>" . number_format($total_cost, 2) . "</td>
-                        <td>
-                        <span style='font-weight:bold;'>{$article}</span>
-                        <br>
-                        <span style='font-style:italic;'>$description</span>
+                    // echo "<tr>
+                    //     <td>{$model->property->quantity}</td>
+                    //     <td>{$model->property->unitOfMeasure->unit_of_measure}</td>
+                    //     <td class='amount'>" . number_format($model->property->acquisition_amount, 2) . "</td>
+                    //     <td class='amount'>" . number_format($total_cost, 2) . "</td>
+                    //     <td>
+                    //     <span style='font-weight:bold;'>{$article}</span>
+                    //     <br>
+                    //     <span style='font-style:italic;'>$description</span>
                         
-                        </td>
-                        <td>{$model->property->property_number}</td>
-                        <td class='center'>{$model->property->estimated_life}</td>
-                    </tr>";
+                    //     </td>
+                    //     <td>{$model->property->property_number}</td>
+                    //     <td class='center'>{$model->property->estimated_life}</td>
+                    // </tr>";
                     for ($i = 0; $i < 4; $i++) {
                         echo "<tr>
                         <td></td>
@@ -272,7 +275,9 @@ BarcodeGenerator::widget($optionsArray);
                             <span>Position/Office</span>
                             <br>
                             <br>
-                            <span style="border-bottom: 1px solid black;"><?php echo DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y') ?></span>
+                            <span style="border-bottom: 1px solid black;"><?php 
+                            // echo DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y')
+                             ?></span>
                             <br>
                             <span>Date</span>
                         </td>

@@ -180,13 +180,15 @@ class PropertyController extends Controller
     {
 
         $year = DateTime::createFromFormat('Y-m-d', $date)->format('Y');
-        $query = Yii::$app->db->createCommand("SELECT
+        $query = Yii::$app->db->createCommand(
+            "SELECT
         CAST(SUBSTRING_INDEX(property.property_number,'-',-1)AS UNSIGNED) as p_number
                 FROM property
-                WHERE property.province = :province
+                -- WHERE property.province = :province
                 -- AND property.date LIKE :_year
-                ORDER BY  p_number DESC LIMIT 1")
-            ->bindValue(':province', $province)
+                ORDER BY  p_number DESC LIMIT 1"
+        )
+            // ->bindValue(':province', $province)
             // ->bindValue(':_year', $year . '%')
             ->queryScalar();
         $num = 1;
@@ -199,7 +201,8 @@ class PropertyController extends Controller
             $zero = str_repeat(0, $num_len);
         }
 
-        $string = strtoupper($province) . '-' . $year . '-' . $zero . $num;
+        // $string = strtoupper($province) . '-' . $year . '-' . $zero . $num;
+        $string = 'PPE-' . $zero . $num;
         return $string;
     }
     public function actionSearchProperty($q = null, $id = null, $province = null)
@@ -439,12 +442,26 @@ class PropertyController extends Controller
         }
         for ($i = 0; $i < 100; $i++) {
             $property_number = 'PPE-' . $zero . $num;
-            $property = new Property();
-            $property->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            $property->property_number = $property_number;
-            if ($property->save(false)) {
+
+            $check = YIi::$app->db->createCommand("SELECT id FROm property WHERE property_number = :property_number")
+                ->bindValue(':property_number', $property_number)
+                ->queryOne();
+            if (!empty($check)) {
+                $property = Property::findOne($check);
+            } else {
+                $property = new Property();
+                $property->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $property->property_number = $property_number;
             }
-            else{
+
+            if ($property->save(false)) {
+                $par = new Par();
+                $par->par_number = $property_number;
+                $par->fk_property_id = $property->id;
+                $par->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                if ($par->save(false)) {
+                }
+            } else {
                 return 'failed';
             }
             $num++;
