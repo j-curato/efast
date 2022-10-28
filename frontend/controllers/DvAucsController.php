@@ -460,6 +460,7 @@ class DvAucsController extends Controller
 
                 $ad_entry = new AdvancesEntries();
                 $ad_entry->is_deleted = 9;
+                $ad_entry->advances_id = $advances_id;
             } else {
                 $ad_entry = AdvancesEntries::findOne($advances_entries_id[$i]);
                 if (!empty($ad_entry->advances->cashDisbursement->id)) {
@@ -468,7 +469,7 @@ class DvAucsController extends Controller
                     }
                 }
             }
-            $ad_entry->advances_id = $advances_id;
+
             $ad_entry->fund_source_type = $fund_source_type[$i];
             $ad_entry->object_code = $object_codes[$i];
             $ad_entry->fund_source = trim($val, " \r\n\t");
