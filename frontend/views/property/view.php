@@ -210,9 +210,9 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
             padding: .5px;
             border: 2px solid black;
         }
-
+/* if blank stikcer padding 50 */
         #qr_table .item {
-            padding-bottom: 20px;
+            padding-bottom: 50px;
         }
 
 
