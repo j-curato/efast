@@ -89,7 +89,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     if (!empty($model->recieved_at) &&  DateTime::createFromFormat('Y-m-d H:i:s', $model->recieved_at)->format('Y') >= 1) {
         $recieve_timestamp = DateTime::createFromFormat('Y-m-d H:i:s', $model->recieved_at);
-        $transaction_date = $recieve_timestamp->format('F d, y');
+        $transaction_date = $recieve_timestamp->format('F d, Y');
         $transaction_time = $recieve_timestamp->format('h:i A');
     }
 
@@ -111,9 +111,12 @@ $this->params['breadcrumbs'][] = $this->title;
             ->bindValue(':id', $model->id)
             ->queryScalar();
 
-        $budget = DateTime::createFromFormat('Y-m-d H:i:s', $ors_created_at);
-        $budget_date = $budget->format('F d,Y');
-        $budget_time_in =  $budget->format('h:i A');
+        if (!empty($ors_created_at)) {
+
+            $budget = DateTime::createFromFormat('Y-m-d H:i:s', $ors_created_at);
+            $budget_date = $budget->format('F d,Y');
+            $budget_time_in =  $budget->format('h:i A');
+        }
     }
     $gross_amount = Yii::$app->db->createCommand("SELECT 
     IFNULL(SUM(dv_aucs_entries.amount_disbursed),0)+
@@ -189,7 +192,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ?></span>
                         <br>
                         <span>DV Amount: </span>
-                        <span style="text-decoration: underline;"> <?= number_format($net_amount, 2) ?></span>
+                        <span style="text-decoration: underline;"> <?= !empty($net_amount) ? number_format($net_amount, 2) : '' ?></span>
                         <br>
                         <span>ORS No.</span>
                         <span style="text-decoration:underline ;">
@@ -214,7 +217,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </span>
                         <br>
                         <span>Gross Amount: </span>
-                        <span style="text-decoration: underline;"><?php echo number_format($gross_amount, 2) ?></span>
+                        <span style="text-decoration: underline;"><?php echo !empty($gross_amount) ? number_format($gross_amount, 2) : '' ?></span>
                     </th>
                 </tr>
                 <tr>
@@ -315,13 +318,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
 
 
-               <tr>
+                <tr>
                     <th colspan="6" class="no-border">
 
                         <span>Part 2: Checklist of Attachments/Supporting documents (for FAD use) </span>
                     </th>
                 </tr>
-                  <!--
+                <!--
                 <tr>
                     <th class='no-border'><span>
                             Transaction:
