@@ -24,7 +24,7 @@ $property_number = $stickerDetails['property_number'];
 $old_par_number = $stickerDetails['old_par_number'];
 $par_date = !empty($model->date) ? $model->date : '';
 $location = !empty($model->location) ? $model->location : '';
-$province = $stickerDetails['province'];
+$province = !empty($stickerDetails['province']) ? $stickerDetails['province'] : '';
 $accountable_officer = $stickerDetails['accountable_officer'];
 $actual_user = $stickerDetails['actual_user'];
 $issued_by = $stickerDetails['issued_by'];
@@ -134,9 +134,9 @@ BarcodeGenerator::widget($optionsArray);
                 <tr>
                     <th>Office</th>
                     <td colspan='2'>
-                        <?php 
-                        // echo
-                        //  $province 
+                        <?php
+                        echo
+                        !$province
                         ?>
                     </td>
                 </tr>
@@ -240,7 +240,7 @@ BarcodeGenerator::widget($optionsArray);
                     //     <span style='font-weight:bold;'>{$article}</span>
                     //     <br>
                     //     <span style='font-style:italic;'>$description</span>
-                        
+
                     //     </td>
                     //     <td>{$model->property->property_number}</td>
                     //     <td class='center'>{$model->property->estimated_life}</td>
@@ -275,9 +275,9 @@ BarcodeGenerator::widget($optionsArray);
                             <span>Position/Office</span>
                             <br>
                             <br>
-                            <span style="border-bottom: 1px solid black;"><?php 
-                            // echo DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y')
-                             ?></span>
+                            <span style="border-bottom: 1px solid black;"><?php
+                                                                            // echo DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y')
+                                                                            ?></span>
                             <br>
                             <span>Date</span>
                         </td>
