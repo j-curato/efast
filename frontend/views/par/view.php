@@ -135,8 +135,7 @@ BarcodeGenerator::widget($optionsArray);
                     <th>Office</th>
                     <td colspan='2'>
                         <?php
-                        echo
-                        !$province
+                        echo $province
                         ?>
                     </td>
                 </tr>
