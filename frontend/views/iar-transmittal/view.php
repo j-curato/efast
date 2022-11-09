@@ -5,6 +5,7 @@ use app\models\EmployeePosition;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\web\JsExpression;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PurchaseOrderTransmittal */
@@ -102,10 +103,10 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row head" style="margin-top:1rem">Thank you.</div>
         <div class="row head" style="margin-top:4rem">Very truly yours,</div>
         <div class="row head" style="margin-top:2rem">
-            <div class="head" style="font-weight:bold;right:10;" id="asig_1">
+            <div class="head" style="font-weight:bold;right:10;" id="signatory">
 
             </div>
-            <div class="head" id="oic">Regional Director</div>
+            <div class="head" id="asig_pos">Regional Director</div>
         </div>
         <div class="row" style="margin-top:2rem">
             <div class="head" id="for_rd"></div>
@@ -116,51 +117,33 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <div class="row" style="margin-top: 20px;">
 
-            <div class="col-sm-3 as">
-                <label for="assignatory_1">Regional Director </label>
-                <select name="" id="assignatory_1" class="assignatory" onchange="regionalDirector(this)" style="width: 100%;">
-                    <option value=""></option>
-                </select>
-            </div>
-            <div class="col-sm-3 as">
-                <label for="qwe">OIC</label>
-                <!-- <select id="assignatory" onchange="sample(this)" name="assignatory" class=" select" style="width: 100%">
-                    <option></option>
-                </select> -->
-                <?php
-                echo Select2::widget([
-                    'data' => ArrayHelper::map(Assignatory::find()->asArray()->all(), 'name', 'name'),
-                    'name' => 'ass',
-                    'options' => ['id' => 'assignatory', 'onChange' => 'sample(this)'],
-                    'pluginOptions' => [
-                        'placeholder' => 'select',
-                        'allowClear' => true,
+            <div class="row select_row" style="margin-top: 20px;">
+                <div class="col-sm-3">
+                    <label for="employee">Select Signatory</label>
+                    <?= Select2::widget([
+                        'name' => 'employee',
+                        'id' => 'employee',
+                        'options' => ['placeholder' => 'Search for a Employee ...'],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                            'minimumInputLength' => 1,
+                            'language' => [
+                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                            ],
+                            'ajax' => [
+                                'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                                'dataType' => 'json',
+                                'delay' => 250,
+                                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                                'cache' => true,
+                            ],
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            // 'templateResult' => new JsExpression(''),
+                            // 'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        ],
 
-                    ],
-                ])
-                ?>
-            </div>
-            <div class="col-sm-3 as">
-                <label for="oic">Regional Director </label>
-                <select name="" id="oic_rd" onchange="oicRd(this)" style="width: 100%;">
-                    <option value=""></option>
-                </select>
-            </div>
-            <div class="col-sm-3 as">
-                <label for="qwe">OIC Position</label>
-
-                <?php
-                echo Select2::widget([
-                    'data' => ArrayHelper::map(EmployeePosition::find()->asArray()->all(), 'position', 'position'),
-                    'name' => 'oic_position',
-                    'id' => 'oic_position',
-                    'options' => ['onChange' => 'oic_position(this)'],
-                    'pluginOptions' => [
-                        'placeholder' => 'select',
-                        'allowClear' => true,
-                    ],
-                ])
-                ?>
+                    ]) ?>
+                </div>
             </div>
         </div>
     </div>
@@ -348,73 +331,23 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", []);
         }
     }
 </style>
+
 <script>
-    var reference = []
-    // $(document).ready(function() {
-    //     reference = ["GAY A. TIDALGO"]
-    //     $('#assignatory').select2({
-    //         data: reference,
-    //         placeholder: "Select ",
-
-    //     })
-    // })
-    // $("#assignatory").change(function() {
-    //     console.log("qwe")
-    // })
-    function oic_position(q) {
-        console.log($(q).val())
-        $('#oic_position_text').text($(q).val())
-
-    }
-
-    function oicRd(x) {
-        $("#oic").text(x.value)
-    }
-
-    function regionalDirector(x) {
-        $("#asig_1").text(x.value)
-    }
-
-    function sample(q) {
-        console.log(q.value)
-
-        $("#ass").text(q.value)
-        if (q.value == '') {
-            $("#for_rd").text('')
-        } else {
-
-            $("#for_rd").text('For the Regional Director')
-        }
-
-
-    }
     $(document).ready(function() {
-        var oic_rd = ['Officer-in-Charge', 'Regional Director']
-        $('#oic_rd').select2({
-            data: oic_rd,
-            placeholder: "Select ",
-            allowClear: true,
-            closeOnSelect: true
-        })
-        $.getJSON(window.location.pathname + '?r=assignatory/get-all-assignatory')
-
-            .then(function(data) {
-
-                var array = []
-                $.each(data, function(key, val) {
-                    array.push({
-                        id: val.name,
-                        text: val.name
-                    })
-                })
-                assignatory = array
-                $('.assignatory').select2({
-                    data: assignatory,
-                    placeholder: "Select ",
-                    allowClear: true,
-                    closeOnSelect: true
-                })
-
+        $('#employee').on('change', () => {
+            const emp_id = $('#employee').val()
+            $.ajax({
+                url: window.location.pathname + "?r=employee/search-employee",
+                data: {
+                    id: emp_id
+                },
+                success: function(data) {
+                    $('#asig_pos').text(data.results.position)
+                    $('#signatory').text(data.results.text)
+                }
             })
+        })
+
+
     })
 </script>
