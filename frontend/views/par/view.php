@@ -18,7 +18,7 @@ $dateAquired = $d->format('F d, Y');
 $description = preg_replace('#\[n\]#', "<br>", $model->property->description);
 
 $article = $model->property->article;
-$book = '';
+$book = !empty($model->property->book->name) ? $model->property->book->name : '';
 $par_number = $model->par_number;
 $property_number = $stickerDetails['property_number'];
 $old_par_number = $stickerDetails['old_par_number'];
@@ -37,11 +37,12 @@ $recieved_by = '';
 //   strtoupper($model->employee->f_name) . ' ' . strtoupper(substr($model->employee->m_name, 0, 1)) . '. ' . strtoupper($model->employee->l_name);
 $recieved_by_position = '';
 // $model->employee->position;
-$property_custodian = '';
-//  strtoupper($model->property->employee->f_name) . ' ' . strtoupper(substr($model->property->employee->m_name, 0, 1)) . '. ' .
-//     strtoupper($model->property->employee->l_name);
-$property_custodian_position = '';
-// $model->property->employee->position
+
+$property_custodian = !empty($model->property->employee->f_name) ?
+    strtoupper($model->property->employee->f_name) . ' ' . strtoupper(substr($model->property->employee->m_name, 0, 1)) . '. ' .
+    strtoupper($model->property->employee->l_name) : '';
+$property_custodian_position = !empty($model->property->employee->position) ? $model->property->employee->position : '';
+$accountable_officer_position =  !empty($model->employee->position) ? strtoupper($model->employee->position) : '';
 
 
 
@@ -64,6 +65,9 @@ $optionsArray = array(
 
 );
 BarcodeGenerator::widget($optionsArray);
+
+$quantity = !empty($model->property->quantity) ? $model->property->quantity : '';
+$unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $model->property->unitOfMeasure->unit_of_measure : '';
 ?>
 <div class="par-view">
 
@@ -181,11 +185,6 @@ BarcodeGenerator::widget($optionsArray);
         <?php
 
         if ($model->property->acquisition_amount < 1500) {
-
-
-
-
-
         ?>
             <table class="par_form">
                 <tbody>
@@ -230,20 +229,20 @@ BarcodeGenerator::widget($optionsArray);
                     </tr>
                     <?php
 
-                    // echo "<tr>
-                    //     <td>{$model->property->quantity}</td>
-                    //     <td>{$model->property->unitOfMeasure->unit_of_measure}</td>
-                    //     <td class='amount'>" . number_format($model->property->acquisition_amount, 2) . "</td>
-                    //     <td class='amount'>" . number_format($total_cost, 2) . "</td>
-                    //     <td>
-                    //     <span style='font-weight:bold;'>{$article}</span>
-                    //     <br>
-                    //     <span style='font-style:italic;'>$description</span>
+                    echo "<tr>
+                        <td>{$quantity}</td>
+                        <td>{$unit_of_measure}</td>
+                        <td class='amount'>" . number_format($model->property->acquisition_amount, 2) . "</td>
+                        <td class='amount'>" . number_format($total_cost, 2) . "</td>
+                        <td>
+                        <span style='font-weight:bold;'>{$article}</span>
+                        <br>
+                        <span style='font-style:italic;'>$description</span>
 
-                    //     </td>
-                    //     <td>{$model->property->property_number}</td>
-                    //     <td class='center'>{$model->property->estimated_life}</td>
-                    // </tr>";
+                        </td>
+                        <td>{$model->property->property_number}</td>
+                        <td class='center'>{$model->property->estimated_life}</td>
+                    </tr>";
                     for ($i = 0; $i < 4; $i++) {
                         echo "<tr>
                         <td></td>
@@ -274,9 +273,10 @@ BarcodeGenerator::widget($optionsArray);
                             <span>Position/Office</span>
                             <br>
                             <br>
-                            <span style="border-bottom: 1px solid black;"><?php
-                                                                            // echo DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y')
-                                                                            ?></span>
+                            <span style="border-bottom: 1px solid black;">
+                                <?php
+                                echo DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y')
+                                ?></span>
                             <br>
                             <span>Date</span>
                         </td>
@@ -284,11 +284,12 @@ BarcodeGenerator::widget($optionsArray);
                             <br>
                             <br>
                             <br>
-                            <span style="text-decoration: underline;font-weight:bold;"><?php echo $recieved_by ?></span>
+                            <span style="text-decoration: underline;font-weight:bold;"><?php echo $accountable_officer ?></span>
                             <br>
                             <span>Signature Over Printed Name</span>
                             <br>
-                            <span><?php echo $recieved_by_position ?></span>
+                            <br>
+                            <b><?php echo $accountable_officer_position ?></b>
                             <br>
                             <span>Position/Office</span>
                             <br>
@@ -329,7 +330,7 @@ BarcodeGenerator::widget($optionsArray);
                         <th colspan="3">
                             <span>Fund Cluster:</span>
                             <span><?php
-                                    // echo $model->property->book->name;
+                                    echo $book;
                                     ?></span>
                         </th>
                         <th colspan="3">
@@ -347,19 +348,19 @@ BarcodeGenerator::widget($optionsArray);
                     </tr>
                     <?php
 
-                    // echo "<tr>
-                    //     <td>{$model->property->quantity}</td>
-                    //     <td>{$model->property->unitOfMeasure->unit_of_measure}</td>
-                    //     <td>
-                    //     <span style='font-weight:bold;'>{$article}</span>
-                    //     <br>
-                    //     <span style='font-style:italic;'>$description</span>
+                    echo "<tr>
+                        <td>{$quantity}</td>
+                        <td>{$unit_of_measure}</td>
+                        <td>
+                        <span style='font-weight:bold;'>{$article}</span>
+                        <br>
+                        <span style='font-style:italic;'>$description</span>
 
-                    //     </td>
-                    //     <td>{$model->property->property_number}</td>
-                    //     <td>{$dateAquired}</td>
-                    //     <td class='amount'>" . number_format($model->property->acquisition_amount, 2) . "</td>
-                    // </tr>";
+                        </td>
+                        <td>{$model->property->property_number}</td>
+                        <td>{$dateAquired}</td>
+                        <td class='amount'>" . number_format($model->property->acquisition_amount, 2) . "</td>
+                    </tr>";
                     for ($i = 0; $i < 4; $i++) {
                         echo "<tr>
                         <td></td>
@@ -373,81 +374,68 @@ BarcodeGenerator::widget($optionsArray);
                     ?>
 
                     <tr>
-                        <th class='foot' colspan="3">Received By</th>
-                        <th class='foot' colspan="3">Issued By</th>
+                        <th class='foot no-border' colspan="3">Received By</th>
+                        <th class='foot no-border' colspan="3">Issued By</th>
                     </tr>
                     <tr>
-                        <th class='foot' colspan="3">
+                        <td class='foot no-border center' colspan="3">
                             <span style="text-decoration:underline">
-                                <span><?php
-                                        // echo strtoupper($model->employee->f_name); 
-                                        ?>
-                                </span>
-                                <span><?php
-                                        // echo strtoupper(substr($model->employee->m_name, 0, 1)); 
-                                        ?>
-                                    . </span>
-                                <span><?php
-                                        // echo strtoupper($model->employee->l_name); 
-                                        ?>
-                                </span>
+                                <b><?php
+                                    echo $accountable_officer;
+                                    ?>
+                                </b>
+
                             </span>
                             <br>
                             <span> Signatue over Printed Name of End User</span>
-                        </th>
-                        <th class='foot' colspan="3">
+                        </td>
+                        <td class='foot no-border center' colspan="3">
                             <span style="text-decoration:underline">
-                                <span><?php
-                                        // echo strtoupper($model->property->employee->f_name); 
-                                        ?>
-                                </span>
-                                <span><?php
-                                        // echo strtoupper(substr($model->property->employee->m_name, 0, 1)); 
-                                        ?>
-                                    .
-                                </span>
-                                <span><?php
-                                        // echo strtoupper($model->property->employee->l_name);
-                                        ?>
-                                </span>
+                                <b><?php
+                                    echo $property_custodian;
+                                    ?>
+                                </b>
+
                             </span>
                             <br>
                             <span> Signatue over Printed Name of Supply and/or </span>
                             <br>
                             <span>Property Custodian</span>
-                        </th>
+                        </td>
 
                     </tr>
                     <tr>
-                        <th class='foot' colspan="3">
-                            <span style="text-decoration: underline;"><?php
-                                                                        // echo strtoupper($model->employee->position);
-                                                                        ?></span>
+                        <td class='foot no-border center' colspan="3">
+                            <span style="text-decoration: underline;">
+                                <?php
+                                echo $accountable_officer_position;
+                                ?></span>
                             <br>
                             <span>Position</span>
-                        </th>
-                        <th class='foot' colspan="3">
+                        </td>
+                        <td class='foot no-border center' colspan="3">
 
-                            <span style="text-decoration: underline;"><?php
-                                                                        // echo strtoupper($model->property->employee->position);
-                                                                        ?></span>
+                            <span style="text-decoration: underline;">
+                                <?php
+                                echo $property_custodian_position;
+                                ?></span>
                             <br>
                             <span>Position</span>
-                        </th>
+                        </td>
 
                     </tr>
                     <tr>
-                        <th class='foot' colspan="3" style="border-bottom: 1px solid black;">
+                        <td class='foot no-border center' colspan="3" style="border-bottom: 1px solid black;">
 
                             <span>_______________</span>
                             <br>
                             <span>Date</span>
-                        </th>
-                        <th class='foot' colspan="3" style="border-bottom: 1px solid black;">
+                        </td>
+                        <td class='foot no-border center' colspan="3" style="border-bottom: 1px solid black;">
                             <span>_______________</span>
                             <br>
                             <span>Date</span>
-                        </th>
+                        </td>
 
                     </tr>
                     <!-- ACTUAL USER -->
@@ -456,7 +444,7 @@ BarcodeGenerator::widget($optionsArray);
                     if (!empty($model->actual_user)) {
                         $user_name = "{$model->actualUser->f_name} {$model->actualUser->m_name[0]}. {$model->actualUser->l_name} ";
                         echo "        <tr>
-                    <th class='foot' colspan='3' style='text-align:center;padding-top:5rem;border-bottom: 1px solid black;'>
+                    <th class='foot no-border' colspan='3' style='text-align:center;padding-top:5rem;border-bottom: 1px solid black;'>
                         <span style='text-decoration:underline'>
                             <span>$user_name </span>
                            
@@ -464,7 +452,7 @@ BarcodeGenerator::widget($optionsArray);
                         <br>
                         <span> Signatue over Printed Name of Actual User</span>
                     </th>
-                    <th class='foot' colspan='3' style='text-align:center;padding-top:5rem;border-bottom: 1px solid black;'>
+                    <th class='foot no-border' colspan='3' style='text-align:center;padding-top:5rem;border-bottom: 1px solid black;'>
                 
                     </th>
 
@@ -487,6 +475,9 @@ BarcodeGenerator::widget($optionsArray);
         background-color: white;
     }
 
+    .no-border {
+        border: 0;
+    }
 
     .cut_line {
         max-width: 100%;
@@ -494,6 +485,10 @@ BarcodeGenerator::widget($optionsArray);
         padding: 1px;
         border: 1px solid black;
         float: left;
+    }
+
+    .center {
+        text-align: center;
     }
 
     table,
@@ -544,7 +539,7 @@ BarcodeGenerator::widget($optionsArray);
             padding: 2px;
         }
 
-        table {
+        #sticker_table {
             border: 1px solid black;
             max-width: 150px;
             min-width: 150px;
@@ -553,6 +548,10 @@ BarcodeGenerator::widget($optionsArray);
         .cut_line {
             padding: .5px;
             border: 2px solid black;
+        }
+
+        .par_form {
+            width: 100%;
         }
 
     }
