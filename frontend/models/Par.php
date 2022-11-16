@@ -8,7 +8,6 @@ use Yii;
  * This is the model class for table "par".
  *
  * @property string|null $par_number
- * @property string $property_number
  * @property string|null $date
  * @property int|null $employee_id
  *
@@ -31,7 +30,6 @@ class Par extends \yii\db\ActiveRecord
     {
         return [
             [[
-                // 'property_number',
                 //  'agency_id', 
                 //  'fk_property_id'
             ], 'required'],
@@ -63,7 +61,6 @@ class Par extends \yii\db\ActiveRecord
                 'agency_id',
                 'created_at',
                 'actual_user',
-                'property_number',
                 'fk_property_id',
 
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],

@@ -24,17 +24,24 @@ use yii\widgets\ActiveForm;
     $property = '';
     $agency =  '';
     $agency_id = '';
+    $actual_user = [];
     if (!empty($model)) {
         $rcv_by_query   = Yii::$app->db->createCommand("SELECT employee_id,UPPER(employee_name)  as employee_name FROM employee_search_view WHERE employee_id = :id")
             ->bindValue(':id', $model->employee_id)
             ->queryAll();
 
         $rcv_by = ArrayHelper::map($rcv_by_query, 'employee_id', 'employee_name');
-        $property = ArrayHelper::map(Property::find()->where(['property_number' => $model->property_number]), 'property_number', 'property_number');
+        $actual_user_query   = Yii::$app->db->createCommand("SELECT employee_id,UPPER(employee_name)  as employee_name FROM employee_search_view WHERE employee_id = :id")
+            ->bindValue(':id', $model->actual_user)
+            ->queryAll();
+
+        $actual_user = ArrayHelper::map($actual_user_query, 'employee_id', 'employee_name');
+        $property = ArrayHelper::map(Property::find()->where(['id' => $model->fk_property_id])->asArray()->all(), 'id', 'property_number');
         $q = Yii::$app->db->createCommand("SELECT * FROM agency")->queryAll();
         $agency = ArrayHelper::map($q, 'id', 'name');
         $agency_id = $model->agency_id;
     }
+
     ?>
     <div class="row">
         <div class="col-sm-6">
@@ -57,7 +64,7 @@ use yii\widgets\ActiveForm;
         </div>
 
     </div>
-
+    <?= $form->field($model, 'location')->textInput() ?>
     <div class="row">
         <div class="col-sm-12">
             <?= $form->field($model, 'fk_property_id')->widget(Select2::class, [
@@ -119,8 +126,7 @@ use yii\widgets\ActiveForm;
         <div class="col-sm-12">
 
             <?= $form->field($model, 'actual_user')->widget(Select2::class, [
-                'data' => $rcv_by,
-                'name' => 'fund_source',
+                'data' => $actual_user,
                 'options' => ['placeholder' => 'Search Employee ...'],
                 'pluginOptions' => [
                     'allowClear' => true,

@@ -17,7 +17,7 @@ class ParSearch extends Par
     public function rules()
     {
         return [
-            [['par_number', 'property_number', 'date','employee_id','fk_property_id'], 'safe'],
+            [['par_number', 'date', 'employee_id', 'fk_property_id'], 'safe'],
         ];
     }
 
@@ -45,7 +45,7 @@ class ParSearch extends Par
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort'=> ['defaultOrder' => ['created_at' => SORT_DESC]],
+            'sort' => ['defaultOrder' => ['created_at' => SORT_DESC]],
         ]);
 
         $this->load($params);
@@ -63,10 +63,8 @@ class ParSearch extends Par
         ]);
 
         $query->andFilterWhere(['like', 'par_number', $this->par_number])
-            ->andFilterWhere(['like', 'property_number', $this->property_number])
             ->andFilterWhere(['or', ['like', 'employee.f_name', $this->employee_id], ['like', 'employee.l_name', $this->employee_id]])
-            ->andFilterWhere(['or', ['like', 'property.property_number', $this->fk_property_id], ['like', 'property.article', $this->fk_property_id]])
-            ;
+            ->andFilterWhere(['or', ['like', 'property.property_number', $this->fk_property_id], ['like', 'property.article', $this->fk_property_id]]);
 
         return $dataProvider;
     }
