@@ -275,7 +275,7 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
                             <br>
                             <span style="border-bottom: 1px solid black;">
                                 <?php
-                                echo DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y')
+                                echo $par_date;
                                 ?></span>
                             <br>
                             <span>Date</span>
