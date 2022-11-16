@@ -32,7 +32,7 @@ async function cal(
     const mnthly_depreciation_lst_mnt =
       depreciable_amount > 0 ? depreciable_amount - ttl_depreciation : 0;
     q.push({
-      book_name: val.book,
+      book_name: val.book_name,
       acquisition_cost: acquisition_cost,
       salvage_value: salvage_value,
       depreciable_amount: depreciable_amount,
@@ -48,35 +48,47 @@ async function cal(
       second_to_the_last_mnth: second_to_the_last_mnth,
     });
   });
-  displayCalulatedData(q);
+  return q;
 }
 
 function displayCalulatedData(data) {
   $("#computation_table tbody").html("");
   $.each(data, (key, val) => {
+    const acquisition_cost = parseFloat(val.acquisition_cost);
+    const salvage_value = parseFloat(val.salvage_value);
+    const depreciable_amount = parseFloat(val.depreciable_amount);
+    const monthly_depreciation = parseFloat(val.monthly_depreciation);
+    const ttl_depreciation = parseFloat(val.ttl_depreciation);
+    const mnthly_depreciation_lst_mnt = parseFloat(
+      val.mnthly_depreciation_lst_mnt
+    );
     const row = `<tr>
       <td>${val.book_name}</td>
       <td >
-          <span class="digits">${val.acquisition_cost}</span>
+          <span class="digits">${thousands_separators(acquisition_cost)}</span>
       </td>
       <td>
-          <span class="digits">${val.salvage_value}</span>
+          <span class="digits">${thousands_separators(salvage_value)}</span>
       </td>
       <td>
-       <span class="digits">${val.depreciable_amount}</span>
+       <span class="digits">${thousands_separators(depreciable_amount)}</span>
       </td>
       <td>${val.first_month_depreciation}</td>
       <td>${val.second_to_the_last_mnth}</td>
       <td>${val.useful_life_in_mnths}</td>
       <td>
-         <span class="digits">${val.monthly_depreciation}</span>
+         <span class="digits">${thousands_separators(
+           monthly_depreciation
+         )}</span>
       </td>
       <td>
-         <span class="digits">${val.ttl_depreciation}</span>
+         <span class="digits">${thousands_separators(ttl_depreciation)}</span>
       </td>
       <td>${val.last_month_depreciation}</td>
       <td>
-         <span class="digits">${val.mnthly_depreciation_lst_mnt}</span>
+         <span class="digits">${thousands_separators(
+           mnthly_depreciation_lst_mnt
+         )}</span>
       </td>
 
       </tr>`;
@@ -86,6 +98,20 @@ function displayCalulatedData(data) {
   // $("span.digits").digits();
 }
 
+async function calculateAndDisplay(
+  data,
+  salvage_value_percentage,
+  useful_life_in_mnths,
+  first_month_depreciation
+) {
+  const q = await cal(
+    data,
+    salvage_value_percentage,
+    useful_life_in_mnths,
+    first_month_depreciation
+  );
+  displayCalulatedData(q);
+}
 $(document).ready(() => {
   maskAmount();
 
@@ -97,10 +123,17 @@ $(document).ready(() => {
   });
   $("#calculate").on("click", (e) => {
     e.preventDefault();
+    const depreciation_schedule = $(
+      "#otherpropertydetails-depreciation_schedule"
+    ).val();
+    const property_id = $("#otherpropertydetails-fk_property_id").val();
+    let data = $('[name^="items"]').serializeArray();
+    data.push({ name: "depreciation_schedule", value: depreciation_schedule });
+    data.push({ name: "property_id", value: property_id });
     $.ajax({
       type: "POST",
       url: window.location.pathname + "?r=other-property-details/items",
-      data: $('[name^="items"]').serialize(),
+      data: data,
       success: function (data) {
         const res = JSON.parse(data);
         const salvage_value_percentage = parseInt(
@@ -109,7 +142,7 @@ $(document).ready(() => {
         const first_month_depreciation = $(
           "#otherpropertydetails-first_month_depreciation"
         ).val();
-        cal(
+        calculateAndDisplay(
           res,
           salvage_value_percentage,
           useful_life_in_mnths,
@@ -129,8 +162,9 @@ $(document).ready(() => {
       },
       success: function (data) {
         const res = data.results;
+        console.log(res);
         useful_life_in_mnths =
-          res[0].life_to > 0 ? parseInt(res[0].life_to) * 12 : 0;
+          res[0].life_from > 0 ? parseInt(res[0].life_from) * 12 : 0;
         console.log(useful_life_in_mnths);
       },
     });
@@ -146,6 +180,25 @@ $(document).ready(() => {
       },
       success: function (data) {
         console.log(data);
+        const res = JSON.parse(data);
+        $(".property-details").html("");
+        const d = `<div>
+        <span>Property Number:</span>
+        <span>${res.property_number}</span>
+    </div>
+    <div>
+        <span>Article:</span>
+        <span>${res.article}</span>
+    </div>
+    <div>
+        <span>Date:</span>
+        <span>${res.date}</span>
+    </div>
+    <div>
+        <span>Acquisition Amount:</span>
+        <span>${res.acquisition_amount}</span>
+    </div>`;
+        $(".property-details").prepend(d);
       },
     });
   });
@@ -159,6 +212,9 @@ $(document).ready(() => {
 
     const source = $(this).closest("tr");
     const clone = source.clone(true);
+    clone.find(".mask-amount").val(0);
+    clone.find(".amount").val(0);
+    clone.find(".book").val("").trigger("change");
     clone.find(".amount").attr("name", `items[${row_number}][amount]`);
     clone.find(".book").attr("name", `items[${row_number}][book]`);
     clone.find(".item_id").remove();

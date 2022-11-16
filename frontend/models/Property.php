@@ -36,14 +36,30 @@ class Property extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['property_number', 'date', 'book_id', 'unit_of_measure_id', 'quantity', 'acquisition_amount', 'employee_id', 'article', 'province'], 'required'],
+            [[
+                'property_number',
+                'date',
+                'unit_of_measure_id',
+                'quantity',
+                'acquisition_amount',
+                'employee_id',
+                'article',
+                'province',
+                'ppe_type',
+                'serial_number',
+                'description',
+            ], 'required'],
             [['date'], 'string'],
             [['book_id', 'unit_of_measure_id', 'quantity', 'estimated_life', 'fk_ssf_category_id', 'id'], 'integer'],
             [['acquisition_amount', 'salvage_value'], 'number'],
             [['id'], 'unique'],
             [['employee_id', 'article', 'description', 'object_code'], 'string'],
             [['property_number', 'iar_number', 'model', 'serial_number', 'province', 'ppe_type'], 'string', 'max' => 255],
-
+            ['fk_ssf_category_id', 'required', 'when' => function ($model) {
+                return $model->ppe_type == 'SSF';
+            }, 'whenClient' => "function (attribute, value) {
+                return $('#fk_ssf_category_id').val() == 'SSF';
+            }"],
             [['property_number'], 'unique'],
             [[
                 'property_number',
@@ -83,7 +99,7 @@ class Property extends \yii\db\ActiveRecord
             'article' => 'Article',
             'description' => 'Description',
             'model' => 'Model',
-            'serial_number' => 'Serial Number',
+            'serial_number' => 'Serial Number (put "N/A" if not applicable)',
             'quantity' => 'Quantity',
             'acquisition_amount' => 'Acquisition Amount',
             'date' => 'Date',
@@ -92,8 +108,8 @@ class Property extends \yii\db\ActiveRecord
             'salvage_value' => 'Salvage Value',
             'estimated_life' => 'Estimated Useful Life',
             'province' => 'Province',
-            'ppe_type' => 'ppe_type',
-            'fk_ssf_category_id' => 'fk_ssf_category_id',
+            'fk_ssf_category_id' => 'SSF Category',
+            'ppe_type' => 'PPE Type',
 
         ];
     }

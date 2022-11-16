@@ -22,7 +22,32 @@ use yii\widgets\ActiveForm;
     <div class="panel panel-default container">
 
         <?php $form = ActiveForm::begin(); ?>
+        <div class="row">
+            <div class="col-sm-3">
 
+                <?php
+
+                if (Yii::$app->user->can('super-user')) {
+
+                    echo $form->field($model, 'province')->widget(Select2::class, [
+                        'data' => [
+                            'ro' => 'RO',
+                            'adn' => 'ADN',
+                            'ads' => 'ADS',
+                            'pdi' => 'PDI',
+                            'sdn' => 'SDN',
+                            'sds' => 'SDS',
+                        ],
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Province'
+                        ]
+                    ]);
+                }
+                ?>
+
+
+            </div>
+        </div>
         <div class="row">
             <div class="col-sm-3">
                 <?= $form->field($model, 'date')->widget(DatePicker::class, [
@@ -54,21 +79,9 @@ use yii\widgets\ActiveForm;
                     ]
                 ]) ?>
             </div>
-            <div class="col-sm-3">
-                <?= $form->field($model, 'province')->widget(Select2::class, [
-                    'data' => [
-                        'ro' => 'RO',
-                        'adn' => 'ADN',
-                        'ads' => 'ADS',
-                        'pdi' => 'PDI',
-                        'sdn' => 'SDN',
-                        'sds' => 'SDS',
-                    ],
-                    'pluginOptions' => [
-                        'placeholder' => 'Select Province'
-                    ]
-                ]) ?>
 
+            <div class="col-sm-2">
+                <?= $form->field($model, 'quantity')->textInput(['type'=>'number','min'=>1]) ?>
 
             </div>
         </div>
@@ -98,18 +111,15 @@ use yii\widgets\ActiveForm;
 
                 ]) ?>
             </div>
-            <div class="col-sm-4">
+            <!-- <div class="col-sm-4">
                 <?= $form->field($model, 'model')->textInput(['maxlength' => true]) ?>
 
-            </div>
-            <div class="col-sm-2">
+            </div> -->
+            <div class="col-sm-4">
                 <?= $form->field($model, 'iar_number')->textInput(['maxlength' => true]) ?>
 
             </div>
-            <div class="col-sm-2">
-                <?= $form->field($model, 'quantity')->textInput() ?>
 
-            </div>
 
         </div>
         <?php
@@ -118,6 +128,49 @@ use yii\widgets\ActiveForm;
             $description = !empty($model->description) ? preg_replace('#\[n\]#', "\n", $model->description) : '';;
         }
         ?>
+        <div class="row">
+            <div class="col-sm-3">
+                <?= $form->field($model, 'ppe_type')->widget(Select2::class, [
+                    'data' => [
+                        'non-SSF' => 'non-SSF',
+                        'SSF' => 'SSF'
+                    ],
+                    'pluginOptions' => [
+                        'placeholder' => 'Select PPE Type'
+                    ]
+
+                ]) ?>
+            </div>
+
+
+            <div class="col-sm-3">
+                <?= $form->field($model, 'fk_ssf_category_id')->widget(Select2::class, [
+                    'name' => 'ssf_number',
+                    'options' => ['placeholder' => 'Search SSF Number ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Yii::$app->request->baseUrl . '?r=property/search-ssf-category',
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
+
+                ])
+
+                ?>
+            </div>
+        </div>
+
         <?= $form->field($model, 'serial_number')->textInput() ?>
         <?= $form->field($model, 'article')->textarea(['maxlength' => true,]) ?>
         <?= $form->field($model, 'description')->textarea(['maxlength' => true, 'style' => 'display:none;']) ?>
@@ -134,6 +187,7 @@ use yii\widgets\ActiveForm;
                 ],
             ]
         ) ?>
+
 
 
         <div class="row">

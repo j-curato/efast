@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Update', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=employee/update&id='.$model->employee_id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Update', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=employee/update&id=' . $model->employee_id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->employee_id], [
             'class' => 'btn btn-danger',
             'data' => [
@@ -30,12 +30,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'employee_id',
             'f_name',
             'l_name',
             'm_name',
             'status',
-            'property_custodian',
             'position',
         ],
     ]) ?>

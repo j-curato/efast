@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Property;
+use Yii;
 
 /**
  * PropertySearch represents the model behind the search form of `app\models\Property`.
@@ -46,6 +47,9 @@ class PropertySearch extends Property
     {
         $query = Property::find();
 
+        if (!Yii::$app->user->can('super-user')) {
+            $query->where("property.province =:province", ['province' => Yii::$app->user->identity->province]);
+        }
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
@@ -71,15 +75,15 @@ class PropertySearch extends Property
             'acquisition_amount' => $this->acquisition_amount,
         ]);
 
-        $query->andFilterWhere(['like', 'property_number', $this->property_number])
-            ->andFilterWhere(['like', 'iar_number', $this->iar_number])
-            ->andFilterWhere(['like', 'article', $this->article])
-            ->andFilterWhere(['like', 'model', $this->model])
-            ->andFilterWhere(['like', 'serial_number', $this->serial_number])
+        $query->andFilterWhere(['like', 'property.property_number', $this->property_number])
+            ->andFilterWhere(['like', 'property.iar_number', $this->iar_number])
+            ->andFilterWhere(['like', 'property.article', $this->article])
+            ->andFilterWhere(['like', 'property.model', $this->model])
+            ->andFilterWhere(['like', 'property.serial_number', $this->serial_number])
             ->andFilterWhere(['like', 'books.name', $this->book_id])
             ->andFilterWhere(['like', 'unit_of_emasure.unit_of_measure', $this->unit_of_measure_id])
-            ->andFilterWhere(['like', 'description', $this->description])
-            ->andFilterWhere(['like', 'province', $this->province])
+            ->andFilterWhere(['like', 'property.description', $this->description])
+            ->andFilterWhere(['like', 'property.province', $this->province])
             ->andFilterWhere(['like', 'ppe_type', $this->ppe_type])
             ->andFilterWhere(['or', ['like', 'employee.f_name', $this->employee_id], ['like', 'employee.l_name', $this->employee_id]]);
 

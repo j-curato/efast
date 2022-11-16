@@ -17,7 +17,13 @@ class MyComponent extends Component
     // {
     //     return $q;
     // }
-
+    public function updateEmployee($employee_id)
+    {
+        $query = YIi::$app->db->createCommand("SELECT employee_name,employee_id,position FROM employee_search_view WHERE employee_id = :employee_id ")
+            ->bindValue(':employee_id', $employee_id)
+            ->queryAll();
+        return $query;
+    }
 
     public function serverIp()
     {

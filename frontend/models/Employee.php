@@ -32,7 +32,7 @@ class Employee extends \yii\db\ActiveRecord
     {
         return [
             [['property_custodian', 'employee_id'], 'integer'],
-            [['employee_number', 'f_name', 'l_name', 'm_name', 'status', 'position', 'suffix'], 'string', 'max' => 255],
+            [['employee_number', 'f_name', 'l_name', 'm_name', 'status', 'position', 'suffix', 'province'], 'string', 'max' => 255],
             [[
                 'employee_id',
                 'f_name',
@@ -45,6 +45,8 @@ class Employee extends \yii\db\ActiveRecord
                 'created_at',
                 'employee_number',
                 'suffix',
+                'province',
+
 
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
@@ -65,6 +67,7 @@ class Employee extends \yii\db\ActiveRecord
             'position' => 'Designation',
             'employee_number' => 'Employee Number',
             'suffix' => 'Suffix',
+            'province' => 'Province',
         ];
     }
 }

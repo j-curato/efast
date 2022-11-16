@@ -59,6 +59,7 @@
                                 Yii::$app->user->can('po_check_range') ?  ['label' => 'Check Range', 'icon' => 'circle-o', 'url' => ['/check-range'],] : [],
                                 Yii::$app->user->can('po_asignatory') ?     ['label' => 'PO Asignatory', 'icon' => 'circle-o', 'url' => ['/po-assignatory'],] : [],
                                 Yii::$app->user->can('po_responsibility_center') ?     ['label' => 'PO Responsibility Center', 'icon' => 'circle-o', 'url' => ['/po-responsibility-center'],] : [],
+                                Yii::$app->user->can('province') ?     ['label' => 'Employees', 'icon' => 'circle-o', 'url' => ['/employee'],] : [],
                             ],
                         ],
                         [
@@ -70,6 +71,7 @@
                                 Yii::$app->user->can('liquidation') ?     ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ['/liquidation'],] : [],
                                 Yii::$app->user->can('liquidation') ?     ['label' => 'Cancelled Check', 'icon' => 'circle-o', 'url' => ['/liquidation/cancelled-check-index'],] : [],
                                 Yii::$app->user->can('po_transmittal') ? ['label' => 'DV Transmittal', 'icon' => 'circle-o', 'url' => ['/po-transmittal'],] : [],
+                                Yii::$app->user->can('province') ? ['label' => 'Property', 'icon' => 'circle-o', 'url' => ['/property'],] : [],
 
                             ],
                         ],
@@ -430,9 +432,20 @@
                             'label' => 'General Services',
                             'url' => '#',
                             'items' => [
+                                [
+                                    'label' => 'Master Records',
+                                    'icon' => 'circle-o',
+                                    'url' => '#',
+                                    'items' => [
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Cars', 'icon' => 'circle-o', 'url' => ['/cars'],] : [],
+                                    ],
+                                ],
+
+
 
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Job Request', 'icon' => 'circle-o', 'url' => ['/maintenance-job-request'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Pre-Repair Inspection', 'icon' => 'circle-o', 'url' => ['/pre-repair-inspection'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Trip Ticket', 'icon' => 'circle-o', 'url' => ['/trip-ticket'],] : [],
 
                             ],
                         ] : [],

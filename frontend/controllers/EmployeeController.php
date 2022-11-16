@@ -36,6 +36,7 @@ class EmployeeController extends Controller
                     'update',
                     'delete',
                     'search-employee',
+                    'import'
                 ],
                 'rules' => [
                     [
@@ -45,10 +46,27 @@ class EmployeeController extends Controller
                             'create',
                             'update',
                             'delete',
+                            'import'
 
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => [
+                            'super-user',
+                        ]
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+
+                        ],
+                        'allow' => true,
+                        'roles' => [
+                            'province_admin_1',
+
+                        ]
                     ],
                     [
                         'actions' => [
@@ -108,7 +126,10 @@ class EmployeeController extends Controller
     public function actionCreate()
     {
         $model = new Employee();
-
+        if (!Yii::$app->user->can('super-user')) {
+            $model->province = Yii::$app->user->identity->province;
+            // return json_encode(Yii::$app->user->identity->province);
+        }
         if ($model->load(Yii::$app->request->post())) {
 
             $model->employee_id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();

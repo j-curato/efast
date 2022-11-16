@@ -34,13 +34,13 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
 
             'title:ntext',
-            [
-                'label' => 'Office',
-                'attribute' => 'pr_office_id',
-                'value' => function ($model) {
-                    return $model->office->office . ' ' . $model->office->division . ' ' . $model->office->unit;
-                }
-            ],
+            // [
+            //     'label' => 'Office',
+            //     'attribute' => 'pr_office_id',
+            //     'value' => function ($model) {
+            //         return $model->office->office . ' ' . $model->office->division . ' ' . $model->office->unit;
+            //     }
+            // ],
             'amount',
             [
                 'label' => 'Prepared By',
