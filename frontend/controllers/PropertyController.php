@@ -9,8 +9,6 @@ use app\models\PropertySearch;
 use barcode\barcode\BarcodeGenerator;
 use DateTime;
 use ErrorException;
-use kartik\mpdf\Pdf;
-use phpDocumentor\Reflection\Types\Null_;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -110,6 +108,9 @@ class PropertyController extends Controller
     {
         $model = new Property();
 
+        if (!Yii::$app->user->can('super-user')) {
+            $model->province = Yii::$app->user->identity->province;
+        }
         if ($model->load(Yii::$app->request->post())) {
             $model->property_number = $this->getPropertyNumber($model->date, $model->province);
             $model->id = Yii::$app->db->createCommand('SELECT UUID_SHORT()')->queryScalar();
@@ -184,7 +185,7 @@ class PropertyController extends Controller
             "SELECT
         CAST(SUBSTRING_INDEX(property.property_number,'-',-1)AS UNSIGNED) as p_number
                 FROM property
-                -- WHERE property.province = :province
+                WHERE property.property_number LIKE  'PPE%'
                 -- AND property.date LIKE :_year
                 ORDER BY  p_number DESC LIMIT 1"
         )
@@ -196,7 +197,7 @@ class PropertyController extends Controller
             $num = intval($query) + 1;
         }
         $zero = '';
-        $num_len =  4 - strlen($num);
+        $num_len =  5 - strlen($num);
         if ($num_len > 0) {
             $zero = str_repeat(0, $num_len);
         }
@@ -422,61 +423,84 @@ class PropertyController extends Controller
     {
         return $this->render('property_sticker');
     }
-    public function actionCreateBlank()
+    public function actionSearchSsfCategory($q = null, $id = null)
     {
-
-        $query = Yii::$app->db->createCommand("SELECT
-        CAST(SUBSTRING_INDEX(property.property_number,'-',-1)AS UNSIGNED) as p_number
-                FROM property
-                -- AND property.date LIKE :_year
-                ORDER BY  p_number DESC LIMIT 1")
-            ->queryScalar();
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
 
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+            $query->select(["ssf_category.id as id", "CONCAT (ssf_category.ssf_number ,' - ',ssf_category.project_title) AS text"])
+                ->from('ssf_category')
+                ->where(['like', 'ssf_category.ssf_number', $q])
+                ->orwhere(['like', 'ssf_category.project_title', $q]);
 
-        $num  = 1400;
-        $zero = '';
-
-
-        for ($i = 0; $i < 100; $i++) {
-            $num_len =  5 - strlen($num);
-            if ($num_len > 0) {
-                $zero = str_repeat(0, $num_len);
-            }
-            $property_number = 'PPE-' . $zero . $num;
-
-            $check = YIi::$app->db->createCommand("SELECT id FROm property WHERE property_number = :property_number")
-                ->bindValue(':property_number', $property_number)
-                ->queryOne();
-            if (!empty($check)) {
-                $property = Property::findOne($check);
-            } else {
-                $property = new Property();
-                $property->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-                $property->property_number = $property_number;
-            }
-
-            if ($property->save(false)) {
-
-                $check_par = YIi::$app->db->createCommand("SELECT id FROM par WHERE fk_property_id = :property_id")
-                    ->bindValue(':property_id', $property->id)
-                    ->queryScalar();
-                if (!empty($check_par)) {
-                    $par  = Par::findOne($check_par);
-                } else {
-
-                    $par = new Par();
-                    $par->fk_property_id = $property->id;
-                    $par->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-                }
-                $par->par_number = 'PAR-' . $zero . $num;
-                if ($par->save(false)) {
-                }
-            } else {
-                return 'failed';
-            }
-            $num++;
+            $command = $query->createCommand();
+            // return json_encode($command->getRawSql());
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
         }
-        return 'success';
+        // elseif ($id > 0) {
+        //     $out['results'] = ['id' => $id, 'text' => ChartOfAccounts::find($id)->uacs];
+        // }
+        return $out;
     }
+    // public function actionCreateBlank()
+    // {
+
+    //     $query = Yii::$app->db->createCommand("SELECT
+    //     CAST(SUBSTRING_INDEX(property.property_number,'-',-1)AS UNSIGNED) as p_number
+    //             FROM property
+    //             -- AND property.date LIKE :_year
+    //             ORDER BY  p_number DESC LIMIT 1")
+    //         ->queryScalar();
+
+
+
+    //     $num  = 1400;
+    //     $zero = '';
+
+
+    //     for ($i = 0; $i < 100; $i++) {
+    //         $num_len =  5 - strlen($num);
+    //         if ($num_len > 0) {
+    //             $zero = str_repeat(0, $num_len);
+    //         }
+    //         $property_number = 'PPE-' . $zero . $num;
+
+    //         $check = YIi::$app->db->createCommand("SELECT id FROm property WHERE property_number = :property_number")
+    //             ->bindValue(':property_number', $property_number)
+    //             ->queryOne();
+    //         if (!empty($check)) {
+    //             $property = Property::findOne($check);
+    //         } else {
+    //             $property = new Property();
+    //             $property->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+    //             $property->property_number = $property_number;
+    //         }
+
+    //         if ($property->save(false)) {
+
+    //             $check_par = YIi::$app->db->createCommand("SELECT id FROM par WHERE fk_property_id = :property_id")
+    //                 ->bindValue(':property_id', $property->id)
+    //                 ->queryScalar();
+    //             if (!empty($check_par)) {
+    //                 $par  = Par::findOne($check_par);
+    //             } else {
+
+    //                 $par = new Par();
+    //                 $par->fk_property_id = $property->id;
+    //                 $par->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+    //             }
+    //             $par->par_number = 'PAR-' . $zero . $num;
+    //             if ($par->save(false)) {
+    //             }
+    //         } else {
+    //             return 'failed';
+    //         }
+    //         $num++;
+    //     }
+    //     return 'success';
+    // }
 }
