@@ -35,9 +35,11 @@ class OtherPropertyDetails extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'fk_property_id', 'fk_chart_of_account_id',  'salvage_value_prcnt', 'first_month_depreciation', 'start_month_depreciation'], 'required'],
-            [['id', 'fk_property_id', 'depreciation_schedule', 'fk_chart_of_account_id',  'salvage_value_prcnt'], 'integer'],
+            [['id', 'fk_property_id', 'fk_chart_of_account_id',  'salvage_value_prcnt', 'first_month_depreciation', 'start_month_depreciation', 'depreciation_schedule'], 'required'],
+            [['id', 'fk_property_id', 'fk_chart_of_account_id'], 'integer'],
             [['created_at'], 'safe'],
+            [['salvage_value_prcnt'], 'integer', 'min' => 5],
+            [['depreciation_schedule'], 'integer', 'min' => 1],
             [['first_month_depreciation', 'start_month_depreciation'], 'string', 'max' => 255],
             [['id'], 'unique'],
         ];
@@ -68,5 +70,9 @@ class OtherPropertyDetails extends \yii\db\ActiveRecord
     public function getOtherPropertyDetailItems()
     {
         return $this->hasMany(OtherPropertyDetailItems::class, ['fk_other_property_details_id' => 'id']);
+    }
+    public function getProperty()
+    {
+        return $this->hasOne(Property::class, ['id' => 'fk_property_id']);
     }
 }
