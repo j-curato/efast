@@ -208,7 +208,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'ads': 'PRESCYLIN C. LADEMORA',
         'sdn': 'FERDINAND R. INRES',
         'pdi': 'VENUS A. CUSTODIO',
-        'sds': 'FRITZIE N. USARES',
+        'sds': 'FRITZIE U. Bacor',
     }
     var months = {
         '0': 'January',

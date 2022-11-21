@@ -292,7 +292,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
         'ads': 'PRESCYLIN C. LADEMORA',
         'sdn': 'FERDINAND R. INRES',
         'pdi': 'VENUS A. CUSTODIO',
-        'sds': 'FRITZIE N. USARES',
+        'sds': 'FRITZIE U. Bacor',
     }
     $("#filter").submit((e) => {
         $('#dots5').show()
