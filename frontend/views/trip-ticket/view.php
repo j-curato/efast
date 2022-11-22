@@ -54,6 +54,11 @@ if (!empty($model->authorized_by)) {
                     <td class="first_col   no-border">Date</td>
                     <td colspan="2" class=" no-border underlined">
                         <span><?= DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y') ?></span>
+                        <?php
+                        if (!empty($model->to_date)) {
+                            echo ' - ' . DateTime::createFromFormat('Y-m-d', $model->to_date)->format('F d, Y');
+                        }
+                        ?>
                     </td>
                     <td colspan="3" class="    no-border">Plate No:
                         <span class="underlined" style="margin-left: 1rem;"><?= !empty($model->carType->car_name) ? strtoupper($model->carType->plate_number) : '' ?></span>

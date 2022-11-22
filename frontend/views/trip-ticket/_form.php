@@ -41,9 +41,18 @@ $row_number = 1;
                 ]
             ]) ?>
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-2">
+            <?= $form->field($model, 'to_date')->widget(DatePicker::class, [
+
+                'pluginOptions' => [
+                    'format' => 'yyyy-mm-dd',
+                    'autoClose' => true,
+                ]
+            ]) ?>
+        </div>
+        <div class="col-sm-2">
             <?= $form->field($model, 'car_id')->widget(Select2::class, [
-                'data' =>ArrayHelper::map(Yii::$app->db->createCommand("SELECT id,UPPER(car_name) as car_name FROM cars ")->queryAll(),'id','car_name'),
+                'data' => ArrayHelper::map(Yii::$app->db->createCommand("SELECT id,UPPER(car_name) as car_name FROM cars ")->queryAll(), 'id', 'car_name'),
                 'pluginOptions' => [
                     'placeholder' => "Select Car"
                 ]
