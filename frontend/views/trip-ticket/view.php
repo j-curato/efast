@@ -51,17 +51,17 @@ if (!empty($model->authorized_by)) {
                 <tr>
 
 
-                    <td class="first_col  no-border">Date</td>
-                    <td colspan="2" class=" no-border">
+                    <td class="first_col   no-border">Date</td>
+                    <td colspan="2" class=" no-border underlined">
                         <span><?= DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y') ?></span>
                     </td>
-                    <td colspan="3" class="  no-border">Plate No:
+                    <td colspan="3" class="    no-border">Plate No:
                         <span class="underlined" style="margin-left: 1rem;"><?= !empty($model->carType->car_name) ? strtoupper($model->carType->plate_number) : '' ?></span>
                     </td>
                 </tr>
                 <tr>
                     <td class=" first_col  no-border">Driver</td>
-                    <td colspan="2" class="  no-border"><?= $driver ?></td>
+                    <td colspan="2" class="   underlined no-border"><?= $driver ?></td>
                     <td class="  no-border" colspan="3">Series No: <span class="underlined" style="margin-left: 1rem;"><?= $model->serial_no ?></span></td>
                 </tr>
                 <tr>
@@ -110,7 +110,7 @@ if (!empty($model->authorized_by)) {
                     $arrival_time = $item['arrival_time'];
                     $arrival_place = $item['arrival_place'];
                     $employee_name = $item['employee_name'];
-                    echo "<tr>
+                    echo "<tr class='r'>
                     <td>$item_no</td>
                     <td>$departure_time</td>
                     <td>$departure_place</td>
@@ -121,8 +121,8 @@ if (!empty($model->authorized_by)) {
                     $item_no++;
                 }
                 $r = $item_no;
-                for ($i = $r; $i <= 10; $i++) {
-                    echo "<tr>
+                for ($i = $r; $i <= 20; $i++) {
+                    echo "<tr class='r'>
                         <td class='first_col'>$item_no</td>
                         <td></td>
                         <td></td>
@@ -214,6 +214,10 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
         text-decoration: underline;
     }
 
+    .r>td {
+        padding: 3px;
+    }
+
     .center {
         text-align: center;
     }
@@ -249,5 +253,10 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
             display: none;
         }
 
+        th,
+        td {
+            padding: 8px;
+            border: 1px solid black;
+        }
     }
 </style>

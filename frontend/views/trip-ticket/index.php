@@ -38,7 +38,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             'purpose',
-            'car_type',
 
             [
                 'label' => 'Action',
