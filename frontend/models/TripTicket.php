@@ -35,7 +35,7 @@ class TripTicket extends \yii\db\ActiveRecord
         return [
             [['id', 'date', 'driver', 'serial_no', 'purpose', 'authorized_by', 'car_id'], 'required'],
             [['id', 'driver', 'authorized_by', 'car_id'], 'integer'],
-            [['date', 'created_at'], 'safe'],
+            [['date', 'created_at', 'to_date'], 'safe'],
             [['purpose'], 'string'],
             [['serial_no',], 'string', 'max' => 255],
             [['serial_no'], 'unique'],
@@ -51,6 +51,7 @@ class TripTicket extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'date' => 'Date',
+            'to_date' => 'To Date',
             'driver' => 'Driver',
             'serial_no' => 'Serial No',
             'purpose' => 'Purpose',
