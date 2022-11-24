@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <h4 class="modal-title" id="myModalLabel">UPLOAD Cash Disbursement</h4>
                     </div>
                     <div class='modal-body'>
-                        <center><a href="import_formats/Cash_Disbursement and DV Format.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                        <center><a href="import_formats/update_uacs_format.xlsx">Download Template Here to avoid error during Upload.</a></center>
                         <hr>
                         <?php
 
