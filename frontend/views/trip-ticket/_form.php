@@ -37,7 +37,7 @@ $row_number = 1;
 
                 'pluginOptions' => [
                     'format' => 'yyyy-mm-dd',
-                    'autoClose' => true,
+                    'autoclose' => true,
                 ]
             ]) ?>
         </div>
