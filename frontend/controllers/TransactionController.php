@@ -169,7 +169,7 @@ class TransactionController extends Controller
 
             $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date);
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            if ($ip !== '192.168.1.23') {
+            if ($ip !== '192.168.10.116') {
                 if (
                     $division === 'idd' ||
                     $division === 'sdd' ||
