@@ -163,9 +163,26 @@ class PrPurchaseRequestController extends Controller
             }
             $host = gethostname();
             $ip = gethostbyname($host);
-            if ($ip !== '10.20.17.35') {
-                $model->is_cloud = 1;
+            if ($ip !== '192.168.10.116') {
+                $division = strtolower(Yii::$app->user->identity->division);
+                if (
+                    $division === 'idd' ||
+                    $division === 'sdd' ||
+                    $division === 'fad'
+                ) {
+                    $searchModel = new PrPurchaseRequestSearch();
+                    $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+                    return $this->render('index', [
+                        'searchModel' => $searchModel,
+                        'dataProvider' => $dataProvider,
+                    ]);
+                }
+                $model->is_local = 0;
             }
+
+
+
             $transaction = Yii::$app->db->beginTransaction();
 
             try {
