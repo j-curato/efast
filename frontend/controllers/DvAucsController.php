@@ -464,7 +464,7 @@ class DvAucsController extends Controller
             } else {
                 $ad_entry = AdvancesEntries::findOne($advances_entries_id[$i]);
                 if (!empty($ad_entry->advances->cashDisbursement->id)) {
-                    if ($ad_entry->advances->cashDisbursement->is_cancelled != 1) {
+                    if (intval($ad_entry->advances->cashDisbursement->is_cancelled) != 1) {
                         $ad_entry->is_deleted = 0;
                     }
                 }
@@ -494,8 +494,19 @@ class DvAucsController extends Controller
         } else {
             $advances = Advances::findOne($advances_update_id);
         }
+        $bank_acc_province = YIi::$app->db->createCommand("SELECT 
+
+        UPPER(bank_account.province) as province
+        FROM 
+        bank_account 
+        WHERE 
+        bank_account.id = :bank_account_id")
+            ->bindValue(':bank_account_id', $advances_bank_account_id)
+            ->queryScalar();
+
+
         $advances->reporting_period = $reporting_period;
-        $advances->province = $province;
+        $advances->province = $bank_acc_province;
         $advances->dv_aucs_id = $dv_aucs_id;
         $advances->bank_account_id = $advances_bank_account_id;
         if ($advances->save(false)) {
