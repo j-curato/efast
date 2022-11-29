@@ -354,9 +354,9 @@ class DvAucsController extends Controller
                         return json_encode(['check_error' => 'Error in inserting Accounting entries']);
                     }
                     if ($model->save(false)) {
-                        Yii::$app->db->createCommand("DELETE FROM dv_aucs_entries WHERE dv_aucs_id = :id")
-                            ->bindValue(':id', $model->id)
-                            ->query();
+                        // Yii::$app->db->createCommand("DELETE FROM dv_aucs_entries WHERE dv_aucs_id = :id")
+                        //     ->bindValue(':id', $model->id)
+                        //     ->query();
                         $flag = $this->insertDvItems(
                             $dv_aucs_id = $model->id,
                             $process_ors_id,
