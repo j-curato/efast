@@ -178,11 +178,23 @@ class PrPurchaseRequestController extends Controller
                         'dataProvider' => $dataProvider,
                     ]);
                 }
-                $model->is_local = 0;
+                // $model->is_local = 0;
             }
 
 
+            $date_now = new DateTime();
+            $date2    = new DateTime("11/30/2022");
 
+            if ($date_now > $date2) {
+                $searchModel = new PrPurchaseRequestSearch();
+                $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+                return $this->render('index', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+                ]);
+            }
+            $model->date = $date_now->format('Y-m-d');
             $transaction = Yii::$app->db->beginTransaction();
 
             try {
