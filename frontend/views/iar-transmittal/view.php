@@ -185,6 +185,8 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", []);
     }
 
     @media print {
+
+        .select_row,
         .btn {
             display: none;
         }

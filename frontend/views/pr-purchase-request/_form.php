@@ -82,9 +82,13 @@ if (!empty($model->id)) {
                         ]) ?>
                     </div>
 
-                    <div class="col-sm-4">
 
-                        <?= $form->field($model, 'date')->widget(DatePicker::class, [
+                    <?php
+
+                    if (empty($model->date)) {
+                        echo "  <div class='col-sm-4'>";
+
+                        echo $form->field($model, 'date')->widget(DatePicker::class, [
                             'name' => 'date',
                             'pluginOptions' => [
                                 'autoclose' => true,
@@ -94,8 +98,10 @@ if (!empty($model->id)) {
                                 'readonly' => true,
                                 'style' => 'background-color:white'
                             ]
-                        ]) ?>
-                    </div>
+                        ]);
+                        echo "</div>";
+                    } ?>
+
                     <div class="col-sm-2">
                         <?= $form->field($model, 'book_id')->widget(Select2::class, [
                             'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
