@@ -241,7 +241,7 @@ if (!empty($model->id)) {
                     if (!empty($model->id)) {
                         // if ($model->transaction_type != 'Payroll') {
                         $query  = Yii::$app->db->createCommand(" SELECT 
-        
+                            dv_aucs_entries.id as item_id,
                             dv_aucs_entries.process_ors_id,
                             process_ors.serial_number,
                             `transaction`.particular,
@@ -269,13 +269,16 @@ if (!empty($model->id)) {
                             GROUP BY dv_aucs_entries.process_ors_id
                             ) as total_obligated ON process_ors.id=total_obligated.ors_id
                             WHERE
-                            dv_aucs_entries.dv_aucs_id = :id")
+                            dv_aucs_entries.dv_aucs_id = :id
+                            AND dv_aucs_entries.is_deleted =0
+                            ")
                             ->bindValue(':id', $model->id)
                             ->queryAll();
                         foreach ($query as $val) {
 
 
                             echo "<tr>
+                                <td style='display:none' ><input value='{$val['item_id']}' type='hidden' name='item_ids[$row]'/></td>
                                 <td style='display:none' ><input value='{$val['process_ors_id']}' type='hidden' name='process_ors_id[$row]'/></td>
                                 <td> {$val['serial_number']}</td>
                                 <td> 

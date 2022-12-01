@@ -282,6 +282,7 @@ class DvAucsController extends Controller
             $transaction_type = !empty($_POST['transaction_type']) ? $_POST['transaction_type'] : null;
             $book = !empty($_POST['book']) ? $_POST['book'] : null;
             $particular = !empty($_POST['particular']) ? $_POST['particular'] : null;
+            $item_ids = !empty($_POST['item_ids']) ? $_POST['item_ids'] : [];
             if ($oldModel->book_id != $book) {
                 $book_name = Yii::$app->db->createCommand("SELECT `name` FROM books WHERE id = :id")->bindValue(':id', $book)->queryScalar();
                 $dv_number = explode('-', $model->dv_number);
@@ -357,15 +358,16 @@ class DvAucsController extends Controller
                         // Yii::$app->db->createCommand("DELETE FROM dv_aucs_entries WHERE dv_aucs_id = :id")
                         //     ->bindValue(':id', $model->id)
                         //     ->query();
-                        // $flag = $this->insertDvItems(
-                        //     $dv_aucs_id = $model->id,
-                        //     $process_ors_id,
-                        //     $amount_disbursed,
-                        //     $vat_nonvat,
-                        //     $ewt_goods_services,
-                        //     $compensation,
-                        //     $other_trust_liabilities
-                        // );
+                        $this->deleteDvAucsEntries($model->id, $item_ids);
+                        $flag = $this->insertDvItems(
+                            $dv_aucs_id = $model->id,
+                            $process_ors_id,
+                            $amount_disbursed,
+                            $vat_nonvat,
+                            $ewt_goods_services,
+                            $compensation,
+                            $other_trust_liabilities
+                        );
 
                         if (!empty($advances_province) && !empty($advances_period) && !empty($advances_bank_account_id)) {
                             $advances_id = $this->insertAdvances($advances_province, $advances_period, $model->id, $advances_update_id, $advances_bank_account_id);
@@ -429,7 +431,9 @@ class DvAucsController extends Controller
             LEFT JOIN process_ors ON dv_aucs_entries.process_ors_id = process_ors.id
             LEFT JOIN `transaction` ON process_ors.transaction_id = `transaction`.id
             LEFT JOIN payee ON `transaction`.payee_id = payee.id
-            WHERE dv_aucs_entries.dv_aucs_id = :id")
+            WHERE dv_aucs_entries.dv_aucs_id = :id
+            AND dv_aucs_entries.is_deleted = 0
+            ")
             ->bindValue(':id', $model->id)
             ->queryAll();
 
@@ -1638,10 +1642,16 @@ class DvAucsController extends Controller
         $vat,
         $ewt_goods_services,
         $compensation,
-        $liabilities
+        $liabilities,
+        $item_ids = []
     ) {
         foreach ($ors as $i => $val) {
-            $entry = new DvAucsEntries();
+
+            if (!empty($item_ids[$i])) {
+                $entry =  DvAucsEntries::findOne($item_ids[$i]);
+            } else {
+                $entry = new DvAucsEntries();
+            }
             $entry->dv_aucs_id = $model_id;
             $entry->process_ors_id  = $val;
             $entry->amount_disbursed = $amount_disbursed[$i];
@@ -1656,6 +1666,20 @@ class DvAucsController extends Controller
         }
         return true;
     }
+
+    public function deleteDvAucsEntries($dv_id, $items = [])
+    {
+
+        $params = [];
+        $sql = '';
+        if (!empty($items)) {
+            $sql = "AND";
+            $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $items, 'item_id'], $params);
+        }
+        Yii::$app->db->createCommand("UPDATE dv_aucs_entries SET is_deleted = 1 
+        WHERE dv_aucs_entries.dv_aucs_id = :id   $sql  ", $params)
+            ->bindValue(':id', $dv_id)->query();
+    }
     public function actionTrackingUpdate($id)
     {
         $model = $this->findModel($id);
@@ -1665,6 +1689,9 @@ class DvAucsController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         // echo $id;
         if ($_POST) {
+
+            $item_ids = !empty($_POST['item_ids']) ? $_POST['item_ids'] : [];
+
             if (empty($_POST['book_id'])) {
                 return json_encode(['isSuccess' => false, 'error' => 'Book is Required']);
             }
@@ -1740,15 +1767,17 @@ class DvAucsController extends Controller
                                 $this->insertDvAccountingEntriesFromPayroll($model->id, $model->payroll_id);
                             }
                         }
-                        // $flag =  $this->insertDvEntries(
-                        //     $model->id,
-                        //     $ors,
-                        //     $amount_disbursed,
-                        //     $vat,
-                        //     $ewt_goods_services,
-                        //     $compensation,
-                        //     $liabilities
-                        // );
+                        $this->deleteDvAucsEntries($model->id, $item_ids);
+                        $flag =  $this->insertDvEntries(
+                            $model->id,
+                            $ors,
+                            $amount_disbursed,
+                            $vat,
+                            $ewt_goods_services,
+                            $compensation,
+                            $liabilities,
+                            $item_ids
+                        );
                     } else {
                         $flag = false;
                     }
@@ -1854,5 +1883,8 @@ class DvAucsController extends Controller
             }
         }
         // return $this->render('file_upload', ['model' => $model]);
+    }
+    public function dvAucsEntries($dv_id)
+    {
     }
 }
