@@ -29,10 +29,52 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
 
-            'id',
             'date',
             'destination:ntext',
-            'created_at',
+            [
+                'attribute' => 'purpose',
+                'value' => function ($model) {
+                    return preg_replace('#\[n\]#', "\n", $model->purpose);
+                }
+            ],
+            [
+                'attribute' => 'expected_outputs',
+                'value' => function ($model) {
+                    return preg_replace('#\[n\]#', "\n", $model->expected_outputs);
+                }
+            ],
+            [
+                'attribute' => 'fk_recommending_approval',
+                'value' => function ($model) {
+
+                    $suffix = !empty($model->recommendingApproval->suffix) ? ', ' . $model->recommendingApproval->suffix : '';
+
+                    return $model->recommendingApproval->f_name . ' ' .
+                        $model->recommendingApproval->m_name[0] . '. '
+                        . $model->recommendingApproval->l_name . $suffix;
+                }
+            ],
+            [
+                'attribute' => 'fk_approved_by',
+                'value' => function ($model) {
+
+
+                    $suffix = !empty($model->approvedBy->suffix) ? ', ' . $model->approvedBy->suffix : '';
+
+                    return $model->approvedBy->f_name . ' ' . $model->approvedBy->m_name[0] . '. ' . $model->approvedBy->l_name . $suffix;
+                }
+            ],
+            [
+                'attribute' => 'fk_budget_officer',
+                'value' => function ($model) {
+                    $suffix = !empty($model->budgetOfficer->suffix) ? ', ' . $model->budgetOfficer->suffix : '';
+
+                    return $model->budgetOfficer->f_name . ' ' . $model->budgetOfficer->m_name[0] . '. ' . $model->budgetOfficer->l_name . $suffix;
+                }
+            ],
+
+
+
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
@@ -40,3 +82,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
+<style>
+    .grid-view td {
+        white-space: normal;
+        padding: 0;
+    }
+</style>
