@@ -31,7 +31,7 @@ class RemittanceController extends Controller
                 'only' => [
                     'view',
                     'update',
-                    'delete',
+                    'index',
                     'create',
                     'delete',
                 ],
@@ -40,12 +40,12 @@ class RemittanceController extends Controller
                         'actions' => [
                             'view',
                             'update',
-                            'delete',
+                            'index',
                             'create',
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],
@@ -379,7 +379,7 @@ class RemittanceController extends Controller
                 ->join('INNER JOIN', 'payee', ' remittance_payee.payee_id = payee.id')
                 ->where(['like', 'payee.account_name', $q])
                 ->groupBy(" payee.id ,payee.account_name ");
-                $command = $query->createCommand();
+            $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
         } else if (!is_null($q)) {
