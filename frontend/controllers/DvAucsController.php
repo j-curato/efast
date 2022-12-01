@@ -357,15 +357,15 @@ class DvAucsController extends Controller
                         // Yii::$app->db->createCommand("DELETE FROM dv_aucs_entries WHERE dv_aucs_id = :id")
                         //     ->bindValue(':id', $model->id)
                         //     ->query();
-                        $flag = $this->insertDvItems(
-                            $dv_aucs_id = $model->id,
-                            $process_ors_id,
-                            $amount_disbursed,
-                            $vat_nonvat,
-                            $ewt_goods_services,
-                            $compensation,
-                            $other_trust_liabilities
-                        );
+                        // $flag = $this->insertDvItems(
+                        //     $dv_aucs_id = $model->id,
+                        //     $process_ors_id,
+                        //     $amount_disbursed,
+                        //     $vat_nonvat,
+                        //     $ewt_goods_services,
+                        //     $compensation,
+                        //     $other_trust_liabilities
+                        // );
 
                         if (!empty($advances_province) && !empty($advances_period) && !empty($advances_bank_account_id)) {
                             $advances_id = $this->insertAdvances($advances_province, $advances_period, $model->id, $advances_update_id, $advances_bank_account_id);
