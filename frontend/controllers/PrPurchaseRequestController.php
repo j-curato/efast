@@ -164,7 +164,7 @@ class PrPurchaseRequestController extends Controller
             }
             $host = gethostname();
             $ip = gethostbyname($host);
-            if ($ip !== '192.168.10.116') {
+            if ($ip !== '192.168.1.21') {
                 $division = strtolower(Yii::$app->user->identity->division);
                 if (
                     $division === 'idd' ||
