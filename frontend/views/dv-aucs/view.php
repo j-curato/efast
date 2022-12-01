@@ -114,8 +114,9 @@ $this->params['breadcrumbs'][] = $this->title;
             }
             if (!empty($model->dvAucsFile->id)) {
                 $dv_number =  "/scanned-dv" . "/" . $model->dv_number;
-                $path =  Url::base() . "/frontend"  . $dv_number . "/" . $model->dvAucsFile->file_name;
-                echo Html::a('Download Soft Copy ', $path, ['class' => 'btn btn-link ']);
+                // $path =  Url::base() . "/frontend"  . $dv_number . "/" . $model->dvAucsFile->file_name;
+                $path =   "E:\scanned_dvs\\" . $model->dvAucsFile->file_name;
+                echo Html::button('Download Soft Copy ', ['class' => 'btn btn-link ', 'id' => 'download_soft_copy', 'file-url' => $path]);
             } else {
                 echo '<button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload Soft Copy</button>';
             }
@@ -194,20 +195,22 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
 
                 foreach ($model->dvAucsEntries as $val) {
-                    $total_withheld = $val->compensation + $val->ewt_goods_services + $val->vat_nonvat;
-                    $ors_serial_number = '';
-                    $ors_serial_number = !empty($val->process_ors_id) ? $val->processOrs->serial_number : '';
-                    $t = '';
-                    if (!empty($val->process_ors_id)) {
+                    if (intval($val->is_deleted) != 1) {
 
-                        // $q = Raouds::find()
-                        //     ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' =>  $val->process_ors_id])
-                        //     ->one();
-                        // $q = !empty($val->process_ors_id) ? $val->process_ors_id : '';
-                        $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$val->process_ors_id";
-                    }
+                        $total_withheld = $val->compensation + $val->ewt_goods_services + $val->vat_nonvat;
+                        $ors_serial_number = '';
+                        $ors_serial_number = !empty($val->process_ors_id) ? $val->processOrs->serial_number : '';
+                        $t = '';
+                        if (!empty($val->process_ors_id)) {
 
-                    echo "
+                            // $q = Raouds::find()
+                            //     ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' =>  $val->process_ors_id])
+                            //     ->one();
+                            // $q = !empty($val->process_ors_id) ? $val->process_ors_id : '';
+                            $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$val->process_ors_id";
+                        }
+
+                        echo "
                     <tr>
                     <td>
                         {$ors_serial_number}
@@ -225,8 +228,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         {$val->dvAucs->particular}
                     </td>
                     <td  class='amount'>"
-                        . number_format($val->amount_disbursed, 2) .
-                        "</td>
+                            . number_format($val->amount_disbursed, 2) .
+                            "</td>
                     <td class='amount'>
                         " . number_format($val->vat_nonvat, 2) . "
                     </td>
@@ -244,12 +247,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                     <td class='link'>" .
 
-                        Html::a('ORS', $t, ['class' => ' btn btn-xs btn-success '])
-                        . "
+                            Html::a('ORS', $t, ['class' => ' btn btn-xs btn-success '])
+                            . "
                 
                 </td>
                     </tr>
                     ";
+                    }
                 }
                 // echo $model->dvAucsEntries;
                 ?>
@@ -572,6 +576,25 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 
+<script>
+    $(document).ready(function() {
+
+        $('#download_soft_copy').click((e) => {
+            e.preventDefault()
+            console.log($('#download_soft_copy').attr('file-url'))
+            $.ajax({
+                type: 'POST',
+                url: window.location.pathname + '?r=report/q',
+                data: {
+                    url: $('#download_soft_copy').attr('file-url')
+                },
+                success: function(res) {
+                    window.open(res)
+                }
+            })
+        })
+    })
+</script>
 <?php
 SweetAlertAsset::register($this);
 $script = <<<JS
