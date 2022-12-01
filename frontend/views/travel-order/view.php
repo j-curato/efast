@@ -49,12 +49,13 @@ $date = $date_format->format('F d, Y');
 <div class="travel-order-view">
 
 
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
-    </p>
 
     <div class="container">
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+
+        </p>
         <table>
             <thead>
                 <tr>
