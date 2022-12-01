@@ -1576,15 +1576,15 @@ class DvAucsController extends Controller
                         }
 
 
-                        $flag =  $this->insertDvEntries(
-                            $model->id,
-                            $ors,
-                            $amount_disbursed,
-                            $vat,
-                            $ewt_goods_services,
-                            $compensation,
-                            $liabilities
-                        );
+                        // $flag =  $this->insertDvEntries(
+                        //     $model->id,
+                        //     $ors,
+                        //     $amount_disbursed,
+                        //     $vat,
+                        //     $ewt_goods_services,
+                        //     $compensation,
+                        //     $liabilities
+                        // );
                     } else {
                         $flag = false;
                     }
