@@ -59,7 +59,7 @@ class TravelOrderController extends Controller
     public function toNumber($date)
     {
         $year =  DateTime::createFromFormat('Y-m-d', $date)->format('Y');
-        $las_num = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(travel_order.to_number,'-',-1) AS UNSIGNED)as last_num 
+        $last_num = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(travel_order.to_number,'-',-1) AS UNSIGNED)as last_num 
         FROM travel_order WHERE travel_order.to_number LIKE :_year
         ORDER BY last_num DESC LIMIT 1")
             ->bindValue(':_year', $year . '%')
@@ -117,6 +117,8 @@ class TravelOrderController extends Controller
      */
     public function insertItems($tavel_order_id = '', $items = [])
     {
+
+
         if (empty($tavel_order_id)) {
             return ['isSuccess' => false, 'error_message' => 'Travel Order ID is Missing'];
         }

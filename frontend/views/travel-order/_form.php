@@ -205,11 +205,11 @@ Yii::$app->db->createCommand();
                         </td>
                         <td>
                             <label for="from_date">From Date</label>
-                            <input type="date" class="from_date form-control">
+                            <input type="date" class="from_date form-control" name='items[0][from_date]'>
                         </td>
                         <td>
                             <label for="to_date">To Date</label>
-                            <input type="date" class=" form-control to_date">
+                            <input type="date" class=" form-control to_date" name='items[0][to_date]'>
 
 
                         </td>
