@@ -14,6 +14,7 @@ class m221122_051155_create_travel_order_table extends Migration
     {
         $this->createTable('{{%travel_order}}', [
             'id' => $this->primaryKey(),
+            'to_number' => $this->string()->notNull()->unique(),
             'date' => $this->date()->notNull(),
             'destination' => $this->text()->notNull(),
             'purpose' => $this->text()->notNull(),

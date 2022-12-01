@@ -47,7 +47,7 @@ class TravelOrder extends \yii\db\ActiveRecord
             ], 'integer'],
             [['date', 'created_at'], 'safe'],
             [['destination', 'purpose', 'expected_outputs'], 'string'],
-            [['type'], 'string', 'max' => 255],
+            [['type', 'to_number'], 'string', 'max' => 255],
             [['id'], 'unique'],
             // [['date'], 'validateDate'],
 
@@ -80,6 +80,7 @@ class TravelOrder extends \yii\db\ActiveRecord
             'fk_approved_by' => 'Approved By',
             'fk_budget_officer' => 'Budget Officer',
             'type' => 'Type',
+            'to_number' => 'Travel Order Number',
 
         ];
     }

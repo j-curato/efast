@@ -37,129 +37,130 @@ $row_number = 1;
 // fa-flag on fa-circle
 Yii::$app->db->createCommand();
 ?>
-<div class="travel-order-form" id="main">
+<div class="travel-order-form " id="main">
+    <div class="container">
 
-    <?php $form = ActiveForm::begin(); ?>
-    <div class="row">
-        <div class="col-sm-2">
+        <?php $form = ActiveForm::begin(); ?>
+        <div class="row">
+            <div class="col-sm-3">
 
-            <?= $form->field($model, 'date')->widget(DatePicker::class, [
-                'pluginOptions' => [
-                    'autoclose' => true,
-                    'format' => 'yyyy-mm-dd'
-                ]
-            ]) ?>
+                <?= $form->field($model, 'date')->widget(DatePicker::class, [
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ]
+                ]) ?>
 
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'type')->widget(Select2::class, [
+
+                    'data' => ['national' => 'National', 'regional' => 'Regional'],
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Type',
+                    ]
+                ]) ?>
+            </div>
         </div>
-        <div class="col-sm-3">
-            <?= $form->field($model, 'type')->widget(Select2::class, [
+        <div class="row">
 
-                'data' => ['national' => 'National', 'regional' => 'Regional'],
-                'pluginOptions' => [
-                    'placeholder' => 'Select Type',
-                ]
-            ]) ?>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'fk_budget_officer')->widget(Select2::class, [
+                    'data' => $budget_officer,
+                    'options' => ['placeholder' => 'Search for a Employee ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
+                ]) ?>
+
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'fk_recommending_approval')->widget(Select2::class, [
+                    'data' => $recommending_approval,
+                    'options' => ['placeholder' => 'Search for a Employee ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
+                ]) ?>
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'fk_approved_by')->widget(Select2::class, [
+                    'data' => $approved_by,
+                    'options' => ['placeholder' => 'Search for a Employee ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
+                ]) ?>
+
+            </div>
         </div>
-    </div>
-    <div class="row">
+        <textarea class="purpose form-control hidden" rows="4" name="purpose"><?= $model->purpose ?></textarea>
+        <textarea class="expected_output form-control hidden" rows="4" name="expected_output"><?= $model->expected_outputs ?></textarea>
 
-        <div class="col-sm-3">
-            <?= $form->field($model, 'fk_budget_officer')->widget(Select2::class, [
-                'data' => $budget_officer,
-                'options' => ['placeholder' => 'Search for a Employee ...'],
-                'pluginOptions' => [
-                    'allowClear' => true,
-                    'minimumInputLength' => 1,
-                    'language' => [
-                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                    ],
-                    'ajax' => [
-                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                        'dataType' => 'json',
-                        'delay' => 250,
-                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                        'cache' => true
-                    ],
-                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                ],
-            ]) ?>
-
-        </div>
-        <div class="col-sm-3">
-            <?= $form->field($model, 'fk_recommending_approval')->widget(Select2::class, [
-                'data' => $recommending_approval,
-                'options' => ['placeholder' => 'Search for a Employee ...'],
-                'pluginOptions' => [
-                    'allowClear' => true,
-                    'minimumInputLength' => 1,
-                    'language' => [
-                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                    ],
-                    'ajax' => [
-                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                        'dataType' => 'json',
-                        'delay' => 250,
-                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                        'cache' => true
-                    ],
-                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                ],
-            ]) ?>
-        </div>
-        <div class="col-sm-3">
-            <?= $form->field($model, 'fk_approved_by')->widget(Select2::class, [
-                'data' => $approved_by,
-                'options' => ['placeholder' => 'Search for a Employee ...'],
-                'pluginOptions' => [
-                    'allowClear' => true,
-                    'minimumInputLength' => 1,
-                    'language' => [
-                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                    ],
-                    'ajax' => [
-                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                        'dataType' => 'json',
-                        'delay' => 250,
-                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                        'cache' => true
-                    ],
-                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                ],
-            ]) ?>
-
-        </div>
-    </div>
-    <textarea class="purpose form-control hidden" rows="4" name="purpose"><?= $model->purpose ?></textarea>
-    <textarea class="expected_output form-control hidden" rows="4" name="expected_output"><?= $model->expected_outputs ?></textarea>
-
-    <?= $form->field($model, 'destination')->textarea(['rows' => 4]) ?>
-    <?= $form->field($model, 'purpose')->textarea(['rows' => 4, 'value' =>  preg_replace('#\[n\]#', "\n", $model->purpose)]) ?>
-    <?= $form->field($model, 'expected_outputs')->textarea(['rows' => 4, 'value' =>  preg_replace('#\[n\]#', "\n", $model->expected_outputs)]) ?>
+        <?= $form->field($model, 'destination')->textarea(['rows' => 4]) ?>
+        <?= $form->field($model, 'purpose')->textarea(['rows' => 4, 'value' =>  preg_replace('#\[n\]#', "\n", $model->purpose)]) ?>
+        <?= $form->field($model, 'expected_outputs')->textarea(['rows' => 4, 'value' =>  preg_replace('#\[n\]#', "\n", $model->expected_outputs)]) ?>
 
 
 
 
 
 
-    <table id="items_table" class="table">
+        <table id="items_table" class="table">
 
-        <tbody>
+            <tbody>
 
-            <?php
+                <?php
 
-            foreach ($items as $item) {
-                $employee_name = !empty($item['employee_name']) ? $item['employee_name'] : '';
-                $employee_id = !empty($item['employee_id']) ? $item['employee_id'] : '';
-                $from_date = !empty($item['from_date']) ? $item['from_date'] : '';
-                $to_date = !empty($item['to_date']) ? $item['to_date'] : '';
-                $item_id = !empty($item['id']) ? $item['id'] : '';
-                echo "<tr class='panel  panel-default' style='margin-top: 2rem;margin-bottom:2rem;'>
+                foreach ($items as $item) {
+                    $employee_name = !empty($item['employee_name']) ? $item['employee_name'] : '';
+                    $employee_id = !empty($item['employee_id']) ? $item['employee_id'] : '';
+                    $from_date = !empty($item['from_date']) ? $item['from_date'] : '';
+                    $to_date = !empty($item['to_date']) ? $item['to_date'] : '';
+                    $item_id = !empty($item['id']) ? $item['id'] : '';
+                    echo "<tr class='panel  panel-default' style='margin-top: 2rem;margin-bottom:2rem;'>
                     <td style='max-width:100rem;'>
                     <input type='hidden' name='items[$row_number][item_id]' class=' form-control item_id' value='$item_id'>
 
@@ -187,55 +188,66 @@ Yii::$app->db->createCommand();
 
 
                 </tr>";
-                $row_number++;
-            }
-            ?>
-            <?php
-            if (empty($items)) {
+                    $row_number++;
+                }
+                ?>
+                <?php
+                if (empty($items)) {
 
-            ?>
-                <tr class="panel  panel-default" style="margin-top: 2rem;margin-bottom:2rem;">
-                    <td style="max-width:100rem;">
+                ?>
+                    <tr class="panel  panel-default" style="margin-top: 2rem;margin-bottom:2rem;">
+                        <td style="max-width:100rem;">
 
-                        <label for="employee">Employee</label>
-                        <select name="items[0][employee_id]" class="employee_select form-control " style="width: 100%">
-                            <option></option>
-                        </select>
-                    </td>
-                    <td>
-                        <label for="from_date">From Date</label>
-                        <input type="date" class="from_date form-control">
-                    </td>
-                    <td>
-                        <label for="to_date">To Date</label>
-                        <input type="date" class=" form-control to_date">
-
-
-                    </td>
-                    <td style='  text-align: center;'>
-                        <div class='pull-right'>
-                            <button class='add_new_row btn btn-primary btn-xs' type="button"><i class='fa fa-plus fa-fw'></i> </button>
-                            <a class='remove_this_row btn btn-danger btn-xs disabled' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
-                        </div>
-                    </td>
+                            <label for="employee">Employee</label>
+                            <select name="items[0][employee_id]" class="employee_select form-control " style="width: 100%">
+                                <option></option>
+                            </select>
+                        </td>
+                        <td>
+                            <label for="from_date">From Date</label>
+                            <input type="date" class="from_date form-control">
+                        </td>
+                        <td>
+                            <label for="to_date">To Date</label>
+                            <input type="date" class=" form-control to_date">
 
 
-                </tr>
-            <?php } ?>
+                        </td>
+                        <td style='  text-align: center;'>
+                            <div class='pull-right'>
+                                <button class='add_new_row btn btn-primary btn-xs' type="button"><i class='fa fa-plus fa-fw'></i> </button>
+                                <a class='remove_this_row btn btn-danger btn-xs disabled' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                            </div>
+                        </td>
 
-        </tbody>
-    </table>
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+                    </tr>
+                <?php } ?>
+
+            </tbody>
+        </table>
+
+        <div class="row">
+            <div class="col-sm-3 col-sm-offset-6">
+                <div class="form-group">
+                    <?= Html::submitButton('Save', ['class' => 'btn btn-success ']) ?>
+                </div>
+            </div>
+        </div>
+
+
+        <?php ActiveForm::end(); ?>
     </div>
-
-    <?php ActiveForm::end(); ?>
 
 </div>
 <style>
     .hidden {
         display: none;
+    }
+
+    .container {
+        background-color: white;
+        padding: 4rem;
     }
 </style>
 <?php

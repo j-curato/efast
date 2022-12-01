@@ -6,6 +6,7 @@ use Yii;
 use app\models\TravelOrder;
 use app\models\TravelOrderItems;
 use app\models\TravelOrderSearch;
+use DateTime;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -54,6 +55,29 @@ class TravelOrderController extends Controller
                 ],
             ],
         ];
+    }
+    public function toNumber($date)
+    {
+        $year =  DateTime::createFromFormat('Y-m-d', $date)->format('Y');
+        $las_num = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(travel_order.to_number,'-',-1) AS UNSIGNED)as last_num 
+        FROM travel_order WHERE travel_order.to_number LIKE :_year
+        ORDER BY last_num DESC LIMIT 1")
+            ->bindValue(':_year', $year . '%')
+            ->queryScalar();
+
+        if (!empty($last_num)) {
+
+            $last_num = intval($last_num) + 1;
+        } else {
+            $last_num = 1;
+        }
+        $zero = '';
+
+        for ($i = strlen($last_num); $i < 5; $i++) {
+
+            $zero .= 0;
+        }
+        return $year . '-' . $zero . $last_num;
     }
 
     /**
@@ -139,6 +163,7 @@ class TravelOrderController extends Controller
             $items = !empty($_POST['items']) ? $_POST['items'] : [];
             $transaction = Yii::$app->db->beginTransaction();
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+            $model->to_number = $this->toNumber($model->date);
             if ($model->save()) {
                 $insert_items = $this->insertItems($model->id, $items);
                 if ($insert_items['isSuccess']) {
@@ -168,11 +193,17 @@ class TravelOrderController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $old_model = $this->findModel($id);
 
 
         if ($model->load(Yii::$app->request->post())) {
             $items = !empty($_POST['items']) ? $_POST['items'] : [];
             $transaction = Yii::$app->db->beginTransaction();
+            $old_year  = DateTime::createFromFormat('Y-m-d', $old_model->date)->format('Y');
+            $new_year  = DateTime::createFromFormat('Y-m-d', $model->date)->format('Y');
+            // if ($old_year != $new_year) {
+            //     $model->to_number = $this->toNumber($model->date);
+            // }
             $model->purpose = $_POST['purpose'];
             $model->expected_outputs = !empty($_POST['expected_output']) ? $_POST['expected_output'] : null;
             if ($model->save()) {

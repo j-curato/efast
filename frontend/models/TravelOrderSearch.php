@@ -18,7 +18,17 @@ class TravelOrderSearch extends TravelOrder
     {
         return [
             [['id'], 'integer'],
-            [['date', 'destination', 'created_at', 'purpose', 'expected_outputs'], 'safe'],
+            [[
+                'date',
+                'destination',
+                'created_at',
+                'purpose',
+                'expected_outputs',
+                'to_number',
+                'fk_approved_by',
+                'fk_recommending_approval',
+                'fk_budget_officer'
+            ], 'safe'],
         ];
     }
 
@@ -55,7 +65,9 @@ class TravelOrderSearch extends TravelOrder
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->joinWith('approvedBy as approved_by');
+        $query->joinWith('recommendingApproval as recommending_approval');
+        $query->joinWith('budgetOfficer as budget_officer');
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
@@ -66,6 +78,27 @@ class TravelOrderSearch extends TravelOrder
         $query->andFilterWhere(['like', 'destination', $this->destination]);
         $query->andFilterWhere(['like', 'purpose', $this->purpose]);
         $query->andFilterWhere(['like', 'expected_outputs', $this->expected_outputs]);
+        $query->andFilterWhere(['like', 'to_number', $this->to_number]);
+        $query->andFilterWhere([
+            'or', ['like', 'approved_by.f_name', $this->fk_approved_by],
+            ['like', 'approved_by.m_name', $this->fk_approved_by],
+            ['like', 'approved_by.l_name', $this->fk_approved_by]
+        ]);
+        $query->andFilterWhere([
+            'or', ['like', 'recommending_approval.f_name', $this->fk_recommending_approval],
+            ['like', 'recommending_approval.m_name', $this->fk_recommending_approval],
+            ['like', 'recommending_approval.l_name', $this->fk_recommending_approval]
+        ]);
+        $query->andFilterWhere([
+            'or', ['like', 'budget_officer.f_name', $this->fk_budget_officer],
+            ['like', 'budget_officer.m_name', $this->fk_budget_officer],
+            ['like', 'budget_officer.l_name', $this->fk_budget_officer]
+        ]);
+
+
+
+
+
 
         return $dataProvider;
     }

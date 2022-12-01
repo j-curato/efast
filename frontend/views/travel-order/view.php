@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\TravelOrder */
 
-$this->title = $model->id;
+$this->title = $model->to_number;
 $this->params['breadcrumbs'][] = ['label' => 'Travel Orders', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -40,6 +40,10 @@ if (!empty($model->fk_recommending_approval)) {
 $rows = count($items);
 $y =  !empty($model->expected_outputs) ? 10 : 9;
 $x = $rows + $y;
+
+$date_format = DateTime::createFromFormat('Y-m-d', $model->date);
+$date = $date_format->format('F d, Y');
+
 ?>
 
 <div class="travel-order-view">
@@ -72,6 +76,19 @@ $x = $rows + $y;
                     <th colspan="3" class="center">
                         <h4>TRAVEL ORDER</h4>
                     </th>
+                </tr>
+                <tr>
+                    <td>
+
+
+                        <span><?= !empty($model->to_number) ? $model->to_number : '' ?></span>
+                    </td>
+                    <td></td>
+                    <td style="text-align: right;">
+
+                        <span>Date: <?= $date ?></span>
+
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="3">
@@ -190,7 +207,10 @@ $x = $rows + $y;
                         </td>";
                     } else {
 
-                        echo " <td class='center'>
+                        echo "
+                     
+                        <td class='center'>
+                        <br><br>
                             <span>Funds Available:</span>
                             <br>
                             <br>
