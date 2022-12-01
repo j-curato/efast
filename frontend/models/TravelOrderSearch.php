@@ -18,7 +18,7 @@ class TravelOrderSearch extends TravelOrder
     {
         return [
             [['id'], 'integer'],
-            [['date', 'destination', 'created_at'], 'safe'],
+            [['date', 'destination', 'created_at', 'purpose', 'expected_outputs'], 'safe'],
         ];
     }
 
@@ -64,6 +64,8 @@ class TravelOrderSearch extends TravelOrder
         ]);
 
         $query->andFilterWhere(['like', 'destination', $this->destination]);
+        $query->andFilterWhere(['like', 'purpose', $this->purpose]);
+        $query->andFilterWhere(['like', 'expected_outputs', $this->expected_outputs]);
 
         return $dataProvider;
     }

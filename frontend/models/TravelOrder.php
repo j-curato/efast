@@ -83,4 +83,16 @@ class TravelOrder extends \yii\db\ActiveRecord
 
         ];
     }
+    public function getRecommendingApproval()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_recommending_approval']);
+    }
+    public function getApprovedBy()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_approved_by']);
+    }
+    public function getBudgetOfficer()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_budget_officer']);
+    }
 }
