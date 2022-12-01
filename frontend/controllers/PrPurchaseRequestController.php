@@ -142,7 +142,8 @@ class PrPurchaseRequestController extends Controller
         $model = new PrPurchaseRequest();
 
         if ($model->load(Yii::$app->request->post())) {
-
+            $date_now = new DateTime();
+            $model->date = $date_now->format('Y-m-d');
             // return var_dump($_POST['segment']);
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             $model->pr_number = $this->getPrNumber($model->date, $model->pr_project_procurement_id);
@@ -182,19 +183,20 @@ class PrPurchaseRequestController extends Controller
             }
 
 
-            $date_now = new DateTime();
-            $date2    = new DateTime("11/30/2022");
+
+            $date2    = new DateTime("12/08/2022");
 
             if ($date_now > $date2) {
-                $searchModel = new PrPurchaseRequestSearch();
-                $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+                // $searchModel = new PrPurchaseRequestSearch();
+                // $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-                return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
-                ]);
+                // return $this->render('index', [
+                //     'searchModel' => $searchModel,
+                //     'dataProvider' => $dataProvider,
+                // ]);
+                $model->date = $date_now->format('Y-m-d');
             }
-            $model->date = $date_now->format('Y-m-d');
+
             $transaction = Yii::$app->db->beginTransaction();
 
             try {

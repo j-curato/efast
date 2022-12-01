@@ -84,8 +84,11 @@ if (!empty($model->id)) {
 
 
                     <?php
+                    $date_now = new DateTime();
+                    $date2    = new DateTime("12/09/2022");
 
-                    if (empty($model->date)) {
+                    if ($date_now < $date2) {
+
                         echo "  <div class='col-sm-4'>";
 
                         echo $form->field($model, 'date')->widget(DatePicker::class, [

@@ -134,6 +134,12 @@ $date = $date_format->format('F d, Y');
                     }
                     echo "</tr>";
                 }
+                // for ($x = 0; $x < 30; $x++) {
+
+                //     echo "<tr>
+                //     <td>lorem</td>
+                //     </tr>";
+                // }
                 ?>
                 <tr>
                     <td colspan="3">
@@ -364,6 +370,10 @@ $date = $date_format->format('F d, Y');
         th,
         td {
             padding: 5px;
+        }
+
+        tfoot>td {
+            position: fixed;
         }
 
 
