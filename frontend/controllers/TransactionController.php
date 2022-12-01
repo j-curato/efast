@@ -177,7 +177,7 @@ class TransactionController extends Controller
             //     ) {
             //         return;
             //     }
-            $model->is_local = 0;
+            //     $model->is_local = 0;
             // }
             if ($model->save()) {
 
