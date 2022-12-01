@@ -42,7 +42,8 @@
         "2amigos/yii2-google-maps-library" : "*",
         "vilochane/yii2-barcode-generator": "dev-master",
         "softark/yii2-mb-captcha": "dev-master",
-        "razonyang/yii2-rate-limiter": "^1.0"
+        "razonyang/yii2-rate-limiter": "^1.0",
+        "kartik-v/yii2-icons": "@dev"
 
 
     },
