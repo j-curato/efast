@@ -164,7 +164,7 @@
                                 Yii::$app->user->can('department-offices') ?     ['label' => 'IAR', 'icon' => 'circle-o', 'url' => ['/iar'],] : [],
                             ],
                         ] : [],
-
+                        Yii::$app->user->can('super-user') ?     ['label' => 'Travel Order', 'icon' => 'circle-o', 'url' => ['/travel-order'],] : [],
                         ['label' => 'PPMP Non-CSE', 'icon' => 'circle-o', 'url' => ['/ppmp-non-cse'],],
 
 
