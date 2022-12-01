@@ -234,7 +234,7 @@ class ParController extends Controller
             $num = intval($query) + 1;
         }
         $new_num = substr(str_repeat(0, 5) . $num, -5);
-        $string = 'DTI-XIII-' . $new_num;
+        $string = 'PAR-' . $new_num;
         return $string;
     }
     public function actionSearchPar($q = null, $id = null, $province = null)
@@ -333,5 +333,9 @@ class ParController extends Controller
                 ->queryScalar();
             return json_encode($query);
         }
+    }
+    public function actionBlankSticker()
+    {
+        return $this->render('par_sticker');
     }
 }
