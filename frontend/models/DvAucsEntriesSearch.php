@@ -40,7 +40,8 @@ class DvAucsEntriesSearch extends DvAucsEntries
      */
     public function search($params)
     {
-        $query = DvAucsEntries::find();
+        $query = DvAucsEntries::find()
+            ->where("dv_aucs.is_deleted = 0");
 
         // add conditions that should always apply here
 
@@ -56,6 +57,7 @@ class DvAucsEntriesSearch extends DvAucsEntries
             return $dataProvider;
         }
         $query->joinWith("dvAucs");
+        $query->where("dv_aucs.reporting_period >= '2022-11'");
         // grid filtering conditions
         // $this->id=$dv_id;
         $query->andFilterWhere([

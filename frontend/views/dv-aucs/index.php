@@ -270,6 +270,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ->select("SUM(amount_disbursed) as total_disbursed")
                         ->from("dv_aucs_entries")
                         ->where('dv_aucs_entries.dv_aucs_id = :dv_aucs_id', ['dv_aucs_id' => $model->id])
+                        ->andWhere('dv_aucs_entries.is_deleted = 0')
                         ->one();
                     return $query['total_disbursed'];
                 },
