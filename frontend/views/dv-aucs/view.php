@@ -114,9 +114,8 @@ $this->params['breadcrumbs'][] = $this->title;
             }
             if (!empty($model->dvAucsFile->id)) {
                 $dv_number =  "/scanned-dv" . "/" . $model->dv_number;
-                // $path =  Url::base() . "/frontend"  . $dv_number . "/" . $model->dvAucsFile->file_name;
-                $path =   "E:\scanned_dvs\\" . $model->dvAucsFile->file_name;
-                echo Html::button('Download Soft Copy ', ['class' => 'btn btn-link ', 'id' => 'download_soft_copy', 'file-url' => $path]);
+                $path =  Url::base() . "/frontend"  . $dv_number . "/" . $model->dvAucsFile->file_name;
+                echo Html::a('Download Soft Copy ', $path, ['class' => 'btn btn-link ']);
             } else {
                 echo '<button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload Soft Copy</button>';
             }
