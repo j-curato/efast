@@ -104,6 +104,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ->from('dv_aucs')
                     ->join("LEFT JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
                     ->where("dv_aucs.id =:id", ['id' => $model->dv_aucs_id])
+                    ->andWhere("dv_aucs_entries.is_deleted !=1")
                     ->one();
 
                 return $query['total_disbursed'];
@@ -111,7 +112,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         [
             'label' => 'Good/Cancelled',
-            'attribute'=>'is_cancelled',
+            'attribute' => 'is_cancelled',
             'value' => function ($model) {
                 $model->is_cancelled ? $q = 'cancelled' : $q = 'Good';
                 return $q;
