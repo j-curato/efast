@@ -7,7 +7,7 @@
     use aryelds\sweetalert\SweetAlertAsset;
     use kartik\date\DatePicker;
     use kartik\grid\GridView;
-    use kartik\select2\Select2; 
+    use kartik\select2\Select2;
     use kartik\time\TimePicker;
     use yii\helpers\ArrayHelper;
     use yii\helpers\Html;
@@ -269,6 +269,7 @@
                                     ->from('dv_aucs')
                                     ->join("LEFT JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
                                     ->where("dv_aucs.id =:id", ['id' => $model->id])
+                                    ->andWhere("dv_aucs_entries.is_deleted =0")
                                     ->one();
 
                                 return $query['total_disbursed'];
@@ -377,5 +378,5 @@
         
 
 JS;
-$this->registerJs($script);
-?>
+    $this->registerJs($script);
+    ?>
