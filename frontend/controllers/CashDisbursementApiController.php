@@ -77,7 +77,7 @@ class CashDisbursementApiController extends \yii\rest\ActiveController
                         'check_or_ada_no' => !empty($val['check_or_ada_no']) ? Html::encode($val['check_or_ada_no']) : null,
                         'is_cancelled' => Html::encode($val['is_cancelled']),
                         'issuance_date' => !empty($val['issuance_date']) ? Html::encode($val['issuance_date']) : null,
-                        'ada_number' => !empty($val['ada_number']) ? Html::encode($val['ada_number']) : null,
+                        'ada_number' => !empty($val['ada_number']) ? Html::encode($val['ada_number']) : '',
                         'begin_time' => !empty($val['begin_time']) ? Html::encode($val['begin_time']) : null,
                         'out_time' => !empty($val['out_time']) ? Html::encode($val['out_time']) : null,
                         'parent_disbursement' => !empty($val['parent_disbursement']) ? Html::encode($val['parent_disbursement']) : null,
