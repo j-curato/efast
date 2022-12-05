@@ -23,15 +23,10 @@ use yii\helpers\Html;
     <div class="container">
 
 
-        <div class="row">
-            <div class="col-sm-12" style="text-align:center;color:red">
-                <h4 id="link">
-                </h4>
-            </div>
-        </div>
+
         <form id="cash_disbursement_form">
 
-            <div class="row">
+            <div class="row" style="padding:1rem ;">
                 <div class="col-sm-3">
                     <label for="reporting_period"> Reporting Period</label>
                     <?php
@@ -46,90 +41,88 @@ use yii\helpers\Html;
                             'autoclose' => true,
                             'startView' => "year",
                             'minViewMode' => 'months'
-
                         ]
                     ])
 
                     ?>
                 </div>
 
-
+                <br><br>
 
             </div>
-            <div class="row">
-                <?php
-                $gridColumn = [
+            <?php
+            $gridColumn = [
 
-                    [
+                [
 
-                        'class' => '\kartik\grid\CheckboxColumn',
-                        'checkboxOptions' => function ($model) {
-                            return ['value' => $model->id,  'style' => 'width:20px;', 'class' => 'checkbox', 'name' => 'disbursement_id'];
-                        }
-                    ],
+                    'class' => '\kartik\grid\CheckboxColumn',
+                    'checkboxOptions' => function ($model) {
+                        return ['value' => $model->id,  'style' => 'width:20px;', 'class' => 'checkbox', 'name' => 'disbursement_id'];
+                    }
+                ],
 
-                    [
-                        "label" => "Book",
-                        "attribute" => "book_id",
-                        "value" => "book.name"
-                    ],
-                    'reporting_period',
-                    'mode_of_payment',
-                    'check_or_ada_no',
-                    'ada_number',
-                    'issuance_date',
-                    [
-                        'label' => "DV Number",
-                        "attribute" => "dv_aucs_id",
-                        'value' => 'dvAucs.dv_number'
-                    ],
-                    [
-                        'label' => "Payee",
-                        "attribute" => "dvAucs.payee.account_name"
-                    ],
-                    [
-                        'label' => "Particular",
-                        "attribute" => "dvAucs.particular"
-                    ],
-                    [
-                        'label' => "Amount Disbursed",
-                        'format' => ['decimal', 2],
-                        'value' => function ($model) {
-                            $query = (new \yii\db\Query())
-                                ->select(["SUM(dv_aucs_entries.amount_disbursed) as total_disbursed"])
-                                ->from('dv_aucs')
-                                ->join("LEFT JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
-                                ->where("dv_aucs.id =:id", ['id' => $model->dv_aucs_id])
-                                ->one();
+                [
+                    "label" => "Book",
+                    "attribute" => "book_id",
+                    "value" => "book.name"
+                ],
+                'reporting_period',
+                'mode_of_payment',
+                'check_or_ada_no',
+                'ada_number',
+                'issuance_date',
+                [
+                    'label' => "DV Number",
+                    "attribute" => "dv_aucs_id",
+                    'value' => 'dvAucs.dv_number'
+                ],
+                [
+                    'label' => "Payee",
+                    "attribute" => "dvAucs.payee.account_name"
+                ],
+                [
+                    'label' => "Particular",
+                    "attribute" => "dvAucs.particular"
+                ],
+                [
+                    'label' => "Amount Disbursed",
+                    'format' => ['decimal', 2],
+                    'value' => function ($model) {
+                        $query = (new \yii\db\Query())
+                            ->select(["SUM(dv_aucs_entries.amount_disbursed) as total_disbursed"])
+                            ->from('dv_aucs')
+                            ->join("LEFT JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
+                            ->where("dv_aucs.id =:id", ['id' => $model->dv_aucs_id])
+                            ->where("dv_aucs_entries.is_deleted =0")
+                            ->one();
 
-                            return $query['total_disbursed'];
-                        }
-                    ],
-                    [
-                        'label' => 'Good/Cancelled',
-                        'attribute' => 'is_cancelled',
-                        'value' => function ($model) {
-                            $model->is_cancelled ? $q = 'cancelled' : $q = 'Good';
-                            return $q;
-                        }
-                    ],
+                        return $query['total_disbursed'];
+                    }
+                ],
+                [
+                    'label' => 'Good/Cancelled',
+                    'attribute' => 'is_cancelled',
+                    'value' => function ($model) {
+                        $model->is_cancelled ? $q = 'cancelled' : $q = 'Good';
+                        return $q;
+                    }
+                ],
 
-                ];
-                ?>
+            ];
+            ?>
 
-                <?= GridView::widget([
-                    'dataProvider' => $dataProvider,
-                    'filterModel' => $searchModel,
-                    'panel' => [
-                        'type' => Gridview::TYPE_PRIMARY,
- 
-                    ],
+            <?= GridView::widget([
+                'dataProvider' => $dataProvider,
+                'filterModel' => $searchModel,
+                'panel' => [
+                    'type' => Gridview::TYPE_PRIMARY,
 
-                    'export' => false,
-                    'toggleDataContainer' => ['class' => 'btn-group mr-2'],
-                    'columns' => $gridColumn
-                ]); ?>
-            </div>
+                ],
+
+                'export' => false,
+                'toggleDataContainer' => ['class' => 'btn-group mr-2'],
+                'columns' => $gridColumn
+            ]); ?>
 
             <button type="button" name="" id="submit" class="btn btn-success" style="width: 100%;">Save</button>
         </form>
@@ -184,7 +177,7 @@ $this->registerJs($script);
                     swal({
                         title: 'Error',
                         type: 'error',
-                        text:res.error,
+                        text: res.error,
                         button: false,
                         timer: 3000,
                     })
