@@ -40,6 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'position' => 'absolute',
         ],
         'export' => false,
+        'pjax' => true,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
@@ -48,7 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => 'Province',
                 'attribute' => 'province',
-                'value'=>'bankAccount.province'
+                'value' => 'bankAccount.province'
             ],
             [
                 'label' => 'Bank Account',
