@@ -107,6 +107,7 @@ $this->params['breadcrumbs'][] = $this->title;
         FROM dv_aucs_entries
         LEFT JOIN process_ors ON dv_aucs_entries.process_ors_id = process_ors.id
         WHERE dv_aucs_entries.dv_aucs_id= :id
+        AND dv_aucs_entries.is_deleted = 0
         LIMIT 1")
             ->bindValue(':id', $model->id)
             ->queryScalar();
@@ -126,14 +127,18 @@ $this->params['breadcrumbs'][] = $this->title;
     IFNULL(SUM(dv_aucs_entries.other_trust_liabilities),0)
      as gross_amount
     FROM dv_aucs_entries
-    WHERE dv_aucs_entries.dv_aucs_id = :id")
+    WHERE dv_aucs_entries.dv_aucs_id = :id
+    AND dv_aucs_entries.is_deleted = 0
+    ")
         ->bindValue(':id', $model->id)
         ->queryScalar();
     $net_amount = Yii::$app->db->createCommand("SELECT 
     SUM(dv_aucs_entries.amount_disbursed)
      as net_amount
     FROM dv_aucs_entries
-    WHERE dv_aucs_entries.dv_aucs_id = :id")
+    WHERE dv_aucs_entries.dv_aucs_id = :id
+    AND dv_aucs_entries.is_deleted = 0
+    ")
         ->bindValue(':id', $model->id)
         ->queryScalar();
     $acc_2_date = '';
@@ -201,7 +206,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             process_ors.serial_number
                             FROM dv_aucs_entries
                             LEFT JOIN process_ors ON dv_aucs_entries.process_ors_id = process_ors.id
-                            WHERE dv_aucs_entries.dv_aucs_id = :id")
+                            WHERE dv_aucs_entries.dv_aucs_id = :id
+                            AND dv_aucs_entries.is_deleted !=1
+                            ")
                                 ->bindValue(':id', $model->id)
                                 ->queryAll();
                             $ors_length = count($ors_numbers);
