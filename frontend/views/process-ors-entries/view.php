@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="process-ors-entries-view">
     <?php
     $ors  = $model;
-    $entries = ProcessOrsNewView::find()->where('id = :id',['id'=>$model->id])->all();
+    $entries = ProcessOrsNewView::find()->where('id = :id', ['id' => $model->id])->all();
     ?>
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -88,7 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
                 $total = 0;
                 foreach ($entries as $key => $val) {
-                    $count = $key+1;
+                    $count = $key + 1;
                     echo "
                     <tr>
                         <td>
@@ -122,7 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
                            {$val->ors_account_title}
                         </td>
                       
-                        <td class='amount'>".number_format($val->amount,2)."
+                        <td class='amount'>" . number_format($val->amount, 2) . "
                            
                         </td>
                       
@@ -160,13 +160,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 if (!empty($ors->dvAucsEntries)) {
                     $dv_id = 0;
                     foreach ($ors->dvAucsEntries as $val) {
-                        $x = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/view&id={$val->dvAucs->id}";
-                        echo "<tr>
+                        if (intval($val->is_deleted) === 0) {
+
+                            $x = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/view&id={$val->dvAucs->id}";
+                            echo "<tr>
                         <td>{$val->dvAucs->dv_number}</td>
                         <td>" .
-                            Html::a('Dv Link', $x, ['class' => 'btn-xs btn-danger '])
-                            . "</td>
+                                Html::a('Dv Link', $x, ['class' => 'btn-xs btn-danger '])
+                                . "</td>
                         </tr>";
+                        }
                     }
 
                     // http://10.20.17.33/dti-afms-2/frontend/web/index.php?r=dv-aucs%2Fview&id=6878
@@ -185,6 +188,7 @@ $this->params['breadcrumbs'][] = $this->title;
         background-color: white;
         padding: 12px;
     }
+
     .amount {
         text-align: right;
     }
