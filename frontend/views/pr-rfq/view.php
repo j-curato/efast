@@ -90,7 +90,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td class='bdr-none' colspan="4" style="border-right:none;" class="bdr-top-none bdr-left-none bdr-btm-none"></td>
                     <td class='bdr-none' colspan="2" style="padding-top:5rem;" class="bdr-top-none bdr-left-none bdr-btm-none">
                         <span>Date: </span>
-                        <span><?= DateTIme::createFromFormat('Y-m-d', $model->_date)->format('F d, Y') ?></span>
+                        <span><?php
+
+
+                                echo DateTIme::createFromFormat('Y-m-d H:i:s', $model->created_at)->format('F d, Y')
+                                ?></span>
                         <br>
                         <span>RFQ Number:</span>
                         <span><?= $model->rfq_number ?></span>
