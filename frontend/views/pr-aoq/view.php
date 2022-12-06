@@ -104,7 +104,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <th colspan="<?= $header_count ?>" style='padding:0;border:none;'>
                         <?php
-                        $date = DateTime::createFromFormat('Y-m-d H:i:s', $model->created_at);
+                        $date = DateTime::createFromFormat('Y-m-d H:i:s', $model->rfq->created_at);
                         echo $date->format('F d, Y');
 
                         ?>
