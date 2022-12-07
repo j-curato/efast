@@ -886,6 +886,7 @@ class ReportController extends \yii\web\Controller
             record_allotments.id as record_allotment_id,
             books.`name`as book,
             cash_disbursement.is_cancelled as cash_disursement_is_cancelled
+
             FROM dv_aucs
             LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
             LEFT JOIN process_ors ON dv_aucs_entries.process_ors_id = process_ors.id
@@ -908,7 +909,7 @@ class ReportController extends \yii\web\Controller
             GROUP BY process_ors_entries.process_ors_id) as t_obligation ON process_ors.id = t_obligation.process_ors_id
             LEFT JOIN chart_of_accounts  as ors_chart ON process_ors_entries.chart_of_account_id = ors_chart.id 
             WHERE dv_aucs.is_cancelled = 0 AND dv_aucs.reporting_period >=:from_reporting_period 
-            AND dv_aucs.reporting_period <=:to_reporting_period )
+            AND dv_aucs.reporting_period <=:to_reporting_period  AND dv_aucs_entries.is_deleted = 0)
        ")
             ->bindValue(":from_reporting_period", $from_reporting_period)
             ->bindValue(":to_reporting_period", $to_reporting_period)
@@ -4948,6 +4949,7 @@ class ReportController extends \yii\web\Controller
         }
         return $this->render('proc_summary');
     }
+
     // yii2 upload
     public function actionFile()
     {
@@ -5065,6 +5067,16 @@ class ReportController extends \yii\web\Controller
             }
         }
         return $this->render('file_upload', ['model' => $model]);
+    }
+    public function actionMail()
+    {
+        Yii::$app->mailer->compose()
+            ->setFrom('afms@afms.com')
+            ->setTo('normanbutalon@gmail.com')
+            ->setSubject('Message subject')
+            ->setTextBody('Plain text content')
+            ->setHtmlBody('<b>HTML content</b>')
+            ->send();
     }
     // public function actionQ()
     // {
