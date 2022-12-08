@@ -215,7 +215,7 @@ class LiquidationController extends Controller
             $q = $this->validateReportingPeriod($reporting_period, $province, $bank_account_id);
             // echo $q;
             if ($q !== true) {
-                return $q;
+                return $q . " Advances {$advances_entries_balance['fund_source']} line";
                 die();
             };
 
