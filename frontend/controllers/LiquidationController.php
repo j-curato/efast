@@ -210,8 +210,13 @@ class LiquidationController extends Controller
             if ($partial_balance < 0) {
                 return "Cannot Insert. Advances {$advances_entries_balance['fund_source']} Balance is not enough";
             }
-            if (!$this->validateReportingPeriod($reporting_period, $province, $bank_account_id)) {
-                return "Reporting is Disable in  Advances {$advances_entries_balance['fund_source']} line";
+
+            // echo $this->validateReportingPeriod($reporting_period, $province, $bank_account_id);
+            $q = $this->validateReportingPeriod($reporting_period, $province, $bank_account_id);
+            // echo $q;
+            if ($q !== true) {
+                return $q;
+                die();
             };
 
 
@@ -226,6 +231,7 @@ class LiquidationController extends Controller
             $liquidation_entries->liquidation_damage = !empty($liq_damages[$key]) ? $liq_damages[$key] : 0;
             $liquidation_entries->new_object_code = $object_codes[$key];
             $liquidation_entries->chart_of_account_id = null;
+
 
             if ($liquidation_entries->save(false)) {
             } else {
@@ -444,6 +450,9 @@ class LiquidationController extends Controller
             $model->check_range_id = $check_range_id;
             $model->check_number = $check_number;
             $model->po_transaction_id = $po_transaction_id;
+            // echo   $validateReportingPeriod = $this->validateReportingPeriod($reporting_period, $province, $model->checkRange->bank_account_id);
+            // echo $model->checkRange->bank_account_id;
+            // die();
             if ($model->reporting_period !== $reporting_period) {
 
                 $validateReportingPeriod = $this->validateReportingPeriod($reporting_period, $province, $model->checkRange->bank_account_id);
