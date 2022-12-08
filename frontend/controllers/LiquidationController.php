@@ -456,7 +456,7 @@ class LiquidationController extends Controller
             if ($model->reporting_period !== $reporting_period) {
 
                 $validateReportingPeriod = $this->validateReportingPeriod($reporting_period, $province, $model->checkRange->bank_account_id);
-                if ($validateReportingPeriod === false) {
+                if ($validateReportingPeriod !== true) {
                     $transaction->rollBack();
                     return json_encode(['check_error' => 'Reporting Period is Disabled']);
                 } else if ($validateReportingPeriod === 'empty') {
