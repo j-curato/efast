@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::a('Create  Purchase Request', ['create'], ['class' => 'btn btn-success']) ?>
+        <!-- <?= Html::a('Create  Purchase Request', ['create'], ['class' => 'btn btn-success']) ?> -->
 
         <?php
 
