@@ -187,13 +187,13 @@ class PrPurchaseRequestController extends Controller
             $date2    = new DateTime("12/08/2022");
 
             if ($date_now > $date2) {
-                // $searchModel = new PrPurchaseRequestSearch();
-                // $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+                $searchModel = new PrPurchaseRequestSearch();
+                $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-                // return $this->render('index', [
-                //     'searchModel' => $searchModel,
-                //     'dataProvider' => $dataProvider,
-                // ]);
+                return $this->render('index', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+                ]);
                 $model->date = $date_now->format('Y-m-d');
             }
 
