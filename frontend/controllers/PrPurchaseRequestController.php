@@ -141,90 +141,90 @@ class PrPurchaseRequestController extends Controller
     {
         $model = new PrPurchaseRequest();
 
-        if ($model->load(Yii::$app->request->post())) {
-            $date_now = new DateTime();
-            $model->date = $date_now->format('Y-m-d');
-            // return var_dump($_POST['segment']);
-            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            $model->pr_number = $this->getPrNumber($model->date, $model->pr_project_procurement_id);
+        // if ($model->load(Yii::$app->request->post())) {
+        //     $date_now = new DateTime();
+        //     $model->date = $date_now->format('Y-m-d');
+        //     // return var_dump($_POST['segment']);
+        //     $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+        //     $model->pr_number = $this->getPrNumber($model->date, $model->pr_project_procurement_id);
 
-            $pr_stocks_id = [];
-            $specification = [];
-            $unit_of_measure_id = [];
-            $pr_item_id = [];
+        //     $pr_stocks_id = [];
+        //     $specification = [];
+        //     $unit_of_measure_id = [];
+        //     $pr_item_id = [];
 
-            $unit_cost = $_POST['unit_cost'];
-            $quantity = $_POST['quantity'];
-            if (empty($_POST['pr_stocks_id'])) {
-                return json_encode(['error' => true, 'message' => 'Please Insert Items']);
-            } else {
-                $pr_stocks_id = $_POST['pr_stocks_id'];
-                $specification = $_POST['specification'];
-                $unit_of_measure_id = $_POST['unit_of_measure_id'];
-            }
-            $host = gethostname();
-            $ip = gethostbyname($host);
-            if ($ip !== '192.168.1.25') {
-                $division = strtolower(Yii::$app->user->identity->division);
-                if (
-                    $division === 'idd' ||
-                    $division === 'sdd' ||
-                    $division === 'fad'
-                ) {
-                    $searchModel = new PrPurchaseRequestSearch();
-                    $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        //     $unit_cost = $_POST['unit_cost'];
+        //     $quantity = $_POST['quantity'];
+        //     if (empty($_POST['pr_stocks_id'])) {
+        //         return json_encode(['error' => true, 'message' => 'Please Insert Items']);
+        //     } else {
+        //         $pr_stocks_id = $_POST['pr_stocks_id'];
+        //         $specification = $_POST['specification'];
+        //         $unit_of_measure_id = $_POST['unit_of_measure_id'];
+        //     }
+        //     $host = gethostname();
+        //     $ip = gethostbyname($host);
+        //     if ($ip !== '192.168.1.25') {
+        //         $division = strtolower(Yii::$app->user->identity->division);
+        //         if (
+        //             $division === 'idd' ||
+        //             $division === 'sdd' ||
+        //             $division === 'fad'
+        //         ) {
+        //             $searchModel = new PrPurchaseRequestSearch();
+        //             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-                    return $this->render('index', [
-                        'searchModel' => $searchModel,
-                        'dataProvider' => $dataProvider,
-                    ]);
-                }
-                // $model->is_local = 0;
-            }
+        //             return $this->render('index', [
+        //                 'searchModel' => $searchModel,
+        //                 'dataProvider' => $dataProvider,
+        //             ]);
+        //         }
+        //         // $model->is_local = 0;
+        //     }
 
 
 
-            $date2    = new DateTime("12/08/2022");
+        //     $date2    = new DateTime("12/08/2022");
 
-            if ($date_now > $date2) {
-                $searchModel = new PrPurchaseRequestSearch();
-                $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        //     if ($date_now > $date2) {
+        //         $searchModel = new PrPurchaseRequestSearch();
+        //         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-                return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
-                ]);
-                $model->date = $date_now->format('Y-m-d');
-            }
+        //         return $this->render('index', [
+        //             'searchModel' => $searchModel,
+        //             'dataProvider' => $dataProvider,
+        //         ]);
+        //         $model->date = $date_now->format('Y-m-d');
+        //     }
 
-            $transaction = Yii::$app->db->beginTransaction();
+        //     $transaction = Yii::$app->db->beginTransaction();
 
-            try {
-                if ($flag = true) {
+        //     try {
+        //         if ($flag = true) {
 
-                    if ($model->save(false)) {
-                        $flag =  $this->insertPrItems(
-                            $model->id,
-                            $pr_stocks_id,
-                            $unit_cost,
-                            $quantity,
-                            $specification,
-                            $pr_item_id,
-                            $unit_of_measure_id
-                        );
-                    }
-                }
-                if ($flag) {
-                    $transaction->commit();
-                    return $this->redirect(['view', 'id' => $model->id]);
-                } else {
-                    $transaction->rollBack();
-                    return json_encode('Error');
-                }
-            } catch (ErrorException $e) {
-                $transaction->rollBack();
-            }
-        }
+        //             if ($model->save(false)) {
+        //                 $flag =  $this->insertPrItems(
+        //                     $model->id,
+        //                     $pr_stocks_id,
+        //                     $unit_cost,
+        //                     $quantity,
+        //                     $specification,
+        //                     $pr_item_id,
+        //                     $unit_of_measure_id
+        //                 );
+        //             }
+        //         }
+        //         if ($flag) {
+        //             $transaction->commit();
+        //             return $this->redirect(['view', 'id' => $model->id]);
+        //         } else {
+        //             $transaction->rollBack();
+        //             return json_encode('Error');
+        //         }
+        //     } catch (ErrorException $e) {
+        //         $transaction->rollBack();
+        //     }
+        // }
 
         return $this->render('create', [
             'model' => $model,
