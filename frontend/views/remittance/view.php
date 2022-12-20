@@ -42,6 +42,7 @@ AND remittance_items.is_removed = 0
         GROUP BY remittance_items.fk_dv_acounting_entries_id) as remitted ON dv_accounting_entries.id = remitted.fk_dv_acounting_entries_id 
 WHERE remittance_items.fk_remittance_id = :id
 AND remittance_items.is_removed = 0
+AND dv_aucs_entries.is_deleted=0
 ")
     ->bindValue(':id', $model->id)
     ->bindValue(':create_at', $model->created_at)
