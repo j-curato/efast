@@ -38,7 +38,7 @@ class Transaction extends \yii\db\ActiveRecord
     {
         return [
             [['responsibility_center_id', 'payee_id', 'particular',  'transaction_date'], 'required'],
-            [['responsibility_center_id', 'payee_id', 'is_local', 'fk_record_allotment_entry_id'], 'integer'],
+            [['responsibility_center_id', 'payee_id', 'is_local',], 'integer'],
             [['gross_amount'], 'number'],
             [['tracking_number', 'earmark_no', 'payroll_number', 'type'], 'string', 'max' => 255],
             [['transaction_date'], 'string', 'max' => 50],
@@ -57,7 +57,7 @@ class Transaction extends \yii\db\ActiveRecord
                 'transaction_time',
                 'created_at',
                 'is_local',
-                'fk_record_allotment_entry_id'
+
 
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
             [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::class, 'targetAttribute' => ['payee_id' => 'id']],
@@ -84,7 +84,6 @@ class Transaction extends \yii\db\ActiveRecord
             'created_at' => 'created_at',
             'type' => 'Type',
             'is_local' => 'is Local',
-            'fk_record_allotment_entry_id' => 'Allotment '
         ];
     }
 
