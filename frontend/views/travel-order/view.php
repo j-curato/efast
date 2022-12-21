@@ -123,7 +123,7 @@ $date = $date_format->format('F d, Y');
                             $travel_date =  $from_date->format('F d, Y') . '-' . $to_date->format('F d, Y');
                         }
                     } else {
-                        $travel_date = !empty($from_date->format('F d, Y')) ? $from_date->format('F d, Y') : '';
+                        $travel_date = !empty($from_date) ? $from_date->format('F d, Y') : '';
                     }
 
                     $last_row = $i === $rows - 1 ? 'border-bottom:1px solid black;' : '';
