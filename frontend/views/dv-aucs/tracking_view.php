@@ -167,6 +167,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <p>
             <?= Html::a('Update', ['tracking-update', 'id' => $model->id], ['class' => 'btn btn-primary', 'id' => 'update']) ?>
+            <?= Html::a('Create', ['create-tracking'], ['class' => 'btn btn-success']) ?>
 
         </p>
         <table id="page">
