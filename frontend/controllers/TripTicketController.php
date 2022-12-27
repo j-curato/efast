@@ -59,14 +59,7 @@ class TripTicketController extends Controller
 
         $year = date('Y');
         $query = Yii::$app->db->createCommand(
-            "SELECT
-        CAST(SUBSTRING_INDEX(trip_ticket.serial_no,'-',-1)AS UNSIGNED) as p_number
-                FROM trip_ticket
-                LEFT JOIN cars ON trip_ticket.car_id = cars.id
-                WHERE
-                trip_ticket.date LIKE :_year
-                and cars.car_name = :car_type
-                ORDER BY  p_number DESC LIMIT 1"
+            "CALL trip_ticket_serial_number(:_year,:car_type)"
         )
             ->bindValue(':_year', $year . '%')
             ->bindValue(':car_type', $car_type)
@@ -74,7 +67,7 @@ class TripTicketController extends Controller
         $zero = '';
         $num = 1;
         if (!empty($query)) {
-            $num = intval($query) + 1;
+            $num = intval($query);
         }
         $num_len =  5 - strlen($num);
         if ($num_len > 0) {
@@ -191,9 +184,13 @@ class TripTicketController extends Controller
     {
 
         $model = $this->findModel($id);
+        $oldModel = $this->findModel($id);
         $items = $this->items($model->id);
         if ($model->load(Yii::$app->request->post())) {
             $items = !empty($_POST['items']) ? $_POST['items'] : [];
+            if ($oldModel->car_id != $model->car_id) {
+                $model->serial_no = $this->serialNumber($model->carType->car_name);
+            }
             if ($model->save(false)) {
                 $params = [];
                 $sql = '';
