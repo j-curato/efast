@@ -16,6 +16,12 @@ $this->params['breadcrumbs'][] = $this->title;
 $employee = Yii::$app->db->createCommand("SELECT employee_name,position FROM employee_search_view WHERE employee_id = :employee_id")
     ->bindValue(':employee_id', $model->fk_employee_id)
     ->queryOne();
+$approved_by = '';
+if (!empty($model->fk_approved_by)) {
+    $approved_by = Yii::$app->db->createCommand("SELECT employee_name,position FROM employee_search_view WHERE employee_id = :employee_id")
+        ->bindValue(':employee_id', $model->fk_approved_by)
+        ->queryOne();
+}
 ?>
 <div class="maintenance-job-request-view">
 
@@ -103,7 +109,7 @@ $employee = Yii::$app->db->createCommand("SELECT employee_name,position FROM emp
                     <td colspan="1" style="min-width: 300px;padding-top:4rem">
 
                         <span class='bold'> Requested by:</span>
-                        <span class="bold" style="text-decoration:underline"><?= strtoupper(  $employee['employee_name'])  ?></span>
+                        <span class="bold" style="text-decoration:underline"><?= strtoupper($employee['employee_name'])  ?></span>
                         <br>
                         <span class='bold'> Designation:</span>
                         <span><?= $employee['position'] ?></span>
@@ -115,7 +121,11 @@ $employee = Yii::$app->db->createCommand("SELECT employee_name,position FROM emp
 
                     </td>
                     <td colspan="2" style="padding-top:4rem">
-                        <span class='bold'>Approved By:_________________________________</span>
+                        <span class='bold'>Approved By:</span>
+                        <span class="bold" style="text-decoration:underline"><?= !empty($approved_by) ? strtoupper($approved_by['employee_name']) : ''  ?></span>
+                        <br>
+                        <span class='bold'> Designation:</span>
+                        <span><?= !empty($approved_by) ? $approved_by['position'] : '' ?></span>
                         <br>
                         <br>
                         <span class='bold'>Date:____________________________________</span>

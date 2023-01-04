@@ -57,6 +57,29 @@ if (!empty($model->id)) {
 
 
     ]) ?>
+    <?= $form->field($model, 'fk_approved_by')->widget(Select2::class, [
+        'data' => $requested_by,
+        'options' => ['placeholder' => 'Search for a Employee ...'],
+        'pluginOptions' => [
+            'allowClear' => true,
+            'minimumInputLength' => 1,
+            'language' => [
+                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+            ],
+            'ajax' => [
+                'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                'dataType' => 'json',
+                'delay' => 250,
+                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                'cache' => true
+            ],
+            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+        ],
+
+
+    ]) ?>
 
     <?= $form->field($model, 'date_requested')->widget(DatePicker::class, [
         'options' => [

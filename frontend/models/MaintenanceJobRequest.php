@@ -32,8 +32,8 @@ class MaintenanceJobRequest extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'fk_responsibility_center_id', 'fk_employee_id', 'date_requested', 'problem_description', 'mjr_number'], 'required'],
-            [['id', 'fk_responsibility_center_id', 'fk_employee_id'], 'integer'],
+            [['id', 'fk_responsibility_center_id', 'fk_employee_id', 'date_requested', 'problem_description', 'mjr_number','fk_approved_by'], 'required'],
+            [['id', 'fk_responsibility_center_id', 'fk_employee_id','fk_approved_by'], 'integer'],
             [['date_requested', 'created_at'], 'safe'],
             [['mjr_number'], 'unique'],
             [['problem_description', 'recommendation', 'action_taken', 'mjr_number'], 'string'],
@@ -68,6 +68,7 @@ class MaintenanceJobRequest extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'action_taken' => 'Action Taken',
             'mjr_number' => 'MJR Number',
+            'fk_approved_by' => 'Approved By',
         ];
     }
     public function getResponsibilityCenter()
