@@ -54,6 +54,7 @@ if (!empty($model->id)) {
         remittance_items.fk_dv_acounting_entries_id,
         SUM(remittance_items.amount) as remitted_amount
         FROM remittance_items
+        WHERE remittance_items.is_removed=0
         GROUP BY fk_dv_acounting_entries_id) as remitted ON dv_accounting_entries.id = remitted.fk_dv_acounting_entries_id 
     WHERE remittance_items.fk_remittance_id=:id
 
@@ -152,6 +153,9 @@ if (!empty($model->id)) {
                 <?php
 
                 foreach ($items as $val) {
+                    $to_remit_amount = number_format($val['to_remit_amount'], 2);
+                    $remitted_amount = number_format($val['remitted_amount'], 2);
+                    $unremited_amount = number_format($val['unremited_amount'], 2);
                     echo "<tr>
                         <td style='display:none'><input type='hidden' value='{$val['remittance_items_id']}' class='checkbox' name='remittance_items_id[$row_number]'></td>
                         <td style='display:none'><input type='hidden' value='{$val['dv_accounting_entries_id']}' class='checkbox' name='dv_accounting_entry_id[$row_number]'></td>
@@ -161,9 +165,9 @@ if (!empty($model->id)) {
                         <td>{$val['payee']}</td>
                         <td>{$val['object_code']}</td>
                         <td>{$val['account_title']}</td>
-                        <td>{$val['to_remit_amount']}</td>
-                        <td>{$val['remitted_amount']}</td>
-                        <td>{$val['unremited_amount']}</td>
+                        <td>{$to_remit_amount}</td>
+                        <td>{$remitted_amount}</td>
+                        <td>{$unremited_amount}</td>
                         <td>
                         <input type='text' class='form-control mask-amount' value='{$val['amount']}'>
                         <input type='hidden' class='form-control main-amount' name='amount[$row_number]' value='{$val['amount']}'>
