@@ -5,6 +5,9 @@
 
 <?php
 
+use app\models\AllotmentType;
+use app\models\Divisions;
+use app\models\Office;
 use app\models\ResponsibilityCenter;
 use kartik\date\DatePicker;
 use aryelds\sweetalert\SweetAlertAsset;
@@ -26,6 +29,51 @@ use yii\helpers\ArrayHelper;
             }
             echo " <input type='text' id='update_id' name='update_id'  value='$q' style='display:none;'>";
             ?>
+            <div class="row">
+                <div class="col-sm-3">
+                    <label for="office_id">Office</label>
+                    <?php
+                    echo Select2::widget([
+                        'name' => 'office_id',
+                        'id' => 'office_id',
+                        'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Office',
+                        ]
+                    ]);
+                    ?>
+                </div>
+                <div class="col-sm-3">
+                    <label for="division_id">Division</label>
+                    <?php
+                    echo Select2::widget([
+                        'name' => 'division_id',
+                        'id' => 'division_id',
+                        'data' => ArrayHelper::map(Divisions::find()->asArray()->all(), 'id', 'division'),
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Division',
+                        ]
+                    ]);
+                    ?>
+                </div>
+                <div class="col-sm-3">
+                    <label for="allotment_type_id">Allotment Type</label>
+                    <?php
+                    echo Select2::widget([
+                        'name' => 'allotment_type_id',
+                        'id' => 'allotment_type_id',
+                        'data' => ArrayHelper::map(AllotmentType::find()->asArray()->all(), 'id', 'type'),
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Allotment Type',
+                        ]
+                    ]);
+                    ?>
+                </div>
+
+
+
+
+            </div>
             <div class="row">
 
                 <div class="col-sm-3">
@@ -75,12 +123,12 @@ use yii\helpers\ArrayHelper;
                     ]);
                     ?>
                 </div>
-                <div class="col-sm-3">
+                <!-- <div class="col-sm-3">
                     <label for="responsibility_center">Responsibility Center</label>
                     <select id="responsibility_center" name="responsibility_center" class="responsibility_center select" style="width: 100%; margin-top:50px" required>
                         <option></option>
                     </select>
-                </div>
+                </div> -->
             </div>
             <div class="row">
 
@@ -342,7 +390,7 @@ use yii\helpers\ArrayHelper;
             });
 
             // GET ALL DOCUMENT RECIEVES
-            $.getJSON(window.location.pathname+'/frontend/web/index.php?r=document-recieve/get-document-recieves')
+            $.getJSON(window.location.pathname + '/frontend/web/index.php?r=document-recieve/get-document-recieves')
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {
@@ -359,7 +407,7 @@ use yii\helpers\ArrayHelper;
                     })
                 })
             // GET RESPONSIBILITY CENTER
-            $.getJSON(window.location.pathname+'/frontend/web/index.php?r=responsibility-center/get-responsibility-center')
+            $.getJSON(window.location.pathname + '/frontend/web/index.php?r=responsibility-center/get-responsibility-center')
                 .then(function(data) {
                     var array = []
                     $.each(data, function(key, val) {
@@ -378,7 +426,7 @@ use yii\helpers\ArrayHelper;
 
 
             // GET ALL AUTHORIZATION CODES
-            $.getJSON(window.location.pathname+'/frontend/web/index.php?r=authorization-code/get-authorization-codes')
+            $.getJSON(window.location.pathname + '/frontend/web/index.php?r=authorization-code/get-authorization-codes')
                 .then(function(data) {
 
                     var array = []
@@ -397,7 +445,7 @@ use yii\helpers\ArrayHelper;
 
                 })
             // GET ALL FUND SOURCE
-            $.getJSON(window.location.pathname+'/frontend/web/index.php?r=fund-source/get-fund-sources')
+            $.getJSON(window.location.pathname + '/frontend/web/index.php?r=fund-source/get-fund-sources')
                 .then(function(data) {
 
                     var array = []
@@ -416,7 +464,7 @@ use yii\helpers\ArrayHelper;
 
                 })
             // GET ALL MFO/PAP CODES
-            $.getJSON(window.location.pathname+'/frontend/web/index.php?r=mfo-pap-code/get-mfo-pap-codes')
+            $.getJSON(window.location.pathname + '/frontend/web/index.php?r=mfo-pap-code/get-mfo-pap-codes')
                 .then(function(data) {
 
                     var array = []
@@ -435,7 +483,7 @@ use yii\helpers\ArrayHelper;
 
                 })
             // GET ALL FUND CLUSTER CODES
-            $.getJSON(window.location.pathname+'/frontend/web/index.php?r=fund-cluster-code/get-all-cluster')
+            $.getJSON(window.location.pathname + '/frontend/web/index.php?r=fund-cluster-code/get-all-cluster')
                 .then(function(data) {
 
                     var array = []
@@ -458,7 +506,7 @@ use yii\helpers\ArrayHelper;
             // GET ALL CHART OF accounts
 
             // GET FINANCING SOURCE CODES
-            $.getJSON(window.location.pathname+'/frontend/web/index.php?r=financing-source-code/get-financing-source-codes')
+            $.getJSON(window.location.pathname + '/frontend/web/index.php?r=financing-source-code/get-financing-source-codes')
                 .then(function(data) {
 
                     var array = []
@@ -478,7 +526,7 @@ use yii\helpers\ArrayHelper;
                 });
             // GET BOOKS
             var books = [];
-            $.getJSON(window.location.pathname+'/frontend/web/index.php?r=books/get-books')
+            $.getJSON(window.location.pathname + '/frontend/web/index.php?r=books/get-books')
                 .then(function(data) {
 
                     var array = []
@@ -617,6 +665,7 @@ $script = <<< JS
                         var res = JSON.parse(data)
                         var record_allotment = res.record_allotments
                         var record_allotment_entries = res.record_allotment_entries
+                        console.log(record_allotment['division_id'])
                         $('#reporting_period').val(record_allotment['reporting_period'])
                         $('#date_issued').val(record_allotment['date_issued']);
                         $('#valid_until').val(record_allotment['valid_until']);
@@ -628,9 +677,13 @@ $script = <<< JS
                         $('#mfo_pap_code').val(record_allotment['mfo_pap_code_id']).trigger('change');
                         $('#fund_source').val(record_allotment['fund_source_id']).trigger('change');
                         $('#book').val(record_allotment['book_id']).trigger('change');
-                        $('#responsibility_center').val(record_allotment['responsibility_center_id']).trigger('change');
                         $('#particular').val(record_allotment['particulars']);
-
+                        $('#responsibility_center').val(record_allotment['responsibility_center_id']).trigger('change');
+                        $('#division_id').val(record_allotment['division_id']).trigger('change');
+                        $('#office_id').val(record_allotment['office_id']).trigger('change');
+                        $('#allotment_type_id').val(record_allotment['allotment_type_id']).trigger('change');
+                        
+                            
                         for (var y=0; y<record_allotment_entries.length;y++){
                             if (y>0){
                                 add();

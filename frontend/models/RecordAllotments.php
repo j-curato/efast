@@ -46,7 +46,14 @@ class RecordAllotments extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['document_recieve_id', 'fund_cluster_code_id', 'financing_source_code_id', 'fund_category_and_classification_code_id', 'authorization_code_id', 'mfo_pap_code_id', 'fund_source_id'], 'integer'],
+            [[
+                'document_recieve_id', 'fund_cluster_code_id',
+                'financing_source_code_id', 'fund_category_and_classification_code_id', 'authorization_code_id',
+                'mfo_pap_code_id', 'fund_source_id',
+                'office_id',
+                'allotment_type_id',
+                'division_id',
+            ], 'integer'],
             [['reporting_period', 'serial_number'], 'required'],
             [['reporting_period'], 'string', 'max' => 20],
             [['serial_number', 'allotment_number', 'date_issued', 'valid_until'], 'string', 'max' => 50],
@@ -104,6 +111,11 @@ class RecordAllotments extends \yii\db\ActiveRecord
             'date_issued' => 'Date Issued',
             'valid_until' => 'Valid Until',
             'particulars' => 'Particulars',
+            'office_id' => 'Office',
+            'allotment_type_id' => 'Allotment Type',
+            'division_id' => 'Division',
+
+
         ];
     }
 

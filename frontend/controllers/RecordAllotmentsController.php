@@ -174,7 +174,10 @@ class RecordAllotmentsController extends Controller
         $mfo_pap_code_id = $_POST['mfo_pap_code'];
         $fund_source_id = $_POST['fund_source'];
         $book_id = $_POST['book'];
-        $responsibility_center_id = $_POST['responsibility_center'];
+        $responsibility_center_id = !empty($_POST['responsibility_center']) ? $_POST['responsibility_center'] : null;
+        $office_id = $_POST['office_id'];
+        $division_id = $_POST['division_id'];
+        $allotment_type_id = $_POST['allotment_type_id'];
         $transaction = \Yii::$app->db->beginTransaction();
         // COUNTER NI SIYA KUN ASA DAPIT NA CHART_OF_ACCOUNT_ID IYA I UPDATE OG E INSERT KUNG MAG DUNGAG KAG ENTRIES
         $x = 0;
@@ -219,6 +222,9 @@ class RecordAllotmentsController extends Controller
         $recordAllotment->book_id = $book_id;
         $recordAllotment->responsibility_center_id = $responsibility_center_id;
         $recordAllotment->fund_source_id = $fund_source_id;
+        $recordAllotment->office_id = $office_id;
+        $recordAllotment->division_id = $division_id;
+        $recordAllotment->allotment_type_id = $allotment_type_id;
         $recordAllotment->fund_category_and_classification_code_id = $fund_category_and_classification_code_id['id'];
         if ($recordAllotment->validate()) {
             try {
@@ -280,17 +286,26 @@ class RecordAllotmentsController extends Controller
 
     public function actionUpdateRecordAllotment()
     {
+        // 99889333414133896
+        // 99889333414133890
+        // 99889333414133890
+        // 99889333414133888
+        // 99889333414133890
+
+
 
         if ($_POST) {
             $record_allotment_id = $_POST['update_id'];
-            // $query = (new \yii\db\Query())->select('*')
-            //     ->from('record_allotments')
-            //     ->join('LEFT JOIN', 'record_allotment_entries', 'record_allotments.id=record_allotment_entries.record_allotment_id')
-            //     ->where("record_allotments.id = :id", ['id' => $record_allotment_id])
-            //     ->one();
+            $division_id = (new \yii\db\Query())->select('division_id')
+                ->from('record_allotments')
+
+                ->where("record_allotments.id = :id", ['id' => $record_allotment_id])
+                ->scalar();
             // $query = RecordAllotments::find()->where("id=:id", ['id' => 120]);
 
             $model = RecordAllotments::findOne($record_allotment_id);
+
+            $d_id = $model->division_id;
             $record_allotment = [
                 'date_issued' => $model->date_issued,
                 'document_recieve_id' => $model->document_recieve_id,
@@ -308,6 +323,10 @@ class RecordAllotmentsController extends Controller
                 'fund_classification' => $model->fund_classification,
                 'book_id' => $model->book_id,
                 'responsibility_center_id' => $model->responsibility_center_id,
+                'office_id' => $model->office_id,
+                'division_id' => $division_id,
+                'allotment_type_id' => $model->allotment_type_id,
+
             ];
             $record_allotment_entries = [];
             foreach ($model->recordAllotmentEntries as $val) {
