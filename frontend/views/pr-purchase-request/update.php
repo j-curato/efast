@@ -20,7 +20,10 @@ $this->params['breadcrumbs'][] = 'Update';
     ?>
     <?= $this->render('_form', [
         'model' => $model,
-        'error' => $err
+        'error' => $err,
+        'action' => $action,
+        'items' => $items,
+        'allotment_items' => $allotment_items,
     ]) ?>
 
 </div>

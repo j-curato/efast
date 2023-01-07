@@ -34,7 +34,17 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
     {
         return [
             [['date', 'created_at'], 'safe'],
-            [['book_id', 'pr_project_procurement_id', 'requested_by_id', 'approved_by_id', 'is_cloud'], 'integer'],
+            [[
+                'book_id',
+
+                'requested_by_id',
+                'approved_by_id',
+                'is_cloud',
+                'fk_supplemental_ppmp_noncse_id',
+                'fk_supplemental_ppmp_cse_id',
+                'is_deleted',
+                'budget_year',
+            ], 'integer'],
             [['purpose'], 'string'],
             [['pr_number'], 'string', 'max' => 255],
             [['pr_number'], 'unique'],
@@ -42,7 +52,7 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
                 'pr_number',
                 'date',
                 'book_id',
-                'pr_project_procurement_id',
+                'budget_year',
                 'purpose',
                 'requested_by_id',
                 'approved_by_id',
@@ -53,7 +63,7 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
                 'pr_number',
                 'date',
                 'book_id',
-                'pr_project_procurement_id',
+
                 'purpose',
                 'requested_by_id',
                 'approved_by_id',
@@ -82,6 +92,10 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
             'approved_by_id' => 'Approved By ',
             'created_at' => 'Created At',
             'is_cloud' => 'is_cloud',
+            'is_deleted' => 'is_deleted',
+            'fk_supplemental_ppmp_noncse_id' => 'fk_supplemental_ppmp_noncse_id',
+            'fk_supplemental_ppmp_cse_id' => 'fk_supplemental_ppmp_cse_id',
+            'budget_year' => 'Budget Year',
         ];
     }
     public function getRequestedBy()

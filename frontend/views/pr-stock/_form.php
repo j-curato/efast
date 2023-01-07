@@ -24,6 +24,14 @@ if (!empty($model->id)) {
 
     $chart_of_account_id = ArrayHelper::map($chart_of_account_query, 'id', 'account');
 }
+$stock_type = [];
+
+if (!empty($model->part)) {
+    $stock_type_query = Yii::$app->db->createCommand("SELECT id,`type` FROM  pr_stock_type WHERE part = :part")
+        ->bindValue(':part', $model->part)
+        ->queryAll();
+    $stock_type = ArrayHelper::map($stock_type_query, 'id', 'type');
+}
 ?>
 
 <div class="pr-stock-form">
@@ -66,8 +74,8 @@ if (!empty($model->id)) {
     ]) ?>
 
 
-    <?= $form->field($model, 'type')->widget(Select2::class, [
-        'data' => [],
+    <?= $form->field($model, 'pr_stock_type_id')->widget(Select2::class, [
+        'data' => $stock_type,
         'pluginOptions' => [
             'placeholder' => 'Select Stock Type'
         ],
@@ -225,11 +233,12 @@ $script = <<<JS
                     part:part
                 },
                 success: function(data) {
-                    // console.log(data)
                     const types = JSON.parse(data)
+                    console.log(types)
+
                     stock_types = types
 
-                    $('#prstock-type')
+                    $('#prstock-pr_stock_type_id')
                         .find('option')
                         .remove()
                         .end()
@@ -238,18 +247,18 @@ $script = <<<JS
 
 
                     const array = []
-                    const stockTypeSelect = $('#prstock-type')
+                    const stockTypeSelect = $('#prstock-pr_stock_type_id')
                     $.each(types, function(key, val) {
 
-                        var option = new Option([val.type], [val.type], true, true);
+                        var option = new Option([val.type], [val.id], true, true);
                         stockTypeSelect.append(option)
                     })
-                    $('#prstock-type').val('')
+                    $('#prstock-pr_stock_type_id').val('')
                     // console.log(array)
                     // var types = array
                     // for (var i = 0; i < types.length; i++) {
                     // }
-                    // $('#prstock-type').select2({
+                    // $('#prstock-pr_stock_type_id').select2({
                     //     data: qqq,
                     //     placeholder: "Select Unit of Measure",
                     // })
@@ -266,11 +275,11 @@ $script = <<<JS
             }
 
         })
-        $('#prstock-type').on('change', function(e) {
+        $('#prstock-pr_stock_type_id').on('change', function(e) {
             e.preventDefault()
             var q = $(this).val()
             var find_type = stock_types.filter(function(n) {
-                return n.type === q
+                return n.id === q
             })
             if ($('#prstock-part').val() != 'part-3') {
                 $.ajax({

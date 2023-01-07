@@ -10,12 +10,40 @@ $this->title = $model->pr_number;
 $this->params['breadcrumbs'][] = ['label' => 'Pr Purchase Requests', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+
+$office_division_unit = '';
+
+if (!empty($model->fk_supplemental_ppmp_noncse_id)) {
+    $office_division_unit = Yii::$app->db->createCommand("SELECT 
+    office.office_name,
+    divisions.division,
+    division_program_unit.`name` as division_program_unit
+     FROM pr_purchase_request
+    INNER JOIN supplemental_ppmp_non_cse ON pr_purchase_request.fk_supplemental_ppmp_noncse_id = supplemental_ppmp_non_cse.id
+    LEFT JOIN supplemental_ppmp ON supplemental_ppmp_non_cse.fk_supplemental_ppmp_id = supplemental_ppmp.id
+    LEFT JOIN office ON supplemental_ppmp.fk_office_id = office.id
+    LEFT JOIN divisions ON supplemental_ppmp.fk_division_id = divisions.id
+    LEFT JOIN division_program_unit ON supplemental_ppmp.fk_division_program_unit_id = division_program_unit.id
+    WHERE pr_purchase_request.id = :id")
+        ->bindValue(':id', $model->id)
+        ->queryOne();
+} else if (!empty($model->fk_supplemental_ppmp_cse_id)) {
+    $office_division_unit = Yii::$app->db->createCommand("SELECT 
+    office.office_name,
+    divisions.division,
+    division_program_unit.`name` as division_program_unit
+     FROM pr_purchase_request
+    INNER JOIN supplemental_ppmp_cse ON pr_purchase_request.fk_supplemental_ppmp_cse_id = supplemental_ppmp_cse.id
+    LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = supplemental_ppmp.id
+    LEFT JOIN office ON supplemental_ppmp.fk_office_id = office.id
+    LEFT JOIN divisions ON supplemental_ppmp.fk_division_id = divisions.id
+    LEFT JOIN division_program_unit ON supplemental_ppmp.fk_division_program_unit_id = division_program_unit.id
+    WHERE pr_purchase_request.id = :id")
+        ->bindValue(':id', $model->id)
+        ->queryOne();
+}
 ?>
 <div class="pr-purchase-request-view">
-
-
-
-
 
 
     <div class="container ">
@@ -77,7 +105,15 @@ $this->params['breadcrumbs'][] = $this->title;
                             Office/Section:
                         </span>
                         <span>
-                            <?php echo $model->projectProcurement->office->office . '-' . $model->projectProcurement->office->division . '-' . $model->projectProcurement->office->unit ?>
+                            <?php
+
+                            $office_name = !empty($office_division_unit['office_name']) ? strtoupper($office_division_unit['office_name']) : '';
+                            $division = !empty($office_division_unit['division']) ? strtoupper($office_division_unit['division']) : '';
+                            $division_program_unit = !empty($office_division_unit['division_program_unit']) ? strtoupper($office_division_unit['division_program_unit']) : '';
+
+
+                            echo $office_name . '-' . $division . '-' . $division_program_unit;
+                            ?>
                         </span>
 
                     </th>
@@ -86,7 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <span><?= $model->pr_number ?></span>
                         <br>
                         <span>Responsibility Center Code:</span>
-                        <span><?= $model->projectProcurement->office->responsibility_code ?></span>
+                        <span><?= $division ?></span>
 
                     </th>
                     <th colspan="2">
@@ -114,26 +150,51 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <?php
                 $total = 0;
-                foreach ($model->prItem as $val) {
 
-                    $total_cost = intval($val->quantity) * floatval($val->unit_cost);
+                foreach ($items as $i => $val) {
+                    $unit_cost = $val['unit_cost'];
+                    $quantity = $val['quantity'];
+
+                    $total_cost = intval($quantity) * floatval($unit_cost);
                     $total += $total_cost;
-                    $specs = preg_replace('#\[n\]#', "<br>", $val->specification);
-                    $bac_code = !empty($val->stock->bac_code) ? $val->stock->bac_code : '';
-                    $stock_title = !empty($val->stock->stock_title) ? $val->stock->stock_title : '';
+                    $stock_title = $val['stock_title'];
+                    $unit_of_measure = $val['unit_of_measure'];
+                    $bac_code = $val['bac_code'];
+
+                    $specification  = preg_replace('#\[n\]#', "<br>",  $val['specification']);
                     echo "<tr>
-                        <td>{$bac_code}</td>
-                        <td class='center'>{$val->unitOfMeasure->unit_of_measure}</td>
-                        <td><span class='description'>" .  $stock_title . "</span>" .
+                    <td>{$bac_code}</td>
+                    <td class='center'>{$unit_of_measure}</td>
+                    <td><span class='description'>" .  $stock_title . "</span>" .
                         "<br><span class='specs'>"
 
-                        . $specs
+                        . $specification
                         . "</specs></td>
-                        <td class='center'>{$val->quantity}</td>
-                        <td class='amount'>" . number_format($val->unit_cost, 2) . "</td>
-                        <td class='amount'>" . number_format($total_cost, 2) . "</td>
-                    </tr>";
+                    <td class='center'>{$quantity}</td>
+                    <td class='amount'>" . number_format($unit_cost, 2) . "</td>
+                    <td class='amount'>" . number_format($total_cost, 2) . "</td>
+                </tr>";
                 }
+                // foreach ($model->prItem as $val) {
+
+                //     $total_cost = intval($val->quantity) * floatval($val->unit_cost);
+                //     $total += $total_cost;
+                //     $specs = preg_replace('#\[n\]#', "<br>", $val->specification);
+                //     $bac_code = !empty($val->stock->bac_code) ? $val->stock->bac_code : '';
+                //     $stock_title = !empty($val->stock->stock_title) ? $val->stock->stock_title : '';
+                //     echo "<tr>
+                //         <td>{$bac_code}</td>
+                //         <td class='center'>{$val->unitOfMeasure->unit_of_measure}</td>
+                //         <td><span class='description'>" .  $stock_title . "</span>" .
+                //         "<br><span class='specs'>"
+
+                //         . $specs
+                //         . "</specs></td>
+                //         <td class='center'>{$val->quantity}</td>
+                //         <td class='amount'>" . number_format($val->unit_cost, 2) . "</td>
+                //         <td class='amount'>" . number_format($total_cost, 2) . "</td>
+                //     </tr>";
+                // }
                 for ($i = 0; $i < 3; $i++) {
                     echo "<tr>
                             <td style='height: 3rem;'></td>
@@ -174,7 +235,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         </span>
                         <span>
 
-                            <?php echo $model->projectProcurement->title ?>
+                            <?php
+                            // $model->projectProcurement->title 
+                            ?>
                         </span>
                     </td>
                 </tr>

@@ -14,8 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <!-- <?= Html::a('Create  Purchase Request', ['create'], ['class' => 'btn btn-success']) ?> -->
-
+        <?= Html::a('Create  Purchase Request', ['create'], ['class' => 'btn btn-success']) ?>
         <?php
 
 
@@ -53,37 +52,24 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'pjax' => true,
         'columns' => [
-
             'pr_number',
-            'date',
+            'office_name',
+            'division',
+            'division_program_unit',
+            'activity_name',
+            'requested_by',
+            'approved_by',
+            'book_name',
             'purpose',
+            'date',
             [
-                'label' => 'Book',
-                'attribute' => 'book_id',
-                'value' => 'book.name'
-            ],
-            [
-                'label' => 'Activity/Project',
-                'attribute' => 'pr_project_procurement_id',
-                'value' => 'projectProcurement.title'
-            ],
-            [
-                'label' => 'Requested By',
-                'attribute' => 'requested_by_id',
+                'label' => 'Action',
+                'format' => 'raw',
                 'value' => function ($model) {
-                    $name = $model->requestedBy->f_name . ' ' . $model->requestedBy->m_name[0] . '. ' . $model->requestedBy->l_name;
-                    return strtoupper($name);
+                    return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id])
+                        . ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id]);
                 }
-            ],
-            [
-                'label' => 'Approved By',
-                'attribute' => 'approved_by_id',
-                'value' => function ($model) {
-                    $name = $model->approvedBy->f_name . ' ' . $model->approvedBy->m_name[0] . '. ' . $model->approvedBy->l_name;
-                    return strtoupper($name);
-                }
-            ],
-            $actions
+            ]
 
 
         ],

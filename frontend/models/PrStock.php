@@ -31,8 +31,12 @@ class PrStock extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['unit_of_measure_id', 'chart_of_account_id'], 'integer'],
+            [[
+                'unit_of_measure_id', 'chart_of_account_id', 'budget_year',
+                'pr_stock_type_id'
+            ], 'integer'],
             [['amount'], 'number'],
+            [['cse_type'], 'string', 'max' => 255],
             [['created_at',  'chart_of_account_id'], 'safe'],
             [[
                 'unit_of_measure_id',
@@ -60,6 +64,10 @@ class PrStock extends \yii\db\ActiveRecord
             'part' => 'Part No. ',
             'type' => 'Stock Type ',
             'created_at' => 'Created At',
+            'budget_year' => 'Budget Year',
+            'cse_type' => 'CSE Type',
+            'pr_stock_type_id' => 'Stock Type'
+
         ];
     }
     public function getPrStockSpecification()

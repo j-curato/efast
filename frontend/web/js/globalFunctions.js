@@ -43,8 +43,7 @@ function liquidationAccountingCodesSelect() {
 let books = [];
 async function getAllBooks() {
   if (books.length === 0) {
-
-   await $.getJSON(
+    await $.getJSON(
       window.location.pathname + "/frontend/web/index.php?r=books/get-books"
     ).then(function (data) {
       var array = [];
@@ -193,12 +192,38 @@ function stockSelect() {
       data: function (params) {
         return {
           q: params.term,
+          page: params.page || 1,
+        };
+      },
+      processResults: function (data) {
+        // Transforms the top-level key of the response object from 'items' to 'results'
+        console.log(data.pagination.more);
+        return {
+          results: data.results,
+          pagination: data.pagination,
+        };
+      },
+    },
+  });
+}
+function paginatedStockSelect() {
+  $(".stock-paginated").select2({
+    ajax: {
+      url: base_url + "?r=pr-stock/search-paginated-stock",
+      dataType: "json",
+      data: function (params) {
+        return {
+          q: params.term,
+          page: params.page || 1,
+          budget_year: $("#budget_year").val(),
+          cse_type: $("#cse_type").val(),
         };
       },
       processResults: function (data) {
         // Transforms the top-level key of the response object from 'items' to 'results'
         return {
           results: data.results,
+          pagination: data.pagination,
         };
       },
     },
@@ -292,7 +317,28 @@ async function getAllFundSource() {
       });
     },
   });
+
   return { fund_sources };
+}
+async function getAllModeOfProcurement() {
+  const modes = [];
+  await $.ajax({
+    type: "GET",
+    url:
+      window.location.pathname +
+      "?r=pr-mode-of-procurement/get-mode-of-procurements",
+    success: function (data) {
+      const res = JSON.parse(data);
+      $.each(res, function (key, val) {
+        modes.push({
+          id: val.id,
+          text: val.mode_name,
+        });
+      });
+    },
+  });
+
+  return { modes };
 }
 
 // $(".mask-amount").on("keyup change", () => {

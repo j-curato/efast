@@ -32,7 +32,7 @@ class PrPurchaseRequestItem extends \yii\db\ActiveRecord
         return [
             [['pr_purchase_request_id', 'pr_stock_id', 'quantity', 'unit_of_measure_id'], 'integer'],
             [['unit_cost'], 'number'],
-            [['specification'], 'text'],
+            [['specification'], 'string'],
             [['created_at'], 'safe'],
             [[
                 'id',

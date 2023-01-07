@@ -3,17 +3,16 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\PrModeOfProcurement;
-use app\models\PrModeOfProcurementSearch;
-use yii\filters\AccessControl;
+use app\models\DivisionProgramUnit;
+use app\models\DivisionProgramUnitSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * PrModeOfProcurementController implements the CRUD actions for PrModeOfProcurement model.
+ * DivisionProgramUnitController implements the CRUD actions for DivisionProgramUnit model.
  */
-class PrModeOfProcurementController extends Controller
+class DivisionProgramUnitController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -21,31 +20,8 @@ class PrModeOfProcurementController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::class,
-                'only' => [
-                    'view',
-                    'index',
-                    'update',
-                    'delete',
-                    'create',
-                ],
-                'rules' => [
-                    [
-                        'actions' => [
-                            'view',
-                            'index',
-                            'update',
-                            'delete',
-                            'create',
-                        ],
-                        'allow' => true,
-                        'roles' => ['super-user']
-                    ]
-                ]
-            ],
             'verbs' => [
-                'class' => VerbFilter::class,
+                'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -54,12 +30,12 @@ class PrModeOfProcurementController extends Controller
     }
 
     /**
-     * Lists all PrModeOfProcurement models.
+     * Lists all DivisionProgramUnit models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new PrModeOfProcurementSearch();
+        $searchModel = new DivisionProgramUnitSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -69,7 +45,7 @@ class PrModeOfProcurementController extends Controller
     }
 
     /**
-     * Displays a single PrModeOfProcurement model.
+     * Displays a single DivisionProgramUnit model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -82,25 +58,25 @@ class PrModeOfProcurementController extends Controller
     }
 
     /**
-     * Creates a new PrModeOfProcurement model.
+     * Creates a new DivisionProgramUnit model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new PrModeOfProcurement();
+        $model = new DivisionProgramUnit();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->renderAjax('create', [
+        return $this->render('create', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Updates an existing PrModeOfProcurement model.
+     * Updates an existing DivisionProgramUnit model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -114,13 +90,13 @@ class PrModeOfProcurementController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->renderAjax('update', [
+        return $this->render('update', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Deletes an existing PrModeOfProcurement model.
+     * Deletes an existing DivisionProgramUnit model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -134,23 +110,18 @@ class PrModeOfProcurementController extends Controller
     }
 
     /**
-     * Finds the PrModeOfProcurement model based on its primary key value.
+     * Finds the DivisionProgramUnit model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return PrModeOfProcurement the loaded model
+     * @return DivisionProgramUnit the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = PrModeOfProcurement::findOne($id)) !== null) {
+        if (($model = DivisionProgramUnit::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
-    }
-    public function actionGetModeOfProcurements()
-    {
-        $na = (new \yii\db\Query())->select('*')->from('pr_mode_of_procurement')->all();
-        return json_encode($na);
     }
 }

@@ -411,7 +411,7 @@ class PpmpNonCseController extends Controller
         if (!empty($last_no)) {
             $last_no++;
         } else {
-            $last_no = 1;
+            $last_no = 1;   
         }
         $zero = '';
         for ($i = strlen($last_no); $i <= 4; $i++) {

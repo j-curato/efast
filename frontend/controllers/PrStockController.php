@@ -237,7 +237,7 @@ class PrStockController extends Controller
 
                 if ($flag = true) {
 
-                    if ($model->save()) {
+                    if ($model->save(false)) {
                         // $flag = $this->insertSpecs($specification, $model->id);
                     } else {
                         $flag = false;
@@ -253,7 +253,7 @@ class PrStockController extends Controller
                 }
             } catch (ErrorException $e) {
                 $transaction->rollBack();
-                return json_encode('fail');
+                return json_encode($e->getMessage());
             }
         }
 
@@ -309,6 +309,31 @@ class PrStockController extends Controller
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
+        }
+
+        return $out;
+    }
+    public function actionSearchPaginatedStock($page = 0, $q = null, $id = null, $budget_year = null, $cse_type = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+
+            $query->select([" id, UPPER(`stock_title`) as text"])
+                ->from('pr_stock')
+                ->where(['like', 'stock_title', $q])
+                ->andwhere('pr_stock.budget_year = :budget_year', ['budget_year' => $budget_year])
+                ->andwhere('pr_stock.cse_type = :cse_type', ['cse_type' => $cse_type]);
+            $query->offset($offset)
+                ->limit($limit);
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+            $out['pagination'] = ['more' => !empty($data) ? true : false];
         }
 
         return $out;
@@ -421,7 +446,7 @@ class PrStockController extends Controller
 
         if ($_POST) {
             $part = $_POST['part'];
-            $query = Yii::$app->db->createCommand("SELECT `type`,chart_of_accounts.uacs as object_code
+            $query = Yii::$app->db->createCommand("SELECT pr_stock_type.id,`type`,chart_of_accounts.uacs as object_code
              FROM pr_stock_type
              LEFT JOIN chart_of_accounts ON pr_stock_type.fk_chart_of_account_id = chart_of_accounts.id
               WHERE pr_stock_type.part = :part")
