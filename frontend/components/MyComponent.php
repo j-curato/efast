@@ -6,6 +6,7 @@ use app\models\Books;
 use app\models\ChartOfAccounts;
 use app\models\FundClusterCode;
 use app\models\SubAccounts1;
+use common\models\User;
 use Yii;
 use yii\base\Component;
 use yii\helpers\Html;
@@ -17,6 +18,16 @@ class MyComponent extends Component
     // {
     //     return $q;
     // }
+    public $d;
+    public function getUserData()
+    {
+
+        return  User::find()
+            ->joinWith('divisionName')
+            ->joinWith('office')
+            ->where('user.id = :id', ['id' => Yii::$app->user->identity->id])
+            ->one();
+    }
     public function updateEmployee($employee_id)
     {
         $query = YIi::$app->db->createCommand("SELECT employee_name,employee_id,position FROM employee_search_view WHERE employee_id = :employee_id ")
