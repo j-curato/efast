@@ -1,6 +1,9 @@
 <?php
+
 namespace common\models;
 
+use app\models\Divisions;
+use app\models\Office;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
@@ -59,7 +62,14 @@ class User extends ActiveRecord implements IdentityInterface
             ['employee_id', 'string', 'max' => 255],
         ];
     }
-
+    public function getOffice()
+    {
+        return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
+    }
+    public function getDivisionName()
+    {
+        return $this->hasOne(Divisions::class, ['id' => 'fk_division_id']);
+    }
     /**
      * {@inheritdoc}
      */
@@ -74,9 +84,7 @@ class User extends ActiveRecord implements IdentityInterface
     public static function findIdentityByAccessToken($token, $type = null)
     {
 
-            return static::findOne(['auth_key'=>$token]);
-
-
+        return static::findOne(['auth_key' => $token]);
     }
 
     /**
@@ -114,7 +122,8 @@ class User extends ActiveRecord implements IdentityInterface
      * @param string $token verify email token
      * @return static|null
      */
-    public static function findByVerificationToken($token) {
+    public static function findByVerificationToken($token)
+    {
         return static::findOne([
             'verification_token' => $token,
             'status' => self::STATUS_INACTIVE
