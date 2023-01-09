@@ -141,6 +141,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
+<style>
+    .grid-view td {
+        white-space: normal;
+        max-width: 100rem;
+        padding: 0;
+    }
+</style>
 <?php
 $script = <<<JS
             var i=false;
