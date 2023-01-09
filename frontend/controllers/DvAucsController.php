@@ -939,9 +939,14 @@ class DvAucsController extends Controller
         // $book_id=5;
         $latest_dv = Yii::$app->db->createCommand("SELECT CAST(substring_index(dv_number, '-', -1)AS UNSIGNED) as q 
         from dv_aucs
-        WHERE reporting_period LIKE :_year
+         
+        WHERE dv_aucs.dv_number LIKE :_year 
+        AND dv_aucs.reporting_period  LIKE :_year
         ORDER BY q DESC  LIMIT 1")
-            ->bindValue(':_year', $year . '%')
+            ->bindValue(':_year', '%' . $year . '%')
+            //     ->getRawSql();
+            // echo $latest_dv;
+            // die();
             ->queryScalar();
         !empty($book_id) ? $book_id : $book_id = 5;
         // $latest_dv = (new \yii\db\Query())
