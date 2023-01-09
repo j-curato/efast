@@ -200,6 +200,62 @@ $this->params['breadcrumbs'][] = $this->title;
         'dvAucs.books.name'
 
     ];
+
+
+    $cols =  [
+        // ['class' => 'yii\grid\SerialColumn'],
+
+        'id',
+        // 'process_ors_id',
+        // 'raoud_id',
+        'dv_number',
+        'reporting_period',
+        'particular',
+
+        // foreach($model->dvAucsEntries as $val){
+
+        // },
+        [
+            'label' => "Payee",
+            'attribute' => 'payee_id',
+            'value' => "payee.account_name"
+        ],
+        [
+            'label' => "MRD Classification",
+            'attribute' => 'mrd_classification_id',
+            'value' => "mrdClassification.name"
+        ],
+        [
+            'label' => "Nature of Transaction",
+            'attribute' => 'nature_of_transaction_id',
+            'value' => "natureOfTransaction.name"
+        ],
+        [
+            'label' => "Amount Disbursed",
+            'value' => function ($model) {
+                $query = (new \yii\db\Query())
+                    ->select("SUM(amount_disbursed) as total_disbursed")
+                    ->from("dv_aucs_entries")
+                    ->where('dv_aucs_entries.dv_aucs_id = :dv_aucs_id', ['dv_aucs_id' => $model->id])
+                    ->andWhere('dv_aucs_entries.is_deleted = 0')
+                    ->one();
+                return $query['total_disbursed'];
+            },
+            'format' => ['decimal', 2],
+            'hAlign' => 'right',
+        ],
+
+        //'other_trust_liability_withheld',
+        'created_at',
+        // [
+        //     'label'=>
+        // ],
+
+        [
+            'class' => '\kartik\grid\ActionColumn',
+            'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
+        ],
+    ];
     ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -215,8 +271,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'toolbar' => [
             [
                 'content' => ExportMenu::widget([
-                    'dataProvider' => $exportDataProvider,
-                    'columns' => $exportColumns,
+                    'dataProvider' => $dataProvider,
+                    'columns' => $cols,
                     'filename' => "DV",
                     'exportConfig' => [
                         ExportMenu::FORMAT_CSV => false,
@@ -235,60 +291,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'pjax' => true,
         'export' => false,
-        'columns' => [
-            // ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            // 'process_ors_id',
-            // 'raoud_id',
-            'dv_number',
-            'reporting_period',
-            'particular',
-
-            // foreach($model->dvAucsEntries as $val){
-
-            // },
-            [
-                'label' => "Payee",
-                'attribute' => 'payee_id',
-                'value' => "payee.account_name"
-            ],
-            [
-                'label' => "MRD Classification",
-                'attribute' => 'mrd_classification_id',
-                'value' => "mrdClassification.name"
-            ],
-            [
-                'label' => "Nature of Transaction",
-                'attribute' => 'nature_of_transaction_id',
-                'value' => "natureOfTransaction.name"
-            ],
-            [
-                'label' => "Amount Disbursed",
-                'value' => function ($model) {
-                    $query = (new \yii\db\Query())
-                        ->select("SUM(amount_disbursed) as total_disbursed")
-                        ->from("dv_aucs_entries")
-                        ->where('dv_aucs_entries.dv_aucs_id = :dv_aucs_id', ['dv_aucs_id' => $model->id])
-                        ->andWhere('dv_aucs_entries.is_deleted = 0')
-                        ->one();
-                    return $query['total_disbursed'];
-                },
-                'format' => ['decimal', 2],
-                'hAlign' => 'right',
-            ],
-
-            //'other_trust_liability_withheld',
-            'created_at',
-            // [
-            //     'label'=>
-            // ],
-
-            [
-                'class' => '\kartik\grid\ActionColumn',
-                'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
-            ],
-        ],
+        'columns' => $cols
     ]); ?>
 
 
