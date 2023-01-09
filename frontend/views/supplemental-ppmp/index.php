@@ -61,10 +61,71 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Create Supplemental Ppmp', ['create'], ['class' => 'btn btn-success']) ?>
-        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload Soft Copy</button>
+        <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload Soft Copy</button> -->
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
+
+    if (Yii::$app->user->can('super-user')) {
+        $columns = [
+
+            'budget_year',
+            'cse_type',
+            'serial_number',
+            'office_name',
+            'division',
+            'division_program_unit_name',
+            'activity_name',
+
+
+            [
+                'attribute' => 'total_amount',
+                'value' => function ($model) {
+                    return number_format($model->total_amount, 2);
+                }
+            ],
+            [
+                'attribute' => 'balance',
+                'value' => function ($model) {
+                    return number_format($model->balance, 2);
+                }
+            ],
+            'ttl_qty',
+            'prepared_by',
+            'reviewed_by',
+            'approved_by',
+            'certified_avail',
+            [
+                'label' => 'Action',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id])
+                        . ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id]);
+                }
+            ]
+        ];
+    } else {
+        $columns = [
+            'budget_year',
+            'serial_number',
+            'division_program_unit_name',
+            'activity_name',
+            'total_amount',
+            'ttl_qty',
+            'prepared_by',
+            'reviewed_by',
+            'approved_by',
+            'certified_avail',
+            [
+                'label' => 'Action',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id])
+                        . ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id]);
+                }
+            ]
+        ];
+    }
     ?>
 
     <?= GridView::widget([
@@ -75,37 +136,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'heading' => 'PPMP'
         ],
         'pjax' => true,
-        'columns' => [
-
-            'budget_year',
-            'serial_number',
-            'cse_type',
-            [
-                'attribute' => 'fk_office_id',
-                'value' => function ($model) {
-                    return !empty($model->office->office_name) ? $model->office->office_name : '';
-                }
-            ],
-            [
-                'attribute' => 'fk_division_id',
-                'value' => function ($model) {
-                    return !empty($model->divisionName->division) ? $model->divisionName->division : '';
-                }
-            ],
-            [
-                'attribute' => 'fk_division_program_unit_id',
-                'value' => function ($model) {
-                    return !empty($model->divisionProgramUnit->name) ? $model->divisionProgramUnit->name : '';
-                }
-            ],
-            'fk_prepared_by',
-            'fk_reviewed_by',
-            'fk_approved_by',
-            'fk_certified_funds_available_by',
-
-
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
+        'columns' => $columns
     ]); ?>
 
 

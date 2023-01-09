@@ -1,5 +1,6 @@
 <?php
 
+use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
@@ -796,7 +797,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             clone.find('.unit-of-measure').val('')
             // console.log(clone.find('.qty').attr('name'))
             clone.find('.stock-paginated').attr('name', `cse_items[${row_cnt}][stock_id]`)
+            clone.find('.unit-of-measure').attr('name', `cse_items[${row_cnt}][unit_of_measure_id]`)
             $('input[name^="cse_items"]').each(function(key, val) {
+                console.log(val)
                 const attr_name = $(val).attr('name')
                 const suffix = attr_name.match(/\d+/);
                 // console.log(suffix[0])
@@ -1033,6 +1036,18 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
         }
 
 
+
+        $('#lgModalButtoncreate').click(function() {
+            $('#lgModal').modal('show').find('#lgModalContent').load($(this).attr('value'));
+        });
+    })
+</script>
+
+<?php
+SweetAlertAsset::register(($this));
+
+$js = <<<JS
+    $(document).ready(()=>{
         $('#SupplementalPpmp').on('submit', function(e) {
             e.preventDefault()
             const form = $(this)
@@ -1061,8 +1076,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
 
             })
         })
-        $('#lgModalButtoncreate').click(function() {
-            $('#lgModal').modal('show').find('#lgModalContent').load($(this).attr('value'));
-        });
     })
-</script>
+JS;
+$this->registerJs($js);
+
+?>

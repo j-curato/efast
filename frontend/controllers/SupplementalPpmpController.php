@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\SupplementalPpmp;
 use app\models\SupplementalPpmpCse;
+use app\models\SupplementalPpmpIndexSearch;
 use app\models\SupplementalPpmpNonCse;
 use app\models\SupplementalPpmpNonCseItems;
 use app\models\SupplementalPpmpSearch;
@@ -59,6 +60,31 @@ class SupplementalPpmpController extends Controller
             ],
         ];
     }
+    public function viewNoncseItems($id)
+    {
+
+        return YIi::$app->db->createCommand("SELECT 
+        supplemental_ppmp.budget_year,
+        UPPER(REPLACE(supplemental_ppmp.cse_type,'_','-')) as cse_type,
+        mfo_pap_code.`code` as mfo_code,
+        supplemental_ppmp_non_cse.activity_name,
+        pr_stock.bac_code,
+        pr_stock.stock_title,
+        supplemental_ppmp_non_cse_items.description,
+        IF(supplemental_ppmp_non_cse.early_procurement=1,'Yes','No') as early_procurement,
+        supplemental_ppmp_non_cse_items.amount
+        FROM supplemental_ppmp
+        INNER JOIN supplemental_ppmp_non_cse ON supplemental_ppmp.id  = supplemental_ppmp_non_cse.fk_supplemental_ppmp_id
+        LEFT JOIN supplemental_ppmp_non_cse_items ON supplemental_ppmp_non_cse.id = supplemental_ppmp_non_cse_items.fk_supplemental_ppmp_non_cse_id
+        LEFT JOIN pr_stock ON supplemental_ppmp_non_cse_items.fk_pr_stock_id = pr_stock.id
+        LEFT JOIN pr_stock_type ON pr_stock.pr_stock_type_id = pr_stock_type.id
+        LEFT JOIN division_program_unit ON supplemental_ppmp.fk_division_program_unit_id = division_program_unit.id
+        LEFT JOIN mfo_pap_code ON division_program_unit.fk_mfo_pap_id = mfo_pap_code.id
+        WHERE 
+        supplemental_ppmp.id = :id")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
     public function serialNumber($budget_year, $cse_type)
     {
         $latest_dv = Yii::$app->db->createCommand("SELECT CAST(substring_index(serial_number, '-', -1)AS UNSIGNED) as q 
@@ -85,10 +111,14 @@ class SupplementalPpmpController extends Controller
     }
     public function insertCseItems($id, $items = [])
     {
-
+        $c = 1;
 
         foreach ($items as $i => $item) {
 
+            if (empty($item['unit_of_measure_id'])) {
+                echo json_encode([$item, $c]);
+                die();
+            }
             if (!empty($item['cse_item_id'])) {
                 $cse_item = SupplementalPpmpCse::findOne($item['cse_item_id']);
             } else {
@@ -113,6 +143,7 @@ class SupplementalPpmpController extends Controller
             $cse_item->dec_qty = $item['dec_qty'];
             if ($cse_item->save(false)) {
             }
+            $c++;
         }
         return true;
     }
@@ -132,16 +163,17 @@ class SupplementalPpmpController extends Controller
 
 
                 $update_non_cse_item_ids = array_column($noncse['items'], 'non_cse_item_id');
+                $params = [];
+                $sql = '';
+                $item_ids = array_column($noncse['items'], 'non_cse_item_id');
+                if (!empty($item_ids)) {
+                    $sql = 'AND ';
+                    $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $item_ids], $params);
+                }
 
-                // $params = [];
-                // $sql = '';
-                // if (!empty($update_non_cse_item_ids)) {
-                //     $sql = 'AND ';
-                //     $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $update_non_cse_item_ids], $params);
-                // }
-                // Yii::$app->db->createCommand("UPDATE supplemental_ppmp_non_cse_items SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE 
-                //         supplemental_ppmp_non_cse_items.fk_supplemental_ppmp_non_cse_id = :id $sql", $params)
-                //     ->bindValue(':id', $ppmp_non_cse->id)->query();
+                Yii::$app->db->createCommand("UPDATE supplemental_ppmp_non_cse_items SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE 
+                        supplemental_ppmp_non_cse_items.fk_supplemental_ppmp_non_cse_id = :id $sql", $params)
+                    ->bindValue(':id', $ppmp_non_cse->id)->query();
             } else {
 
                 $ppmp_non_cse = new SupplementalPpmpNonCse();
@@ -275,7 +307,7 @@ class SupplementalPpmpController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new SupplementalPpmpSearch();
+        $searchModel = new SupplementalPpmpIndexSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -295,13 +327,14 @@ class SupplementalPpmpController extends Controller
         $model = $this->findModel($id);
         $items = [];
         if ($model->cse_type === 'non_cse') {
-            $items = $this->getNonCseItems($id);
+            $items = $this->viewNoncseItems($id);
         } else if ($model->cse_type === 'cse') {
             $items = $this->getCseItems($id);
         }
         return $this->render('view', [
             'model' => $model,
-            'items' => $items
+            'items' => $items,
+
         ]);
     }
 
@@ -313,11 +346,9 @@ class SupplementalPpmpController extends Controller
     public function actionCreate()
     {
         $model = new SupplementalPpmp();
-        if (!YIi::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $model->fk_office_id = $user_data->office->id;
-            $model->fk_division_id = $user_data->divisionName->id;
-        }
+        $model->fk_approved_by = '99684622555676858';
+        $model->fk_certified_funds_available_by = '99684622555676773';
+
         if (Yii::$app->request->isPost) {
 
             // return $model->serial_number;
@@ -334,11 +365,24 @@ class SupplementalPpmpController extends Controller
             $model->date = date("Y-m-d");
             $model->budget_year = $_POST['budget_year'];
             $model->cse_type = $_POST['cse_type'];
-            $model->fk_division_id = $_POST['fk_division_id'];
+
             $model->fk_division_program_unit_id = $_POST['fk_division_program_unit_id'];
-            $model->fk_office_id = $_POST['fk_office_id'];
+
+            if (!YIi::$app->user->can('super-user')) {
+                $user_data = Yii::$app->memem->getUserData();
+                $model->fk_office_id = $user_data->office->id;
+                $model->fk_division_id = $user_data->divisionName->id;
+            } else {
+                $model->fk_division_id = $_POST['fk_division_id'];
+                $model->fk_office_id = $_POST['fk_office_id'];
+            }
             $model->serial_number = $this->serialNumber($model->budget_year, $model->cse_type);
+            if (!Yii::$app->user->can('super-user') && $model->cse_type = 'cse') {
+                return json_encode(['isSuccess' => false, 'error_message' => 'Only Supply Office Can Create CSE PPMP']);
+                die();
+            }
             $transaction = Yii::$app->db->beginTransaction();
+
             try {
                 if ($model->validate()) {
                     if ($model->save(false)) {
@@ -397,14 +441,26 @@ class SupplementalPpmpController extends Controller
             $model->date = date("Y-m-d");
             $model->budget_year = $_POST['budget_year'];
             $model->cse_type = $_POST['cse_type'];
-            $model->fk_division_id = $_POST['fk_division_id'];
+
             $model->fk_division_program_unit_id = $_POST['fk_division_program_unit_id'];
-            $model->fk_office_id = $_POST['fk_office_id'];
+
             $model->fk_prepared_by = $_POST['fk_prepared_by'];
             $model->fk_reviewed_by = $_POST['fk_reviewed_by'];
             $model->fk_approved_by = $_POST['fk_approved_by'];
             $model->fk_certified_funds_available_by = $_POST['fk_certified_funds_available_by'];
+            if (!YIi::$app->user->can('super-user')) {
+                $user_data = Yii::$app->memem->getUserData();
+                $model->fk_office_id = $user_data->office->id;
+                $model->fk_division_id = $user_data->divisionName->id;
+            } else {
+                $model->fk_division_id = $_POST['fk_division_id'];
+                $model->fk_office_id = $_POST['fk_office_id'];
+            }
 
+            if (!Yii::$app->user->can('super-user') && $model->cse_type = 'cse') {
+                return json_encode(['isSuccess' => false, 'error_message' => 'Only Supply Office Can Edit CSE PPMP']);
+                die();
+            }
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 if ($model->validate()) {
@@ -440,8 +496,20 @@ class SupplementalPpmpController extends Controller
                                 return json_encode(['isSuccess' => false, 'error_message' => $insert_cse]);
                                 die();
                             }
-                        } else {
+                        } else if ($model->cse_type === 'non_cse') {
+                            $check_pr = YII::$app->db->createCommand("SELECT 
+                            COUNT(supplemental_ppmp_non_cse.id)
+                             FROM supplemental_ppmp_non_cse
+                            INNER  JOIN pr_purchase_request ON supplemental_ppmp_non_cse.id = pr_purchase_request.fk_supplemental_ppmp_noncse_id
+                             WHERE supplemental_ppmp_non_cse.fk_supplemental_ppmp_id = :id
+                            ")
+                                ->bindValue(':id', $model->id)
+                                ->queryScalar();
 
+
+                            if (intval($check_pr) > 0) {
+                                return json_encode(['isSuccess' => false, 'error_message' => "Cannot be edited because a purchase request has already been made for it."]);
+                            }
                             $insert_non_cse = $this->insertNonCseItems($model->id, $non_cse_items);
 
                             if ($insert_non_cse !== true) {

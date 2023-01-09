@@ -151,7 +151,10 @@
                             'url' => '#',
                             'items' => [
                                 // Yii::$app->user->can('department-offices') ?     ['label' => 'Stock/Property', 'icon' => 'circle-o', 'url' => ['/pr-stock'],] : [],
-                                Yii::$app->user->can('project_procurement') ?     ['label' => 'Activity/Project Procurement', 'icon' => 'circle-o', 'url' => ['/pr-project-procurement'],] : [],
+                                // Yii::$app->user->can('project_procurement') ?     ['label' => 'Activity/Project Procurement', 'icon' => 'circle-o', 'url' => ['/pr-project-procurement'],] : [],
+                                ['label' => 'Supplemental PPMP', 'icon' => 'circle-o', 'url' => ['/supplemental-ppmp'],],
+
+
                                 Yii::$app->user->can('purchase_request') ?     ['label' => 'Purchase Request', 'icon' => 'circle-o', 'url' => ['/pr-purchase-request'],] : [],
                             ],
                         ],
@@ -165,8 +168,7 @@
                             ],
                         ] : [],
                         Yii::$app->user->can('super-user') ?     ['label' => 'Travel Order', 'icon' => 'circle-o', 'url' => ['/travel-order'],] : [],
-         
-                        ['label' => 'Supplemental PPMP', 'icon' => 'circle-o', 'url' => ['/supplemental-ppmp'],]
+
 
                     ],
 
@@ -204,6 +206,8 @@
                                         ['label' => 'Jev Reporting Period', 'icon' => 'circle-o', 'url' => ['/jev-reporting-period'],],
                                         ['label' => 'Fund Source Type', 'icon' => 'circle-o', 'url' => ['/fund-source-type'],],
                                         ['label' => 'Report Type', 'icon' => 'circle-o', 'url' => ['/report-type'],],
+                                        ['label' => 'Divisions', 'icon' => 'circle-o', 'url' => ['/divisions'],],
+                                        ['label' => 'Division/Program/Unit', 'icon' => 'circle-o', 'url' => ['/division-program-unit'],],
 
 
                                     ],
@@ -278,6 +282,7 @@
                                         ['label' => 'Fund Classification Code', 'icon' => 'circle-o', 'url' => ['/fund-category-and-classification-code'], 'options' => ['style' => 'color:red;']],
                                         ['label' => 'MFO/PAP Codes', 'icon' => 'circle-o', 'url' => ['/mfo-pap-code'],],
                                         ['label' => 'Fund Source', 'icon' => 'circle-o', 'url' => ['/fund-source'],],
+                                        ['label' => 'Allotment Type', 'icon' => 'circle-o', 'url' => ['/allotment-type'],],
 
                                     ],
                                 ],
@@ -404,6 +409,8 @@
                                     'url' => '#',
                                     'items' => [
                                         Yii::$app->user->can('super-user') ?     ['label' => 'Activity/Project Procurement', 'icon' => 'circle-o', 'url' => ['/pr-project-procurement'],] : [],
+                        Yii::$app->user->can('super-user') ?     ['label' => 'Supplemental PPMP', 'icon' => 'circle-o', 'url' => ['/supplemental-ppmp'],] : [],
+                                       
                                         Yii::$app->user->can('super-user') ?     ['label' => 'Purchase Request', 'icon' => 'circle-o', 'url' => ['/pr-purchase-request'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'RFQ', 'icon' => 'circle-o', 'url' => ['/pr-rfq'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'AOQ', 'icon' => 'circle-o', 'url' => ['/pr-aoq'],] : [],
@@ -497,7 +504,6 @@
                         Yii::$app->user->can('super-user') ?     ['label' => 'PPMP Non-CSE', 'icon' => 'circle-o', 'url' => ['/ppmp-non-cse'],] : [],
                         Yii::$app->user->can('super-user') ?     ['label' => 'Other Property Details', 'icon' => 'circle-o', 'url' => ['/other-property-details'],] : [],
                         Yii::$app->user->can('super-user') ?     ['label' => 'Travel Order', 'icon' => 'circle-o', 'url' => ['/travel-order'],] : [],
-                        Yii::$app->user->can('super-user') ?     ['label' => 'Supplemental PPMP', 'icon' => 'circle-o', 'url' => ['/supplemental-ppmp'],] : [],
 
 
 

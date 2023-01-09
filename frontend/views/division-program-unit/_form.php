@@ -1,5 +1,8 @@
 <?php
 
+use app\models\MfoPapCode;
+use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -13,6 +16,12 @@ use yii\widgets\ActiveForm;
     <?php $form = ActiveForm::begin(); ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'fk_mfo_pap_id')->widget(Select2::class, [
+        'data' => ArrayHelper::map(MfoPapCode::find()->asArray()->all(), 'id', 'name'),
+        'pluginOptions'=>[
+            'placeholder'=>'Select MFO/PAP'
+        ]
+    ]) ?>
 
 
     <div class="form-group">

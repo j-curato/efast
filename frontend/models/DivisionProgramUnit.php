@@ -27,9 +27,10 @@ class DivisionProgramUnit extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name'], 'required'],
+            [['name', 'fk_mfo_pap_id'], 'required'],
             [['created_at'], 'safe'],
             [['name'], 'string', 'max' => 255],
+            [['fk_mfo_pap_id'], 'integer'],
             [['name'], 'unique'],
         ];
     }
@@ -43,6 +44,7 @@ class DivisionProgramUnit extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Name',
             'created_at' => 'Created At',
+            'fk_mfo_pap_id' => 'MFO/PAP ',
         ];
     }
 }

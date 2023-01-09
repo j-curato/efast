@@ -479,7 +479,7 @@ class PrPurchaseRequestController extends Controller
             }
             $model->pr_number = $this->getPrNumber($model->date, $model->fk_supplemental_ppmp_noncse_id, $model->fk_supplemental_ppmp_cse_id);
 
-     
+
 
             $transaction = Yii::$app->db->beginTransaction();
 
@@ -879,6 +879,7 @@ class PrPurchaseRequestController extends Controller
            
                 FROM pr_purchase_request 
                 LEFT JOIN pr_purchase_request_item ON pr_purchase_request.id = pr_purchase_request_item.pr_purchase_request_id
+                WHERE pr_purchase_request_item.is_deleted = 0
                 GROUP BY pr_purchase_request.fk_supplemental_ppmp_cse_id ) as ppmp_in_pr ON supplemental_ppmp_cse.id = ppmp_in_pr.fk_supplemental_ppmp_cse_id
                  WHERE supplemental_ppmp_cse.id = :id")
                     ->bindValue(':id', $id)
@@ -907,7 +908,7 @@ class PrPurchaseRequestController extends Controller
                 WHERE 
                 
                 pr_purchase_request.fk_supplemental_ppmp_noncse_id =  :id
-                
+                AND 		 pr_purchase_request_item.is_deleted = 0
                 GROUP BY 
                 pr_purchase_request_item.pr_stock_id) as item_in_pr_total ON supplemental_ppmp_non_cse_items.fk_pr_stock_id = item_in_pr_total.pr_stock_id
                 WHERE supplemental_ppmp_non_cse.id = :id")
