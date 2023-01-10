@@ -72,7 +72,9 @@ class SupplementalPpmpController extends Controller
         pr_stock.stock_title,
         supplemental_ppmp_non_cse_items.description,
         IF(supplemental_ppmp_non_cse.early_procurement=1,'Yes','No') as early_procurement,
-        supplemental_ppmp_non_cse_items.amount
+        supplemental_ppmp_non_cse_items.amount,
+        UPPER(unit_of_measure.unit_of_measure) as unit_of_measure,
+        supplemental_ppmp_non_cse_items.quantity
         FROM supplemental_ppmp
         INNER JOIN supplemental_ppmp_non_cse ON supplemental_ppmp.id  = supplemental_ppmp_non_cse.fk_supplemental_ppmp_id
         LEFT JOIN supplemental_ppmp_non_cse_items ON supplemental_ppmp_non_cse.id = supplemental_ppmp_non_cse_items.fk_supplemental_ppmp_non_cse_id
@@ -80,6 +82,7 @@ class SupplementalPpmpController extends Controller
         LEFT JOIN pr_stock_type ON pr_stock.pr_stock_type_id = pr_stock_type.id
         LEFT JOIN division_program_unit ON supplemental_ppmp.fk_division_program_unit_id = division_program_unit.id
         LEFT JOIN mfo_pap_code ON division_program_unit.fk_mfo_pap_id = mfo_pap_code.id
+        LEFT JOIN unit_of_measure ON supplemental_ppmp_non_cse_items.fk_unit_of_measure_id  = unit_of_measure.id
         WHERE 
         supplemental_ppmp.id = :id")
             ->bindValue(':id', $id)
@@ -203,6 +206,7 @@ class SupplementalPpmpController extends Controller
                         $ppmp_non_cse_item->fk_pr_stock_id = $item['stock_id'];
                         $ppmp_non_cse_item->description = $item['description'];
                         $ppmp_non_cse_item->quantity = $item['qty'];
+                        $ppmp_non_cse_item->fk_unit_of_measure_id = $item['unit_of_measure_id'];
                         if ($ppmp_non_cse_item->validate()) {
                             if ($ppmp_non_cse_item->save(false)) {
                             }
@@ -274,7 +278,9 @@ class SupplementalPpmpController extends Controller
         fund_source.id as fund_source_id,
         fund_source.name as fund_source_name,
         pr_mode_of_procurement.id as mode_of_procurement_id,
-        pr_mode_of_procurement.mode_name as mode_of_procurement_name
+        pr_mode_of_procurement.mode_name as mode_of_procurement_name,
+        unit_of_measure.unit_of_measure,
+        unit_of_measure.id as unit_of_measure_id
         
         
         
@@ -285,6 +291,7 @@ class SupplementalPpmpController extends Controller
         LEFT JOIN pr_stock ON supplemental_ppmp_non_cse_items.fk_pr_stock_id  = pr_stock.id
         LEFT JOIN fund_source ON supplemental_ppmp_non_cse.fk_fund_source_id  = fund_source.id
         LEFT JOIN pr_mode_of_procurement ON supplemental_ppmp_non_cse.fk_mode_of_procurement_id = pr_mode_of_procurement.id
+        LEFT JOIN unit_of_measure ON supplemental_ppmp_non_cse_items.fk_unit_of_measure_id = unit_of_measure.id
         WHERE 
         supplemental_ppmp_non_cse.fk_supplemental_ppmp_id = :id
         AND supplemental_ppmp_non_cse.is_deleted = 0
@@ -365,9 +372,11 @@ class SupplementalPpmpController extends Controller
             $model->date = date("Y-m-d");
             $model->budget_year = $_POST['budget_year'];
             $model->cse_type = $_POST['cse_type'];
-
+            $model->fk_prepared_by = $_POST['fk_prepared_by'];
+            $model->fk_reviewed_by = $_POST['fk_reviewed_by'];
             $model->fk_division_program_unit_id = $_POST['fk_division_program_unit_id'];
-
+            $model->fk_approved_by = $_POST['fk_approved_by'];
+            $model->fk_certified_funds_available_by = $_POST['fk_certified_funds_available_by'];
             if (!YIi::$app->user->can('super-user')) {
                 $user_data = Yii::$app->memem->getUserData();
                 $model->fk_office_id = $user_data->office->id;

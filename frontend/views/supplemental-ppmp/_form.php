@@ -368,6 +368,8 @@ if (!empty($model->fk_certified_funds_available_by)) {
                         $amount = $non_cse_item['amount'];
                         $quantity = $non_cse_item['quantity'];
                         $description = $non_cse_item['description'];
+                        $unit_of_measure = $non_cse_item['unit_of_measure'];
+                        $unit_of_measure_id = $non_cse_item['unit_of_measure_id'];
 
                         echo "  <tr >
                         <td  style='max-width:120px'>
@@ -380,6 +382,12 @@ if (!empty($model->fk_certified_funds_available_by)) {
                         <td style='max-width:40px'>
                             <label for='qty'>Quantity</label>
                             <input required name='ppmp_non_cse[$non_cse_rw_cnt][items][$x][qty]' class='form-control qty' type='number' value='$quantity'>
+                        </td>
+                        <td  style='max-width:120px'>
+                            <label for='unit_of_measure'>Unit of Measure</label>
+                            <select name='ppmp_non_cse[$non_cse_rw_cnt][items][$x][unit_of_measure_id]' class='form-control  unit-of-measure'  style='width: 100%;' required>
+                                <option value='$unit_of_measure_id'>$unit_of_measure</option>
+                            </select>
                         </td>
                         <td style='max-width:50px'>
                             <label for='amount'>Amount</label>
@@ -629,6 +637,10 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                                     <label for="qty">Quantity</label>
                                     <input required name="ppmp_non_cse[${non_cse_rw_cnt}][items][1][qty]" class='form-control qty' type="number" >
                                 </td>
+                                <td  style='max-width:120px'>
+                                    <label for="unit_of_measure">Unit of Measure</label>
+                                    <select name="ppmp_non_cse[${non_cse_rw_cnt}][items][1][unit_of_measure_id]" class='form-control  unit-of-measure'  style='width: 100%;' required></select>
+                                </td>
                                 <td style='max-width:50px'>
                                     <label for='amount'>Amount</label>
                                     <input type='text' required class='form-control mask-amount amt' placeholder='Amount' onkeyup='updateMainAmount(this)'>
@@ -656,6 +668,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
         ActivityOrFixedExpenseSelect()
         EarlyProcurementSelect()
         modeOfProcurementSelect()
+        unitOfMeasureSelect()
         non_cse_rw_cnt++
 
 
@@ -781,6 +794,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
         maskAmount()
         paginatedStockSelect()
         unitOfMeasureSelect()
+
         $('#table_body').on('.mask-amount', 'change keyup', function() {
             // $(this).closesthidden tr').find('.main-amount').val($(this).maskMoney('unmasked')[0])
             $(this).parent().find('.main-amount').val($(this).maskMoney('unmasked')[0])
@@ -823,21 +837,25 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             event.preventDefault();
             const source = $(this).closest('tr');
             $('.stock-paginated').select2('destroy')
+            $('.unit-of-measure').select2('destroy')
             const clone = source.clone(true);
             const c_table = $(this).closest('tbody').clone(true)
             const amt = clone.find('.main-amount')
             const description = clone.find('.description')
             const qty = clone.find('.qty')
             const stock = clone.find('.stock-paginated')
+            const unit_of_measure = clone.find('.unit-of-measure')
             clone.find('.mask-amount').val('')
             amt.val(0)
             qty.val(0)
             description.val('')
             stock.val('')
+            unit_of_measure.val('')
             let qty_name = qty.attr('name')
             let amt_name = amt.attr('name')
             let description_name = description.attr('name')
             let stock_name = stock.attr('name')
+            let unit_of_measure_name = stock.attr('name')
             let max = 0
 
             let non_cse_item_row_name = qty_name.slice(0, 22)
@@ -853,6 +871,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
 
             qty.attr('name', nonCseItemRowNum(qty_name, max))
             amt.attr('name', nonCseItemRowNum(amt_name, max))
+            unit_of_measure.attr('name', nonCseItemRowNum(unit_of_measure_name, max))
             description.attr('name', nonCseItemRowNum(description_name, max))
             stock.attr('name', nonCseItemRowNum(stock_name, max))
             const attr_name = clone.find('.stock-paginated').attr('name')
@@ -862,6 +881,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             $(this).closest('tbody').append(clone)
             paginatedStockSelect()
             maskAmount()
+            unitOfMeasureSelect()
         });
 
 

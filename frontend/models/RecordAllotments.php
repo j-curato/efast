@@ -53,6 +53,7 @@ class RecordAllotments extends \yii\db\ActiveRecord
                 'office_id',
                 'allotment_type_id',
                 'division_id',
+                'book_id',
             ], 'integer'],
             [['reporting_period', 'serial_number'], 'required'],
             [['reporting_period'], 'string', 'max' => 20],
@@ -114,6 +115,7 @@ class RecordAllotments extends \yii\db\ActiveRecord
             'office_id' => 'Office',
             'allotment_type_id' => 'Allotment Type',
             'division_id' => 'Division',
+            'book_id' => 'Book',
 
 
         ];

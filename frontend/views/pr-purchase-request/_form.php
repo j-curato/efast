@@ -1005,7 +1005,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                                 </div>
                                 <div class="col-sm-1">
                                     <label for="quantity">Quantity</label>
-                                    <input type="number" name='pr_items[${row_number}][quantity]' class="form-control quantity" value='${bal_qty}' >
+                                    <input type="number" name='pr_items[${row_number}][quantity]' class="form-control quantity" value='${bal_qty}'  min='0'>
                                 </div>
                                  <div class='col-sm-2'>
                                         <label for='total'>Total</label>
