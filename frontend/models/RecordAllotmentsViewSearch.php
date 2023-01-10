@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\RecordAllotmentsView;
+use Yii;
 
 /**
  * RecordAllotmentsViewSearch represents the model behind the search form of `app\models\RecordAllotmentsView`.
@@ -49,6 +50,9 @@ class RecordAllotmentsViewSearch extends RecordAllotmentsView
                 'allotment_class',
                 'nca_nta',
                 'carp_101',
+                'office_name',
+                'division',
+                'allotment_type',
 
             ], 'safe'],
         ];
@@ -70,7 +74,7 @@ class RecordAllotmentsViewSearch extends RecordAllotmentsView
      *
      * @return ActiveDataProvider
      */
-    public function search($params, $type)
+    public function search($params, $type, $responsibility_center = '')
     {
         $query = RecordAllotmentsView::find();
 
@@ -96,6 +100,10 @@ class RecordAllotmentsViewSearch extends RecordAllotmentsView
             $query->andFilterWhere(['!=', 'book', 'Fund 07']);
         }
 
+        if (!Yii::$app->user->can('super-user')) {
+
+            $query->andWhere("responsibility_center = :responsibility_center", ['responsibility_center' => Yii::$app->user->identity->division]);
+        }
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
@@ -122,6 +130,9 @@ class RecordAllotmentsViewSearch extends RecordAllotmentsView
             ->andFilterWhere(['like', 'allotment_class', $this->allotment_class])
             ->andFilterWhere(['like', 'nca_nta', $this->nca_nta])
             ->andFilterWhere(['like', 'total_ors', $this->total_ors])
+            ->andFilterWhere(['like', 'office_name', $this->office_name])
+            ->andFilterWhere(['like', 'division', $this->division])
+            ->andFilterWhere(['like', 'allotment_type', $this->allotment_type])
             ->andFilterWhere(['like', 'carp_101', $this->carp_101]);
 
         return $dataProvider;

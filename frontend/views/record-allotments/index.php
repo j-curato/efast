@@ -258,7 +258,14 @@ $this->params['breadcrumbs'][] = $this->title;
     //     ]
     // ];
     $col = [
-        'entry_id',
+        'office_name',
+        [
+            'attribute' => 'division',
+            'value' => function ($model) {
+                return strtoupper($model->division);
+            }
+        ],
+        'allotment_type',
         'reporting_period',
         'serial_number',
         'date_issued',
@@ -271,7 +278,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'authorization_code',
         'mfo_code',
         'mfo_name',
-        'responsibility_center',
         'fund_source',
         'uacs',
         'general_ledger',
@@ -285,6 +291,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
         [
             'attribute' => 'total_ors',
+            'format' => ['decimal', 2],
+            'hAlign' => 'right'
+        ],
+        [
+            'attribute' => 'ttl_pr_amount',
             'format' => ['decimal', 2],
             'hAlign' => 'right'
         ],
