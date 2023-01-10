@@ -661,6 +661,7 @@ $user_data = Yii::$app->memem->getUserData();
 
     .warning li {
         color: red;
+        font-size: 10px;
     }
 </style>
 <?php
