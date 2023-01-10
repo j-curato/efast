@@ -141,7 +141,7 @@ $user_data = Yii::$app->memem->getUserData();
         </div>
 
         <label for="purpose">Purpose </label>
-        <?php echo Html::textarea('purpose', $model->purpose, ['rows' => 4, 'required' => true]) ?>
+        <?php echo Html::textarea('purpose', $model->purpose, ['rows' => 4, 'required' => true, 'id' => 'purpose']) ?>
 
 
 
@@ -571,7 +571,7 @@ $user_data = Yii::$app->memem->getUserData();
 
 
         ];
-    }else{
+    } else {
         $col = [
             [
                 'label' => 'Actions',
@@ -992,6 +992,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                     },
                     success: function(data) {
                         const result = JSON.parse(data)
+                        console.log($('#ppmp_id').text())
+                        $('#purpose').val($('#ppmp_id :selected').text())
                         displayPpmpItems(result)
                     }
                 })

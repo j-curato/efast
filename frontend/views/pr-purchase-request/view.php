@@ -312,6 +312,36 @@ if (!empty($model->fk_supplemental_ppmp_noncse_id)) {
 
             </tbody>
         </table>
+        <table class="table table-stripe allotment" style="margin-top: 3rem;">
+            <thead>
+                <tr class="info">
+                    <th colspan="4" class="center">
+                        <h4>
+
+                            Allotment
+                    </th>
+                    </h4>
+                </tr>
+                <tr>
+                    <th>MFO/PAP Code</th>
+                    <th> Fund Source</th>
+                    <th> General Ledger</th>
+                    <th> Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                foreach ($allotment_items as $item) {
+                    echo "<tr>
+                    <td>{$item['mfo_name']}</td>
+                    <td>{$item['fund_source_name']}</td>
+                    <td>{$item['account_title']}</td>
+                    <td>" . number_format($item['gross_amount'], 2) . "</td>
+                    </tr>";
+                }
+                ?>
+            </tbody>
+        </table>
         <?php
 
         $rfqs = Yii::$app->db->createCommand("SELECT id, rfq_number FROM pr_rfq WHERE pr_purchase_request_id = :id")
@@ -342,6 +372,8 @@ if (!empty($model->fk_supplemental_ppmp_noncse_id)) {
                 </tbody>
             </table>
         <?php } ?>
+
+
     </div>
 
 </div>
@@ -398,7 +430,9 @@ if (!empty($model->fk_supplemental_ppmp_noncse_id)) {
 
 
     @media print {
-        .main-footer {
+
+        .main-footer,
+        .allotment {
             display: none;
         }
 
