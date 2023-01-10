@@ -888,21 +888,21 @@ class PrPurchaseRequestController extends Controller
                 $res = Yii::$app->db->createCommand("SELECT 
                 pr_stock.id as stock_id,
                 pr_stock.stock_title,
-                IFNULL(pr_stock.amount,0) as unit_cost,
+                IFNULL(supplemental_ppmp_non_cse_items.amount,0) as unit_cost,
                 IFNULL(unit_of_measure.unit_of_measure,'') as unit_of_measure,
                 IFNULL(unit_of_measure.id,'') as unit_of_measure_id,
                 IFNULL(supplemental_ppmp_non_cse_items.amount,0) - IFNULL(item_in_pr_total.total_pr_amt,0) as bal_amt,
-                0 as bal_qty,
+                IFNULL(supplemental_ppmp_non_cse_items.quantity,0) - IFNULL(item_in_pr_total.ttl_qty,0) as bal_qty,
                 supplemental_ppmp_non_cse_items.description
                 FROM
                 supplemental_ppmp_non_cse 
                 LEFT JOIN supplemental_ppmp_non_cse_items ON supplemental_ppmp_non_cse.id = supplemental_ppmp_non_cse_items.fk_supplemental_ppmp_non_cse_id
                 LEFT JOIN pr_stock ON supplemental_ppmp_non_cse_items.fk_pr_stock_id = pr_stock.id
-                LEFT JOIN unit_of_measure ON pr_stock.unit_of_measure_id  = unit_of_measure.id
+                LEFT JOIN unit_of_measure ON supplemental_ppmp_non_cse_items.fk_unit_of_measure_id  = unit_of_measure.id
                 LEFT JOIN (SELECT 
                 pr_purchase_request_item.pr_stock_id,
-                SUM(pr_purchase_request_item.unit_cost *pr_purchase_request_item.quantity) as total_pr_amt
-                
+                SUM(pr_purchase_request_item.unit_cost *pr_purchase_request_item.quantity) as total_pr_amt,
+                SUM(pr_purchase_request_item.quantity) as ttl_qty
                 FROM pr_purchase_request
                 LEFT JOIN pr_purchase_request_item ON pr_purchase_request.id = pr_purchase_request_item.pr_purchase_request_id
                 WHERE 
