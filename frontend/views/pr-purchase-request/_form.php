@@ -212,74 +212,8 @@ $user_data = Yii::$app->memem->getUserData();
 
 
 
-        <table class="table" id="allotment_table">
-            <thead>
-                <tr class="info">
-                    <th colspan="7" class="center">
-                        <h3>Allotments</h3>
-                    </th>
-                </tr>
-                <tr>
-                    <th>Mfo Name</th>
-                    <th>Fund Source</th>
-                    <th> General Ledger</th>
-                    <th class='amount'>Amount </th>
-                    <th class='amount'>Balance </th>
-                    <th>Gross Amount</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
 
-                <?php
-                $allotment_grnd_ttl  = 0;
-                if (!empty($allotment_items)) {
-                    foreach ($allotment_items as $item) {
-                        $allotment_entry_id = $item['allotment_entry_id'];
-                        $pr_allotment_item_id = $item['pr_allotment_item_id'];
-                        $mfo_name = $item['mfo_name'];
-                        $fund_source_name = $item['fund_source_name'];
-                        $account_title = $item['account_title'];
-                        $amount = $item['amount'];
-                        $balance = $item['balance'];
-                        $gross_amount = floatval($item['gross_amount']);
-                        $allotment_grnd_ttl += $gross_amount;
-                        $gross_display = number_format($gross_amount, 2);
-                        echo "<tr>
-                            <td style='display:none;'><input type='text' class='entry_id' name='allotment_items[{$allotment_row_num}][pr_allotment_item_id]' value='$pr_allotment_item_id'></td>
-                            <td style='display:none;'><input type='text' class='entry_id' name='allotment_items[{$allotment_row_num}][allotment_id]' value='$allotment_entry_id'></td>
-                            <td>$mfo_name</td>
-                            <td>$fund_source_name</td>
-                            <td>$account_title</td>
-                            <td >" . number_format($amount, 2) . "</td>
-                            <td >" . number_format($balance, 2) . "</td>
-                            <td>
-                                <input type='text' class='mask-amount amount form-control' onkeyup='updateMainAmount(this)' value='$gross_display'>
-                                <input type='hidden' name='allotment_items[$allotment_row_num][gross_amount]' class='gross_amount main-amount' value='$gross_amount'>
-                            </td>
-                            <td class='right'>
-                            <button type='button' class='remove btn-xs btn-danger'><i class='fa fa-times'></i></button>
-                            </td>
-                        </tr>";
-                        $allotment_row_num++;
-                    }
-                }
-                ?>
-            </tbody>
-            <tfoot>
 
-                <tr>
-                    <th colspan="5" class="" style="text-align: right;">Total: </th>
-                    <th class='allotment_total' style="padding-left: 2rem;"><?= number_format($allotment_grnd_ttl, 2) ?></th>
-                </tr>
-            </tfoot>
-        </table>
-        <hr style="  position: relative;
-                            top: 10px;
-                            border: none;
-                            height: 2px;
-                            background: black;
-                            margin-bottom: 20px;">
 
 
 
@@ -502,9 +436,75 @@ $user_data = Yii::$app->memem->getUserData();
             </tfoot>
         </table>
 
+        <hr style="  position: relative;
+                            top: 10px;
+                            border: none;
+                            height: 2px;
+                            background: black;
+                            margin-bottom: 20px;">
 
+        <table class="table" id="allotment_table">
+            <thead>
+                <tr class="info">
+                    <th colspan="7" class="center">
+                        <h3>Allotments</h3>
+                    </th>
+                </tr>
+                <tr>
+                    <th>Mfo Name</th>
+                    <th>Fund Source</th>
+                    <th> General Ledger</th>
+                    <th class='amount'>Amount </th>
+                    <th class='amount'>Balance </th>
+                    <th>Gross Amount</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
 
+                <?php
+                $allotment_grnd_ttl  = 0;
+                if (!empty($allotment_items)) {
+                    foreach ($allotment_items as $item) {
+                        $allotment_entry_id = $item['allotment_entry_id'];
+                        $pr_allotment_item_id = $item['pr_allotment_item_id'];
+                        $mfo_name = $item['mfo_name'];
+                        $fund_source_name = $item['fund_source_name'];
+                        $account_title = $item['account_title'];
+                        $amount = $item['amount'];
+                        $balance = $item['balance'];
+                        $gross_amount = floatval($item['gross_amount']);
+                        $allotment_grnd_ttl += $gross_amount;
+                        $gross_display = number_format($gross_amount, 2);
+                        echo "<tr>
+                            <td style='display:none;'><input type='text' class='entry_id' name='allotment_items[{$allotment_row_num}][pr_allotment_item_id]' value='$pr_allotment_item_id'></td>
+                            <td style='display:none;'><input type='text' class='entry_id' name='allotment_items[{$allotment_row_num}][allotment_id]' value='$allotment_entry_id'></td>
+                            <td>$mfo_name</td>
+                            <td>$fund_source_name</td>
+                            <td>$account_title</td>
+                            <td >" . number_format($amount, 2) . "</td>
+                            <td >" . number_format($balance, 2) . "</td>
+                            <td>
+                                <input type='text' class='mask-amount amount form-control' onkeyup='updateMainAmount(this)' value='$gross_display'>
+                                <input type='hidden' name='allotment_items[$allotment_row_num][gross_amount]' class='gross_amount main-amount' value='$gross_amount'>
+                            </td>
+                            <td class='right'>
+                            <button type='button' class='remove btn-xs btn-danger'><i class='fa fa-times'></i></button>
+                            </td>
+                        </tr>";
+                        $allotment_row_num++;
+                    }
+                }
+                ?>
+            </tbody>
+            <tfoot>
 
+                <tr>
+                    <th colspan="5" class="" style="text-align: right;">Total: </th>
+                    <th class='allotment_total' style="padding-left: 2rem;"><?= number_format($allotment_grnd_ttl, 2) ?></th>
+                </tr>
+            </tfoot>
+        </table>
         <div class="form-group" style="text-align: center;">
             <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:15em;font-size:15px']) ?>
         </div>

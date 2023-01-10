@@ -130,6 +130,8 @@ use yii\widgets\Pjax;
         $dataProvider->pagination = ['pageSize' => 10];
         $col = [
             'entry_id',
+            'office_name',
+            'division',
             'reporting_period',
             'serial_number',
             'mfo_code',
