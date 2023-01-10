@@ -71,6 +71,13 @@ $user_data = Yii::$app->memem->getUserData();
 
 <div class="pr-purchase-request-form" style="padding:3rem">
 
+    <div>
+        <ul>
+            <li>Select Budget Year Before selecting Project</li>
+            <li>Projects are create in Supplemental PPMP Module </li>
+            <li>Allotment and Specification Total Must be Equal </li>
+        </ul>
+    </div>
     <div class="panel panel-body shadow p-3 mb-5 bg-white rounded">
         <?= Html::beginForm([$action, 'id' => $model->id], 'post', ['id' => 'pr_form']); ?>
         <div class="row">
