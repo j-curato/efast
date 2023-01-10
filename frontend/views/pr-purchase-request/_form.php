@@ -524,48 +524,96 @@ $user_data = Yii::$app->memem->getUserData();
     $searchModel->budget_year = date('Y');
     $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors', $division);
     $dataProvider->pagination = ['pageSize' => 10];
-    $col = [
-        [
-            'label' => 'Actions',
-            'format' => 'raw',
-            'value' => function ($model) {
-                return  Html::input('text', 'item[allotment_id]', $model->allotment_entry_id, ['class' => 'allotment_id']);
-            },
-            'hidden' => true
-        ],
-        [
-            'label' => 'Actions',
-            'format' => 'raw',
-            'value' => function ($model) {
-                return  Html::button(Icon::show('plus', ['framework' => Icon::FA]), ['class' => 'btn-xs btn-primary  add', 'onClick' => 'addAllotment(this)']);
-            },
-        ],
+    $office = '';
+    $division = '';
+    if (Yii::$app->user->can('super-user')) {
+        $office =   'office_name';
+        $division =   'division';
+        $col = [
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return  Html::input('text', 'item[allotment_id]', $model->allotment_entry_id, ['class' => 'allotment_id']);
+                },
+                'hidden' => true
+            ],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return  Html::button(Icon::show('plus', ['framework' => Icon::FA]), ['class' => 'btn-xs btn-primary  add', 'onClick' => 'addAllotment(this)']);
+                },
+            ],
 
-        [
-            'attribute' => 'budget_year',
-            'hidden' => true
+            [
+                'attribute' => 'budget_year',
+                'hidden' => true
 
-        ],
+            ],
 
-        // 'office_name',
-        // 'division',
-        'mfo_name',
-        'fund_source_name',
-        'account_title',
-        [
-            'attribute' => 'amount',
-            'format' => ['decimal', 2],
-            // 'hAlign' => 'right'
-        ],
-        [
-            'attribute' => 'balance',
-            'format' => ['decimal', 2],
-            // 'hAlign' => 'right'
-        ],
+            'office_name',
+            'division',
+            'mfo_name',
+            'fund_source_name',
+            'account_title',
+            [
+                'attribute' => 'amount',
+                'format' => ['decimal', 2],
+                // 'hAlign' => 'right'
+            ],
+            [
+                'attribute' => 'balance',
+                'format' => ['decimal', 2],
+                // 'hAlign' => 'right'
+            ],
 
 
 
-    ];
+        ];
+    }else{
+        $col = [
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return  Html::input('text', 'item[allotment_id]', $model->allotment_entry_id, ['class' => 'allotment_id']);
+                },
+                'hidden' => true
+            ],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return  Html::button(Icon::show('plus', ['framework' => Icon::FA]), ['class' => 'btn-xs btn-primary  add', 'onClick' => 'addAllotment(this)']);
+                },
+            ],
+
+            [
+                'attribute' => 'budget_year',
+                'hidden' => true
+
+            ],
+
+            'mfo_name',
+            'fund_source_name',
+            'account_title',
+            [
+                'attribute' => 'amount',
+                'format' => ['decimal', 2],
+                // 'hAlign' => 'right'
+            ],
+            [
+                'attribute' => 'balance',
+                'format' => ['decimal', 2],
+                // 'hAlign' => 'right'
+            ],
+
+
+
+        ];
+    }
+
 
     ?>
 

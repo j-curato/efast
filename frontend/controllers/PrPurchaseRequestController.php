@@ -300,7 +300,9 @@ class PrPurchaseRequestController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
-            'items' => $this->getPrItems($id)
+            'items' => $this->getPrItems($id),
+            'allotment_items' => $this->getPrAllotments($id)
+
         ]);
     }
 
