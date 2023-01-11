@@ -31,7 +31,6 @@ class FundSourceController extends Controller
                     'create',
                     'view',
                     'delete',
-                    'get-fund-sources'
                 ],
                 'rules' => [
                     [
@@ -41,7 +40,6 @@ class FundSourceController extends Controller
                             'create',
                             'view',
                             'delete',
-                            'get-fund-sources'
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
@@ -157,5 +155,4 @@ class FundSourceController extends Controller
         $na = (new \yii\db\Query())->select('*')->from('fund_source')->all();
         return json_encode($na);
     }
-   
 }
