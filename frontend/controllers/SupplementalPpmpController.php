@@ -188,7 +188,7 @@ class SupplementalPpmpController extends Controller
             $ppmp_non_cse->activity_name = $noncse['activity_name'];
             $ppmp_non_cse->fk_mode_of_procurement_id = $noncse['fk_mode_of_procurement_id'];
             if ($ppmp_non_cse->type === 'fixed expenses') {
-                $ppmp_non_cse->activity_name = 'fixed';
+                $ppmp_non_cse->activity_name = 'Fixed Expenses';
             }
             if ($ppmp_non_cse->validate()) {
                 if ($ppmp_non_cse->save(false)) {
