@@ -518,8 +518,13 @@ if (YIi::$app->user->can('super-user')) {
 
         </tbody>
     </table>
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="row">
+        <div class="col-sm-offset-5">
+            <div class="form-group">
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:200px']) ?>
+            </div>
+
+        </div>
     </div>
 
     <?= Html::endForm(); ?>
