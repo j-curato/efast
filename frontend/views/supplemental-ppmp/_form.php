@@ -563,6 +563,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                 new_name += '[' + val + ']'
             }
         })
+        console.log(new_name)
         return new_name
     }
 
@@ -862,7 +863,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             let amt_name = amt.attr('name')
             let description_name = description.attr('name')
             let stock_name = stock.attr('name')
-            let unit_of_measure_name = stock.attr('name')
+            let unit_of_measure_name = unit_of_measure.attr('name')
             let max = 0
 
             let non_cse_item_row_name = qty_name.slice(0, 22)
