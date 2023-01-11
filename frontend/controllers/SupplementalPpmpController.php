@@ -386,10 +386,10 @@ class SupplementalPpmpController extends Controller
                 $model->fk_office_id = $_POST['fk_office_id'];
             }
             $model->serial_number = $this->serialNumber($model->budget_year, $model->cse_type);
-            if (!Yii::$app->user->can('super-user') && $model->cse_type === 'cse') {
-                return json_encode(['isSuccess' => false, 'error_message' => 'Only Supply Office Can Create CSE PPMP']);
-                die();
-            }
+            // if (!Yii::$app->user->can('super-user') && $model->cse_type === 'cse') {
+            //     return json_encode(['isSuccess' => false, 'error_message' => 'Only Supply Office Can Create CSE PPMP']);
+            //     die();
+            // }
             $transaction = Yii::$app->db->beginTransaction();
 
             try {
@@ -466,10 +466,10 @@ class SupplementalPpmpController extends Controller
                 $model->fk_office_id = $_POST['fk_office_id'];
             }
 
-            if (!Yii::$app->user->can('super-user') && $model->cse_type === 'cse') {
-                return json_encode(['isSuccess' => false, 'error_message' => 'Only Supply Office Can Edit CSE PPMP']);
-                die();
-            }
+            // if (!Yii::$app->user->can('super-user') && $model->cse_type === 'cse') {
+            //     return json_encode(['isSuccess' => false, 'error_message' => 'Only Supply Office Can Edit CSE PPMP']);
+            //     die();
+            // }
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 if ($model->validate()) {
