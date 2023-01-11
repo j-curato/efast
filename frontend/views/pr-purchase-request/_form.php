@@ -451,10 +451,18 @@ $user_data = Yii::$app->memem->getUserData();
                             background: black;
                             margin-bottom: 20px;">
 
+        <?php
+        $allotment_colspan = 7;
+        if (Yii::$app->user->can('super-user')) {
+            $allotment_colspan = 9;
+            echo "<th>Office</th>";
+            echo "<th>Division</th>";
+        }
+        ?>
         <table class="table" id="allotment_table">
             <thead>
                 <tr class="info">
-                    <th colspan="7" class="center">
+                    <th colspan="<?= $allotment_colspan ?>" class="center">
                         <h3>Allotments</h3>
                     </th>
                 </tr>
@@ -488,10 +496,18 @@ $user_data = Yii::$app->memem->getUserData();
                         $account_title = $item['account_title'];
                         $amount = $item['amount'];
                         $balance = $item['balance'];
+                        $gross_amount = ($item['gross_amount']);
+                        $division = ($item['division']);
+                        $office = ($item['office_name']);
                         $gross_amount = floatval($item['gross_amount']);
                         $allotment_grnd_ttl += $gross_amount;
                         $gross_display = number_format($gross_amount, 2);
-                        echo "<tr>
+                        echo "<tr>";
+                        if (Yii::$app->user->can('super-user')) {
+                            echo "<td>$office</td>
+                            <td>$division</td>";
+                        }
+                        echo " 
                             <td style='display:none;'><input type='text' class='entry_id' name='allotment_items[{$allotment_row_num}][pr_allotment_item_id]' value='$pr_allotment_item_id'></td>
                             <td style='display:none;'><input type='text' class='entry_id' name='allotment_items[{$allotment_row_num}][allotment_id]' value='$allotment_entry_id'></td>
                             <td>$mfo_name</td>

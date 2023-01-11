@@ -113,7 +113,9 @@ class PrPurchaseRequestController extends Controller
         pr_allotment_view.account_title,
         pr_allotment_view.amount,
         pr_allotment_view.balance,
-        pr_purchase_request_allotments.amount as gross_amount
+        pr_purchase_request_allotments.amount as gross_amount,
+        UPPER(pr_allotment_view.office_name) as office_name,
+        UPPER(pr_allotment_view.division) as division
         FROM pr_purchase_request_allotments
         LEFT JOIN  pr_allotment_view ON pr_purchase_request_allotments.fk_record_allotment_entries_id = pr_allotment_view.allotment_entry_id
         WHERE pr_purchase_request_allotments.is_deleted = 0
