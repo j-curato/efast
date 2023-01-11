@@ -459,6 +459,13 @@ $user_data = Yii::$app->memem->getUserData();
                     </th>
                 </tr>
                 <tr>
+                    <?php
+
+                    if (Yii::$app->user->can('super-user')) {
+                        echo "<th>Office</th>";
+                        echo "<th>Division</th>";
+                    }
+                    ?>
                     <th>Mfo Name</th>
                     <th>Fund Source</th>
                     <th> General Ledger</th>
