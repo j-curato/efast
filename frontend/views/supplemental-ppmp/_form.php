@@ -402,7 +402,7 @@ $cse_type_data = [
                             <input type='hidden' class='form-control main-amount amt ' name='ppmp_non_cse[$non_cse_rw_cnt][items][$x][amount]' placeholder='Amount' value='$amount'>
                         </td>
                         <td style='max-width:150px'>
-                            <label for='description'>Desctription</label>
+                            <label for='description'>Description</label>
                             <textarea  name='ppmp_non_cse[$non_cse_rw_cnt][items][$x][description]' class='form-control description' style='max-width:100%'>$description</textarea>
                         </td>
                         <td style='width:100px'>
@@ -660,7 +660,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                                     <input type='hidden' required class='form-control main-amount amt ' name='ppmp_non_cse[${non_cse_rw_cnt}][items][1][amount]' placeholder='Amount'>
                                 </td>
                                 <td style='max-width:150px'>
-                                    <label for='description' >Desctription</label>
+                                    <label for='description' >Description</label>
                                     <textarea name='ppmp_non_cse[${non_cse_rw_cnt}][items][1][description]' class='form-control description' style='max-width:100%' rows='1' ></textarea>
                                 </td>
                                 <td style='width:100px'>
