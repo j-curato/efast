@@ -276,7 +276,7 @@ if (!empty($model->pr_purchase_request_id)) {
                     var row = `
                         <tr>
                             <td>
-                                <input type='checkbox' class='form-check-input' value='${res.pr_items_data[i]['pr_item_id']}' name='pr_purchase_request_item_id[]' data-value = '${res.pr_items_data[i]['pr_item_id']}'>
+                                <input type='checkbox' class='form-check-input' value='${res.pr_items_data[i]['item_id']}' name='pr_purchase_request_item_id[]' data-value = '${res.pr_items_data[i]['pr_item_id']}'>
                             </td>
                             <td>
                                 ${res.pr_items_data[i]['bac_code']}
