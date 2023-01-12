@@ -76,7 +76,7 @@ $user_data = Yii::$app->memem->getUserData();
         <div>
             <ul class="warning">
                 <li>Select Budget Year Before Selecting Project</li>
-                <li>Projects are create in Supplemental PPMP Module </li>
+                <li>Projects are created in Supplemental PPMP Module </li>
                 <li>Allotment and Specification Total Must be Equal </li>
             </ul>
         </div>
