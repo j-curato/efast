@@ -283,6 +283,11 @@ class LiquidationController extends Controller
         if (empty($reporting_period) || empty($province) || empty($bank_account_id)) {
             return false;
         }
+        $year = DateTIme::createFromFormat('Y-m', $reporting_period)->format('Y');
+        if (intval($year) < 2022) {
+            return 'Reporting Period is Disabled';
+        }
+
         $query = (new \yii\db\Query())
             ->select('*')
             ->from('liquidation_reporting_period')
