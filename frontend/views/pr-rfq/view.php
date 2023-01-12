@@ -52,7 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <span>
 
                             <?php
-                            // echo $model->purchaseRequest->projectProcurement->title;
+                            echo $model->purchaseRequest->purpose;
                             ?>
                         </span>
 
