@@ -30,7 +30,14 @@ class PrPurchaseRequestItem extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['pr_purchase_request_id', 'pr_stock_id', 'quantity', 'unit_of_measure_id'], 'integer'],
+            [[
+                'pr_purchase_request_id',
+                'pr_stock_id',
+                'quantity',
+                'unit_of_measure_id',
+                'fk_ppmp_cse_item_id',
+                'fk_ppmp_non_cse_item_id'
+            ], 'integer'],
             [['unit_cost'], 'number'],
             [['specification'], 'string'],
             [['created_at'], 'safe'],
@@ -62,6 +69,8 @@ class PrPurchaseRequestItem extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'specification' => 'Specification',
             'unit_of_measure_id' => 'Unit of Measure',
+            'fk_ppmp_cse_item_id' => 'fk_ppmp_cse_item_id',
+            'fk_ppmp_non_cse_item_id' => 'fk_ppmp_non_cse_item_id'
         ];
     }
     public function getStock()
