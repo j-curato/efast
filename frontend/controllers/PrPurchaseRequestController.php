@@ -129,7 +129,9 @@ class PrPurchaseRequestController extends Controller
         $amount = 0,
         $qty = 0,
         $stock_id = '',
-        $item_id = ''
+        $item_id = '',
+        $cse_item_id = '',
+        $non_cse_item_id = ''
     ) {
 
         $params = [];
@@ -188,28 +190,26 @@ class PrPurchaseRequestController extends Controller
         } else if ($cse_type === 'non_cse') {
             try {
                 $query  = YIi::$app->db->createCommand("SELECT 
-                    IFNULL(supplemental_ppmp_non_cse_items.amount,0) - IFNULL(item_in_pr_total.total_pr_amt,0) as bal_amt
-                    FROM
-                    supplemental_ppmp_non_cse 
-                    LEFT JOIN supplemental_ppmp_non_cse_items ON supplemental_ppmp_non_cse.id = supplemental_ppmp_non_cse_items.fk_supplemental_ppmp_non_cse_id
-                    LEFT JOIN pr_stock ON supplemental_ppmp_non_cse_items.fk_pr_stock_id = pr_stock.id
-                    LEFT JOIN unit_of_measure ON pr_stock.unit_of_measure_id  = unit_of_measure.id
-                    LEFT JOIN (SELECT 
-                    pr_purchase_request_item.pr_stock_id,
-                    SUM(pr_purchase_request_item.unit_cost *pr_purchase_request_item.quantity) as total_pr_amt
-                    
-                    FROM pr_purchase_request
-                    LEFT JOIN pr_purchase_request_item ON pr_purchase_request.id = pr_purchase_request_item.pr_purchase_request_id
-                    WHERE 
-                    pr_purchase_request.fk_supplemental_ppmp_noncse_id =  :cse_or_non_cse_id
-                    AND pr_purchase_request_item.is_deleted=0
-                    $sql
-                    GROUP BY 
-                    pr_purchase_request_item.pr_stock_id) as item_in_pr_total ON supplemental_ppmp_non_cse_items.fk_pr_stock_id = item_in_pr_total.pr_stock_id
-                    WHERE supplemental_ppmp_non_cse.id = :cse_or_non_cse_id
-                    AND pr_stock.id = :stock_id", $params)
-                    ->bindValue(':stock_id', $stock_id)
-                    ->bindValue(':cse_or_non_cse_id', $cse_or_non_cse_id)
+
+                IFNULL(supplemental_ppmp_non_cse_items.amount,0) - IFNULL(item_in_pr_total.total_pr_amt,0) as bal_amt
+                FROM
+                supplemental_ppmp_non_cse_items 
+                LEFT JOIN pr_stock ON supplemental_ppmp_non_cse_items.fk_pr_stock_id = pr_stock.id
+                LEFT JOIN unit_of_measure ON pr_stock.unit_of_measure_id  = unit_of_measure.id
+                LEFT JOIN (SELECT 
+                
+                pr_purchase_request_item.fk_ppmp_non_cse_item_id,
+                SUM(pr_purchase_request_item.unit_cost * pr_purchase_request_item.quantity) as total_pr_amt
+                FROM pr_purchase_request_item
+                WHERE 
+                pr_purchase_request_item.is_deleted =0
+                $sql
+                GROUP BY
+                pr_purchase_request_item.fk_ppmp_non_cse_item_id
+                ) as item_in_pr_total ON supplemental_ppmp_non_cse_items.id = item_in_pr_total.fk_ppmp_non_cse_item_id
+                 WHERE supplemental_ppmp_non_cse_items.id = :non_cse_item_id
+                    ", $params)
+                    ->bindValue(':non_cse_item_id', $non_cse_item_id)
                     ->queryOne();
 
                 $bal_amt = floatval($query['bal_amt']);
@@ -354,7 +354,9 @@ class PrPurchaseRequestController extends Controller
                     $item['unit_cost'],
                     $item['quantity'],
                     $item['pr_stocks_id'],
-                    !empty($item['item_id']) ? $item['item_id'] : ''
+                    !empty($item['item_id']) ? $item['item_id'] : '',
+                    !empty($item['cse_item_id']) ? $item['cse_item_id'] : '',
+                    !empty($item['non_cse_item_id']) ? $item['non_cse_item_id'] : ''
                 );
 
 
@@ -905,7 +907,7 @@ class PrPurchaseRequestController extends Controller
                 IFNULL(unit_of_measure.unit_of_measure,'') as unit_of_measure,
                 IFNULL(unit_of_measure.id,'') as unit_of_measure_id,
                 IFNULL(supplemental_ppmp_non_cse_items.amount,0) - IFNULL(item_in_pr_total.total_pr_amt,0) as bal_amt,
-                IFNULL(supplemental_ppmp_non_cse_items.quantity,0) - IFNULL(item_in_pr_total.ttl_qty,0) as bal_qty,
+               1 as bal_qty,
                 supplemental_ppmp_non_cse_items.description,
                 'non_cse_item_id' as cse_type
                 FROM
@@ -914,18 +916,17 @@ class PrPurchaseRequestController extends Controller
                 LEFT JOIN pr_stock ON supplemental_ppmp_non_cse_items.fk_pr_stock_id = pr_stock.id
                 LEFT JOIN unit_of_measure ON supplemental_ppmp_non_cse_items.fk_unit_of_measure_id  = unit_of_measure.id
                 LEFT JOIN (SELECT 
-                pr_purchase_request_item.pr_stock_id,
-                SUM(pr_purchase_request_item.unit_cost *pr_purchase_request_item.quantity) as total_pr_amt,
-                SUM(pr_purchase_request_item.quantity) as ttl_qty
-                FROM pr_purchase_request
-                LEFT JOIN pr_purchase_request_item ON pr_purchase_request.id = pr_purchase_request_item.pr_purchase_request_id
-                WHERE 
-                
-                pr_purchase_request.fk_supplemental_ppmp_noncse_id =  :id
-                AND 		 pr_purchase_request_item.is_deleted = 0
-                GROUP BY 
-                pr_purchase_request_item.pr_stock_id) as item_in_pr_total ON supplemental_ppmp_non_cse_items.fk_pr_stock_id = item_in_pr_total.pr_stock_id
-                WHERE supplemental_ppmp_non_cse.id = :id")
+									pr_purchase_request_item.fk_ppmp_non_cse_item_id,
+									SUM(pr_purchase_request_item.quantity) as ttl_qty,
+									SUM(IFNULL(pr_purchase_request_item.unit_cost,0) * IFNULL(pr_purchase_request_item.quantity,0)) as total_pr_amt
+									FROM pr_purchase_request_item
+									WHERE 
+									pr_purchase_request_item.is_deleted =0
+
+									GROUP BY
+									pr_purchase_request_item.fk_ppmp_non_cse_item_id
+									 ) as item_in_pr_total ON supplemental_ppmp_non_cse_items.id = item_in_pr_total.fk_ppmp_non_cse_item_id
+                WHERE supplemental_ppmp_non_cse.id =  :id")
                     ->bindValue(':id', $id)
                     ->queryAll();
             }

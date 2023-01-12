@@ -1072,7 +1072,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                             <div class="row">
                                 <div class="col-sm-4">
                                     <label for="stocks">Stock</label>
-                                    <input required type='hidden' name="pr_items[${row_number}][${cse_type}]" class=" form-control" style="width: 100%" value='${stock_id}'>
+                                    <input required type='hidden' name="pr_items[${row_number}][${cse_type}]" class=" form-control" style="width: 100%" value='${item_id}'>
                                     <input required type='hidden' name="pr_items[${row_number}][pr_stocks_id]" class="stock_input form-control" style="width: 100%" value='${stock_id}'>
                                     <p>${stock_title}</p>
                                         
