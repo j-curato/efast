@@ -1027,7 +1027,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                     },
                     success: function(data) {
                         const result = JSON.parse(data)
-                        console.log($('#ppmp_id').text())
                         $('#purpose').val($('#ppmp_id :selected').text())
                         displayPpmpItems(result)
                     }
@@ -1056,6 +1055,10 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             const unit_of_measure = val.unit_of_measure
             const unit_of_measure_id = val.unit_of_measure_id
             const specification = val.description
+            let item_id = val.item_id
+            let cse_type = val.cse_type
+
+
 
             let row = `<tr class="" style="margin-top: 2rem;margin-bottom:2rem;">
                     <td style="max-width:100rem;">
@@ -1069,6 +1072,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                             <div class="row">
                                 <div class="col-sm-4">
                                     <label for="stocks">Stock</label>
+                                    <input required type='hidden' name="pr_items[${row_number}][${cse_type}]" class=" form-control" style="width: 100%" value='${stock_id}'>
                                     <input required type='hidden' name="pr_items[${row_number}][pr_stocks_id]" class="stock_input form-control" style="width: 100%" value='${stock_id}'>
                                     <p>${stock_title}</p>
                                         

@@ -376,6 +376,12 @@ class PrPurchaseRequestController extends Controller
                 $q->unit_of_measure_id =   $item['unit_of_measure_id'];
                 $q->specification = empty($item['specification']) ? null :    $item['specification'];
 
+                if (!empty($item['cse_item_id'])) {
+                    $q->fk_ppmp_cse_item_id = $item['cse_item_id'];
+                }
+                if (!empty($item['non_cse_item_id'])) {
+                    $q->fk_ppmp_non_cse_item_id = $item['non_cse_item_id'];
+                }
                 if ($q->validate()) {
                     if ($q->save(false)) {
                     } else {
@@ -852,6 +858,8 @@ class PrPurchaseRequestController extends Controller
 
             if ($type === 'cse') {
                 $res = Yii::$app->db->createCommand("SELECT 
+                supplemental_ppmp_cse.id as item_id,
+                  'cse_item_id' as cse_type,
                 '' as `description`,
                 pr_stock.id as stock_id,
                 pr_stock.stock_title,
@@ -890,6 +898,7 @@ class PrPurchaseRequestController extends Controller
                     ->queryAll();
             } else if ($type === 'non_cse') {
                 $res = Yii::$app->db->createCommand("SELECT 
+                supplemental_ppmp_non_cse_items.id as item_id,
                 pr_stock.id as stock_id,
                 pr_stock.stock_title,
                 IFNULL(supplemental_ppmp_non_cse_items.amount,0) as unit_cost,
@@ -897,7 +906,8 @@ class PrPurchaseRequestController extends Controller
                 IFNULL(unit_of_measure.id,'') as unit_of_measure_id,
                 IFNULL(supplemental_ppmp_non_cse_items.amount,0) - IFNULL(item_in_pr_total.total_pr_amt,0) as bal_amt,
                 IFNULL(supplemental_ppmp_non_cse_items.quantity,0) - IFNULL(item_in_pr_total.ttl_qty,0) as bal_qty,
-                supplemental_ppmp_non_cse_items.description
+                supplemental_ppmp_non_cse_items.description,
+                'non_cse_item_id' as cse_type
                 FROM
                 supplemental_ppmp_non_cse 
                 LEFT JOIN supplemental_ppmp_non_cse_items ON supplemental_ppmp_non_cse.id = supplemental_ppmp_non_cse_items.fk_supplemental_ppmp_non_cse_id
