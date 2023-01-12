@@ -83,23 +83,33 @@ class PrPurchaseRequestController extends Controller
     public function getPrItems($id)
     {
         return YIi::$app->db->createCommand("SELECT 
-        pr_purchase_request_item.id as item_id,
-        pr_stock.id as stock_id,
-        pr_stock.stock_title,
-        unit_of_measure.id as unit_of_measure_id,
-        unit_of_measure.unit_of_measure,
-        pr_purchase_request_item.unit_cost,
-        pr_purchase_request_item.quantity,
-        pr_stock.bac_code,
-        pr_purchase_request_item.unit_cost * pr_purchase_request_item.quantity as total_cost,
-        IFNULL(REPLACE( pr_purchase_request_item.specification, '[n]', '<br>'),'') as specification
-         FROM `pr_purchase_request_item`
-        LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
-        LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
-        WHERE 
-        pr_purchase_request_item.pr_purchase_request_id = :id
-        AND 
-        pr_purchase_request_item.is_deleted = 0")
+            (CASE 
+            WHEN pr_purchase_request_item.fk_ppmp_cse_item_id IS NOT NULL THEN 'cse_item_id'
+            WHEN     pr_purchase_request_item.fk_ppmp_non_cse_item_id IS NOT NULL THEN 'non_cse_item_id'
+            END
+            )    as cse_type,
+            (CASE 
+            WHEN pr_purchase_request_item.fk_ppmp_cse_item_id IS NOT NULL THEN pr_purchase_request_item.fk_ppmp_cse_item_id 
+            WHEN     pr_purchase_request_item.fk_ppmp_non_cse_item_id IS NOT NULL THEN  pr_purchase_request_item.fk_ppmp_non_cse_item_id 
+            END
+            )    as  ppmp_item_id,
+            pr_purchase_request_item.id as item_id,
+            pr_stock.id as stock_id,
+            pr_stock.stock_title,
+            unit_of_measure.id as unit_of_measure_id,
+            unit_of_measure.unit_of_measure,
+            pr_purchase_request_item.unit_cost,
+            pr_purchase_request_item.quantity,
+            pr_stock.bac_code,
+            pr_purchase_request_item.unit_cost * pr_purchase_request_item.quantity as total_cost,
+            IFNULL(REPLACE( pr_purchase_request_item.specification, '[n]', '<br>'),'') as specification
+            FROM `pr_purchase_request_item`
+            LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+            LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
+            WHERE 
+            pr_purchase_request_item.pr_purchase_request_id = :id
+        AND
+            pr_purchase_request_item.is_deleted =0")
             ->bindValue(':id', $id)
             ->queryAll();
     }
@@ -210,11 +220,15 @@ class PrPurchaseRequestController extends Controller
                  WHERE supplemental_ppmp_non_cse_items.id = :non_cse_item_id
                     ", $params)
                     ->bindValue(':non_cse_item_id', $non_cse_item_id)
-                    ->queryOne();
-
+                    ->queryOne()
+                    ;
+                // echo json_encode($query->getRawSql());
+                // die();
                 $bal_amt = floatval($query['bal_amt']);
 
-                $bal = $bal_amt - ($amount * $qty);
+                // $bal = $bal_amt - ($amount * $qty);
+                $bal_amt = 0;
+                $bal = 0;
                 if ($bal < 0) {
                     return  "Amount Cannot be more than " . number_format($bal_amt, 2);
                 }

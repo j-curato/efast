@@ -248,6 +248,8 @@ $user_data = Yii::$app->memem->getUserData();
                         $unit_of_measure = $val['unit_of_measure'];
                         $unit_cost = $val['unit_cost'];
                         $quantity = $val['quantity'];
+                        $cse_type = $val['cse_type'];
+                        $ppmp_item_id = $val['ppmp_item_id'];
                         $bal_amt = '';
                         $specification  = preg_replace('#\<br\>#', "\n",  $val['specification']);
                         $item_ttl = floatval($unit_cost) * intval($quantity);
@@ -256,7 +258,7 @@ $user_data = Yii::$app->memem->getUserData();
                         <td style='max-width:100rem;'>
                             <div class='panel panel-default' style=' padding: 15px;'>
                                 <div class='row'>
-                                <input required type='hidden' name='pr_items[$row_number][item_id]' class='stock_input form-control' style='width: 100%' value='$item_id'>
+                                     <input required type='hidden' name='pr_items[$row_number][item_id]' class='stock_input form-control' style='width: 100%' value='$item_id'>
                                     <div class=' col-sm-12'>
                                         <a class='remove_this_row btn btn-danger btn-xs  pull-right' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
                                     </div>
@@ -264,6 +266,7 @@ $user_data = Yii::$app->memem->getUserData();
                                 <div class='row'>
                                     <div class='col-sm-4'>
                                         <label for='stocks'>Stock</label>
+                                        <input required type='hidden' name='pr_items[$row_number][$cse_type]' class=' form-control' style='width: 100%' value='$ppmp_item_id'>
                                         <input required type='hidden' name='pr_items[$row_number][pr_stocks_id]' class='stock_input form-control' style='width: 100%' value='$stock_id'>
                                         <p>$stock_title</p>
                                             
