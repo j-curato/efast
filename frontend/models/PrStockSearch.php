@@ -17,7 +17,7 @@ class PrStockSearch extends PrStock
     public function rules()
     {
         return [
-            [['id',  'chart_of_account_id'], 'integer'],
+            [['id',  'chart_of_account_id', 'budget_year'], 'integer'],
             [['stock_title', 'created_at', 'unit_of_measure_id', 'bac_code'], 'safe'],
             [['amount'], 'number'],
         ];
@@ -61,6 +61,7 @@ class PrStockSearch extends PrStock
         $query->andFilterWhere([
             'id' => $this->id,
             'amount' => $this->amount,
+            'budget_year' => $this->budget_year,
             'chart_of_account_id' => $this->chart_of_account_id,
             'created_at' => $this->created_at,
         ]);

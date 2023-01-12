@@ -184,6 +184,10 @@ class PrStockController extends Controller
             if ($model->part !== 'part-1') {
 
                 $model->bac_code = $this->bacCode($model->part, $model->type, $model->chart_of_account_id);
+                if ($model->part === 'part-2') {
+                    $model->bac_code = 'CSE Part II';
+                } else {
+                }
             }
             try {
 

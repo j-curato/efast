@@ -84,7 +84,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'unit_of_measure_id',
                 'value' => 'unitOfMeasure.unit_of_measure'
             ],
-
+            'budget_year',
             [
                 'attribute' => 'amount',
                 'hAlign' => 'right',

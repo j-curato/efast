@@ -1,6 +1,7 @@
 <?php
 
 use app\models\UnitOfMeasure;
+use kartik\date\DatePicker;
 use kartik\money\MaskMoney;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
@@ -66,6 +67,14 @@ if (!empty($model->part)) {
         </div>
     </div> -->
 
+    <?= $form->field($model, 'budget_year')->widget(DatePicker::class, [
+        'pluginOptions' => [
+            'placeholder' => 'Select Unit of Measure',
+            'minViewMode' => 'years',
+            'format' => 'yyyy',
+            'autoclose' => true
+        ]
+    ]) ?>
     <?= $form->field($model, 'part')->widget(Select2::class, [
         'data' => $stock_part,
         'pluginOptions' => [

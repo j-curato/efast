@@ -33,7 +33,8 @@ class PrStock extends \yii\db\ActiveRecord
         return [
             [[
                 'unit_of_measure_id', 'chart_of_account_id', 'budget_year',
-                'pr_stock_type_id'
+                'pr_stock_type_id',
+                'budget_year'
             ], 'integer'],
             [['amount'], 'number'],
             [['cse_type'], 'string', 'max' => 255],
@@ -43,7 +44,8 @@ class PrStock extends \yii\db\ActiveRecord
 
                 'stock_title',
                 'amount',
-                'bac_code', 'part', 'type'
+                'bac_code', 'part', 'type',
+                'budget_year'
             ], 'required'],
             [['stock_title', 'part', 'type'], 'safe'],
         ];
@@ -66,7 +68,8 @@ class PrStock extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'budget_year' => 'Budget Year',
             'cse_type' => 'CSE Type',
-            'pr_stock_type_id' => 'Stock Type'
+            'pr_stock_type_id' => 'Stock Type',
+            'budget_year' => 'Budget Year',
 
         ];
     }

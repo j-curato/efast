@@ -101,7 +101,6 @@ $user_data = Yii::$app->memem->getUserData();
                 ]);
                 ?>
             </div>
-<!-- qweqweqwe -->
             <div class="col-sm-6">
                 <label for="ppmp_id">Project</label>
                 <?= Select2::widget([
