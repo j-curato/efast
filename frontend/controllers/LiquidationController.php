@@ -198,11 +198,21 @@ class LiquidationController extends Controller
             $withdrawals =  !empty($withdrawal[$key]) ? $withdrawal[$key] : 0;
             $reporting_period = gettype($new_reporting_period) === 'array' ? $new_reporting_period[$key] : $new_reporting_period;
             $advances_entries_balance = Yii::$app->db->createCommand("SELECT 
-            advances_entries_for_liquidation.balance,
-            advances_entries_for_liquidation.fund_source
-
-             FROM advances_entries_for_liquidation
-            WHERE advances_entries_for_liquidation.id = :id")
+            advances_entries.fund_source,
+            IFNULL(advances_entries.amount,0) - IFNULL(ttl_liq.ttl_wd,0) as balance
+            
+            FROM 
+            advances_entries
+            LEFT JOIN (
+            SELECT 
+            liquidation_entries.advances_entries_id,
+            SUM(liquidation_entries.withdrawals) as ttl_wd
+            FROM 
+            liquidation_entries
+            
+            GROUP BY liquidation_entries.advances_entries_id
+            ) as ttl_liq ON advances_entries.id = ttl_liq.advances_entries_id
+            WHERE advances_entries.id  = :id")
                 ->bindValue(':id', $val)
                 ->queryOne();
             $partial_balance = floatVal($advances_entries_balance['balance']) - floatval($withdrawals);
