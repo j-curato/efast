@@ -220,15 +220,14 @@ class PrPurchaseRequestController extends Controller
                  WHERE supplemental_ppmp_non_cse_items.id = :non_cse_item_id
                     ", $params)
                     ->bindValue(':non_cse_item_id', $non_cse_item_id)
-                    ->queryOne()
-                    ;
+                    ->queryOne();
                 // echo json_encode($query->getRawSql());
                 // die();
                 $bal_amt = floatval($query['bal_amt']);
 
-                // $bal = $bal_amt - ($amount * $qty);
-                $bal_amt = 0;
-                $bal = 0;
+                $bal = $bal_amt - ($amount * $qty);
+                // $bal_amt = 0;
+                // $bal = 0;
                 if ($bal < 0) {
                     return  "Amount Cannot be more than " . number_format($bal_amt, 2);
                 }
