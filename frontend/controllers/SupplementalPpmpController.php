@@ -465,7 +465,10 @@ class SupplementalPpmpController extends Controller
                 $model->fk_division_id = $_POST['fk_division_id'];
                 $model->fk_office_id = $_POST['fk_office_id'];
             }
-
+            if (intval($model->is_final) === 1) {
+                return json_encode(['isSuccess' => false, 'error_message' => 'Cannot Update Supplemental is Already Final']);
+                //     die();
+            }
             // if (!Yii::$app->user->can('super-user') && $model->cse_type === 'cse') {
             //     return json_encode(['isSuccess' => false, 'error_message' => 'Only Supply Office Can Edit CSE PPMP']);
             //     die();

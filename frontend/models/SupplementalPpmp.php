@@ -42,7 +42,11 @@ class SupplementalPpmp extends \yii\db\ActiveRecord
     {
         return [
             [['id', 'serial_number', 'budget_year', 'cse_type', 'fk_office_id', 'fk_division_id', 'fk_division_program_unit_id'], 'required'],
-            [['id', 'budget_year', 'fk_pr_stock_type_id', 'fk_office_id', 'fk_division_id', 'fk_division_program_unit_id', 'fk_prepared_by', 'fk_reviewed_by', 'fk_approved_by', 'fk_certified_funds_available_by'], 'integer'],
+            [[
+                'id', 'budget_year', 'fk_pr_stock_type_id', 'fk_office_id', 'fk_division_id', 'fk_division_program_unit_id', 'fk_prepared_by',
+                'fk_reviewed_by', 'fk_approved_by', 'fk_certified_funds_available_by',
+                'is_final'
+            ], 'integer'],
             [['date', 'created_at'], 'safe'],
             [['serial_number', 'cse_type'], 'string', 'max' => 255],
             [['serial_number'], 'unique'],
@@ -70,6 +74,7 @@ class SupplementalPpmp extends \yii\db\ActiveRecord
             'fk_approved_by' => ' Approved ',
             'fk_certified_funds_available_by' => ' Certified Funds Available ',
             'created_at' => 'Created At',
+            'is_final' => 'Final',
         ];
     }
 
@@ -94,37 +99,30 @@ class SupplementalPpmp extends \yii\db\ActiveRecord
     }
     public function getOffice()
     {
-        return $this->hasOne(Office::class, ['id'=> 'fk_office_id']);
+        return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
     }
     public function getDivisionName()
     {
-        return $this->hasOne(Divisions::class, ['id'=> 'fk_division_id']);
+        return $this->hasOne(Divisions::class, ['id' => 'fk_division_id']);
     }
     public function getDivisionProgramUnit()
     {
-        return $this->hasOne(DivisionProgramUnit::class, ['id'=> 'fk_division_program_unit_id']);
+        return $this->hasOne(DivisionProgramUnit::class, ['id' => 'fk_division_program_unit_id']);
     }
     public function getPreparedBy()
     {
-        return $this->hasOne(Employee::class, ['employee_id'=> 'fk_prepared_by']);
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_prepared_by']);
     }
     public function getReviewedBy()
     {
-        return $this->hasOne(Employee::class, ['employee_id'=> 'fk_reviewed_by']);
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_reviewed_by']);
     }
     public function getApprovedBy()
     {
-        return $this->hasOne(Employee::class, ['employee_id'=> 'fk_approved_by']);
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_approved_by']);
     }
     public function getCertifiedFundsAvailableBy()
     {
-        return $this->hasOne(Employee::class, ['employee_id'=> 'fk_certified_funds_available_by']);
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_certified_funds_available_by']);
     }
-
-
-
-    
-
-
- 
 }
