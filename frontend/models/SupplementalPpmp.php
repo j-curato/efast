@@ -41,7 +41,20 @@ class SupplementalPpmp extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'serial_number', 'budget_year', 'cse_type', 'fk_office_id', 'fk_division_id', 'fk_division_program_unit_id'], 'required'],
+            [[
+                'id', 'serial_number',
+                'budget_year',
+                'cse_type',
+                'fk_office_id',
+                'fk_division_id',
+                'fk_division_program_unit_id',
+                'fk_prepared_by',
+                'fk_reviewed_by',
+                'fk_approved_by',
+                'fk_certified_funds_available_by',
+
+
+            ], 'required'],
             [[
                 'id', 'budget_year', 'fk_pr_stock_type_id', 'fk_office_id', 'fk_division_id', 'fk_division_program_unit_id', 'fk_prepared_by',
                 'fk_reviewed_by', 'fk_approved_by', 'fk_certified_funds_available_by',

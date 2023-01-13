@@ -397,7 +397,7 @@ $cse_type_data = [
                             </select>
                         </td>
                         <td style='max-width:50px'>
-                            <label for='amount'>Amount</label>
+                            <label for='amount'>Gross Amount</label>
                             <input required type='text' class='form-control mask-amount amt' placeholder='Amount' onkeyup='updateMainAmount(this)' value='" . number_format($amount, 2) . "'>
                             <input type='hidden' class='form-control main-amount amt ' name='ppmp_non_cse[$non_cse_rw_cnt][items][$x][amount]' placeholder='Amount' value='$amount'>
                         </td>
@@ -655,7 +655,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                                     <select name="ppmp_non_cse[${non_cse_rw_cnt}][items][1][unit_of_measure_id]" class='form-control  unit-of-measure'  style='width: 100%;' required></select>
                                 </td>
                                 <td style='max-width:50px'>
-                                    <label for='amount'>Amount</label>
+                                    <label for='amount'>Gross Amount</label>
                                     <input type='text' required class='form-control mask-amount amt' placeholder='Amount' onkeyup='updateMainAmount(this)'>
                                     <input type='hidden' required class='form-control main-amount amt ' name='ppmp_non_cse[${non_cse_rw_cnt}][items][1][amount]' placeholder='Amount'>
                                 </td>
@@ -1019,6 +1019,18 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                     fk_division_program_unit_id: {
                         required: true
                     },
+                    fk_prepared_by: {
+                        required: true
+                    },
+                    fk_reviewed_by: {
+                        required: true
+                    },
+                    fk_approved_by: {
+                        required: true
+                    },
+                    fk_certified_funds_available_by: {
+                        required: true
+                    },
 
 
 
@@ -1044,6 +1056,18 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                     },
                     fk_division_program_unit_id: {
                         required: 'Division/Program/Unit is Required'
+                    },
+                    fk_prepared_by: {
+                        required: 'Prepared By is Required'
+                    },
+                    fk_reviewed_by: {
+                        required: 'Reviewed By is Required'
+                    },
+                    fk_approved_by: {
+                        required: 'Approved By is Required'
+                    },
+                    fk_certified_funds_available_by: {
+                        required: 'Certified Funds Available By is Required'
                     },
 
                 },
