@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
 
-            'id',
+            // 'id',
             [
                 'label' => 'Payee',
                 'attribute' => 'payee_id',

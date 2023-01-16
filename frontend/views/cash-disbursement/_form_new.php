@@ -48,7 +48,7 @@
                             'name' => 'reporting_period',
                             'value' => !empty($model->reporting_period) ? $model->reporting_period : '',
                             'options' => [
-                                'required' => true
+                                'readonly' => true
                             ],
                             'pluginOptions' => [
                                 'format' => "yyyy-mm",
@@ -67,9 +67,13 @@
                         echo DatePicker::widget([
                             'name' => 'issuance_date',
                             'value' => !empty($model->issuance_date) ? $model->issuance_date : '',
+                            'options' => [
+                                'readonly' => true
+                            ],
                             'pluginOptions' => [
                                 'format' => "yyyy-mm-dd",
                                 'autoclose' => true,
+                                'readonly' => true
 
                             ]
                         ])
@@ -225,8 +229,11 @@
 
                     'columns' => [
 
-                        'id',
 
+                        [
+                            'attribute' => 'id',
+                            'hidden' => true
+                        ],
                         // [
                         //     "label" => "id",
                         //     "attribute" => "id",
@@ -236,6 +243,7 @@
                         // ],
 
                         [
+
 
                             'class' => '\kartik\grid\CheckboxColumn',
                             'checkboxOptions' => function ($model, $key, $index, $column) use ($x, $dv_aucs_id) {

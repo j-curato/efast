@@ -70,7 +70,6 @@ $this->params['breadcrumbs'][] = $this->title;
     $gridColumn = [
         // ['class' => 'yii\grid\SerialColumn'],
 
-        'id',
         // 'book_id',
         [
             "label" => "Book",

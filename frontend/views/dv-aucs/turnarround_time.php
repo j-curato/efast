@@ -314,7 +314,7 @@ $this->params['breadcrumbs'][] = $this->title;
         [
             // ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
+            // 'id',
             // 'process_ors_id',
             'dv_number',
             [

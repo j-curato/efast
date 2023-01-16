@@ -76,7 +76,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php
     $gridColumns3 = [
-        'id',
+        // 'id',
         'with_dv',
         'serial_number',
         'reporting_period',
@@ -235,7 +235,7 @@ $this->params['breadcrumbs'][] = $this->title;
     $raoWithDvSearch = new RaoWithDvSearch();
     $roaWithDvDataProvider = $raoWithDvSearch->search(Yii::$app->request->queryParams);
     $raoWithDvCol = [
-        'id',
+        // 'id',
         'reporting_period',
         'date',
         'tracking_number',
