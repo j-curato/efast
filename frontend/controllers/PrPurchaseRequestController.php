@@ -832,25 +832,27 @@ class PrPurchaseRequestController extends Controller
                 'model' => $model,
             ]);
     }
-    public function actionSearchPpmp($page = 1, $q = null, $id = null, $budget_year = '')
+    public function actionSearchPpmp($page = 1, $q = null, $id = null, $budget_year = '', $office_id = '', $division_id = '')
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $limit = 10;
         $offset = ($page - 1) * $limit;
         $out = ['results' => ['id' => '', 'text' => '']];
+
+        if (!Yii::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $office_id = $user_data->office->id;
+            $division_id = $user_data->divisionName->id;
+        }
+
         if (!is_null($q)) {
             $query = new Query();
-
             $query->select([" id, UPPER(`stock_or_act_name`) as text"])
                 ->from('pr_ppmp_search_view')
                 ->where(['like', 'stock_or_act_name', $q])
-                ->andwhere('pr_ppmp_search_view.budget_year = :budget_year', ['budget_year' => $budget_year]);
-
-            if (!Yii::$app->user->can('super-user')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $query->andwhere('pr_ppmp_search_view.fk_office_id = :fk_office_id', ['fk_office_id' => $user_data->office->id])
-                    ->andwhere('pr_ppmp_search_view.fk_division_id = :fk_division_id', ['fk_division_id' => $user_data->divisionName->id]);
-            }
+                ->andwhere('pr_ppmp_search_view.budget_year = :budget_year', ['budget_year' => $budget_year])
+                ->andwhere('pr_ppmp_search_view.fk_office_id = :fk_office_id', ['fk_office_id' => $office_id])
+                ->andwhere('pr_ppmp_search_view.fk_division_id = :fk_division_id', ['fk_division_id' => $division_id]);
             $query->offset($offset)
                 ->limit($limit);
             $command = $query->createCommand();
@@ -870,6 +872,14 @@ class PrPurchaseRequestController extends Controller
             $id_arr = explode('-', $ppmp_id);
             $id = $id_arr[0];
             $type = $id_arr[1];
+            // return json_encode($id_arr);
+            $params = [];
+            $sql = '';
+            if (!empty($id_arr[2])) {
+                $sql .= ' AND ';
+                $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['=', 'supplemental_ppmp_non_cse_items.id', $id_arr[2]], $params);
+                // return $id_arr[2];
+            }
 
             if ($type === 'cse') {
                 $res = Yii::$app->db->createCommand("SELECT 
@@ -939,7 +949,10 @@ class PrPurchaseRequestController extends Controller
 									GROUP BY
 									pr_purchase_request_item.fk_ppmp_non_cse_item_id
 									 ) as item_in_pr_total ON supplemental_ppmp_non_cse_items.id = item_in_pr_total.fk_ppmp_non_cse_item_id
-                WHERE supplemental_ppmp_non_cse.id =  :id")
+                WHERE supplemental_ppmp_non_cse.id =  :id
+                $sql
+                
+                ", $params)
                     ->bindValue(':id', $id)
                     ->queryAll();
             }

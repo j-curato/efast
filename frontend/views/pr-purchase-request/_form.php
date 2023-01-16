@@ -1,6 +1,8 @@
 <?php
 
 use app\models\Books;
+use app\models\Divisions;
+use app\models\Office;
 use app\models\PrAllotmentViewSearch;
 use app\models\RecordAllotmentsViewSearch;
 use aryelds\sweetalert\SweetAlert;
@@ -54,10 +56,30 @@ $ppmp_item_id  = '';
 $ppmp_item_data  = [];
 if (!empty($model->fk_supplemental_ppmp_noncse_id)) {
 
-    $ppmp_item_id = $model->fk_supplemental_ppmp_noncse_id . '-non_cse';
+    $check_ppmp_type = YIi::$app->db->createCommand("SELECT `type` FROM supplemental_ppmp_non_cse WHERE supplemental_ppmp_non_cse.id = :id  ")
+        ->bindValue(':id', $model->fk_supplemental_ppmp_noncse_id)
+        ->queryScalar();
+    if ($check_ppmp_type === 'fixed expenses') {
+        $query = Yii::$app->db->createCommand("SELECT 
 
-    $ppmp_item_data = ArrayHelper::map(Yii::$app->db->createCommand("SELECT CONCAT(id,'-non_cse') as id,activity_name FROM supplemental_ppmp_non_cse WHERE id =:id")
-        ->bindValue(':id', $model->fk_supplemental_ppmp_noncse_id)->queryAll(), 'id', 'activity_name');
+        CONCAT(pr_purchase_request.fk_supplemental_ppmp_noncse_id,'-non_cse','-',pr_purchase_request_item.fk_ppmp_non_cse_item_id) as id,
+        pr_ppmp_search_view.stock_or_act_name as activity_name
+        FROM pr_purchase_request
+        LEFT JOIN pr_purchase_request_item ON pr_purchase_request.id  = pr_purchase_request_item.pr_purchase_request_id
+        LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+        LEFT JOIN pr_ppmp_search_view ON CONCAT(pr_purchase_request.fk_supplemental_ppmp_noncse_id,'-non_cse','-',pr_purchase_request_item.fk_ppmp_non_cse_item_id)  = pr_ppmp_search_view.id
+        WHERE pr_purchase_request.id = :id
+        AND pr_purchase_request_item.is_deleted = 0
+        ")
+            ->bindValue(':id', $model->id)
+            ->queryAll();
+        $ppmp_item_id =  $query[min(array_keys($query))]['id'];
+    } else {
+        $ppmp_item_id = $model->fk_supplemental_ppmp_noncse_id . '-non_cse';
+        $query = Yii::$app->db->createCommand("SELECT CONCAT(id,'-non_cse') as id,activity_name FROM supplemental_ppmp_non_cse WHERE id =:id")
+            ->bindValue(':id', $model->fk_supplemental_ppmp_noncse_id)->queryAll();
+    }
+    $ppmp_item_data = ArrayHelper::map($query, 'id', 'activity_name');
 } else if (!empty($model->fk_supplemental_ppmp_cse_id)) {
     $ppmp_item_id = $model->fk_supplemental_ppmp_cse_id . '-cse';
     $ppmp_item_data = ArrayHelper::map(Yii::$app->db->createCommand("SELECT CONCAT(supplemental_ppmp_cse.id,'-cse') as id,pr_stock.stock_title
@@ -81,6 +103,37 @@ $user_data = Yii::$app->memem->getUserData();
             </ul>
         </div>
         <?= Html::beginForm([$action, 'id' => $model->id], 'post', ['id' => 'pr_form']); ?>
+        <?php
+        if (YIi::$app->user->can('super-user')) {
+
+        ?>
+            <label for="row">Project Filter</label>
+            <div class="row">
+                <div class="col-sm-2">
+                    <label for="office_id">Office </label>
+                    <?= Select2::widget([
+                        'id' => 'office_id',
+                        'name' => 'office_id',
+                        'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Book'
+                        ]
+                    ]) ?>
+                </div>
+                <div class="col-sm-2">
+                    <label for="division_id">Division </label>
+                    <?= Select2::widget([
+                        'id' => 'division_id',
+                        'name' => 'division_id',
+                        'value' => $model->book_id,
+                        'data' => ArrayHelper::map(Divisions::find()->asArray()->all(), 'id', 'division'),
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Book'
+                        ]
+                    ]) ?>
+                </div>
+            </div>
+        <?php } ?>
         <div class="row">
             <div class="col-sm-3">
                 <label for="budget_year">Budget Year</label>
@@ -122,7 +175,12 @@ $user_data = Yii::$app->memem->getUserData();
                             'dataType' => 'json',
                             'delay' => 250,
                             'data' => new JsExpression('function(params) { 
-                                return {q:params.term,page: params.page||1,budget_year:$("#budget_year").val()}; }'),
+                                return {
+                                    q:params.term,page: params.page||1,
+                                    budget_year:$("#budget_year").val(),
+                                    office_id:$("#office_id").val(),
+                                    division_id:$("#division_id").val(),
+                                }; }'),
                             'cache' => true
                         ],
                         'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
@@ -132,6 +190,7 @@ $user_data = Yii::$app->memem->getUserData();
 
                 ]) ?>
             </div>
+
 
 
             <div class="col-sm-2">
@@ -1020,6 +1079,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
 
         $('#ppmp_id').change(() => {
             const id = $('#ppmp_id').val()
+            console.log($('#ppmp_id :selected').text())
             if (id != '') {
                 $.ajax({
 
