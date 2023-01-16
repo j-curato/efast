@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
-            <button id="export" type='button' class="btn-xs btn-success" style="margin:1rem;">Export</button>
+            <button id="export" type='button' class="btn btn-success" style="margin:1rem;">Export</button>
 
         </p>
         <div id='con'>
