@@ -38,7 +38,7 @@ class Transaction extends \yii\db\ActiveRecord
     {
         return [
             [['responsibility_center_id', 'payee_id', 'particular',  'transaction_date'], 'required'],
-            [['responsibility_center_id', 'payee_id', 'is_local',], 'integer'],
+            [['responsibility_center_id', 'payee_id', 'is_local', 'fk_book_id'], 'integer'],
             [['gross_amount'], 'number'],
             [['tracking_number', 'earmark_no', 'payroll_number', 'type'], 'string', 'max' => 255],
             [['transaction_date'], 'string', 'max' => 50],
@@ -84,6 +84,7 @@ class Transaction extends \yii\db\ActiveRecord
             'created_at' => 'created_at',
             'type' => 'Type',
             'is_local' => 'is Local',
+            'fk_book_id' => 'Book',
         ];
     }
 
