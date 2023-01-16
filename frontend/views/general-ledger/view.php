@@ -16,12 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="jev-preparation-index">
 
 
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
-        <button id="export" type='button' class="btn-xs btn-success" style="margin:1rem;">Export</button>
-
-    </p>
     <?php
 
     $generalLedger = Yii::$app->db->createCommand("SELECT object_code,account_title FROM accounting_codes WHERE object_code  = :object_code")
@@ -32,7 +27,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="container panel panel-default">
 
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
+            <button id="export" type='button' class="btn-xs btn-success" style="margin:1rem;">Export</button>
+
+        </p>
         <div id='con'>
 
             <table id="data_table" style="margin-top:30px">
