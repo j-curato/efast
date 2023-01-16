@@ -20,6 +20,7 @@ use yii\widgets\ActiveForm;
 
         <div class="row">
             <div class="col-sm-3">
+                <label for="year"> Year</label>
                 <?= DatePicker::widget([
                     'name' => 'year',
                     'value' => $model->year,
@@ -31,6 +32,7 @@ use yii\widgets\ActiveForm;
                 ]) ?>
             </div>
             <div class="col-sm-3">
+                <label for="book_id"> Book</label>
                 <?= Select2::widget([
                     'id' => 'book_id',
                     'name' => 'book_id',
@@ -43,7 +45,7 @@ use yii\widgets\ActiveForm;
             </div>
         </div>
 
-        <table id="form_fields_data">
+        <table id="form_fields_data" style="margin-top: 2rem;">
             <tbody>
 
                 <?php
