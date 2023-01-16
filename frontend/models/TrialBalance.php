@@ -50,8 +50,8 @@ class TrialBalance extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'reporting_period' => 'Reporting Period',
-            'book_id' => 'Book ID',
-            'entry_type' => 'Entry Type',
+            'book_id' => 'Book ',
+            'entry_type' => ' Type',
         ];
     }
     public function getBook()
