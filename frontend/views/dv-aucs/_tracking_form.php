@@ -350,7 +350,7 @@ if (!empty($model->id)) {
                 'filterModel' => $searchModel,
                 'panel' => [
                     // 'type' => GridView::TYPE_PRIMARY,
-                    'heading' => 'List of Areas',
+                    'heading' => 'List of ORS',
                 ],
                 'floatHeaderOptions' => [
                     'top' => 50,

@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Dv Aucs', ['create-tracking'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Routing Slip', ['create-tracking'], ['class' => 'btn btn-success']) ?>
     </p>
 
 
