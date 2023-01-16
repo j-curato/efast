@@ -18,19 +18,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="jev-preparation-index">
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-        <button id="export" type='button' class="btn-xs btn btn-success" style="margin:1rem;"><i class="glyphicon glyphicon-export"></i></button>
-    </p>
+
 
     <div class="container panel panel-default">
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <button id="export" type='button' class="btn btn btn-success" style="margin:1rem;">Export</button>
+        </p>
         <div id="con">
             <table class="table " style="margin-top:30px" id='data-table'>
                 <thead>
@@ -104,7 +98,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </tbody>
 
-                    <!-- <tr class="footer1" style="border:0;">
+                <!-- <tr class="footer1" style="border:0;">
                         <td colspan="3" class="br"></td>
                         <td colspan='2' class="br" style="padding-top:2em">
                             CERTIFIED CORRECT:
@@ -116,22 +110,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <td colspan='3' style="text-align: center;font-weight:bold;padding-top:4rem"> -->
 
-                            <?php
-                            // $reporting_period = DateTime::createFromFormat('Y-m', $model->reporting_period)->format('Y-m');
-                            // if ($reporting_period < '2022-03') {
-                            //     echo "<span style='font-weight: bold;text-decoration:underline'>JOHN VOLTAIRE S. ANCLA, CPA</span>";
-                            //     echo "<br>";
-                            //     echo " <span>Accountant III</span>";
-                            // } else {
+                <?php
+                // $reporting_period = DateTime::createFromFormat('Y-m', $model->reporting_period)->format('Y-m');
+                // if ($reporting_period < '2022-03') {
+                //     echo "<span style='font-weight: bold;text-decoration:underline'>JOHN VOLTAIRE S. ANCLA, CPA</span>";
+                //     echo "<br>";
+                //     echo " <span>Accountant III</span>";
+                // } else {
 
-                            //     echo "<span style='font-weight: bold;text-decoration:underline'>CHARLIE C. DECHOS, CPA</span>";
-                            //     echo "<br>";
-                            //     echo " <span>OIC Accountant III </span>";
-                            // }
+                //     echo "<span style='font-weight: bold;text-decoration:underline'>CHARLIE C. DECHOS, CPA</span>";
+                //     echo "<br>";
+                //     echo " <span>OIC Accountant III </span>";
+                // }
 
-                            ?>
+                ?>
 
-                        <!-- </td>
+                <!-- </td>
                     </tr> -->
             </table>
 
