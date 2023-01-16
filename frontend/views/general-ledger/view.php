@@ -18,14 +18,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    <button id="export" type='button' class="btn-xs btn-success" style="margin:1rem;"><i class="glyphicon glyphicon-export"></i></button>
+
+        <button id="export" type='button' class="btn-xs btn-success" style="margin:1rem;">Export</button>
 
     </p>
     <?php
@@ -293,8 +287,4 @@ $csrfParam = Yii::$app->request->csrfParam;
             })
         })
     })
-
-
-
-  
 </script>
