@@ -53,7 +53,7 @@ class GeneralLedger extends \yii\db\ActiveRecord
             'id' => 'ID',
             'reporting_period' => 'Reporting Period',
             'object_code' => 'Object Code',
-            'book_id' => 'Book ID',
+            'book_id' => 'Book',
             'created_at' => 'Created At',
         ];
     }
