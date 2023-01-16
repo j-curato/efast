@@ -519,7 +519,7 @@ class JevPreparationController extends Controller
             $model->ref_number = $reference;
             $model->jev_number = $reference;
             $model->jev_number .= '-' . $this->getJevNumber($model->book_id, $model->reporting_period, $reference, 1);
-        
+
             if ($model->form_token !== Yii::$app->session['jev_form_session']) {
                 return $this->redirect('index');
             }
@@ -2091,7 +2091,7 @@ class JevPreparationController extends Controller
         if ($_POST) {
             $to_reporting_period = $_POST['reporting_period'];
             $book_id = $_POST['book_id'];
-            $object_code = $_POST['object_code'].'%';
+            $object_code = $_POST['object_code'] . '%';
             $year  = DateTime::createFromFormat('Y-m', $to_reporting_period)->format('Y');
             $from_reporting_period = $year . '-01';
             $params = [];
