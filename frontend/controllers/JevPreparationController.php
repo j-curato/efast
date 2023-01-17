@@ -2330,7 +2330,7 @@ class JevPreparationController extends Controller
             // echo "</pre>";
             // $x=1;
             // echo "<br> $i";
-            $x = $query + $i;
+            $x = intval($query) + $i;
         } else {
             $x = $i;
         }
