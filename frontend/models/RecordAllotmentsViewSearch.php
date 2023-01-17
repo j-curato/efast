@@ -53,6 +53,7 @@ class RecordAllotmentsViewSearch extends RecordAllotmentsView
                 'office_name',
                 'division',
                 'allotment_type',
+                'book'
 
             ], 'safe'],
         ];
@@ -133,6 +134,7 @@ class RecordAllotmentsViewSearch extends RecordAllotmentsView
             ->andFilterWhere(['like', 'office_name', $this->office_name])
             ->andFilterWhere(['like', 'division', $this->division])
             ->andFilterWhere(['like', 'allotment_type', $this->allotment_type])
+            ->andFilterWhere(['like', 'book', $this->book])
             ->andFilterWhere(['like', 'carp_101', $this->carp_101]);
 
         return $dataProvider;

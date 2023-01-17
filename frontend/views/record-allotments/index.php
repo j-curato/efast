@@ -331,6 +331,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => 'primary',
 
         ],
+        'pjax' => true,
         'toolbar' => [
             [
                 'content' => ExportMenu::widget([
