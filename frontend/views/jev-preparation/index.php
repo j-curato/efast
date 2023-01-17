@@ -82,7 +82,21 @@ $this->params['breadcrumbs'][] = $this->title;
 
   <?php // echo $this->render('_search', ['model' => $searchModel]); 
 
-  $ref_number  = JevPreparation::find()->select('ref_number')->distinct()->asArray()->all();
+  // $reference  = Yii::$app->db->createCommand("SELECT jev_preparation.ref_number  as `reference`
+
+  // FROM jev_preparation
+  // WHERE jev_preparation.ref_number  !='' AND  jev_preparation.ref_number IS NOT NULL
+  // GROUP BY
+  // jev_preparation.ref_number")->queryAll();
+
+
+  $reference = [
+    'ADADJ' => 'ADADJ',
+    'CDJ' => 'CDJ',
+    'CKDJ' => 'CKDJ',
+    'CRJ' => 'CRJ',
+    'GJ' => 'GJ',
+  ];
 
   // echo "<pre>";
   // var_dump($ref_number);
@@ -159,6 +173,7 @@ $this->params['breadcrumbs'][] = $this->title;
       'type' => GridView::TYPE_PRIMARY,
       // 'heading' => 'List of Areas',
     ],
+    'pjax' => true,
     'export' => false,
     'floatHeaderOptions' => [
       'top' => 50,
@@ -202,16 +217,13 @@ $this->params['breadcrumbs'][] = $this->title;
     ],
     'toggleDataContainer' => ['class' => 'btn-group mr-2'],
     'columns' => [
-      // ['class' => 'yii\grid\SerialColumn'],
 
-      // 'id',
       'jev_number',
       [
         'label' => 'Payee',
         'attribute' => 'payee_id',
         'value' => 'payee.account_name'
       ],
-      // 'transaction_id',
       [
         'label' => 'Particular',
         'attribute' => 'explaination',
@@ -219,59 +231,72 @@ $this->params['breadcrumbs'][] = $this->title;
           'width' => '50',
         ]
       ],
-
-
-      // 'responsibility_center_id'
-      // 'jev_number',
-      // 'dv_number',
-      // [
-      //   'label' => 'Responsibility Center',
-      //   'attribute' => 'responsibility_center_id',
-      //   'value' => 'responsibilityCenter.name',
-      //   'filter' => Html::activeDropDownList(
-      //     $searchModel,
-      //     'responsibility_center_id',
-      //     ArrayHelper::map(ResponsibilityCenter::find()->asArray()->all(), 'id', 'name'),
-      //     ['class' => 'form-control', 'prompt' => 'Responsibility Centers']
-      //   )
-
-      // ],
       [
-        'label' => 'Reference Number',
+        'label' => 'Reference',
         'attribute' => 'ref_number',
-        // 'filter' => Html::activeDropDownList(
-        //   $searchModel,
-        //   'ref_number',
-        //   ArrayHelper::getColumn($ref_number, 'ref_number'),
-        //   ['class' => 'form-control', 'prompt' => 'Fund Cluster Code']
-        // )
+        'filterType' => GridView::FILTER_SELECT2,
+        'filter' => $reference,
+        'filterWidgetOptions' => [
+          'pluginOptions' => ['allowClear' => true],
+        ],
+        'filterInputOptions' => ['placeholder' => 'Select Reference', 'multiple' => false],
+        'format' => 'raw'
       ],
 
       [
-        'label' => 'Fund Cluster Code',
+        'label' => 'Book',
         'attribute' => 'book_id',
         'value' => 'books.name',
-        'filter' => Html::activeDropDownList(
-          $searchModel,
-          'book_id',
-          ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
-          ['class' => 'form-control', 'prompt' => 'Books']
-        )
+        'filterType' => GridView::FILTER_SELECT2,
+        'filter' => ArrayHelper::map(Books::find()->orderBy('name')->asArray()->all(), 'id', 'name'),
+        'filterWidgetOptions' => [
+          'pluginOptions' => ['allowClear' => true],
+        ],
+        'filterInputOptions' => ['placeholder' => 'Select Book', 'multiple' => false],
+        'format' => 'raw'
+      ],
+      [
+        'attribute' => 'reporting_period',
+        'filterType' => GridView::FILTER_DATE,
+        'filterWidgetOptions' => [
+          'attribute' => 'reporting_period',
+          'readonly' => true,
+          'pluginOptions' =>
+          [
+            'allowClear' => true,
+            'format' => 'yyyy-mm',
+            'minViewMode' => 'months',
+            'autoclose' => true
+
+          ],
+        ],
+
+      ],
+      [
+        'attribute' => 'date',
+        'value' => 'date',
+        'filterType' => GridView::FILTER_DATE,
+        'filterWidgetOptions' => [
+          'attribute' => 'date',
+
+          'pluginOptions' =>
+          [
+            'allowClear' => true,
+            'format' => 'yyyy-mm-dd',
+            'autoclose' => true,
+
+
+          ],
+        ],
 
       ],
 
-
-      'reporting_period',
-      'date',
-      // 'check_ada_number',
       'dv_number',
       'lddap_number',
       'check_ada_number',
 
 
 
-      // 'lddap_number',
-      // 'entity_name',
 
 
       ['class' => 'yii\grid\ActionColumn'],

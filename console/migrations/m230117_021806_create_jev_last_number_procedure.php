@@ -37,7 +37,6 @@ class m230117_021806_create_jev_last_number_procedure extends Migration
         vacant_num as (SELECT  seq.`row` FROM seq LEFT JOIN used_num ON seq.`row` = used_num.p_number WHERE used_num.p_number IS NULL),
         l_num as (SELECT used_num.p_number +1 as l_num FROM used_num ORDER BY used_num.p_number DESC LIMIT 1)
 
-        -- SELECT vacant_num.`row` FROM vacant_num ORDER BY vacant_num.`row` DESC LIMIT 1;
         SELECT 
 
         IFNULL(
