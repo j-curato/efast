@@ -607,7 +607,7 @@ class JevPreparationController extends Controller
                 $old_year != $cur_year
             ) {
 
-                return  $model->jev_number = $this->getJevNumber($model->book_id, $model->reporting_period, $reference, 1);
+                $model->jev_number = $this->getJevNumber($model->book_id, $model->reporting_period, $reference, 1);
             }
             if ($model->validate()) {
                 if ($model->save(false)) {
