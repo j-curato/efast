@@ -18,7 +18,7 @@ use app\models\SubAccounts2;
 use DateTime;
 use ErrorException;
 use Exception;
-
+use PhpOffice\PhpSpreadsheet\Calculation\TextData\Format;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -518,7 +518,7 @@ class JevPreparationController extends Controller
             }
             $model->ref_number = $reference;
             $model->jev_number = $reference;
-            $model->jev_number .= '-' . $this->getJevNumber($model->book_id, $model->reporting_period, $reference, 1);
+            $model->jev_number = $this->getJevNumber($model->book_id, $model->reporting_period, $reference, 1);
 
             if ($model->form_token !== Yii::$app->session['jev_form_session']) {
                 return $this->redirect('index');
@@ -598,6 +598,17 @@ class JevPreparationController extends Controller
                 }
             }
             $model->ref_number = $reference;
+            $old_year  = intval(DateTime::createFromFormat('Y-m', $oldModel->reporting_period)->format('Y'));
+            $cur_year  = intval(DateTime::createFromFormat('Y-m', $model->reporting_period)->format('Y'));
+
+            if (
+                $model->ref_number != $oldModel->ref_number ||
+                $model->book_id != $oldModel->book_id ||
+                $old_year != $cur_year
+            ) {
+
+                return  $model->jev_number = $this->getJevNumber($model->book_id, $model->reporting_period, $reference, 1);
+            }
             if ($model->validate()) {
                 if ($model->save(false)) {
                     if (!empty($model->jevAccountingEntries)) {
@@ -2292,69 +2303,30 @@ class JevPreparationController extends Controller
     // MAG ASSIGN OG JEV NUMBER 
     public function getJevNumber($book_id, $reporting_period, $reference, $i)
     {
-        // $reporting_period = "2021-12";
-        $q = date("Y%", strtotime($reporting_period));
-        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(jev_number,'-',-1) AS UNSIGNED)  as q
-        from jev_preparation
-
-        WHERE reporting_period LIKE :r_year
-        AND book_id = :book_id
-        AND ref_number = :ref_number
-        ORDER BY q DESC LIMIT 1")
+        $year = date("Y", strtotime($reporting_period));
+        $query = Yii::$app->db->createCommand("CALL jev_last_number(:r_year,:book_id, :ref_number)")
             ->bindValue(':ref_number', $reference)
             ->bindValue(':book_id', $book_id)
-            ->bindValue(':r_year', $q)
+            ->bindValue(':r_year', $year . '%')
             ->queryScalar();
-
-
-        // $query = JevPreparation::find()
-        // ->where("reporting_period LIKE :reporting_period", [
-        //     'reporting_period' => "$q%"
-        // ])
-        // ->andWhere("book_id = :book_id", [
-        //     'book_id' => $book_id
-        // ])
-        // ->andWhere("ref_number = :ref_number", [
-        //     'ref_number' => $reference
-        // ])
-        // ->orderBy([
-        //     'id' => SORT_DESC
-        // ])->one();
-        $ff = Books::find()
+        $book_name = Books::find()
             ->where("id = :id", [
                 'id' => $book_id
             ])->one()->name;
+        $last_num = 1;
         if (!empty($query)) {
-            // echo "<pre>";
-            // var_dump($query->toArray());
-            // echo "</pre>";
-            // $x=1;
-            // echo "<br> $i";
-            $x = intval($query) + $i;
-        } else {
-            $x = $i;
+
+            $last_num = $query;
         }
-        $y = null;
-        $len = strlen($x);
+        $len = strlen($last_num);
 
         // add zero bag.o mag last number
+        $zero = '';
         for ($i = $len; $i < 4; $i++) {
-            $y .= 0;
+            $zero .= 0;
         }
-        $year = date('Y', strtotime($reporting_period));
-        $year .= '-' . date('m', strtotime($reporting_period));
-        $year .= '-' . $y . $x;
 
-        // VarDumper::dump($year);
-        $ff .= '-' . $year;
-        // var_dump($ff);
-        // die();
-        return $ff;
-        // ob_start();
-        // echo "<pre>";
-        // var_dump( $query);
-        // echo "</pre>";
-        // return ob_get_clean();
+        return strtoupper($reference) . '-' . $book_name . '-' . $reporting_period . '-' . $zero . $last_num;
     }
 
     // KUHAON ANG DATA SA E UPDATE NA JEV
