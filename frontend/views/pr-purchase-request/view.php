@@ -18,7 +18,8 @@ if (!empty($model->fk_supplemental_ppmp_noncse_id)) {
     office.office_name,
     divisions.division,
     division_program_unit.`name` as division_program_unit,
-    supplemental_ppmp_non_cse.activity_name as purpose
+    supplemental_ppmp_non_cse.activity_name as purpose,
+    supplemental_ppmp.is_supplemental
      FROM pr_purchase_request
     INNER JOIN supplemental_ppmp_non_cse ON pr_purchase_request.fk_supplemental_ppmp_noncse_id = supplemental_ppmp_non_cse.id
     LEFT JOIN supplemental_ppmp ON supplemental_ppmp_non_cse.fk_supplemental_ppmp_id = supplemental_ppmp.id
@@ -33,7 +34,8 @@ if (!empty($model->fk_supplemental_ppmp_noncse_id)) {
     office.office_name,
     divisions.division,
     division_program_unit.`name` as division_program_unit,
-    pr_stock.stock_title as purpose
+    pr_stock.stock_title as purpose,
+    supplemental_ppmp.is_supplemental
      FROM pr_purchase_request
     INNER JOIN supplemental_ppmp_cse ON pr_purchase_request.fk_supplemental_ppmp_cse_id = supplemental_ppmp_cse.id
     LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = supplemental_ppmp.id
@@ -45,6 +47,7 @@ if (!empty($model->fk_supplemental_ppmp_noncse_id)) {
         ->bindValue(':id', $model->id)
         ->queryOne();
 }
+
 ?>
 <div class="pr-purchase-request-view">
 
@@ -140,7 +143,9 @@ if (!empty($model->fk_supplemental_ppmp_noncse_id)) {
                 </tr>
                 <tr>
 
-                    <th class="center">Stock/ Property No.</th>
+                    <th class="center"><?= intval($office_division_unit_purpose['is_supplemental']) === 1 ? '*' : '' ?>
+
+                        Stock/ Property No.</th>
                     <th class="center">Unit</th>
                     <th class="center">Item Description</th>
                     <th class="center">Quantity</th>

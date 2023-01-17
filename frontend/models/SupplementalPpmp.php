@@ -52,13 +52,13 @@ class SupplementalPpmp extends \yii\db\ActiveRecord
                 'fk_reviewed_by',
                 'fk_approved_by',
                 'fk_certified_funds_available_by',
-
+                'is_supplemental',
 
             ], 'required'],
             [[
                 'id', 'budget_year', 'fk_pr_stock_type_id', 'fk_office_id', 'fk_division_id', 'fk_division_program_unit_id', 'fk_prepared_by',
                 'fk_reviewed_by', 'fk_approved_by', 'fk_certified_funds_available_by',
-                'is_final'
+                'is_final', 'is_supplemental'
             ], 'integer'],
             [['date', 'created_at'], 'safe'],
             [['serial_number', 'cse_type'], 'string', 'max' => 255],
@@ -88,6 +88,7 @@ class SupplementalPpmp extends \yii\db\ActiveRecord
             'fk_certified_funds_available_by' => ' Certified Funds Available ',
             'created_at' => 'Created At',
             'is_final' => 'Final',
+            'is_supplemental' => 'Supplemental',
         ];
     }
 
