@@ -1,21 +1,19 @@
 <?php
 
 use app\models\Books;
+use app\models\DivisionProgramUnit;
 use app\models\Divisions;
 use app\models\Office;
 use app\models\PrAllotmentViewSearch;
-use app\models\RecordAllotmentsViewSearch;
 use aryelds\sweetalert\SweetAlert;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\grid\GridView;
 use kartik\icons\Icon;
-use kartik\money\MaskMoney;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JsExpression;
-use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PrPurchaseRequest */
@@ -33,24 +31,7 @@ if (!empty($error)) {
         ]
     ]);
 }
-$requested_by = '';
-$approved_by = '';
 $pr_project = '';
-if (!empty($model->id)) {
-    $requested_by_query   = Yii::$app->db->createCommand("SELECT employee_id,UPPER(employee_name)  as employee_name FROM employee_search_view WHERE employee_id = :id")
-        ->bindValue(':id', $model->requested_by_id)
-        ->queryAll();
-    $requested_by = ArrayHelper::map($requested_by_query, 'employee_id', 'employee_name');
-    $approved_by_query   = Yii::$app->db->createCommand("SELECT employee_id,UPPER(employee_name)  as employee_name FROM employee_search_view WHERE employee_id = :id")
-        ->bindValue(':id', $model->approved_by_id)
-        ->queryAll();
-    $approved_by = ArrayHelper::map($approved_by_query, 'employee_id', 'employee_name');
-    // $pr_project_query   = Yii::$app->db->createCommand("SELECT id,title   FROM pr_project_procurement WHERE id = :id")
-    //     ->bindValue(':id', $model->ppmp_id)
-    //     ->queryAll();
-    // $pr_project = ArrayHelper::map($pr_project_query, 'id', 'title');
-}
-
 
 $ppmp_item_id  = '';
 $ppmp_item_data  = [];
@@ -87,6 +68,12 @@ if (!empty($model->fk_supplemental_ppmp_noncse_id)) {
      LEFT JOIN pr_stock ON supplemental_ppmp_cse.fk_pr_stock_id = pr_stock.id
       WHERE supplemental_ppmp_cse.id =:id")
         ->bindValue(':id', $model->fk_supplemental_ppmp_cse_id)->queryAll(), 'id', 'stock_title');
+} else if (intval($model->is_fixed_expense) === 1) {
+    $ppmp_item_id =  'fixed_expenses-fixed_expenses';
+    $ppmp_item_data =
+        ArrayHelper::map([
+            ['id' => $ppmp_item_id, 'name' => 'Fixed Expenses']
+        ], 'id', 'name');
 }
 $user_data = Yii::$app->memem->getUserData();
 ?>
@@ -114,9 +101,10 @@ $user_data = Yii::$app->memem->getUserData();
                     <?= Select2::widget([
                         'id' => 'office_id',
                         'name' => 'office_id',
-                        'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
+                        'value' => $model->fk_office_id,
+                        'data' => ArrayHelper::map($offices, 'id', 'office_name'),
                         'pluginOptions' => [
-                            'placeholder' => 'Select Book'
+                            'placeholder' => 'Select Office'
                         ]
                     ]) ?>
                 </div>
@@ -125,17 +113,18 @@ $user_data = Yii::$app->memem->getUserData();
                     <?= Select2::widget([
                         'id' => 'division_id',
                         'name' => 'division_id',
-                        'value' => $model->book_id,
-                        'data' => ArrayHelper::map(Divisions::find()->asArray()->all(), 'id', 'division'),
+                        'value' => $model->fk_division_id,
+                        'data' => ArrayHelper::map($divisions_list, 'id', 'division'),
                         'pluginOptions' => [
-                            'placeholder' => 'Select Book'
+                            'placeholder' => 'Select Division'
                         ]
                     ]) ?>
                 </div>
+
             </div>
         <?php } ?>
         <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <label for="budget_year">Budget Year</label>
                 <?php
                 echo DatePicker::widget([
@@ -154,7 +143,19 @@ $user_data = Yii::$app->memem->getUserData();
                 ]);
                 ?>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-2">
+                <label for="division_id">Division/Program/Unit</label>
+                <?= Select2::widget([
+                    'id' => 'division_program_unit_id',
+                    'name' => 'division_program_unit_id',
+                    'value' => $model->fk_division_program_unit_id,
+                    'data' => ArrayHelper::map(DivisionProgramUnit::find()->asArray()->all(), 'id', 'name'),
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Division/Program/Unit'
+                    ]
+                ]) ?>
+            </div>
+            <div class="col-sm-4">
                 <label for="ppmp_id">Project</label>
                 <?= Select2::widget([
                     'data' => $ppmp_item_data,
@@ -219,7 +220,7 @@ $user_data = Yii::$app->memem->getUserData();
                 <?= Select2::widget([
                     'name' => 'requested_by_id',
                     'value' => $model->requested_by_id,
-                    'data' => $requested_by,
+                    'data' => Arrayhelper::map($requested_by, 'employee_id', 'employee_name'),
                     'options' => ['placeholder' => 'Search for a Employee ...'],
                     'pluginOptions' => [
                         'allowClear' => true,
@@ -245,7 +246,7 @@ $user_data = Yii::$app->memem->getUserData();
                 <label for="approved_by_id">Approved By </label>
                 <?= Select2::widget([
                     'name' => 'approved_by_id',
-                    'data' => $approved_by,
+                    'data' => Arrayhelper::map($approved_by, 'employee_id', 'employee_name'),
                     'value' => $model->approved_by_id,
                     'options' => ['placeholder' => 'Search for a Employee ...'],
                     'pluginOptions' => [
@@ -618,9 +619,7 @@ $user_data = Yii::$app->memem->getUserData();
     $dataProvider->pagination = ['pageSize' => 10];
     $office = '';
     $division = '';
-    $divisions_list = YIi::$app->db->createCommand("SELECT UPPER(divisions.division) as division FROM divisions")->queryAll();
-    $mfo_list = YIi::$app->db->createCommand("SELECT CONCAT(mfo_pap_code.`code`,'-',mfo_pap_code.`name`) as mfo FROM mfo_pap_code")->queryAll();
-    $fund_source_list = YIi::$app->db->createCommand("SELECT fund_source.`name` FROM fund_source")->queryAll();
+
     if (Yii::$app->user->can('super-user')) {
         $office =   'office_name';
         $division =   'division';
@@ -1079,6 +1078,13 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                     budget_year: {
                         required: true
                     },
+                    office_id: {
+                        required: true
+                    },
+                    division_id: {
+                        required: true
+                    },
+
 
                 },
                 messages: {
@@ -1134,6 +1140,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
         })
 
         $('#ppmp_id').change(() => {
+            $('#form_fields_data tbody').html('')
             const id = $('#ppmp_id').val()
             const office = $('#office_id').val()
             const division = $('#division_id').val()
@@ -1154,6 +1161,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                     }
                 })
             }
+        })
+        $("#pr_form").on('change', '#office_id, #division_id', () => {
+            $('#ppmp_id').val('').trigger('change')
         })
         $('#budget_year').change(() => {
             const budget_year = $('#budget_year').val()

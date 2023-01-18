@@ -35,6 +35,27 @@ class MyComponent extends Component
             ->queryAll();
         return $query;
     }
+    public function getDivisions($id = '')
+    {
+        if (!empty($id)) {
+            return YIi::$app->db->createCommand("SELECT UPPER(divisions.division) as division,id FROM divisions")
+                ->bindValue(':id', $id)
+                ->queryOne();
+        }
+        return YIi::$app->db->createCommand("SELECT UPPER(divisions.division) as division,id FROM divisions")->queryAll();
+    }
+    public function getMfoPapCode()
+    {
+        return YIi::$app->db->createCommand("SELECT CONCAT(mfo_pap_code.`code`,'-',mfo_pap_code.`name`) as mfo,id FROM mfo_pap_code")->queryAll();
+    }
+    public function getFundSources()
+    {
+        return YIi::$app->db->createCommand("SELECT fund_source.`name`,id FROM fund_source")->queryAll();
+    }
+    public function getOffices()
+    {
+        return YIi::$app->db->createCommand("SELECT office.office_name,id FROM office")->queryAll();
+    }
 
     public function serverIp()
     {

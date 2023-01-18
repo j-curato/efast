@@ -43,6 +43,9 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
                 'fk_supplemental_ppmp_noncse_id',
                 'fk_supplemental_ppmp_cse_id',
                 'budget_year',
+                'fk_office_id',
+                'fk_division_id',
+                'fk_division_program_unit_id', 'is_fixed_expense'
             ], 'integer'],
             [['purpose'], 'string'],
             [['pr_number'], 'string', 'max' => 255],
@@ -55,6 +58,8 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
                 'purpose',
                 'requested_by_id',
                 'approved_by_id',
+                'fk_office_id',
+                'fk_division_id',
 
             ], 'required'],
             [[
@@ -94,6 +99,10 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
             'fk_supplemental_ppmp_noncse_id' => 'fk_supplemental_ppmp_noncse_id',
             'fk_supplemental_ppmp_cse_id' => 'fk_supplemental_ppmp_cse_id',
             'budget_year' => 'Budget Year',
+            'fk_office_id' => 'Office',
+            'fk_division_id' => 'Division',
+            'fk_division_program_unit_id' => 'Division/Program/Unit',
+            'is_fixed_expense' => 'Fixed Expense',
         ];
     }
     public function getRequestedBy()

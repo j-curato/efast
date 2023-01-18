@@ -24,6 +24,12 @@ $this->params['breadcrumbs'][] = 'Update';
         'action' => $action,
         'items' => $items,
         'allotment_items' => $allotment_items,
+        'requested_by' => $requested_by,
+        'approved_by' => $approved_by,
+        'divisions_list' => $divisions_list,
+        'mfo_list' => $mfo_list,
+        'fund_source_list' => $fund_source_list,
+        'offices' => $offices,
     ]) ?>
 
 </div>

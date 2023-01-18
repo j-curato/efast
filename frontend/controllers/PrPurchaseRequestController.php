@@ -197,7 +197,7 @@ class PrPurchaseRequestController extends Controller
             if ($qty < 0) {
                 return  "Quantity Cannot be more than $bal_qty";
             }
-        } else if ($cse_type === 'non_cse') {
+        } else if ($cse_type === 'non_cse' || $cse_type === 'fixed_expenses') {
             try {
                 $query  = YIi::$app->db->createCommand("SELECT 
 
@@ -313,10 +313,60 @@ class PrPurchaseRequestController extends Controller
      */
     public function actionView($id)
     {
+
+        $office_division_unit_purpose = '';
+        $model = $this->findModel($id);
+        if (!empty($model->fk_supplemental_ppmp_noncse_id)) {
+            $office_division_unit_purpose = Yii::$app->db->createCommand("SELECT 
+    office.office_name,
+    divisions.division,
+    division_program_unit.`name` as division_program_unit,
+    supplemental_ppmp_non_cse.activity_name as purpose,
+    supplemental_ppmp.is_supplemental
+     FROM pr_purchase_request
+    INNER JOIN supplemental_ppmp_non_cse ON pr_purchase_request.fk_supplemental_ppmp_noncse_id = supplemental_ppmp_non_cse.id
+    LEFT JOIN supplemental_ppmp ON supplemental_ppmp_non_cse.fk_supplemental_ppmp_id = supplemental_ppmp.id
+    LEFT JOIN office ON supplemental_ppmp.fk_office_id = office.id
+    LEFT JOIN divisions ON supplemental_ppmp.fk_division_id = divisions.id
+    LEFT JOIN division_program_unit ON supplemental_ppmp.fk_division_program_unit_id = division_program_unit.id
+    WHERE pr_purchase_request.id = :id")
+                ->bindValue(':id', $model->id)
+                ->queryOne();
+        } else if (!empty($model->fk_supplemental_ppmp_cse_id)) {
+            $office_division_unit_purpose = Yii::$app->db->createCommand("SELECT 
+    office.office_name,
+    divisions.division,
+    division_program_unit.`name` as division_program_unit,
+    pr_stock.stock_title as purpose,
+    supplemental_ppmp.is_supplemental
+     FROM pr_purchase_request
+    INNER JOIN supplemental_ppmp_cse ON pr_purchase_request.fk_supplemental_ppmp_cse_id = supplemental_ppmp_cse.id
+    LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = supplemental_ppmp.id
+    LEFT JOIN office ON supplemental_ppmp.fk_office_id = office.id
+    LEFT JOIN divisions ON supplemental_ppmp.fk_division_id = divisions.id
+    LEFT JOIN division_program_unit ON supplemental_ppmp.fk_division_program_unit_id = division_program_unit.id
+    LEFT JOIN pr_stock ON supplemental_ppmp_cse.fk_pr_stock_id = pr_stock.id
+    WHERE pr_purchase_request.id = :id")
+                ->bindValue(':id', $model->id)
+                ->queryOne();
+        } else {
+            $office_division_unit_purpose = Yii::$app->db->createCommand("SELECT 
+    office.office_name,
+      divisions.division
+  FROM `pr_purchase_request`
+  LEFT JOIN office ON pr_purchase_request.fk_office_id = office.id
+  LEFT JOIN divisions ON pr_purchase_request.fk_division_id = divisions.id
+  WHERE 
+  pr_purchase_request.id = :id")
+                ->bindValue(':id', $model->id)
+                ->queryOne();
+        }
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
             'items' => $this->getPrItems($id),
-            'allotment_items' => $this->getPrAllotments($id)
+            'allotment_items' => $this->getPrAllotments($id),
+            'office_division_unit_purpose' => $office_division_unit_purpose
 
         ]);
     }
@@ -462,6 +512,17 @@ class PrPurchaseRequestController extends Controller
         }
         return true;
     }
+    public function employeeData($employee_id = '')
+    {
+        if (empty($employee_id)) {
+            return [];
+        }
+        return Yii::$app->db->createCommand("SELECT employee_id,UPPER(employee_name)  as employee_name,position FROM employee_search_view WHERE employee_id = :id")
+            ->bindValue(':id', $employee_id)
+            ->queryAll();
+    }
+
+
     public function actionCreate()
     {
         $model = new PrPurchaseRequest();
@@ -469,6 +530,14 @@ class PrPurchaseRequestController extends Controller
         if (Yii::$app->request->isPost) {
 
 
+            $office_id = !empty($_POST['office_id']) ? $_POST['office_id'] : '';
+            $division_id = !empty($_POST['division_id']) ? $_POST['division_id'] : '';
+            $division_program_unit_id = !empty($_POST['division_program_unit_id']) ? $_POST['division_program_unit_id'] : '';
+            if (!Yii::$app->user->can('super-user')) {
+                $user_data = Yii::$app->memem->getUserData();
+                $office_id = $user_data->office->id;
+                $division_id = $user_data->divisionName->id;
+            }
             $ppmp_id = !empty($_POST['ppmp_id']) ? $_POST['ppmp_id'] : '';
 
             $book_id = !empty($_POST['book_id']) ? $_POST['book_id'] : '';
@@ -490,6 +559,9 @@ class PrPurchaseRequestController extends Controller
             $model->requested_by_id = $requested_by_id;
             $model->approved_by_id = $approved_by_id;
             $model->budget_year = $budget_year;
+            $model->fk_office_id = $office_id;
+            $model->fk_division_id = $division_id;
+            $model->fk_division_program_unit_id = $division_program_unit_id;
             $id_arr = explode('-', $ppmp_id);
             $cse_or_non_cse_id = $id_arr[0];
             $cse_type = $id_arr[1];
@@ -501,8 +573,12 @@ class PrPurchaseRequestController extends Controller
 
                 $model->fk_supplemental_ppmp_noncse_id = $cse_or_non_cse_id;
                 $model->fk_supplemental_ppmp_cse_id  = null;
+            } else {
+                $model->fk_supplemental_ppmp_noncse_id = null;
+                $model->fk_supplemental_ppmp_cse_id  = null;
+                $model->is_fixed_expense  = 1;
             }
-            $model->pr_number = $this->getPrNumber($model->date, $model->fk_supplemental_ppmp_noncse_id, $model->fk_supplemental_ppmp_cse_id);
+            $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
 
 
 
@@ -548,7 +624,13 @@ class PrPurchaseRequestController extends Controller
 
         return $this->render('create', [
             'model' => $model,
-            'action' => 'pr-purchase-request/create'
+            'action' => 'pr-purchase-request/create',
+            'requested_by' => [],
+            'approved_by' => [],
+            'divisions_list' => Yii::$app->memem->getDivisions(),
+            'mfo_list' => Yii::$app->memem->getMfoPapCode(),
+            'fund_source_list' => Yii::$app->memem->getFundSources(),
+            'offices' => Yii::$app->memem->getOffices(),
         ]);
     }
 
@@ -586,6 +668,17 @@ class PrPurchaseRequestController extends Controller
             $pr_items = !empty($_POST['pr_items']) ? $_POST['pr_items'] : [];
             $allotment_items = !empty($_POST['allotment_items']) ? $_POST['allotment_items'] : [];
 
+            $office_id = !empty($_POST['office_id']) ? $_POST['office_id'] : '';
+            $division_id = !empty($_POST['division_id']) ? $_POST['division_id'] : '';
+            $division_program_unit_id = !empty($_POST['division_program_unit_id']) ? $_POST['division_program_unit_id'] : '';
+            if (!Yii::$app->user->can('super-user')) {
+                $user_data = Yii::$app->memem->getUserData();
+                $office_id = $user_data->office->id;
+                $division_id = $user_data->divisionName->id;
+            }
+            $model->fk_office_id = $office_id;
+            $model->fk_division_id = $division_id;
+            $model->fk_division_program_unit_id = $division_program_unit_id;
             $date_now = new DateTime();
             $model->date = $date_now->format('Y-m-d');
             // return var_dump($_POST['segment']);
@@ -656,7 +749,14 @@ class PrPurchaseRequestController extends Controller
             'model' => $model,
             'action' => 'pr-purchase-request/update',
             'items' => $this->getPrItems($id),
-            'allotment_items' => $this->getPrAllotments($id)
+            'allotment_items' => $this->getPrAllotments($id),
+            'requested_by' => $this->employeeData($model->requested_by_id),
+
+            'approved_by' =>  $this->employeeData($model->approved_by_id),
+            'divisions_list' => Yii::$app->memem->getDivisions(),
+            'mfo_list' => Yii::$app->memem->getMfoPapCode(),
+            'fund_source_list' => Yii::$app->memem->getFundSources(),
+            'offices' => Yii::$app->memem->getOffices(),
         ]);
     }
 
@@ -689,43 +789,21 @@ class PrPurchaseRequestController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function getPrNumber($d, $non_cse_id, $cse_id)
+    public function getPrNumber($d, $office_id, $division_id)
     {
-        $office = '';
-        if (!empty($non_cse_id)) {
-            $office = YIi::$app->db->createCommand("SELECT 
-            UPPER(CONCAT(office.office_name,'-',divisions.division)) as office
-             FROM supplemental_ppmp_non_cse 
-            LEFT JOIN supplemental_ppmp ON supplemental_ppmp_non_cse.fk_supplemental_ppmp_id = supplemental_ppmp.id
-            LEFT JOIN office ON supplemental_ppmp.fk_office_id = office.id
-            LEFT JOIN divisions ON supplemental_ppmp.fk_division_id = divisions.id
-            LEFT JOIN division_program_unit ON supplemental_ppmp.fk_division_program_unit_id = division_program_unit.id
-            WHERE supplemental_ppmp_non_cse.id = :non_cse_id")
-                ->bindValue(":non_cse_id", $non_cse_id)
-                ->queryScalar();
-        }
-        if (!empty($cse_id)) {
-            $office = YIi::$app->db->createCommand("SELECT 
-            UPPER(CONCAT(office.office_name,'-',divisions.division)) as office
-             FROM supplemental_ppmp_cse 
-            LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = supplemental_ppmp.id
-            LEFT JOIN office ON supplemental_ppmp.fk_office_id = office.id
-            LEFT JOIN divisions ON supplemental_ppmp.fk_division_id = divisions.id
-            LEFT JOIN division_program_unit ON supplemental_ppmp.fk_division_program_unit_id = division_program_unit.id
-            WHERE supplemental_ppmp_cse.id = :cse_id")
-                ->bindValue(":cse_id", $cse_id)
-                ->queryScalar();
-        }
+        $office = Yii::$app->db->createCommand("SELECT office_name FROM office WHERE office.id = :id")->bindValue(':id', $office_id)->queryScalar();
+        $division = Yii::$app->db->createCommand("SELECT division FROM divisions WHERE divisions.id = :id")->bindValue(':id', $division_id)->queryScalar();
 
+        $pr_office = $office . '-' . $division;
         $date = DateTime::createFromFormat('Y-m-d', $d)->format('Y-m-d');
         $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_number,'-',-1) AS UNSIGNED) as last_number 
         FROM pr_purchase_request
         WHERE pr_purchase_request.date = :_date
         AND 
-        pr_purchase_request.pr_number LIKE :division
+        pr_purchase_request.pr_number LIKE :pr_number
          ORDER BY last_number DESC LIMIT 1")
             ->bindValue(':_date', $date)
-            ->bindValue(':division', '%' . $office . '%')
+            ->bindValue(':pr_number', '%' . $pr_office . '%')
             ->queryScalar();
 
         $num  = 1;
@@ -739,7 +817,7 @@ class PrPurchaseRequestController extends Controller
 
 
 
-        return  strtoupper($office) . '-' . $date . '-' . $final . $num;
+        return  strtoupper($pr_office) . '-' . $date . '-' . $final . $num;
     }
     public function actionSearchPr($q = null, $id = null, $province = null)
     {
