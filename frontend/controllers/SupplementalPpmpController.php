@@ -392,6 +392,7 @@ class SupplementalPpmpController extends Controller
             //     return json_encode(['isSuccess' => false, 'error_message' => 'Only Supply Office Can Create CSE PPMP']);
             //     die();
             // }
+            $model->is_supplemental = 1;
             $transaction = Yii::$app->db->beginTransaction();
 
             try {
