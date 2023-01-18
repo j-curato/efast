@@ -133,7 +133,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $stock_title = $val['stock_title'];
                     $unit_of_measure = $val['unit_of_measure'];
                     $bac_code = $val['bac_code'];
-                    $is_supplemental = !empty($val['is_supplemental']) ? '*' : '';
+                    $is_supplemental = intval($val['is_supplemental']) === 0 ? '*' : '';
 
                     $specification  = preg_replace('#\[n\]#', "<br>",  $val['specification']);
                     echo "<tr>
