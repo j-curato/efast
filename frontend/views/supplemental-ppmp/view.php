@@ -171,6 +171,7 @@ if (!empty($model->fk_certified_funds_available_by)) {
                         <th>Specification</th>
                         <th>Unit of Measure</th>
                         <th>Quantity</th>
+                        <th>Mode of Procurement</th>
                         <th>Early Procurement?</th>
                         <th style='text-align:right'>Amount</th>
                     </tr>";
@@ -185,8 +186,10 @@ if (!empty($model->fk_certified_funds_available_by)) {
                         $early_procurement = $item['early_procurement'];
                         $unit_of_measure = $item['unit_of_measure'];
                         $quantity = $item['quantity'];
+                        $mode_of_procurement_name = !empty($item['mode_name']) ? $item['mode_name'] : '';
                         $amount = number_format($item['amount'], 2);
                         $grand_total += floatval($item['amount']);
+
                         echo "<tr class='r'>
                             <td>$budget_year</td>
                             <td>$mfo_code</td>
@@ -196,6 +199,7 @@ if (!empty($model->fk_certified_funds_available_by)) {
                             <td>$description</td>
                             <td>$unit_of_measure</td>
                             <td>$quantity</td>
+                            <td>$mode_of_procurement_name</td>
                             <td>$early_procurement</td>
                             <td style='text-align:right'>$amount</td>
                             </tr>";
@@ -274,7 +278,7 @@ if (!empty($model->fk_certified_funds_available_by)) {
     th,
     td {
         padding: 1rem;
-  
+
     }
 
     .head {
@@ -287,7 +291,8 @@ if (!empty($model->fk_certified_funds_available_by)) {
         border-left: 1px solid black;
         border-right: 1px solid black;
     }
-    .ttl{
+
+    .ttl {
         border-bottom: 1px solid black;
         border-left: 1px solid black;
         border-right: 1px solid black;

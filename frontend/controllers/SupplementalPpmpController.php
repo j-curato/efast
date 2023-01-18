@@ -74,7 +74,8 @@ class SupplementalPpmpController extends Controller
         IF(supplemental_ppmp_non_cse.early_procurement=1,'Yes','No') as early_procurement,
         supplemental_ppmp_non_cse_items.amount,
         UPPER(unit_of_measure.unit_of_measure) as unit_of_measure,
-        supplemental_ppmp_non_cse_items.quantity
+        supplemental_ppmp_non_cse_items.quantity,
+        pr_mode_of_procurement.mode_name
         FROM supplemental_ppmp
         INNER JOIN supplemental_ppmp_non_cse ON supplemental_ppmp.id  = supplemental_ppmp_non_cse.fk_supplemental_ppmp_id
         LEFT JOIN supplemental_ppmp_non_cse_items ON supplemental_ppmp_non_cse.id = supplemental_ppmp_non_cse_items.fk_supplemental_ppmp_non_cse_id
@@ -83,6 +84,7 @@ class SupplementalPpmpController extends Controller
         LEFT JOIN division_program_unit ON supplemental_ppmp.fk_division_program_unit_id = division_program_unit.id
         LEFT JOIN mfo_pap_code ON division_program_unit.fk_mfo_pap_id = mfo_pap_code.id
         LEFT JOIN unit_of_measure ON supplemental_ppmp_non_cse_items.fk_unit_of_measure_id  = unit_of_measure.id
+        LEFT JOIN pr_mode_of_procurement ON supplemental_ppmp_non_cse.fk_mode_of_procurement_id= pr_mode_of_procurement.id
         WHERE 
         supplemental_ppmp.id = :id")
             ->bindValue(':id', $id)
