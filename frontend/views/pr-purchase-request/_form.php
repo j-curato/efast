@@ -618,6 +618,9 @@ $user_data = Yii::$app->memem->getUserData();
     $dataProvider->pagination = ['pageSize' => 10];
     $office = '';
     $division = '';
+    $divisions_list = YIi::$app->db->createCommand("SELECT UPPER(divisions.division) as division FROM divisions")->queryAll();
+    $mfo_list = YIi::$app->db->createCommand("SELECT CONCAT(mfo_pap_code.`code`,'-',mfo_pap_code.`name`) as mfo FROM mfo_pap_code")->queryAll();
+    $fund_source_list = YIi::$app->db->createCommand("SELECT fund_source.`name` FROM fund_source")->queryAll();
     if (Yii::$app->user->can('super-user')) {
         $office =   'office_name';
         $division =   'division';
@@ -643,11 +646,46 @@ $user_data = Yii::$app->memem->getUserData();
                 'hidden' => true
 
             ],
-
-            'office_name',
-            'division',
-            'mfo_name',
-            'fund_source_name',
+            [
+                'attribute' => 'office_name',
+                'filterType' => GridView::FILTER_SELECT2,
+                'filter' => ArrayHelper::map(Office::find()->asArray()->all(), 'office_name', 'office_name'),
+                'filterWidgetOptions' => [
+                    'pluginOptions' => ['allowClear' => true],
+                ],
+                'filterInputOptions' => ['placeholder' => 'Select Office', 'multiple' => false],
+                'format' => 'raw'
+            ],
+            [
+                'attribute' => 'division',
+                'filterType' => GridView::FILTER_SELECT2,
+                'filter' => ArrayHelper::map($divisions_list, 'division', 'division'),
+                'filterWidgetOptions' => [
+                    'pluginOptions' => ['allowClear' => true],
+                ],
+                'filterInputOptions' => ['placeholder' => 'Select Division', 'multiple' => false],
+                'format' => 'raw'
+            ],
+            [
+                'attribute' => 'mfo_name',
+                'filterType' => GridView::FILTER_SELECT2,
+                'filter' => ArrayHelper::map($mfo_list, 'mfo', 'mfo'),
+                'filterWidgetOptions' => [
+                    'pluginOptions' => ['allowClear' => true],
+                ],
+                'filterInputOptions' => ['placeholder' => 'Select MFO/PAP Code', 'multiple' => false],
+                'format' => 'raw'
+            ],
+            [
+                'attribute' => 'fund_source_name',
+                'filterType' => GridView::FILTER_SELECT2,
+                'filter' => ArrayHelper::map($fund_source_list, 'name', 'name'),
+                'filterWidgetOptions' => [
+                    'pluginOptions' => ['allowClear' => true],
+                ],
+                'filterInputOptions' => ['placeholder' => 'Select Fund Source', 'multiple' => false],
+                'format' => 'raw'
+            ],
             'account_title',
             [
                 'attribute' => 'amount',
@@ -687,8 +725,26 @@ $user_data = Yii::$app->memem->getUserData();
 
             ],
 
-            'mfo_name',
-            'fund_source_name',
+            [
+                'attribute' => 'mfo_name',
+                'filterType' => GridView::FILTER_SELECT2,
+                'filter' => ArrayHelper::map($mfo_list, 'mfo', 'mfo'),
+                'filterWidgetOptions' => [
+                    'pluginOptions' => ['allowClear' => true],
+                ],
+                'filterInputOptions' => ['placeholder' => 'Select MFO/PAP Code', 'multiple' => false],
+                'format' => 'raw'
+            ],
+            [
+                'attribute' => 'fund_source_name',
+                'filterType' => GridView::FILTER_SELECT2,
+                'filter' => ArrayHelper::map($fund_source_list, 'name', 'name'),
+                'filterWidgetOptions' => [
+                    'pluginOptions' => ['allowClear' => true],
+                ],
+                'filterInputOptions' => ['placeholder' => 'Select Fund Source', 'multiple' => false],
+                'format' => 'raw'
+            ],
             'account_title',
             [
                 'attribute' => 'amount',
@@ -1079,14 +1135,17 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
 
         $('#ppmp_id').change(() => {
             const id = $('#ppmp_id').val()
-            console.log($('#ppmp_id :selected').text())
+            const office = $('#office_id').val()
+            const division = $('#division_id').val()
             if (id != '') {
                 $.ajax({
 
                     type: 'POST',
                     url: window.location.pathname + "?r=pr-purchase-request/get-ppmp-items",
                     data: {
-                        id: id
+                        id: id,
+                        office: office,
+                        division: division
                     },
                     success: function(data) {
                         const result = JSON.parse(data)
@@ -1110,7 +1169,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
     function displayPpmpItems(data) {
         $('#form_fields_data tbody').html('')
         $.each(data, (key, val) => {
-            const bal_amt = val.bal_amt
+            const bal_amt = thousands_separators(val.bal_amt)
             const bal_qty = val.bal_qty
             const stock_id = val.stock_id
             const stock_title = val.stock_title

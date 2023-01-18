@@ -852,7 +852,13 @@ class PrPurchaseRequestController extends Controller
                 ->where(['like', 'stock_or_act_name', $q])
                 ->andwhere('pr_ppmp_search_view.budget_year = :budget_year', ['budget_year' => $budget_year])
                 ->andwhere('pr_ppmp_search_view.fk_office_id = :fk_office_id', ['fk_office_id' => $office_id])
-                ->andwhere('pr_ppmp_search_view.fk_division_id = :fk_division_id', ['fk_division_id' => $division_id]);
+                ->andwhere('pr_ppmp_search_view.fk_division_id = :fk_division_id', ['fk_division_id' => $division_id])
+                ->orFilterWhere([
+                    'and',
+                    ['like', 'stock_or_act_name', $q],
+                    ['=', 'pr_ppmp_search_view.fk_office_id', 'fixed_expenses'],
+                    ['=', 'pr_ppmp_search_view.fk_division_id', 'fixed_expenses']
+                ]);
             $query->offset($offset)
                 ->limit($limit);
             $command = $query->createCommand();
@@ -869,18 +875,26 @@ class PrPurchaseRequestController extends Controller
         if (Yii::$app->request->isPost) {
 
             $ppmp_id = $_POST['id'];
+            $office_id = !empty($_POST['office']) ? $_POST['office'] : '';
+            $division_id = !empty($_POST['division']) ? $_POST['division'] : '';
             $id_arr = explode('-', $ppmp_id);
             $id = $id_arr[0];
             $type = $id_arr[1];
             // return json_encode($id_arr);
             $params = [];
             $sql = '';
-            if (!empty($id_arr[2])) {
-                $sql .= ' AND ';
-                $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['=', 'supplemental_ppmp_non_cse_items.id', $id_arr[2]], $params);
-                // return $id_arr[2];
+            // if (!empty($id_arr[2])) {
+            //     $sql .= ' AND ';
+            //     $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['=', 'supplemental_ppmp_non_cse_items.id', $id_arr[2]], $params);
+            //     // return $id_arr[2];
+            // }
+            if (!Yii::$app->user->can('super-user')) {
+                $user_data = Yii::$app->memem->getUserData();
+                $office_id = $user_data->office->id;
+                $division_id = $user_data->divisionName->id;
             }
 
+            $res = [];
             if ($type === 'cse') {
                 $res = Yii::$app->db->createCommand("SELECT 
                 supplemental_ppmp_cse.id as item_id,
@@ -954,6 +968,40 @@ class PrPurchaseRequestController extends Controller
                 
                 ", $params)
                     ->bindValue(':id', $id)
+                    ->queryAll();
+            } else if ($type === 'fixed_expenses') {
+                $res = Yii::$app->db->createCommand("SELECT 
+                supplemental_ppmp_non_cse_items.id as item_id,
+                pr_stock.id as stock_id,
+                pr_stock.stock_title,
+                IFNULL(supplemental_ppmp_non_cse_items.amount,0) as unit_cost,
+                IFNULL(unit_of_measure.unit_of_measure,'') as unit_of_measure,
+                IFNULL(unit_of_measure.id,'') as unit_of_measure_id,
+                IFNULL(supplemental_ppmp_non_cse_items.amount,0) - IFNULL(item_in_pr_total.total_pr_amt,0) as bal_amt,
+               1 as bal_qty,
+                supplemental_ppmp_non_cse_items.description,
+                'non_cse_item_id' as cse_type
+                FROM
+                supplemental_ppmp_non_cse 
+                LEFT JOIN supplemental_ppmp_non_cse_items ON supplemental_ppmp_non_cse.id = supplemental_ppmp_non_cse_items.fk_supplemental_ppmp_non_cse_id
+                LEFT JOIN pr_stock ON supplemental_ppmp_non_cse_items.fk_pr_stock_id = pr_stock.id
+                LEFT JOIN unit_of_measure ON supplemental_ppmp_non_cse_items.fk_unit_of_measure_id  = unit_of_measure.id
+                LEFT JOIN supplemental_ppmp ON supplemental_ppmp_non_cse.fk_supplemental_ppmp_id = supplemental_ppmp.id
+                LEFT JOIN (SELECT 
+									pr_purchase_request_item.fk_ppmp_non_cse_item_id,
+									SUM(pr_purchase_request_item.quantity) as ttl_qty,
+									SUM(IFNULL(pr_purchase_request_item.unit_cost,0) * IFNULL(pr_purchase_request_item.quantity,0)) as total_pr_amt
+									FROM pr_purchase_request_item
+									WHERE 
+									pr_purchase_request_item.is_deleted =0
+
+									GROUP BY
+									pr_purchase_request_item.fk_ppmp_non_cse_item_id
+									 ) as item_in_pr_total ON supplemental_ppmp_non_cse_items.id = item_in_pr_total.fk_ppmp_non_cse_item_id
+                WHERE supplemental_ppmp_non_cse.type =  'fixed expenses'
+                AND supplemental_ppmp.fk_office_id = :office_id AND supplemental_ppmp.fk_division_id = :division_id")
+                    ->bindValue(':office_id', $office_id)
+                    ->bindValue(':division_id', $division_id)
                     ->queryAll();
             }
             return json_encode($res);
