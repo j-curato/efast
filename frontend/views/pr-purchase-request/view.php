@@ -11,42 +11,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Pr Purchase Requests', 'url' => ['
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 
-$office_division_unit_purpose = '';
 
-if (!empty($model->fk_supplemental_ppmp_noncse_id)) {
-    $office_division_unit_purpose = Yii::$app->db->createCommand("SELECT 
-    office.office_name,
-    divisions.division,
-    division_program_unit.`name` as division_program_unit,
-    supplemental_ppmp_non_cse.activity_name as purpose,
-    supplemental_ppmp.is_supplemental
-     FROM pr_purchase_request
-    INNER JOIN supplemental_ppmp_non_cse ON pr_purchase_request.fk_supplemental_ppmp_noncse_id = supplemental_ppmp_non_cse.id
-    LEFT JOIN supplemental_ppmp ON supplemental_ppmp_non_cse.fk_supplemental_ppmp_id = supplemental_ppmp.id
-    LEFT JOIN office ON supplemental_ppmp.fk_office_id = office.id
-    LEFT JOIN divisions ON supplemental_ppmp.fk_division_id = divisions.id
-    LEFT JOIN division_program_unit ON supplemental_ppmp.fk_division_program_unit_id = division_program_unit.id
-    WHERE pr_purchase_request.id = :id")
-        ->bindValue(':id', $model->id)
-        ->queryOne();
-} else if (!empty($model->fk_supplemental_ppmp_cse_id)) {
-    $office_division_unit_purpose = Yii::$app->db->createCommand("SELECT 
-    office.office_name,
-    divisions.division,
-    division_program_unit.`name` as division_program_unit,
-    pr_stock.stock_title as purpose,
-    supplemental_ppmp.is_supplemental
-     FROM pr_purchase_request
-    INNER JOIN supplemental_ppmp_cse ON pr_purchase_request.fk_supplemental_ppmp_cse_id = supplemental_ppmp_cse.id
-    LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = supplemental_ppmp.id
-    LEFT JOIN office ON supplemental_ppmp.fk_office_id = office.id
-    LEFT JOIN divisions ON supplemental_ppmp.fk_division_id = divisions.id
-    LEFT JOIN division_program_unit ON supplemental_ppmp.fk_division_program_unit_id = division_program_unit.id
-    LEFT JOIN pr_stock ON supplemental_ppmp_cse.fk_pr_stock_id = pr_stock.id
-    WHERE pr_purchase_request.id = :id")
-        ->bindValue(':id', $model->id)
-        ->queryOne();
-}
 
 ?>
 <div class="pr-purchase-request-view">
@@ -115,10 +80,10 @@ if (!empty($model->fk_supplemental_ppmp_noncse_id)) {
 
                             $office_name = !empty($office_division_unit_purpose['office_name']) ? strtoupper($office_division_unit_purpose['office_name']) : '';
                             $division = !empty($office_division_unit_purpose['division']) ? strtoupper($office_division_unit_purpose['division']) : '';
-                            $division_program_unit = !empty($office_division_unit_purpose['division_program_unit']) ? strtoupper($office_division_unit_purpose['division_program_unit']) : '';
+                            $division_program_unit = !empty($office_division_unit_purpose['division_program_unit']) ? '-' . strtoupper($office_division_unit_purpose['division_program_unit']) : '';
 
 
-                            echo $office_name . '-' . $division . '-' . $division_program_unit;
+                            echo $office_name . '-' . $division . $division_program_unit;
                             ?>
                         </span>
 
@@ -143,7 +108,7 @@ if (!empty($model->fk_supplemental_ppmp_noncse_id)) {
                 </tr>
                 <tr>
 
-                    <th class="center"><?= intval($office_division_unit_purpose['is_supplemental']) === 1 ? '*' : '' ?>
+                    <th class="center">
 
                         Stock/ Property No.</th>
                     <th class="center">Unit</th>
