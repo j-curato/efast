@@ -155,18 +155,19 @@ class SupplementalPpmpController extends Controller
     public function insertNonCseItems($id, $non_cse = [])
     {
 
-
-
-
-
         foreach ($non_cse as $noncse) {
-
-
-
             if (!empty($noncse['non_cse_id'])) {
                 $ppmp_non_cse = SupplementalPpmpNonCse::findOne($noncse['non_cse_id']);
-
-
+                $withPr = YIi::$app->db->createCommand("SELECT EXISTS (SELECT 
+                pr_purchase_request_item.id
+                FROM supplemental_ppmp_non_cse_items
+                LEFT JOIN pr_purchase_request_item ON supplemental_ppmp_non_cse_items.id = pr_purchase_request_item.fk_ppmp_non_cse_item_id
+                 WHERE supplemental_ppmp_non_cse_items.fk_supplemental_ppmp_non_cse_id =:id)")
+                    ->bindValue(':id', $ppmp_non_cse->id)
+                    ->queryScalar();
+                if (intval($withPr) === 1) {
+                    return "Cannot be edited because a purchase request has already been made for it.";
+                }
                 $update_non_cse_item_ids = array_column($noncse['items'], 'non_cse_item_id');
                 $params = [];
                 $sql = '';
