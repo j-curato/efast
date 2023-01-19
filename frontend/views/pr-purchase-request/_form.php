@@ -1162,9 +1162,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                 })
             }
         })
-        $("#pr_form").on('change', '#office_id, #division_id', () => {
-            $('#ppmp_id').val('').trigger('change')
-        })
+        // $("#pr_form").on('change', '#office_id, #division_id', () => {
+        //     $('#ppmp_id').val('').trigger('change')
+        // })
         $('#budget_year').change(() => {
             const budget_year = $('#budget_year').val()
             $('#form_fields_data tbody').html('')
