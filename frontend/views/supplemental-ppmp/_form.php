@@ -319,7 +319,7 @@ $cse_type_data = [
                     $mode_of_procurement_id = $non_cse[$min_key]['mode_of_procurement_id'];
                     $mode_of_procurement_name = $non_cse[$min_key]['mode_of_procurement_name'];
                     $early_procurement_disp = $early_procurement ? 'Yes' : 'No';
-                    $show_hide_act_name = $activity_name == 'activity' ? '' : 'display:none;';
+                    $show_hide_act_name = $type == 'activity' ? '' : 'display:none;';
                     echo "<tr>
                             <td >
                             <div class='panel panel-default'  style=' padding: 15px;' >
