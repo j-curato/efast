@@ -86,7 +86,12 @@ class SupplementalPpmpController extends Controller
         LEFT JOIN unit_of_measure ON supplemental_ppmp_non_cse_items.fk_unit_of_measure_id  = unit_of_measure.id
         LEFT JOIN pr_mode_of_procurement ON supplemental_ppmp_non_cse.fk_mode_of_procurement_id= pr_mode_of_procurement.id
         WHERE 
-        supplemental_ppmp.id = :id")
+        supplemental_ppmp.id = :id
+        AND 
+        supplemental_ppmp_non_cse.is_deleted = 0 
+        AND 
+supplemental_ppmp_non_cse_items.is_deleted = 0
+        ")
             ->bindValue(':id', $id)
             ->queryAll();
     }
