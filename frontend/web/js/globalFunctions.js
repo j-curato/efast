@@ -197,10 +197,9 @@ function stockSelect() {
       },
       processResults: function (data) {
         // Transforms the top-level key of the response object from 'items' to 'results'
-        console.log(data.pagination.more);
         return {
           results: data.results,
-          pagination: data.pagination,
+          // pagination: data.pagination,
         };
       },
     },
