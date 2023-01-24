@@ -16,25 +16,19 @@ $this->params['breadcrumbs'][] = ['label' => 'Sub Trial Balances', 'url' => ['in
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 ?>
 <div class="jev-preparation-index">
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-        <button id="export" type='button' class="btn-xs btn-success" style="margin:1rem;"><i class="glyphicon glyphicon-export"></i></button>
 
-    </p>
 
     <?php
     $fund = Yii::$app->db->createCommand("SELECT fund_cluster_code.id,fund_cluster_code.name FROM fund_cluster_code")->queryAll();
     $books = Yii::$app->db->createCommand("SELECT books.id,books.name FROM books")->queryAll();
     ?>
     <div class="container panel panel-default">
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
+            <button id="export" type='button' class="btn btn-success" style="margin:1rem;"><i class="glyphicon glyphicon-export"> </i> Export</button>
+
+        </p>
         <table id="data_table">
             <thead>
                 <tr class="header" style="border: none;">
@@ -246,6 +240,12 @@ $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' 
 
         .table {
             display: none;
+        }
+
+        @media print {
+            .btn {
+                display: none;
+            }
         }
     </style>
 
