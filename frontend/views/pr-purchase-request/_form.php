@@ -80,7 +80,6 @@ $user_data = Yii::$app->memem->getUserData();
 
 <div class="pr-purchase-request-form" style="padding:3rem">
 
-
     <div class="panel panel-body shadow p-3 mb-5 bg-white rounded">
         <div>
             <ul class="warning">
@@ -130,7 +129,7 @@ $user_data = Yii::$app->memem->getUserData();
                 echo DatePicker::widget([
                     'name' => 'budget_year',
                     'id' => 'budget_year',
-                    'value' => $model->budget_year,
+                    'value' => !empty($model->budget_year) ? $model->budget_year : date('Y'),
                     'pluginOptions' => [
                         'autoclose' => true,
                         'format' => 'yyyy',
@@ -155,7 +154,7 @@ $user_data = Yii::$app->memem->getUserData();
                     ]
                 ]) ?>
             </div>
-            <div class="col-sm-4">
+            <!-- <div class="col-sm-4">
                 <label for="ppmp_id">Project</label>
                 <?= Select2::widget([
                     'data' => $ppmp_item_data,
@@ -190,7 +189,7 @@ $user_data = Yii::$app->memem->getUserData();
                     ],
 
                 ]) ?>
-            </div>
+            </div> -->
 
 
 
@@ -296,63 +295,82 @@ $user_data = Yii::$app->memem->getUserData();
             <tbody>
 
                 <?php
-                $row_num = 1;
                 $specs_grnd_ttl = 0;
                 if (!empty($items)) {
-                    foreach ($items as $i => $val) {
 
-                        $item_id = $val['item_id'];
-                        $stock_id = $val['stock_id'];
-                        $stock_title = $val['stock_title'];
-                        $unit_of_measure_id = $val['unit_of_measure_id'];
-                        $unit_of_measure = $val['unit_of_measure'];
-                        $unit_cost = $val['unit_cost'];
-                        $quantity = $val['quantity'];
-                        $cse_type = $val['cse_type'];
-                        $ppmp_item_id = $val['ppmp_item_id'];
-                        $bal_amt = '';
-                        $specification  = preg_replace('#\<br\>#', "\n",  $val['specification']);
-                        $item_ttl = floatval($unit_cost) * intval($quantity);
-                        $specs_grnd_ttl += $item_ttl;
-                        echo "<tr class='' style='margin-top: 2rem;margin-bottom:2rem;'>
-                        <td style='max-width:100rem;'>
-                            <div class='panel panel-default' style=' padding: 15px;'>
+
+                    foreach ($items as $key => $item) {
+
+                        echo "<tr class='' style='margin-top: 1rem;margin-bottom:1rem;'>
+                    <td style='max-width:100rem;'>
+                        <div class='panel panel-default' style='border:1px solid black'>
+                            <div class='row' style='padding: 2rem;padding-left:4rem'>
+                                <div class='col-sm-6'>
+                                    <label for='ppmp'> Select PPMP</label>
+                                    <select required name='q' class='ppmp form-control' style='width: 100%'>
+                                    <option>{$key}</option>
+                                    </select>
+                                </div>
+                                <div class=' col-sm-offset-5 col-sm-1' style='padding-top:2rem'>
+                                    <a class='add_ppmp btn btn-success btn-xs ' title='Delete Row'><i class='fa fa-plus fa-fw'></i> </a>
+                                    <a class='remove_ppmp btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                                </div>
+                            </div>
+
+                            <ul class='itemList'>";
+                        foreach ($item as $specItem) {
+
+                            $stock_id = $specItem['stock_id'];
+                            $stock_title = $specItem['stock_title'];
+                            $unit_cost = $specItem['unit_cost'];
+                            $unit_of_measure = $specItem['unit_of_measure'];
+                            $unit_of_measure_id = $specItem['unit_of_measure_id'];
+                            $specification = $specItem['specification'];
+                            $item_id = $specItem['item_id'];
+                            $cse_type = $specItem['cse_type'];
+                            $quantity = $specItem['quantity'];
+                            $bac_code = $specItem['bac_code'];
+                            $ppmp_item_id = $specItem['ppmp_item_id'];
+                            $total_cost = $specItem['total_cost'];
+                            $itemTtl  = floatval($unit_cost) * intval($quantity);
+                            $specs_grnd_ttl += $itemTtl;
+                            echo "<li style='width:100%;padding-right: 4rem;'>
+                                <div class='panel panel-default' style=' padding: 15px;'>
                                 <div class='row'>
-                                     <input required type='hidden' name='pr_items[$row_number][item_id]' class='stock_input form-control' style='width: 100%' value='$item_id'>
                                     <div class=' col-sm-12'>
-                                        <a class='remove_this_row btn btn-danger btn-xs  pull-right' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                                        <a class='remove_ppmp_item btn btn-danger btn-xs  pull-right' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
                                     </div>
                                 </div>
                                 <div class='row'>
                                     <div class='col-sm-4'>
                                         <label for='stocks'>Stock</label>
+                                        <input required type='hidden' name='pr_items[$row_number]['item_id']' class=' form-control' style='width: 100%' value='$item_id'>
                                         <input required type='hidden' name='pr_items[$row_number][$cse_type]' class=' form-control' style='width: 100%' value='$ppmp_item_id'>
                                         <input required type='hidden' name='pr_items[$row_number][pr_stocks_id]' class='stock_input form-control' style='width: 100%' value='$stock_id'>
                                         <p>$stock_title</p>
-                                            
                                     </div>
                                     <div class='col-sm-1'>
                                         <label for='balance'>Balance Amount</label>
-                                        <p>$bal_amt</p>
+                                        <p></p>
                                     </div>
                                     <div class='col-sm-2'>
                                         <label for='unit_of_measure'>Unit of Measure</label>
                                         <select required name='pr_items[$row_number][unit_of_measure_id]' class='unit_of_measure form-control' style='width: 100%'>
-                                            <option value='$unit_of_measure_id'>$unit_of_measure</option>
+                                        <option value='$unit_of_measure_id'>$unit_of_measure</option>
                                         </select>
                                     </div>
                                     <div class='col-sm-2'>
                                         <label for='amount'>Unit Cost</label>
-                                        <input type='text' class='amount form-control' value='" . number_format($unit_cost, 2) . "' onkeyup='updateMainAmount(this)'>
+                                        <input type='text' class='amount form-control' value='$unit_cost' onkeyup='updateMainAmount(this)'>
                                         <input type='hidden' name='pr_items[$row_number][unit_cost]' class='unit_cost main-amount' value='$unit_cost'>
                                     </div>
                                     <div class='col-sm-1'>
                                         <label for='quantity'>Quantity</label>
-                                        <input type='number' name='pr_items[$row_number][quantity]' class='form-control quantity' value='$quantity' min='0'>
+                                        <input type='number' name='pr_items[$row_number][quantity]' class='form-control quantity' value='$quantity'  min='0'>
                                     </div>
                                     <div class='col-sm-2'>
                                         <label for='total'>Total</label>
-                                        <h5 class='item_total'>" . number_format($item_ttl, 2) . "</h5>
+                                        <h5 class='item_total'>$itemTtl</h5>
                                     </div>
                                 </div>
                                 <div class='row'>
@@ -362,132 +380,39 @@ $user_data = Yii::$app->memem->getUserData();
                                         <textarea name='pr_items[$row_number][specification]' class='main-specs' style='display:none'>$specification</textarea>
                                     </div>
                                 </div>
-
-                            </div>
-                        </td>
-                    </tr>";
-                        $row_number++;
-                    } ?>
-
-                    <!-- <tr class="" style="margin-top: 2rem;margin-bottom:2rem;">
-                    <td style="max-width:100rem;">
-
-                        <div class='panel panel-default' style=' padding: 15px;'>
-                            <div class="row">
-
-                                <div class=' col-sm-12'>
-                                    <a class='remove_this_row btn btn-danger btn-xs disabled pull-right' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-4">
-                                    <label for="stocks">Stock</label>
-                                    <select required name="pr_stocks_id[0]" class="stocks form-control" style="width: 100%">
-                                        <option></option>
-                                    </select>
-                                </div>
-                                <div class="col-sm-3">
-                                    <label for="unit_of_measure">Unit of Measure</label>
-                                    <select required name="unit_of_measure_id[0]" class="unit_of_measure form-control" style="width: 100%">
-                                        <option></option>
-                                    </select>
-                                </div>
+                                </li>";
+                            $row_number++;
+                        }
 
-
-
-
-                                <div class="col-sm-3">
-                                    <label for="amount">Unit Cost</label>
-                                    <input type="text" class="amount form-control">
-                                    <input type="hidden" name="unit_cost[0]" class="unit_cost">
-                                </div>
-
-                                <div class="col-sm-2">
-
-                                    <label for="quantity">Quantity</label>
-                                    <input type="number" name='quantity[0]' class="form-control quantity">
-
-                                </div>
-
-                            </div>
-
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <label for="specs_view">Specification</label>
-                                    <textarea rows="2" class="specs_view form-control" id="q"></textarea>
-                                    <input name="specification[0]" rows="2" class="specs" type='hidden'>
-                                    <textarea name='specification[0]' class='specs' type='hidden' style='display:none'></textarea>
-                                </div>
-                            </div>
-
+                        echo "</ul>
                         </div>
                     </td>
+                </tr>";
+                    }
+                } else {
 
-
-                </tr> -->
-
-                    <!-- <tr class="panel  panel-default" style="margin-top: 2rem;margin-bottom:2rem;">
-                            <td style="max-width:100rem;">
-
-                                <div class="row">
-                                    <div class="col-sm-4">
-                                        <label for="stocks">Stock</label>
-                                        <select required name="pr_stocks_id[0]" class="stocks form-control" style="width: 100%">
-                                            <option></option>
-                                        </select>
+                ?>
+                    <tr class='' style='margin-top: 1rem;margin-bottom:1rem;'>
+                        <td style='max-width:100rem;'>
+                            <div class='panel panel-default' style='border:1px solid black'>
+                                <div class='row' style="padding: 2rem;padding-left:4rem">
+                                    <div class="col-sm-6">
+                                        <label for="ppmp"> Select PPMP</label>
+                                        <select required name='q' class='ppmp form-control' style='width: 100%'></select>
                                     </div>
-                                    <div class="col-sm-3">
-                                        <label for="unit_of_measure">Unit of Measure</label>
-                                        <select required name="unit_of_measure_id[0]" class="unit_of_measure form-control" style="width: 100%">
-                                            <option></option>
-                                        </select>
-                                    </div>
-
-
-
-
-                                    <div class="col-sm-3">
-                                        <label for="amount">Unit Cost</label>
-                                        <input type="text" class="amount form-control">
-                                        <input type="hidden" name="unit_cost[0]" class="unit_cost">
-                                    </div>
-
-                                    <div class="col-sm-2">
-
-                                        <label for="quantity">Quantity</label>
-                                        <input type="number" name='quantity[0]' class="form-control quantity">
-
-                                    </div>
-
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <label for="specs_view">Specification</label>
-                                        <textarea rows="2" class="specs_view form-control" id="q"></textarea>
-                                        <input name="specification[0]" rows="2" class="specs" type='hidden'>
-                                        <textarea name='specification[0]' class='specs' type='hidden' style='display:none'></textarea>
+                                    <div class=' col-sm-offset-5 col-sm-1' style='padding-top:2rem'>
+                                        <a class='add_ppmp btn btn-success btn-xs ' title='Delete Row'><i class='fa fa-plus fa-fw'></i> </a>
+                                        <a class='remove_ppmp btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
                                     </div>
                                 </div>
-                            </td>
-                            <td style='  text-align: center;'>
-                                <div class='pull-right'>
-                                    <button class='add_new_row btn btn-primary btn-xs'><i class='fa fa-plus fa-fw'></i> </button>
-                                    <a class='remove_this_row btn btn-danger btn-xs disabled' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
-                                </div>
-                            </td>
 
+                                <ul class="itemList"></ul>
+                            </div>
 
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <hr>
-                            </td>
-                        </tr> -->
-
-
+                        </td>
+                    </tr>
                 <?php } ?>
-
             </tbody>
             <tfoot>
 
@@ -802,6 +727,10 @@ $user_data = Yii::$app->memem->getUserData();
         color: red;
         font-size: 10px;
     }
+
+    ul {
+        list-style-type: none;
+    }
 </style>
 <?php
 
@@ -888,30 +817,84 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
         allotment_row_num++
     }
 
-    var unit_of_measure = []
-    $(document).ready(function() {
-        $('#form_fields_data').on('keyup change', '.quantity, .amount', () => {
+    function PpmpSelect() {
+        $(".ppmp").select2({
+            allowClear: true,
+            ajax: {
+                url: window.location.pathname + "?r=pr-purchase-request/search-ppmp",
+                dataType: "json",
+                data: function(params) {
+                    return {
+                        q: params.term,
+                        page: params.page || 1,
+                        budget_year: $("#budget_year").val(),
+                        office_id: $("#office_id").val(),
+                        division_id: $("#division_id").val(),
+                    };
+                },
+                processResults: function(data, params) {
+                    params.page = params.page || 1;
+                    // Transforms the top-level key of the response object from 'items' to 'results'
+                    return {
+                        results: data.results,
+                        pagination: data.pagination
+                    };
+                },
+            },
+            // placeholder: "Search for a Payee",
+        }).on('change', function(e) {
+            var data = $(".select2 option:selected").text();
 
-            let specs_total = 0
+            const id = $(this).val()
+            const office = $('#office_id').val()
+            const division = $('#division_id').val()
+            // $(this).closest('tr').find('.itemList').html('');
+            // $(this).closest('tr').find('.itemList').append('<li><a href="#">New list item</a></li>');
+            const itemList = $(this).closest('tr').find('.itemList')
+            if (id != '') {
+                $.ajax({
 
-            $(this).closest('tr').find('.item_total').text('qwe')
-            $(".quantity").each(function(key, val) {
-                const unit_cost = $(val).closest('tr').find('.main-amount').val()
-                const qty = $(val).val()
-                let res = parseFloat(unit_cost) * parseInt(qty)
-                specs_total += res
-                $(val).closest('tr').find('.item_total').text(thousands_separators(res))
-            })
-            if (isNaN(specs_total)) {
-                console.log('true')
-                specs_total = 0
+                    type: 'POST',
+                    url: window.location.pathname + "?r=pr-purchase-request/get-ppmp-items",
+                    data: {
+                        id: id,
+                        office: office,
+                        division: division
+                    },
+                    success: function(data) {
+                        const result = JSON.parse(data)
+                        console.log(result)
+                        displayPpmpItems(result, itemList)
+
+                    }
+                })
             }
-            console.log(specs_total)
-            $('.specs_grand_total').text(thousands_separators(specs_total))
+        });;
+    }
 
-            // console.log(specs_total)
-            // console.log(isNaN(specs_total))
-            // console.log($(this).val())
+    function GetSpecificationsTotal() {
+        let specs_total = 0
+
+        $(".quantity").each(function(key, val) {
+            const unit_cost = $(val).closest('li').find('.main-amount').val()
+            const qty = $(val).val()
+            let res = parseFloat(unit_cost) * parseInt(qty)
+            specs_total += res
+            $(val).closest('li').find('.item_total').text(thousands_separators(res))
+        })
+        if (isNaN(specs_total)) {
+            console.log('true')
+            specs_total = 0
+        }
+        $('.specs_grand_total').text(thousands_separators(specs_total))
+    }
+    let unit_of_measure = []
+    $(document).ready(function() {
+        maskAmount()
+        PpmpSelect()
+        $('#form_fields_data').on('keyup change', '.quantity, .amount', () => {
+            GetSpecificationsTotal()
+
         })
         $('#allotment_table').on('change keyup', '.amount  ', function(e) {
             let specs_total = 0
@@ -925,11 +908,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             $('.allotment_total').text(thousands_separators(specs_total))
         })
 
-        var x = <?= $row_num ?>;
-        maskAmount()
         $.getJSON(window.location.pathname + '/frontend/web/index.php?r=unit-of-measure/get-all-measure')
             .then(function(data) {
-
                 var array = []
                 $.each(data, function(key, val) {
                     array.push({
@@ -941,21 +921,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                 unitOfMeasureSelect()
 
             });
-        stockSelect()
-
-        // function addNewLine() {
-        //     var text = document.getElementById('q').value;
-        //     text = text.replace(/\n/g, "[n]");
-        //     console.log(text)
-        // }
-        // $('.specs_view').on('change', function(e) {
-        //     e.preventDefault()
-        //     var specs = $(this).val()
-        //     var main_specs = $(this).closest('tr');
-        //     specs = specs.replace(/\n/g, "[n]");
-        //     specs = specs.replace(/"/g, '\'');
-        //     main_specs.children('td').eq(0).find('.specs').val(specs)
-        // })
 
         $('.amount').on('change keyup', function(e) {
             e.preventDefault()
@@ -964,92 +929,45 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             source.children('td').eq(0).find('.unit_cost').val(amount)
 
         })
-        // $('.stocks').on('change', function(e) {
-        //     var source = $(this).closest('tr');
-        //     $.ajax({
-        //         type: 'POST',
-        //         url: window.location.pathname + '?r=pr-stock/stock-info',
-        //         data: {
-        //             id: $(this).val()
-        //         },
-        //         success: function(data) {
-        //             var res = JSON.parse(data)
-        //             source.children('td').eq(0).find('.amount').val(res.amount).trigger('change')
-        //             source.children('td').eq(0).find('.unit_of_measure').val(res.unit_of_measure_id).trigger('change')
-        //         }
-        //     })
-
-
-        // })
-        stockSelect()
-        $('#form_fields_data').on('click', '.remove_this_row', function(event) {
+        // remove ppmp
+        $('#form_fields_data').on('click', '.remove_ppmp', function(event) {
             event.preventDefault();
-            // $(this).closest('tr').next().remove();
             $(this).closest('tr').remove();
         });
-        // $('.add_new_row').on('click', function(event) {
-        //     event.preventDefault();
-        //     $('.stocks').select2('destroy');
-        //     $('.unit_of_measure').select2('destroy');
-        //     $('.unit_cost').maskMoney('destroy');
-        //     var source = $(this).closest('tr');
-        //     var clone = source.clone(true);
-        //     clone.children('td').eq(0).find('.desc').text('')
-        //     clone.children('td').eq(0).find('.quantity').val(0)
-        //     clone.children('td').eq(0).find('.quantity').attr('name', 'quantity[' + x + ']')
-        //     clone.children('td').eq(0).find('.unit_of_measure').val('')
-        //     clone.children('td').eq(0).find('.unit_of_measure').attr('name', 'unit_of_measure_id[' + x + ']')
-        //     clone.children('td').eq(0).find('.pr_item_id').val('')
-        //     clone.children('td').eq(0).find('.pr_item_id').attr('name', 'pr_item_id[' + x + ']')
-        //     clone.children('td').eq(0).find('.stocks').val('')
-        //     clone.children('td').eq(0).find('.stocks').attr('name', 'pr_stocks_id[' + x + ']')
-        //     clone.children('td').eq(0).find('.unit_cost').val(0)
-        //     clone.children('td').eq(0).find('.unit_cost').attr('name', 'unit_cost[' + x + ']')
-        //     clone.children('td').eq(0).find('.amount').val(0)
-        //     clone.children('td').eq(0).find('.specs').val(null)
-        //     clone.children('td').eq(0).find('.specs_view').val(null)
-        //     clone.children('td').eq(0).find('.specs').attr('name', 'specification[' + x + ']');
+        $('#form_fields_data').on('click', '.remove_ppmp_item', function(event) {
+            event.preventDefault();
+            $(this).closest('li').remove();
+        });
+        // ADD PPMP
+        $('#form_fields_data').on('click', '.add_ppmp', function(event) {
+            event.preventDefault();
+            const addRow = `<tr class='' style='margin-top: 1rem;margin-bottom:1rem;'>
+                    <td style='max-width:100rem;'>
+                        <div class='panel panel-default' style='border:1px solid black'>
+                            <div class='row' style="padding: 2rem;padding-left:4rem">
+                                <div class="col-sm-6">
+                                    <label for="ppmp"> Select PPMP</label>
+                                    <select required name='q' class='ppmp form-control' style='width: 100%'></select>
+                                </div>
+                                <div class=' col-sm-offset-5 col-sm-1'  style='padding-top:2rem'>
+                                    <a class='add_ppmp btn btn-success btn-xs ' title='Delete Row'><i class='fa fa-plus fa-fw'></i> </a>
+                                    <a class='remove_ppmp btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                                </div>
+                            </div>
 
-        //     // clone.children('td').eq(0).find('.specification').val('')
-        //     $('#form_fields_data').append(clone);
-        //     var spacer = `<tr>
-        //                 <td colspan="2">
-        //                     <hr>
-        //                 </td>
-        //             </tr>`
-        //     $('#form_fields_data').append(spacer);
-        //     clone.find('.remove_this_row').removeClass('disabled');
-        //     stockSelect()
-        //     maskAmount()
-        //     unitOfMeasureSelect()
-        //     x++
+                            <ul class="itemList"></ul>
+                        </div>
 
+                    </td>
+                </tr>`;
+            $('#form_fields_data tbody').append(addRow)
+            PpmpSelect()
 
-        // });
+        });
         $('.specs_remove_this_row').on('click', function(event) {
             event.preventDefault();
             $(this).closest('tr').remove();
         });
-        // $('.specs_add_new_row').on('click', function(event) {
-        //     event.preventDefault();
-        //     var source = $(this).closest('tr');
-        //     var clone = source.clone(true);
-
-        //     $(this).closest('.specs-table').append(clone);
-        //     clone.find('.specs_remove_this_row').removeClass('disabled');
-        // });
-
-        // $('.specs').on('change', function(event) {
-        //     event.preventDefault();
-        //     var source = $(this).closest('.form_fields_data > tr ');
-        //     var new_val = source.children('td').eq(0).find('.unit_cost').val() + '|' + $(this).val()
-        // });
-        // $('#form_fields_data').on('change onkeyup', '.specs_view', () => {
-        //     console.log($(this).closest('tr'))
-        //     $(this).closest('tr').find('specs').val('qweqwe')
-        // })
-
-        // $('.stocks').val(1).trigger('change')
 
 
 
@@ -1162,22 +1080,12 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                 })
             }
         })
-        // $("#pr_form").on('change', '#office_id, #division_id', () => {
-        //     $('#ppmp_id').val('').trigger('change')
-        // })
-        $('#budget_year').change(() => {
-            const budget_year = $('#budget_year').val()
-            $('#form_fields_data tbody').html('')
-            $('#ppmp_id').val('').trigger('change')
 
-            $('input[name^="PrAllotmentViewSearch[budget_year]"]').val(budget_year).trigger('change')
-
-        })
 
     });
 
-    function displayPpmpItems(data) {
-        $('#form_fields_data tbody').html('')
+    function displayPpmpItems(data, itemList) {
+        itemList.html('')
         $.each(data, (key, val) => {
             const bal_amt = thousands_separators(val.bal_amt)
             const bal_qty = val.bal_qty
@@ -1187,64 +1095,58 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             const unit_of_measure = val.unit_of_measure
             const unit_of_measure_id = val.unit_of_measure_id
             const specification = val.description
+
             let item_id = val.item_id
             let cse_type = val.cse_type
-
-
-
-            let row = `<tr class="" style="margin-top: 2rem;margin-bottom:2rem;">
-                    <td style="max-width:100rem;">
-
-                        <div class='panel panel-default' style=' padding: 15px;'>
-                            <div class="row">
-                                <div class=' col-sm-12'>
-                                    <a class='remove_this_row btn btn-danger btn-xs  pull-right' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
-                                </div>
+            let row = `
+                <li style="width:100%;padding-right: 4rem;">
+                     <div class='panel panel-default' style=' padding: 15px;'>
+                        <div class="row">
+                            <div class=' col-sm-12'>
+                                <a class='remove_ppmp_item btn btn-danger btn-xs  pull-right' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
                             </div>
-                            <div class="row">
-                                <div class="col-sm-4">
-                                    <label for="stocks">Stock</label>
-                                    <input required type='hidden' name="pr_items[${row_number}][${cse_type}]" class=" form-control" style="width: 100%" value='${item_id}'>
-                                    <input required type='hidden' name="pr_items[${row_number}][pr_stocks_id]" class="stock_input form-control" style="width: 100%" value='${stock_id}'>
-                                    <p>${stock_title}</p>
-                                        
-                                </div>
-                                <div class="col-sm-1">
-                                    <label for="balance">Balance Amount</label>
-                                    <p>${bal_amt}</p>
-                                </div>
-                                <div class="col-sm-2">
-                                    <label for="unit_of_measure">Unit of Measure</label>
-                                    <select required name="pr_items[${row_number}][unit_of_measure_id]" class="unit_of_measure form-control" style="width: 100%">
-                                        <option value='${unit_of_measure_id}'>${unit_of_measure}</option>
-                                    </select>
-                                </div>
-                                <div class="col-sm-2">
-                                    <label for="amount">Unit Cost</label>
-                                    <input type="text" class="amount form-control" value='${unit_cost}' onkeyup='updateMainAmount(this)'>
-                                    <input type="hidden" name="pr_items[${row_number}][unit_cost]" class="unit_cost main-amount" value='${unit_cost}'>
-                                </div>
-                                <div class="col-sm-1">
-                                    <label for="quantity">Quantity</label>
-                                    <input type="number" name='pr_items[${row_number}][quantity]' class="form-control quantity" value='${bal_qty}'  min='0'>
-                                </div>
-                                 <div class='col-sm-2'>
-                                        <label for='total'>Total</label>
-                                        <h5 class='item_total'></h5>
-                                    </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <label for='specs_view'>Specification</label>
-                                    <textarea rows='2' class='specs_view form-control' onkeyup='updateMainSpecs(this)'>${specification}</textarea>
-                                    <textarea name='pr_items[${row_number}][specification]' class='main-specs' style='display:none'>${specification}</textarea>
-                                </div>
-                            </div>
-
                         </div>
-                    </td>
-                </tr>`;
-            $("#form_fields_data tbody").append(row)
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label for="stocks">Stock</label>
+                                <input required type='hidden' name="pr_items[${row_number}][${cse_type}]" class=" form-control" style="width: 100%" value='${item_id}'>
+                                <input required type='hidden' name="pr_items[${row_number}][pr_stocks_id]" class="stock_input form-control" style="width: 100%" value='${stock_id}'>
+                                <p>${stock_title}</p>
+                            </div>
+                            <div class="col-sm-1">
+                                <label for="balance">Balance Amount</label>
+                                <p>${bal_amt}</p>
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="unit_of_measure">Unit of Measure</label>
+                                <select required name="pr_items[${row_number}][unit_of_measure_id]" class="unit_of_measure form-control" style="width: 100%">
+                                <option value='${unit_of_measure_id}'>${unit_of_measure}</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="amount">Unit Cost</label>
+                                <input type="text" class="amount form-control" value='${unit_cost}' onkeyup='updateMainAmount(this)'>
+                                <input type="hidden" name="pr_items[${row_number}][unit_cost]" class="unit_cost main-amount" value='${unit_cost}'>
+                            </div>
+                            <div class="col-sm-1">
+                                <label for="quantity">Quantity</label>
+                                <input type="number" name='pr_items[${row_number}][quantity]' class="form-control quantity" value='${bal_qty}'  min='0'>
+                            </div>
+                            <div class='col-sm-2'>
+                                <label for='total'>Total</label>
+                                <h5 class='item_total'></h5>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label for='specs_view'>Specification</label>
+                                <textarea rows='2' class='specs_view form-control' onkeyup='updateMainSpecs(this)'>${specification}</textarea>
+                                <textarea name='pr_items[${row_number}][specification]' class='main-specs' style='display:none'>${specification}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </li>`;
+            itemList.append(row)
             row_number++
             unitOfMeasureSelect()
             maskAmount()

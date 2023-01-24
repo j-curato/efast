@@ -64,6 +64,7 @@ class SupplementalPpmp extends \yii\db\ActiveRecord
             [['serial_number', 'cse_type'], 'string', 'max' => 255],
             [['serial_number'], 'unique'],
             [['id'], 'unique'],
+            [['is_supplemental'], 'default', 'value' => 1],
         ];
     }
 

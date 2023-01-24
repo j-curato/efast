@@ -205,7 +205,7 @@ $this->params['breadcrumbs'][] = $this->title;
     $cols =  [
         // ['class' => 'yii\grid\SerialColumn'],
 
-        'id',
+        // 'id',
         // 'process_ors_id',
         // 'raoud_id',
         'dv_number',
@@ -269,10 +269,12 @@ $this->params['breadcrumbs'][] = $this->title;
             'position' => 'absolute',
         ],
         'toolbar' => [
+
+
             [
                 'content' => ExportMenu::widget([
-                    'dataProvider' => $dataProvider,
-                    'columns' => $cols,
+                    'dataProvider' => $exportDataProvider,
+                    'columns' => $exportColumns,
                     'filename' => "DV",
                     'exportConfig' => [
                         ExportMenu::FORMAT_CSV => false,

@@ -12,6 +12,8 @@ use Yii;
  */
 class PrAllotmentViewSearch extends PrAllotmentView
 {
+    public $module = '';
+    public $bookFilter = '';
     /**
      * {@inheritdoc}
      */
@@ -28,7 +30,9 @@ class PrAllotmentViewSearch extends PrAllotmentView
                     'account_title',
                     'amount',
                     'balance',
-
+                    'book_name',
+                    'type',
+                    'bookFilter',
                 ], 'safe'
             ],
         ];
@@ -61,6 +65,7 @@ class PrAllotmentViewSearch extends PrAllotmentView
 
 
 
+
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
@@ -87,7 +92,16 @@ class PrAllotmentViewSearch extends PrAllotmentView
             ->andFilterWhere(['like', 'fund_source_name', $this->fund_source_name])
             ->andFilterWhere(['like', 'account_title', $this->account_title])
             ->andFilterWhere(['like', 'amount', $this->amount])
+            ->andFilterWhere(['like', 'book_name', $this->book_name])
             ->andFilterWhere(['like', 'balance', $this->balance]);
+
+        if ($this->module === 'transaction') {
+            $query->andWhere(['=', 'book_name', $this->bookFilter]);
+        }
+
+        // echo $this->bookFilter;
+        // echo $query->createCommand()->getRawSql();
+        // die();
 
         return $dataProvider;
     }

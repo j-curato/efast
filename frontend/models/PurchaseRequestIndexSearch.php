@@ -12,6 +12,13 @@ use Yii;
  */
 class PurchaseRequestIndexSearch extends PurchaseRequestIndex
 {
+    public $bookFilter = '';
+    public $module = '';
+
+    // ...
+    // other attributes
+
+
     /**
      * {@inheritdoc}
      */
@@ -30,6 +37,7 @@ class PurchaseRequestIndexSearch extends PurchaseRequestIndex
                 'book_name',
                 'purpose',
                 'date',
+                'bookFilter',
             ], 'safe'],
         ];
     }
@@ -91,6 +99,11 @@ class PurchaseRequestIndexSearch extends PurchaseRequestIndex
             ->andFilterWhere(['like', 'purpose', $this->purpose])
             ->andFilterWhere(['like', 'date', $this->date]);
 
+        if (!empty($this->module === 'transaction')) {
+            $query->andWhere(['=', 'book_name', $this->bookFilter]);
+        }
+        // echo $query->createCommand()->getRawSql();
+        // die();
         return $dataProvider;
     }
 }

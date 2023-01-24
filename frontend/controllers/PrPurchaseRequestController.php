@@ -17,6 +17,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 
 /**
  * PrPurchaseRequestController implements the CRUD actions for PrPurchaseRequest model.
@@ -80,74 +81,24 @@ class PrPurchaseRequestController extends Controller
             ],
         ];
     }
-    public function getPrItems($id)
+    private function getPrItems($id)
     {
-        return YIi::$app->db->createCommand("  SELECT  (CASE 
-        WHEN pr_purchase_request_item.fk_ppmp_cse_item_id IS NOT NULL THEN 'cse_item_id'
-        WHEN     pr_purchase_request_item.fk_ppmp_non_cse_item_id IS NOT NULL THEN 'non_cse_item_id'
-        END
-        )    as cse_type,
-        (CASE 
-        WHEN pr_purchase_request_item.fk_ppmp_cse_item_id IS NOT NULL THEN pr_purchase_request_item.fk_ppmp_cse_item_id 
-        WHEN     pr_purchase_request_item.fk_ppmp_non_cse_item_id IS NOT NULL THEN  pr_purchase_request_item.fk_ppmp_non_cse_item_id 
-        END
-        )    as  ppmp_item_id,
-        pr_purchase_request_item.id as item_id,
-        pr_stock.id as stock_id,
-        pr_stock.stock_title,
-        unit_of_measure.id as unit_of_measure_id,
-        unit_of_measure.unit_of_measure,
-        pr_purchase_request_item.unit_cost,
-        pr_purchase_request_item.quantity,
-        pr_stock.bac_code,
-        pr_purchase_request_item.unit_cost * pr_purchase_request_item.quantity as total_cost,
-        IFNULL(REPLACE( pr_purchase_request_item.specification, '[n]', '<br>'),'') as specification,
-supplemental_ppmp.is_supplemental
-        FROM `pr_purchase_request_item`
-        LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
-        LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
-LEFT JOIN supplemental_ppmp_non_cse_items ON pr_purchase_request_item.fk_ppmp_non_cse_item_id = supplemental_ppmp_non_cse_items.id
-LEFT JOIN supplemental_ppmp_cse ON pr_purchase_request_item.fk_ppmp_cse_item_id = supplemental_ppmp_cse.id
-LEFT JOIN supplemental_ppmp_non_cse ON supplemental_ppmp_non_cse_items.fk_supplemental_ppmp_non_cse_id = supplemental_ppmp_non_cse.id
-LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = supplemental_ppmp_cse.id OR supplemental_ppmp_non_cse.fk_supplemental_ppmp_id = supplemental_ppmp.id
-
-       
-            WHERE 
-            pr_purchase_request_item.pr_purchase_request_id = :id
-        AND
-            pr_purchase_request_item.is_deleted =0")
+        return Yii::$app->db->createCommand("CALL GetPrItems(:id)")
             ->bindValue(':id', $id)
             ->queryAll();
     }
     public function getPrAllotments($id)
     {
-        return Yii::$app->db->createCommand("SELECT 
-         pr_allotment_view.allotment_entry_id,
-        pr_purchase_request_allotments.id as pr_allotment_item_id,
-        pr_allotment_view.mfo_name,
-        pr_allotment_view.fund_source_name,
-        pr_allotment_view.account_title,
-        pr_allotment_view.amount,
-        pr_allotment_view.balance,
-        pr_purchase_request_allotments.amount as gross_amount,
-        UPPER(pr_allotment_view.office_name) as office_name,
-        UPPER(pr_allotment_view.division) as division
-        FROM pr_purchase_request_allotments
-        LEFT JOIN  pr_allotment_view ON pr_purchase_request_allotments.fk_record_allotment_entries_id = pr_allotment_view.allotment_entry_id
-        WHERE pr_purchase_request_allotments.is_deleted = 0
-        AND pr_purchase_request_allotments.fk_purchase_request_id = :id ")
+        return Yii::$app->db->createCommand("CALL GetPrAllotments(:id)")
             ->bindValue(':id', $id)
             ->queryAll();
     }
     public function validatePpmp(
-        $cse_or_non_cse_id,
         $cse_type,
         $amount = 0,
         $qty = 0,
-        $stock_id = '',
-        $item_id = '',
-        $cse_item_id = '',
-        $non_cse_item_id = ''
+        $ppmp_item_id = '',
+        $item_id = ''
     ) {
 
         $params = [];
@@ -155,7 +106,6 @@ LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = s
 
         if (!empty($item_id)) {
             $sql = 'AND ';
-
             $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['!=', 'pr_purchase_request_item.id', $item_id], $params);
         }
         if ($cse_type === 'cse') {
@@ -191,7 +141,7 @@ LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = s
             $sql
             GROUP BY pr_purchase_request.fk_supplemental_ppmp_cse_id ) as ppmp_in_pr ON supplemental_ppmp_cse.id = ppmp_in_pr.fk_supplemental_ppmp_cse_id
              WHERE supplemental_ppmp_cse.id = :cse_or_non_cse_id", $params)
-                ->bindValue(':cse_or_non_cse_id', $cse_or_non_cse_id)
+                ->bindValue(':cse_or_non_cse_id', $ppmp_item_id)
                 ->queryOne();
             $bal_amt = floatval($query['bal_amt']);
             $bal_qty = floatval($query['bal_qty']);
@@ -206,14 +156,12 @@ LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = s
         } else if ($cse_type === 'non_cse' || $cse_type === 'fixed_expenses') {
             try {
                 $query  = YIi::$app->db->createCommand("SELECT 
-
                 IFNULL(supplemental_ppmp_non_cse_items.amount,0) - IFNULL(item_in_pr_total.total_pr_amt,0) as bal_amt
                 FROM
                 supplemental_ppmp_non_cse_items 
                 LEFT JOIN pr_stock ON supplemental_ppmp_non_cse_items.fk_pr_stock_id = pr_stock.id
                 LEFT JOIN unit_of_measure ON pr_stock.unit_of_measure_id  = unit_of_measure.id
                 LEFT JOIN (SELECT 
-                
                 pr_purchase_request_item.fk_ppmp_non_cse_item_id,
                 SUM(pr_purchase_request_item.unit_cost * pr_purchase_request_item.quantity) as total_pr_amt
                 FROM pr_purchase_request_item
@@ -225,15 +173,12 @@ LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = s
                 ) as item_in_pr_total ON supplemental_ppmp_non_cse_items.id = item_in_pr_total.fk_ppmp_non_cse_item_id
                  WHERE supplemental_ppmp_non_cse_items.id = :non_cse_item_id
                     ", $params)
-                    ->bindValue(':non_cse_item_id', $non_cse_item_id)
+                    ->bindValue(':non_cse_item_id', $ppmp_item_id)
                     ->queryOne();
-                // echo json_encode($query->getRawSql());
-                // die();
                 $bal_amt = floatval($query['bal_amt']);
 
                 $bal = $bal_amt - ($amount * $qty);
-                // $bal_amt = 0;
-                // $bal = 0;
+
                 if ($bal < 0) {
                     return  "Amount Cannot be more than " . number_format($bal_amt, 2);
                 }
@@ -289,7 +234,11 @@ LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = s
             $ttl = intval($item['quantity']) * floatval($item['unit_cost']);
             $pr_grnd_ttl = $pr_grnd_ttl + floatval($ttl);
         }
-        if ($pr_allotment_grnd_ttl !== floatval($pr_grnd_ttl)) {
+        // echo var_dump(floatval($pr_allotment_grnd_ttl) !== floatval($pr_grnd_ttl)) . '<br>';
+        // echo $pr_allotment_grnd_ttl . '<br>';
+        // echo  floatval($pr_grnd_ttl);
+        // die();
+        if (floatval($pr_allotment_grnd_ttl) !== floatval($pr_grnd_ttl)) {
             return false;
         }
 
@@ -382,53 +331,54 @@ LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = s
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function insertPrItems($model_id, $items = [], $cse_or_non_cse_id = '', $cse_type = '')
+    public function insertPrItems($model_id, $items = [], $isUpdate = false)
     {
         if (empty($items)) {
             return 'PR Cannot be Empty';
         }
-        if (empty($cse_or_non_cse_id)) {
-            return 'cse_or_non_cse_id Cannot be Empty';
-        }
-        if (empty($cse_type)) {
-            return 'cse_type Cannot be Empty';
-        }
 
         $c = 1;
-        $params = [];
-        $item_ids = array_column($items, 'item_id');
-        $sql = '';
-        if (!empty($item_ids)) {
-            $sql = 'AND ';
-            $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $item_ids], $params);
+        if ($isUpdate) {
+            $params = [];
+            $item_ids = array_column($items, 'item_id');
+            $sql = '';
+            if (!empty($item_ids)) {
+                $sql = 'AND ';
+                $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $item_ids], $params);
+            }
+            Yii::$app->db->createCommand("UPDATE pr_purchase_request_item SET is_deleted = 1 WHERE 
+                     pr_purchase_request_item.pr_purchase_request_id = :id  $sql", $params)
+                ->bindValue(':id', $model_id)
+                ->execute();
         }
-        Yii::$app->db->createCommand("UPDATE pr_purchase_request_item SET is_deleted = 1 WHERE 
-             pr_purchase_request_item.pr_purchase_request_id = :id  $sql", $params)
-            ->bindValue(':id', $model_id)
-            ->execute();
+        $cseType = '';
+        $cse_or_non_cse_id = '';
         foreach ($items as $i => $item) {
-            // echo json_encode($item);
-            // die();
+
             if (empty($item['quantity'])) {
                 return 'Quantity Cannot be blank in item ' . $c;
             }
             if (empty($item['unit_cost'])) {
                 return 'Unit Cost Cannot be blank in item ' . $c;
             }
+            if (!empty($item['cse_item_id'])) {
+                $cseType = 'cse';
+                $cse_or_non_cse_id = $item['cse_item_id'];
+            }
+            if (!empty($item['non_cse_item_id'])) {
+                $cseType = 'non_cse';
+                $cse_or_non_cse_id = $item['non_cse_item_id'];
+            }
+
             try {
                 $validate =  $this->validatePpmp(
 
-                    $cse_or_non_cse_id,
-                    $cse_type,
+                    $cseType,
                     $item['unit_cost'],
                     $item['quantity'],
-                    $item['pr_stocks_id'],
+                    $cse_or_non_cse_id,
                     !empty($item['item_id']) ? $item['item_id'] : '',
-                    !empty($item['cse_item_id']) ? $item['cse_item_id'] : '',
-                    !empty($item['non_cse_item_id']) ? $item['non_cse_item_id'] : ''
                 );
-
-
                 if ($validate !== true) {
                     return $validate . ' in item ' . $c;
                     die();
@@ -440,7 +390,6 @@ LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = s
                     $q->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
                 }
                 $q->pr_purchase_request_id = $model_id;
-
                 $q->pr_stock_id =   $item['pr_stocks_id'];
                 $q->quantity =   $item['quantity'];
                 $q->unit_cost =   $item['unit_cost'];
@@ -453,17 +402,14 @@ LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = s
                 if (!empty($item['non_cse_item_id'])) {
                     $q->fk_ppmp_non_cse_item_id = $item['non_cse_item_id'];
                 }
-                if ($q->validate()) {
-                    if ($q->save(false)) {
-                    } else {
-                    }
-                } else {
-
+                if (!$q->validate()) {
                     return $q->errors;
                 }
+                if (!$q->save(false)) {
+                    return 'PR items Save error';
+                }
             } catch (ErrorException $e) {
-                echo json_encode($e->getMessage());
-                die();
+                return $e->getMessage();
             }
             $c++;
         }
@@ -544,7 +490,7 @@ LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = s
                 $office_id = $user_data->office->id;
                 $division_id = $user_data->divisionName->id;
             }
-            $ppmp_id = !empty($_POST['ppmp_id']) ? $_POST['ppmp_id'] : '';
+            // $ppmp_id = !empty($_POST['ppmp_id']) ? $_POST['ppmp_id'] : '';
 
             $book_id = !empty($_POST['book_id']) ? $_POST['book_id'] : '';
             $purpose = !empty($_POST['purpose']) ? $_POST['purpose'] : '';
@@ -568,22 +514,22 @@ LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = s
             $model->fk_office_id = $office_id;
             $model->fk_division_id = $division_id;
             $model->fk_division_program_unit_id = $division_program_unit_id;
-            $id_arr = explode('-', $ppmp_id);
-            $cse_or_non_cse_id = $id_arr[0];
-            $cse_type = $id_arr[1];
-            if ($cse_type === 'cse') {
+            // $id_arr = explode('-', $ppmp_id);
+            // $cse_or_non_cse_id = $id_arr[0];
+            // $cse_type = $id_arr[1];
+            // if ($cse_type === 'cse') {
 
-                $model->fk_supplemental_ppmp_noncse_id = null;
-                $model->fk_supplemental_ppmp_cse_id  = $cse_or_non_cse_id;
-            } else if ($cse_type === 'non_cse') {
+            //     $model->fk_supplemental_ppmp_noncse_id = null;
+            //     $model->fk_supplemental_ppmp_cse_id  = $cse_or_non_cse_id;
+            // } else if ($cse_type === 'non_cse') {
 
-                $model->fk_supplemental_ppmp_noncse_id = $cse_or_non_cse_id;
-                $model->fk_supplemental_ppmp_cse_id  = null;
-            } else {
-                $model->fk_supplemental_ppmp_noncse_id = null;
-                $model->fk_supplemental_ppmp_cse_id  = null;
-                $model->is_fixed_expense  = 1;
-            }
+            //     $model->fk_supplemental_ppmp_noncse_id = $cse_or_non_cse_id;
+            //     $model->fk_supplemental_ppmp_cse_id  = null;
+            // } else {
+            //     $model->fk_supplemental_ppmp_noncse_id = null;
+            //     $model->fk_supplemental_ppmp_cse_id  = null;
+            //     $model->is_fixed_expense  = 1;
+            // }
             $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
 
 
@@ -598,30 +544,28 @@ LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = s
             }
 
             try {
-                if ($model->validate()) {
-
-                    if ($model->save(false)) {
-                        $insert_items = $this->insertPrItems(
-                            $model->id,
-                            $pr_items,
-                            $cse_or_non_cse_id,
-                            $cse_type
-                        );
-                        if ($insert_items !== true) {
-                            $transaction->rollBack();
-                            return json_encode(['isSuccess' => false, 'error_message' => $insert_items]);
-                        }
-                        $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items);
-                        if ($insert_allotments !== true) {
-                            $transaction->rollBack();
-                            return json_encode(['isSuccess' => false, 'error_message' => $insert_items]);
-                        }
-                        $transaction->commit();
-                        return $this->redirect(['view', 'id' => $model->id]);
-                    }
-                } else {
+                if (!$model->validate()) {
                     $transaction->rollBack();
                     return json_encode(['isSuccess' => false, 'error_message' => $model->errors]);
+                }
+                if ($model->save(false)) {
+                    $insert_items = $this->insertPrItems(
+                        $model->id,
+                        $pr_items,
+                        // $cse_or_non_cse_id,
+                        // $cse_type
+                    );
+                    if ($insert_items !== true) {
+                        $transaction->rollBack();
+                        return json_encode(['isSuccess' => false, 'error_message' => $insert_items]);
+                    }
+                    $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items);
+                    if ($insert_allotments !== true) {
+                        $transaction->rollBack();
+                        return json_encode(['isSuccess' => false, 'error_message' => $insert_items]);
+                    }
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
                 }
             } catch (ErrorException $e) {
                 $transaction->rollBack();
@@ -687,31 +631,25 @@ LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = s
             $model->fk_division_program_unit_id = $division_program_unit_id;
             $date_now = new DateTime();
             $model->date = $date_now->format('Y-m-d');
-            // return var_dump($_POST['segment']);
-
             $model->book_id = $book_id;
             $model->pr_project_procurement_id = '';
             $model->purpose = $purpose;
             $model->requested_by_id = $requested_by_id;
             $model->approved_by_id = $approved_by_id;
+            // $id_arr = explode('-', $ppmp_id);
+            // $cse_or_non_cse_id = $id_arr[0];
+            // $cse_type = $id_arr[1];
+            // if ($cse_type === 'cse') {
+            //     $model->fk_supplemental_ppmp_noncse_id = null;
+            //     $model->fk_supplemental_ppmp_cse_id  = $cse_or_non_cse_id;
+            // } else if ($cse_type === 'non_cse') {
 
-
-            $id_arr = explode('-', $ppmp_id);
-            $cse_or_non_cse_id = $id_arr[0];
-            $cse_type = $id_arr[1];
-            if ($cse_type === 'cse') {
-
-                $model->fk_supplemental_ppmp_noncse_id = null;
-                $model->fk_supplemental_ppmp_cse_id  = $cse_or_non_cse_id;
-            } else if ($cse_type === 'non_cse') {
-
-                $model->fk_supplemental_ppmp_noncse_id = $cse_or_non_cse_id;
-                $model->fk_supplemental_ppmp_cse_id  = null;
-            }
+            //     $model->fk_supplemental_ppmp_noncse_id = $cse_or_non_cse_id;
+            //     $model->fk_supplemental_ppmp_cse_id  = null;
+            // }
 
 
             $transaction = Yii::$app->db->beginTransaction();
-
             $allotment_items_ttl = array_column($allotment_items, 'gross_amount');
             $validate_ttl = $this->calculateItemsTotal($pr_items, $allotment_items_ttl);
 
@@ -720,44 +658,41 @@ LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = s
             }
 
             try {
-                if ($model->validate()) {
-
-                    if ($model->save(false)) {
-
-                        $insert_items = $this->insertPrItems(
-                            $model->id,
-                            $pr_items,
-                            $cse_or_non_cse_id,
-                            $cse_type
-                        );
-                        if ($insert_items !== true) {
-                            $transaction->rollBack();
-                            return json_encode(['isSuccess' => false, 'error_message' => $insert_items]);
-                        }
-                        $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items);
-                        if ($insert_allotments !== true) {
-                            $transaction->rollBack();
-                            return json_encode(['isSuccess' => false, 'error_message' => $insert_allotments]);
-                        }
-                        $transaction->commit();
-                        return $this->redirect(['view', 'id' => $model->id]);
-                    }
-                } else {
+                if (!$model->validate()) {
                     $transaction->rollBack();
                     return json_encode(['isSuccess' => false, 'error_message' => $model->errors]);
                 }
+                if ($model->save(false)) {
+
+                    $insert_items = $this->insertPrItems(
+                        $model->id,
+                        $pr_items,
+                        true
+                    );
+                    if ($insert_items !== true) {
+                        $transaction->rollBack();
+                        return json_encode(['isSuccess' => false, 'error_message' => $insert_items]);
+                    }
+                    $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items);
+                    if ($insert_allotments !== true) {
+                        $transaction->rollBack();
+                        return json_encode(['isSuccess' => false, 'error_message' => $insert_allotments]);
+                    }
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
             } catch (ErrorException $e) {
                 $transaction->rollBack();
+                return json_encode(['isSuccess' => false, 'error_message' => $e->getMessage()]);
             }
         }
 
         return $this->render('update', [
             'model' => $model,
             'action' => 'pr-purchase-request/update',
-            'items' => $this->getPrItems($id),
+            'items' => ArrayHelper::index($this->getPrItems($id), null, 'project_name'),
             'allotment_items' => $this->getPrAllotments($id),
             'requested_by' => $this->employeeData($model->requested_by_id),
-
             'approved_by' =>  $this->employeeData($model->approved_by_id),
             'divisions_list' => Yii::$app->memem->getDivisions(),
             'mfo_list' => Yii::$app->memem->getMfoPapCode(),

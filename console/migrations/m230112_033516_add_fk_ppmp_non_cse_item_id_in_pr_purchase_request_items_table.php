@@ -22,6 +22,7 @@ class m230112_033516_add_fk_ppmp_non_cse_item_id_in_pr_purchase_request_items_ta
     public function safeDown()
     {
         $this->dropColumn('pr_purchase_request_item', 'fk_ppmp_non_cse_item_id');
+        $this->dropColumn('pr_purchase_request_item', 'fk_ppmp_cse_item_id');
     }
 
     /*

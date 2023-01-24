@@ -19,6 +19,7 @@ use Yii;
  */
 class PrAllotmentView extends \yii\db\ActiveRecord
 {
+    public $type = '';
     /**
      * {@inheritdoc}
      */
