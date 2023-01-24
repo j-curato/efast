@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="pr-aoq-view">
 
-    <div class="container">
+    <div class="" style="background-color: white;padding:1rem">
 
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -59,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
             return $element['rfq_item_id'];
         }]);
         $aoq_items_array  = ArrayHelper::index($aoq_items_query, 'payee');
-        $header_count = count($aoq_items_array) + 5;
+        $header_count = count($aoq_items_array) * 2 + 5;
 
         $bac_compositions = Yii::$app->db->createCommand("SELECT 
             employee_search_view.employee_name,
@@ -116,92 +116,41 @@ $this->params['breadcrumbs'][] = $this->title;
                     </th>
                 </tr>
                 <tr>
-                    <th>Item No.</th>
-                    <th>Qty</th>
-                    <th>Unit</th>
-                    <th>Description</th>
-
-
-
-                    <?php
-                    $payee_position = [];
-                    $payee_count  = 5;
-                    $payee_head_query = Yii::$app->db->createCommand("SELECT payee.account_name as payee
-                    FROM `pr_aoq_entries`
-                    LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
-                    WHERE pr_aoq_entries.pr_aoq_id = :id
-                    GROUP BY payee.id
-                    ")
-                        ->bindValue(':id', $model->id)
-                        ->queryAll();
-
-                    foreach ($payee_head_query as $i => $val) {
-
-                        $payee = $val['payee'];
-                        echo "<th style='text-align:center'>
-                                <span style='float:right'>$payee</span>
-                            </th>";
-                        $payee_position[$payee_count] = $payee;
-                        $payee_count++;
-                    }
-                    ?>
-
-                    </th>
-                    <th>Lowest</th>
+                    <th rowspan="3">Item No.</th>
+                    <th rowspan="3">Qty</th>
+                    <th rowspan="3">Unit</th>
+                    <th rowspan="3">Description</th>
 
                 </tr>
                 <?php
-                // foreach ($result as $i => $val) {
-                //     $description = $val[0]['description'];
-                //     $specification =  $specs = preg_replace('#\[n\]#', "<br>", $val[0]['specification']);
-                //     $quantity = $val[0]['quantity'];
-                //     $unit_of_measure = $val[0]['unit_of_measure'];
-                //     echo " <tr><td></td><td> {$quantity}</td>
-                //         <td> {$unit_of_measure}</td>
-                //         <td><span>$description</span>
-                //         <br>
-                //         <span>$specification</span>
-                //         </td>
-                //         ";
-                //     $min_amount   = min(array_column($val, 'amount'));
-                //     $lowest = '';
-                //     $comma_counter = 0;
+                $payeeRow = "<tr>";
+                $payeeHeaderRow = "<tr>";
+                $payee_position = [];
+                $payee_count  = 5;
+                $payee_head_query = Yii::$app->db->createCommand("SELECT payee.account_name as payee
+                    FROM `pr_aoq_entries`
+                    LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
+                    WHERE pr_aoq_entries.pr_aoq_id = :id
+                    GROUP BY payee.account_name
+                    ")
+                    ->bindValue(':id', $model->id)
+                    ->queryAll();
 
-                //     foreach ($payee_position as $index => $payee) {
-                //         $x = !empty($qqq[$i][$index]['amount']) ? $qqq[$i][$index]['amount'] : '';
-                //         // var_dump( $qqq[$i]);
-                //         // if (intval(($qqq[$i][$index]['is_lowest']))) {
-                //         //     if ($comma_counter > 0) {
-                //         //         $lowest .= ',<br>';
-                //         //     }
-                //         //     $lowest .= $index . ' ';
-                //         //     $comma_counter++;
-                //         // }
-                //         echo "<td>";
-                //         echo $x;
-                //         echo '<br>';
-                //         echo '<br>';
-                //         echo '<br>';
-                //         // echo $qqq[$i][$index]['remark'];
-                //         echo "</td>";
-                //     }
+                foreach ($payee_head_query as $i => $val) {
 
-                //     // echo "<td style='text-align:center'>$lowest</td>";
-                //     foreach ($val as $q) {
-                //         $amount = $q['amount'];
-                //         $remark = $q['remark'];
-                //         echo "<td style='text-align:center'>
-                //         <span style='float:right'>$amount</span>
-                //         <br>
-                //         <br>
-                //         <br>
-                //         <span >$remark</span>
+                    $payee = $val['payee'];
+                    $payeeRow .= "<th style='text-align:center' colspan='2'>
+                                <span>$payee</span>
+                            </th>";
+                    $payeeHeaderRow .= "<th class='center'>Unit Cost</th><th class='center'>Gross Amount</th>";
+                    $payee_position[$payee_count] = $payee;
 
-                //     </td>";
-                //     }
-                //     echo "</tr>";
-                // } 
+                    $payee_count += 2;
+                }
+                echo $payeeRow . "<th class='center'>Lowest</th>";
+                echo $payeeHeaderRow . "<th></th>";
                 ?>
+
 
 
             </thead>
@@ -239,7 +188,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </tr>
                 <tr>
-                    <td colspan="<?= $header_count ?>" class='no-border'>
+                    <td colspan="<?= $header_count  ?>" class='no-border'>
                         <div style="float: left;margin-left:20%;text-align:center;margin-top:2em">
                             <?php
                             $search_vice =  array_search('vice-chairperson', array_column($bac_compositions, 'position'));
@@ -327,6 +276,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     }
 
+    .center {
+        text-align: center;
+    }
 
 
     .amount {
@@ -404,7 +356,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
 
         const q = <?php echo json_encode($for_print) ?>;
         const payee_position = JSON.parse(`<?php echo json_encode($payee_position) ?>`);
-        console.log(q)
+        let ttlAmtPerPayee = []
         let row_number = 0
         let purpose = ''
         let remark_arr = []
@@ -427,18 +379,16 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
             <td style='vertical-align:top'>${quantity}</td>
             <td style='vertical-align:top'>${unit_of_measure}</td>
             <td>
-            <span style='font-weight:bold;vertical-align:top'>
-            ${description}
-            </span>
-            </br>
-            <span style='vertical-align:text-bottom;font-style:italic;'>
-            ${specification}
-            </span>
-      
-            </td>
-
-          `;
+                <span style='font-weight:bold;vertical-align:top'>
+                ${description}
+                </span>
+                </br>
+                <span style='vertical-align:text-bottom;font-style:italic;'>
+                ${specification}
+                </span>
+            </td>`;
             $.each(payee_position, function(key, val2) {
+                row += `<td class='fooed' style='text-align:center;vertical-align:middle' ></td>`;
                 row += `<td class='fooed' style='text-align:center;vertical-align:middle' ></td>`;
             })
             row += `<td style='vertical-align:top'></td>`;
@@ -452,7 +402,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                 $.each(payee_position, function(key, payee) {
                     if (payee == val2.payee) {
                         key_pos = parseInt(key)
-
                         return false
                     }
                 })
@@ -481,18 +430,24 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                 let key_pos_1 = 5
                 const amount = `${to_display}<br>`
                 const remark = `<span>${val2.remark}</span>`
+                const ttl = parseFloat(val2.amount) * parseInt(val2.quantity);
+                if (ttlAmtPerPayee[key_pos + 1]) {
+                    ttlAmtPerPayee[key_pos + 1] = parseFloat(ttlAmtPerPayee[key_pos + 1]) + parseFloat(ttl)
+                } else {
+                    ttlAmtPerPayee[key_pos + 1] = parseFloat(ttl)
+                }
 
                 $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(amount)
-                // $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(remark)
+                $("#table tbody").find(`td:nth-child(${key_pos+1})`).eq(row_number).append(ttl)
 
             })
             $("#table tbody ").find(`td:last-child`).eq(row_number).text(lowest)
             row_number++
 
+
         })
 
         let colCount = 5
-
         let remark_row = `<tr>
             <td class='amount' style='vertical-align:top'></td>
             <td style='vertical-align:top'></td>
@@ -507,20 +462,38 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
             </td>
 
           `;
+        let ttlRow = `<tr>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th>TOTAL</th>`
 
 
-        //   ADD REMARKS EACH COL
+        //   ADD REMARKS  COL
         $.each(payee_position, function(key, val2) {
-            remark_row += `<td class='fooed' style='vertical-align:bottom' ></td>`;
-            colCount++
+            remark_row += `<td ></td>`;
+            remark_row += `<td ></td>`;
+            ttlRow += "<td></td><td  class='center'></td>"
+            colCount += 2
         })
         remark_row += `<td style='vertical-align:top'></td>`;
+        ttlRow += `<td ></td>`;
+        $("#table tbody").append(ttlRow)
         $("#table tbody").append(remark_row)
+        let posNeg = 0
+        let arrSibRemove = []
         $.each(remark_arr, function(key, val) {
 
-            const pos = parseInt(val.key_pos)
+            let pos = 0
+            pos = parseInt(val.key_pos)
+            if (ttlAmtPerPayee[val.key_pos + 1]) {
+                // console.log(ttlAmtPerPayee[val.key_pos + 1])
+                $("#table tbody ").find(`td:nth-child(${pos+1})`).eq(row_number).text(ttlAmtPerPayee[val.key_pos + 1])
+            }
+
+
             const remark = val.remark
-            const table_col = $("#table tbody").find(`td:nth-child(${pos})`).eq(row_number)
+            const table_col = $("#table tbody").find(`td:nth-child(${pos})`).eq(row_number + 1)
             if (table_col.text() != '  ') {
                 if ($.trim(remark) != '') {
                     if (table_col.text() != '')
@@ -528,6 +501,19 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                 }
             }
             table_col.append(val.remark)
+            table_col.attr('colspan', 2)
+            // console.log(pos + '-' + !arrSibRemove.includes(pos))
+
+            if (!arrSibRemove.includes(pos)) {
+
+                arrSibRemove.push(pos)
+            }
+
+
+        })
+        $.each(arrSibRemove.sort((a, b) => b - a), (key, val) => {
+            console.log(val)
+            $("#table tbody").find(`td:nth-child(${val})`).eq(row_number + 1).next('td').remove()
         })
 
 

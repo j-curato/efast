@@ -12,6 +12,7 @@ class m230112_084943_add_fk_constraints_in_supplemental_ppmp_non_cse_items_table
      */
     public function safeUp()
     {
+        Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS=0")->execute();
         $this->alterColumn('supplemental_ppmp_non_cse_items', 'fk_supplemental_ppmp_non_cse_id', $this->integer());
         $this->alterColumn('supplemental_ppmp_non_cse_items', 'fk_pr_stock_id', $this->bigInteger());
         $this->createIndex('idx-fk_supplemental_ppmp_non_cse_id', 'supplemental_ppmp_non_cse_items', 'fk_supplemental_ppmp_non_cse_id');
@@ -42,6 +43,7 @@ class m230112_084943_add_fk_constraints_in_supplemental_ppmp_non_cse_items_table
             'id',
             'RESTRICT'
         );
+        Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS=1")->execute();
     }
 
     /**
