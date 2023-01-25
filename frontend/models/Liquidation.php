@@ -72,7 +72,6 @@ class Liquidation extends \yii\db\ActiveRecord
                 'document_link',
                 'cancel_reporting_period',
                 'exclude_in_raaf',
-                'bank_account_id',
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
