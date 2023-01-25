@@ -12,9 +12,10 @@ class m230119_020403_create_transaction_number_procedure extends Migration
      */
     public function safeUp()
     {
-        $sql = <<<SQL
+        Yii::$app->db->createCommand("
+
             DROP PROCEDURE IF EXISTS transaction_number;
- 
+            DELIMTER //
             CREATE PROCEDURE transaction_number(IN _year INT, IN responsibility_center_id INT,OUT transaction_number INT)
             BEGIN
             DECLARE r_name CHAR(20) DEFAULT '';
@@ -34,9 +35,10 @@ class m230119_020403_create_transaction_number_procedure extends Migration
             -- 	SELECT @r_name := (SELECT responsibilityCenterName.r_name FROM responsibilityCenterName);
             SELECT @transaction_number := IFNULL((SELECT   latestTransactionNum.transaction_number FROM latestTransactionNum),CONCAT((SELECT responsibilityCenterName.r_name FROM responsibilityCenterName),'-',_year,'-0001'));
 
-            END
-        SQL;
-        $this->execute($sql);
+            END //
+            DELIMTER;
+            ")
+            ->execute();
     }
 
     /**
