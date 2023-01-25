@@ -279,7 +279,12 @@ class RodController extends Controller
                         IFNULL(po_transaction.payee,liquidation.payee) as payee,
                         IFNULL(po_transaction.particular,liquidation.particular) as particular,
                         IFNULL(liquidation_entries.withdrawals,0) as withdrawals,
-                        advances_entries.fund_source
+                        advances_entries.fund_source,
+                        IFNULL(liquidation_entries.withdrawals,0)+ 	
+IFNULL(liquidation_entries.vat_nonvat,0)+ 	
+IFNULL(liquidation_entries.expanded_tax,0)+ 	
+IFNULL(liquidation_entries.liquidation_damage,0) as gross_amount
+
             "])
                 ->from('liquidation_entries')
                 ->join('LEFT JOIN', 'liquidation', 'liquidation_entries.liquidation_id = liquidation.id')

@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <thead>
                 <tr>
 
-                    <th colspan="6">
+                    <th colspan="7">
                         <div class="head" style="margin-left: auto;margin-right:auto;text-align:center;">
                             <h5 style="font-weight: bold;">REPORT OF DISBURSEMENTS</h5>
                             <h6> Department of Trade and Industry</h6>
@@ -47,12 +47,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
 
-                    <th colspan="4">Period Covered:</th>
+                    <th colspan="5">Period Covered:</th>
                     <th colspan="2">Report No.:</th>
                 </tr>
                 <tr>
 
-                    <th colspan="4"></th>
+                    <th colspan="5"></th>
                     <th colspan="2">Sheet No.:</th>
                 </tr>
 
@@ -62,6 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>Payee</th>
                 <th>Nature of Payment</th>
                 <th class="amount">Amount</th>
+                <th class="amount">Gross Amount</th>
 
             </thead>
             <tbody>
@@ -76,13 +77,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </tr>
                 <tr>
-                    <td colspan="6">
+                    <td colspan="7">
                         CERTIFICATION
                     </td>
 
                 </tr>
                 <tr>
-                    <td colspan="6">
+                    <td colspan="7">
                         <span>
                             I hereby certify that this Report of Disbursemets in ___ sheet is a full, true and correct statement of the disbursements made by
                             me and that this is in liquidation of the following cash advances granted to the Provincial Office, to wit:
@@ -104,7 +105,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="3" style="border-right:none">
+                    <td colspan="4" style="border-right:none">
                         <span>_________________________</span>
                         <br>
                         <span>Disbursing Officer</span>
@@ -293,6 +294,7 @@ $script = <<< JS
                         <td >`+rod[x]['payee']+`</td>
                         <td >`+rod[x]['particular']+`</td>
                         <td class='amount'>`+thousands_separators(parseFloat(rod[x]['withdrawals']))+`</td>
+                        <td class='amount'>`+thousands_separators(parseFloat(rod[x]['gross_amount']))+`</td>
                         </tr>`
               
                 $('#rod_table').find('#start').after(row)
