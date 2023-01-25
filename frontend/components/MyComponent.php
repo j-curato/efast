@@ -151,7 +151,7 @@ class MyComponent extends Component
             ],
             'pdi' => [
                 'province' => 'Dinagat Islands',
-                'officer' => 'Venus A. Custodio',
+                'officer' => 'Edmar M. Granada',
                 'location' => 'San Jose, PDI'
             ],
 
