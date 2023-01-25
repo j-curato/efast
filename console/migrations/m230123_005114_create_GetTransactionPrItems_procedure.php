@@ -12,8 +12,10 @@ class m230123_005114_create_GetTransactionPrItems_procedure extends Migration
      */
     public function safeUp()
     {
-        $sql = <<<SQL
+        Yii::$app->db->createCommand("
+
             DROP PROCEDURE IF EXISTS GetTransactionPrItems;
+            DELIMITER //
             CREATE PROCEDURE GetTransactionPrItems(IN transaction_id BIGINT)
             BEGIN 
             SELECT 
@@ -30,10 +32,10 @@ class m230123_005114_create_GetTransactionPrItems_procedure extends Migration
                         WHERE 
                         transaction_pr_items.fk_transaction_id = transaction_id
                         AND transaction_pr_items.is_deleted = 0;
-            END
-
-        SQL;
-        $this->execute($sql);
+            END //
+            DELIMITER ;
+            ")
+        ->execute();
     }
 
     /**
