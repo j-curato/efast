@@ -12,9 +12,10 @@ class m230123_013214_create_GetPrAllotments_procedure extends Migration
      */
     public function safeUp()
     {
-        $sql = <<<SQL
+        Yii::$app->db->createCommand("
 
             DROP PROCEDURE IF EXISTS GetPrAllotments;
+            DELIMITER //
             CREATE PROCEDURE GetPrAllotments(IN pr_id BIGINT)
             BEGIN 
                 SELECT 
@@ -32,9 +33,10 @@ class m230123_013214_create_GetPrAllotments_procedure extends Migration
                     LEFT JOIN  pr_allotment_view ON pr_purchase_request_allotments.fk_record_allotment_entries_id = pr_allotment_view.allotment_entry_id
                     WHERE pr_purchase_request_allotments.is_deleted = 0
                     AND pr_purchase_request_allotments.fk_purchase_request_id = pr_id ;
-            END 
-        SQL;
-        $this->execute($sql);
+            END //
+            DELIMITER ;
+            ")
+            ->execute();
     }
 
     /**
@@ -42,7 +44,6 @@ class m230123_013214_create_GetPrAllotments_procedure extends Migration
      */
     public function safeDown()
     {
-
     }
 
     /*
