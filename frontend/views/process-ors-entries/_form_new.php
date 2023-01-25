@@ -461,7 +461,7 @@ use yii\widgets\Pjax;
                 ) {
 
                 } else {
-                    $(`#chart-${select_id} option:not(:selected)`).attr('disabled', true);
+                    // $(`#chart-${select_id} option:not(:selected)`).attr('disabled', true);
                 }
 
 
@@ -523,7 +523,7 @@ use yii\widgets\Pjax;
 
 
             // GET ALL BOOKS
-            $.getJSON(window.location.pathname+'?r=books/get-books')
+            $.getJSON(window.location.pathname + '?r=books/get-books')
                 .then(function(data) {
 
                     var array = []
