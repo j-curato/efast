@@ -12,8 +12,9 @@ class m230123_012901_create_GetPrItems_procedure extends Migration
      */
     public function safeUp()
     {
-        $sql = <<< SQL
+        Yii::$app->db->createCommand("
             DROP PROCEDURE IF EXISTS GetPrItems;
+            DELIMITER //
             CREATE PROCEDURE GetPrItems(IN pr_id BIGINT)
             BEGIN 
             SELECT 
@@ -57,9 +58,9 @@ class m230123_012901_create_GetPrItems_procedure extends Migration
                 WHERE 
                 pr_purchase_request_item.pr_purchase_request_id = pr_id
                 AND pr_purchase_request_item.is_deleted =0;
-            END 
-        SQL;
-        $this->execute($sql);
+            END //
+            DELIMITER ;
+            ")->execute();
     }
 
     /**

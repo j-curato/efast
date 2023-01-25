@@ -12,8 +12,8 @@ class m230123_010213_create_GetTransactionAllotmentItems_procedure extends Migra
      */
     public function safeUp()
     {
-        $sql = <<<SQL
-            DROP PROCEDURE IF EXISTS GetTransactionAllotmentItems;
+        Yii::$app->db->createCommand("DROP PROCEDURE IF EXISTS GetTransactionAllotmentItems;
+            DELIMITER //
             CREATE PROCEDURE GetTransactionAllotmentItems(IN transaction_id BIGINT)
             BEGIN 
                 SELECT 
@@ -34,9 +34,10 @@ class m230123_010213_create_GetTransactionAllotmentItems_procedure extends Migra
                 LEFT JOIN record_allotments_view ON  transaction_items.fk_record_allotment_entries_id = record_allotments_view.entry_id
                 where transaction_items.fk_transaction_id= transaction_id
                 AND transaction_items.is_deleted = 0 ;
-            END 
-        SQL;
-        $this->execute($sql);
+            END //
+            DELIMITER ;
+            ")
+            ->execute();
     }
 
     /**
