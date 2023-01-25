@@ -74,6 +74,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td class='amount' id="total_amount">
 
                     </td>
+                    <td class='amount' id="grossTotal">
+
+                    </td>
+
 
                 </tr>
                 <tr>
@@ -280,6 +284,7 @@ $script = <<< JS
     function addData(rod) {
         $(".data_row").remove();
         var total = 0
+        let grossTotal = 0
         for (var x = 0;x<rod.length;x++){
             if (rod[x]['particular']==null){
                 rod[x]['particular']=''
@@ -300,10 +305,12 @@ $script = <<< JS
                 $('#rod_table').find('#start').after(row)
  
             total +=parseFloat(rod[x]['withdrawals'])
+            grossTotal +=parseFloat(rod[x]['gross_amount'])
 
         }
       
         $('#total_amount').text(  thousands_separators(total))
+        $('#grossTotal').text(  thousands_separators(grossTotal))
 
 
     }
