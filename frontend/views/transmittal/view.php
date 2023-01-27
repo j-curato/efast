@@ -70,25 +70,20 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <?php
                 $total = 0;
-                foreach ($model->transmittalEntries as $i => $val) {
-                    $query = (new \yii\db\Query())
-                        ->select(["SUM(dv_aucs_entries.amount_disbursed) as total_disbursed"])
-                        ->from('dv_aucs')
-                        ->join("LEFT JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
-                        ->where("dv_aucs.id =:id", ['id' => $val->cashDisbursement->dv_aucs_id])
-                        ->one();
+                foreach ($items as $i => $val) {
+
                     $q = $i + 1;
                     echo "<tr>
                         <td>$q</td>
-                        <td>{$val->cashDisbursement->dvAucs->dv_number}</td>
-                        <td>{$val->cashDisbursement->check_or_ada_no}</td>
-                        <td>{$val->cashDisbursement->issuance_date}</td>
-                        <td>{$val->cashDisbursement->dvAucs->payee->account_name}</td>
-                        <td>{$val->cashDisbursement->dvAucs->particular}</td>
-                        <td style='text-align:right'>" . number_format($query['total_disbursed'], 2)
+                        <td>{$val['dv_number']}</td>
+                        <td>{$val['check_or_ada_no']}</td>
+                        <td>{$val['issuance_date']}</td>
+                        <td>{$val['payee']}</td>
+                        <td>{$val['particular']}</td>
+                        <td style='text-align:right'>" . number_format($val['amtDisburse'], 2)
                         . "</td>
                     </tr>";
-                    $total += $query['total_disbursed'];
+                    $total += $val['amtDisburse'];
                 }
                 ?>
                 <tr>

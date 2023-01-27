@@ -55,7 +55,32 @@ class TransmittalController extends Controller
             ],
         ];
     }
-
+    private function getItems($id)
+    {
+        return Yii::$app->db->createCommand("SELECT
+                dv_aucs.dv_number,
+                cash_disbursement.check_or_ada_no,
+                cash_disbursement.issuance_date,
+                payee.account_name as payee,
+                dv_aucs.particular,
+                ttlEntry.amtDisburse
+                FROM transmittal_entries
+                LEFT JOIN cash_disbursement ON transmittal_entries.cash_disbursement_id = cash_disbursement.id
+                LEFT JOIN dv_aucs  ON cash_disbursement.dv_aucs_id = dv_aucs.id
+                LEFT JOIN payee ON dv_aucs.payee_id = payee.id
+                LEFT JOIN (SELECT dv_aucs_entries.dv_aucs_id,
+                SUM(dv_aucs_entries.amount_disbursed) as amtDisburse
+                FROM 
+                dv_aucs_entries
+                WHERE 
+                dv_aucs_entries.is_deleted = 0
+                GROUP BY dv_aucs_entries.dv_aucs_id
+                ) as ttlEntry  ON dv_aucs.id  = ttlEntry.dv_aucs_id
+                WHERE 
+                transmittal_entries.transmittal_id = :id")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
     /**
      * Lists all Transmittal models.
      * @return mixed
@@ -81,6 +106,7 @@ class TransmittalController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'items' => $this->getItems($id)
         ]);
     }
 
@@ -203,16 +229,16 @@ class TransmittalController extends Controller
         ORDER BY q DESC LIMIT 1")->queryScalar();
         $id = 1;
         if (!empty($query)) {
-            $id =$query + 1;
-        } 
+            $id = $query + 1;
+        }
         // $final_id = '';
         // for ($y = strlen($id); $y < 4; $y++) {
         //     $final_id .= 0;
         // }
         // $final_id .= $id;
 
-        $final_id = substr(str_repeat(0,4).$id,-4);
-        $transmittal_number = 'RO-'.date('Y', strtotime($date)) . '-' . $final_id;
+        $final_id = substr(str_repeat(0, 4) . $id, -4);
+        $transmittal_number = 'RO-' . date('Y', strtotime($date)) . '-' . $final_id;
         return $transmittal_number;
     }
 }
