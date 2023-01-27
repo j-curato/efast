@@ -222,6 +222,12 @@ class LiquidationController extends Controller
             }
 
             // echo $this->validateReportingPeriod($reporting_period, $province, $bank_account_id);
+            $curYear = date('Y');
+            $rpYear = DateTime::createFromFormat('Y-m', $reporting_period)->format('Y');
+            if (intval($rpYear) < intval($curYear)) {
+                return "Year $rpYear is Locked";
+                die();
+            }
             $q = $this->validateReportingPeriod($reporting_period, $province, $bank_account_id);
             // echo $q;
             if ($q !== true) {
@@ -288,6 +294,17 @@ class LiquidationController extends Controller
             return 'Reporting Period is Disabled';
         }
 
+        $last_r_period = YIi::$app->db->createCommand("SELECT liquidation_reporting_period.reporting_period FROM `liquidation_reporting_period` WHERE
+        (liquidation_reporting_period.province LIKE :province)
+        AND (liquidation_reporting_period.bank_account_id = :bank_account_id)
+        ORDER BY liquidation_reporting_period.reporting_period DESC
+        LIMIT 1")
+
+            ->bindValue(':province', $province)
+            ->bindValue(':bank_account_id', $bank_account_id)
+            ->queryScalar();
+
+
         $query = (new \yii\db\Query())
             ->select('*')
             ->from('liquidation_reporting_period')
@@ -351,60 +368,48 @@ class LiquidationController extends Controller
             $model->particular = null;
             $model->payee = null;
             try {
-                $flag = true;
-                if ($model->validate()) {
-                    if (!$this->validateCheckNumber($check_number, $check_range_id)) {
-                        $transaction->rollBack();
-                        return json_encode(['check_error' => 'Check Number Not in Range']);
-                    }
-                    if (empty($advances_entries_id)) {
-                        $transaction->rollBack();
-                        return json_encode(['check_error' => 'No Entry']);
-                    }
-
-                    $validateReportingPeriod = $this->validateReportingPeriod($reporting_period, $province, $model->checkRange->bank_account_id);
-                    if ($validateReportingPeriod !== true) {
-                        $transaction->rollBack();
-                        return json_encode(['check_error' => $validateReportingPeriod]);
-                    }
-                    // else if ($validateReportingPeriod === 'empty') {
-                    //     $transaction->rollBack();
-                    //     return json_encode(['check_error' => 'No Reporting Period']);
-                    // }
-
-
-                    if ($model->save(false)) {
-
-                        $flag = $this->insertItems(
-                            $model->id,
-                            $advances_entries_id,
-                            $model->reporting_period,
-                            $object_codes,
-                            $liq_damages,
-                            $withdrawal,
-                            $vat_nonvat,
-                            $expanded_tax,
-                            $model->checkRange->bank_account_id
-                        );
-                    }
-                } else {
+                if (!$model->validate()) {
                     $transaction->rollBack();
                     return json_encode(['form_error' => $model->errors]);
                 }
-                if ($flag) {
-                    // return 'sucess';
-                    $transaction->commit();
-                    return $this->redirect(['view', 'id' => $model->id]);
-                } else {
-                    $transaction->rollBack();
-                    return json_encode(['check_error' => $flag]);
+                if (!$this->validateCheckNumber($check_number, $check_range_id)) {
+                    throw new ErrorException('Check Number Not in Range');
                 }
+                if (empty($advances_entries_id)) {
+                    throw new ErrorException('No Entry');
+                }
+
+                $validateReportingPeriod = $this->validateReportingPeriod($reporting_period, $province, $model->checkRange->bank_account_id);
+                if ($validateReportingPeriod !== true) {
+                    throw new ErrorException($validateReportingPeriod);
+                }
+
+
+                if ($model->save(false)) {
+
+                    $flag = $this->insertItems(
+                        $model->id,
+                        $advances_entries_id,
+                        $model->reporting_period,
+                        $object_codes,
+                        $liq_damages,
+                        $withdrawal,
+                        $vat_nonvat,
+                        $expanded_tax,
+                        $model->checkRange->bank_account_id
+                    );
+                    if ($flag !== true) {
+                        throw new ErrorException($flag);
+                    }
+                }
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
-                return json_encode($e->getMessage());
+                $transaction->rollBack();
+                return json_encode(['check_error' => $e->getMessage()]);
             }
         }
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
         $dataProvider->pagination = ['pageSize' => 10];
 
         return $this->render('create', [
@@ -483,45 +488,42 @@ class LiquidationController extends Controller
             $model->reporting_period = $reporting_period;
             try {
                 $flag = true;
-                if ($model->validate()) {
-                    if (strtotime($model->reporting_period) >= strtotime('2021-10')) {
-                        if (!$this->validateCheckNumber($check_number, $check_range_id)) {
-                            $transaction->rollBack();
-                            return json_encode(['check_error' => 'Check Number Not in Range']);
-                        }
-                    }
-
-
-                    if ($model->save(false)) {
-
-                        $flag = $this->insertItems(
-                            $model->id,
-                            $advances_entries_id,
-                            $new_reporting_period,
-                            $object_codes,
-                            $liq_damages,
-                            $withdrawal,
-                            $vat_nonvat,
-                            $expanded_tax,
-                            $model->checkRange->bank_account_id
-
-                        );
-                    }
-                } else {
+                if (!$model->validate()) {
                     $transaction->rollBack();
                     return json_encode(['form_error' => $model->errors]);
                 }
-
-                if ($flag === true) {
-                    // return 'sucess';
-                    $transaction->commit();
-                    return $this->redirect(['view', 'id' => $model->id]);
-                } else {
-                    $transaction->rollBack();
-                    return json_encode(['check_error' => $flag]);
+                if (strtotime($model->reporting_period) >= strtotime('2021-10')) {
+                    if (!$this->validateCheckNumber($check_number, $check_range_id)) {
+                        $transaction->rollBack();
+                        throw new ErrorException('Check Number Not in Range');
+                    }
                 }
+
+
+                if ($model->save(false)) {
+
+                    $flag = $this->insertItems(
+                        $model->id,
+                        $advances_entries_id,
+                        $new_reporting_period,
+                        $object_codes,
+                        $liq_damages,
+                        $withdrawal,
+                        $vat_nonvat,
+                        $expanded_tax,
+                        $model->checkRange->bank_account_id
+
+                    );
+                    if ($flag !== true) {
+                        throw new ErrorException($flag);
+                    }
+                }
+
+
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
-                return json_encode($e->getMessage());
+                return json_encode(['check_error' => $e->getMessage()]);
             }
         }
         // else{
