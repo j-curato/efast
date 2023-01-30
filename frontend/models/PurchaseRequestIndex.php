@@ -36,7 +36,7 @@ class PurchaseRequestIndex extends \yii\db\ActiveRecord
     {
         return [
             [['id'], 'integer'],
-            [['activity_name', 'requested_by', 'approved_by', 'purpose'], 'string'],
+            [[ 'requested_by', 'approved_by', 'purpose'], 'string'],
             [['date'], 'safe'],
             [['pr_number', 'office_name', 'division', 'division_program_unit', 'book_name'], 'string', 'max' => 255],
         ];
@@ -53,7 +53,6 @@ class PurchaseRequestIndex extends \yii\db\ActiveRecord
             'office_name' => 'Office Name',
             'division' => 'Division',
             'division_program_unit' => 'Division Program Unit',
-            'activity_name' => 'Activity Name',
             'requested_by' => 'Requested By',
             'approved_by' => 'Approved By',
             'book_name' => 'Book Name',

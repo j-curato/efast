@@ -56,12 +56,16 @@ $this->params['breadcrumbs'][] = $this->title;
             'office_name',
             'division',
             'division_program_unit',
-            'activity_name',
             'requested_by',
             'approved_by',
             'book_name',
             'purpose',
             'date',
+
+            [
+                'label' => 'Total Cost',
+                'attribute' => 'ttlCost',
+            ],
             [
                 'label' => 'Action',
                 'format' => 'raw',
@@ -70,8 +74,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         . ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id]);
                 }
             ]
-
-
         ],
     ]); ?>
 

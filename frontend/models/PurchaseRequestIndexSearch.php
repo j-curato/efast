@@ -31,7 +31,7 @@ class PurchaseRequestIndexSearch extends PurchaseRequestIndex
                 'office_name',
                 'division',
                 'division_program_unit',
-                'activity_name',
+
                 'requested_by',
                 'approved_by',
                 'book_name',
@@ -92,7 +92,6 @@ class PurchaseRequestIndexSearch extends PurchaseRequestIndex
             ->andFilterWhere(['like', 'office_name', $this->office_name])
             ->andFilterWhere(['like', 'division', $this->division])
             ->andFilterWhere(['like', 'division_program_unit', $this->division_program_unit])
-            ->andFilterWhere(['like', 'activity_name', $this->activity_name])
             ->andFilterWhere(['like', 'requested_by', $this->requested_by])
             ->andFilterWhere(['like', 'approved_by', $this->approved_by])
             ->andFilterWhere(['like', 'book_name', $this->book_name])
@@ -101,6 +100,7 @@ class PurchaseRequestIndexSearch extends PurchaseRequestIndex
 
         if (!empty($this->module === 'transaction')) {
             $query->andWhere(['=', 'book_name', $this->bookFilter]);
+            $query->andWhere("forTransactionBal >0");
         }
         // echo $query->createCommand()->getRawSql();
         // die();
