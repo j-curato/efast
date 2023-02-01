@@ -85,7 +85,9 @@ $this->params['breadcrumbs'][] = $this->title;
             'label' => "Cash Disbursed",
             'value' => function ($model) {
                 $query  = Yii::$app->db->createCommand("SELECT SUM(dv_aucs_entries.amount_disbursed) as total_disbursed 
-                FROM dv_aucs_entries WHERE dv_aucs_id = :dv_id")
+                FROM dv_aucs_entries WHERE dv_aucs_id = :dv_id
+                AND dv_aucs_entries.is_deleted = 0
+                ")
                     ->bindValue(':dv_id', $model->dvAucs->id)
                     ->queryScalar();
                 return $query;
@@ -113,11 +115,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 $obligate = 0;
                 if (!empty($model->process_ors_id)) {
 
-                    $query = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total_obligated
-                from process_ors,raouds,raoud_entries
-                WHERE process_ors.id = raouds.process_ors_id
-                AND raouds.id  = raoud_entries.raoud_id
-                AND process_ors.id = :process_ors_id")
+                    $query = Yii::$app->db->createCommand("SELECT 
+                    SUM(process_ors_entries.amount) as total_obligated
+                    FROM process_ors_entries
+                    WHERE 
+                    process_ors_entries.process_ors_id =:process_ors_id ")
                         ->bindValue(':process_ors_id', $model->process_ors_id)
                         ->queryOne();
                     $obligate = $query['total_obligated'];
@@ -180,24 +182,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 return $model->dvAucs->is_payable === 1 ? 'Payable' : 'Not Payable';
             }
         ],
-        [
-            'label' => "Allotment Class",
-            'value' => function ($model) {
-                $x = '';
-                if (!empty($model->processOrs->id)) {
-                    $x =  $model->processOrs->id;
-                    $q = (new yii\db\Query())
-                        ->select('record_allotment_entries_id')
-                        ->from('raouds')
-                        ->where('process_ors_id =:process_ors_id', ['process_ors_id' => $model->processOrs->id])
-                        ->andWhere('is_parent =:is_parent', ['is_parent' => 1])
-                        ->one();
-                }
-                return $x;
-            }
-        ],
+
         'dvAucs.created_at',
-        'dvAucs.books.name'
+
+        [
+            'label' => 'DV Book',
+            'value' =>  'dvAucs.books.name',
+        ],
+        [
+            'label' => 'Cash Disbursement Book',
+            'value' =>  'dvAucs.cashDisbursement.books.name',
+        ]
+
 
     ];
 
@@ -278,6 +274,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     'filename' => "DV",
                     'batchSize' => 10,
                     'stream' => false,
+                    'target' => '_popup',
+
                     'exportConfig' => [
                         ExportMenu::FORMAT_CSV => false,
                         ExportMenu::FORMAT_TEXT => false,
