@@ -922,13 +922,13 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
 
             });
 
-        $('.amount').on('change keyup', function(e) {
-            e.preventDefault()
-            var amount = $(this).maskMoney('unmasked')[0];
-            var source = $(this).closest('tr');
-            source.children('td').eq(0).find('.unit_cost').val(amount)
+        // $('.amount').on('change keyup', function(e) {
+        //     e.preventDefault()
+        //     var amount = $(this).maskMoney('unmasked')[0];
+        //     var source = $(this).closest('tr');
+        //     source.children('td').eq(0).find('.unit_cost').val(amount)
 
-        })
+        // })
         // remove ppmp
         $('#form_fields_data').on('click', '.remove_ppmp', function(event) {
             event.preventDefault();
