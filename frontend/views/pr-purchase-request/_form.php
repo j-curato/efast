@@ -376,7 +376,7 @@ $user_data = Yii::$app->memem->getUserData();
                                 <div class='row'>
                                     <div class='col-sm-12'>
                                         <label for='specs_view'>Specification</label>
-                                        <textarea rows='2' class='specs_view form-control' onkeyup='updateMainSpecs(this)'>" . str_replace('[n]', '\n', $specification) . "</textarea>
+                                        <textarea rows='2' class='specs_view form-control' onkeyup='updateMainSpecs(this)'>" . preg_replace('#\[n\]#', "<br>", $specification)  . "</textarea>
                                         <textarea name='pr_items[$row_number][specification]' class='main-specs' style='display:none'>$specification</textarea>
                                     </div>
                                 </div>
