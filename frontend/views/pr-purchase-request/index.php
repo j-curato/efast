@@ -65,6 +65,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => 'Total Cost',
                 'attribute' => 'ttlCost',
+                'format' => ['decimal', 2]
             ],
             [
                 'label' => 'Action',
