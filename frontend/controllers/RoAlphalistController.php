@@ -211,11 +211,11 @@ class RoAlphalistController extends Controller
         SUM(dv_aucs_entries.other_trust_liabilities) as other_trust_liabilities
         FROM dv_aucs
         LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
-       
         INNER JOIN cash_disbursement ON dv_aucs.id  = cash_disbursement.dv_aucs_id
 
         WHERE 
-
+        dv_aucs_entries.is_deleted = 0
+        AND 
         $sql
         GROUP BY 
         dv_aucs.id) as dv
@@ -239,7 +239,10 @@ class RoAlphalistController extends Controller
                     FROM dv_aucs
                     INNER JOIN cash_disbursement ON dv_aucs.id  = cash_disbursement.dv_aucs_id
                     LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
-                    WHERE $sql
+                    WHERE
+                    dv_aucs_entries.is_deleted = 0
+                    AND 
+                     $sql
                     GROUP BY 
                     dv_aucs.reporting_period,
                     dv_aucs.book_id)as conso
