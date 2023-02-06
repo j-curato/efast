@@ -61,7 +61,7 @@ if ($model->is_final === 1) {
             'hAlign' => 'right',
             'format' => ['decimal', 2]
         ],
-        'office',
+        'office_name',
         'division',
         'is_cancelled'
     ];
