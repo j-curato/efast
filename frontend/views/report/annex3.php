@@ -187,7 +187,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         'ads': 'Maria Prescylin C. Lademora',
         'sdn': 'Glenn Michael M. Goloran',
         'sds': 'Fritzie N. Usares',
-        'pdi': 'Venus A. Custodio',
+        'pdi': 'Edmar M. Granada',
         'ro': 'RO',
     }
     $('#generate').click((e) => {
