@@ -822,6 +822,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             clone.find('.qty').val('')
             clone.find('.stock-paginated').val('')
             clone.find('.unit-of-measure').val('')
+            clone.find('.cse_item_id').remove()
             // console.log(clone.find('.qty').attr('name'))
             clone.find('.stock-paginated').attr('name', `cse_items[${row_cnt}][stock_id]`)
             clone.find('.unit-of-measure').attr('name', `cse_items[${row_cnt}][unit_of_measure_id]`)
