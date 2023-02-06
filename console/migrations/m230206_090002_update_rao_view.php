@@ -13,7 +13,7 @@ class m230206_090002_update_rao_view extends Migration
     public function safeUp()
     {
         YIi::$app->db->createCommand("DROP VIEW IF EXISTS rao;
-CREATE VIEW rao asSELECT
+CREATE VIEW rao as SELECT
 document_recieve.`name` as document_name,
 fund_cluster_code.`name` as fund_cluster_code_name,
 CONCAT(financing_source_code.`name`,'-',financing_source_code.`description`) as financing_source_code_name,
