@@ -61,6 +61,7 @@ if ($model->is_final === 1) {
             'hAlign' => 'right',
             'format' => ['decimal', 2]
         ],
+        'office',
         'division',
         'is_cancelled'
     ];
@@ -115,7 +116,7 @@ if ($model->is_final === 1) {
                 },
                 success: function(data) {
                     location.reload(true)
-                 
+
 
                 }
             })
