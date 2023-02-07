@@ -86,6 +86,33 @@ class CashDisbursementController extends Controller
             ],
         ];
     }
+    private function getDvDetails($id)
+    {
+        $query = Yii::$app->db->createCommand("SELECT 
+
+        dv_aucs.dv_number,
+        dv_aucs.particular,
+        payee.account_name as payee,
+        disburse.ttlDisburse,
+        cash.cash_id
+        FROM dv_aucs
+        LEFT JOIN (SELECT dv_aucs_entries.dv_aucs_id,
+        SUM(dv_aucs_entries.amount_disbursed) as ttlDisburse 
+        FROM dv_aucs_entries
+         WHERE dv_aucs_entries.is_deleted = 0
+        GROUP BY dv_aucs_entries.dv_aucs_id
+        ) as 
+        disburse ON dv_aucs.id = disburse.dv_aucs_id
+        LEFT JOIN payee ON dv_aucs.payee_id = payee.id
+        LEFT JOIN (SELECT cash_disbursement.dv_aucs_id,cash_disbursement.id as cash_id FROM cash_disbursement WHERE cash_disbursement.is_cancelled = 0) cash
+        ON dv_aucs.id = cash.dv_aucs_id
+        
+        WHERE 
+        dv_aucs.id = :id")
+            ->bindValue(':id', $id)
+            ->queryOne();
+        return $query;
+    }
 
     /**
      * Lists all CashDisbursement models.
@@ -125,19 +152,37 @@ class CashDisbursementController extends Controller
     {
         $model = new CashDisbursement();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
 
-            Yii::$app->db->createCommand("UPDATE advances_entries 
-             LEFT JOIN advances ON advances_entries.advances_id  = advances.id
-             SET advances_entries.is_deleted = 0,
-             advances_entries.cash_disbursement_id = :cash_id
-             WHERE 
-             advances.dv_aucs_id = :dv_id
-             AND advances_entries.is_deleted = 9
-             ")
-                ->bindValue(':dv_id', $model->dv_aucs_id)
-                ->bindValue(':cash_id', $model->id)
-                ->execute();
+            try {
+                $checkExist = YIi::$app->db->createCommand("SELECT EXISTS(SELECT *
+                 FROM cash_disbursement WHERE cash_disbursement.is_cancelled = 0 AND cash_disbursement.dv_aucs_id = :dv_id)")
+                    ->bindValue(':dv_id', $model->dv_aucs_id)
+                    ->queryScalar();
+                if ($checkExist) {
+                    throw new ErrorException("DV Already Disbursed");
+                }
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException("Model Save Failed");
+                }
+
+                Yii::$app->db->createCommand("UPDATE advances_entries 
+                    LEFT JOIN advances ON advances_entries.advances_id  = advances.id
+                    SET advances_entries.is_deleted = 0,
+                    advances_entries.cash_disbursement_id = :cash_id
+                    WHERE 
+                    advances.dv_aucs_id = :dv_id
+                    AND advances_entries.is_deleted = 9
+                    ")
+                    ->bindValue(':dv_id', $model->dv_aucs_id)
+                    ->bindValue(':cash_id', $model->id)
+                    ->query();
+            } catch (ErrorException $e) {
+                return json_encode(['error' => true, 'error_message' => $e->getMessage()]);
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -158,13 +203,43 @@ class CashDisbursementController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            try {
+                $checkExist = YIi::$app->db->createCommand("SELECT EXISTS(SELECT *
+                 FROM cash_disbursement WHERE cash_disbursement.is_cancelled = 0 AND cash_disbursement.dv_aucs_id = :dv_id AND cash_disbursement.id != :cash_id)")
+                    ->bindValue(':dv_id', $model->dv_aucs_id)
+                    ->bindValue(':cash_id', $model->id)
+                    ->queryScalar();
+                if ($checkExist) {
+                    throw new ErrorException("DV Already Disbursed");
+                }
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException("Model Save Failed");
+                }
+
+                Yii::$app->db->createCommand("UPDATE advances_entries 
+                    LEFT JOIN advances ON advances_entries.advances_id  = advances.id
+                    SET advances_entries.is_deleted = 0,
+                    advances_entries.cash_disbursement_id = :cash_id
+                    WHERE 
+                    advances.dv_aucs_id = :dv_id
+                    AND advances_entries.is_deleted = 9
+                    ")
+                    ->bindValue(':dv_id', $model->dv_aucs_id)
+                    ->bindValue(':cash_id', $model->id)
+                    ->query();
+            } catch (ErrorException $e) {
+                return json_encode(['error' => true, 'error_message' => $e->getMessage()]);
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         }
-
         return $this->render('update', [
             'model' => $model,
-            'type' => 'update'
+            'type' => 'update',
+            'dv_details' => $this->getDvDetails($model->dv_aucs_id)
         ]);
     }
 
@@ -689,5 +764,11 @@ class CashDisbursementController extends Controller
         }
 
         return $out;
+    }
+    public function actionDvDetails()
+    {
+        if (YIi::$app->request->isPost) {
+            return json_encode($this->getDvDetails(YIi::$app->request->post('id')));
+        }
     }
 }

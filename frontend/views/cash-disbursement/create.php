@@ -12,9 +12,10 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="cash-disbursement-create">
 
 
-    <?= $this->render('_form_new', [
+    <?= $this->render('_form', [
         'model' => $model,
         'type' => $type,
+        'dv_details' => '',
     ]) ?>
 
 </div>
