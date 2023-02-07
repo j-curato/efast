@@ -98,6 +98,7 @@ if (!empty($model->fk_certified_funds_available_by)) {
                             <th>Unit of Measure</th>
                             <th>Amount</th>
                             <th>Total Qty</th>
+                            <th>Gross Amount</th>
                             <th>January Qty</th>
                             <th>February Qty</th>
                             <th>March Qty</th>
@@ -116,6 +117,7 @@ if (!empty($model->fk_certified_funds_available_by)) {
                             <th>Q4 Qty</th>
                         </tr>";
 
+                    $cseGrandTtl = 0;
                     foreach ($items as $item) {
                         $amt_dsp = number_format($item['amount'], 2);
                         $total += floatval($item['amount']);
@@ -133,11 +135,14 @@ if (!empty($model->fk_certified_funds_available_by)) {
                             intval($item['nov_qty']) +
                             intval($item['dec_qty']);
                         $total_qty =  $q1_qty + $q2_qty + $q3_qty + $q4_qty;
+                        $gross_amount  = $total_qty * floatval($item['amount']);
+                        $cseGrandTtl += $gross_amount;
                         echo "<tr class='r'>
                                 <td>{$item['stock_title']}</td>
                                 <td>{$item['unit_of_measure']}</td>
                                 <td>{$amt_dsp}</td>
                                 <td>{$total_qty}</td>
+                                <td>" . number_format($gross_amount, 2) . "</td>
                                 <td>{$item['jan_qty']}</td>
                                 <td>{$item['feb_qty']}</td>
                                 <td>{$item['mar_qty']}</td>
@@ -157,7 +162,10 @@ if (!empty($model->fk_certified_funds_available_by)) {
                            </tr>";
                     }
                     echo "   <tr class='ttl'> <th colspan='2'>Total</th>
-                <td >" . number_format($total, 2) . "</td> </tr>
+                <td >" . number_format($total, 2) . "</td> 
+                <td></td>
+                <td >" . number_format($cseGrandTtl, 2) . "</td> 
+                </tr>
           ";
                 } else if ($model->cse_type === 'non_cse') {
                     $colspan = 4;
