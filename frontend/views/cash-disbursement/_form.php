@@ -15,6 +15,20 @@ use yii\widgets\ActiveForm;
 /* @var $model app\models\CashDisbursement */
 /* @var $form yii\widgets\ActiveForm */
 
+$dv = [];
+if (!empty($model->dv_aucs_id)) {
+
+
+
+    $dv = ArrayHelper::map(
+        Yii::$app->db->createCommand("SELECT dv_aucs.id,dv_aucs.dv_number FROM dv_aucs WHERE dv_aucs.id = :id")
+            ->bindValue(':id', $model->dv_aucs_id)
+            ->queryAll(),
+        'id',
+        'dv_number'
+    );
+}
+
 ?>
 
 <div class="cash-disbursement-form ">
@@ -87,7 +101,7 @@ use yii\widgets\ActiveForm;
         <div class="row">
             <div class="col-sm-4">
                 <?= $form->field($model, 'dv_aucs_id')->widget(Select2::class, [
-                    'data' => ArrayHelper::map(DvAucs::find($model->dv_aucs_id)->asArray()->all(), 'id', 'dv_number'),
+                    'data' => $dv,
                     'options' => [
                         'placeholder' => 'Search for a DV ...',
                     ],
