@@ -236,10 +236,11 @@ $this->params['breadcrumbs'][] = $this->title;
             <tbody>
 
                 <?php
-
+                $grandTotal = 0;
                 foreach ($model->rfqItems as $index => $val) {
                     $specs = preg_replace('#\[n\]#', "<br>", $val->purchaseRequestItem->specification);
                     $total_cost = intval($val->purchaseRequestItem->quantity) * floatval($val->purchaseRequestItem->unit_cost);
+                    $grandTotal += $total_cost;
                     $i = $index + 1;
                     echo "<tr>
                         <td class='bordered'>$i</td>
@@ -254,6 +255,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td class='bordered'></td>
                    </tr>";
                 }
+                echo "<tr>
+                        <td class='bordered' colspan='6'><b>TOTAL</b></td>
+                
+                        <td class='bordered amount' >" . number_format($grandTotal, 2) . "</td>
+                        <td class='bdr-none'></td>
+                        <td class='bordered'></td>
+                        <td class='bordered'></td>
+                   </tr>";
                 ?>
                 <tr>
                     <td class='bordered' colspan="6">
@@ -331,6 +340,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
 
             </tbody>
+
         </table>
 
         <?php
