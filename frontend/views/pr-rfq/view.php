@@ -256,7 +256,7 @@ $this->params['breadcrumbs'][] = $this->title;
                    </tr>";
                 }
                 echo "<tr>
-                        <td class='bordered' colspan='5'><b>TOTAL</b></td>
+                        <td class='bordered' colspan='5' style='text-align:center'><b>TOTAL</b></td>
                 
                         <td class='bordered amount' >" . number_format($grandTotal, 2) . "</td>
                         <td class='bdr-none'></td>
