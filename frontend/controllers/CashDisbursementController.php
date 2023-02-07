@@ -653,7 +653,7 @@ class CashDisbursementController extends Controller
             dv.total_disbursed,
             payee.account_name as payee 
 
-             FROM cash_disbursement,dv_aucs,payee,(SELECT SUM(dv_aucs_entries.amount_disbursed) as total_disbursed,dv_aucs_entries.dv_aucs_id FROM dv_aucs_entries GROUP BY dv_aucs_id) as dv
+             FROM cash_disbursement,dv_aucs,payee,(SELECT SUM(dv_aucs_entries.amount_disbursed) as total_disbursed,dv_aucs_entries.dv_aucs_id FROM dv_aucs_entries WHERE dv_aucs_entries.is_deleted = 0 GROUP BY dv_aucs_id) as dv
               WHERE cash_disbursement.dv_aucs_id = dv_aucs.id
               AND dv_aucs.payee_id = payee.id
               AND dv_aucs.id = dv.dv_aucs_id
