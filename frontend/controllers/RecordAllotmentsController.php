@@ -4,10 +4,12 @@ namespace frontend\controllers;
 
 use app\models\RaoudEntries;
 use app\models\Raouds;
+use app\models\RecordAllotmentDetailedSearch;
 use app\models\RecordAllotmentEntries;
 use Yii;
 use app\models\RecordAllotments;
 use app\models\RecordAllotmentsViewSearch;
+use ErrorException;
 use Exception;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -64,13 +66,53 @@ class RecordAllotmentsController extends Controller
         ];
     }
 
+    private function insertItems($allotment_id, $items)
+    {
+   
+        try {
+            foreach ($items as $item) {
+                if (!empty($item['item_id'])) {
+                    $entry = RecordAllotmentEntries::findOne($item['item_id']);
+                } else {
+                    $entry = new RecordAllotmentEntries();
+                }
+                $entry->record_allotment_id = $allotment_id;
+                $entry->chart_of_account_id = $item['chart_of_account_id'];
+                $entry->amount = $item['amount'];
+                if (!$entry->validate()) {
+                    throw new ErrorException(json_encode($entry->errors));
+                }
+                if (!$entry->save(false)) {
+                    throw new ErrorException('Entry Save Failed');
+                }
+            }
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+        return true;
+    }
+    private function getItems($id)
+    {
+        $query = YIi::$app->db->createCommand("SELECT 
+        record_allotment_entries.id as item_id,
+        record_allotment_entries.chart_of_account_id,
+        record_allotment_entries.amount,
+        chart_of_accounts.uacs,
+        chart_of_accounts.general_ledger
+        FROM record_allotment_entries 
+        LEFT JOIN chart_of_accounts ON record_allotment_entries.chart_of_account_id = chart_of_accounts.id
+        WHERE record_allotment_id = :id")
+            ->bindValue(':id', $id)
+            ->queryAll();
+        return $query;
+    }
     /**
      * Lists all RecordAllotments models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new RecordAllotmentsViewSearch();
+        $searchModel = new RecordAllotmentDetailedSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'all', '');
 
         return $this->render('index', [
@@ -87,9 +129,9 @@ class RecordAllotmentsController extends Controller
      */
     public function actionView($id)
     {
-        $r = RecordAllotmentEntries::findOne($id);
         return $this->render('view', [
-            'model' => $this->findModel($r->record_allotment_id),
+            'model' => $this->findModel($id),
+            'items' => $this->getItems($id)
         ]);
     }
 
@@ -102,12 +144,37 @@ class RecordAllotmentsController extends Controller
     {
         $model = new RecordAllotments();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            $items = Yii::$app->request->post('items');
+            try {
+                $fund_category_and_classification_code_id = Yii::$app->db->createCommand("SELECT 
+                    fund_category_and_classification_code.id
+                    FROM `fund_category_and_classification_code` 
+                    WHERE  :fund_classification_code >=`fund_category_and_classification_code`.`from`
+                    AND :fund_classification_code <= `fund_category_and_classification_code`.`to` LIMIT 1 ")
+                    ->bindValue(':fund_classification_code', $model->fund_classification)
+                    ->queryScalar();
+                $model->serial_number =  Yii::$app->memem->getRaoudSerialNumber($model->reporting_period, $model->book_id, '');
+                $model->fund_category_and_classification_code_id = $fund_category_and_classification_code_id;
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Allotment Save Failed');
+                }
+                $insItms = $this->insertItems($model->id, $items);
+                if ($insItms !== true) {
+                    throw new ErrorException($insItms);
+                }
+            } catch (ErrorException $e) {
+                return json_encode(['isSuccess' => false, 'error_message' => $e->getMessage()]);
+            }
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [
-            'model' => '',
+            'model' => $model,
         ]);
     }
 
@@ -122,12 +189,38 @@ class RecordAllotmentsController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            $items = Yii::$app->request->post('items');
+            try {
+                $fund_category_and_classification_code_id = Yii::$app->db->createCommand("SELECT 
+                    fund_category_and_classification_code.id
+                    FROM `fund_category_and_classification_code` 
+                    WHERE  :fund_classification_code >=`fund_category_and_classification_code`.`from`
+                    AND :fund_classification_code <= `fund_category_and_classification_code`.`to` LIMIT 1 ")
+                    ->bindValue(':fund_classification_code', $model->fund_classification)
+                    ->queryScalar();
+                $model->serial_number =  Yii::$app->memem->getRaoudSerialNumber($model->reporting_period, $model->book_id, '');
+                $model->fund_category_and_classification_code_id = $fund_category_and_classification_code_id;
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Allotment Save Failed');
+                }
+                $insItms = $this->insertItems($model->id, $items);
+                if ($insItms !== true) {
+                    throw new ErrorException($insItms);
+                }
+            } catch (ErrorException $e) {
+                return json_encode(['isSuccess' => false, 'error_message' => $e->getMessage()]);
+            }
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('_form_new', [
-            'model' => $id,
+        return $this->render('update', [
+            'model' => $model,
+            'items' => $this->getItems($id)
         ]);
     }
 

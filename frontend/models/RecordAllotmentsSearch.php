@@ -18,7 +18,7 @@ class RecordAllotmentsSearch extends RecordAllotments
     {
         return [
             [['id', 'document_recieve_id', 'fund_cluster_code_id', 'financing_source_code_id', 'fund_category_and_classification_code_id', 'authorization_code_id', 'mfo_pap_code_id', 'fund_source_id'], 'integer'],
-            [['reporting_period', 'serial_number', 'allotment_number', 'date_issued', 'valid_until', 'particulars'], 'safe'],
+            [['reporting_period', 'serial_number', 'date_issued', 'valid_until', 'particulars'], 'safe'],
         ];
     }
 
@@ -70,7 +70,6 @@ class RecordAllotmentsSearch extends RecordAllotments
 
         $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
             ->andFilterWhere(['like', 'serial_number', $this->serial_number])
-            ->andFilterWhere(['like', 'allotment_number', $this->allotment_number])
             ->andFilterWhere(['like', 'date_issued', $this->date_issued])
             ->andFilterWhere(['like', 'valid_until', $this->valid_until])
             ->andFilterWhere(['like', 'particulars', $this->particulars]);

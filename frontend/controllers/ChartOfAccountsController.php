@@ -533,11 +533,11 @@ class ChartOfAccountsController extends Controller
 
         return json_encode($query2->all());
     }
-    public function actionSearchChartOfAccounts($q = null, $id = null, $province = null)
+    public function actionSearchChartOfAccounts($q = null, $id = null, $page = null)
     {
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-
-
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
             $query = new Query();
@@ -546,20 +546,28 @@ class ChartOfAccountsController extends Controller
                 ->where(['like', 'general_ledger', $q])
                 ->orWhere(['like', 'uacs', $q])
                 ->andWhere('is_active = 1');
+            if (!empty($page)) {
 
+                $query->offset($offset)
+                    ->limit($limit);
+            }
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
+            if (!empty($page)) {
+                $out['pagination'] = ['more' => !empty($data) ? true : false];
+            }
         }
         //  elseif ($id > 0) {
         //     $out['results'] = ['id' => $id, 'text' => AdvancesEntries::find($id)->fund_source];
         // }
         return $out;
     }
-    public function actionSearchGeneralLedger($q = null, $id = null, $province = null)
+    public function actionSearchGeneralLedger($q = null, $id = null, $base_uacs = null, $page = null)
     {
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-
 
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
@@ -569,14 +577,55 @@ class ChartOfAccountsController extends Controller
                 ->where(['like', 'general_ledger', $q])
                 ->orWhere(['like', 'uacs', $q])
                 ->andWhere('is_active = 1');
+            if (!empty($base_uacs)) {
+                $query->andWhere('major_object_code = :base_uacs', ['base_uacs' => $base_uacs]);
+            }
+            if (!empty($page)) {
+
+                $query->offset($offset)
+                    ->limit($limit);
+            }
+
 
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
+            if (!empty($page)) {
+                $out['pagination'] = ['more' => !empty($data) ? true : false];
+            }
         }
-        //  elseif ($id > 0) {
-        //     $out['results'] = ['id' => $id, 'text' => AdvancesEntries::find($id)->fund_source];
-        // }
+
+
+
+        return $out;
+    }
+    public function actionSearchAllotmentGeneralLedger($q = null, $id = null, $base_uacs = null, $page = 1)
+    {
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+            $query->select(["chart_of_accounts.id, CONCAT (chart_of_accounts.uacs ,'-',chart_of_accounts.general_ledger) as text"])
+                ->from('chart_of_accounts')
+                ->join('LEFT JOIN', 'major_accounts', 'chart_of_accounts.major_account_id = major_accounts.id')
+                ->where(['like', 'chart_of_accounts.general_ledger', $q])
+                ->orWhere(['like', 'chart_of_accounts.uacs', $q])
+                ->andWhere('chart_of_accounts.is_active = 1');
+            if (!empty($base_uacs)) {
+                $query->andWhere('major_accounts.object_code = :base_uacs', ['base_uacs' => $base_uacs]);
+            }
+            $query->offset($offset)
+                ->limit($limit);
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+            $out['pagination'] = ['more' => !empty($data) ? true : false];
+        }
+
         return $out;
     }
     public function actionSearchLiquidationAccountingCode($q = null, $id = null, $province = null)
@@ -607,7 +656,7 @@ class ChartOfAccountsController extends Controller
         }
         return $out;
     }
-    public function actionSearchAccountingCode($q = null, $id = null, $province = null)
+    public function actionSearchAccountingCode($q = null, $id = null, $base_uacs = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
@@ -626,6 +675,9 @@ class ChartOfAccountsController extends Controller
                 ->orWhere(['like', 'object_code', $q])
                 ->andWhere('is_active =1 AND coa_is_active = 1 AND sub_account_is_active = 1');
 
+            if (!empty($base_uacs)) {
+                $query->andWhere('major_object_code = :base_uacs', ['base_uacs' => $base_uacs]);
+            }
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);

@@ -17,7 +17,6 @@ use Yii;
  * @property int|null $fund_source_id
  * @property string $reporting_period
  * @property string $serial_number
- * @property string|null $allotment_number
  * @property string|null $date_issued
  * @property string|null $valid_until
  * @property string|null $particulars
@@ -55,9 +54,28 @@ class RecordAllotments extends \yii\db\ActiveRecord
                 'division_id',
                 'book_id',
             ], 'integer'],
-            [['reporting_period', 'serial_number'], 'required'],
+            [[
+                'reporting_period',
+                'serial_number',
+                'document_recieve_id',
+                'fund_cluster_code_id',
+                'financing_source_code_id',
+                'fund_category_and_classification_code_id',
+                'authorization_code_id',
+                'mfo_pap_code_id',
+                'fund_source_id',
+                'date_issued',
+                'valid_until',
+                'particulars',
+                'fund_classification',
+                'book_id',
+                'office_id',
+
+                'division_id',
+                'allotment_type_id',
+            ], 'required'],
             [['reporting_period'], 'string', 'max' => 20],
-            [['serial_number', 'allotment_number', 'date_issued', 'valid_until'], 'string', 'max' => 50],
+            [['serial_number',  'date_issued', 'valid_until'], 'string', 'max' => 50],
             [['particulars'], 'string', 'max' => 500],
             [[
                 'id',
@@ -70,7 +88,6 @@ class RecordAllotments extends \yii\db\ActiveRecord
                 'fund_source_id',
                 'reporting_period',
                 'serial_number',
-                'allotment_number',
                 'date_issued',
                 'valid_until',
                 'particulars',
@@ -108,7 +125,6 @@ class RecordAllotments extends \yii\db\ActiveRecord
             'fund_source_id' => 'Fund Source ',
             'reporting_period' => 'Reporting Period',
             'serial_number' => 'Serial Number',
-            'allotment_number' => 'Allotment Number',
             'date_issued' => 'Date Issued',
             'valid_until' => 'Valid Until',
             'particulars' => 'Particulars',

@@ -258,57 +258,72 @@ $this->params['breadcrumbs'][] = $this->title;
     //     ]
     // ];
     $col = [
-        'office_name',
-        [
-            'attribute' => 'division',
-            'value' => function ($model) {
-                return strtoupper($model->division);
-            }
-        ],
-        'allotment_type',
+        'budget_year',
         'reporting_period',
-        'serial_number',
         'date_issued',
         'valid_until',
+        'allotmentNumber',
+        'office_name',
+        'division',
+        [
+            'attribute' => 'mfo_name',
+            'value' => function ($model) {
+                return $model->mfo_code . '-' . $model->mfo_name;
+            }
+        ],
+        'fund_source_name',
+        'uacs',
+        'account_title',
         'particulars',
         'document_recieve',
         'fund_cluster_code',
         'financing_source_code',
         'fund_classification',
         'authorization_code',
-        'mfo_code',
-        'mfo_name',
-        'fund_source',
-        'uacs',
-        'general_ledger',
+        'responsibility_center',
         'allotment_class',
-
-        [
-            'attribute' =>  'amount',
-            'format' => ['decimal', 2],
-            'hAlign' => 'right'
-        ],
-
-        [
-            'attribute' => 'total_ors',
-            'format' => ['decimal', 2],
-            'hAlign' => 'right'
-        ],
-        [
-            'attribute' => 'ttl_pr_amount',
-            'format' => ['decimal', 2],
-            'hAlign' => 'right'
-        ],
-
         'nca_nta',
         'carp_101',
+        'book',
+        'allotment_type',
+        'book_name',
         [
-            'label' => 'Update',
+            'attribute' => 'amount',
+            'label' => 'Allotment Amount',
+            'format' => ['decimal', 2]
+        ],
+        [
+            'attribute' => 'ttlOrsAmt',
+            'label' => 'Total Ors',
+            'format' => ['decimal', 2]
+        ],
+        [
+            'attribute' => 'ttlPrAmt',
+            'label' => 'Total In Purchase Request',
+            'format' => ['decimal', 2]
+        ],
+        [
+            'attribute' => 'ttlTrAmt',
+            'label' => 'Total in Transaction',
+            'format' => ['decimal', 2]
+        ],
+        [
+            'attribute' => 'balance',
+            'format' => ['decimal', 2]
+        ],
+        [
+            'attribute' => 'balAfterObligation',
+            'label' => 'Balance After Obligation',
+            'format' => ['decimal', 2]
+        ],
+
+        [
+            'label' => 'Actions',
             'format' => 'raw',
             'value' => function ($model) {
 
                 $t = yii::$app->request->baseUrl . "/index.php?r=record-allotments/update&id=$model->id";
-                $view = yii::$app->request->baseUrl . "/index.php?r=record-allotments/view&id=$model->entry_id";
+                $view = yii::$app->request->baseUrl . "/index.php?r=record-allotments/view&id=$model->allotment_entry_id";
                 return   ' ' . Html::a('', $view, ['class' => 'btn-xs btn-primary fa fa-eye'])
                     . ' ' . Html::a('', $t, ['class' => 'btn-xs btn-primary fa fa-pencil-square-o']);
             },
