@@ -155,6 +155,7 @@ class CashDisbursementController extends Controller
         if ($model->load(Yii::$app->request->post())) {
 
             try {
+                $model->is_cancelled = 0;
                 $checkExist = YIi::$app->db->createCommand("SELECT EXISTS(SELECT *
                  FROM cash_disbursement WHERE cash_disbursement.is_cancelled = 0 AND cash_disbursement.dv_aucs_id = :dv_id)")
                     ->bindValue(':dv_id', $model->dv_aucs_id)
