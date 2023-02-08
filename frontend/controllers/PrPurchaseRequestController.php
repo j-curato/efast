@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\components\helpers\MyHelper;
 use app\models\PrProjectProcurement;
 use Yii;
 use app\models\PrPurchaseRequest;
@@ -124,7 +125,22 @@ class PrPurchaseRequestController extends Controller
                 IFNULL(supplemental_ppmp_cse.nov_qty,0)+
                 IFNULL(supplemental_ppmp_cse.dec_qty,0)
             )- IFNULL(ppmp_in_pr.total_pr_qty,0) as bal_qty,
-            IFNULL(supplemental_ppmp_cse.amount,0) - IFNULL(ppmp_in_pr.total_pr_amt,0) as bal_amt
+            (IFNULL(supplemental_ppmp_cse.amount,0)*
+                (
+                    IFNULL(supplemental_ppmp_cse.jan_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.feb_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.mar_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.apr_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.may_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.jun_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.jul_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.aug_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.sep_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.oct_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.nov_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.dec_qty,0)
+                )
+            ) - IFNULL(ppmp_in_pr.total_pr_amt,0) as bal_amt
             
              FROM supplemental_ppmp_cse
             LEFT JOIN pr_stock ON supplemental_ppmp_cse.fk_pr_stock_id  = pr_stock.id
@@ -189,42 +205,26 @@ class PrPurchaseRequestController extends Controller
         }
         return true;
     }
-    public function checkAllotmentBalance($allotment_id, $amount = 0, $entry_id = '')
-    {
+    // public function checkAllotmentBalance($allotment_id, $amount = 0, $entry_id = null)
+    // {
 
-        $params = [];
-        $sql = '';
-        if (!empty($entry_id)) {
-            $sql = 'AND ';
-            $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['!=', 'pr_purchase_request_allotments.id', $entry_id], $params);
-        }
-        $balance = Yii::$app->db->createCommand("SELECT 
+    //     $params = [];
+    //     $sql = '';
+    //     if (!empty($entry_id)) {
+    //         $sql = 'AND ';
+    //         $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['!=', 'pr_purchase_request_allotments.id', $entry_id], $params);
+    //     }
+    //     $balance = Yii::$app->db->createCommand("CALL GetAllotmentBalance(:allotment_id,:entry_id,NULL,NULL,NULL,NULL)")
+    //         ->bindValue(':allotment_id', $allotment_id)
+    //         ->bindValue(':entry_id', $entry_id)
 
-        IFNULL(record_allotment_entries.amount,0) - IFNULL(total_pr_amt.ttl_pr_amount,0) as balance
-
-        FROM record_allotment_entries 
-       
-        LEFT JOIN (SELECT
-        pr_purchase_request_allotments.fk_record_allotment_entries_id,
-        SUM(pr_purchase_request_allotments.amount) as ttl_pr_amount
-        FROM pr_purchase_request_allotments
-        WHERE 
-        pr_purchase_request_allotments.is_deleted = 0
-        $sql
-        GROUP BY pr_purchase_request_allotments.fk_record_allotment_entries_id
-        ) as total_pr_amt ON record_allotment_entries.id = total_pr_amt.fk_record_allotment_entries_id
-        WHERE record_allotment_entries.id = :allotment_id
-         ", $params)
-            ->bindValue(':allotment_id', $allotment_id)
-            ->queryScalar();
-
-        $cur_balance = floatval($balance)  - floatval($amount);
-
-        if ($cur_balance < 0) {
-            return  "Allotment Amount Cannot be more than " . number_format($balance, 2);
-        }
-        return true;
-    }
+    //         ->queryScalar();
+    //     $cur_balance = floatval($balance) - floatval($amount);
+    //     if ($cur_balance < 0) {
+    //         return  "Allotment Amount Cannot be more than " . number_format($balance, 2);
+    //     }
+    //     return true;
+    // }
     // CALCULATE PR ITEMS VS PR ALLOTMENTS TOTAL
     public function calculateItemsTotal($pr_items, $pr_allotments_amt)
     {
@@ -234,10 +234,7 @@ class PrPurchaseRequestController extends Controller
             $ttl = intval($item['quantity']) * floatval($item['unit_cost']);
             $pr_grnd_ttl = $pr_grnd_ttl + floatval($ttl);
         }
-        // echo var_dump(floatval($pr_allotment_grnd_ttl) !== floatval($pr_grnd_ttl)) . '<br>';
-        // echo $pr_allotment_grnd_ttl . '<br>';
-        // echo  floatval($pr_grnd_ttl);
-        // die();
+
         if (floatval($pr_allotment_grnd_ttl) !== floatval($pr_grnd_ttl)) {
             return false;
         }
@@ -380,8 +377,7 @@ class PrPurchaseRequestController extends Controller
                     !empty($item['item_id']) ? $item['item_id'] : '',
                 );
                 if ($validate !== true) {
-                    return $validate . ' in item ' . $c;
-                    die();
+                    throw new ErrorException($validate . ' in Specification table item ' . $c);
                 }
                 if (!empty($item['item_id'])) {
                     $q =  PrPurchaseRequestItem::findOne($item['item_id']);
@@ -403,10 +399,10 @@ class PrPurchaseRequestController extends Controller
                     $q->fk_ppmp_non_cse_item_id = $item['non_cse_item_id'];
                 }
                 if (!$q->validate()) {
-                    return $q->errors;
+                    throw new ErrorException(json_encode($q->errors));
                 }
                 if (!$q->save(false)) {
-                    return 'PR items Save error';
+                    throw new ErrorException('PR items Save error');
                 }
             } catch (ErrorException $e) {
                 return $e->getMessage();
@@ -432,30 +428,36 @@ class PrPurchaseRequestController extends Controller
             ->execute();
         foreach ($allotment_items as  $item) {
             if (empty($item['gross_amount'])) {
-                return 'Gross Amount Cannot be Blank';
+                throw new ErrorException('Gross Amount Cannot be Blank');
             }
             if (empty($item['allotment_id'])) {
-                return 'Allotment  Cannot be Blank';
+                throw new ErrorException('Allotment  Cannot be Blank');
             }
             try {
-                $validate_allotment = $this->checkAllotmentBalance($item['allotment_id'], $item['gross_amount'], !empty($item['pr_allotment_item_id']) ? $item['pr_allotment_item_id'] : '');
-                if ($validate_allotment !== true) {
-                    return $validate_allotment . ' in Allotment Table Item ' . $i;
-                }
 
                 if (!empty($item['pr_allotment_item_id'])) {
                     $ai = PrPurchaseRequestAllotments::findOne($item['pr_allotment_item_id']);
                 } else {
                     $ai = new PrPurchaseRequestAllotments();
                 }
+                $validate_allotment = MyHelper::checkAllotmentBalance(
+                    $item['allotment_id'],
+                    $item['gross_amount'],
+                    !empty($item['pr_allotment_item_id']) ? $item['pr_allotment_item_id'] : null
+                );
+                if ($validate_allotment !== true) {
+                    throw new ErrorException($validate_allotment . ' in Allotment Table Item ' . $i);
+                }
+
                 $ai->fk_purchase_request_id = $model_id;
                 $ai->fk_record_allotment_entries_id = $item['allotment_id'];
                 $ai->amount = $item['gross_amount'];
-                if ($ai->validate()) {
-                    if ($ai->save(false)) {
-                    }
-                } else {
-                    return $ai->errors;
+                if (!$ai->validate()) {
+
+                    throw new ErrorException(json_encode($ai->errors));
+                }
+                if (!$ai->save(false)) {
+                    throw new ErrorException('Allotment Save Failed');
                 }
             } catch (ErrorException $e) {
                 return $e->getMessage();
@@ -562,7 +564,7 @@ class PrPurchaseRequestController extends Controller
                     $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items);
                     if ($insert_allotments !== true) {
                         $transaction->rollBack();
-                        return json_encode(['isSuccess' => false, 'error_message' => $insert_items]);
+                        return json_encode(['isSuccess' => false, 'error_message' => $insert_allotments]);
                     }
                     $transaction->commit();
                     return $this->redirect(['view', 'id' => $model->id]);
@@ -937,8 +939,23 @@ class PrPurchaseRequestController extends Controller
                 IFNULL(supplemental_ppmp_cse.oct_qty,0)+
                 IFNULL(supplemental_ppmp_cse.nov_qty,0)+
                 IFNULL(supplemental_ppmp_cse.dec_qty,0))- IFNULL(ppmp_in_pr.total_pr_qty,0) as bal_qty,
-                IFNULL(supplemental_ppmp_cse.amount,0) - IFNULL(ppmp_in_pr.total_pr_amt,0) as bal_amt
-                
+           
+                (
+                    IFNULL(supplemental_ppmp_cse.amount,0)*
+                    ( IFNULL(supplemental_ppmp_cse.jan_qty,0)+
+                        IFNULL(supplemental_ppmp_cse.feb_qty,0)+
+                        IFNULL(supplemental_ppmp_cse.mar_qty,0)+
+                        IFNULL(supplemental_ppmp_cse.apr_qty,0)+
+                        IFNULL(supplemental_ppmp_cse.may_qty,0)+
+                        IFNULL(supplemental_ppmp_cse.jun_qty,0)+
+                        IFNULL(supplemental_ppmp_cse.jul_qty,0)+
+                        IFNULL(supplemental_ppmp_cse.aug_qty,0)+
+                        IFNULL(supplemental_ppmp_cse.sep_qty,0)+
+                        IFNULL(supplemental_ppmp_cse.oct_qty,0)+
+                        IFNULL(supplemental_ppmp_cse.nov_qty,0)+
+                        IFNULL(supplemental_ppmp_cse.dec_qty,0)
+                    )
+                ) - IFNULL(ppmp_in_pr.total_pr_amt,0) bal_amt 
                  FROM supplemental_ppmp_cse
                 LEFT JOIN pr_stock ON supplemental_ppmp_cse.fk_pr_stock_id  = pr_stock.id
                 LEFT JOIN unit_of_measure ON supplemental_ppmp_cse.fk_unit_of_measure_id = unit_of_measure.id

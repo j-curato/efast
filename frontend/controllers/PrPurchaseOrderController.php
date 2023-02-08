@@ -34,7 +34,11 @@ class PrPurchaseOrderController extends Controller
                     'view',
                     'delete',
                     'create',
-                    'update',
+                    'index',
+                    'aoq-info',
+                    'search-purchase-order',
+                    'search-purchase-order-for-rfi',
+                    'po-details',
                 ],
                 'rules' => [
                     [
@@ -43,7 +47,11 @@ class PrPurchaseOrderController extends Controller
                             'view',
                             'delete',
                             'create',
-                            'update',
+                            'index',
+                            'aoq-info',
+                            'search-purchase-order',
+                            'search-purchase-order-for-rfi',
+                            'po-details',
                         ],
                         'allow' => true,
                         'roles' => ['@']

@@ -5,6 +5,7 @@ use app\models\DivisionProgramUnit;
 use app\models\Divisions;
 use app\models\Office;
 use app\models\PrAllotmentViewSearch;
+use app\models\RecordAllotmentDetailedSearch;
 use aryelds\sweetalert\SweetAlert;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
@@ -361,7 +362,7 @@ $user_data = Yii::$app->memem->getUserData();
                                     </div>
                                     <div class='col-sm-2'>
                                         <label for='amount'>Unit Cost</label>
-                                        <input type='text' class='amount form-control' value='$unit_cost' onkeyup='updateMainAmount(this)'>
+                                        <input type='text' class='amount form-control' value='" . number_format($unit_cost, 2) . "' onkeyup='updateMainAmount(this)'>
                                         <input type='hidden' name='pr_items[$row_number][unit_cost]' class='unit_cost main-amount' value='$unit_cost'>
                                     </div>
                                     <div class='col-sm-1'>
@@ -370,7 +371,7 @@ $user_data = Yii::$app->memem->getUserData();
                                     </div>
                                     <div class='col-sm-2'>
                                         <label for='total'>Total</label>
-                                        <h5 class='item_total'>$itemTtl</h5>
+                                        <h5 class='item_total'>" . number_format($itemTtl, 2) . "</h5>
                                     </div>
                                 </div>
                                 <div class='row'>
@@ -439,9 +440,9 @@ $user_data = Yii::$app->memem->getUserData();
                             margin-bottom: 20px;">
 
         <?php
-        $allotment_colspan = 7;
+        $allotment_colspan = 9;
         if (Yii::$app->user->can('super-user')) {
-            $allotment_colspan = 9;
+            $allotment_colspan = 11;
             echo "<th>Office</th>";
             echo "<th>Division</th>";
         }
@@ -454,6 +455,8 @@ $user_data = Yii::$app->memem->getUserData();
                     </th>
                 </tr>
                 <tr>
+                    <th>Budget Year</th>
+
                     <?php
 
                     if (Yii::$app->user->can('super-user')) {
@@ -461,6 +464,7 @@ $user_data = Yii::$app->memem->getUserData();
                         echo "<th>Division</th>";
                     }
                     ?>
+                    <th>Allotment Number</th>
                     <th>Mfo Name</th>
                     <th>Fund Source</th>
                     <th> General Ledger</th>
@@ -487,9 +491,13 @@ $user_data = Yii::$app->memem->getUserData();
                         $division = ($item['division']);
                         $office = ($item['office_name']);
                         $gross_amount = floatval($item['gross_amount']);
+                        $allotmentNumber = $item['allotmentNumber'];
+                        $budget_year = $item['budget_year'];
                         $allotment_grnd_ttl += $gross_amount;
                         $gross_display = number_format($gross_amount, 2);
-                        echo "<tr>";
+                        echo "<tr><td>$budget_year</td>";
+
+
                         if (Yii::$app->user->can('super-user')) {
                             echo "<td>$office</td>
                             <td>$division</td>";
@@ -497,6 +505,7 @@ $user_data = Yii::$app->memem->getUserData();
                         echo " 
                             <td style='display:none;'><input type='text' class='entry_id' name='allotment_items[{$allotment_row_num}][pr_allotment_item_id]' value='$pr_allotment_item_id'></td>
                             <td style='display:none;'><input type='text' class='entry_id' name='allotment_items[{$allotment_row_num}][allotment_id]' value='$allotment_entry_id'></td>
+                            <td>$allotmentNumber</td>
                             <td>$mfo_name</td>
                             <td>$fund_source_name</td>
                             <td>$account_title</td>
@@ -538,7 +547,7 @@ $user_data = Yii::$app->memem->getUserData();
     </style>
     <?php
     $division = Yii::$app->user->identity->division;
-    $searchModel = new PrAllotmentViewSearch();
+    $searchModel = new RecordAllotmentDetailedSearch();
     $searchModel->budget_year = date('Y');
     $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors', $division);
     $dataProvider->pagination = ['pageSize' => 10];
@@ -567,7 +576,7 @@ $user_data = Yii::$app->memem->getUserData();
 
             [
                 'attribute' => 'budget_year',
-                'hidden' => true
+                // 'hidden' => true
 
             ],
             [
@@ -590,6 +599,8 @@ $user_data = Yii::$app->memem->getUserData();
                 'filterInputOptions' => ['placeholder' => 'Select Division', 'multiple' => false],
                 'format' => 'raw'
             ],
+            'allotmentNumber',
+
             [
                 'attribute' => 'mfo_name',
                 'filterType' => GridView::FILTER_SELECT2,
@@ -598,7 +609,10 @@ $user_data = Yii::$app->memem->getUserData();
                     'pluginOptions' => ['allowClear' => true],
                 ],
                 'filterInputOptions' => ['placeholder' => 'Select MFO/PAP Code', 'multiple' => false],
-                'format' => 'raw'
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return $model->mfo_code . '-' . $model->mfo_name;
+                }
             ],
             [
                 'attribute' => 'fund_source_name',
@@ -621,7 +635,6 @@ $user_data = Yii::$app->memem->getUserData();
                 'format' => ['decimal', 2],
                 // 'hAlign' => 'right'
             ],
-
 
 
         ];
@@ -645,9 +658,11 @@ $user_data = Yii::$app->memem->getUserData();
 
             [
                 'attribute' => 'budget_year',
-                'hidden' => true
+                // 'hidden' => true
 
             ],
+            'allotmentNumber',
+            'allotment_class',
 
             [
                 'attribute' => 'mfo_name',
@@ -657,7 +672,10 @@ $user_data = Yii::$app->memem->getUserData();
                     'pluginOptions' => ['allowClear' => true],
                 ],
                 'filterInputOptions' => ['placeholder' => 'Select MFO/PAP Code', 'multiple' => false],
-                'format' => 'raw'
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return $model->mfo_code . '-' . $model->mfo_name;
+                }
             ],
             [
                 'attribute' => 'fund_source_name',
@@ -680,7 +698,6 @@ $user_data = Yii::$app->memem->getUserData();
                 'format' => ['decimal', 2],
                 // 'hAlign' => 'right'
             ],
-
 
 
         ];
