@@ -94,6 +94,13 @@ if (!empty($model->part)) {
     ]) ?>
     <?= $form->field($model, 'bac_code')->textInput(['placeholder' => 'BAC Code']) ?>
 
+    <?= $form->field($model, 'cse_type')->widget(Select2::class, [
+        'data' => ['cse' => 'CSE', 'non_cse' => 'NON-CSE'],
+        'pluginOptions' => [
+            'placeholder' => 'Select CSE/NON-CSE'
+        ]
+    ]) ?>
+
     <?= $form->field($model, 'unit_of_measure_id')->widget(Select2::class, [
         'data' => ArrayHelper::map(UnitOfMeasure::find()->asArray()->all(), 'id', 'unit_of_measure'),
         'pluginOptions' => [
