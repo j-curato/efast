@@ -41,7 +41,7 @@ class PrStock extends \yii\db\ActiveRecord
             [['created_at',  'chart_of_account_id'], 'safe'],
             [[
                 'unit_of_measure_id',
-
+                'cse_type',
                 'stock_title',
                 'amount',
                 'bac_code', 'part', 'type',
