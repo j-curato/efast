@@ -37,7 +37,6 @@ if (!empty($model->dv_aucs_id)) {
 
         <?php $form = ActiveForm::begin([
             'id' => 'cash_disbursement_form',
-            'options' => ['class' => 'form-horizontal'],
         ]); ?>
 
         <div class="row">

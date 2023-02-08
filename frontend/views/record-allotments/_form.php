@@ -40,7 +40,6 @@ $fund_categories = ArrayHelper::map(FundCategoryAndClassificationCode::find()->a
 
     <?php $form = ActiveForm::begin([
         'id' => 'RecordAllotmentForm',
-        'options' => ['class' => 'form-horizontal'],
     ]); ?>
 
 
