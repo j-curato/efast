@@ -17,9 +17,8 @@ class recordAllotmentEntriesSearch extends RecordAllotmentEntries
     public function rules()
     {
         return [
-            [['id', 'record_allotment_id', 'chart_of_account_id', 'lvl'], 'integer'],
+            [['id', 'record_allotment_id', 'chart_of_account_id'], 'integer'],
             [['amount'], 'number'],
-            [['object_code'], 'safe'],
         ];
     }
 
@@ -62,13 +61,10 @@ class recordAllotmentEntriesSearch extends RecordAllotmentEntries
             'record_allotment_entries.id' => $this->id,
             // 'record_allotment_id' => $this->record_allotment_id,
             'chart_of_account_id' => $this->chart_of_account_id,
-            'amount' => $this->amount,
-            'lvl' => $this->lvl,
         ]);
 
-        $query->andFilterWhere(['like', 'object_code', $this->object_code])
-            ->andFilterWhere(['like', 'record_allotments.serial_number', $this->record_allotment_id]);
-
- ;       return $dataProvider;
+        $query
+            ->andFilterWhere(['like', 'record_allotments.serial_number', $this->record_allotment_id]);;
+        return $dataProvider;
     }
 }

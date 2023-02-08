@@ -36,9 +36,7 @@ class RecordAllotmentEntries extends \yii\db\ActiveRecord
                 'record_allotment_id',
                 'chart_of_account_id',
                 'amount',
-                'lvl',
-                'object_code',
-                'report_type',
+
 
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
@@ -64,11 +62,6 @@ class RecordAllotmentEntries extends \yii\db\ActiveRecord
     public function getRecordAllotment()
     {
         return $this->hasOne(RecordAllotments::class, ['id' => 'record_allotment_id']);
-    }
-
-    public function getRaouds()
-    {
-        return $this->hasMany(Raouds::class, ['record_allotment_entries_id' => 'id']);
     }
     public function getProcessOrsEntries()
     {
