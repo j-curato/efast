@@ -83,6 +83,7 @@ class RecordAllotmentDetailedSearch extends RecordAllotmentDetailed
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['budget_year' => SORT_DESC]],
         ]);
 
         $this->load($params);
