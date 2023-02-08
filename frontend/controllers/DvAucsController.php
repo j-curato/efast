@@ -473,7 +473,9 @@ class DvAucsController extends Controller
                     }
                 }
             }
-
+            $fund_source_type_id = Yii::$app->db->createCommand("SELECT fund_source_type.id FROM fund_source_type WHERE fund_source_type.name  = :_type")
+                ->bindValue(':_type', $report_type[$i])
+                ->queryOne();
             $ad_entry->fund_source_type = $fund_source_type[$i];
             $ad_entry->object_code = $object_codes[$i];
             $ad_entry->fund_source = trim($val, " \r\n\t");
@@ -482,6 +484,7 @@ class DvAucsController extends Controller
             $ad_entry->report_type = $report_type[$i];
 
             $ad_entry->book_id = intval($book_id);
+            $ad_entry->fk_fund_source_type_id = $fund_source_type_id;
             if ($ad_entry->save(false)) {
             } else {
                 return false;
@@ -1891,5 +1894,30 @@ class DvAucsController extends Controller
     }
     public function dvAucsEntries($dv_id)
     {
+    }
+    public function actionSearchDv($page = 1, $q = null, $id = null)
+    {
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if ($id > 0) {
+            $out['results'] = ['id' => $id, 'text' => DvAucs::findOne($id)->dv_number];
+        } else if (!is_null($q)) {
+            $query = new Query();
+            $query->select('dv_aucs.id, dv_aucs.dv_number AS text')
+                ->from('dv_aucs')
+                ->where(['like', 'dv_aucs.dv_number', $q])
+                ->andWhere('dv_aucs.is_cancelled = 0');
+
+            $query->offset($offset)
+                ->limit($limit);
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+            $out['pagination'] = ['more' => !empty($data) ? true : false];
+        }
+        return $out;
     }
 }
