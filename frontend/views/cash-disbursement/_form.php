@@ -67,6 +67,21 @@ if (!empty($model->dv_aucs_id)) {
                     ]
                 ]) ?>
             </div>
+            <!-- <div class="col-sm-4">
+                <?= $form->field($model, 'is_cancelled')->widget(Select2::class, [
+                    'readonly' => true,
+                    'data' => [0 => "Good", 1 => "Cancelled"],
+                    'options' => [
+                        'style' => 'background-color:white'
+                    ],
+                    'pluginOptions' => [
+                        'placeholder' => ''
+                    ]
+                ]) ?>
+            </div> -->
+
+
+
 
 
         </div>

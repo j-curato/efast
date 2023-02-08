@@ -55,6 +55,7 @@ class CashDisbursement extends \yii\db\ActiveRecord
             ], 'string', 'max' => 50],
             [['ada_number'], 'string', 'max' => 40],
             [['check_or_ada_no'], 'string', 'max' => 100],
+            [['is_cancelled'], 'default', 'value' => 0],
             [[
                 'id',
                 'book_id',
