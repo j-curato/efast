@@ -15,16 +15,16 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Major Accounts', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Major Accounts', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
             'id',
             'name',
@@ -34,4 +34,3 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]); ?>
 </div>
- 

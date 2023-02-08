@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Payee', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Payee', ['create'], ['class' => 'btn btn-success modalButtoncreate']) ?>
         <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal"> Import</button>
     </p>
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
@@ -76,7 +76,7 @@ $this->params['breadcrumbs'][] = $this->title;
     'filterModel' => $searchModel,
     'panel' => [
         'type' => GridView::TYPE_PRIMARY,
-        'heading' => 'List of Areas',
+        'heading' => 'List of Payees',
     ],
     'floatHeaderOptions' => [
         'top' => 50,
@@ -103,5 +103,24 @@ $this->params['breadcrumbs'][] = $this->title;
     ],
 ]); ?>
 
+<?php
 
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    ['depends' => [\yii\web\JqueryAsset::class]]
+)
+?>
 </div>
+<script>
+    // $(document).ready(() => {
+    //     $('.modalButtoncreate').click(function(e) {
+    //         e.preventDefault()
+    //         $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
+    //     });
+    //     $('a[title=Update]').click(function(e) {
+    //         e.preventDefault();
+
+    //         $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
+    //     });
+    // })
+</script>
