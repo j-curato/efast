@@ -149,6 +149,7 @@ class PrPurchaseRequestController extends Controller
             SUM(pr_purchase_request_item.quantity) as ttlPrQty
             FROM pr_purchase_request_item
             WHERE pr_purchase_request_item.is_deleted = 0
+            $sql
             GROUP BY pr_purchase_request_item.fk_ppmp_cse_item_id
             ) as ttlInPr ON supplemental_ppmp_cse.id = ttlInPr.fk_ppmp_cse_item_id
             WHERE
@@ -936,34 +937,29 @@ class PrPurchaseRequestController extends Controller
                 IFNULL(supplemental_ppmp_cse.nov_qty,0)+
                 IFNULL(supplemental_ppmp_cse.dec_qty,0))- IFNULL(ppmp_in_pr.total_pr_qty,0) as bal_qty,
            
-                (
-                    IFNULL(supplemental_ppmp_cse.amount,0)*
-                    ( IFNULL(supplemental_ppmp_cse.jan_qty,0)+
-                        IFNULL(supplemental_ppmp_cse.feb_qty,0)+
-                        IFNULL(supplemental_ppmp_cse.mar_qty,0)+
-                        IFNULL(supplemental_ppmp_cse.apr_qty,0)+
-                        IFNULL(supplemental_ppmp_cse.may_qty,0)+
-                        IFNULL(supplemental_ppmp_cse.jun_qty,0)+
-                        IFNULL(supplemental_ppmp_cse.jul_qty,0)+
-                        IFNULL(supplemental_ppmp_cse.aug_qty,0)+
-                        IFNULL(supplemental_ppmp_cse.sep_qty,0)+
-                        IFNULL(supplemental_ppmp_cse.oct_qty,0)+
-                        IFNULL(supplemental_ppmp_cse.nov_qty,0)+
-                        IFNULL(supplemental_ppmp_cse.dec_qty,0)
-                    )
-                ) - IFNULL(ppmp_in_pr.total_pr_amt,0) bal_amt 
+                (IFNULL(supplemental_ppmp_cse.jan_qty,0)+
+                IFNULL(supplemental_ppmp_cse.feb_qty,0)+
+              IFNULL(supplemental_ppmp_cse.mar_qty,0)+
+              IFNULL(supplemental_ppmp_cse.apr_qty,0)+
+              IFNULL(supplemental_ppmp_cse.may_qty,0)+
+              IFNULL(supplemental_ppmp_cse.jun_qty,0)+
+              IFNULL(supplemental_ppmp_cse.jul_qty,0)+
+              IFNULL(supplemental_ppmp_cse.aug_qty,0)+
+              IFNULL(supplemental_ppmp_cse.sep_qty,0)+
+              IFNULL(supplemental_ppmp_cse.oct_qty,0)+
+              IFNULL(supplemental_ppmp_cse.nov_qty,0)+
+              IFNULL(supplemental_ppmp_cse.dec_qty,0)
+            )* IFNULL(supplemental_ppmp_cse.amount,0) - IFNULL(ppmp_in_pr.total_pr_amt,0) as bal_amt    
                  FROM supplemental_ppmp_cse
                 LEFT JOIN pr_stock ON supplemental_ppmp_cse.fk_pr_stock_id  = pr_stock.id
                 LEFT JOIN unit_of_measure ON supplemental_ppmp_cse.fk_unit_of_measure_id = unit_of_measure.id
                 LEFT JOIN (SELECT 
-                pr_purchase_request.fk_supplemental_ppmp_cse_id,
-                SUM(pr_purchase_request_item.quantity) as total_pr_qty,
-                SUM(pr_purchase_request_item.unit_cost *pr_purchase_request_item.quantity)as total_pr_amt
-           
-                FROM pr_purchase_request 
-                LEFT JOIN pr_purchase_request_item ON pr_purchase_request.id = pr_purchase_request_item.pr_purchase_request_id
-                WHERE pr_purchase_request_item.is_deleted = 0
-                GROUP BY pr_purchase_request.fk_supplemental_ppmp_cse_id ) as ppmp_in_pr ON supplemental_ppmp_cse.id = ppmp_in_pr.fk_supplemental_ppmp_cse_id
+            pr_purchase_request_item.fk_ppmp_cse_item_id,
+            SUM(pr_purchase_request_item.quantity *pr_purchase_request_item.unit_cost) as total_pr_amt,
+            SUM(pr_purchase_request_item.quantity) as total_pr_qty
+            FROM pr_purchase_request_item
+            WHERE pr_purchase_request_item.is_deleted = 0
+            GROUP BY pr_purchase_request_item.fk_ppmp_cse_item_id) as ppmp_in_pr ON supplemental_ppmp_cse.id = ppmp_in_pr.fk_ppmp_cse_item_id
                  WHERE supplemental_ppmp_cse.id = :id")
                     ->bindValue(':id', $id)
                     ->queryAll();
