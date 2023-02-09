@@ -20,8 +20,27 @@ function accountingCodesSelect() {
     },
   });
 }
+//
+function ChartOfAccountsSelect() {
+  $(".chart-of-accounts").select2({
+    ajax: {
+      url: base_url + "?r=chart-of-accounts/search-accounting-code",
+      dataType: "json",
+      data: function (params) {
+        return {
+          q: params.term,
+        };
+      },
+      processResults: function (data) {
+        return {
+          results: data.results,
+          pagination: data.pagination,
+        };
+      },
+    },
+  });
+}
 function liquidationAccountingCodesSelect() {
-  console.log(base_url);
   $(".liquidation-chart-of-accounts").select2({
     ajax: {
       url: base_url + "?r=chart-of-accounts/search-liquidation-accounting-code",
@@ -97,6 +116,9 @@ function maskAmount() {
 }
 // SEPARATE WITH COMMA AMOUNT
 function thousands_separators(num) {
+  if (isNaN(num)) {
+    return;
+  }
   var number = Number(Math.round(num + "e2") + "e-2");
   var num_parts = number.toString().split(".");
   num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -353,3 +375,19 @@ $.fn.digits = function () {
     );
   });
 };
+
+$(".modalButtonCreate").click(function (e) {
+  e.preventDefault();
+  $("#genericModal")
+    .modal("show")
+    .find("#modalContent")
+    .load($(this).attr("href"));
+});
+$(".modalButtonUpdate").click(function (e) {
+  e.preventDefault();
+
+  $("#genericModal")
+    .modal("show")
+    .find("#modalContent")
+    .load($(this).attr("href"));
+});
