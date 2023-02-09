@@ -18,65 +18,30 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="chart-of-accounts-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::button('Update', 
-        ['value' => Url::to(Yii::$app->request->baseUrl . '?r=chart-of-accounts/update&id='.$model->id),
-         'class' => 'btn btn-primary modalButtoncreate']); ?>
-
-        <?php
-        $t = yii::$app->request->baseUrl . '/index.php?r=sub-accounts1/create&id=' . $model->id;
-
-
-        ?>
-        <?= Html::button('<span class="fa fa-pencil-square-o"></span>', ['value' => Url::to($t), 'class' => 'btn btn-primary btn-xs modalButtoncreate']); ?>
-
-    </p>
-    <!-- <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button> -->
-
-    <!-- Modal -->
-    <div id="myModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-
-            <!-- Modal content-->
-
-            <div class="modal-content">
-                <input type="text" hidden value="<?php echo $model->id; ?>" id="chart_id">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Modal Header</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="account_title">Account Title:</label>
-                        <input type="account_title" class="form-control" id="account_title">
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" id="save"> Submit</button>
-                </div>
-            </div>
-
-        </div>
-    </div>
 
 
 
+    <div class="container" style="background-color: white;">
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) ?>
+            <?= Html::a('Create Sub Account 1', ['sub-accounts1/create', 'chartOfAccountId' => $model->id], ['class' => 'btn btn-success modalButtonCreate']) ?>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'uacs',
-            'general_ledger',
-        ],
-    ]) ?>
+        </p>
 
-    <div class="container">
+        <?= DetailView::widget([
+            'model' => $model,
+
+            'attributes' => [
+                'uacs',
+                'general_ledger',
+            ],
+        ]) ?>
+
         <table class="table table-striped">
             <thead>
+                <tr class="info">
+                    <th colspan="2" style="text-align: center;">Sub Account 1's</th>
+                </tr>
                 <th>
                     Object Code
                 </th>
@@ -108,64 +73,65 @@ $this->params['breadcrumbs'][] = $this->title;
             </tbody>
         </table>
     </div>
-    
+
 
 
 </div>
 <?php
+$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [\yii\web\JqueryAsset::class]]);
 SweetAlertAsset::register($this);
-$script = <<<JS
-        $('.modalButtoncreate').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-        $('.modalButtonedit').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
+// $script = <<<JS
+//         $('.modalButtoncreate').click(function(){
+//             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+//         });
+//         $('.modalButtonedit').click(function(){
+//             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+//         });
 
-        $(document).ready(function(){
-            var at =''
-            var id=''
-            $('#save').click(function(){
-             at = document.getElementById('account_title').value
-             id = document.getElementById('chart_id').value
-            console.log (at)
-            $.ajax({
-                type:'POST',
-                url:window.location.pathname + '?r=chart-of-accounts/create-sub-account' ,
-                data:{
-                    account_title:at,
-                    id:id,
-                },
-                success:function(data){
-                    console.log(data)
-                    $('#myModal').modal('hide');
-       
-                        swal( {
-                        position: 'top-end',
-                        icon: 'success',
-                        title: " Reporting Period and Fund Cluster Code are Required",
-                        type: "success",
-                        timer:3000,
-                        closeOnConfirm: false,
-                        closeOnCancel: false
-                    })
-                },
-                beforeSend: function(){
-                   setTimeout(() => {
-                   console.log('loading');
-                       
-                   }, 5000);
-                },
-                complete: function(){
-                    $('#loading').hide();
-                }
-                
+//         $(document).ready(function(){
+//             var at =''
+//             var id=''
+//             $('#save').click(function(){
+//              at = document.getElementById('account_title').value
+//              id = document.getElementById('chart_id').value
+//             console.log (at)
+//             $.ajax({
+//                 type:'POST',
+//                 url:window.location.pathname + '?r=chart-of-accounts/create-sub-account' ,
+//                 data:{
+//                     account_title:at,
+//                     id:id,
+//                 },
+//                 success:function(data){
+//                     console.log(data)
+//                     $('#myModal').modal('hide');
 
-            })
-        })
-        })
+//                         swal( {
+//                         position: 'top-end',
+//                         icon: 'success',
+//                         title: " Reporting Period and Fund Cluster Code are Required",
+//                         type: "success",
+//                         timer:3000,
+//                         closeOnConfirm: false,
+//                         closeOnCancel: false
+//                     })
+//                 },
+//                 beforeSend: function(){
+//                    setTimeout(() => {
+//                    console.log('loading');
+
+//                    }, 5000);
+//                 },
+//                 complete: function(){
+//                     $('#loading').hide();
+//                 }
 
 
-JS;
-$this->registerJs($script);
+//             })
+//         })
+//         })
+
+
+// JS;
+// $this->registerJs($script);
 ?>

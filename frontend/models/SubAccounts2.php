@@ -54,7 +54,7 @@ class SubAccounts2 extends \yii\db\ActiveRecord
             'id' => 'ID',
             'sub_accounts1_id' => 'Sub Accounts1 ID',
             'object_code' => 'Object Code',
-            'name' => 'Name',
+            'name' => 'Account Title',
             'is_active' => 'Active'
         ];
     }

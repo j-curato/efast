@@ -5,6 +5,7 @@ namespace app\components\helpers;
 use ErrorException;
 use Yii;
 use yii\base\BaseObject;
+use yii\helpers\Html;
 
 class MyHelper extends BaseObject
 {
@@ -48,5 +49,10 @@ class MyHelper extends BaseObject
         }
 
         return true;
+    }
+    public static function gridDefaultAction($id)
+    {
+        return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $id])
+            . ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $id], ['class' => 'modalButtonUpdate']);
     }
 }

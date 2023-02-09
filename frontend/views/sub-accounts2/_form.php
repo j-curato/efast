@@ -13,15 +13,11 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'sub_accounts1_id',
-    // [ 'options' => [ 'hidden' => true]]
-    )->textInput() ?>
 
-    <?= $form->field($model, 'object_code')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
-    <?= $form->field($model, 'is_active')->widget(Select2::class,[
-        'data'=>[1=>'True',0=>'False']
+    <?= $form->field($model, 'is_active')->widget(Select2::class, [
+        'data' => [1 => 'True', 0 => 'False']
     ]) ?>
 
     <div class="form-group">

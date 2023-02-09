@@ -7,10 +7,12 @@ use Yii;
 use app\models\SubAccounts1;
 use app\models\SubAccounts1Search;
 use app\models\SubAccounts2;
+use ErrorException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\validators\Validator;
 
 /**
  * SubAccounts1Controller implements the CRUD actions for SubAccounts1 model.
@@ -97,15 +99,31 @@ class SubAccounts1Controller extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($chartOfAccountId = '')
     {
         $model = new SubAccounts1();
+        $model->chart_of_account_id = $chartOfAccountId;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            $last_id = SubAccounts1::find()->orderBy('id DESC')->one()->id + 1;
+            $uacs = ChartOfAccounts::findOne($model->chart_of_account_id)->uacs;
+            $zero = strlen($last_id) < 5 ? str_repeat('0',  5 - strlen($last_id)) : '';
+            $model->object_code = $uacs . '_' . $zero . $last_id;
+
+            try {
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Save Failed');
+                }
+            } catch (ErrorException $e) {
+                return $e->getMessage();
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('create', [
+        return $this->renderAjax('create', [
             'model' => $model,
         ]);
     }

@@ -123,42 +123,46 @@ supplemental_ppmp_non_cse_items.is_deleted = 0
     {
         $c = 1;
 
-        foreach ($items as $i => $item) {
+        try {
 
-            if (empty($item['unit_of_measure_id'])) {
-                echo json_encode([$item, $c]);
-                die();
-            }
-            if (!empty($item['cse_item_id'])) {
-                $cse_item = SupplementalPpmpCse::findOne($item['cse_item_id']);
-            } else {
+            foreach ($items as $i => $item) {
+                if (empty($item['unit_of_measure_id'])) {
+                    echo json_encode([$item, $c]);
+                    die();
+                }
+                if (!empty($item['cse_item_id'])) {
+                    $cse_item = SupplementalPpmpCse::findOne($item['cse_item_id']);
+                } else {
 
-                $cse_item = new SupplementalPpmpCse();
+                    $cse_item = new SupplementalPpmpCse();
+                }
+                $cse_item->fk_supplemental_ppmp_id = $id;
+                $cse_item->fk_pr_stock_id = $item['stock_id'];
+                $cse_item->fk_unit_of_measure_id = $item['unit_of_measure_id'];
+                $cse_item->amount = $item['amount'];
+                $cse_item->jan_qty = $item['jan_qty'];
+                $cse_item->feb_qty = $item['feb_qty'];
+                $cse_item->mar_qty = $item['mar_qty'];
+                $cse_item->apr_qty = $item['apr_qty'];
+                $cse_item->may_qty = $item['may_qty'];
+                $cse_item->jun_qty = $item['jun_qty'];
+                $cse_item->jul_qty = $item['jul_qty'];
+                $cse_item->aug_qty = $item['aug_qty'];
+                $cse_item->sep_qty = $item['sep_qty'];
+                $cse_item->oct_qty = $item['oct_qty'];
+                $cse_item->nov_qty = $item['nov_qty'];
+                $cse_item->dec_qty = $item['dec_qty'];
+                if (!$cse_item->validate()) {
+                    throw new ErrorException(json_encode($cse_item->errors));
+                }
+                if ($cse_item->save(false)) {
+                }
+                $c++;
             }
-            $cse_item->fk_supplemental_ppmp_id = $id;
-            $cse_item->fk_pr_stock_id = $item['stock_id'];
-            $cse_item->fk_unit_of_measure_id = $item['unit_of_measure_id'];
-            $cse_item->amount = $item['amount'];
-            $cse_item->jan_qty = $item['jan_qty'];
-            $cse_item->feb_qty = $item['feb_qty'];
-            $cse_item->mar_qty = $item['mar_qty'];
-            $cse_item->apr_qty = $item['apr_qty'];
-            $cse_item->may_qty = $item['may_qty'];
-            $cse_item->jun_qty = $item['jun_qty'];
-            $cse_item->jul_qty = $item['jul_qty'];
-            $cse_item->aug_qty = $item['aug_qty'];
-            $cse_item->sep_qty = $item['sep_qty'];
-            $cse_item->oct_qty = $item['oct_qty'];
-            $cse_item->nov_qty = $item['nov_qty'];
-            $cse_item->dec_qty = $item['dec_qty'];
-            if (!$cse_item->validate()) {
-                throw new ErrorException(json_encode($cse_item->errors));
-            }
-            if ($cse_item->save(false)) {
-            }
-            $c++;
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
         }
-        return true;
     }
     public function insertNonCseItems($id, $non_cse = [])
     {

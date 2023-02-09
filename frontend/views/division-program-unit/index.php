@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\helpers\Url;
@@ -15,15 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
     <p>
-        <?= Html::button(
-            '<i class="glyphicon glyphicon-plus"></i> Create',
-            [
-                'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=divisions/create'),
-                'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' =>
-                'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
-            ]
-        ); ?>
-
+        <?= Html::a('Create Division/Program/Unit', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
     </p>
 
 
@@ -40,8 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Action',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id])
-                        . ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id],['title'=>'Update']);
+                    return MyHelper::gridDefaultAction($model->id);
                 }
             ]
         ],
@@ -50,19 +42,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 <?php
-$js = <<<JS
 
-    $(document).ready(function(){
-        $('#modalButtoncreate').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-        $('a[title=Update]').click(function(e){
-            e.preventDefault();
-            
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
-        });
-
-    })
-JS;
-$this->registerJs($js);
+$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>

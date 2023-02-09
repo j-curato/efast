@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+use kartik\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\FundSourceTypeSearch */
@@ -12,27 +12,38 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="fund-source-type-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Fund Source Type', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Fund Source Type', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel' => [
+            'type' => 'primary',
+            'heading' => 'Fund Source Types'
+        ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'name',
             'division',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Action',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return Html::a("<i class='fa fa-eye'></i>", ['view', 'id' => $model->id])
+                        . ' ' .
+                        Html::a("<i class='fa fa-pencil'></i>", ['update', 'id' => $model->id], ['class' => 'modalButtonCreate']);
+                }
+            ],
         ],
     ]); ?>
 
 
 </div>
+<?php $this->registerJsFile("@web/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]) ?>

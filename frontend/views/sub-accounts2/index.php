@@ -29,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
         // Html::a('Create Sub Accounts1', ['create'], ['class' => 'btn btn-success']) 
 
         ?>
-        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button>
+        <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button> -->
     </p>
     <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
@@ -100,23 +100,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'object_code',
             'name',
-            // [
-            //     'label' => 'Actions',
-            //     'format' => 'raw',
-            //     'value' => function ($model) {
-            //         // $t = yii::$app->request->baseUrl . '/index.php?r=chart-of-accounts/update&id=' .
-            //         return ' ' . Html::button('<span class="">Add</span>', [
-            //             'class' => '"btn btn-info btn-xs add-sub',
-            //             'data-toggle' => "collapse", 'data-target' => "#collapseExample",
-            //             'aria-expanded' => "false", 'aria-controls' => "collapseExample",
-            //             'value' => $model->id,
-
-            //         ]);
-            //     }
-            // ],
 
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return
+
+                        Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id])
+                        . ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']);
+                }
+            ]
 
         ],
     ]); ?>
@@ -125,13 +120,12 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <?php
-$script = <<<JS
-    $('a[title=Update]').click(function(e){
-        e.preventDefault();
-        
-        $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'))
-    })
-JS;
-$this->registerJs($script);
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    [
+        'depends' => [\yii\web\JqueryAsset::class]
+    ]
+);
+
 
 ?>

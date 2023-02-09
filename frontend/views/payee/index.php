@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use kartik\widgets\ActiveForm;
@@ -17,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Payee', ['create'], ['class' => 'btn btn-success modalButtoncreate']) ?>
+        <?= Html::a('Create Payee', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
         <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal"> Import</button>
     </p>
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
@@ -83,7 +84,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'position' => 'absolute',
     ],
     'columns' => [
-        ['class' => 'yii\grid\SerialColumn'],
+
 
         'id',
         'account_name',
@@ -94,12 +95,13 @@ $this->params['breadcrumbs'][] = $this->title;
         //'remark',
         //'tin_number',
 
-
-
         [
-            'class' => '\kartik\grid\ActionColumn',
-            'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
-        ],
+            'label' => 'Action',
+            'format' => 'raw',
+            'value' => function ($model) {
+                return MyHelper::gridDefaultAction($model->id);
+            }
+        ]
     ],
 ]); ?>
 

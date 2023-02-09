@@ -23,9 +23,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-
-        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Add New', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=chart-of-accounts/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
-        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
+        <?= Html::a('<i class="glyphicon glyphicon-plus"></i> Add New ', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
+        <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button> -->
     </p>
 
     <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -219,68 +218,33 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => 'subMajorAccount.name'
 
             ],
+
+            // <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
             [
-                'label' => 'Actions',
+                'label' => 'Action',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    // $t = yii::$app->request->baseUrl . '/index.php?r=chart-of-accounts/update&id=' .
-                    return ' ' . Html::button('<span class="">Add</span>', [
-                        'data-toggle' => "modal", 'class' => '"btn btn-info btn-xs add-sub',
-                        'data-toggle' => "modal", 'data-target' => "#myModal",
-                        'value' => $model->id,
-                    ]);
-                }
-            ],
-            // <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
-            ['class' => 'yii\grid\ActionColumn'],
-
+                    // return Html::button('<i class="fa fa-plus"></i>', [
+                    //     'data-toggle' => "modal", 'class' => 'add-sub',
+                    //     'data-toggle' => "modal", 'data-target' => "#myModal",
+                    //     'value' => $model->id,
+                    // ])
+                    //     . '' .
+                    return  Html::a('<i class="fa fa-plus"></i>', ['sub-accounts1/create', 'chartOfAccountId' => $model->id], ['class' => 'btn-xs btn-success modalButtonCreate']) .
+                        ' ' .
+                        Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id])
+                        . ' ' .
+                        Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']);
+                },
+                'options' => [
+                    'style' => 'width:5%;'
+                ]
+            ]
 
 
         ],
     ]); ?>
-    <div id="myModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
 
-            <!-- Modal content-->
-
-            <div class="modal-content">
-                <div class="modal-header">
-
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Modal Header</h4>
-                </div>
-                <form id='create_sub_account'>
-
-                    <div class="modal-body">
-
-                        <div class="form-group">
-                            <label for="account_title">Account Title:</label>
-                            <input type="text" class="form-control" id="account_title" name="account_title">
-
-                            <label for="reporting_period">Reporting Period</label>
-                            <?php
-                            echo DatePicker::widget([
-                                'name' => 'reporting_period',
-                                'pluginOptions' => [
-                                    'minViewMode' => 'months',
-                                    'format' => 'yyyy-mm',
-                                    'autoclose' => true
-                                ]
-                            ])
-                            ?>
-                            <input type="hidden" class="form-control " id="chart_id" name="id">
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary" id="save"> Submit</button>
-                    </div>
-                </form>
-
-            </div>
-
-        </div>
-    </div>
 
 </div>
 <style>
@@ -290,87 +254,82 @@ $this->params['breadcrumbs'][] = $this->title;
 </style>
 
 <?php
+$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [\yii\web\JqueryAsset::class]]);
 SweetAlertAsset::register($this);
-$script = <<<JS
-            $('#modalButtoncreate').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-        $('a[title=Update]').click(function(e){
-            e.preventDefault();
-            
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
-        });
+// $script = <<<JS
+//             $('#modalButtoncreate').click(function(){
+//             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+//         });
+//         $('a[title=Update]').click(function(e){
+//             e.preventDefault();
 
-        $(document).ready(function(){
-            var at =''
-            var id=''
-          
-            $('.add-sub').click(function(){
-              id =  document.getElementById('chart_id').value=$(this).val()
-            })
-            $('#create_sub_account').submit(function(e){
-                e.preventDefault()
-             at = document.getElementById('account_title').value
-            //  id = document.getElementById('chart_id').value
-            console.log (at)
-            $.ajax({
-                type:'POST',
-                url:window.location.pathname + '?r=chart-of-accounts/create-sub-account' ,
-                data:$('#create_sub_account').serialize(),
-                success:function(data){
-                    // var res = JSON.parse(data)
-                    console.log(data)
+//             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
+//         });
 
-    
-                    if (data=='success'){
-                    $('#myModal').modal('hide');
-   
-                        swal( {
-                        icon: 'success',
-                        title: "Successfuly Added",
-                        type: "success",
-                        timer:3000,
-                        closeOnConfirm: false,
-                        closeOnCancel: false
-                    })
-                    }
-                    else{
-                        swal( {
-                        icon: 'error',
-                        title:  res.name,
-                        type: "error",
-                        timer:3000,
-                        closeOnConfirm: false,
-                        closeOnCancel: false
-                    })
-                    }
-                },
-                beforeSend: function(){
-                   setTimeout(() => {
-                   console.log('loading');
-                       
-                   }, 5000);
-                },
-                complete: function(){
-                    $('#loading').hide();
-                }
-                
+//         $(document).ready(function(){
+//             var at =''
+//             var id=''
 
-            })
-        })
-        })
+//             $('.add-sub').click(function(){
+//               id =  document.getElementById('chart_id').value=$(this).val()
+//             })
+//             $('#create_sub_account').submit(function(e){
+//                 e.preventDefault()
+//              at = document.getElementById('account_title').value
+//             //  id = document.getElementById('chart_id').value
+//             console.log (at)
+//             $.ajax({
+//                 type:'POST',
+//                 url:window.location.pathname + '?r=chart-of-accounts/create-sub-account' ,
+//                 data:$('#create_sub_account').serialize(),
+//                 success:function(data){
+//                     // var res = JSON.parse(data)
+//                     console.log(data)
 
 
-JS;
-$this->registerJs($script);
+//                     if (data=='success'){
+//                     $('#myModal').modal('hide');
+
+//                         swal( {
+//                         icon: 'success',
+//                         title: "Successfuly Added",
+//                         type: "success",
+//                         timer:3000,
+//                         closeOnConfirm: false,
+//                         closeOnCancel: false
+//                     })
+//                     }
+//                     else{
+//                         swal( {
+//                         icon: 'error',
+//                         title:  res.name,
+//                         type: "error",
+//                         timer:3000,
+//                         closeOnConfirm: false,
+//                         closeOnCancel: false
+//                     })
+//                     }
+//                 },
+//                 beforeSend: function(){
+//                    setTimeout(() => {
+//                    console.log('loading');
+
+//                    }, 5000);
+//                 },
+//                 complete: function(){
+//                     $('#loading').hide();
+//                 }
+
+
+//             })
+//         })
+//         })
+
+
+// JS;
+// $this->registerJs($script);
 ?>
 
 <?php
 
-$js = <<<JS
-
-
-
-JS;
-$this->registerJs($js);
 ?>

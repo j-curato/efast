@@ -16,43 +16,49 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-    <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=books/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
-
+        <?= Html::a('Create Book', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-        'panel'=>[
-            'type'=>GridView::TYPE_PRIMARY,
-            'heading'=>'Books'
+        'panel' => [
+            'type' => GridView::TYPE_PRIMARY,
+            'heading' => 'Books'
         ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'name',
             'account_number',
             'type',
 
-            ['class' => 'yii\grid\ActionColumn'],
+
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return
+
+                        Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id])
+                        . ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']);
+                }
+            ]
+
         ],
     ]); ?>
 
 
 </div>
 <?php
-$script = <<<JS
-    $(document).ready(function(){
-        $('a[title=Update]').click(function(e){
-            e.preventDefault();
-            
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
-        });
-    })
-JS;
-$this->registerJs($script);
+
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    [
+        'depends' => [\yii\web\JqueryAsset::class]
+    ]
+);
 
 ?>

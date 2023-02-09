@@ -5,7 +5,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\SubAccounts1 */
 
-$this->title = 'Update Sub Accounts1: ' . $model->name;
+$this->title = 'Update Sub Account 1: ' . $model->object_code;
 $this->params['breadcrumbs'][] = ['label' => 'Sub Accounts1s', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';
