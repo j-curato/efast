@@ -151,6 +151,9 @@ supplemental_ppmp_non_cse_items.is_deleted = 0
             $cse_item->oct_qty = $item['oct_qty'];
             $cse_item->nov_qty = $item['nov_qty'];
             $cse_item->dec_qty = $item['dec_qty'];
+            if (!$cse_item->validate()) {
+                throw new ErrorException(json_encode($cse_item->errors));
+            }
             if ($cse_item->save(false)) {
             }
             $c++;
@@ -370,7 +373,6 @@ supplemental_ppmp_non_cse_items.is_deleted = 0
             // die();
             $cse_items = !empty($_POST['cse_items']) ? $_POST['cse_items'] : [];
             $non_cse_items = !empty($_POST['ppmp_non_cse']) ? $_POST['ppmp_non_cse'] : [];
-            // return json_encode($cse_items);
 
 
 
@@ -455,6 +457,8 @@ supplemental_ppmp_non_cse_items.is_deleted = 0
 
         if (Yii::$app->request->isPost) {
             $cse_items = !empty($_POST['cse_items']) ? $_POST['cse_items'] : [];
+
+
             $non_cse_items = !empty($_POST['ppmp_non_cse']) ? $_POST['ppmp_non_cse'] : [];
             $model->date = date("Y-m-d");
             $model->budget_year = $_POST['budget_year'];
@@ -724,6 +728,7 @@ supplemental_ppmp_non_cse_items.is_deleted = 0
                     $ppmp->cse_type = strtolower($cse_type);
                     $ppmp->fk_office_id = $office_id;
                     $ppmp->fk_division_id = $division_id;
+                    $ppmp->is_supplemental = 0;
                     $ppmp->fk_division_program_unit_id = $division_program_unit_id;
                     if ($ppmp->validate()) {
                         if ($ppmp->save(false)) {

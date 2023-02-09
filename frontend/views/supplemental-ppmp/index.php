@@ -75,22 +75,23 @@ $this->params['breadcrumbs'][] = $this->title;
             'office_name',
             'division',
             'division_program_unit_name',
-            'activity_name',
+            'stock_activity',
 
 
             [
-                'attribute' => 'total_amount',
+                'attribute' => 'gross_amt',
                 'value' => function ($model) {
-                    return number_format($model->total_amount, 2);
+                    return number_format($model->gross_amt, 2);
                 }
             ],
             [
-                'attribute' => 'balance',
+                'attribute' => 'bal_amt',
                 'value' => function ($model) {
-                    return number_format($model->balance, 2);
+                    return number_format($model->bal_amt, 2);
                 }
             ],
             'ttl_qty',
+            'bal_qty',
             'prepared_by',
             'reviewed_by',
             'approved_by',
@@ -109,9 +110,14 @@ $this->params['breadcrumbs'][] = $this->title;
             'budget_year',
             'serial_number',
             'division_program_unit_name',
-            'activity_name',
-            'total_amount',
+            'stock_activity',
+            'gross_amt',
+            'bal_amt',
             'ttl_qty',
+            'bal_qty',
+
+
+
             'prepared_by',
             'reviewed_by',
             'approved_by',

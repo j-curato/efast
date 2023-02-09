@@ -39,7 +39,7 @@ class SupplementalPpmpIndex extends \yii\db\ActiveRecord
     {
         return [
             [['id', 'budget_year', 'ttl_qty'], 'integer'],
-            [['activity_name', 'prepared_by', 'reviewed_by', 'approved_by', 'certified_avail'], 'string'],
+            [['stock_activity', 'prepared_by', 'reviewed_by', 'approved_by', 'certified_avail'], 'string'],
             [['total_amount'], 'number'],
             [['cse_type', 'serial_number', 'office_name', 'division', 'division_program_unit_name'], 'string', 'max' => 255],
         ];
@@ -58,14 +58,16 @@ class SupplementalPpmpIndex extends \yii\db\ActiveRecord
             'office_name' => 'Office ',
             'division' => 'Division',
             'division_program_unit_name' => 'Division/Program/Unit',
-            'activity_name' => 'Activity Name',
+            'stock_activity' => 'Stock/Activity Name',
             'prepared_by' => 'Prepared By',
             'reviewed_by' => 'Reviewed By',
             'approved_by' => 'Approved By',
             'certified_avail' => 'Certified Funds Available By',
-            'total_amount' => 'Total Amount',
             'ttl_qty' => 'Total Quantity',
-            'balance' => 'Balance',
+            'bal_qty' => 'Balance Quantity',
+            'bal_amt' => 'Balance',
+            'gross_amt' => 'Gross Amount',
+
         ];
     }
 }

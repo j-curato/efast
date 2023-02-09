@@ -18,8 +18,13 @@ class SupplementalPpmpIndexSearch extends SupplementalPpmpIndex
     public function rules()
     {
         return [
-            [['id', 'ttl_qty'], 'integer'],
-            [['total_amount'], 'number'],
+            [['id', 'ttl_qty', 'bal_qty',], 'integer'],
+            [[
+
+
+                'bal_amt',
+                'gross_amt',
+            ], 'number'],
             [[
                 'budget_year',
                 'cse_type',
@@ -27,11 +32,12 @@ class SupplementalPpmpIndexSearch extends SupplementalPpmpIndex
                 'office_name',
                 'division',
                 'division_program_unit_name',
-                'activity_name',
+                'stock_activity',
                 'prepared_by',
                 'reviewed_by',
                 'approved_by',
                 'certified_avail',
+
             ], 'safe'],
         ];
     }
@@ -79,7 +85,10 @@ class SupplementalPpmpIndexSearch extends SupplementalPpmpIndex
         $query->andFilterWhere([
             'id' => $this->id,
             'ttl_qty' => $this->ttl_qty,
-            'total_amount' => $this->total_amount,
+            'bal_qty' => $this->bal_qty,
+            'bal_amt' => $this->bal_amt,
+            'gross_amt' => $this->gross_amt,
+
 
         ]);
 
@@ -91,7 +100,7 @@ class SupplementalPpmpIndexSearch extends SupplementalPpmpIndex
             ->andFilterWhere(['like', 'office_name', $this->office_name])
             ->andFilterWhere(['like', 'division', $this->division])
             ->andFilterWhere(['like', 'division_program_unit_name', $this->division_program_unit_name])
-            ->andFilterWhere(['like', 'activity_name', $this->activity_name])
+            ->andFilterWhere(['like', 'stock_activity', $this->stock_activity])
             ->andFilterWhere(['like', 'prepared_by', $this->prepared_by])
             ->andFilterWhere(['like', 'reviewed_by', $this->reviewed_by])
             ->andFilterWhere(['like', 'certified_avail', $this->certified_avail]);
