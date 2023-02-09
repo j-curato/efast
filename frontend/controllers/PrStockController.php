@@ -172,46 +172,46 @@ class PrStockController extends Controller
     {
         $model = new PrStock();
 
-        if ($model->load(Yii::$app->request->post())) {
+        // if ($model->load(Yii::$app->request->post())) {
 
-            // $specification = $_POST['specification'];
-            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            $transaction = Yii::$app->db->beginTransaction();
+        //     // $specification = $_POST['specification'];
+        //     $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+        //     $transaction = Yii::$app->db->beginTransaction();
 
-            // if (Yii::$app->memem->serverIp() !== '10.20.17.35') {
-            //     return $this->actionIndex();
-            // }
-            if ($model->part !== 'part-1') {
+        //     // if (Yii::$app->memem->serverIp() !== '10.20.17.35') {
+        //     //     return $this->actionIndex();
+        //     // }
+        //     if ($model->part !== 'part-1') {
 
-                $model->bac_code = $this->bacCode($model->part, $model->type, $model->chart_of_account_id);
-                if ($model->part === 'part-2') {
-                    $model->bac_code = 'CSE Part II';
-                } else {
-                }
-            }
-            try {
+        //         $model->bac_code = $this->bacCode($model->part, $model->type, $model->chart_of_account_id);
+        //         if ($model->part === 'part-2') {
+        //             $model->bac_code = 'CSE Part II';
+        //         } else {
+        //         }
+        //     }
+        //     try {
 
-                if ($flag = true) {
+        //         if ($flag = true) {
 
-                    if ($model->save(false)) {
-                        // $flag = $this->insertSpecs($specification, $model->id);
-                    } else {
-                        $flag = false;
-                    }
-                }
+        //             if ($model->save(false)) {
+        //                 // $flag = $this->insertSpecs($specification, $model->id);
+        //             } else {
+        //                 $flag = false;
+        //             }
+        //         }
 
-                if ($flag) {
-                    $transaction->commit();
-                    return $this->redirect(['view', 'id' => $model->id]);
-                } else {
-                    $transaction->rollBack();
-                    return json_encode('fail');
-                }
-            } catch (ErrorException $e) {
-                $transaction->rollBack();
-                return json_encode('fail');
-            }
-        }
+        //         if ($flag) {
+        //             $transaction->commit();
+        //             return $this->redirect(['view', 'id' => $model->id]);
+        //         } else {
+        //             $transaction->rollBack();
+        //             return json_encode('fail');
+        //         }
+        //     } catch (ErrorException $e) {
+        //         $transaction->rollBack();
+        //         return json_encode('fail');
+        //     }
+        // }
 
         return $this->renderAjax('create', [
             'model' => $model,
@@ -229,37 +229,37 @@ class PrStockController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post())) {
-            // $specification = !empty($_POST['specification']) ? $_POST['specification'] : [];
-            $transaction = Yii::$app->db->beginTransaction();
+        // if ($model->load(Yii::$app->request->post())) {
+        //     // $specification = !empty($_POST['specification']) ? $_POST['specification'] : [];
+        //     $transaction = Yii::$app->db->beginTransaction();
 
-            try {
+        //     try {
 
-                foreach ($model->prStockSpecification as $val) {
-                    $val->delete();
-                }
+        //         foreach ($model->prStockSpecification as $val) {
+        //             $val->delete();
+        //         }
 
-                if ($flag = true) {
+        //         if ($flag = true) {
 
-                    if ($model->save(false)) {
-                        // $flag = $this->insertSpecs($specification, $model->id);
-                    } else {
-                        $flag = false;
-                    }
-                }
+        //             if ($model->save(false)) {
+        //                 // $flag = $this->insertSpecs($specification, $model->id);
+        //             } else {
+        //                 $flag = false;
+        //             }
+        //         }
 
-                if ($flag) {
-                    $transaction->commit();
-                    return $this->redirect(['view', 'id' => $model->id]);
-                } else {
-                    $transaction->rollBack();
-                    return json_encode('fail');
-                }
-            } catch (ErrorException $e) {
-                $transaction->rollBack();
-                return json_encode($e->getMessage());
-            }
-        }
+        //         if ($flag) {
+        //             $transaction->commit();
+        //             return $this->redirect(['view', 'id' => $model->id]);
+        //         } else {
+        //             $transaction->rollBack();
+        //             return json_encode('fail');
+        //         }
+        //     } catch (ErrorException $e) {
+        //         $transaction->rollBack();
+        //         return json_encode($e->getMessage());
+        //     }
+        // }
 
         return $this->renderAjax('update', [
             'model' => $model,
