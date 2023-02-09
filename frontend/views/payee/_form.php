@@ -33,8 +33,13 @@ use yii\widgets\ActiveForm;
         ]
     ]) ?>
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="row">
+        <div class="col-sm-3 col-sm-offset-2">
+
+        </div>
+        <div class="form-group">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success','style'=>'width:11rem']) ?>
+        </div>
     </div>
 
     <?php ActiveForm::end(); ?>

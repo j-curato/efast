@@ -1,8 +1,10 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use kartik\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\web\JqueryAsset;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\CashAdjustmentSearch */
@@ -17,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=cash-adjustment/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+        <?= Html::a('Create Laps Amount', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
@@ -31,9 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'heading' => 'List of Laps Amounts',
         ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             [
                 'label' => 'Book',
                 'value' => function ($model) {
@@ -45,19 +45,16 @@ $this->params['breadcrumbs'][] = $this->title;
             'reporting_period',
             'amount',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id);
+                }
+            ],
         ],
     ]); ?>
 
 
 </div>
-<script>
-    $('#modalButtoncreate').click(function() {
-        $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-    });
-    $('a[title=Update]').click(function(e) {
-        e.preventDefault();
-
-        $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
-    });
-</script>
+<?php $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]) ?>

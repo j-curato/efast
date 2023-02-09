@@ -53,14 +53,14 @@ class CashAdjustment extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'book_id' => 'Book ID',
+            'book_id' => 'Book ',
             'particular' => 'Particular',
             'date' => 'Date',
             'amount' => 'Amount',
             'reporting_period' => 'Reporting Period',
         ];
     }
-    public function getBooks()
+    public function getBook()
     {
         return $this->hasOne(Books::class, ['id' => 'book_id']);
     }

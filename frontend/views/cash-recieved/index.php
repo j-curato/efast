@@ -1,8 +1,10 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use kartik\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\web\JqueryAsset;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\CashRecievedSearch */
@@ -16,8 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <!-- <?= Html::a('Create Cash Recieved', ['create'], ['class' => 'btn btn-success']) ?> -->
-        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Add New', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=cash-recieved/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+        <?= Html::a('Create Cash Recieved', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
 
     </p>
 
@@ -27,58 +28,55 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-        'panel'=>[
-            'type'=>GridView::TYPE_PRIMARY,
+        'panel' => [
+            'type' => GridView::TYPE_PRIMARY,
+            'heading' => 'Cash Recieves'
         ],
-        'export'=>false,
+        'export' => false,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'date',
             'reporting_period',
             [
-                'label'=>'Document Recieved',
-                'attribute'=>'documentRecieved.name'
+                'label' => 'Document Recieved',
+                'attribute' => 'documentRecieved.name'
             ],
             [
-                'label'=>"Book",
-                'attribute'=>'book.name'
+                'label' => "Book",
+                'attribute' => 'book.name'
             ],
-            
-            
+
+
             'nca_no',
             'nta_no',
             'nft_no',
             'purpose',
             // 'mfo_pap_code_id',
             [
-                'label'=>'Amount',
-                'attribute'=>'amount',
-                'format'=>['decimal',2],
+                'label' => 'Amount',
+                'attribute' => 'amount',
+                'format' => ['decimal', 2],
             ],
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id);
+                }
+            ],
         ],
     ]); ?>
 
-<style>
-.grid-view td{
-    white-space: normal;
-    width: 5rem;
-}
-</style>
+    <style>
+        .grid-view td {
+            white-space: normal;
+            width: 5rem;
+        }
+    </style>
 </div>
 
 <?php
-$script = <<< JS
 
-    $('#modalButtoncreate').click(function(){
-         $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-    });
-    $('.modalButtonedit').click(function(){
-        $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-    });
-JS;
-$this->registerJs($script);
+$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
 ?>

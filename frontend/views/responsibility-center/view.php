@@ -13,26 +13,22 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="responsibility-center-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="container panel panel-default" style="padding:2rem">
 
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
+
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) ?>
+
+        </p>
+
+        <?= DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                'name',
+                'description',
             ],
         ]) ?>
-    </p>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'name',
-            'description',
-        ],
-    ]) ?>
+    </div>
 
 </div>
+<?php $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [\yii\web\JqueryAsset::class]]) ?>

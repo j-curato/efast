@@ -86,7 +86,6 @@ $this->params['breadcrumbs'][] = $this->title;
     'columns' => [
 
 
-        'id',
         'account_name',
         'registered_name',
         'contact_person',

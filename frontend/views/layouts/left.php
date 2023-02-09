@@ -408,7 +408,7 @@
                                     'icon' => 'circle-o',
                                     'url' => '#',
                                     'items' => [
-                                        Yii::$app->user->can('super-user') ?     ['label' => 'Activity/Project Procurement', 'icon' => 'circle-o', 'url' => ['/pr-project-procurement'],] : [],
+                                        // Yii::$app->user->can('super-user') ?     ['label' => 'Activity/Project Procurement', 'icon' => 'circle-o', 'url' => ['/pr-project-procurement'],] : [],
                         Yii::$app->user->can('super-user') ?     ['label' => 'Supplemental PPMP', 'icon' => 'circle-o', 'url' => ['/supplemental-ppmp'],] : [],
                                        
                                         Yii::$app->user->can('super-user') ?     ['label' => 'Purchase Request', 'icon' => 'circle-o', 'url' => ['/pr-purchase-request'],] : [],

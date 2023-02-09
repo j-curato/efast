@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 
@@ -48,9 +49,22 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => 'rfq.purchaseRequest.purpose'
             ],
             'created_at',
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Action',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id);
+                }
+            ]
         ],
     ]); ?>
 
 
 </div>
+<style>
+    .grid-view td {
+        white-space: normal;
+        width: 5rem;
+        padding: 0;
+    }
+</style>

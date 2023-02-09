@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 
@@ -12,13 +13,13 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="fund-cluster-code-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Fund Cluster Code', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Fund Cluster Code', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -26,21 +27,26 @@ $this->params['breadcrumbs'][] = $this->title;
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
             'heading' => 'List of Areas',
-      ],
-       'floatHeaderOptions'=>[
-           'top'=>50,
-           'position'=>'absolute',
-         ],
+        ],
+        'floatHeaderOptions' => [
+            'top' => 50,
+            'position' => 'absolute',
+        ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'name',
             'description',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id);
+                }
+            ],
         ],
     ]); ?>
 
 
 </div>
+<?php $this->registerJsfile('@web/frontend/web/js/globalFunctions.js', ['depends' => [\yii\web\JqueryAsset::class]]) ?>

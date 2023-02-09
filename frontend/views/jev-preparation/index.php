@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use app\models\Books;
 use app\models\FundClusterCode;
 use app\models\JevAccountingEntries;
@@ -299,7 +300,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 
-      ['class' => 'yii\grid\ActionColumn'],
+      [
+        'label' => 'Actions',
+        'format' => 'raw',
+        'value' => function ($model) {
+          return MyHelper::gridDefaultAction($model->id);
+        }
+      ],
 
     ],
   ]); ?>

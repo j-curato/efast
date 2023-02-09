@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use kartik\export\ExportMenu;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
@@ -118,7 +119,13 @@ $this->params['breadcrumbs'][] = $this->title;
             }
         ],
 
-        ['class' => 'yii\grid\ActionColumn'],
+        [
+            'label' => 'Actions',
+            'format' => 'raw',
+            'value' => function ($model) {
+                return MyHelper::gridDefaultAction($model->id);
+            }
+        ],
     ];
     ?>
 
