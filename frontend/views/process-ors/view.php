@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="panel panel-default container" style="background-color: white;">
         <p>
             <?= Html::a('Create Process Ors', ['create'], ['class' => 'btn btn-success']) ?>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('Update/Re-Align', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
             <?php
             if ($ors->is_cancelled) {
@@ -45,7 +45,6 @@ $this->params['breadcrumbs'][] = $this->title;
             $t = yii::$app->request->baseUrl . "/index.php?r=transaction/view&id=$ors->transaction_id";
             echo  Html::a('Transaction', $t, ['class' => 'btn btn-info']);
             $adjust = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/re-align&id=$model->id";
-            echo Html::a('Adjust/Re-align', $adjust, ['class' => 'btn btn-warning ', 'style' => 'margin:5px']);
             ?>
         </p>
         <table class="table" style="margin-bottom: 2rem;">
