@@ -37,7 +37,7 @@ class Transaction extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['responsibility_center_id', 'payee_id', 'particular',  'transaction_date'], 'required'],
+            [['payee_id', 'particular',  'transaction_date'], 'required'],
             [['responsibility_center_id', 'payee_id', 'is_local', 'fk_book_id'], 'integer'],
             [['gross_amount'], 'number'],
             [['tracking_number', 'earmark_no', 'payroll_number', 'type'], 'string', 'max' => 255],
