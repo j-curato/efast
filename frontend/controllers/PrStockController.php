@@ -229,37 +229,37 @@ class PrStockController extends Controller
     {
         $model = $this->findModel($id);
 
-        // if ($model->load(Yii::$app->request->post())) {
-        //     // $specification = !empty($_POST['specification']) ? $_POST['specification'] : [];
-        //     $transaction = Yii::$app->db->beginTransaction();
+        if ($model->load(Yii::$app->request->post())) {
+            // $specification = !empty($_POST['specification']) ? $_POST['specification'] : [];
+            $transaction = Yii::$app->db->beginTransaction();
 
-        //     try {
+            try {
 
-        //         foreach ($model->prStockSpecification as $val) {
-        //             $val->delete();
-        //         }
+                foreach ($model->prStockSpecification as $val) {
+                    $val->delete();
+                }
 
-        //         if ($flag = true) {
+                if ($flag = true) {
 
-        //             if ($model->save(false)) {
-        //                 // $flag = $this->insertSpecs($specification, $model->id);
-        //             } else {
-        //                 $flag = false;
-        //             }
-        //         }
+                    if ($model->save(false)) {
+                        // $flag = $this->insertSpecs($specification, $model->id);
+                    } else {
+                        $flag = false;
+                    }
+                }
 
-        //         if ($flag) {
-        //             $transaction->commit();
-        //             return $this->redirect(['view', 'id' => $model->id]);
-        //         } else {
-        //             $transaction->rollBack();
-        //             return json_encode('fail');
-        //         }
-        //     } catch (ErrorException $e) {
-        //         $transaction->rollBack();
-        //         return json_encode($e->getMessage());
-        //     }
-        // }
+                if ($flag) {
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
+                } else {
+                    $transaction->rollBack();
+                    return json_encode('fail');
+                }
+            } catch (ErrorException $e) {
+                $transaction->rollBack();
+                return json_encode($e->getMessage());
+            }
+        }
 
         return $this->renderAjax('update', [
             'model' => $model,
