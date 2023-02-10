@@ -9,6 +9,7 @@ use app\models\ProcessOrs;
 use app\models\ProccessOrsSearch;
 use app\models\ProcessOrsEntries;
 use app\models\ProcessOrsEntriesSearch;
+use app\models\ProcessOrsIndexSearch;
 use app\models\ProcessOrsTxnItems;
 use app\models\RaoudEntries;
 use app\models\Raouds;
@@ -257,7 +258,7 @@ class ProcessOrsController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new ProccessOrsSearch();
+        $searchModel = new ProcessOrsIndexSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render('index', [
             'searchModel' => $searchModel,

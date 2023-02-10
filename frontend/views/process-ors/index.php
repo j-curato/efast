@@ -31,9 +31,13 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
 
-            [
-                'attribute' => 'serial_number',
-            ],
+            'serial_number',
+            'reporting_period',
+            'date',
+            'tracking_number',
+            'particular',
+            'r_center',
+            'payee',
 
             [
                 'label' => 'Actions',
