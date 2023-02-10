@@ -29,7 +29,8 @@ class m230210_101129_create_process_ors_index_view extends Migration
         process_ors
         LEFT JOIN `transaction` ON process_ors.transaction_id = `transaction`.id
         LEFT JOIN payee ON `transaction`.payee_id = payee.id
-        LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id = responsibility_center.id")
+        LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id = responsibility_center.id
+        WHERE process_ors.type = 'ors'")
             ->execute();
     }
 
@@ -38,7 +39,6 @@ class m230210_101129_create_process_ors_index_view extends Migration
      */
     public function safeDown()
     {
-
     }
 
     /*
