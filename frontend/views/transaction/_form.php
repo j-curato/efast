@@ -817,15 +817,15 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             })
         })
         let x = 0
+        let qwe = '<?= !empty($model->book->name) ? $model->book->name : '' ?>';
         window.onload = function() {
-            $('input[name^="PurchaseRequestIndexSearch[bookFilter]').val('').trigger('change')
+            $('input[name^="PurchaseRequestIndexSearch[bookFilter]').val(qwe).trigger('change')
         };
 
         $('#book_id').change(() => {
             x = 0
             // console.log($('input[name^="RecordAllotmentDetailedSearch[bookFilter]"]').val())
             const book = $('#book_id :selected').text()
-            console.log(book)
             $('input[name^="PurchaseRequestIndexSearch[bookFilter]').val(book).trigger('change')
             $(document).ajaxComplete(function() {
 
