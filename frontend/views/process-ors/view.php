@@ -1,5 +1,7 @@
 <?php
 
+use app\models\ProcessOrsNewView;
+use aryelds\sweetalert\SweetAlertAsset;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\widgets\Pjax;
@@ -7,348 +9,325 @@ use yii\widgets\Pjax;
 /* @var $this yii\web\View */
 /* @var $model app\models\ProcessOrs */
 
-$this->title = $model->id;
+$this->title = $model->serial_number;
 $this->params['breadcrumbs'][] = ['label' => 'Process Ors', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="process-ors-view">
 
+    <?php
+    $ors  = $model;
+    $entries = ProcessOrsNewView::find()->where('id = :id', ['id' => $model->id])->all();
+    ?>
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+    <div class="panel panel-default container" style="background-color: white;">
+        <p>
+            <?= Html::a('Create Process Ors', ['create'], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
-
-    <div class="container panel panel-default">
-
-        <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>
-
-        <table style="margin-top:30px">
+            <?php
+            if ($ors->is_cancelled) {
+                echo "
+                <button class='btn btn-success' id='cancel'>
+                    Activate
+                </button>
+                ";
+            } else {
+                echo "
+                <button class='btn btn-danger' id='cancel'>
+                    Cancel
+                </button>
+                ";
+            }
+            echo "<input type='text' id='cancel_id' value='$ors->id' style='display:none'/>";
+            $t = yii::$app->request->baseUrl . "/index.php?r=transaction/view&id=$ors->transaction_id";
+            echo  Html::a('Transaction', $t, ['class' => 'btn btn-info']);
+            $adjust = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/re-align&id=$model->id";
+            echo Html::a('Adjust/Re-align', $adjust, ['class' => 'btn btn-warning ', 'style' => 'margin:5px']);
+            ?>
+        </p>
+        <table class="table" style="margin-bottom: 2rem;">
+            <thead>
+                <tr class="info ">
+                    <th colspan="9" class="center">
+                        <h4> <b>Transaction Allotments </b></h4>
+                    </th>
+                </tr>
+                <th>Responsible Center</th>
+                <th>Particular</th>
+                <th>Payee</th>
+                <th>Book</th>
+                <th> Allotment Number</th>
+                <th> MFO/PAP</th>
+                <th> Fund Source</th>
+                <th> UACS</th>
+                <th> Amount</th>
+            </thead>
             <tbody>
 
-                <tr>
-
-                    <td colspan="5" style="text-align: center;">
-                        <h4 class="head">
-                            OBLIGATION REQUEST AND STATUS
-                        </h4>
-                        <div>
-                            _____________________________
-                        </div>
-                        <h5 class="head">
-                            entity name
-                        </h5>
-
-                    </td>
-                    <td colspan="3">
-                        <div>
-                            <span>Serial Number:</span>
-                            <span>124123</span>
-                        </div>
-                        <div>
-                            <span>Date:</span>
-                            <span>15-12-12</span>
-                        </div>
-                        <div>
-                            <span>Fund Cluster:</span>
-                            <span>Fund 01</span>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        payee
-                    </td>
-                    <td colspan="6">
-                        <?php
-                        echo "{$model->transaction->payee->account_name}";
-                        ?>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        Office
-                    </td>
-                    <td colspan="6">
-                        qweqw
-                    </td>
-                </tr>
-                <tr class="header">
-                    <td colspan="2">
-                        Address
-                    </td>
-                    <td colspan="6">
-                         <?php
-                        echo "{$model->transaction->payee->registered_address}";
-                        ?>
-                    </td>
-                </tr>
-                <tr class="header">
-                    <td colspan="2">
-                        Responsibility Center
-                    </td>
-                    <td colspan="3">
-                        Particulars
-                    </td>
-                    <td colspan="1">
-                        MFO/PAP
-                    </td>
-                    <td colspan="1">
-                        UACS Object Code
-                    </td>
-                    <td colspan="1">
-                        Amount
-                    </td>
-                </tr>
-
                 <?php
+                $txnTtl  = 0;
+                foreach ($orsTxnAllotments as $item) {
+                    $particular = $item['particular'];
+                    $allotment_number = $item['allotment_number'];
+                    $responsibilityCenter = $item['responsibilityCenter'];
+                    $mfo_name = $item['mfo_name'];
+                    $fund_source_name = $item['fund_source_name'];
+                    $account_title = $item['account_title'];
+                    $uacs = $item['uacs'];
+                    $book_name = $item['book_name'];
+                    $payee = $item['payee'];
+                    $itemAmt = $item['itemAmt'];
 
-                // foreach ($model-> as $val) {
-                    // echo "
-                    // <tr>
-                    //     <td colspan='2'></td>
-                    //     <td colspan='3'></td>
-                    //     <td></td>
-                    //     <td>
-                    //     {$val->raoudEntries->chartOfAccount->general_ledger}
-                    //     </td>
-                    //     <td>
-                    //     {$val->raoudEntries->amount}
-                        
-                    //     </td>
-                    // </tr>
-                    // ";
+                    echo "<tr>
+                        <td>$responsibilityCenter</td>
+                        <td>$particular</td>
+                        <td>$payee</td>
+                        <td>$book_name</td>
+                        <td>$allotment_number</td>
+                        <td>$mfo_name</td>
+                        <td>$fund_source_name</td>
+                        <td>$uacs - $account_title</td>
+                        <td class='amount'> 
+                           " . number_format($itemAmt, 2) . " 
+                        </td>
+                    </tr>";
+                    $txnTtl += floatval($itemAmt);
+                }
+                ?>
+            </tbody>
+            <tfoot>
+                <tr class="warning">
+
+                    <th colspan="8" class="center">Total</th>
+                    <th class="amount"><?= number_format($txnTtl, 2) ?></th>
+                </tr>
+            </tfoot>
+        </table>
+        <table class="table table-striped">
+
+            <thead>
+                <tr class="info ">
+                    <th colspan="9" class="center">
+                        <h4> <b>ORS Entries </b></h4>
+                    </th>
+                </tr>
+
+                <th>
+                    Reporting Period
+                </th>
+                <th>
+                    Allotment Number
+                </th>
+                <th>MFO/PAP</th>
+                <th>Fund Source</th>
+                <th>
+                    Allotment UACS
+                </th>
+                <th>
+                    Entry UACS
+                </th>
+
+                <th style='text-align:right'>
+                    Amount
+                </th>
+            </thead>
+            <tbody>
+                <?php
+                $orsItmTtl = 0;
+                // foreach ($entries as $key => $val) {
+                //     $count = $key + 1;
+                //     echo "
+                // <tr>
+                //     <td>
+                //        {$count}
+                //     </td>
+                //     <td>
+                //        {$val->reporting_period}
+                //     </td>
+                //     <td>
+                //        {$val->reporting_period}
+                //     </td>
+                //     <td>
+                //        {$val->payee}
+                //     </td>
+                //     <td>
+                //        {$val->particular}
+                //     </td>
+                //     <td>
+                //        {$val->allotment_uacs}
+                //     </td>
+
+                //     <td>
+                //        {$val->allotment_account_title}
+                //     </td>
+
+                //     <td>
+                //        {$val->ors_uacs}
+                //     </td>
+
+                //     <td>
+                //        {$val->ors_account_title}
+                //     </td>
+
+                //     <td class='amount'>" . number_format($val->amount, 2) . "
+
+                //     </td>
+
+
+                // </tr>
+
+                // ";
+                //     $total += $val->amount;
                 // }
-                     echo "
-                    <tr>
-                        <td colspan='2'></td>
-                        <td colspan='3'>{$model->transaction->particular}</td>
-                        <td></td>
-                        <td>
-                        </td>
-                        <td>
-                        {$model->transaction->gross_amount}
-                        
-                        </td>
-                    </tr>
-                    ";
+                foreach ($GetOrsItems as $orsItm) {
+                    echo "<tr>
+                            <td>{$orsItm['reporting_period']}</td>
+                            <td>{$orsItm['serial_number']}</td>
+                            <td>{$orsItm['mfo_code']}-{$orsItm['mfo_name']}</td>
+                            <td>{$orsItm['fund_source']}</td>
+                            <td>{$orsItm['allotment_uacs']}-{$orsItm['allotment_ledger']}</td>
+                            <td>{$orsItm['uacs']}-{$orsItm['general_ledger']}</td>
+                            <td class='amount'>" . number_format($orsItm['amount'], 2) . "</td>
+                        </tr>";
+                    $orsItmTtl += floatval($orsItm['amount']);
+                }
                 ?>
                 <tr>
-                    <td colspan="2">
-                    </td>
-                    <td colspan="3">
-                    </td>
-                    <td colspan="1">
-                    </td>
-                    <td colspan="1">
-                    </td>
-                    <td colspan="1">
-                    </td>
+                <tr class="warning">
+
+                    <td colspan="6" style='text-align:center;font-weight:bold;'>Total</td>
+                    <td style='text-align:right;font-weight:bold;'><?php echo number_format($orsItmTtl, 2); ?></td>
                 </tr>
-
-
-                <tr style="border-top:1px solid black">
-                    <td colspan="4">
-                        <div>
-                            <span class="head">A. Certified: </span>
-                            Charges to appropriation/alloment arenecessary,
-                            lawful and under my direct supervision;and supporting documents
-                            valid, proper and legal
-
-                        </div>
-                        <div>
-                            <span>Signature:</span>
-                            <span>______________</span>
-                        </div>
-                        <div>
-                            <span>Printed Name:</span>
-                            <span>______________</span>
-                        </div>
-                        <div>
-                            <span>Position:</span>
-                            <span>______________</span>
-                            <h6>Head, Budget Division/Unit/Authorized Representative</h6>
-                        </div>
-                        <div>
-                            <span>Date:</span>
-                            <span>______________</span>
-                        </div>
-
-                    </td>
-                    <td colspan="4">
-
-                        <div>
-                            <span class="head"> B. Certified:</span>
-                            Allotment available and obligated
-                            for the purpose/adjustment necessary as
-                            indicated above
-                        </div>
-                        <div>
-                            <span>Signature:</span>
-                            <span>______________</span>
-                        </div>
-                        <div>
-                            <span>Printed Name:</span>
-                            <span>______________</span>
-                        </div>
-                        <div>
-                            <span>Position:</span>
-                            <span>______________</span>
-                            <h6>Head, Budget Division/Unit/Authorized Representative</h6>
-                        </div>
-                        <div>
-                            <span>Date:</span>
-                            <span>______________</span>
-                        </div>
-
-                    </td>
-
-
                 </tr>
-                <tr>
-                    <td colspan="8">
-                        <h6 class="head">
-                            STATUS OF OBLIGATION
-                        </h6>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="4" class="head">
-                        REFERENCE
-
-                    </td>
-                    <td colspan="4" class="head">
-                        AMOUNT
-                    </td>
-                </tr>
-                <tr>
-                    <td rowspan="2">date</td>
-                    <td rowspan="2">particular</td>
-                    <td rowspan="2">ORS/JEV/Check/ADA/TRA No.</td>
-                    <td rowspan="2">Obligation</td>
-                    <td rowspan="2">Payable</td>
-                    <td rowspan="2">Payment</td>
-                    <td colspan="2">balance</td>
-                </tr>
-                <tr>
-                    <td>
-                        Not Yet Due
-                    </td>
-                    <td>
-                        Due and Demandable
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-
-
-
             </tbody>
         </table>
-        <?php Pjax::end() ?>
-
     </div>
-    <style>
-        .head {
-            text-align: center;
-            font-weight: bold;
-        }
-
-        td {
-            border: 1px solid black;
-            padding: 1rem;
-        }
-
-        table {
-            margin: 12px;
-            margin-left: auto;
-            margin-right: auto;
-            width: 100%;
-        }
-
-        @media print {
-            .actions {
-                display: none;
-            }
-
-            table,
-            th,
-            td {
-                border: 1px solid black;
-                padding: 5px;
-                font-size: 10px;
-            }
-
-            @page {
-                size: auto;
-                margin: 0;
-                margin-top: 0.5cm;
-            }
+    <div class="container">
 
 
+        <h4>List of DV's Using This ORS</h4>
+        <table class="table">
+            <thead>
+                <th>
+                    DV Number
+                </th>
+                <th>
+                    Link
+                </th>
+            </thead>
+            <tbody>
 
-            .container {
-                margin: 0;
-                top: 0;
-            }
+                <?php
+                if (!empty($ors->dvAucsEntries)) {
+                    $dv_id = 0;
+                    foreach ($ors->dvAucsEntries as $val) {
+                        if (intval($val->is_deleted) === 0) {
 
-            .entity_name {
-                font-size: 5pt;
-            }
+                            $x = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/view&id={$val->dvAucs->id}";
+                            echo "<tr>
+                        <td>{$val->dvAucs->dv_number}</td>
+                        <td>" .
+                                Html::a('Dv Link', $x, ['class' => 'btn-xs btn-danger '])
+                                . "</td>
+                        </tr>";
+                        }
+                    }
 
-            table,
-            th,
-            td {
-                border: 1px solid black;
-                padding: 5px;
-                background-color: white;
-            }
+                    // http://10.20.17.33/dti-afms-2/frontend/web/index.php?r=dv-aucs%2Fview&id=6878
+                    // echo  
+                }
+                ?>
+            </tbody>
 
-            .container {
-
-                border: none;
-            }
-
-
-            table {
-                page-break-after: auto
-            }
-
-            tr {
-                page-break-inside: avoid;
-                page-break-after: auto
-            }
-
-            td {
-                page-break-inside: avoid;
-                page-break-after: auto
-            }
-
-            /* thead {
-                display: table-header-group
-            } */
-
-            .main-footer {
-                display: none;
-            }
-        }
-    </style>
+        </table>
+    </div>
 
 </div>
+
+<style>
+    .container {
+        background-color: white;
+        padding: 12px;
+    }
+
+    .amount {
+        text-align: right;
+    }
+
+    .center {
+        text-align: center;
+    }
+</style>
+<?php
+
+SweetAlertAsset::register($this);
+$script = <<< JS
+
+    $("#cancel").click(function(){
+    swal({
+        title: "Are you sure?",
+        text: "You will not be able to recover this imaginary file!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: '#DD6B55',
+        confirmButtonText: 'Yes, I am sure!',
+        cancelButtonText: "No, cancel it!",
+        closeOnConfirm: false,
+        closeOnCancel: true
+    },
+    function(isConfirm){
+
+    if (isConfirm){
+                $.ajax({
+                    type:"POST",
+                    url:window.location.pathname + "?r=process-ors-entries/cancel",
+                    data:{
+                        id:$("#cancel_id").val()
+                    },
+                    success:function(data){
+                        var res = JSON.parse(data)
+                        // swal({
+                        //     title:"Success",
+                        //     type:'success',
+                        //     button:false,
+                        //     timer:3000,
+                        //  })
+                        console.log(data)
+                        var cancelled = res.cancelled?"Successfuly Cancelled":"Successfuly Activated";
+                        if(res.isSuccess){
+                            swal({
+                                title:cancelled,
+                                type:'success',
+                                button:false,
+                                timer:3000,
+                            },function(){
+                                location.reload(true)
+                            })
+                        }else{
+                            swal({
+                                title:"Error",
+                                text:res.error,
+                                type:'error',
+                                button:false,
+                                timer:3000,
+                            })
+                        }
+                    }
+                })
+
+
+        } 
+    })
+
+    })
+    $(document).ready(function(){
+        
+    })
+
+JS;
+$this->registerJs($script);
+
+?>

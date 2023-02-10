@@ -2,15 +2,24 @@
 
 namespace frontend\controllers;
 
+use app\components\helpers\MyHelper;
+use app\models\Books;
 use Yii;
 use app\models\ProcessOrs;
 use app\models\ProccessOrsSearch;
 use app\models\ProcessOrsEntries;
 use app\models\ProcessOrsEntriesSearch;
+use app\models\ProcessOrsTxnItems;
 use app\models\RaoudEntries;
 use app\models\Raouds;
 use app\models\Raouds2Search;
 use app\models\RaoudsSearch;
+use app\models\RecordAllotmentDetailed;
+use app\models\RecordAllotmentDetailedSearch;
+use app\models\RecordAllotmentsViewSearch;
+use DateTime;
+use ErrorException;
+use phpDocumentor\Reflection\DocBlock\Tags\Throws;
 use yii\db\ForeignKeyConstraint;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -69,6 +78,178 @@ class ProcessOrsController extends Controller
             ],
         ];
     }
+    private function InsertEntries($orsId, $items, $reporting_period = '')
+    {
+        $cnt = 1;
+        try {
+            foreach ($items as $item) {
+
+                if (!empty($item['item_id'])) {
+
+                    $entry = ProcessOrsEntries::findOne($item['item_id']);
+                } else {
+                    $entry = new ProcessOrsEntries();
+                }
+
+                $validate = MyHelper::checkAllotmentBalance(
+                    $item['allotment_id'],
+                    $item['gross_amount'],
+
+                );
+                if ($validate !== true) {
+                    throw new ErrorException($validate . ' in item No. ' . $cnt);
+                }
+                $entry->chart_of_account_id = intval($item['chart_of_account_id']);
+                $entry->process_ors_id = $orsId;
+                $entry->amount = floatval($item['gross_amount']);
+                $entry->reporting_period = !empty($reporting_period) ? $reporting_period : $item['reporting_period'];
+                $entry->record_allotment_entries_id = intval($item['allotment_id']);
+                if (!$entry->validate()) {
+                    throw new ErrorException(json_encode($entry->errors));
+                }
+                if (!$entry->save(false)) {
+                    throw new ErrorException('Entry Save Error');
+                }
+            }
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+        return true;
+    }
+    private function checkTxnItmBal($txnItmId, $amt, $item_id = '')
+    {
+
+        $params = [];
+        $sql = '';
+        if (!empty($item_id)) {
+            $sql .= ' AND ';
+            $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['!=', "process_ors_txn_items.id", $item_id], $params);
+        }
+        $bal = Yii::$app->db->createCommand("SELECT 
+             transaction_items.amount - IFNULL(ttlObligated.ttl,0) as balance
+            FROM transaction_items 
+            LEFT JOIN (SELECT 
+            process_ors_txn_items.fk_transaction_item_id,
+            SUM(process_ors_txn_items.amount) as ttl
+            FROM 
+            process_ors_txn_items
+            WHERE process_ors_txn_items.is_deleted = 0
+            $sql
+            GROUP BY process_ors_txn_items.fk_transaction_item_id) as ttlObligated ON transaction_items.id  = ttlObligated.fk_transaction_item_id
+            WHERE  `transaction_items`.id = :id
+         ", $params)
+            ->bindValue(':id', $txnItmId)
+            ->queryScalar();
+
+        $finalBal = floatval($bal) - floatval($amt);
+
+        if ($finalBal < 0) {
+            return "Allotment Balance Cannot be less than " . number_format($bal, 2);
+        }
+        return true;
+    }
+    private function InsertOrsTxnItems($orsId, $items)
+    {
+        try {
+            foreach ($items as $item) {
+                $itemId = '';
+                if (!empty($item['item_id'])) {
+                    $itemId = $item['item_id'];
+                    $txnItem = ProcessOrsTxnItems::findOne($item['item_id']);
+                } else {
+                    $txnItem = new ProcessOrsTxnItems();
+                }
+                $val = $this->checkTxnItmBal($item['txnItemId'], $item['txnAmount'], $itemId);
+                if ($val !== true) {
+                    throw new ErrorException($val);
+                }
+                $txnItem->fk_process_ors_id = $orsId;
+                $txnItem->fk_transaction_item_id = $item['txnItemId'];
+                $txnItem->amount = $item['txnAmount'];
+                if (!$txnItem->validate()) {
+                    throw new ErrorException(json_encode($txnItem->errors));
+                }
+                if (!$txnItem->save(false)) {
+                    throw new ErrorException('Transaction Item Save Error');
+                }
+            }
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+        return true;
+    }
+    private function GetOrsTxnItems($id)
+    {
+        return YIi::$app->db->createCommand("SELECT 
+                     process_ors_txn_items.id as item_id,
+                    `transaction_items`.id as transactionItemId,
+                    `transaction`.tracking_number,
+                    `transaction`.particular,
+                    record_allotments.serial_number as allotment_number,
+                    transaction_items.amount as txnItemAmt,
+                    responsibility_center.`name` as responsibilityCenter,
+                    CONCAT(mfo_pap_code.`code`,'-',mfo_pap_code.`name`) as mfo_name,
+                    fund_source.`name` as fund_source_name,
+                    chart_of_accounts.general_ledger as account_title,
+                    chart_of_accounts.uacs ,
+                    books.`name` as book_name,
+                    payee.account_name as payee,
+                    process_ors_txn_items.amount as itemAmt,
+                    transaction_items.amount - IFNULL(ttlObligated.ttl,0) as balance
+
+                    FROM process_ors_txn_items
+                    INNER JOIN transaction_items ON `process_ors_txn_items`.fk_transaction_item_id = transaction_items.id
+                    LEFT JOIN `transaction` ON transaction_items.fk_transaction_id  =`transaction`.id
+                    LEFT JOIN record_allotment_entries ON transaction_items.fk_record_allotment_entries_id = record_allotment_entries.id
+                    LEFT JOIN record_allotments ON record_allotment_entries.record_allotment_id = record_allotments.id
+                    LEFT JOIN mfo_pap_code ON record_allotments.mfo_pap_code_id = mfo_pap_code.id
+                    LEFT JOIN fund_source ON record_allotments.fund_source_id = fund_source.id
+                    LEFT JOIN chart_of_accounts ON record_allotment_entries.chart_of_account_id = chart_of_accounts.id
+                    LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id = responsibility_center.id
+                    LEFT JOIN books ON `transaction`.fk_book_id = books.id
+                    LEFT JOIN payee ON `transaction`.payee_id = payee.id
+                    LEFT JOIN (SELECT 
+                    process_ors_txn_items.fk_transaction_item_id,
+                    SUM(process_ors_txn_items.amount) as ttl
+                    FROM 
+                    process_ors_txn_items
+                    WHERE process_ors_txn_items.is_deleted = 0
+                    GROUP BY process_ors_txn_items.fk_transaction_item_id) as ttlObligated ON transaction_items.id  = ttlObligated.fk_transaction_item_id
+                    WHERE  
+                    process_ors_txn_items.is_deleted = 0
+                    AND process_ors_txn_items.fk_process_ors_id = :id")
+
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
+    private function GetOrsItems($id)
+    {
+        return YIi::$app->db->createCommand("SELECT 
+
+        process_ors_entries.reporting_period,
+        record_allotments_view.mfo_code,
+        record_allotments_view.mfo_name,
+        record_allotments_view.fund_source,
+        chart_of_accounts.general_ledger,
+        process_ors_entries.chart_of_account_id,
+        chart_of_accounts.uacs,
+        process_ors_entries.amount,
+        process_ors_entries.record_allotment_entries_id as allotment_id,
+        record_allotments_view.uacs as allotment_uacs,
+        record_allotments_view.general_ledger as allotment_ledger,
+        record_allotments_view.serial_number
+        
+        FROM 
+        process_ors_entries
+        LEFT JOIN chart_of_accounts ON process_ors_entries.chart_of_account_id  = chart_of_accounts.id
+        LEFT JOIN record_allotments_view ON process_ors_entries.record_allotment_entries_id  = record_allotments_view.entry_id
+     
+        WHERE 
+        process_ors_entries.process_ors_id = :id")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
+
 
     /**
      * Lists all ProcessOrs models.
@@ -78,9 +259,6 @@ class ProcessOrsController extends Controller
     {
         $searchModel = new ProccessOrsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        // $searchModel = new ProcessOrsEntriesSearch();
-        // $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -97,6 +275,9 @@ class ProcessOrsController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'orsTxnAllotments' => $this->GetOrsTxnItems($id),
+            'GetOrsItems' => $this->GetOrsItems($id),
+
         ]);
     }
 
@@ -107,21 +288,45 @@ class ProcessOrsController extends Controller
      */
     public function actionCreate()
     {
-        // $model = new ProcessOrs();
+        $model = new ProcessOrs();
 
-        // if ($model->load(Yii::$app->request->post()) && $model->save()) {
-        //     return $this->redirect(['view', 'id' => $model->id]);
-        // }
+        if ($model->load(Yii::$app->request->post())) {
+            $orsTxnItems = Yii::$app->request->post('orsTxnItems') ?? [];
+            $orsItems = Yii::$app->request->post('orsItems') ?? [];
+            $model->serial_number = $this->getOrsSerialNumber($model->reporting_period, $model->book_id);
 
-        // return $this->render('create', [
-        //     'model' => $model,
-        // ]);
-        $searchModel = new RaoudsSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+            try {
+                $transaction = Yii::$app->db->beginTransaction();
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException("Model Save Error");
+                }
+                $insertEntries = $this->InsertEntries($model->id, $orsItems, $model->reporting_period);
+                if ($insertEntries !== true) {
+                    throw new ErrorException($insertEntries);
+                }
+                $insertOrsTxnItems = $this->InsertOrsTxnItems($model->id, $orsTxnItems);
+                if ($insertOrsTxnItems !== true) {
+                    throw new ErrorException($insertOrsTxnItems);
+                }
 
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $transaction->rollBack();
+                return json_encode(["error" => $e->getMessage()]);
+            }
+        }
+
+
+        $searchModel = new RecordAllotmentDetailedSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'model' => $model,
         ]);
     }
 
@@ -136,12 +341,50 @@ class ProcessOrsController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+            $orsTxnItems = Yii::$app->request->post('orsTxnItems') ?? [];
+            $orsItems = Yii::$app->request->post('orsItems') ?? [];
+            // return json_encode($orsItems);
+            try {
+                $transaction = Yii::$app->db->beginTransaction();
+
+
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+
+                if (!$model->save(false)) {
+                    throw new ErrorException("Model Save Error");
+                }
+
+                $insertEntries = $this->InsertEntries($model->id, $orsItems, $model->reporting_period);
+                if ($insertEntries !== true) {
+                    throw new ErrorException('insertEnty ' . $insertEntries);
+                }
+                $insertOrsTxnItems = $this->InsertOrsTxnItems($model->id, $orsTxnItems);
+                if ($insertOrsTxnItems !== true) {
+                    throw new ErrorException($insertOrsTxnItems);
+                }
+
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $transaction->rollBack();
+                return json_encode(["error" => $e->getMessage()]);
+            }
         }
 
+
+        $searchModel = new RecordAllotmentDetailedSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
+
         return $this->render('update', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
             'model' => $model,
+            'orsTxnAllotments' => $this->GetOrsTxnItems($id),
+            'GetOrsItems' => $this->GetOrsItems($id),
+
         ]);
     }
 
@@ -225,7 +468,7 @@ class ProcessOrsController extends Controller
             $ors = new ProcessOrs();
             $ors->reporting_period = $reporting_period;
             if ($ors->validate()) {
-                if ($ors->save()) {
+                if ($ors->save(false)) {
                     // return json_encode($q);
                     // $raoud = new Raouds();
                     foreach ($_POST['chart_of_account_id'] as $index => $value) {
@@ -254,7 +497,9 @@ class ProcessOrsController extends Controller
                         $ors_entry->chart_of_account_id = $value;
                         $ors_entry->process_ors_id = $ors->id;
                         $ors_entry->amount = $_POST['final_amount'][$index];
-                        if ($ors_entry->save()) {
+                        if ($ors_entry->save(false)) {
+                        } else {
+                            return 'qweqwe';
                         }
                     }
                 }
@@ -295,5 +540,80 @@ class ProcessOrsController extends Controller
             $out['results'] = array_values($data);
         }
         return $out;
+    }
+    public function actionGetTxnAllotments()
+    {
+        if (Yii::$app->request->isPost) {
+
+            $id = YIi::$app->request->post('id');
+            $query = Yii::$app->db->createCommand("SELECT 
+            `transaction_items`.id as transactionItemId,
+            `transaction`.tracking_number,
+            `transaction`.particular,
+            record_allotments.serial_number as allotment_number,
+            transaction_items.amount as txnItemAmt,
+            responsibility_center.`name` as responsibilityCenter,
+            CONCAT(mfo_pap_code.`code`,'-',mfo_pap_code.`name`) as mfo_name,
+            fund_source.`name` as fund_source_name,
+            chart_of_accounts.general_ledger as account_title,
+            chart_of_accounts.uacs ,
+            books.`name` as book_name,
+            payee.account_name as payee,
+            ttlObligated.ttl,
+            transaction_items.amount - IFNULL(ttlObligated.ttl,0) as balance
+            
+            FROM `transaction`
+            INNER JOIN transaction_items ON `transaction`.id = transaction_items.fk_transaction_id
+            LEFT JOIN record_allotment_entries ON transaction_items.fk_record_allotment_entries_id = record_allotment_entries.id
+            LEFT JOIN record_allotments ON record_allotment_entries.record_allotment_id = record_allotments.id
+            LEFT JOIN mfo_pap_code ON record_allotments.mfo_pap_code_id = mfo_pap_code.id
+            LEFT JOIN fund_source ON record_allotments.fund_source_id = fund_source.id
+            LEFT JOIN chart_of_accounts ON record_allotment_entries.chart_of_account_id = chart_of_accounts.id
+            LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id = responsibility_center.id
+            LEFT JOIN books ON `transaction`.fk_book_id = books.id
+            LEFT JOIN payee ON `transaction`.payee_id = payee.id
+            LEFT JOIN (SELECT 
+            process_ors_txn_items.fk_transaction_item_id,
+            SUM(process_ors_txn_items.amount) as ttl
+            FROM 
+            process_ors_txn_items
+            WHERE process_ors_txn_items.is_deleted = 0
+            GROUP BY process_ors_txn_items.fk_transaction_item_id) as ttlObligated ON transaction_items.id  = ttlObligated.fk_transaction_item_id
+            WHERE  `transaction`.id = :id
+            AND transaction_items.is_deleted = 0
+            ")
+                ->bindValue(':id', $id)
+                ->queryAll();
+            return json_encode($query);
+        }
+    }
+    private function getOrsSerialNumber($reporting_period, $book_id)
+    {
+        $book = Books::findOne($book_id);
+        $year = DateTime::createFromFormat('Y-m', $reporting_period)->format('Y');
+
+        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(process_ors.serial_number,'-',-1) AS UNSIGNED) last_number
+        FROM process_ors
+        WHERE
+        
+        process_ors.type = 'ors'
+        AND process_ors.reporting_period LIKE :_year
+        ORDER BY last_number DESC LIMIT 1")
+            ->bindValue(':_year', $year . '%')
+            ->queryScalar();
+        if (empty($query)) {
+            $x = 1;
+        } else {
+
+            $x = intval($query) + 1;
+        }
+        $final_number = '';
+        for ($y = strlen($x); $y < 3; $y++) {
+            $final_number .= 0;
+        }
+
+        $serial_number = $book->name . '-' . $reporting_period . '-' . $final_number . $x;
+
+        return $serial_number;
     }
 }

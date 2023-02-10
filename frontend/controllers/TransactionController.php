@@ -2,20 +2,24 @@
 
 namespace frontend\controllers;
 
-use app\models\Payee;
-use app\models\ResponsibilityCenter;
+use app\components\helpers\MyHelper;
 use app\models\SubAccounts1;
 use Yii;
 use app\models\Transaction;
 use app\models\TransactionIars;
+use app\models\TransactionItems;
+use app\models\TransactionPrItems;
 use app\models\TransactionSearch;
 use DateTime;
+use ErrorException;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\web\ForbiddenHttpException;
+
+
+
 
 /**
  * TransactionController implements the CRUD actions for Transaction model.
@@ -41,7 +45,10 @@ class TransactionController extends Controller
                     'get-all-transaction',
                     'import-transaction',
                     'sample',
-                    'get-transaction'
+                    'get-transaction',
+                    'search-transaction',
+                    'iar-details',
+                    'get-pr-allotments',
                 ],
                 'rules' => [
                     [
@@ -56,16 +63,20 @@ class TransactionController extends Controller
                             'get-all-transaction',
                             'import-transaction',
                             'sample',
-                            'get-transaction'
+                            'get-transaction',
                         ],
                         'allow' => true,
                         'roles' => ['department-offices', 'super-user', 'ro_transaction'],
                     ],
-                    // [
-                    //     'actions' => ['create'],
-                    //     'allow' => true,
-                    //     'roles' => ['accounting'],
-                    // ],
+                    [
+                        'actions' => [
+                            'search-transaction',
+                            'iar-details',
+                            'get-pr-allotments',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
 
 
                 ],
@@ -80,18 +91,219 @@ class TransactionController extends Controller
             ],
         ];
     }
-    public function insertTransactionIar($transaction_id = '', $iars = [])
+    private function InsertTransactionIar($transaction_id = '', $iars = [], $isUpdate = false)
     {
-        foreach ($iars as $val) {
+        try {
 
-            $item = new TransactionIars();
-            $item->fk_transaction_id = $transaction_id;
-            $item->fk_iar_id = $val;
-            if ($item->save(false)) {
+            foreach ($iars as $val) {
+                $item = new TransactionIars();
+                $item->fk_transaction_id = $transaction_id;
+                $item->fk_iar_id = $val;
+                if (!$item->validate()) {
+                    return $item->errors;
+                }
+                if (!$item->save(false)) {
+                    return 'Transaction IARS Save Error';
+                }
             }
+        } catch (ErrorException $e) {
+            return $e->getMessage();
         }
+        return true;
+    }
+    private function validatePrAllotment($prAllotmentId, $amount, $itemId = null)
+    {
+
+        $params = [];
+        $sql = '';
+        if (!empty($itemId)) {
+            $sql .= ' AND ';
+            $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['!=', "transaction_pr_items.id", $itemId], $params);
+        }
+
+        $bal = Yii::$app->db->createCommand("SELECT 
+
+        pr_purchase_request_allotments.amount - IFNULL(ttlInTsn.ttl,0) as bal
+        FROM 
+        pr_purchase_request_allotments
+        LEFT JOIN (
+        SELECT transaction_pr_items.fk_pr_allotment_id,
+        SUM(transaction_pr_items.amount) as ttl
+        FROM transaction_pr_items
+        WHERE 
+        transaction_pr_items.is_deleted = 0
+        $sql
+        GROUP BY transaction_pr_items.fk_pr_allotment_id
+        ) as ttlInTsn ON pr_purchase_request_allotments.id = ttlInTsn.fk_pr_allotment_id
+        WHERE 
+        pr_purchase_request_allotments.id  = :id
+       
+         ", $params)
+            ->bindValue(':id', $prAllotmentId)
+            ->queryScalar();
+
+        $finalBal = floatval($bal) - floatval($amount);
+
+        if ($finalBal < 0) {
+            return "PR Allotment Cannot be less than " . number_format($bal, 2);
+        }
+        return true;
+    }
+    // insert purchase requests
+    private function InsertPrs($id, $items = [], $isUpdate = false)
+    {
+
+        try {
+
+            if ($isUpdate) {
+                $params = [];
+                $item_ids = array_column($items, 'item_id');
+                $sql = '';
+                if (!empty($item_ids)) {
+                    $sql = 'AND ';
+                    $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $item_ids], $params);
+                }
+                Yii::$app->db->createCommand("UPDATE transaction_pr_items SET is_deleted = 1 WHERE 
+                     transaction_pr_items.fk_transaction_id = :id  $sql", $params)
+                    ->bindValue(':id', $id)
+                    ->execute();
+            }
+            $itemId = '';
+            foreach ($items as $item) {
+                if (!empty($item['item_id'])) {
+                    $itemId = $item['item_id'];
+                    $pr =  TransactionPrItems::findOne($item['item_id']);
+                } else {
+
+                    $pr = new TransactionPrItems();
+                }
+                $validate = $this->validatePrAllotment($item['prAllotmentId'], $item['amount'], $itemId);
+                if ($validate !== true) {
+                    return $validate;
+                }
+                $pr->fk_transaction_id  = $id;
+                $pr->amount  = $item['amount'];
+                $pr->fk_pr_allotment_id  = $item['prAllotmentId'];
+
+                if (!$pr->validate()) {
+                    return $pr->errors;
+                }
+                if (!$pr->save(false)) {
+                    return 'Transaction Pr Items Not Save';
+                }
+            }
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+        return true;
+    }
+    private function GetTxnPrItems($id)
+    {
+        $query = Yii::$app->db->createCommand("SELECT 
+        pr_purchase_request.pr_number,
+        record_allotments.serial_number as allotment_number,
+        pr_purchase_request_allotments.id as prAllotmentId,
+        UPPER(office.office_name) as office_name,
+        UPPER(divisions.division) as division ,
+        CONCAT(mfo_pap_code.`code`,'-',mfo_pap_code.`name`) as mfo_name,
+        fund_source.`name` as fund_source_name,
+        chart_of_accounts.general_ledger as account_title,
+        pr_purchase_request_allotments.amount as prAllotmentAmt,
+        IFNULL(pr_purchase_request_allotments.amount,0) - IFNULL(ttlTransaction.ttlTransactAmt,0) as balance,
+        books.`name` as book_name,
+        ttlTransaction.ttlTransactAmt,
+        pr_purchase_request.purpose,
+        transaction_pr_items.amount as txnPrAmt
+        FROM transaction_pr_items 
+  
+        INNER JOIN pr_purchase_request_allotments ON transaction_pr_items.fk_pr_allotment_id = pr_purchase_request_allotments.id
+        INNER JOIN record_allotment_entries ON pr_purchase_request_allotments.fk_record_allotment_entries_id = record_allotment_entries.id
+        INNER JOIN record_allotments ON record_allotment_entries.record_allotment_id = record_allotments.id
+        LEFT JOIN mfo_pap_code ON record_allotments.mfo_pap_code_id = mfo_pap_code.id
+        LEFT JOIN fund_source ON record_allotments.fund_source_id = fund_source.id
+        LEFT JOIN chart_of_accounts ON record_allotment_entries.chart_of_account_id = chart_of_accounts.id
+        LEFT JOIN office ON record_allotments.office_id = office.id
+        lEFT JOIN divisions ON record_allotments.division_id = divisions.id
+        LEFT JOIN books ON record_allotments.book_id = books.id
+        LEFT JOIN pr_purchase_request ON pr_purchase_request_allotments.fk_purchase_request_id = pr_purchase_request.id
+        LEFT JOIN (SELECT
+          transaction_pr_items.fk_pr_allotment_id,
+          SUM(transaction_pr_items.amount) as ttlTransactAmt
+          FROM transaction_pr_items
+          WHERE transaction_pr_items.is_deleted = 0
+          GROUP BY transaction_pr_items.fk_pr_allotment_id
+        ) as ttlTransaction ON pr_purchase_request_allotments.id = ttlTransaction.fk_pr_allotment_id
+        WHERE 
+        transaction_pr_items.fk_transaction_id = 100154277548261534
+        AND transaction_pr_items.is_deleted = 0")
+            ->bindValue(':id', $id)
+            ->queryAll();
+        return $query;
     }
 
+    private function insertItems($transaction_id, $items = [], $isUpdate = false)
+    {
+        try {
+            if ($isUpdate) {
+                $params = [];
+                $item_ids = array_column($items, 'item_id');
+                $sql = '';
+                if (!empty($item_ids)) {
+                    $sql = 'AND ';
+                    $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $item_ids], $params);
+                }
+                Yii::$app->db->createCommand("UPDATE transaction_items SET is_deleted = 1 WHERE 
+                     transaction_items.fk_transaction_id = :id  $sql", $params)
+                    ->bindValue(':id', $transaction_id)
+                    ->execute();
+            }
+            foreach ($items as $item) {
+                $item_id = '';
+                if (!empty($item['item_id'])) {
+                    $item_id = $item['item_id'];
+                    $transaction_item  = TransactionItems::findOne($item_id);
+                } else {
+                    $transaction_item = new TransactionItems();
+                }
+                $vlt = MyHelper::checkAllotmentBalance(
+                    $item['allotment_id'],
+                    $item['gross_amount'],
+                    null,
+                    $item_id
+                );
+                if ($vlt !== true) {
+                    throw new ErrorException($vlt);
+                }
+                $transaction_item->fk_transaction_id = $transaction_id;
+                $transaction_item->fk_record_allotment_entries_id = $item['allotment_id'];
+                $transaction_item->amount = $item['gross_amount'];
+
+
+                if (!$transaction_item->validate()) {
+                    throw new ErrorException(json_encode($transaction_item->errors));
+                }
+                if (!$transaction_item->save(false)) {
+                    throw new ErrorException('Transaction Items Save Error');
+                }
+            }
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+
+        return true;
+    }
+    private function getPrItems($id)
+    {
+        return YIi::$app->db->createCommand("CALL GetTransactionPrItems(:id)")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
+    private function getItems($id)
+    {
+        return YIi::$app->db->createCommand("CALL GetTransactionAllotmentItems(:id)")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
     /**
      * Lists all Transaction models.
      * @return mixed
@@ -127,9 +339,13 @@ class TransactionController extends Controller
         // return json_encode($iars);
         return $this->render('ors_form', [
             'model' => $this->findModel($id),
-            'iars' => $iars
+            'iars' => $iars,
+            'items' => $this->getItems($id)
+
         ]);
     }
+
+
 
     /**
      * Creates a new Transaction model.
@@ -138,27 +354,37 @@ class TransactionController extends Controller
      */
     public function actionCreate()
     {
-        // if (Yii::$app->user->can('create-transaction')) {
+
 
         $model = new Transaction();
         date_default_timezone_set('Asia/Manila');
-        if ($model->load(Yii::$app->request->post())) {
-            // if ($_SERVER['REMOTE_ADDR'] === '210.1.103.26' || Yii::$app->user->can('super-user')) {
-            // return var_dump($_POST['multiple_iar']);
+        if (Yii::$app->request->isPost) {
+            $prItems = Yii::$app->request->post('prItems') ?? [];
+            $allotmentItems = Yii::$app->request->post('items') ?? [];
+            if (empty($allotmentItems)) {
+                return json_encode(['isSuccess' => false, 'error_message' => 'Allotment and Gross Amount is Required']);
+            }
+
+            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+            $model->type = Yii::$app->request->post('type');
+            $model->responsibility_center_id = Yii::$app->request->post('responsibility_center_id');
+            $model->payee_id = Yii::$app->request->post('payee_id');
+            $model->transaction_date = Yii::$app->request->post('transaction_date');
+            $model->particular = Yii::$app->request->post('particular');
+            $model->fk_book_id = Yii::$app->request->post('book_id');
             $division = strtolower(Yii::$app->user->identity->division);
-            $user = strtolower(Yii::$app->user->identity->province);
-            $host = gethostname();
-            $ip = gethostbyname($host);
 
-            // if ($division == 'sdd' &&  $ip !== '10.20.17.35') {
-            //     return $this->actionIndex();
-            // }
-            $iars = [];
-
-            if ($model->type == 'multiple') {
-                $iars = !empty($_POST['multiple_iar']) ? $_POST['multiple_iar'] : [];
-            } else if ($model->type == 'single') {
-                $iars = !empty($_POST['single_iar']) ? [$_POST['single_iar']] : [];
+            $iarItems = [];
+            if ($model->type === 'multiple') {
+                if (empty($_POST['multiple_iar'])) {
+                    return json_encode(['isSuccess' => false, 'error_message' => 'IAR is Required']);
+                }
+                $iarItems = $_POST['multiple_iar'];
+            } else if ($model->type === 'single') {
+                if (empty($_POST['single_iar'])) {
+                    return json_encode(['isSuccess' => false, 'error_message' => 'IAR is Required']);
+                }
+                $iarItems = [$_POST['single_iar']];
             }
             if (!Yii::$app->user->can('super-user')) {
                 $r_center = Yii::$app->db->createCommand("SELECT `id` FROM responsibility_center WHERE `name`=:division")
@@ -166,35 +392,41 @@ class TransactionController extends Controller
                     ->queryScalar();
                 $model->responsibility_center_id = $r_center;
             }
+            $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id,  $model->transaction_date);
+            try {
+                $transaction = Yii::$app->db->beginTransaction();
 
-            $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date);
-            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            if ($ip !== '192.168.1.25') {
-                // if (
-                //     $division === 'idd' ||
-                //     $division === 'sdd' ||
-                //     $division === 'fad'
-                // ) {
-                //     return;
-                // }
-                $model->is_local = 0;
-            }
-            if ($model->save()) {
-
-                $this->insertTransactionIar($model->id, $iars);
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => json_encode($model->errors))));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => 'Error saving model')));
+                }
+                $err = $this->insertItems($model->id, $allotmentItems);
+                if ($err !== true) {
+                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $err)));
+                }
+                $err = $this->InsertPrs($model->id, $prItems);
+                if ($err !== true) {
+                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $err)));
+                }
+                $err = $this->InsertTransactionIar($model->id, $iarItems);
+                if ($err !== true) {
+                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $err)));
+                }
+                $transaction->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $transaction->rollBack();
+                return $e->getMessage();
             }
-            // }
-            // return $this->actionIndex();
-            // return $q;
         }
 
-        return $this->renderAjax('create', [
+        return $this->render('create', [
             'model' => $model,
+            'action' => 'create'
+
         ]);
-        // } else {
-        //     throw new ForbiddenHttpException();
-        // }
     }
 
     /**
@@ -206,11 +438,15 @@ class TransactionController extends Controller
      */
     public function actionUpdate($id)
     {
-        // if (Yii::$app->user->can('update-transaction')) {
 
         $model = $this->findModel($id);
-        if ($model->load(Yii::$app->request->post())) {
-            // if ($_SERVER['REMOTE_ADDR'] === '210.1.103.26' || Yii::$app->user->can('super-user')) {
+        $items = $this->getItems($model->id);
+        if ((Yii::$app->request->isPost)) {
+            $prItems = !empty($_POST['prItems']) ? $_POST['prItems'] : [];
+            $allotmentItems = !empty($_POST['items']) ? $_POST['items'] : [];
+            if (empty($allotmentItems)) {
+                return json_encode(['isSuccess' => false, 'error_message' => 'Allotment and Gross Amount is Required']);
+            }
             $old =  $this->findModel($id);
             $old_responsibility_center = intval($old->responsibility_center_id);
             $new_responsibility_center = intval($model->responsibility_center_id);
@@ -221,39 +457,72 @@ class TransactionController extends Controller
             }
             if ($old_responsibility_center !==  $new_responsibility_center) {
                 $old_tracking_number = explode('-', $old->tracking_number)[2];
-                $new_tracking_number = explode('-', $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date));
+                $new_tracking_number = explode('-', $this->getTrackingNumber($model->responsibility_center_id, $model->transaction_date));
                 $new_tracking_number[2] = $old_tracking_number;
 
                 $model->tracking_number = implode('-', $new_tracking_number);
-                // var_dump($model->tracking_number);
-                // die();
-            }
-            $iars = [];
-
-            if ($model->type == 'multiple') {
-                $iars = !empty($_POST['multiple_iar']) ? $_POST['multiple_iar'] : [];
-            } else if ($model->type == 'single') {
-                $iars = !empty($_POST['single_iar']) ? [$_POST['single_iar']] : [];
             }
 
-            // return json_encode(
-            //     $model->tracking_number
-            // );
-            if ($model->save(false)) {
-                Yii::$app->db->createCommand("DELETE FROM transaction_iars WHERE fk_transaction_id = :id")->bindValue(':id', $model->id)->query();
-                $this->insertTransactionIar($model->id, $iars);
+            $items = !empty($_POST['items']) ? $_POST['items'] : [];
+            if (empty($items)) {
+                return json_encode(['isSuccess' => false, 'error_message' => 'Allotment and Gross Amount is Required']);
+            }
+            if (Yii::$app->user->can('super-user')) {
+
+                $model->responsibility_center_id = $_POST['responsibility_center_id'];
+            }
+            $model->type = $_POST['type'];
+            $model->payee_id = $_POST['payee_id'];
+            $model->transaction_date = $_POST['transaction_date'];
+            $model->particular = $_POST['particular'];
+            $model->fk_book_id = $_POST['book_id'];
+            $iarItems = [];
+            if ($model->type === 'multiple') {
+                if (empty($_POST['multiple_iar'])) {
+                    return json_encode(['isSuccess' => false, 'error_message' => 'IAR is Required']);
+                }
+                $iarItems = $_POST['multiple_iar'];
+            } else if ($model->type === 'single') {
+                if (empty($_POST['single_iar'])) {
+                    return json_encode(['isSuccess' => false, 'error_message' => 'IAR is Required']);
+                }
+                $iarItems = [$_POST['single_iar']];
+            }
+            try {
+                $transaction = Yii::$app->db->beginTransaction();
+
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $model->errors)));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => 'Error saving model')));
+                }
+                $err = $this->insertItems($model->id, $allotmentItems, true);
+                if ($err !== true) {
+                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $err)));
+                }
+                $err = $this->InsertPrs($model->id, $prItems, true);
+                if ($err !== true) {
+                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $err)));
+                }
+                $err = $this->InsertTransactionIar($model->id, $iarItems);
+                if ($err !== true) {
+                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $err)));
+                }
+                $transaction->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $transaction->rollBack();
+                return $e->getMessage();
             }
-            // }
-            // return $this->actionIndex();
         }
 
-        return $this->renderAjax('update', [
+        return $this->render('update', [
             'model' => $model,
+            'items' => $items,
+            'action' => 'update',
+            'transactionPrItems' => $this->getPrItems($model->id)
         ]);
-        // } else {
-        //     throw new ForbiddenHttpException();
-        // }
     }
 
     /**
@@ -263,18 +532,18 @@ class TransactionController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        // if (Yii::$app->user->can('delete-transaction')) {
+    // public function actionDelete($id)
+    // {
+    //     // if (Yii::$app->user->can('delete-transaction')) {
 
-        // $this->findModel($id)->delete();
+    //     // $this->findModel($id)->delete();
 
-        // return $this->redirect(['index']);
-        // } else {
+    //     // return $this->redirect(['index']);
+    //     // } else {
 
-        //     throw new ForbiddenHttpException();
-        // }
-    }
+    //     //     throw new ForbiddenHttpException();
+    //     // }
+    // }
 
     /**
      * Finds the Transaction model based on its primary key value.
@@ -472,95 +741,52 @@ class TransactionController extends Controller
         if (($model = SubAccounts1::findOne($id)) !== null) {
             return $model;
         }
-
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
 
-    public function getTrackingNumber($responsibility_center_id, $to_add, $d)
+    public function getTrackingNumber($responsibility_center_id, $date)
     {
-        // $responsibility_center ='FAD';
-        // $date = date('Y-m-d');
-        // $q = new DATE($d);
 
-        $q  = DateTime::createFromFormat('m-d-Y', $d);
-        $date = $q->format('Y');
-        $responsibility_center = (new \yii\db\Query())
-            ->select("name")
-            ->from('responsibility_center')
-            ->where("id =:id", ['id' => $responsibility_center_id])
-            ->one();
-
-        // AND `transaction`.created_at >  '2022-05-06 08:00:00'
-
-        // if (date('Y-m-d') !== '2022-05-06') {
-        $latest_tracking_no = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(`transaction`.tracking_number,'-',-1)AS UNSIGNED) as last_number
-        FROM `transaction`
-        LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id = responsibility_center.id
-        WHERE responsibility_center.`name` = :r_center
-        AND `transaction`.transaction_date LIKE :new_year
-        ORDER BY last_number DESC
-        LIMIT 1
-        ")
-            ->bindValue(':r_center', $responsibility_center['name'])
-            ->bindValue(':new_year', '%' . $date)
-            ->queryScalar();
-        if ($latest_tracking_no) {
-            // $x = explode('-', $latest_tracking_no['tracking_number']);
-            $last_number = intval($latest_tracking_no) + $to_add;
-        } else {
-            $last_number = $to_add;
-        }
-        $final_number = '';
-        for ($y = strlen($last_number); $y < 3; $y++) {
-            $final_number .= 0;
-        }
-        $liq = Yii::$app->db->createCommand(" SELECT CAST( substring_index(substring(tracking_number, instr(tracking_number, '-')+1), '-', -1) as UNSIGNED) as num
-        from `transaction`
-        LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id = responsibility_center.id
-        WHERE responsibility_center.`name` = :r_center
-        AND `transaction`.transaction_date LIKE :new_year
-        ORDER BY num
-        ")
-            ->bindValue(':r_center', $responsibility_center['name'])
-            ->bindValue(':new_year', '%' . $date)
-            ->queryAll();
-        if (!empty($liq)) {
-            $number_sequnce = [];
-            foreach (range(1, max($liq)['num']) as $val) {
-                $number_sequnce[] = $val;
-            }
-
-            $diff = array_diff($number_sequnce, array_column($liq, 'num'));
-            // return json_encode($diff);
-            if (!empty($diff)) {
-                $last_number = $diff[min(array_keys($diff))];
-                // return $num;
-            }
-        }
-        $final_number .= $last_number;
-        $tracking_number = strtoupper($responsibility_center['name']) . '-' . $q->format('Y-m') . '-' . $final_number;
-        return  $tracking_number;
+        $q  = DateTime::createFromFormat('m-d-Y', $date);
+        $year = $q->format('Y');
+        return  Yii::$app->db->createCommand("CALL transaction_number(:_year,:responsibility_center_id,@transction_number)")
+            ->bindValue(':_year', $year)
+            ->bindValue(':responsibility_center_id', $responsibility_center_id)->queryScalar();
     }
     public function actionGetTransaction()
     {
         if (!empty($_POST)) {
             $transaction_id = $_POST['transaction_id'];
-            $query = (new \yii\db\Query())
-                ->select(["payee.account_name", "transaction.particular", "transaction.gross_amount"])
-                ->from("transaction")
-                ->join("LEFT JOIN", "payee", "transaction.payee_id = payee.id")
-                ->where("transaction.id =:transaction_id", ["transaction_id" => $transaction_id])
-                ->one();
-
-            return json_encode(["result" => $query]);
-            // ob_start();
-            // echo "<pre>";
-            // var_dump($query);
-            // echo "</pre>";
-            // return ob_get_clean();
+            $query = Yii::$app->db->createCommand("SELECT 
+            payee.account_name,`transaction`.particular, SUM(transaction_items.amount) as gross_amount
+            FROM `transaction`
+            LEFT JOIN payee ON `transaction`.payee_id = payee.id
+            LEFT JOIN transaction_items ON `transaction`.id = transaction_items.fk_transaction_id
+            where `transaction`.id =:transaction_id
+            GROUP BY 
+            payee.account_name,`transaction`.particular")
+                ->bindValue(':transaction_id', $transaction_id)
+                ->queryOne();
+            $transaction_items  = Yii::$app->db->createCommand("SELECT 
+            record_allotments_view.entry_id as raoud_id,
+                                   record_allotments_view.serial_number,
+                                   record_allotments_view.mfo_code as mfo_pap_code_code,
+                                   record_allotments_view.mfo_name as mfo_pap_name,
+                                   record_allotments_view.fund_source as fund_source_name,
+                                   record_allotments_view.uacs as object_code,
+                                   record_allotments_view.general_ledger,
+                                   record_allotments_view.balance as remain,
+                                  chart_of_accounts.id as chart_of_account_id,
+           transaction_items.amount as obligation_amount
+           FROM transaction_items 
+           LEFT JOIN record_allotments_view ON transaction_items.fk_record_allotment_entries_id = record_allotments_view.entry_id 
+           LEFT JOIN chart_of_accounts ON record_allotments_view.uacs = chart_of_accounts.uacs
+            WHERE transaction_items.fk_transaction_id = :transaction_id")
+                ->bindValue(':transaction_id', $transaction_id)
+                ->queryAll();
+            return json_encode(["result" => $query, 'transaction_items' => $transaction_items]);
         }
-        // return json_encode("qqq");
     }
     public function actionSearchTransaction($q = null, $id = null, $province = null)
     {
@@ -593,15 +819,81 @@ class TransactionController extends Controller
             iar_index.payee_name,
             iar_index.purpose,
             iar_index.total_amount as amount
-           
             FROM iar_index
-            
-            WHERE iar_index.id = :id
-           
-            ")
+            WHERE iar_index.id = :id")
                 ->bindValue(':id', $id)
                 ->queryOne();
             return json_encode($query);
         }
+    }
+    public function actionGetPrAllotments()
+    {
+        if (Yii::$app->request->isPost) {
+            $id  = Yii::$app->request->post('id');
+            $query = Yii::$app->db->createCommand("SELECT 
+            pr_purchase_request.pr_number,
+            record_allotments.serial_number as allotment_number,
+            pr_purchase_request_allotments.id as prAllotmentId,
+            UPPER(office.office_name) as office_name,
+            UPPER(divisions.division) as division ,
+            CONCAT(mfo_pap_code.`code`,'-',mfo_pap_code.`name`) as mfo_name,
+            fund_source.`name` as fund_source_name,
+            chart_of_accounts.general_ledger as account_title,
+            pr_purchase_request_allotments.amount as prAllotmentAmt,
+            IFNULL(pr_purchase_request_allotments.amount,0) - IFNULL(ttlTransaction.ttlTransactAmt,0) as balance,
+            books.`name` as book_name,
+            ttlTransaction.ttlTransactAmt,
+            pr_purchase_request.purpose
+            FROM
+            pr_purchase_request
+            INNER JOIN pr_purchase_request_allotments ON pr_purchase_request.id = pr_purchase_request_allotments.fk_purchase_request_id
+            INNER JOIN record_allotment_entries ON pr_purchase_request_allotments.fk_record_allotment_entries_id = record_allotment_entries.id
+            INNER JOIN record_allotments ON record_allotment_entries.record_allotment_id = record_allotments.id
+            LEFT JOIN mfo_pap_code ON record_allotments.mfo_pap_code_id = mfo_pap_code.id
+            LEFT JOIN fund_source ON record_allotments.fund_source_id = fund_source.id
+            LEFT JOIN chart_of_accounts ON record_allotment_entries.chart_of_account_id = chart_of_accounts.id
+            LEFT JOIN office ON record_allotments.office_id = office.id
+            lEFT JOIN divisions ON record_allotments.division_id = divisions.id
+            LEFT JOIN books ON record_allotments.book_id = books.id
+            LEFT JOIN (SELECT
+              transaction_pr_items.fk_pr_allotment_id,
+              SUM(transaction_pr_items.amount) as ttlTransactAmt
+              FROM transaction_pr_items
+              WHERE transaction_pr_items.is_deleted = 0
+              GROUP BY transaction_pr_items.fk_pr_allotment_id
+            ) as ttlTransaction ON pr_purchase_request_allotments.id = ttlTransaction.fk_pr_allotment_id
+            WHERE pr_purchase_request.id = :id
+                AND pr_purchase_request_allotments.is_deleted =0
+                AND  IFNULL(pr_purchase_request_allotments.amount,0) - IFNULL(ttlTransaction.ttlTransactAmt,0) >0
+             ")
+                ->bindValue(':id', $id)
+                ->queryAll();
+            return json_encode($query);
+        }
+    }
+    public function actionSearchTransactionPaginated($page = 1, $q = null, $id = null)
+    {
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if ($id > 0) {
+            // $out['results'] = ['id' => $id, 'text' => Payee::findOne($id)->account_name];
+        } else if (!is_null($q)) {
+            $query = new Query();
+            $query->select('transaction.id, transaction.tracking_number AS text')
+                ->from('transaction')
+                ->where(['like', 'transaction.tracking_number', $q]);
+
+            $query->offset($offset)
+                ->limit($limit);
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+            $out['pagination'] = ['more' => !empty($data) ? true : false];
+        }
+        return $out;
     }
 }

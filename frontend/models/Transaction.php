@@ -111,8 +111,8 @@ class Transaction extends \yii\db\ActiveRecord
     {
         return $this->hasMany(ProcessOrs::class, ['transaction_id' => 'id']);
     }
-    // public function getRaouds()
-    // {
-    //     return $this->hasMany(Raouds::className(), ['process_ors_id' => 'id']);
-    // }
+    public function getBook()
+    {
+        return $this->hasOne(Books::class, ['id' => 'fk_book_id']);
+    }
 }

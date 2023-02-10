@@ -40,6 +40,7 @@ class ProcessOrs extends \yii\db\ActiveRecord
     {
         return [
             [['transaction_id', 'document_recieve_id', 'mfo_pap_code_id', 'fund_source_id', 'book_id', 'is_cancelled'], 'integer'],
+            [['transaction_id',  'book_id', 'date', 'reporting_period'], 'required'],
             [['reporting_period', 'serial_number', 'obligation_number', 'type'], 'string', 'max' => 255],
             [['funding_code'], 'string', 'max' => 50],
             [['is_cancelled'], 'default', 'value' => 0],
@@ -73,7 +74,7 @@ class ProcessOrs extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'transaction_id' => 'Transaction ID',
+            'transaction_id' => 'Transaction ',
             'reporting_period' => 'Reporting Period',
             'serial_number' => 'Serial Number',
             'obligation_number' => 'Obligation Number',
@@ -81,7 +82,7 @@ class ProcessOrs extends \yii\db\ActiveRecord
             'document_recieve_id' => 'Document Recieve ID',
             'mfo_pap_code_id' => 'Mfo Pap Code ID',
             'fund_source_id' => 'Fund Source ID',
-            'book_id' => 'Book ID',
+            'book_id' => 'Book ',
             'date' => 'Date',
             'is_cancelled' => 'Is Cancelled',
             'type' => 'Type',

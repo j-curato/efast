@@ -10,9 +10,13 @@ use aryelds\sweetalert\SweetAlertAsset;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Transaction Forms';
-$this->params['breadcrumbs'][] = $this->title;
+$title = $model->tracking_number;
 
+$this->title =  $title;
+// $this->params['breadcrumbs'][] = $this->title;
+
+$this->params['breadcrumbs'][] = ['label' => 'Transactions', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $title;
 ?>
 <div class="jev-preparation-index" id='doc'>
 
@@ -30,6 +34,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <!-- FORM 1 -->
     <div class="container panel panel-default">
+        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+
         <button class="btn btn-success" type="button" id="print">Print</button>
 
 
@@ -41,6 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
             </h6>
         </div>
+
         <table style="margin-top:30px" id="ors_form">
             <tbody>
 
@@ -60,77 +67,101 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                     <td colspan="3">
                         <div class="serial">
-                            <span>Serial No.:</span>
+                            <span><b>Serial No.:</b></span>
                             <span style="float: right;"> _______________</span>
                         </div>
                         <div class="serial">
-                            <span>Date:</span>
+                            <span><b>Date:</b></span>
                             <span style="float: right;">_______________</span>
                         </div>
                         <div class="serial">
-                            <span>Fund Cluster:</span>
+                            <span><b>Fund Cluster:</b></span>
                             <span style="float: right;">_______________</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2">
+                    <th colspan="2">
                         Payee
-                    </td>
+                    </th>
                     <td colspan="6">
                         <?php echo $model->payee->account_name; ?>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2">
+                    <th colspan="2">
                         Office
-                    </td>
+                    </th>
                     <td colspan="6">
                     </td>
                 </tr>
                 <tr class="header">
-                    <td colspan="2">
+                    <th colspan="2">
                         Address
-                    </td>
+                    </th>
                     <td colspan="6">
                     </td>
                 </tr>
                 <tr class="header">
-                    <td colspan="1" style="width:100px">
+                    <th colspan="1" style="width:100px">
                         Responsibility Center
-                    </td>
-                    <td colspan="2">
+                    </th>
+                    <th colspan="2">
                         Particulars
-                    </td>
-                    <td colspan="2" style="min-width: 150px;">
+                    </th>
+                    <th colspan="2" style="min-width: 150px;">
                         MFO/PAP
-                    </td>
-                    <td colspan="2" style="min-width: 150px;">
+                    </th>
+                    <th colspan="2" style="min-width: 150px;">
                         UACS Object Code
-                    </td>
-                    <td colspan="1" style="width: 30px">
+                    </th>
+                    <th colspan="1" style="width: 30px">
                         Amount
-                    </td>
+                    </th>
                 </tr>
                 <tr>
-                    <td colspan='1' style="vertical-align: top;">
+                    <?php
+                    $row_cnt = count($items) + 1;
+                    ?>
+                    <td colspan='1' rowspan="<?= $row_cnt ?>" style="vertical-align: top;">
                         <?php
                         echo !empty($model->responsibilityCenter->name) ? $model->responsibilityCenter->name : '';
                         ?>
                     </td>
-                    <td colspan='2' style="padding-bottom: 10rem;max-width:250px">
+                    <td colspan='2' rowspan="<?= $row_cnt ?>" style="padding-bottom: 10rem;max-width:250px">
                         <?php
                         echo $model->particular . ' ' . $iars;
                         ?>
                     </td>
-                    <td colspan='2' style="min-width: 150px;">
-                    </td>
-                    <td colspan='2' style="min-width: 150px;">
-                    </td>
-                    <td colspan='1' style="vertical-align: top;text-align: right;padding-right:10px">
-                        <?php echo number_format($model->gross_amount, 2) ?>
-                    </td>
                 </tr>
+
+                <?php
+                $lst_row =  count($items) - 1;
+                $bdr = 'border-bottom:0;border-top:0;';
+                $total = 0;
+                foreach ($items as $k => $item) {
+                    $amount  = number_format($item['amount'], 2);
+                    if ($k === $lst_row) {
+                        $bdr = 'border-top:0';
+                    }
+                    echo " <tr><td colspan='2' style='vertical-align: top;min-width: 150px;{$bdr}'>
+                                {$item['mfo_name']}
+                            </td>
+                            <td colspan='2' style='min-width: 150px;{$bdr}'>
+                            </td>
+                            <td colspan='1' style='vertical-align: top;text-align: right;padding-right:10px;{$bdr}'>
+                               {$amount}
+                            </td></tr>";
+                    $total += floatval($item['amount']);
+                }
+
+
+                ?>
+                <tr>
+                    <td colspan="7" style="text-align: center;"><b>Total</b> </td>
+                    <td style="text-align: right;"><?= number_format($total, 2) ?></td>
+                </tr>
+
 
 
 
@@ -236,21 +267,21 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                 </tr>
                 <tr>
-                    <td rowspan="2">date</td>
-                    <td rowspan="2">particular</td>
-                    <td rowspan="2">ORS/JEV/Check/ADA/TRA No.</td>
-                    <td rowspan="2">Obligation</td>
-                    <td rowspan="2">Payable</td>
-                    <td rowspan="2">Payment</td>
-                    <td colspan="2">Balance</td>
+                    <th rowspan="2">Date</th>
+                    <th rowspan="2">Particular</th>
+                    <th rowspan="2">ORS/JEV/Check/ADA/TRA No.</th>
+                    <th rowspan="2">Obligation</th>
+                    <th rowspan="2">Payable</th>
+                    <th rowspan="2">Payment</th>
+                    <th colspan="2" class="center">Balance</th>
                 </tr>
                 <tr>
-                    <td>
+                    <th>
                         Not Yet Due
-                    </td>
-                    <td>
+                    </th>
+                    <th>
                         Due and Demandable
-                    </td>
+                    </th>
                 </tr>
 
                 <?php
@@ -309,7 +340,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </h5>
 
                     </td>
-                    <td colspan="2">
+                    <th colspan="2">
 
                         <div class="serial">
                             <span>Fund Cluster:</span>
@@ -323,12 +354,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             <span>DV No.:</span>
                             <span style="float: right;">_________________</span>
                         </div>
-                    </td>
+                    </th>
                 </tr>
                 <tr>
-                    <td>
+                    <th>
                         Mode of Payment
-                    </td>
+                    </th>
                     <td colspan="6" style="padding: 0;">
                         <div style="display: flex;width:100%;justify-content:space-evenly">
                             <div style="padding:0;margin:0">
@@ -350,18 +381,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </tr>
                 <tr>
-                    <td colspan="1" class="head" rowspan="2">
+                    <th colspan="1" class="head" rowspan="2">
                         Payee
-                    </td>
-                    <td colspan="4" rowspan="2">
+                    </th>
+                    <th colspan="4" rowspan="2">
                         <?php echo $model->payee->account_name; ?>
-                    </td>
-                    <td rowspan="1">
+                    </th>
+                    <th rowspan="1">
                         TIN/Employee No.
-                    </td>
-                    <td rowspan="1">
+                    </th>
+                    <th rowspan="1">
                         ORS/BURS No.
-                    </td>
+                    </th>
                 </tr>
                 <tr>
                     <td style="padding: 10px;" colspan=""></td>
@@ -369,48 +400,76 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
 
                 <tr class="header">
-                    <td colspan="1" class="head">
+                    <th colspan="1" class="head">
                         Address
-                    </td>
+                    </th>
                     <td colspan="6">
                     </td>
                 </tr>
                 <tr>
 
-                    <td colspan="2">
+                    <th colspan="2" class="center">
                         Particulars
-                    </td>
-                    <td colspan="3">
+                    </th>
+                    <th colspan="3" class="center">
                         MFO/PAP
-                    </td>
-                    <td>
+                    </th>
+                    <th class="center">
                         Responsibility center
-                    </td>
-                    <td style="text-align: center;">
+                    </th>
+                    <th style="text-align: center;" class="center">
                         Amount
-                    </td>
+                    </th>
                 </tr>
                 <tr>
-                    <td colspan='2' style='padding-bottom:10rem'>
+
+                    <td colspan='2' rowspan="<?= $row_cnt ?>" style='padding-bottom:10rem'>
                         <?php echo $model->particular . ' ' . $iars; ?>
                     </td>
-                    <td colspan="3">
-                    </td>
-                    <td style="vertical-align: top; text-align: center;">
-                        <?php
-                        echo !empty($model->responsibilityCenter->name) ? $model->responsibilityCenter->name : '';
-                        ?>
-                    </td>
-                    <td style="vertical-align: top; text-align: right;padding-right:10px">
-                        <?php echo number_format($model->gross_amount, 2) ?>
-                    </td>
+
                 </tr>
+                <?php
+                $r_center = !empty($model->responsibilityCenter->name) ? $model->responsibilityCenter->name : '';
+                $r = $row_cnt - 1;
+                $bdr = "border-top:0;border-bottom:0;";
+                foreach ($items as $k => $item) {
+                    $amount  = number_format($item['amount'], 2);
+                    if ($k === $lst_row) {
+                        $bdr = 'border-top:0';
+                    }
+                    if ($k === 0) {
+                        echo "<tr>
+                        <td colspan='3' style='vertical-align: top;min-width: 150px;$bdr'>
+                            {$item['mfo_name']}
+                        </td>
+                        <td style='vertical-align: top; text-align: center;' rowspan=' $r '>
+                             $r_center
+                        </td>
+                        <td colspan='' style='vertical-align: top;min-width: 150px;text-align:right;{$bdr}'>
+                            {$amount}
+                        </td>
+                   </tr>";
+                    } else {
+                        echo " <tr>
+                        <td colspan='3' style='vertical-align: top;min-width: 150px;{$bdr}'>
+                            {$item['mfo_name']}
+                        </td>
+                        <td style='vertical-align: top;min-width: 150px;text-align:right;{$bdr}' >
+                            {$amount}
+                        </td>
+
+                   </tr>";
+                    }
+                }
+                ?>
+
+
 
                 <tr>
-                    <td class="head" style="text-align: center; font-size:12px" colspan="6">
+                    <th class="head" style="text-align: center; font-size:12px" colspan="6">
                         Amount Due
-                    </td>
-                    <td style="text-align: right;padding-right:10px"> <?php echo number_format($model->gross_amount, 2) ?></td>
+                    </th>
+                    <th style="text-align: right;padding-right:10px"> <?php echo number_format($total, 2) ?></th>
                 </tr>
                 <tr>
                     <td colspan="7" style="padding: 12;">
@@ -438,10 +497,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                 </tr>
                 <tr>
-                    <td style='padding:10px' colspan='3'> Account Title</td>
-                    <td colspan="2">UACS Code</td>
-                    <td>Debit</td>
-                    <td>Credit</td>
+                    <th class="center" style='padding:10px' colspan='3'> Account Title</th>
+                    <th class="center" colspan="2">UACS Code</th>
+                    <th class="center">Debit</th>
+                    <th class="center">Credit</th>
                 </tr>
                 <?php
                 $y = 0;
@@ -591,16 +650,69 @@ $this->params['breadcrumbs'][] = $this->title;
 
             </tbody>
         </table>
+
+    </div>
+    <div class="panel panel-default container" style="padding:2rem">
+        <table class="table " id="allotmentTable">
+            <thead>
+                <tr class="info">
+                    <th colspan="6" style="text-align: center;">
+                        <h4>Allotments</h4>
+                    </th>
+                </tr>
+                <tr>
+
+                    <th>Allotment No.</th>
+                    <th>Book</th>
+                    <th>Mfo Name</th>
+                    <th>Fund Source</th>
+                    <th> General Ledger</th>
+                    <th>Gross Amount</th>
+
+
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $alltmntTtl = 0;
+                foreach ($items as $item) {
+                    echo "<tr>
+                    <td>{$item['allotmentNumber']}</td>
+                    <td>{$item['book']}</td>
+           
+                    <td>{$item['mfo_code']}-{$item['mfo_name']}</td>
+                    <td>{$item['fund_source_name']}</td>
+                    <td>{$item['account_title']}</td>
+                    <td class='amount'>" . number_format($item['amount'], 2) . "</td>
+                    </tr>";
+                    $alltmntTtl += floatval($item['amount']);
+                }
+
+                ?>
+                <tr>
+                    <th colspan="5" class="center">
+                        Total
+                    </th>
+                    <th class="amount">
+                        <?= number_format($alltmntTtl, 2) ?>
+                    </th>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <?php
-
     if (Yii::$app->user->can('super-user')) {
 
 
     ?>
-        <div class="container paner panel-default links" style="background-color: white;">
+        <div class="container panel panel-default links" style="background-color: white;">
 
-            <table class="table ">
+            <table class="table " id='ors_links'>
+                <tr class="info">
+                    <th colspan="2">
+                        <h4>Obligation Links</h4>
+                    </th>
+                </tr>
                 <tr>
                     <th>ORS Number</th>
                     <th>Link</th>
@@ -637,12 +749,38 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <style>
+    #ors_links>td,
+    th {
+        text-align: center;
+        border: 1px solid black;
+    }
+
+    #ors_links {
+        border: 1px solid black;
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    .amount {
+        text-align: right;
+    }
+
     .select2-selection--single {
         /* border: 1px solid #d2d6de; */
         border-radius: 0;
         /* padding: 6px ; */
         height: 34px;
 
+    }
+
+    #allotmentTable th {
+        border: 1px solid black;
+    }
+
+    #allotmentTable {
+        margin-top: 2rem;
     }
 
     .select2-container--default .select2-selection--single {
@@ -697,7 +835,8 @@ $this->params['breadcrumbs'][] = $this->title;
         font-weight: bold;
     }
 
-    td {
+    td,
+    th {
         border: 1px solid black;
         padding: .5rem;
     }

@@ -11,13 +11,15 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="process-ors-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <?= $this->render('_form_new', [
+    <?= $this->render('_form', [
 
         'searchModel' => $searchModel,
         'dataProvider' => $dataProvider,
-
+        'model' => $model,
+        'txnType' => 'create',
+        'orsTxnAllotments' => [],
+        'GetOrsItems' => [],
     ]) ?>
 
 </div>

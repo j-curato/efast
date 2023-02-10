@@ -23,6 +23,9 @@
 .upper-case{
     text-transform: uppercase;
 }
+.bordered{
+       border:1px solid black; 
+}
 
 .v-align-top {
     vertical-align: text-top;
