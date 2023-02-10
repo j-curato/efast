@@ -1,7 +1,8 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
-use yii\grid\GridView;
+use kartik\grid\GridView;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
@@ -13,7 +14,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="process-ors-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Create Process Ors', ['create'], ['class' => 'btn btn-success']) ?>
@@ -25,26 +25,23 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel' => [
+            'type' => 'primary',
+            'heading' => 'Process ORS'
+        ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             [
-                'label' => 'Serial Number',
-                'attribute' => 'processOrs.reporting_period',
-                'value' => 'processOrs.reporting_period'
+                'attribute' => 'serial_number',
             ],
-            'amount',
 
             [
-                'label' => 'Adjust',
+                'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/create";
-                    return ' ' . Html::a('', $t, ['class' => 'btn btn-success fa fa-pencil-square-o']);
+                    return MyHelper::gridDefaultAction($model->id);
                 }
             ],
-            ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 
