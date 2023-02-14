@@ -166,7 +166,7 @@ class ProcessOrsController extends Controller
                 }
                 $txnItem->fk_process_ors_id = $orsId;
                 $txnItem->fk_transaction_item_id = $item['txnItemId'];
-                $txnItem->amount = $item['txnAmount'];
+                $txnItem->amount = floatval($item['txnAmount']) > 0 ? $item['txnAmount'] * -1 : $item['txnAmount'];
                 if (!$txnItem->validate()) {
                     throw new ErrorException(json_encode($txnItem->errors));
                 }
@@ -211,7 +211,7 @@ class ProcessOrsController extends Controller
                     LEFT JOIN payee ON `transaction`.payee_id = payee.id
                     LEFT JOIN (SELECT 
                     process_ors_txn_items.fk_transaction_item_id,
-                    SUM(process_ors_txn_items.amount) as ttl
+                    SUM(process_ors_txn_items.amount) *-1 as ttl
                     FROM 
                     process_ors_txn_items
                     WHERE process_ors_txn_items.is_deleted = 0
@@ -358,7 +358,7 @@ class ProcessOrsController extends Controller
                     throw new ErrorException("Model Save Error");
                 }
 
-                $insertEntries = $this->InsertEntries($model->id, $orsItems, $model->reporting_period);
+                $insertEntries = $this->InsertEntries($model->id, $orsItems);
                 if ($insertEntries !== true) {
                     throw new ErrorException('insertEnty ' . $insertEntries);
                 }
@@ -575,7 +575,7 @@ class ProcessOrsController extends Controller
             LEFT JOIN payee ON `transaction`.payee_id = payee.id
             LEFT JOIN (SELECT 
             process_ors_txn_items.fk_transaction_item_id,
-            SUM(process_ors_txn_items.amount) as ttl
+            SUM(process_ors_txn_items.amount) * -1 as ttl
             FROM 
             process_ors_txn_items
             WHERE process_ors_txn_items.is_deleted = 0
