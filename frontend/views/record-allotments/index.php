@@ -323,7 +323,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'value' => function ($model) {
 
                 $t = yii::$app->request->baseUrl . "/index.php?r=record-allotments/update&id=$model->id";
-                $view = yii::$app->request->baseUrl . "/index.php?r=record-allotments/view&id=$model->allotment_entry_id";
+                $view = yii::$app->request->baseUrl . "/index.php?r=record-allotments/view&id=$model->id";
                 return   ' ' . Html::a('', $view, ['class' => 'btn-xs btn-primary fa fa-eye'])
                     . ' ' . Html::a('', $t, ['class' => 'btn-xs btn-primary fa fa-pencil-square-o']);
             },
