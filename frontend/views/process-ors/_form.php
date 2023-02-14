@@ -167,7 +167,7 @@ $orsTxnRow = 0;
     <table class="table " id="orsEntriesTbl">
         <thead>
             <tr class="info">
-                <th colspan="6">
+                <th colspan="7">
                     <h4>
                         <b>Record Allotments</b>
                     </h4>
@@ -232,7 +232,7 @@ $orsTxnRow = 0;
         </tbody>
         <tfoot>
             <tr class="warning">
-                <th colspan="4">Total</th>
+                <th colspan="5">Total</th>
                 <th colspan="1" class="orsItmTtl"><?= number_format($orsItmsTtl, 2) ?></th>
                 <th></th>
             </tr>
