@@ -342,6 +342,10 @@ $orsTxnRow = 0;
     .amount {
         text-align: right;
     }
+
+    .copy {
+        padding: 5px;
+    }
 </style>
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
