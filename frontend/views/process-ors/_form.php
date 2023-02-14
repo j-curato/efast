@@ -176,8 +176,11 @@ $orsTxnRow = 0;
             <th>Reporting Period</th>
             <th>MFO/PAP Code</th>
             <th>Fund Source</th>
+            <th>Balance</th>
+
             <th>Object Code</th>
             <th>General Ledger</th>
+
             <th>Amount</th>
         </thead>
         <tbody>
@@ -206,6 +209,8 @@ $orsTxnRow = 0;
                         <span class='mfo_code'> $orsItmMfoCode</span>
                   -     <span class='mfo_name'>$orsItmMfoCame</span></td>
                     <td><span class='fund_source'>$orsItmFundSource</span></td>
+                    <td></td>
+
                     <td> 
                       <span class='uacs'>$orsItemUacs</span>-
                       <span class='general_ledger'>$orsItemGenLed</span>
@@ -298,7 +303,8 @@ $orsTxnRow = 0;
         [
             'attribute' => 'balance',
             'format' => ['decimal', 2],
-            'hAlign' => 'right'
+            'hAlign' => 'right',
+            'contentOptions' => ['class' => 'balance'],
         ],
         [
             'attribute' => 'balAfterObligation',
@@ -391,6 +397,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
         uacs,
         general_ledger,
         chart_of_account_id,
+        balance,
         copy = false
     ) {
         let baseOption = '';
@@ -430,6 +437,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
             <td>
                 <span class='fund_source'>${fund_source}</span>
             </td>
+            <td>${balance}</td>
             <td> 
                 <select  required name="orsItems[${orsRowNum}][chart_of_account_id]" class="chart-of-accounts" style="width: 100%" base-uacs ='${baseUacs}'>
                ${baseOption}
@@ -460,6 +468,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
         let uacs = source.find('.uacs').text()
         let general_ledger = source.find('.general_ledger').text()
         let chart_of_account_id = source.find('.chart_of_account_id').text()
+        let balance = source.find('.balance').text()
         OrsDisAddOrCpyItm(
             mfo_code,
             mfo_name,
@@ -467,7 +476,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
             allotment_id,
             uacs,
             general_ledger,
-            chart_of_account_id
+            chart_of_account_id,
+            balance
         )
 
     }
@@ -541,6 +551,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
             uacs,
             general_ledger,
             chart_of_account_id,
+            '',
             true
         )
 
