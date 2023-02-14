@@ -491,7 +491,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
             $('#txn_allotments tbody').append(row)
             orsTxnRow++
         })
-        negativeMaskAmount()
+        maskAmount()
     }
 
     function rmvRow(ths) {
