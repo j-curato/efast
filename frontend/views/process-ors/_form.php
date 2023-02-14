@@ -90,7 +90,13 @@ $orsTxnRow = 0;
     </div>
     <table id="txn_allotments" class="table">
         <thead>
+            <tr>
+                <th style="text-align:left">
+                    <button type="button" class="btn btn-warning refresh"><i class='fa fa-refresh'></i> Refresh Transaction Allotments</button>
+                </th>
+            </tr>
             <tr class="info">
+
                 <th colspan="11">
                     <h4>
                         <b> Transaction Allotments</b>
@@ -475,7 +481,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
                 <td>${val.uacs} - ${val.account_title}</td>
                 <td>${val.balance}</td>
                 <td> 
-                    <input type='text' class='mask-amount form-control' onkeyup='UpdateMainAmount(this)'>
+                    <input type='text' class='negative-mask-amount form-control' onkeyup='UpdateMainAmount(this)'>
                     <input type='hidden' name='orsTxnItems[${orsTxnRow}][txnAmount]' class='txnAmount main-amount'>
                 </td>
                 <td>  
@@ -485,7 +491,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
             $('#txn_allotments tbody').append(row)
             orsTxnRow++
         })
-        maskAmount()
+        negativeMaskAmount()
     }
 
     function rmvRow(ths) {
@@ -532,24 +538,33 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
     function GetOrsTtl() {
         console.log("qweqwe")
     }
+
+    function GetTxnAllot() {
+        const txnId = $('#processors-transaction_id').val()
+
+        $.ajax({
+            type: 'POST',
+            url: window.location.pathname + '?r=process-ors/get-txn-allotments',
+            data: {
+                id: txnId
+            },
+            success: function(data) {
+                const res = JSON.parse(data)
+                DisTxnAllotments(res)
+            }
+        })
+    }
     $(document).ready(() => {
 
         maskAmount()
         ChartOfAccSelect()
+        $(".refresh").click((e) => {
+            e.preventDefault()
+            GetTxnAllot()
+        })
         $('#processors-transaction_id').change(() => {
-            const txnId = $('#processors-transaction_id').val()
+            GetTxnAllot()
 
-            $.ajax({
-                type: 'POST',
-                url: window.location.pathname + '?r=process-ors/get-txn-allotments',
-                data: {
-                    id: txnId
-                },
-                success: function(data) {
-                    const res = JSON.parse(data)
-                    DisTxnAllotments(res)
-                }
-            })
         })
 
         $('#txn_allotments').on('change', '.txnAmount ', function(event) {
