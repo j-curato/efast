@@ -227,7 +227,7 @@ $orsTxnRow = 0;
         <tfoot>
             <tr class="warning">
                 <th colspan="4">Total</th>
-                <th colspan="1"><?= number_format($orsItmsTtl, 2) ?></th>
+                <th colspan="1" class="orsItmTtl"><?= number_format($orsItmsTtl, 2) ?></th>
                 <th></th>
             </tr>
         </tfoot>
@@ -337,6 +337,10 @@ $orsTxnRow = 0;
     th,
     td {
         text-align: center;
+    }
+
+    .amount {
+        text-align: right;
     }
 </style>
 <?php
@@ -469,7 +473,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
     function DisTxnAllotments(data) {
         $('#txn_allotments tbody').html('')
         $.each(data, (key, val) => {
-
+            let bal = thousands_separators(val.balance)
             const row = `<tr>
                 <td style='display:none;'><input type='hidden' name='orsTxnItems[${orsTxnRow}][txnItemId]' value='${val.transactionItemId}'></td>
                 <td>${val.responsibilityCenter}</td>
@@ -479,7 +483,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
                 <td>${val.mfo_name}</td>
                 <td>${val.fund_source_name}</td>
                 <td>${val.uacs} - ${val.account_title}</td>
-                <td>${val.balance}</td>
+                <td class='amount'>${bal}</td>
                 <td> 
                     <input type='text' class='mask-amount form-control' onkeyup='UpdateMainAmount(this)'>
                     <input type='hidden' name='orsTxnItems[${orsTxnRow}][txnAmount]' class='txnAmount main-amount'>
@@ -569,21 +573,28 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
 
         $('#txn_allotments').on('change', '.txnAmount ', function(event) {
             event.preventDefault();
-            console.log('txnAmount')
             let ttl = 0
-            $('.txnAmount ').each(() => {
-                ttl = parseFloat($(this).val())
+            $('.txnAmount ').each((key, val) => {
+                let value = 0
+                if (val.value) {
+                    value = parseFloat(val.value)
+                }
+                ttl += value
             })
-            $('.txnAllotTtl').text(ttl)
+            $('.txnAllotTtl').text(thousands_separators(ttl))
         });
         $('#orsEntriesTbl').on('change', '.orsItmAmt ', function(event) {
             event.preventDefault();
-            console.log('txnAmount')
-            $('#orsEntriesTbl .orsItmAmt ').each(() => {
-                console.log($(this).val())
-                console.log($(this).is('input'))
-                console.log($(this).is('span'))
+            let ttl = 0
+            $('#orsEntriesTbl .orsItmAmt ').each((key, val) => {
+                let value = 0
+                if (val.value) {
+                    value = parseFloat(val.value)
+                }
+                ttl += value
+
             })
+            $('.orsItmTtl').text(thousands_separators(ttl))
         });
     })
 </script>

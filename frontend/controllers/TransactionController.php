@@ -170,6 +170,7 @@ class TransactionController extends Controller
             }
             $itemId = '';
             foreach ($items as $item) {
+                $amt = floatval($item['amount']) < 0 ? $item['amount'] * -1 : $item['amount'];
                 if (!empty($item['item_id'])) {
                     $itemId = $item['item_id'];
                     $pr =  TransactionPrItems::findOne($item['item_id']);
@@ -177,12 +178,12 @@ class TransactionController extends Controller
 
                     $pr = new TransactionPrItems();
                 }
-                $validate = $this->validatePrAllotment($item['prAllotmentId'], $item['amount'], $itemId);
+                $validate = $this->validatePrAllotment($item['prAllotmentId'], $amt, $itemId);
                 if ($validate !== true) {
                     return $validate;
                 }
                 $pr->fk_transaction_id  = $id;
-                $pr->amount  = $item['amount'];
+                $pr->amount  = $amt;
                 $pr->fk_pr_allotment_id  = $item['prAllotmentId'];
 
                 if (!$pr->validate()) {

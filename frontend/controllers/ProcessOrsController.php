@@ -131,7 +131,7 @@ class ProcessOrsController extends Controller
             FROM transaction_items 
             LEFT JOIN (SELECT 
             process_ors_txn_items.fk_transaction_item_id,
-            SUM(process_ors_txn_items.amount) as ttl
+            SUM(process_ors_txn_items.amount) * -1 as ttl
             FROM 
             process_ors_txn_items
             WHERE process_ors_txn_items.is_deleted = 0
@@ -142,7 +142,7 @@ class ProcessOrsController extends Controller
             ->bindValue(':id', $txnItmId)
             ->queryScalar();
 
-        $finalBal = floatval($bal) - floatval($amt);
+        $finalBal = floatval($bal) - (floatval($amt) * -1);
 
         if ($finalBal < 0) {
             return "Allotment Balance Cannot be less than " . number_format($bal, 2);
@@ -154,19 +154,20 @@ class ProcessOrsController extends Controller
         try {
             foreach ($items as $item) {
                 $itemId = '';
+                $amt = floatval($item['txnAmount']) > 0 ? $item['txnAmount'] * -1 : $item['txnAmount'];
                 if (!empty($item['item_id'])) {
                     $itemId = $item['item_id'];
                     $txnItem = ProcessOrsTxnItems::findOne($item['item_id']);
                 } else {
                     $txnItem = new ProcessOrsTxnItems();
                 }
-                $val = $this->checkTxnItmBal($item['txnItemId'], $item['txnAmount'], $itemId);
+                $val = $this->checkTxnItmBal($item['txnItemId'], $amt, $itemId);
                 if ($val !== true) {
                     throw new ErrorException($val);
                 }
                 $txnItem->fk_process_ors_id = $orsId;
                 $txnItem->fk_transaction_item_id = $item['txnItemId'];
-                $txnItem->amount = floatval($item['txnAmount']) > 0 ? $item['txnAmount'] * -1 : $item['txnAmount'];
+                $txnItem->amount = $amt;
                 if (!$txnItem->validate()) {
                     throw new ErrorException(json_encode($txnItem->errors));
                 }
