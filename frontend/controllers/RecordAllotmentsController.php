@@ -68,7 +68,7 @@ class RecordAllotmentsController extends Controller
 
     private function insertItems($allotment_id, $items)
     {
-   
+
         try {
             foreach ($items as $item) {
                 if (!empty($item['item_id'])) {
@@ -101,7 +101,9 @@ class RecordAllotmentsController extends Controller
         chart_of_accounts.general_ledger
         FROM record_allotment_entries 
         LEFT JOIN chart_of_accounts ON record_allotment_entries.chart_of_account_id = chart_of_accounts.id
-        WHERE record_allotment_id = :id")
+        WHERE record_allotment_entries.record_allotment_id = :id
+        AND record_allotment_entries.is_deleted  = 0
+        ")
             ->bindValue(':id', $id)
             ->queryAll();
         return $query;
