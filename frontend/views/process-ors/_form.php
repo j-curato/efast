@@ -481,7 +481,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
                 <td>${val.uacs} - ${val.account_title}</td>
                 <td>${val.balance}</td>
                 <td> 
-                    <input type='text' class='negative-mask-amount form-control' onkeyup='UpdateMainAmount(this)'>
+                    <input type='text' class='mask-amount form-control' onkeyup='UpdateMainAmount(this)'>
                     <input type='hidden' name='orsTxnItems[${orsTxnRow}][txnAmount]' class='txnAmount main-amount'>
                 </td>
                 <td>  

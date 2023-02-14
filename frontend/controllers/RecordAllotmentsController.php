@@ -66,10 +66,23 @@ class RecordAllotmentsController extends Controller
         ];
     }
 
-    private function insertItems($allotment_id, $items)
+    private function insertItems($allotment_id, $items, $isUpdate = false)
     {
 
         try {
+            if ($isUpdate) {
+                $params = [];
+                $item_ids = array_column($items, 'item_id');
+                $sql = '';
+                if (!empty($item_ids)) {
+                    $sql = 'AND ';
+                    $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $item_ids], $params);
+                }
+                Yii::$app->db->createCommand("UPDATE record_allotment_entries SET is_deleted = 1 WHERE 
+                     record_allotment_entries.record_allotment_id = :id  $sql", $params)
+                    ->bindValue(':id', $allotment_id)
+                    ->execute();
+            }
             foreach ($items as $item) {
                 if (!empty($item['item_id'])) {
                     $entry = RecordAllotmentEntries::findOne($item['item_id']);
@@ -209,7 +222,7 @@ class RecordAllotmentsController extends Controller
                 if (!$model->save(false)) {
                     throw new ErrorException('Allotment Save Failed');
                 }
-                $insItms = $this->insertItems($model->id, $items);
+                $insItms = $this->insertItems($model->id, $items, true);
                 if ($insItms !== true) {
                     throw new ErrorException($insItms);
                 }
