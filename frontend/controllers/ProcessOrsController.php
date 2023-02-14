@@ -229,22 +229,23 @@ class ProcessOrsController extends Controller
         return YIi::$app->db->createCommand("SELECT 
 
         process_ors_entries.reporting_period,
-        record_allotments_view.mfo_code,
-        record_allotments_view.mfo_name,
-        record_allotments_view.fund_source,
+        record_allotment_detailed.mfo_code,
+        record_allotment_detailed.mfo_name,
+        record_allotment_detailed.fund_source_name as fund_source,
         chart_of_accounts.general_ledger,
         process_ors_entries.chart_of_account_id,
         chart_of_accounts.uacs,
         process_ors_entries.amount,
         process_ors_entries.record_allotment_entries_id as allotment_id,
-        record_allotments_view.uacs as allotment_uacs,
-        record_allotments_view.general_ledger as allotment_ledger,
-        record_allotments_view.serial_number
+        record_allotment_detailed.uacs as allotment_uacs,
+        record_allotment_detailed.account_title as allotment_ledger,
+        record_allotment_detailed.allotmentNumber as serial_number,
+        record_allotment_detailed.balance
         
         FROM 
         process_ors_entries
         LEFT JOIN chart_of_accounts ON process_ors_entries.chart_of_account_id  = chart_of_accounts.id
-        LEFT JOIN record_allotments_view ON process_ors_entries.record_allotment_entries_id  = record_allotments_view.entry_id
+        LEFT JOIN record_allotment_detailed ON process_ors_entries.record_allotment_entries_id  = record_allotment_detailed.allotment_entry_id
      
         WHERE 
         process_ors_entries.process_ors_id = :id")

@@ -197,6 +197,7 @@ $orsTxnRow = 0;
                 $amount = $itm['amount'];
                 $allotment_id = $itm['allotment_id'];
                 $orsItemUacs =  $itm['uacs'];
+                $balance =  $itm['balance'];
                 echo "<tr>
                     <td>
                         <span class='reporting_period'>$reporting_period</span>
@@ -206,10 +207,9 @@ $orsTxnRow = 0;
                         <span class='chart-of-accounts'>$chart_of_account_id </span>
                     </td>
                     <td>
-                        <span class='mfo_code'> $orsItmMfoCode</span>
-                  -     <span class='mfo_name'>$orsItmMfoCame</span></td>
+               <span class='mfo_name'>$orsItmMfoCame</span></td>
                     <td><span class='fund_source'>$orsItmFundSource</span></td>
-                    <td></td>
+                    <td>" . number_format($balance, 2) . "</td>
 
                     <td> 
                       <span class='uacs'>$orsItemUacs</span>-
@@ -430,7 +430,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
                 <span class='general_ledger'>${general_ledger}</span>
             </td>
             <td>
-                <span class='mfo_code'>${mfo_code}-</span>
                 <span class='mfo_name'>${mfo_name}</span>
               
            </td>
