@@ -285,6 +285,7 @@ $orsTxnRow = 0;
         [
             'attribute' => 'chart_of_account_id',
             'contentOptions' => ['class' => 'chart_of_account_id'],
+            'hidden' => true
         ],
         [
             'attribute' => 'uacs',
@@ -593,8 +594,13 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
             $('#orsEntriesTbl .orsItmAmt ').each((key, val) => {
                 let value = 0
                 if (val.value) {
+
                     value = parseFloat(val.value)
                 }
+                if ($(val).is('span')) {
+                    value = parseFloat($(val).text())
+                }
+
                 ttl += value
 
             })
