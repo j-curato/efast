@@ -213,7 +213,8 @@ $orsTxnRow = 0;
                       
                     </td>
                     <td> 
-                      <span class='orsItmAmt'> " . number_format($amount, 2) . "</span>
+                      <span> " . number_format($amount, 2) . "</span>
+                      <span class='orsItmAmt' style='display:none'> $amount</span>
                     </td>
                     <td>  
                         <a class='btn-xs btn-success copy' type='button' onclick='cpyOrs(this)'><i class='fa fa-copy '></i></a>
@@ -599,8 +600,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
                 }
                 if ($(val).is('span')) {
                     value = parseFloat($(val).text())
-                }
 
+                }
                 ttl += value
 
             })

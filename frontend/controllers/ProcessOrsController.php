@@ -307,7 +307,7 @@ class ProcessOrsController extends Controller
                 }
                 $insertEntries = $this->InsertEntries($model->id, $orsItems, $model->reporting_period);
                 if ($insertEntries !== true) {
-                    throw new ErrorException($insertEntries);
+                    throw new ErrorException($insertEntries . ' in Record Allotments Table ');
                 }
                 $insertOrsTxnItems = $this->InsertOrsTxnItems($model->id, $orsTxnItems);
                 if ($insertOrsTxnItems !== true) {
@@ -361,7 +361,7 @@ class ProcessOrsController extends Controller
 
                 $insertEntries = $this->InsertEntries($model->id, $orsItems);
                 if ($insertEntries !== true) {
-                    throw new ErrorException('insertEnty ' . $insertEntries);
+                    throw new ErrorException($insertEntries . ' in Record Allotments Table ');
                 }
                 $insertOrsTxnItems = $this->InsertOrsTxnItems($model->id, $orsTxnItems);
                 if ($insertOrsTxnItems !== true) {
