@@ -254,13 +254,7 @@ $orsTxnRow = 0;
             },
             'hidden' => true
         ],
-        [
-            'label' => 'Actions',
-            'format' => 'raw',
-            'value' => function ($model) {
-                return  Html::button(Icon::show('plus', ['framework' => Icon::FA]), ['class' => 'btn-xs btn-primary  add', 'onClick' => 'AddOrsItem(this)']);
-            },
-        ],
+
         'office_name',
         'division',
         [
@@ -310,6 +304,13 @@ $orsTxnRow = 0;
             'attribute' => 'balAfterObligation',
             'format' => ['decimal', 2],
             'hAlign' => 'right'
+        ],
+        [
+            'label' => 'Actions',
+            'format' => 'raw',
+            'value' => function ($model) {
+                return  Html::button(Icon::show('plus', ['framework' => Icon::FA]), ['class' => 'btn-xs btn-primary  add', 'onClick' => 'AddOrsItem(this)']);
+            },
         ],
 
 
