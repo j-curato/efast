@@ -79,6 +79,19 @@ class ProcessOrsController extends Controller
             ],
         ];
     }
+    private function checkAllotmentBal($allotment_id, $amt)
+    {
+        $bal = YIi::$app->db->createCommand("SELECT 
+        record_allotment_detailed.balAfterObligation
+         FROM record_allotment_detailed WHERE record_allotment_detailed.allotment_entry_id =:id")
+            ->bindValue(':id', $allotment_id)
+            ->queryScalar();
+        $f_bal = floatval($bal) - floatval($amt);
+        if ($f_bal < 0) {
+            return  "Allotment Amount Cannot be more than " . number_format($bal, 2);
+        }
+        return true;
+    }
     private function InsertEntries($orsId, $items, $reporting_period = '')
     {
         $cnt = 1;
@@ -92,7 +105,7 @@ class ProcessOrsController extends Controller
                     $entry = new ProcessOrsEntries();
                 }
 
-                $validate = MyHelper::checkAllotmentBalance(
+                $validate = $this->checkAllotmentBal(
                     $item['allotment_id'],
                     $item['gross_amount'],
 
