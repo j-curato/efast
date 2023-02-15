@@ -45,13 +45,14 @@ class ProcessOrsIndexSearch extends ProcessOrsIndex
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params, $type = 'ors')
     {
         $query = ProcessOrsIndex::find();
-
+        $query->where('type = :type', ['type' => $type]);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
+
 
         $this->load($params);
 

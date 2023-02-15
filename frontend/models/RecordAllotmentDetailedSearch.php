@@ -70,7 +70,7 @@ class RecordAllotmentDetailedSearch extends RecordAllotmentDetailed
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params, $type)
     {
         $query = RecordAllotmentDetailed::find();
         if (!Yii::$app->user->can('super-user')) {
@@ -80,7 +80,11 @@ class RecordAllotmentDetailedSearch extends RecordAllotmentDetailed
         }
 
         // add conditions that should always apply here
-
+        if ($type === 'burs') {
+            $query->andFilterWhere(['like', 'book_name', 'Fund 07']);
+        } else if ($type === 'ors') {
+            $query->andFilterWhere(['!=', 'book_name', 'Fund 07']);
+        }
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => ['defaultOrder' => ['budget_year' => SORT_DESC]],

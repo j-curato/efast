@@ -25,7 +25,6 @@ $orsTxnRow = 0;
 
     <?php $form = ActiveForm::begin([
         'id' => 'orsForm',
-        'options' => ['class' => 'form-horizontal'],
     ]); ?>
     <div class="row">
 
@@ -65,7 +64,7 @@ $orsTxnRow = 0;
         <div class="col-sm-3">
             <?= $form->field($model, 'transaction_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map(Transaction::find()->where('id =:id', ['id' => $model->transaction_id])->asArray()->all(), 'id', 'tracking_number'),
-                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'options' => ['placeholder' => 'Search Transaction Number ...'],
                 'pluginOptions' => [
                     'allowClear' => true,
                     'minimumInputLength' => 1,

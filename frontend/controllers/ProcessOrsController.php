@@ -265,6 +265,18 @@ class ProcessOrsController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'type' => 'ors'
+        ]);
+    }
+    public function actionBursIndex()
+    {
+
+        $searchModel = new ProcessOrsIndexSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'burs');
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'type' => 'burs'
         ]);
     }
 
@@ -289,11 +301,11 @@ class ProcessOrsController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($type = 'ors')
     {
         $model = new ProcessOrs();
-
         if ($model->load(Yii::$app->request->post())) {
+            $model->type = $type;
             $orsTxnItems = Yii::$app->request->post('orsTxnItems') ?? [];
             $orsItems = Yii::$app->request->post('orsItems') ?? [];
             $model->serial_number = $this->getOrsSerialNumber($model->reporting_period, $model->book_id);
@@ -325,11 +337,12 @@ class ProcessOrsController extends Controller
 
 
         $searchModel = new RecordAllotmentDetailedSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $type);
         return $this->render('create', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'model' => $model,
+            'type' => $type
         ]);
     }
 
@@ -379,7 +392,7 @@ class ProcessOrsController extends Controller
 
 
         $searchModel = new RecordAllotmentDetailedSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors');
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $model->type);
 
         return $this->render('update', [
             'searchModel' => $searchModel,
@@ -403,6 +416,10 @@ class ProcessOrsController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+    public function actionCreateBurs()
+    {
+        return $this->redirect(['create', 'type' => 'burs']);
     }
 
     /**

@@ -5,7 +5,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\ProcessOrs */
 
-$this->title = 'Create Process Ors';
+$this->title = 'Create Process ' . strtoupper($type);
 $this->params['breadcrumbs'][] = ['label' => 'Process Ors', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

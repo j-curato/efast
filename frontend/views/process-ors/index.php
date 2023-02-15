@@ -9,14 +9,22 @@ use yii\helpers\Url;
 /* @var $searchModel app\models\ProccessOrsSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Process Ors';
+$type_dis = strtoupper($type);
+$this->title = 'Process ' . $type_dis;
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="process-ors-index">
 
 
     <p>
-        <?= Html::a('Create Process Ors', ['create'], ['class' => 'btn btn-success']) ?>
+
+        <?php
+        if ($type === 'burs') {
+            echo  Html::a('Create Process ' . $type_dis, ['create-burs'], ['class' => 'btn btn-success']);
+        } else {
+            echo Html::a('Create Process ' . $type_dis, ['create'], ['class' => 'btn btn-success']);
+        }
+        ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
@@ -27,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => 'primary',
-            'heading' => 'Process ORS'
+            'heading' => 'Process ' . $type_dis
         ],
         'columns' => [
 
@@ -38,6 +46,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'particular',
             'r_center',
             'payee',
+            'type',
 
             [
                 'label' => 'Actions',

@@ -293,7 +293,7 @@
                                     'items' => [
                                         ['label' => 'Record Allotments', 'icon' => 'circle-o', 'url' => ['/record-allotments'],],
                                         ['label' => 'Process Ors', 'icon' => 'circle-o', 'url' => ['/process-ors'],],
-                                        ['label' => 'Process BURS', 'icon' => 'circle-o', 'url' => ['/process-burs'],],
+                                        ['label' => 'Process BURS', 'icon' => 'circle-o', 'url' => ['/process-ors/burs-index'],],
 
                                     ],
                                 ],
@@ -409,8 +409,8 @@
                                     'url' => '#',
                                     'items' => [
                                         // Yii::$app->user->can('super-user') ?     ['label' => 'Activity/Project Procurement', 'icon' => 'circle-o', 'url' => ['/pr-project-procurement'],] : [],
-                        Yii::$app->user->can('super-user') ?     ['label' => 'Supplemental PPMP', 'icon' => 'circle-o', 'url' => ['/supplemental-ppmp'],] : [],
-                                       
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Supplemental PPMP', 'icon' => 'circle-o', 'url' => ['/supplemental-ppmp'],] : [],
+
                                         Yii::$app->user->can('super-user') ?     ['label' => 'Purchase Request', 'icon' => 'circle-o', 'url' => ['/pr-purchase-request'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'RFQ', 'icon' => 'circle-o', 'url' => ['/pr-rfq'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'AOQ', 'icon' => 'circle-o', 'url' => ['/pr-aoq'],] : [],
