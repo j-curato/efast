@@ -209,7 +209,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container dv_links">
 
 
-        <h4>List of DV's Using This ORS</h4>
+        <h4>List of DV's Using This <?= strtoupper($model->type) ?></h4>
         <table class="table">
             <thead>
                 <th>
@@ -234,9 +234,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         </tr>";
                         }
                     }
-
-                    // http://10.20.17.33/dti-afms-2/frontend/web/index.php?r=dv-aucs%2Fview&id=6878
-                    // echo  
                 }
                 ?>
             </tbody>

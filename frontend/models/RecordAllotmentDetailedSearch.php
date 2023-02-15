@@ -70,7 +70,7 @@ class RecordAllotmentDetailedSearch extends RecordAllotmentDetailed
      *
      * @return ActiveDataProvider
      */
-    public function search($params, $type)
+    public function search($params, $type = '')
     {
         $query = RecordAllotmentDetailed::find();
         if (!Yii::$app->user->can('super-user')) {
