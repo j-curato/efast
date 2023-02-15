@@ -306,12 +306,13 @@ $orsTxnRow = 0;
             'attribute' => 'balance',
             'format' => ['decimal', 2],
             'hAlign' => 'right',
-            'contentOptions' => ['class' => 'balance'],
         ],
         [
             'attribute' => 'balAfterObligation',
             'format' => ['decimal', 2],
-            'hAlign' => 'right'
+            'hAlign' => 'right',
+            'contentOptions' => ['class' => 'balance'],
+
         ],
         [
             'label' => 'Actions',

@@ -89,7 +89,7 @@ class RecordAllotmentDetailed extends \yii\db\ActiveRecord
             'ttlOrsAmt' => 'Ttl Ors Amt',
             'ttlPrAmt' => 'Ttl Pr Amt',
             'ttlTrAmt' => 'Ttl Tr Amt',
-            'balance' => 'Balance',
+            'balance' => 'Bal After PR/Txn/Obligation',
             'balAfterObligation' => 'Bal After Obligation',
             'reporting_period' => 'Reporting Period',
             'date_issued' => 'Date Issued',
