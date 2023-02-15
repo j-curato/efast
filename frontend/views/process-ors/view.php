@@ -20,9 +20,10 @@ $this->params['breadcrumbs'][] = $this->title;
     $ors  = $model;
     $entries = ProcessOrsNewView::find()->where('id = :id', ['id' => $model->id])->all();
     ?>
-    <h1><?= Html::encode($this->title) ?></h1>
+
 
     <div class="panel panel-default container" style="background-color: white;">
+        <h4 style=""><?= Html::encode($this->title) ?></h4>
         <p>
             <?= Html::a('Create Process Ors', ['create'], ['class' => 'btn btn-success']) ?>
             <?= Html::a('Update/Re-Align', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -204,7 +205,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </tbody>
         </table>
     </div>
-    <div class="container">
+    <div class="container dv_links">
 
 
         <h4>List of DV's Using This ORS</h4>
@@ -258,6 +259,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
     .center {
         text-align: center;
+    }
+
+    @media print {
+
+        .btn,
+        .main-footer,
+        .dv_links {
+            display: none;
+        }
     }
 </style>
 <?php
