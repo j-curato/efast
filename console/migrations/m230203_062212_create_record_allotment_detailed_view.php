@@ -56,7 +56,7 @@ class m230203_062212_create_record_allotment_detailed_view extends Migration
                 transaction_items.fk_record_allotment_entries_id as allotment_entry_id,
                 0 as orsAmt,
                 0 as prAmt,
-                process_ors_txn_items.amount*-1 trAmt
+                process_ors_txn_items.amount as trAmt
             FROM 
                 process_ors_txn_items
             LEFT JOIN transaction_items ON process_ors_txn_items.fk_transaction_item_id = transaction_items.id
@@ -130,6 +130,7 @@ class m230203_062212_create_record_allotment_detailed_view extends Migration
         LEFT JOIN authorization_code ON record_allotments.authorization_code_id = authorization_code.id
         LEFT JOIN major_accounts ON chart_of_accounts.major_account_id = major_accounts.id 
         LEFT JOIN allotment_type ON record_allotments.allotment_type_id  = allotment_type.id
+        WHERE record_allotment_entries.is_deleted = 0 
         ")
             ->execute();
     }

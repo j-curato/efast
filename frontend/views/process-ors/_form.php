@@ -260,8 +260,10 @@ $orsTxnRow = 0;
             'hidden' => true
         ],
 
+        'budget_year',
         'office_name',
         'division',
+        'book_name',
         [
             'attribute' => 'reporting_period',
             'contentOptions' => ['class' => 'reporting_period'],
@@ -273,6 +275,7 @@ $orsTxnRow = 0;
         [
             'attribute' => 'mfo_code',
             'contentOptions' => ['class' => 'mfo_code'],
+            'hidden' => true
         ],
         [
             'attribute' => 'mfo_name',

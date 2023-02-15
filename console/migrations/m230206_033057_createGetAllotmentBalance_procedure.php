@@ -94,7 +94,7 @@ class m230206_033057_createGetAllotmentBalance_procedure extends Migration
          transaction_items.fk_record_allotment_entries_id as allotment_entry_id,
          0 as orsAmt,
          0 as prAmt,
-         process_ors_txn_items.amount*-1 trAmt
+         process_ors_txn_items.amount as trAmt
          FROM 
          process_ors_txn_items
          LEFT JOIN transaction_items ON process_ors_txn_items.fk_transaction_item_id = transaction_items.id
