@@ -3,6 +3,7 @@
 use app\models\ProcessOrsNewView;
 use aryelds\sweetalert\SweetAlertAsset;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\DetailView;
 use yii\widgets\Pjax;
 
@@ -226,12 +227,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     foreach ($ors->dvAucsEntries as $val) {
                         if (intval($val->is_deleted) === 0) {
 
-                            $x = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/view&id={$val->dvAucs->id}";
+                            $url  =   Html::a('Dv Link', Url::to(['dv-aucs/view', 'id' => $val->dvAucs->id]), ['class' => 'btn btn-link ']);
                             echo "<tr>
-                        <td>{$val->dvAucs->dv_number}</td>
-                        <td>" .
-                                Html::a('Dv Link', $x, ['class' => 'btn-xs btn-danger '])
-                                . "</td>
+                            <td>{$val->dvAucs->dv_number}</td>
+                            <td>$url</td>
                         </tr>";
                         }
                     }
