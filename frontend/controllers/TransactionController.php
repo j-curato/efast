@@ -403,11 +403,12 @@ class TransactionController extends Controller
                 if (!$model->save(false)) {
                     throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => 'Error saving model')));
                 }
-                $err = $this->insertItems($model->id, $allotmentItems);
+
+                $err = $this->InsertPrs($model->id, $prItems);
                 if ($err !== true) {
                     throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $err)));
                 }
-                $err = $this->InsertPrs($model->id, $prItems);
+                $err = $this->insertItems($model->id, $allotmentItems);
                 if ($err !== true) {
                     throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $err)));
                 }
