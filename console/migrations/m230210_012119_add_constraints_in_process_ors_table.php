@@ -27,7 +27,7 @@ class m230210_012119_add_constraints_in_process_ors_table extends Migration
         // $this->addForeignKey('fk-ors-document_recieve_id', 'process_ors', 'document_recieve_id', 'document_recieve', 'id', 'RESTRICT');
         // $this->addForeignKey('fk-ors-mfo_pap_code_id', 'process_ors', 'mfo_pap_code_id', 'mfo_pap_code', 'id', 'RESTRICT');
         // $this->addForeignKey('fk-ors-fund_source_id', 'process_ors', 'fund_source_id', 'fund_source', 'id', 'RESTRICT');
-        // $this->addForeignKey('fk-ors-book_id', 'process_ors', 'book_id', '	books', 'id', 'RESTRICT');
+        // $this->addForeignKey('fk-ors-book_id', 'process_ors', 'book_id', 'books', 'id', 'RESTRICT');
         // Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS=1")->query();
     }
 
@@ -59,7 +59,7 @@ class m230210_012119_add_constraints_in_process_ors_table extends Migration
 
     public function down()
     {
-        echo "m230210_012119_add_constraints_in_process_ors_table cannot be reverted.\n";
+        echo "m230210_012119_add_constrain  ts_in_process_ors_table cannot be reverted.\n";
 
         return false;
     }
