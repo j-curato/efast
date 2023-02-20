@@ -52,27 +52,10 @@ class DvAucs extends \yii\db\ActiveRecord
             ], 'required'],
             [[
 
-                'id',
-                'dv_number',
                 'reporting_period',
-                'mrd_classification_id',
-                'nature_of_transaction_id',
                 'particular',
-                'payee_id',
                 'transaction_type',
-                'book_id',
-                'is_cancelled',
-                'created_at',
                 'dv_link',
-                'transaction_begin_time',
-                'return_timestamp',
-                'out_timestamp',
-                'accept_timestamp',
-                'tracking_sheet_id',
-                'in_timestamp',
-                'is_payable',
-                'recieved_at',
-                'payroll_id',
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
 
 
