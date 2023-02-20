@@ -15,7 +15,7 @@ class m230210_014323_add_constrainst_in_transaction_table extends Migration
 
 
         Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS=0")->query();
-        $this->createIndex('idx-tracking_number', 'transaction', 'tracking_number', true);
+        $this->createIndex('idx-tracking_number', 'transaction', 'tracking_number');
         $this->createIndex('idx-fk_record_allotment_entry_id', 'transaction', 'fk_record_allotment_entry_id');
         $this->createIndex('idx-fk_book_id', 'transaction', 'fk_book_id');
 
