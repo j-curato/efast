@@ -24,7 +24,7 @@ class m230206_070554_add_constraints_in_transaction_iars_table extends Migration
     public function safeDown()
     {
         $this->dropForeignKey('fk-fk_transaction_id', 'transaction_iars');
-        $this->dropIndex('idx-fk_transaction_id', 'transaction_iars',);
+        $this->dropIndex('idx-fk_transaction_id', 'transaction_iars');
     }
 
     /*
