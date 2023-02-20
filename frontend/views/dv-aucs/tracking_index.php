@@ -72,7 +72,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'account_name'
             ],
             [
-                'label' => 'Recive Date and Time',
+                'label' => 'Receive Date and Time',
                 'attribute' => 'recieved_at',
 
             ],
