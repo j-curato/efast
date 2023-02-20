@@ -58,13 +58,16 @@ if (!empty($model->fk_requested_by)) {
             <?php
             if (!$model->is_final) {
                 echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) . ' ';
-                echo Html::a('Final', ['final', 'id' => $model->id], [
-                    'class' => 'btn btn-danger',
-                    'data' => [
-                        'confirm' => 'Are you sure you want to final this item?',
-                        'method' => 'post',
-                    ],
-                ]);
+
+                if (Yii::$app->user->can('super-user')) {
+                    echo Html::a('Final', ['final', 'id' => $model->id], [
+                        'class' => 'btn btn-danger',
+                        'data' => [
+                            'confirm' => 'Are you sure you want to final this item?',
+                            'method' => 'post',
+                        ],
+                    ]);
+                }
             } else {
                 if (Yii::$app->user->can('super-user')) {
                     echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) . ' ';
