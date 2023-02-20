@@ -33,9 +33,9 @@ class m230210_014323_add_constrainst_in_transaction_table extends Migration
         $this->dropForeignKey('fk-txn-fk_record_allotment_entry_id', 'transaction');
         $this->dropForeignKey('fk-txn-fk_book_id', 'transaction');
 
-        $this->dropIndex('idx-tracking_number', 'transaction',);
-        $this->dropIndex('idx-fk_record_allotment_entry_id', 'transaction',);
-        $this->dropIndex('idx-fk_book_id', 'transaction',);
+        $this->dropIndex('idx-tracking_number', 'transaction');
+        $this->dropIndex('idx-fk_record_allotment_entry_id', 'transaction');
+        $this->dropIndex('idx-fk_book_id', 'transaction');
     }
 
     /*
