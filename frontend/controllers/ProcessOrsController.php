@@ -162,9 +162,22 @@ class ProcessOrsController extends Controller
         }
         return true;
     }
-    private function InsertOrsTxnItems($orsId, $items)
+    private function InsertOrsTxnItems($orsId, $items, $isUpdate = false)
     {
         try {
+            if ($isUpdate) {
+                $params = [];
+                $item_ids = array_column($items, 'item_id');
+                $sql = '';
+                if (!empty($item_ids)) {
+                    $sql = 'AND ';
+                    $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $item_ids], $params);
+                }
+                Yii::$app->db->createCommand("UPDATE process_ors_txn_items SET is_deleted = 1 WHERE 
+                         process_ors_txn_items.fk_process_ors_id = :id  $sql", $params)
+                    ->bindValue(':id', $orsId)
+                    ->query();
+            }
             foreach ($items as $item) {
                 $itemId = '';
                 $amt = floatval($item['txnAmount']) > 0 ? $item['txnAmount'] * -1 : $item['txnAmount'];
@@ -390,7 +403,7 @@ class ProcessOrsController extends Controller
                 if ($insertEntries !== true) {
                     throw new ErrorException($insertEntries . ' in Record Allotments Table ');
                 }
-                $insertOrsTxnItems = $this->InsertOrsTxnItems($model->id, $orsTxnItems);
+                $insertOrsTxnItems = $this->InsertOrsTxnItems($model->id, $orsTxnItems, true);
                 if ($insertOrsTxnItems !== true) {
                     throw new ErrorException($insertOrsTxnItems);
                 }
