@@ -149,6 +149,7 @@ $orsTxnRow = 0;
                     </td>
                 </tr>";
                     $txnTtl += floatval($itemAmt);
+                    $orsTxnRow++;
                 }
             }
 
