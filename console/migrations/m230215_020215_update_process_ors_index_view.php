@@ -30,7 +30,7 @@ class m230215_020215_update_process_ors_index_view extends Migration
         LEFT JOIN `transaction` ON process_ors.transaction_id = `transaction`.id
         LEFT JOIN payee ON `transaction`.payee_id = payee.id
         LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id = responsibility_center.id")
-            ->queryAll();
+            ->query();
     }
 
     /**
