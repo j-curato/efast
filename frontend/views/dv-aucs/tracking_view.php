@@ -7,11 +7,11 @@ use yii\widgets\DetailView;
 /* @var $model app\models\TrackingSheet */
 
 $this->title = $model->dv_number;
-$this->params['breadcrumbs'][] = ['label' => 'Tracking Sheets', 'url' => ['tracking-index']];
+$this->params['breadcrumbs'][] = ['label' => 'Routing Slips', 'url' => ['tracking-index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="tracking-sheet-view">
+<div class="routing-slip-view">
 
 
 
@@ -166,7 +166,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container">
 
         <p>
-            <?= Html::a('Update', ['tracking-update', 'id' => $model->id], ['class' => 'btn btn-primary', 'id' => 'update']) ?>
+            <?= Html::a('Update', ['update-routing', 'id' => $model->id], ['class' => 'btn btn-primary', 'id' => 'update']) ?>
             <?= Html::a('Create', ['create-tracking'], ['class' => 'btn btn-success']) ?>
 
         </p>

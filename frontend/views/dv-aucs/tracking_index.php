@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Routing Slip', ['create-tracking'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Routing Slip', ['create-routing'], ['class' => 'btn btn-success']) ?>
     </p>
 
 
@@ -84,7 +84,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    $update = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/tracking-update&id=$model->id";
+                    $update = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/update-routing&id=$model->id";
                     $view = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/tracking-view&id=$model->id";
                     return ' ' . Html::a('', $view, ['class' => 'btn-xs btn-primary fa fa-eye'])
                         . ' ' . Html::a('', $update, ['class' => 'btn-xs btn-success fa fa-pencil-square-o']);

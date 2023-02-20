@@ -38,10 +38,18 @@ class DvAucs extends \yii\db\ActiveRecord
 
         return [
             [['tracking_sheet_id', 'is_payable'], 'number'],
+            [['fk_dv_transaction_type_id'], 'integer'],
             [['dv_number', 'object_code'], 'string', 'max' => 255],
 
             [['reporting_period'], 'string', 'max' => 50],
-            [['particular', 'payee_id'], 'required'],
+            [[
+                'particular',
+                'payee_id',
+                'reporting_period',
+                'book_id',
+                'recieved_at',
+                'fk_dv_transaction_type_id',
+            ], 'required'],
             [[
 
                 'id',
@@ -68,6 +76,7 @@ class DvAucs extends \yii\db\ActiveRecord
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
 
 
+
         ];
     }
 
@@ -88,6 +97,10 @@ class DvAucs extends \yii\db\ActiveRecord
             'particular' => 'Particular',
             'mrd_classification_id' => 'MRD Classification',
             'object_code' => 'Object Code',
+            'fk_dv_transaction_type_id' => 'Transaction Type',
+            'payroll_id' => 'Payroll Number',
+            'fk_remittance_id' => 'Remittance Number',
+            'book_id' => 'Book',
         ];
     }
 

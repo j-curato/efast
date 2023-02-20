@@ -23,9 +23,11 @@ use app\models\ProcessOrsEntries;
 use yii\web\NotFoundHttpException;
 use app\models\DvAccountingEntries;
 use app\models\DvAucsFile;
+use app\models\DvTransactionType;
 use app\models\TrackingSheetIndexSearch;
 use common\models\UploadForm;
 use phpDocumentor\Reflection\PseudoTypes\False_;
+use PHPUnit\Util\Log\JSON;
 use yii\helpers\FileHelper;
 use yii\helpers\Url;
 
@@ -182,7 +184,175 @@ class DvAucsController extends Controller
             'model' => $model
         ]);
     }
+    private function insertDvItm($dv_id, $items = [], $isUpdate = false)
+    {
 
+        try {
+            if ($isUpdate) {
+                $params = [];
+                $item_ids = array_column($items, 'item_id');
+                $sql = '';
+                if (!empty($item_ids)) {
+                    $sql = 'AND ';
+                    $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $item_ids], $params);
+                }
+                Yii::$app->db->createCommand("UPDATE dv_aucs_entries SET is_deleted = 1 WHERE 
+                     dv_aucs_entries.dv_aucs_id = :id  $sql", $params)
+                    ->bindValue(':id', $dv_id)
+                    ->execute();
+            }
+
+            foreach ($items as $itm) {
+                if (!empty($itm['item_id'])) {
+                    $dv_itm =  DvAucsEntries::findOne($itm['item_id']);
+                } else {
+
+                    $dv_itm = new DvAucsEntries();
+                }
+
+                $dv_itm->dv_aucs_id = $dv_id;
+                $dv_itm->amount_disbursed = !empty($itm['amount_disbursed']) ? $itm['amount_disbursed'] : 0;
+                $dv_itm->vat_nonvat = !empty($itm['vat_nonvat']) ? $itm['vat_nonvat'] : 0;
+                $dv_itm->ewt_goods_services = !empty($itm['ewt_goods_services']) ? $itm['ewt_goods_services'] : 0;
+                $dv_itm->compensation = !empty($itm['compensation']) ? $itm['compensation'] : 0;
+                $dv_itm->other_trust_liabilities = !empty($itm['other_trust_liabilities']) ? $itm['other_trust_liabilities'] : 0;
+                $dv_itm->process_ors_id = !empty($itm['process_ors_id']) ? $itm['process_ors_id'] : null;
+                if (!$dv_itm->validate()) {
+                    throw new ErrorException(json_encode($dv_itm->errors));
+                }
+                if (!$dv_itm->save(false)) {
+                    throw new ErrorException('DV Item Save Failed');
+                }
+            }
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+        return true;
+    }
+    private function getDvItems($id)
+    {
+        return Yii::$app->db->createCommand(" SELECT 
+        dv_aucs_entries.id as item_id,
+        dv_aucs_entries.process_ors_id,
+        process_ors.serial_number,
+        `transaction`.particular,
+        payee.account_name as payee_name,
+        dv_aucs_entries.amount_disbursed,
+        dv_aucs_entries.vat_nonvat,
+        dv_aucs_entries.ewt_goods_services,
+        dv_aucs_entries.compensation,
+        dv_aucs_entries.other_trust_liabilities,
+        total_obligated.total
+        FROM dv_aucs_entries
+        LEFT JOIN process_ors ON dv_aucs_entries.process_ors_id = process_ors.id
+        LEFT JOIN `transaction` ON process_ors.transaction_id = `transaction`.id
+        LEFT JOIN payee ON `transaction`.payee_id = payee.id
+        LEFT JOIN (SELECT 
+        dv_aucs_entries.process_ors_id as ors_id,
+        SUM(dv_aucs_entries.amount_disbursed) as total
+        FROM dv_aucs_entries
+        INNER JOIN dv_aucs ON dv_aucs_entries.dv_aucs_id = dv_aucs.id
+        INNER JOIN cash_disbursement ON dv_aucs.id = cash_disbursement.dv_aucs_id
+        WHERE
+        dv_aucs.is_cancelled = 0
+        AND
+        cash_disbursement.is_cancelled=0
+        GROUP BY dv_aucs_entries.process_ors_id
+        ) as total_obligated ON process_ors.id=total_obligated.ors_id
+        WHERE
+        dv_aucs_entries.dv_aucs_id = :id
+        AND dv_aucs_entries.is_deleted =0
+        ")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
+    public function actionCreateRouting()
+    {
+        $model = new DvAucs();
+
+        if ($model->load(Yii::$app->request->post())) {
+            $items = !empty(Yii::$app->request->post('items')) ? Yii::$app->request->post('items') : [];
+            $model->dv_number =  $this->getDvNumber($model->reporting_period, $model->book_id);
+            try {
+
+
+                $t_type = strtolower(DvTransactionType::findOne($model->fk_dv_transaction_type_id)->name);
+                $model->transaction_type = $t_type;
+                if (count($items) < 1) {
+                    throw new ErrorException('DV items Must Be More Than or Equal to 1');
+                }
+                if ($t_type === 'single' && count($items) > 1) {
+                    throw new ErrorException('Transaction Type is Single ORS Cannot Be More than 1');
+                }
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Fail');
+                }
+                $ins_itm = $this->insertDvItm($model->id, $items);
+                if ($ins_itm !== true) {
+                    throw new ErrorException($ins_itm);
+                }
+            } catch (ErrorException $e) {
+                return json_encode(['error' => $e->getMessage()]);
+            }
+            return $this->redirect(['tracking-view', 'id' => $model->id]);
+        }
+
+
+        $searchModel = new ProcessOrsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('create_routing', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'model' => $model
+        ]);
+    }
+    public function actionUpdateRouting($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post())) {
+            $items = !empty(Yii::$app->request->post('items')) ? Yii::$app->request->post('items') : [];
+            try {
+                $t_type = strtolower(DvTransactionType::findOne($model->fk_dv_transaction_type_id)->name);
+                $model->transaction_type = $t_type;
+                // return var_dump($items);
+                if (count($items) < 1) {
+                    throw new ErrorException('DV items Must Be More Than or Equal to 1');
+                }
+                if ($t_type === 'single' && count($items) > 1) {
+                    throw new ErrorException('Transaction Type is Single ORS Cannot Be More than 1');
+                }
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Fail');
+                }
+                $ins_itm = $this->insertDvItm($model->id, $items, 'update');
+                if ($ins_itm !== true) {
+                    throw new ErrorException($ins_itm);
+                }
+            } catch (ErrorException $e) {
+                return json_encode(['error' => $e->getMessage()]);
+            }
+            return $this->redirect(['tracking-view', 'id' => $model->id]);
+        }
+
+
+        $searchModel = new ProcessOrsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('update_routing', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'model' => $model,
+            'items' => $this->getDvItems($id)
+        ]);
+    }
     /**
      * Updates an existing DvAucs model.
      * If update is successful, the browser will be redirected to the 'view' page.
