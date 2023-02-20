@@ -24,7 +24,7 @@ class m230215_020215_update_process_ors_index_view extends Migration
         `transaction`.particular,
         responsibility_center.`name` as r_center,
         payee.account_name as payee,
-process_ors.type
+        process_ors.type
         FROM 
         process_ors
         LEFT JOIN `transaction` ON process_ors.transaction_id = `transaction`.id
@@ -38,7 +38,6 @@ process_ors.type
      */
     public function safeDown()
     {
-     
     }
 
     /*
