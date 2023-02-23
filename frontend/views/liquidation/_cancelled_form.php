@@ -79,7 +79,6 @@ use yii\helpers\ArrayHelper;
         </div>
     </div>
 
-
     <?php ActiveForm::end(); ?>
 </div>
 <style>
