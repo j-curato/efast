@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => 'Book',
                 'value' => function ($model) {
-                    return $model->books->name;
+                    return $model->book->name;
                 }
             ],
             'particular:ntext',
