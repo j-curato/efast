@@ -5075,8 +5075,8 @@ class ReportController extends \yii\web\Controller
         $message = new Message();
 
         // set the message sender and recipient
-        $message->setFrom('sender@example.com')
-            ->setTo('recipient@example.com');
+        $message->setFrom('normanbutalon@gmailcom.com')
+            ->setTo('norman.notorious@gmail.com');
 
         // set the message subject
         $message->setSubject('Test message');
