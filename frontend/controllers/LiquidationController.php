@@ -1343,108 +1343,152 @@ class LiquidationController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
-    public function actionCancelledCheckUpdate($id)
+    public function actionUpdateCancelled($id)
     {
-
-
-        // $q  = Liquidation::findOne($id);
         $model = $this->findModel($id);
-        return $this->renderAjax('_cancelled_form', [
-            'model' => $model,
-            'update_type' => 'update'
+        if ($model->load(Yii::$app->request->post())) {
+            try {
+                if (!$this->validateCheckNumber($model->check_number, $model->check_range_id)) {
+                    throw new ErrorException('Check Number Not in Range');
+                }
+                $validateReportingPeriod = $this->validateReportingPeriod($model->reporting_period, $model->province, $model->checkRange->bank_account_id);
+                if ($validateReportingPeriod !== true) {
+                    throw new ErrorException($validateReportingPeriod);
+                }
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Save Failed');
+                }
+                return json_encode(['isSuccess' => true, 'error_message' => 'Success']);
+            } catch (ErrorException $e) {
+                return json_encode(['isSuccess' => false, 'error_message' => $e->getMessage()]);
+            }
+        }
+        return $this->renderAjax('update_cancel', [
+            'model' => $model
         ]);
     }
-    public function actionCancelledForm()
+    public function actionCreateCancelled()
     {
-        if ($_POST) {
-            $reporting_period = $_POST['reporting_period'];
-            $check_date = $_POST['check_date'];
-            $check_range = $_POST['check_range'];
-            $check_number = $_POST['check_number'];
-            $payee = 'CANCELLED';
-            $update_id = $_POST['update_id'];
+        $model = new Liquidation();
+        // if ($_POST) {
+        //     $reporting_period = $_POST['reporting_period'];
+        //     $check_date = $_POST['check_date'];
+        //     $check_range = $_POST['check_range'];
+        //     $check_number = $_POST['check_number'];
+        //     $payee = 'CANCELLED';
+        //     $update_id = $_POST['update_id'];
+        //     $province = Yii::$app->user->identity->province;
+
+        //     $year = date('Y');
+        //     $r_year = date('Y', strtotime($reporting_period));
+        //     // if ($r_year < $year) {
+        //     //     return json_encode(['isSuccess' => false, 'error' => "Please Insert Reporting Period in $year "]);
+        //     // }
+        //     $last_lock_reporting_period = Yii::$app->db->createCommand("SELECT reporting_period FROM `liquidation_reporting_period`
+        //     WHERE province = :province ORDER BY reporting_period DESC limit 1")
+        //         ->bindValue(':province', $province)
+        //         ->queryOne();
+        //     $r_period = date('Y-m', strtotime($reporting_period));
+        //     if (date('Y', strtotime($r_period)) < date('Y', strtotime($last_lock_reporting_period['reporting_period']))) {
+        //         return json_encode(['isSuccess' => false, 'error' => "Please Insert Reporting Period in $year "]);
+        //     }
+        //     $check = (new \yii\db\Query())
+        //         ->select([
+        //             'check_range.from',
+        //             'check_range.to',
+        //         ])
+        //         ->from('check_range')
+        //         ->where("check_range.id = :id", ['id' => $check_range])
+        //         ->one();
+        //     $disabled_reporting_period = (new \yii\db\Query())
+        //         ->select('*')
+        //         ->from('liquidation_reporting_period')
+        //         ->where('liquidation_reporting_period.reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+        //         ->andWhere('liquidation_reporting_period.province LIKE :province', ['province' => $province])
+        //         ->one();
+        //     if ($check_number >= $check['from'] && $check_number <= $check['to']) {
+        //     } else {
+        //         return json_encode(['isSuccess' => false, 'error' => 'Check Number Not in Range']);
+        //     }
+        //     if (!empty($update_id)) {
+        //         $liquidation = Liquidation::findOne($update_id);
+        //         if ($liquidation->reporting_period !== $reporting_period) {
+
+        //             if (!empty($disabled_reporting_period)) {
+        //                 return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
+        //             }
+        //         }
+        //     } else {
+        //         $check_number_exist = Yii::$app->db->createCommand("
+        //         SELECT EXISTS(SELECT * FROM liquidation WHERE check_number = :check_number
+        //         AND province = :province
+        //         AND reporting_period LIKE :year
+        //         AND payee LIKE 'cancelled%'
+        //         )
+        //         ")
+        //             ->bindValue(':check_number', $check_number)
+        //             ->bindValue(':province', $province)
+        //             ->bindValue(':year', $year . '%')
+        //             ->queryScalar();
+        //         if (intval($check_number_exist) === 1) {
+        //             return json_encode(['isSuccess' => false, 'error' => 'Check Number Already Use']);
+        //         }
+
+
+        //         if (!empty($disabled_reporting_period)) {
+        //             return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
+        //         }
+        //         $liquidation = new Liquidation();
+        //     }
+        //     $liquidation->reporting_period = $reporting_period;
+        //     $liquidation->check_date = $check_date;
+        //     $liquidation->check_range_id  = $check_range;
+        //     $liquidation->payee = $payee;
+        //     $liquidation->check_number = $check_number;
+        //     $liquidation->province = $province;
+        //     $liquidation->is_cancelled  = 1;
+
+
+        //     if ($liquidation->validate()) {
+
+        //         if ($liquidation->save(false)) {
+        //             return json_encode(['isSuccess' => true, 'id' => $liquidation->id]);
+        //         }
+        //     } else {
+        //         return json_encode(['isSuccess' => false, 'error' => $liquidation->errors]);
+        //     }
+        // }
+        if ($model->load(Yii::$app->request->post())) {
             $province = Yii::$app->user->identity->province;
-
-            $year = date('Y');
-            $r_year = date('Y', strtotime($reporting_period));
-            // if ($r_year < $year) {
-            //     return json_encode(['isSuccess' => false, 'error' => "Please Insert Reporting Period in $year "]);
-            // }
-            $last_lock_reporting_period = Yii::$app->db->createCommand("SELECT reporting_period FROM `liquidation_reporting_period`
-            WHERE province = :province ORDER BY reporting_period DESC limit 1")
-                ->bindValue(':province', $province)
-                ->queryOne();
-            $r_period = date('Y-m', strtotime($reporting_period));
-            if (date('Y', strtotime($r_period)) < date('Y', strtotime($last_lock_reporting_period['reporting_period']))) {
-                return json_encode(['isSuccess' => false, 'error' => "Please Insert Reporting Period in $year "]);
-            }
-            $check = (new \yii\db\Query())
-                ->select([
-                    'check_range.from',
-                    'check_range.to',
-                ])
-                ->from('check_range')
-                ->where("check_range.id = :id", ['id' => $check_range])
-                ->one();
-            $disabled_reporting_period = (new \yii\db\Query())
-                ->select('*')
-                ->from('liquidation_reporting_period')
-                ->where('liquidation_reporting_period.reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
-                ->andWhere('liquidation_reporting_period.province LIKE :province', ['province' => $province])
-                ->one();
-            if ($check_number >= $check['from'] && $check_number <= $check['to']) {
-            } else {
-                return json_encode(['isSuccess' => false, 'error' => 'Check Number Not in Range']);
-            }
-            if (!empty($update_id)) {
-                $liquidation = Liquidation::findOne($update_id);
-                if ($liquidation->reporting_period !== $reporting_period) {
-
-                    if (!empty($disabled_reporting_period)) {
-                        return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
-                    }
+            $model->payee = 'CANCELLED';
+            $model->is_cancelled = 1;
+            $model->province = $province;
+            try {
+                if (!$this->validateCheckNumber($model->check_number, $model->check_range_id)) {
+                    throw new ErrorException('Check Number Not in Range');
                 }
-            } else {
-                $check_number_exist = Yii::$app->db->createCommand("
-                SELECT EXISTS(SELECT * FROM liquidation WHERE check_number = :check_number
-                AND province = :province
-                AND reporting_period LIKE :year
-                AND payee LIKE 'cancelled%'
-                )
-                ")
-                    ->bindValue(':check_number', $check_number)
-                    ->bindValue(':province', $province)
-                    ->bindValue(':year', $year . '%')
-                    ->queryScalar();
-                if (intval($check_number_exist) === 1) {
-                    return json_encode(['isSuccess' => false, 'error' => 'Check Number Already Use']);
+                $validateReportingPeriod = $this->validateReportingPeriod($model->reporting_period, $model->province, $model->checkRange->bank_account_id);
+                if ($validateReportingPeriod !== true) {
+                    throw new ErrorException($validateReportingPeriod);
                 }
-
-
-                if (!empty($disabled_reporting_period)) {
-                    return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
                 }
-                $liquidation = new Liquidation();
-            }
-            $liquidation->reporting_period = $reporting_period;
-            $liquidation->check_date = $check_date;
-            $liquidation->check_range_id  = $check_range;
-            $liquidation->payee = $payee;
-            $liquidation->check_number = $check_number;
-            $liquidation->province = $province;
-
-
-            if ($liquidation->validate()) {
-
-                if ($liquidation->save(false)) {
-                    return json_encode(['isSuccess' => true, 'id' => $liquidation->id]);
+                if (!$model->save(false)) {
+                    throw new ErrorException('Save Failed');
                 }
-            } else {
-                return json_encode(['isSuccess' => false, 'error' => $liquidation->errors]);
+                return json_encode(['isSuccess' => true, 'error_message' => 'Success']);
+            } catch (ErrorException $e) {
+                return json_encode(['isSuccess' => false, 'error_message' => $e->getMessage()]);
             }
         }
 
-        return $this->renderAjax('_cancelled_form', []);
+        return $this->renderAjax('create_cancel', [
+            'model' => $model
+        ]);
     }
     public function actionUpdateUacs()
     {

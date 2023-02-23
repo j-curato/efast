@@ -43,7 +43,7 @@ class Liquidation extends \yii\db\ActiveRecord
                 'reporting_period',
                 'check_date',
                 'check_number',
-                // 'check_range_id'
+                'check_range_id'
             ], 'required'],
             [['check_range_id',], 'required', 'when' => function ($model) {
                 return strtotime($model->reporting_period) > strtotime('2021-10');

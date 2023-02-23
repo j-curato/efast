@@ -12,28 +12,17 @@ use yii\helpers\Url;
 /* @var $searchModel app\models\LiquidataionSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Liquidations';
+$this->title = 'Cancelled Checks';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="liquidation-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <?php if (Yii::$app->user->can('create_liquidation')) { ?>
         <p>
-            <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', [
-                'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=liquidation/cancelled-form'),
-                'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
-            ]); ?>
+            <?= Html::a('<i class="glyphicon glyphicon-plus"></i> Create ', ['create-cancelled'], ['class' => 'btn btn-success modalButtonCreate']) ?>
         </p>
-
     <?php }
-    ?>
-
-
-
-    <?php
-
 
     $gridColumn = [
         'province',
@@ -47,10 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'label' => 'Actions',
             'format' => 'raw',
             'value' => function ($model) {
-                $t = yii::$app->request->baseUrl . "/index.php?r=liquidation/cancelled-check-update&id=$model->id";
-                return ' ' . Html::a('', $t, ['class' => 'btn-xs btn-primary fa fa-pencil update_form']);
-
-                // return $query['total'];
+                return Html::a('<i class="fa fa-pencil"></i>', ['update-cancelled', 'id' => $model->id], ['class' => 'modalButtonUpdate']);
             },
             'hiddenFromExport' => true,
         ],
@@ -63,7 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => $gridColumn,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'Liquidations',
+            'heading' => 'Cancelled Checks List',
         ],
         'toolbar' => [
             [
@@ -95,17 +81,10 @@ $this->params['breadcrumbs'][] = $this->title;
         font-size: 12px;
     }
 </style>
-
 <?php
-$script = <<<JS
-            $('#modalButtoncreate').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-        $('.update_form').click(function(e){
-            e.preventDefault();
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
-        });
 
-JS;
-$this->registerJs($script);
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    ['depends' => [\yii\web\JqueryAsset::class]]
+)
 ?>
