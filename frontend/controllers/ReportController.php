@@ -31,6 +31,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\FileHelper;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
+use yii\symfonymailer\Message;
 
 class ReportController extends \yii\web\Controller
 {
@@ -5070,13 +5071,21 @@ class ReportController extends \yii\web\Controller
     }
     public function actionMail()
     {
-        Yii::$app->mailer->compose()
-            ->setFrom('afms@afms.com')
-            ->setTo('normanbutalon@gmail.com')
-            ->setSubject('Message subject')
-            ->setTextBody('Plain text content')
-            ->setHtmlBody('<b>HTML content</b>')
-            ->send();
+
+        $message = new Message();
+
+        // set the message sender and recipient
+        $message->setFrom('sender@example.com')
+            ->setTo('recipient@example.com');
+
+        // set the message subject
+        $message->setSubject('Test message');
+
+        // set the text body
+        $message->setTextBody('This is a test message.');
+
+        // send the message
+        Yii::$app->mailer->send($message);
     }
     // public function actionQ()
     // {
