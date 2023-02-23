@@ -43,6 +43,7 @@ class Liquidation extends \yii\db\ActiveRecord
                 'reporting_period',
                 'check_date',
                 'check_number',
+                // 'check_range_id'
             ], 'required'],
             [['check_range_id',], 'required', 'when' => function ($model) {
                 return strtotime($model->reporting_period) > strtotime('2021-10');
@@ -51,18 +52,15 @@ class Liquidation extends \yii\db\ActiveRecord
             [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::class, 'targetAttribute' => ['payee_id' => 'id']],
             [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
             [['po_transaction_id'], 'exist', 'skipOnError' => true, 'targetClass' => PoTransaction::class, 'targetAttribute' => ['po_transaction_id' => 'id']],
-            [[
-                'check_date',
-                'check_number',
-                'dv_number',
-                'particular',
-                'reporting_period',
-                'is_locked',
-                'province',
-                'payee',
-                'document_link',
-                'cancel_reporting_period',
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            // [[
+            //     'check_date',
+            //     'check_number',
+            //     'dv_number',
+
+            //     'reporting_period',
+            //     'province',
+            //     'cancel_reporting_period',
+            // ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
