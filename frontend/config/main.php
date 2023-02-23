@@ -129,6 +129,8 @@ return [
                 'password' => 'doT^2Lalvi]OS/\k1y0',
                 'port' => 587,
             ],
+            'viewPath' => '@common/mail',
+            'useFileTransport' => false,
         ],
     ],
     // 'as beforeRequest' => [
