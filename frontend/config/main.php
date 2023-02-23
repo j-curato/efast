@@ -131,10 +131,10 @@ return [
             ],
         ],
     ],
-    'as beforeRequest' => [
-        'class' => 'frontend\components\CheckIfLogin',
+    // 'as beforeRequest' => [
+    //     'class' => 'frontend\components\CheckIfLogin',
 
-    ],
+    // ],
     'params' => $params,
     'modules' => [
         'gridview' =>  [
