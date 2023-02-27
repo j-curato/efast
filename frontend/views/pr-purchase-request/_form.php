@@ -661,6 +661,16 @@ $user_data = Yii::$app->memem->getUserData();
                 // 'hidden' => true
 
             ],
+            [
+                'attribute' => 'office_name',
+                'filterType' => GridView::FILTER_SELECT2,
+                'filter' => ArrayHelper::map(Office::find()->asArray()->all(), 'office_name', 'office_name'),
+                'filterWidgetOptions' => [
+                    'pluginOptions' => ['allowClear' => true],
+                ],
+                'filterInputOptions' => ['placeholder' => 'Select Office', 'multiple' => false],
+                'format' => 'raw'
+            ],
             'allotmentNumber',
             'allotment_class',
 
