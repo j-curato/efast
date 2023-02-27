@@ -652,7 +652,7 @@ $this->params['breadcrumbs'][] = $title;
         </table>
 
     </div>
-    <div class="panel panel-default container" style="padding:2rem">
+    <div class="panel panel-default container allotmentTable" style="padding:2rem">
         <table class="table " id="allotmentTable">
             <thead>
                 <tr class="info">
@@ -890,7 +890,8 @@ $this->params['breadcrumbs'][] = $title;
             display: none;
         }
 
-        .btn {
+        .btn,
+        .allotmentTable {
             display: none;
         }
 
