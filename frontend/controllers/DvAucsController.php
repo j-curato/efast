@@ -30,6 +30,7 @@ use phpDocumentor\Reflection\PseudoTypes\False_;
 use PHPUnit\Util\Log\JSON;
 use yii\helpers\FileHelper;
 use yii\helpers\Url;
+use yii\validators\Validator;
 
 /**
  * DvAucsController implements the CRUD actions for DvAucs model.
@@ -206,10 +207,8 @@ class DvAucsController extends Controller
                 if (!empty($itm['item_id'])) {
                     $dv_itm =  DvAucsEntries::findOne($itm['item_id']);
                 } else {
-
                     $dv_itm = new DvAucsEntries();
                 }
-
                 $dv_itm->dv_aucs_id = $dv_id;
                 $dv_itm->amount_disbursed = !empty($itm['amount_disbursed']) ? $itm['amount_disbursed'] : 0;
                 $dv_itm->vat_nonvat = !empty($itm['vat_nonvat']) ? $itm['vat_nonvat'] : 0;
@@ -317,9 +316,17 @@ class DvAucsController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $items = !empty(Yii::$app->request->post('items')) ? Yii::$app->request->post('items') : [];
             try {
+                $transaction = Yii::$app->db->beginTransaction();
                 $t_type = strtolower(DvTransactionType::findOne($model->fk_dv_transaction_type_id)->name);
                 $model->transaction_type = $t_type;
-                // return var_dump($items);
+                if ($t_type == 'payroll') {
+                    $model->fk_remittance_id = null;
+                } else if ($t_type == 'remittance') {
+                    $model->payroll_id = null;
+                } else {
+                    $model->fk_remittance_id = null;
+                    $model->payroll_id = null;
+                }
                 if (count($items) < 1) {
                     throw new ErrorException('DV items Must Be More Than or Equal to 1');
                 }
@@ -336,7 +343,9 @@ class DvAucsController extends Controller
                 if ($ins_itm !== true) {
                     throw new ErrorException($ins_itm);
                 }
+                $transaction->commit();
             } catch (ErrorException $e) {
+                $transaction->rollBack();
                 return json_encode(['error' => $e->getMessage()]);
             }
             return $this->redirect(['tracking-view', 'id' => $model->id]);
@@ -353,6 +362,7 @@ class DvAucsController extends Controller
             'items' => $this->getDvItems($id)
         ]);
     }
+
     /**
      * Updates an existing DvAucs model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -438,11 +448,58 @@ class DvAucsController extends Controller
         }
         return true;
     }
+    private function getDvAccountingEntries($id)
+    {
+        return     Yii::$app->db->createCommand("SELECT
+        CONCAT(dv_accounting_entries.object_code,'-',accounting_codes.account_title) as account_title ,
+        dv_accounting_entries.object_code,
+        dv_accounting_entries.debit,
+        dv_accounting_entries.credit,
+        dv_accounting_entries.id  as item_id
+        FROM dv_accounting_entries
+        LEFT JOIN accounting_codes ON dv_accounting_entries.object_code = accounting_codes.object_code
+         WHERE dv_accounting_entries.dv_aucs_id = :id")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
+    private function insertDvAccItems($dv_id, $items = [])
+    {
+
+        try {
+
+            foreach ($items as $itm) {
+                if (!empty($itm['item_id'])) {
+                    $acc_itm = DvAccountingEntries::findOne($itm['item_id']);
+                } else {
+                    $acc_itm = new DvAccountingEntries();
+                }
+                $acc_itm->dv_aucs_id = $dv_id;
+                $acc_itm->debit = $itm['debit'];
+                $acc_itm->credit = $itm['credit'];
+                $acc_itm->current_noncurrent = $itm['isCurrent'];
+                $acc_itm->object_code = $itm['object_code'];
+                if (!$acc_itm->validate()) {
+                    throw new ErrorException(json_encode($acc_itm->errors));
+                }
+                if (!$acc_itm->save(false)) {
+                    throw new ErrorException('Dv Acc Entry Save Fail');
+                }
+            }
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+        return true;
+    }
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
         $oldModel = $model;
-
+        $validator = new \yii\validators\RequiredValidator();
+        $validator->attributes = [
+            'nature_of_transaction_id',
+            'mrd_classification_id'
+        ];
+        $model->validators[] = $validator;
         if ($_POST) {
             $transaction = YIi::$app->db->beginTransaction();
             $reporting_period = !empty($_POST['reporting_period']) ? $_POST['reporting_period'] : null;
@@ -569,7 +626,40 @@ class DvAucsController extends Controller
                 return json_encode($e->getMessage());
             }
         }
-
+        // if ($model->load(Yii::$app->request->post())) {
+        //     $items = !empty(Yii::$app->request->post('items')) ? Yii::$app->request->post('items') : [];
+        //     $dvAccItems = !empty(Yii::$app->request->post('dvAccItems')) ? Yii::$app->request->post('dvAccItems') : [];
+        //     try {
+        //         $transaction = Yii::$app->db->beginTransaction();
+        //         $t_type = strtolower(DvTransactionType::findOne($model->fk_dv_transaction_type_id)->name);
+        //         $model->transaction_type = $t_type;
+        //         if (count($items) < 1) {
+        //             throw new ErrorException('DV items Must Be More Than or Equal to 1');
+        //         }
+        //         if ($t_type === 'single' && count($items) > 1) {
+        //             throw new ErrorException('Transaction Type is Single ORS Cannot Be More than 1');
+        //         }
+        //         if (!$model->validate()) {
+        //             throw new ErrorException(json_encode($model->errors));
+        //         }
+        //         if (!$model->save(false)) {
+        //             throw new ErrorException('Model Save Fail');
+        //         }
+        //         $ins_itm = $this->insertDvItm($model->id, $items, 'update');
+        //         if ($ins_itm !== true) {
+        //             throw new ErrorException($ins_itm);
+        //         }
+        //         $ins_acc_entries  = $this->insertDvAccItems($model->id, $dvAccItems);
+        //         if ($ins_acc_entries !== true) {
+        //             throw new ErrorException($ins_acc_entries);
+        //         }
+        //         $transaction->commit();
+        //     } catch (ErrorException $e) {
+        //         $transaction->rollBack();
+        //         return json_encode(['error' => $e->getMessage()]);
+        //     }
+        //     return $this->redirect(['view', 'id' => $model->id]);
+        // }
         // return $this->render('update', [
         //     'model' => $model,
         // ]);
@@ -612,7 +702,9 @@ class DvAucsController extends Controller
             'dataProvider' => $dataProvider,
             'model' => $model,
             'accounting_entries' => $accounting_entries,
-            'dv_items' => $dv_items
+            'dv_items' => $dv_items,
+            'items' => $this->getDvItems($id),
+            'accEntryItems' => $this->getDvAccountingEntries($id)
         ]);
     }
     public function insertAdvancesEntries(
