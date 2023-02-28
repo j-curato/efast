@@ -238,14 +238,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td style='padding-left:auto;text-align:right;padding-right:10px'>
                         $amount
                         </td>
-                        <td class='link'>" .
-
-                                Html::a('ORS', $t, ['class' => 'btn-xs btn-success '])
-                                . "
-                        
-                        </td>
-                  </tr>
-                    ";
+                        <td class='link'>";
+                            echo  !empty($val->process_ors_id) ? Html::a('ORS', ['process-ors/view', 'id' => $val->process_ors_id], ['class' => 'btn-xs btn-success ']) : '';
+                            echo "</td></tr>";
                         }
                     }
                 }
