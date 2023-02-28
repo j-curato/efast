@@ -207,23 +207,26 @@ $this->params['breadcrumbs'][] = $this->title;
                 if (!empty($model->dvAucsEntries)) {
 
                     foreach ($model->dvAucsEntries as $val) {
-                        $ors_serial_number = !empty($val->process_ors_id) ? $val->processOrs->serial_number : '';
-                        $t = '';
-                        if (!empty($val->process_ors_id)) {
+                        if (!$val->is_deleted) {
 
-                            $q = Raouds::find()
-                                ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' =>  $val->process_ors_id])
-                                ->one();
-                            // $q = !empty($val->process_ors_id) ? $val->process_ors_id : '';
-                            if (!empty($q)) {
 
-                                $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$q->id";
+                            $ors_serial_number = !empty($val->process_ors_id) ? $val->processOrs->serial_number : '';
+                            $t = '';
+                            if (!empty($val->process_ors_id)) {
+
+                                $q = Raouds::find()
+                                    ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' =>  $val->process_ors_id])
+                                    ->one();
+                                // $q = !empty($val->process_ors_id) ? $val->process_ors_id : '';
+                                if (!empty($q)) {
+
+                                    $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$q->id";
+                                }
                             }
-                        }
 
-                        $amount = number_format($val->amount_disbursed, 2);
-                        $total += $val->amount_disbursed;
-                        echo "
+                            $amount = number_format($val->amount_disbursed, 2);
+                            $total += $val->amount_disbursed;
+                            echo "
                     <tr>
                         <td colspan='3' style='padding:0px'>
                         $ors_serial_number
@@ -237,12 +240,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         </td>
                         <td class='link'>" .
 
-                            Html::a('ORS', $t, ['class' => 'btn-xs btn-success '])
-                            . "
+                                Html::a('ORS', $t, ['class' => 'btn-xs btn-success '])
+                                . "
                         
                         </td>
                   </tr>
                     ";
+                        }
                     }
                 }
 
