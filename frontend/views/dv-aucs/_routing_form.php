@@ -3,6 +3,7 @@
 use app\models\Books;
 use app\models\DvTransactionType;
 use app\models\Payee;
+use app\models\Remittance;
 use kartik\date\DatePicker;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\datetime\DateTimePicker;
@@ -19,6 +20,10 @@ use yii\web\JsExpression;
 
 $itemRow = 0;
 $payee = [];
+$remittance = [];
+if (!empty($model->fk_remittance_id)) {
+    $remittance = ArrayHelper::map(Remittance::find()->where('id = :id', ['id' => $model->fk_remittance_id])->asArray()->all(), 'id', 'remittance_number');
+}
 if (!empty($model->payee_id)) {
     $payee = ArrayHelper::map(Payee::find()->where('id = :id', ['id' => $model->payee_id])->asArray()->all(), 'id', 'account_name');
 }
@@ -143,6 +148,7 @@ if (!empty($model->payee_id)) {
             </div>
             <div class="col-sm-3" id="remittance_display" style="display: none;">
                 <?= $form->field($model, 'fk_remittance_id')->widget(Select2::class, [
+                    'data' => $remittance,
                     'pluginOptions' => [
                         'allowClear' => true,
                         'minimumInputLength' => 1,
@@ -604,22 +610,12 @@ $csrfToken = Yii::$app->request->csrfToken;
                 },
                 success: function(data) {
                     const res = JSON.parse(data)
-                    $('#items_table tbody').html('');
                     console.log(res)
-                    // amount_disbursed
-                    // book_id
-
-                    // payee_id
-                    // payroll_number
-                    // reporting_period
-                    // total_due_to_bir
-                    // total_trust_liab
-                    // type
+                    $('#items_table tbody').html('');
                     var data = {
                         id: res.payee_id,
                         text: res.payee
                     };
-
                     var newOption = new Option(data.text, data.id, true, true);
                     $('#dvaucs-payee_id').prepend(newOption).trigger('change');
                     let ewt_goods_services = 0;
@@ -629,6 +625,8 @@ $csrfToken = Yii::$app->request->csrfToken;
                     } else if (res.type == "1601c") {
                         compensation = res.total_due_to_bir;
                     }
+                    $('#dvaucs-book_id').val(res.book_id).trigger('change');
+                    $('#dvaucs-particular').val(res.particular).trigger('change');
                     AddItem(res.ors_id,
                         res.ors_number,
                         res.particular,
@@ -647,6 +645,48 @@ $csrfToken = Yii::$app->request->csrfToken;
 
 
         })
+        $("#dvaucs-fk_remittance_id").change(function(e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: window.location.pathname + "?r=remittance/details",
+                data: {
+                    id: $(this).val(),
+                },
+                success: function(data) {
+                    const res = JSON.parse(data);
+                    console.log(res)
+                    $('#items_table tbody').html('');
+                    var data = {
+                        id: res.remittance_details.payee_id,
+                        text: res.remittance_details.payee
+                    };
+                    var newOption = new Option(data.text, data.id, true, true);
+                    $('#dvaucs-payee_id').prepend(newOption).trigger('change');
+                    $('#dvaucs-book_id').val(res.remittance_details.book_id).trigger('change');
+                    $('#dvaucs-particular').val(res.remittance_details.particular).trigger('change');
+
+                    $.each(res.remittance_items, function(key, val) {
+                        AddItem(
+                            val.ors_id,
+                            val.ors_number,
+                            val.particular,
+                            val.payee,
+                            '',
+                            val.amount,
+                            0,
+                            0,
+                            0,
+                            0
+
+                        )
+
+                    })
+
+                },
+            });
+        });
+
 
 
 
