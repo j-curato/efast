@@ -13,7 +13,8 @@ class m230203_062212_create_record_allotment_detailed_view extends Migration
     public function safeUp()
     {
         Yii::$app->db->createCommand("DROP VIEW IF EXISTS record_allotment_detailed;
-        CREATE VIEW record_allotment_detailed as WITH  detailedUsedAllotments as (
+        CREATE VIEW record_allotment_detailed as 
+        WITH  detailedUsedAllotments as (
             SELECT 
                 pr_purchase_request_allotments.fk_record_allotment_entries_id as allotment_entry_id,
                 0 as orsAmt,
@@ -51,17 +52,20 @@ class m230203_062212_create_record_allotment_detailed_view extends Migration
                 0 as prAmt,
                 0 trAmt
             FROM process_ors_entries
+						JOIN process_ors ON process_ors_entries.process_ors_id = process_ors.id
+						WHERE 
+						process_ors.is_cancelled = 0
         UNION ALL 
             SELECT 
                 transaction_items.fk_record_allotment_entries_id as allotment_entry_id,
                 0 as orsAmt,
                 0 as prAmt,
                 process_ors_txn_items.amount as trAmt
-            FROM 
-                process_ors_txn_items
+            FROM process_ors_txn_items
             LEFT JOIN transaction_items ON process_ors_txn_items.fk_transaction_item_id = transaction_items.id
+						JOIN process_ors ON process_ors_txn_items.fk_process_ors_id = process_ors.id
             WHERE process_ors_txn_items.is_deleted = 0
-        
+						AND process_ors.is_cancelled = 0
         ),
         consoUsedAllotments as (
         
@@ -129,8 +133,8 @@ class m230203_062212_create_record_allotment_detailed_view extends Migration
         LEFT JOIN fund_category_and_classification_code ON record_allotments.fund_category_and_classification_code_id  = fund_category_and_classification_code.id
         LEFT JOIN authorization_code ON record_allotments.authorization_code_id = authorization_code.id
         LEFT JOIN major_accounts ON chart_of_accounts.major_account_id = major_accounts.id 
-        LEFT JOIN allotment_type ON record_allotments.allotment_type_id  = allotment_type.id
-        WHERE record_allotment_entries.is_deleted = 0 
+        LEFT JOIN allotment_type ON record_allotments.allotment_type_id  = allotment_type.id 
+WHERE record_allotment_entries.is_deleted = 0 
         ")
             ->execute();
     }
