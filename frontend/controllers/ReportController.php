@@ -4741,8 +4741,12 @@ class ReportController extends \yii\web\Controller
         AND cash_disbursement.dv_aucs_id = cash.dv_aucs_id
         AND cash_disbursement.is_cancelled = 1)
         AND cash.is_cancelled = 0 ) as all_good_cash
-                INNER JOIN dv_aucs on all_good_cash.dv_aucs_id = dv_aucs.id
-                LEFT JOIN (SELECT SUM(dv_aucs_entries.amount_disbursed) as amount_disbursed,dv_aucs_entries.dv_aucs_id FROM dv_aucs_entries GROUP BY dv_aucs_entries.dv_aucs_id) as dv_amount ON dv_aucs.id  = dv_amount.dv_aucs_id
+         INNER JOIN dv_aucs on all_good_cash.dv_aucs_id = dv_aucs.id
+         LEFT JOIN (SELECT SUM(dv_aucs_entries.amount_disbursed) 
+                as amount_disbursed,dv_aucs_entries.dv_aucs_id
+                 FROM dv_aucs_entries 
+                 WHERE dv_aucs_entries.is_deleted = 0
+                 GROUP BY dv_aucs_entries.dv_aucs_id) as dv_amount ON dv_aucs.id  = dv_amount.dv_aucs_id
                 WHERE 
             NOT EXISTS 
         (SELECT transmittal_entries.cash_disbursement_id
@@ -5072,7 +5076,18 @@ class ReportController extends \yii\web\Controller
     public function actionMail()
     {
 
+        // C:\xampp\htdocs\q\frontend\web\css
+        $appDir = Yii::getAlias('@app');
+         $folderPath = $appDir . '\web\css';
+        $fileLinks = FileHelper::findFiles($folderPath);
+
+        foreach ($fileLinks as $link) {
+            echo $link . "<br>";
+        }
+        return var_dump(trim('SDS    '));
+
         $message = new Message();
+        $message->email = 'normanbutalon@gmail.com';
         // qwe
         // set the message sender and recipient
         $message->setFrom('normanbutalon@gmailcom.com')
