@@ -81,7 +81,8 @@ class RecordAllotmentDetailedSearch extends RecordAllotmentDetailed
 
         // add conditions that should always apply here
         if ($type === 'burs') {
-            $query->andFilterWhere(['like', 'book_name', 'Fund 07']);
+            $query->andWhere(['=', 'book_name', 'Fund 07']);
+            $query->orWhere(['=', 'book_name', 'Coco Levy Funds']);
         } else if ($type === 'ors') {
             $query->andFilterWhere(['!=', 'book_name', 'Fund 07']);
         }
