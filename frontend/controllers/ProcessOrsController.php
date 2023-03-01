@@ -333,12 +333,14 @@ class ProcessOrsController extends Controller
     {
         $model = new ProcessOrs();
         if ($model->load(Yii::$app->request->post())) {
+
             $model->type = $type;
             $orsTxnItems = Yii::$app->request->post('orsTxnItems') ?? [];
             $orsItems = Yii::$app->request->post('orsItems') ?? [];
-            $model->serial_number = $this->getOrsSerialNumber($model->reporting_period, $model->book_id);
+            $model->serial_number = $this->getOrsSerialNumber($model->reporting_period, $model->book_id, $model->type);
 
             try {
+
                 $transaction = Yii::$app->db->beginTransaction();
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
@@ -637,7 +639,7 @@ class ProcessOrsController extends Controller
             return json_encode($query);
         }
     }
-    private function getOrsSerialNumber($reporting_period, $book_id)
+    private function getOrsSerialNumber($reporting_period, $book_id, $type = 'ors')
     {
         $book = Books::findOne($book_id);
         $year = DateTime::createFromFormat('Y-m', $reporting_period)->format('Y');
@@ -646,10 +648,11 @@ class ProcessOrsController extends Controller
         FROM process_ors
         WHERE
         
-        process_ors.type = 'ors'
+        process_ors.type = :_type
         AND process_ors.reporting_period LIKE :_year
         ORDER BY last_number DESC LIMIT 1")
             ->bindValue(':_year', $year . '%')
+            ->bindValue(':_type', $type)
             ->queryScalar();
         if (empty($query)) {
             $x = 1;
