@@ -147,7 +147,9 @@ class ProcessOrsController extends Controller
             SUM(process_ors_txn_items.amount) * -1 as ttl
             FROM 
             process_ors_txn_items
+            JOIN process_ors ON process_ors_txn_items.fk_process_ors_id = process_ors.id
             WHERE process_ors_txn_items.is_deleted = 0
+            AND process_ors.is_cancelled = 0
             $sql
             GROUP BY process_ors_txn_items.fk_transaction_item_id) as ttlObligated ON transaction_items.id  = ttlObligated.fk_transaction_item_id
             WHERE  `transaction_items`.id = :id
