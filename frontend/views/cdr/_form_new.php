@@ -429,7 +429,7 @@ if (!empty($model->id)) {
                 </td>
                 <td colspan="6" style="text-align: center;">
                     <div style="margin-left:-25rem;margin-top:1rem;margin-bottom:2rem"><span>RECEIVED BY:</span></div>
-                    <div><span style="font-weight: bold;">MARION T. MONROID</span></div>
+                    <div><span style="font-weight: bold;">ADA JUNE M. HORMILLADA</span></div>
                     <div><span>Signature Over Printed Name</span></div>
                     <div style="margin-left:-15rem;"><span>Date</span></div>
                 </td>
