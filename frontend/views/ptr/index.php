@@ -1,7 +1,9 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use kartik\grid\GridView;
 use yii\helpers\Html;
+use yii\web\JqueryAsset;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\PtrSearch */
@@ -15,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Ptr', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Ptr', ['create'], ['class' => 'btn btn-success lrgModal']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
@@ -29,19 +31,20 @@ $this->params['breadcrumbs'][] = $this->title;
             'heading' => 'PTR'
         ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
             'ptr_number',
-            'par_number',
-            'transfer_type',
             'date',
-            'reason:ntext',
-            //'from',
-            //'to',
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id, 'lrgModal');
+                }
+            ]
 
-            ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 
 
 </div>
+<?php $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => JqueryAsset::class]) ?>

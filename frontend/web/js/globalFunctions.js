@@ -1,6 +1,27 @@
 // AJAX chart/subaccounts Select2
 
 const base_url = window.location.pathname;
+function ObjectCodesSelect() {
+  $(".object-codes").select2({
+    ajax: {
+      url: base_url + "?r=chart-of-accounts/search-accounting-code",
+      dataType: "json",
+      data: function (params) {
+        return {
+          q: params.term,
+          page: params.page || 1,
+        };
+      },
+      processResults: function (data) {
+        // Transforms the top-level key of the response object from 'items' to 'results'
+        return {
+          results: data.results,
+          pagination: data.pagination,
+        };
+      },
+    },
+  });
+}
 function accountingCodesSelect() {
   $(".chart-of-accounts").select2({
     ajax: {
@@ -112,6 +133,18 @@ function payeeSelect() {
 function maskAmount() {
   $(".mask-amount").maskMoney({
     allowNegative: true,
+  });
+}
+function negativeMaskAmount() {
+  console.log("qwer");
+  $(".negative-mask-amount").maskMoney({
+    allowNegative: true,
+
+    allowNegative: true, // allow negative numbers
+    thousands: ",", // set thousands separator
+    decimal: ".", // set decimal separator
+    precision: 2, // set precision to 2 decimal places
+    negativeFormat: "-$ n", // set the negative format to display a minus sign before the currency symbol
   });
 }
 // SEPARATE WITH COMMA AMOUNT
@@ -383,6 +416,7 @@ $(".modalButtonCreate").click(function (e) {
     .find("#modalContent")
     .load($(this).attr("href"));
 });
+
 $(".modalButtonUpdate").click(function (e) {
   e.preventDefault();
 
@@ -391,3 +425,15 @@ $(".modalButtonUpdate").click(function (e) {
     .find("#modalContent")
     .load($(this).attr("href"));
 });
+$(".lrgModal").click(function (e) {
+  e.preventDefault();
+  $("#lrgModal")
+    .modal("show")
+    .find("#lrgModalContent")
+    .load($(this).attr("href"));
+});
+function UpdateMainAmount(q) {
+  const amt = $(q).maskMoney("unmasked")[0];
+  $(q).parent().find(".main-amount").val(amt);
+  $(q).parent().find(".main-amount").trigger("change");
+}

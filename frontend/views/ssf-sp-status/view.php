@@ -5,14 +5,14 @@ use yii\web\JqueryAsset;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\TransferType */
+/* @var $model app\models\SsfSpStatus */
 
-$this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Transfer Types', 'url' => ['index']];
+$this->title = $model->name;
+$this->params['breadcrumbs'][] = ['label' => 'Ssf Sp Statuses', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="transfer-type-view container panel panel-default">
+<div class="ssf-sp-status-view container panel panel-default">
 
 
     <p>
@@ -23,16 +23,17 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'type',
+            'name',
         ],
     ]) ?>
 
 </div>
 <?php
-$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => JqueryAsset::class])
+$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => JqueryAsset::class]);
+
 ?>
 <style>
-    .container{
+    .container {
         padding: 3rem;
     }
 </style>

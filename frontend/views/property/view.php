@@ -3,6 +3,7 @@
 use Da\QrCode\QrCode;
 use barcode\barcode\BarcodeGenerator as BarcodeGenerator;
 use yii\helpers\Html;
+use yii\web\JqueryAsset;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -33,17 +34,12 @@ $optionsArray = array(
 BarcodeGenerator::widget($optionsArray);
 ?>
 <div class="property-view">
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+
     <div class="container">
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']) ?>
+
+        </p>
         <div class="cut_line">
 
             <table id="qr_table">
@@ -75,11 +71,19 @@ BarcodeGenerator::widget($optionsArray);
                     </tr>
                     <tr>
                         <th>SSF/Non-SSF</th>
-                        <td colspan="2"><?php echo $model->ppe_type ?></td>
+                        <td colspan="2">
+                            <?php
+                            $is_ssf = [
+                                '0' => 'Non-SSF',
+                                '1' => 'SSF',
+                            ];
+                            echo $is_ssf[$model->is_ssf];
+                            ?>
+                        </td>
                     </tr>
                     <tr>
                         <th>SSF SP No.</th>
-                        <td colspan="2"><?php echo !empty($model->ssfCategory->ssf_number) ? $model->ssfCategory->ssf_number : '' ?></td>
+                        <td colspan="2"><?= !empty($model->ssfSpNum->serial_number) ? $model->ssfSpNum->serial_number : ''  ?></td>
                     </tr>
                     <tr>
                         <th>Date Acquired</th>
@@ -100,7 +104,7 @@ BarcodeGenerator::widget($optionsArray);
                     </tr>
                     <tr>
                         <th>Total Acquisition Amount</th>
-                        <td colspan="2"><?php echo !empty($model->acquisition_amount)?number_format($model->acquisition_amount, 2):''  ?></td>
+                        <td colspan="2"><?php echo !empty($model->acquisition_amount) ? number_format($model->acquisition_amount, 2) : ''  ?></td>
                     </tr>
 
                 </tbody>
@@ -114,15 +118,9 @@ BarcodeGenerator::widget($optionsArray);
                 'property_number',
 
                 [
-                    'label' => 'Book',
-                    'attribute' => 'book.name'
-                ],
-                [
                     'label' => 'Unit of Measure',
                     'attribute' => 'unitOfMeasure.unit_of_measure'
                 ],
-
-                'iar_number',
                 'article',
                 [
                     'label' => 'Description',
@@ -134,7 +132,11 @@ BarcodeGenerator::widget($optionsArray);
                 'model',
                 'serial_number',
                 'quantity',
-                'acquisition_amount'
+                'acquisition_amount',
+                [
+                    'attribute' => 'acquisition_amount',
+                    'format' => ['decimal', 2]
+                ]
             ],
         ]) ?>
     </div>
@@ -143,10 +145,12 @@ BarcodeGenerator::widget($optionsArray);
 </div>
 <?php
 $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => JqueryAsset::class])
 ?>
 <style>
     .container {
         background-color: white;
+        padding: 2rem;
     }
 
 
@@ -210,7 +214,8 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
             padding: .5px;
             border: 2px solid black;
         }
-/* if blank stikcer padding 50 */
+
+        /* if blank stikcer padding 50 */
         #qr_table .item {
             padding-bottom: 25px;
         }

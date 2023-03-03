@@ -1,9 +1,12 @@
 <?php
 
+use app\components\helpers\MyHelper;
+use app\models\PropertyArticles;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
 use kartik\grid\GridView;
 use yii\helpers\Html;
+use yii\web\JqueryAsset;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\PropertySearch */
@@ -14,10 +17,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="property-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Property', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Property', ['create'], ['class' => 'btn btn-success lrgModal']) ?>
         <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
     </p>
     <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -81,10 +83,16 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'property_number',
             [
+                'attribute' => 'fk_office_id',
+                'value' => 'office.office_name'
+            ],
+            [
                 'attribute' => 'article',
                 'value' => function ($model) {
-                    $specs = preg_replace('#\[n\]#', "\n", $model->article);
-                    return   $specs;
+                    $article = !empty($model->fk_property_article_id) ?
+                        PropertyArticles::findOne($model->fk_property_article_id)->article_name
+                        : $model->article;
+                    return   $article;
                 }
             ],
             [
@@ -94,9 +102,18 @@ $this->params['breadcrumbs'][] = $this->title;
                     return   $specs;
                 }
             ],
-            'province',
-            'ppe_type',
-            'iar_number',
+
+            [
+                'label' => 'SSF/NON-SSF',
+                'attribute' => 'is_ssf',
+                'value' => function ($model) {
+                    $is_ssf = [
+                        '0' => 'Non-SSF',
+                        '1' => 'SSF',
+                    ];
+                    return $is_ssf[$model->is_ssf];
+                }
+            ],
             [
                 'label' => 'Unit of Measure',
                 'attribute' => 'unit_of_measure_id',
@@ -110,34 +127,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             [
-                'label' => 'Book',
-                'attribute' => 'book_id',
+                'label' => 'Actions',
+                'format' => 'raw',
                 'value' => function ($model) {
-                    $book = '';
-                    if (!empty($model->book->name)) {
-
-                        $book = $model->book->name;
-                    }
-                    return $book;
+                    return MyHelper::gridDefaultAction($model->id, 'lrgModal');
                 }
             ],
-            [
-                'label' => 'Property Custodian',
-                'attribute' => 'employee_id',
-                'value' => function ($model) {
-                    $emp = '';
-                    if (!empty($model->employee->f_name)) {
-                        $f_name = !empty($model->employee->f_name) ? $model->employee->f_name : '';
-                        $m_name = !empty($model->employee->m_name[0]) ? $model->employee->m_name[0] : '';
-                        $l_name = !empty($model->employee->l_name) ? $model->employee->l_name : '';
-                        $emp =   $f_name . ' ' .  $m_name . '. ' .  $l_name;
-                    }
-                    return $emp;
-                }
-            ],
-
-
-            ['class' => 'kartik\grid\ActionColumn'],
         ],
     ]); ?>
 
@@ -149,3 +144,6 @@ $this->params['breadcrumbs'][] = $this->title;
         width: 2rem;
     }
 </style>
+<?php
+$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => JqueryAsset::class]);
+?>
