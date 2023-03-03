@@ -58,7 +58,6 @@ if (Yii::$app->user->isGuest) {
 
         <?php
 
-
         Modal::begin(
             [
                 //'header' => '<h2>Create New Region</h2>',
@@ -71,6 +70,19 @@ if (Yii::$app->user->isGuest) {
             ]
         );
         echo "<div class='box box-success' id='modalContent'></div>";
+        Modal::end();
+        Modal::begin(
+            [
+                //'header' => '<h2>Create New Region</h2>',
+                'id' => 'lrgModal',
+                'size' => 'modal-lg',
+                'clientOptions' => ['backdrop' => 'static', 'keyboard' => TRUE, 'class' => 'modal modal-primary '],
+                'options' => [
+                    'tabindex' => false // important for Select2 to work properly
+                ],
+            ]
+        );
+        echo "<div class='box box-success' id='lrgModalContent'></div>";
         Modal::end();
         ?>
     </head>

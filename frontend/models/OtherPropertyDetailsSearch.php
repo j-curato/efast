@@ -17,8 +17,8 @@ class OtherPropertyDetailsSearch extends OtherPropertyDetails
     public function rules()
     {
         return [
-            [['id', 'fk_property_id', 'depreciation_schedule', 'fk_chart_of_account_id'], 'integer'],
-            [['created_at'], 'safe'],
+            [['id'], 'integer'],
+            [['fk_property_id', 'created_at', 'fk_chart_of_account_id'], 'safe'],
         ];
     }
 
@@ -55,15 +55,18 @@ class OtherPropertyDetailsSearch extends OtherPropertyDetails
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->joinWith('property');
+        $query->joinWith('chartOfAccount');
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'fk_property_id' => $this->fk_property_id,
-            'depreciation_schedule' => $this->depreciation_schedule,
-            'fk_chart_of_account_id' => $this->fk_chart_of_account_id,
             'created_at' => $this->created_at,
         ]);
+        $query->andFilterWhere(['like', 'property.property_number', $this->fk_property_id])
+            ->andFilterWhere([
+                'or', ['like', 'chart_of_accounts.uacs', $this->fk_chart_of_account_id],
+                ['like', 'chart_of_accounts.general_ledger', $this->fk_chart_of_account_id]
+            ]);
 
         return $dataProvider;
     }

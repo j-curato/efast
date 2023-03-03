@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 
@@ -12,11 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="property-card-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Create Property Card', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>
@@ -29,13 +26,17 @@ $this->params['breadcrumbs'][] = $this->title;
             'heading' => 'Property Cards'
         ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'pc_number',
+            'serial_number',
             'balance',
-            'par_number',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return  Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id],);
+                }
+            ],
         ],
         'export' => [
             'fontAwesome' => true

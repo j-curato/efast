@@ -20,7 +20,8 @@ class PropertySearch extends Property
         return [
             [[
                 'book_id', 'unit_of_measure_id', 'employee_id', 'property_number', 'iar_number', 'article', 'model', 'serial_number', 'description', 'province',
-                'ppe_type'
+                'ppe_type',
+                'fk_office_id'
             ], 'safe'],
             [['quantity'], 'integer'],
             [['acquisition_amount'], 'number'],
@@ -66,6 +67,7 @@ class PropertySearch extends Property
         $query->joinWith('book');
         $query->joinWith('employee');
         $query->joinWith('unitOfMeasure');
+        $query->joinWith('office');
 
 
         // grid filtering conditions
@@ -85,6 +87,7 @@ class PropertySearch extends Property
             ->andFilterWhere(['like', 'property.description', $this->description])
             ->andFilterWhere(['like', 'property.province', $this->province])
             ->andFilterWhere(['like', 'ppe_type', $this->ppe_type])
+            ->andFilterWhere(['like', 'office.office_name', $this->fk_office_id])
             ->andFilterWhere(['or', ['like', 'employee.f_name', $this->employee_id], ['like', 'employee.l_name', $this->employee_id]]);
 
         return $dataProvider;

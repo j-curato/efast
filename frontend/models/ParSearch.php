@@ -17,7 +17,7 @@ class ParSearch extends Par
     public function rules()
     {
         return [
-            [['par_number', 'date', 'employee_id', 'fk_property_id'], 'safe'],
+            [['par_number', 'date',  'fk_property_id'], 'safe'],
         ];
     }
 
@@ -55,7 +55,6 @@ class ParSearch extends Par
             // $query->where('0=1');
             return $dataProvider;
         }
-        $query->joinWith('employee');
         $query->joinWith('property');
         // grid filtering conditions
         $query->andFilterWhere([
@@ -63,7 +62,6 @@ class ParSearch extends Par
         ]);
 
         $query->andFilterWhere(['like', 'par_number', $this->par_number])
-            ->andFilterWhere(['or', ['like', 'employee.f_name', $this->employee_id], ['like', 'employee.l_name', $this->employee_id]])
             ->andFilterWhere(['or', ['like', 'property.property_number', $this->fk_property_id], ['like', 'property.article', $this->fk_property_id]]);
 
         return $dataProvider;

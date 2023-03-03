@@ -71,8 +71,28 @@
                                 Yii::$app->user->can('liquidation') ?     ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ['/liquidation'],] : [],
                                 Yii::$app->user->can('liquidation') ?     ['label' => 'Cancelled Check', 'icon' => 'circle-o', 'url' => ['/liquidation/cancelled-check-index'],] : [],
                                 Yii::$app->user->can('po_transmittal') ? ['label' => 'DV Transmittal', 'icon' => 'circle-o', 'url' => ['/po-transmittal'],] : [],
-                                Yii::$app->user->can('province') ? ['label' => 'Property', 'icon' => 'circle-o', 'url' => ['/property'],] : [],
 
+                            ],
+                        ],
+                        [
+                            'label' => 'Property',
+                            'url' => '#',
+                            'items' => [
+                                [
+                                    'label' => 'Master Records',
+                                    'icon' => 'circle-o',
+                                    'url' => '#',
+                                    'items' => [
+                                        Yii::$app->user->can('province') ?    ['label' => 'SSF SP No.', 'icon' => 'circle-o', 'url' => ['/ssf-sp-num'],] : [],
+                                        Yii::$app->user->can('province') ?      ['label' => 'Locations', 'icon' => 'circle-o', 'url' => ['/location'],] : [],
+                                        Yii::$app->user->can('province') ?    ['label' => 'Agency', 'icon' => 'circle-o', 'url' => ['/agency'],] : [],
+                                    ],
+                                ],
+
+                                Yii::$app->user->can('province') ?    ['label' => 'Property', 'icon' => 'circle-o', 'url' => ['/property'],] : [],
+                                Yii::$app->user->can('province') ?   ['label' => 'PAR', 'icon' => 'circle-o', 'url' => ['/par'],] : [],
+                                Yii::$app->user->can('province') ?   ['label' => 'Property Card', 'icon' => 'circle-o', 'url' => ['/property-card'],] : [],
+                                Yii::$app->user->can('province') ?   ['label' => 'PTR', 'icon' => 'circle-o', 'url' => ['/ptr'],] : [],
                             ],
                         ],
                         [
@@ -371,18 +391,32 @@
                             'label' => 'Property',
                             'url' => '#',
                             'items' => [
+                                [
+                                    'label' => 'Master Records',
+                                    'icon' => 'circle-o',
+                                    'url' => '#',
+                                    'items' => [
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'SSF SP No.', 'icon' => 'circle-o', 'url' => ['/ssf-sp-num'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'SSF SP Status', 'icon' => 'circle-o', 'url' => ['/ssf-sp-status'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Locations', 'icon' => 'circle-o', 'url' => ['/location'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Unit of Measure', 'icon' => 'circle-o', 'url' => ['/unit-of-measure'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Agency', 'icon' => 'circle-o', 'url' => ['/agency'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Employee', 'icon' => 'circle-o', 'url' => ['/employee'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Transfer Type', 'icon' => 'circle-o', 'url' => ['/transfer-type'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Property Articles', 'icon' => 'circle-o', 'url' => ['/property-articles'],] : [],
+                                    ],
+                                ],
 
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Employee', 'icon' => 'circle-o', 'url' => ['/employee'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'PAR', 'icon' => 'circle-o', 'url' => ['/par'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Property', 'icon' => 'circle-o', 'url' => ['/property'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'PTR', 'icon' => 'circle-o', 'url' => ['/ptr'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Agency', 'icon' => 'circle-o', 'url' => ['/agency'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Unit of Measure', 'icon' => 'circle-o', 'url' => ['/unit-of-measure'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'PAR', 'icon' => 'circle-o', 'url' => ['/par'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Property Card', 'icon' => 'circle-o', 'url' => ['/property-card'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Transfer Type', 'icon' => 'circle-o', 'url' => ['/transfer-type'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Other Property Details', 'icon' => 'circle-o', 'url' => ['/other-property-details'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Print PC Stickers', 'icon' => 'circle-o', 'url' => ['/property-card/print-pc'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'PTR', 'icon' => 'circle-o', 'url' => ['/ptr'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Scan QR', 'icon' => 'circle-o', 'url' => ['/property-card/property-details'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'RPCPPE', 'icon' => 'circle-o', 'url' => ['/rpcppe'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Inventory', 'icon' => 'circle-o', 'url' => ['/inventory-report'],] : [],
+
                             ],
                         ] : [],
                         Yii::$app->user->can('super-user') ?    [
@@ -501,8 +535,6 @@
 
                             ],
                         ] : ['label' => ''],
-                        Yii::$app->user->can('super-user') ?     ['label' => 'PPMP Non-CSE', 'icon' => 'circle-o', 'url' => ['/ppmp-non-cse'],] : [],
-                        Yii::$app->user->can('super-user') ?     ['label' => 'Other Property Details', 'icon' => 'circle-o', 'url' => ['/other-property-details'],] : [],
                         Yii::$app->user->can('super-user') ?     ['label' => 'Travel Order', 'icon' => 'circle-o', 'url' => ['/travel-order'],] : [],
 
 

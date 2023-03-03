@@ -5,6 +5,7 @@ namespace app\components\helpers;
 use ErrorException;
 use Yii;
 use yii\base\BaseObject;
+use yii\db\Query;
 use yii\helpers\Html;
 
 class MyHelper extends BaseObject
@@ -12,6 +13,10 @@ class MyHelper extends BaseObject
     public static function post($name)
     {
         return Yii::$app->request->post($name);
+    }
+    public static function uuid()
+    {
+        return Yii::$app->db->createCommand('SELECT UUID_SHORT()')->queryScalar();
     }
     public static function checkAllotmentBalance(
         $allotment_id,
@@ -50,9 +55,26 @@ class MyHelper extends BaseObject
 
         return true;
     }
-    public static function gridDefaultAction($id)
+    public static function gridDefaultAction($id, $class = 'modalButtonUpdate')
     {
         return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $id])
-            . ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $id], ['class' => 'modalButtonUpdate']);
+            . ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $id], ['class' => $class]);
+    }
+    public  static function getEmployee($id, $qry_type = 'all')
+    {
+        // $query =   Yii::$app->db->createCommand("SELECT employee_name,position FROM employee_search_view WHERE  employee_id = :id")
+        //     ->bindValue(':id', $id);
+        $query = new Query();
+        $query->select(['employee_id', 'employee_name', 'position'])
+            ->from('employee_search_view')
+            ->where('employee_id = :id', ['id' => $id]);
+
+
+        if ($qry_type === 'all') {
+            $res =  $query->all();
+        } else if ($qry_type === 'one') {
+            $res = $query->one();
+        }
+        return $res;
     }
 }

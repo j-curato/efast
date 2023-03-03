@@ -17,8 +17,8 @@ class PtrSearch extends Ptr
     public function rules()
     {
         return [
-            [['ptr_number', 'par_number', 'date', 'reason', 'employee_from', 'employee_to'], 'safe'],
-            [['transfer_type_id'], 'integer'],
+            [['ptr_number', 'date'], 'safe'],
+
         ];
     }
 
@@ -58,15 +58,11 @@ class PtrSearch extends Ptr
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'transfer_type_id' => $this->transfer_type_id,
+
             'date' => $this->date,
         ]);
 
-        $query->andFilterWhere(['like', 'ptr_number', $this->ptr_number])
-            ->andFilterWhere(['like', 'par_number', $this->par_number])
-            ->andFilterWhere(['like', 'reason', $this->reason])
-            ->andFilterWhere(['like', 'employee_from', $this->employee_from])
-            ->andFilterWhere(['like', 'employee_to', $this->employee_to]);
+        $query->andFilterWhere(['like', 'ptr_number', $this->ptr_number]);
 
         return $dataProvider;
     }

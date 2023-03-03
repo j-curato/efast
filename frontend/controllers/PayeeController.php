@@ -245,10 +245,10 @@ class PayeeController extends Controller
         $p = Yii::$app->db->createCommand("SELECT * FROM payee WHERE isEnable=1")->queryAll();
         return json_encode($p);
     }
-    public function actionSearchPayee($page = 1, $q = null, $id = null)
+    public function actionSearchPayee($page = null, $q = null, $id = null)
     {
-        // $limit = 5;
-        // $offset = ($page - 1) * $limit;
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
         $user_province = strtolower(Yii::$app->user->identity->province);
@@ -263,12 +263,18 @@ class PayeeController extends Controller
                 ->where(['like', 'payee.account_name', $q])
                 ->andWhere('payee.isEnable = 1');
 
-            // $query->offset($offset)
-            //     ->limit($limit);
+            if (!empty($page)) {
+
+                $query->offset($offset)
+                    ->limit($limit);
+            }
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
-            // $out['pagination'] = ['more' => !empty($data) ? true : false];
+
+            if (!empty($page)) {
+                $out['pagination'] = ['more' => !empty($data) ? true : false];
+            }
         }
         return $out;
     }

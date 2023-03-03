@@ -30,7 +30,7 @@ $payee = ArrayHelper::map($payee_query, 'id', 'account_name');
 
 
 
-    <?= $this->render('_form_new', [
+    <?= $this->render('_form', [
         'searchModel' => $searchModel,
         'dataProvider' => $dataProvider,
         'model' => $model,
@@ -42,7 +42,9 @@ $payee = ArrayHelper::map($payee_query, 'id', 'account_name');
         'mrd_classification' => $mrd_classification,
         'particular' => $particular,
         'accounting_entries' => $accounting_entries,
-        'dv_items'=>$dv_items
+        'dv_items' => $dv_items,
+        'items' => $items,
+        'accEntryItems' => $accEntryItems
     ]) ?>
 
 </div>

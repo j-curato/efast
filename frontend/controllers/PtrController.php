@@ -98,7 +98,7 @@ class PtrController extends Controller
     {
         $model = new Ptr();
 
-        return $this->render('create', [
+        return $this->renderAjax('create', [
             'model' => $model,
         ]);
     }

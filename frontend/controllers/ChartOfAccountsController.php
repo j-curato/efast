@@ -656,10 +656,11 @@ class ChartOfAccountsController extends Controller
         }
         return $out;
     }
-    public function actionSearchAccountingCode($q = null, $id = null, $base_uacs = null)
+    public function actionSearchAccountingCode($q = null, $id = null, $base_uacs = null, $page = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
 
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
@@ -678,9 +679,16 @@ class ChartOfAccountsController extends Controller
             if (!empty($base_uacs)) {
                 $query->andWhere('major_object_code = :base_uacs', ['base_uacs' => $base_uacs]);
             }
+            if (!empty($page)) {
+                $query->offset($offset)
+                    ->limit($limit);
+            }
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
+            if (!empty($page)) {
+                $out['pagination'] = ['more' => !empty($data) ? true : false];
+            }
         } elseif (!empty($id)) {
 
             $query = Yii::$app->db->createCommand("SELECT object_code , CONCAT (object_code ,'-',account_title) as account_title 

@@ -12,77 +12,46 @@ $this->params['breadcrumbs'][] = ['label' => 'Other Property Details', 'url' => 
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);;;
 
-$useful_life_in_mnths = YIi::$app->db->createCommand("SELECT 
-ppe_useful_life.life_from
-FROM chart_of_accounts
-LEFT JOIN ppe_useful_life ON chart_of_accounts.fk_ppe_useful_life_id = ppe_useful_life.id
- WHERE chart_of_accounts.id = :id")
-    ->bindValue(':id', $model->fk_chart_of_account_id)
-    ->queryScalar();
+$useful_life_in_mnths = $model->useful_life;
 
-$first_month =  $model->first_month_depreciation;
+$first_month =  $propertyDetails['date'];
 ?>
-<div class="other-property-details-view">
-
-
+<div class="other-property-details-view panel panel-default">
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
     </p>
-
     <div>
 
-        <span> Property Number:</span>
+        <span><b> Property Number:</b></span>
         <span><?= $propertyDetails['property_number'] ?></span>
         <br>
-        <span> Article:</span>
+        <span><b> Article:</b></span>
         <span><?= $propertyDetails['article'] ?></span>
         <br>
-        <span> Item Brand/Model:</span>
+        <span><b> Item Brand/Model:</b></span>
         <span><?= $propertyDetails['description'] ?></span>
         <br>
-        <span> Serial Number:</span>
+        <span><b> Serial Number:</b></span>
         <span><?= $propertyDetails['serial_number'] ?></span>
         <br>
-        <span> Date Acquired:</span>
+        <span><b> Date Acquired:</b></span>
         <span><?= $propertyDetails['date'] ?></span>
         <br>
-        <span> Related PAR Number:</span>
         <span></span>
         <br>
-        <span> Accountable Officer:</span>
+        <!-- <span><b> Accountable Officer:</b></span>
         <span></span>
-        <br>
+        <br> -->
     </div>
-    <?php
 
-    if (intval($model->depreciation_schedule) > 1) {
-    ?>
-        <table class="effect_table">
-            <?php foreach ($effect_of_adjustment as $book_name => $books) {
-                $row = "<tr><td>$book_name</td>";
-
-                foreach ($books as $book) {
-
-                    foreach ($book as $depreciation_schedule) {
-                        $row .= "<td>" . $depreciation_schedule['total_depreciated'] . "</td>";
-                    }
-                }
-                $row .= "</tr>";
-                echo $row;
-            }
-            ?>
-        </table>
-    <?php
-    }
-    ?>
-    <table id="computation_table" class="table">
+    <table id="computation_table">
         <thead>
-            <tr>
-                <td>
-
-
-                </td>
+            <tr style="background-color: #2ab3f7;">
+                <th colspan="11">
+                    <h4>DEPRECIATION</h4>
+                </th>
             </tr>
+
             <th>Book</th>
             <th>Acquisition Cost</th>
             <th>Salvage Value
@@ -115,17 +84,26 @@ $first_month =  $model->first_month_depreciation;
         </thead>
         <tbody></tbody>
     </table>
-
 </div>
 <style>
     th,
     td {
         text-align: center;
+        padding: 5px;
+        border: 1px solid black;
     }
 
     .effect_table td {
         border: 1px solid black;
         padding: 12px;
+    }
+
+    .panel {
+        padding: 3rem;
+    }
+
+    table {
+        width: 100%;
     }
 
     @media print {
@@ -143,6 +121,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/moment.min.js");
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/views/other-property-details/otherPropertyDetailsJs.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 
+
 <script>
     $(document).ready(() => {
         const frst_month = <?php echo json_encode($first_month) ?>;
@@ -150,7 +129,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/views/other-prope
         calculateAndDisplay(
             <?= json_encode($items) ?>,
             <?= $model->salvage_value_prcnt ?>,
-            <?= $useful_life_in_mnths * 12 ?>,
+            <?= $useful_life_in_mnths ?>,
             frst_month
         )
 

@@ -17,7 +17,7 @@ class PropertyCardSearch extends PropertyCard
     public function rules()
     {
         return [
-            [['pc_number', 'par_number'], 'safe'],
+            [['serial_number'], 'safe'],
             [['balance'], 'number'],
         ];
     }
@@ -61,8 +61,7 @@ class PropertyCardSearch extends PropertyCard
             'balance' => $this->balance,
         ]);
 
-        $query->andFilterWhere(['like', 'pc_number', $this->pc_number])
-            ->andFilterWhere(['like', 'par_number', $this->par_number]);
+        $query->andFilterWhere(['like', 'serial_number', $this->serial_number]);
 
         return $dataProvider;
     }

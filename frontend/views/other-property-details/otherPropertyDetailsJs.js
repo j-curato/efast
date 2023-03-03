@@ -4,8 +4,13 @@ async function cal(
   useful_life_in_mnths = 0,
   first_month_depreciation
 ) {
-  let q = [];
-  const startDate = new Date(first_month_depreciation);
+  let calculatedData = [];
+
+  let startDate = new Date(first_month_depreciation);
+  var date = moment(first_month_depreciation); // replace with your date
+  if (date.date() > 15) {
+    startDate = new Date(date.add(1, "months").format("YYYY-MM-DD"));
+  }
   let endDateMoment = moment(startDate);
   endDateMoment.add(useful_life_in_mnths - 1, "months");
   const last_month = new Date(endDateMoment.calendar());
@@ -13,6 +18,7 @@ async function cal(
   const second_to_the_last_mnth = moment(
     new Date(endDateMoment.subtract(1, "months").calendar())
   ).format("MMMM, YYYY");
+
   $.each(data, function (key, val) {
     const acquisition_cost = parseFloat(val.amount);
     const salvage_value =
@@ -31,7 +37,7 @@ async function cal(
         : 0;
     const mnthly_depreciation_lst_mnt =
       depreciable_amount > 0 ? depreciable_amount - ttl_depreciation : 0;
-    q.push({
+    calculatedData.push({
       book_name: val.book_name,
       acquisition_cost: acquisition_cost,
       salvage_value: salvage_value,
@@ -48,7 +54,7 @@ async function cal(
       second_to_the_last_mnth: second_to_the_last_mnth,
     });
   });
-  return q;
+  return calculatedData;
 }
 
 function displayCalulatedData(data) {
@@ -127,48 +133,59 @@ $(document).ready(() => {
       "#otherpropertydetails-depreciation_schedule"
     ).val();
     const property_id = $("#otherpropertydetails-fk_property_id").val();
-    let data = $('[name^="items"]').serializeArray();
-    data.push({ name: "depreciation_schedule", value: depreciation_schedule });
-    data.push({ name: "property_id", value: property_id });
+    // let data = $('[name^="items"]').serializeArray();
+    // data.push({ name: "depreciation_schedule", value: depreciation_schedule });
+    // data.push({ name: "property_id", value: property_id });
     $.ajax({
       type: "POST",
       url: window.location.pathname + "?r=other-property-details/items",
-      data: data,
+      data: {
+        id: property_id,
+      },
       success: function (data) {
-        const res = JSON.parse(data);
+        const items = [];
+        $('select[name^="items["]').each(function (index) {
+          var book = $(this).find("option:selected").text();
+          var amount = $(this).closest("tr").find(".main-amount").val();
+          items.push({
+            amount: amount,
+            book_name: book,
+          });
+        });
+
+        const startDate = data;
         const salvage_value_percentage = parseInt(
           $("#otherpropertydetails-salvage_value_prcnt").val()
         );
-        const first_month_depreciation = $(
-          "#otherpropertydetails-first_month_depreciation"
-        ).val();
+        const useful_life = $("#otherpropertydetails-useful_life").val();
         calculateAndDisplay(
-          res,
+          items,
           salvage_value_percentage,
-          useful_life_in_mnths,
-          first_month_depreciation
+          useful_life,
+          startDate
         );
       },
     });
   });
-  $("#otherpropertydetails-fk_chart_of_account_id").change(() => {
-    $.ajax({
-      type: "GET",
-      url:
-        window.location.pathname +
-        "?r=other-property-details/search-chart-of-accounts",
-      data: {
-        id: $("#otherpropertydetails-fk_chart_of_account_id").val(),
-      },
-      success: function (data) {
-        const res = data.results;
-        console.log(res);
-        useful_life_in_mnths =
-          res[0].life_from > 0 ? parseInt(res[0].life_from) * 12 : 0;
-        console.log(useful_life_in_mnths);
-      },
-    });
-  });
+
+  // $("#otherpropertydetails-fk_chart_of_account_id").change(() => {
+  //   $.ajax({
+  //     type: "GET",
+  //     url:
+  //       window.location.pathname +
+  //       "?r=other-property-details/search-chart-of-accounts",
+  //     data: {
+  //       id: $("#otherpropertydetails-fk_chart_of_account_id").val(),
+  //     },
+  //     success: function (data) {
+  //       const res = data.results;
+  //       console.log(res);
+  //       useful_life_in_mnths =
+  //         res[0].life_from > 0 ? parseInt(res[0].life_from) * 12 : 0;
+  //       console.log(useful_life_in_mnths);
+  //     },
+  //   });
+  // });
   $("#otherpropertydetails-fk_property_id").change(() => {
     const property_id = $("#otherpropertydetails-fk_property_id").val();
     $.ajax({
@@ -179,24 +196,23 @@ $(document).ready(() => {
         property_id: property_id,
       },
       success: function (data) {
-        console.log(data);
         const res = JSON.parse(data);
         $(".property-details").html("");
         const d = `<div>
-        <span>Property Number:</span>
+        <span><b>Property Number:</b></span>
         <span>${res.property_number}</span>
     </div>
     <div>
-        <span>Article:</span>
+        <span><b>Article:</b></span>
         <span>${res.article}</span>
     </div>
     <div>
-        <span>Date:</span>
+        <span><b>Acquisation Date:</b></span>
         <span>${res.date}</span>
     </div>
     <div>
-        <span>Acquisition Amount:</span>
-        <span>${res.acquisition_amount}</span>
+        <span><b>Acquisition Amount:</b></span>
+        <span>${thousands_separators(res.acquisition_amount)}</span>
     </div>`;
         $(".property-details").prepend(d);
       },

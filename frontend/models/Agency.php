@@ -28,6 +28,7 @@ class Agency extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'type'], 'string', 'max' => 255],
+            [['name', 'type'], 'required'],
         ];
     }
 

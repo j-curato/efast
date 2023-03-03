@@ -8,6 +8,7 @@ use app\models\ParIndexSearch;
 use app\models\ParSearch;
 use app\models\PropertyCard;
 use Da\QrCode\QrCode;
+use ErrorException;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -76,7 +77,7 @@ class ParController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new ParIndexSearch();
+        $searchModel = new ParSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -95,7 +96,7 @@ class ParController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
-            'stickerDetails' => $this->stickerDetails($id)
+            // 'stickerDetails' => $this->stickerDetails($id)
         ]);
     }
     public function stickerDetails($id)
@@ -141,27 +142,45 @@ class ParController extends Controller
     public function actionCreate()
     {
         $model = new Par();
+        if (!Yii::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $office_id = $user_data->office->id;
+            $model->fk_office_id = $office_id;
+        }
         if ($model->load(Yii::$app->request->post())) {
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            $model->par_number = $this->getParNumber();
-
-            if ($model->save(false)) {
+            $office_name = YIi::$app->db->createCommand("SELECT office.office_name FROM property
+                JOIN office ON property.fk_office_id = office.id
+                WHERE property.id = :id")
+                ->bindValue(':id', $model->fk_property_id)
+                ->queryScalar();
+            $model->par_number = $this->getParNumber($office_name);
+            $model->_year = date('Y');
+            try {
+                $transaction = Yii::$app->db->beginTransaction();
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
 
                 $pc = new PropertyCard();
                 $pc->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-                $pc->pc_number = $this->getPcNumber();
-                $pc->par_number = $model->par_number;
+                $pc->serial_number = $this->getPcNumber($office_name);
                 $pc->fk_par_id = $model->id;
-                $this->generateQr($pc->pc_number);
-                if ($pc->save()) {
-                    // $url = Url::to(['@propertycardView', 'id' => $pc->pc_number]);
-                    // echo $url;
-                    // return Yii::$app->response->redirect(['property-card/view', 'id' => $pc->id]);
-                    return $this->redirect(['view', 'id' => $model->id]);
-                    // return $this->redirect($url);
+                $this->generateQr($pc->serial_number);
+                if (!$pc->validate()) {
+                    throw new ErrorException(json_encode($pc->errors));
                 }
-
+                if (!$pc->save(false)) {
+                    throw new ErrorException('Save Failed');
+                }
+                $transaction->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $transaction->rollBack();
+                return json_encode(['error' => $e->getMessage()]);
             }
         }
 
@@ -222,19 +241,19 @@ class ParController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function getParNumber()
+    public function getParNumber($office_name)
     {
-
         $query = Yii::$app->db->createCommand("SELECT
         CAST(SUBSTRING_INDEX(par.par_number,'-',-1)AS UNSIGNED) as p_number
         FROM par
+        WHERE par._year >=2023
         ORDER BY  p_number DESC LIMIT 1")->queryScalar();
         $num = 1;
         if (!empty($query)) {
             $num = intval($query) + 1;
         }
         $new_num = substr(str_repeat(0, 5) . $num, -5);
-        $string = 'PAR-' . $new_num;
+        $string = strtoupper($office_name) . '-PAR-' . $new_num;
         return $string;
     }
     public function actionSearchPar($q = null, $id = null, $province = null)
@@ -306,22 +325,24 @@ class ParController extends Controller
         $base_path =  \Yii::getAlias('@webroot');
         $qrCode->writeFile($base_path . "/qr_codes/$text.png");
     }
-    function getPcNumber()
+    function getPcNumber($office_name)
     {
 
-        $query = Yii::$app->db->createCommand("SELECT substring_index(pc_number,'-',-1) as pc_number
+        $query = Yii::$app->db->createCommand("SELECT CAST(substring_index(serial_number,'-',-1) AS UNSIGNED) as pc_number
         FROM property_card
-        
+        JOIN PAR ON property_card.fk_par_id = par.id
+        WHERE 
+        par._year > 2023
         ORDER BY pc_number DESC LIMIT 1
         ")->queryScalar();
         $num = 1;
-        if (!empty($query)) {
-            $num = $query + 1;
-        }
-        $period = date('Y-m');
-        $l_num = substr(str_repeat(0, 5) . $num, -5);
-        $string = "PC $period-" . $l_num;
 
+        if (!empty($query)) {
+            $num = intval($query) + 1;
+        }
+
+        $l_num = substr(str_repeat(0, 5) . intval($num), -5);
+        $string = $office_name . "-PC-" . $l_num;
         return $string;
     }
     public function actionGetPar()

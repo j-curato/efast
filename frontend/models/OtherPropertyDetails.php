@@ -35,12 +35,22 @@ class OtherPropertyDetails extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'fk_property_id', 'fk_chart_of_account_id',  'salvage_value_prcnt', 'first_month_depreciation', 'start_month_depreciation', 'depreciation_schedule'], 'required'],
-            [['id', 'fk_property_id', 'fk_chart_of_account_id'], 'integer'],
+            [[
+                'id',
+                'fk_property_id',
+                'fk_chart_of_account_id',
+                'salvage_value_prcnt',
+                'useful_life'
+            ], 'required'],
+            [[
+                'id',
+                'fk_property_id',
+                'fk_chart_of_account_id',
+                'salvage_value_prcnt',
+                'useful_life'
+            ], 'integer'],
             [['created_at'], 'safe'],
             [['salvage_value_prcnt'], 'integer', 'min' => 5],
-            [['depreciation_schedule'], 'integer', 'min' => 1],
-            [['first_month_depreciation', 'start_month_depreciation'], 'string', 'max' => 255],
             [['id'], 'unique'],
         ];
     }
@@ -53,12 +63,10 @@ class OtherPropertyDetails extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'fk_property_id' => ' Property Number',
-            'depreciation_schedule' => 'Depreciation Schedule',
             'fk_chart_of_account_id' => 'PPE Type',
             'salvage_value_prcnt' => 'Salvage Value Percent',
-            'first_month_depreciation' => 'First Month Depreciation',
-            'start_month_depreciation' => 'Start Month Depreciation',
             'created_at' => 'Created At',
+            'useful_life' => 'Useful Life in Months'
         ];
     }
 
@@ -74,5 +82,9 @@ class OtherPropertyDetails extends \yii\db\ActiveRecord
     public function getProperty()
     {
         return $this->hasOne(Property::class, ['id' => 'fk_property_id']);
+    }
+    public function getChartOfAccount()
+    {
+        return $this->hasOne(ChartOfAccounts::class, ['id' => 'fk_chart_of_account_id']);
     }
 }

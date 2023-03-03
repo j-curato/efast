@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 
@@ -30,11 +31,24 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
 
-            'fk_property_id',
-            'depreciation_schedule',
-            'fk_chart_of_account_id',
+            [
+                'attribute' => 'fk_property_id',
+                'value' => 'property.property_number'
+            ],
+            [
+                'attribute' => 'fk_chart_of_account_id',
+                'value' => function ($model) {
+                    return !empty($model->fk_chart_of_account_id) ? $model->chartOfAccount->uacs . '-' . $model->chartOfAccount->general_ledger : '';
+                }
+            ],
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id);
+                }
+            ],
         ],
     ]); ?>
 

@@ -32,32 +32,28 @@ class Ptr extends \yii\db\ActiveRecord
     {
         return [
             [[
-                'transfer_type_id',
-                'agency_from_id',
-                'agency_to_id'
+                'fk_property_id',
+                'fk_issued_by',
+                'fk_actual_user',
+                'fk_received_by',
+                'fk_approved_by',
+                'fk_transfer_type_id',
+                'fk_to_agency_id',
             ], 'integer'],
             [['date'], 'safe'],
-            [[
-                'reason',
-                'employee_from',
-                'employee_to'
-            ], 'string'],
-            [['ptr_number', 'par_number', 'employee_from', 'employee_to'], 'string', 'max' => 255],
-            [[
-                'ptr_number',
-                'id',
-                'fk_par_id',
-                'par_number',
-                'transfer_type_id',
-                'date',
-                'reason',
-                'employee_from',
-                'employee_to',
-                'agency_from_id',
-                'agency_to_id',
-                'created_at',
 
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [[
+                'fk_property_id',
+                'fk_issued_by',
+                'fk_actual_user',
+                'fk_received_by',
+                'fk_approved_by',
+                'fk_transfer_type_id',
+                'fk_to_agency_id',
+                'date',
+            ], 'required'],
+            [['ptr_number'], 'string', 'max' => 255],
+
         ];
     }
 
@@ -67,27 +63,18 @@ class Ptr extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'ptr_number' => 'Ptr Number',
-            'par_number' => 'Par Number',
-            'transfer_type_id' => 'Transfer Type',
+            'ptr_number' => 'PTR Number',
+            'fk_property_id' => 'Property',
+            'fk_issued_by' => 'Issued By',
+            'fk_actual_user' => 'Actual User',
+            'fk_received_by' => 'Received By',
+            'fk_approved_by' => 'Approved By',
+            'fk_transfer_type_id' => 'Transfer Type',
             'date' => 'Date',
-            'reason' => 'Reason',
-            'employee_from' => 'Employee From',
-            'employee_to' => 'Employee To',
             'agency_from_id' => 'Agency From',
-            'agency_to_id' => 'Agency To'
+            'fk_to_agency_id' => 'Agency To',
+            'created_at' => 'Created At',
+
         ];
-    }
-    public function getEmployee()
-    {
-        return $this->hasOne(Employee::class, ['employee_id' => 'employee_to']);
-    }
-    public function getPar()
-    {
-        return $this->hasOne(Par::class, ['par_number' => 'par_number']);
-    }
-    public function getTransferType()
-    {
-        return $this->hasOne(TransferType::class, ['id' => 'transfer_type_id']);
     }
 }

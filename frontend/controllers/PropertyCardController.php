@@ -31,6 +31,9 @@ class PropertyCardController extends Controller
                     'update',
                     'delete',
                     'property-details',
+                    'print-pc',
+
+
 
                 ],
                 'rules' => [
@@ -42,6 +45,7 @@ class PropertyCardController extends Controller
                             'update',
                             'delete',
                             'property-details',
+                            'print-pc',
 
                         ],
                         'allow' => true,
@@ -59,7 +63,38 @@ class PropertyCardController extends Controller
             ],
         ];
     }
-
+    private function StickerDetails($id)
+    {
+        return Yii::$app->db->createCommand("SELECT 
+       property_card.serial_number as pc_num,
+       par.par_number,
+       par.is_unserviceable,
+       par.date as par_date,
+       property.property_number,
+       property.acquisition_amount,
+       property.date as date_aquired,
+       property.article,
+       property_articles.article_name,
+       property.description,
+       received_by.employee_name as rcv_by,
+       actual_user.employee_name as act_usr,
+       issued_by.employee_name as isd_by,
+       `location`.`location`, 
+       office.office_name
+       FROM property_card
+       JOIN par ON property_card.fk_par_id = par.id
+       JOIN property ON par.fk_property_id = property.id
+       LEFT JOIN employee_search_view as received_by ON  par.fk_received_by = received_by.employee_id
+       LEFT JOIN employee_search_view as actual_user ON par.fk_actual_user = actual_user.employee_id
+       LEFT JOIN employee_search_view as issued_by ON par.fk_issued_by_id  = issued_by.employee_id
+       LEFT JOIN `location` ON par.fk_location_id = location.id
+       LEFT JOIN office ON par.fk_office_id = office.id
+       LEFT JOIN property_articles ON property.fk_property_article_id = property_articles.id
+       WHERE property_card.id = :id
+       ")
+            ->bindValue(':id', $id)
+            ->queryOne();
+    }
     /**
      * Lists all PropertyCard models.
      * @return mixed
@@ -85,6 +120,7 @@ class PropertyCardController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'sticker_details' => $this->StickerDetails($id),
         ]);
     }
 
@@ -220,5 +256,47 @@ class PropertyCardController extends Controller
         }
 
         return $this->render("qr_scanner");
+    }
+    public function actionPrintPc()
+    {
+
+        $items = [];
+
+        if (Yii::$app->request->isPost) {
+            $reporting_period  =  YIi::$app->request->post('reporting_period');
+            $items =  Yii::$app->db->createCommand("SELECT 
+            property_card.id  as pc_id,
+            property_card.serial_number as pc_num,
+            par.par_number,
+            par.is_unserviceable,
+            par.date as par_date,
+            property.property_number,
+            property.acquisition_amount,
+            property.date as date_aquired,
+            property.article,
+            property.description,
+            received_by.employee_name as rcv_by,
+            actual_user.employee_name as act_usr,
+            issued_by.employee_name as isd_by,
+            location.location, 
+            office.office_name,
+            property_articles.article_name
+            FROM property_card
+            JOIN par ON property_card.fk_par_id = par.id
+            JOIN property ON par.fk_property_id = property.id
+            LEFT JOIN employee_search_view as received_by ON  par.fk_received_by = received_by.employee_id
+            LEFT JOIN employee_search_view as actual_user ON par.fk_actual_user = actual_user.employee_id
+            LEFT JOIN employee_search_view as issued_by ON par.fk_issued_by_id  = issued_by.employee_id
+            LEFT JOIN `location` ON par.fk_location_id = location.id
+            LEFT JOIN office ON par.fk_office_id = office.id
+            LEFT JOIN property_articles ON property.fk_property_article_id = property_articles.id
+            WHERE par.date LIKE :reporting_period
+            
+          ")
+                ->bindValue(':reporting_period', $reporting_period . '%')
+                ->queryAll();
+
+        }
+        return $this->render('stickers', ['items' => $items]);
     }
 }

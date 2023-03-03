@@ -92,20 +92,11 @@ class OtherPropertyDetailsController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
-        $effect_of_adjustment = [];
-        if (intval($model->depreciation_schedule) > 1) {
-            $effect_of_adjustment = $this->effectOfAdjustment($model->fk_property_id, $model->start_month_depreciation, $model->depreciation_schedule);
 
-            $effect_of_adjustment = $result = ArrayHelper::index($effect_of_adjustment, null, [function ($element) {
-                return $element['book_name'];
-            }, 'depreciation_schedule']);
-            // return json_encode($effect_of_adjustment);
-        }
-        // return json_encode($effect_of_adjustment);
+
         return $this->render('view', [
             'model' => $model,
-            'effect_of_adjustment' => $effect_of_adjustment,
-            'items' => $this->findItems($id, $model->depreciation_schedule, $model->fk_property_id),
+            'items' => $this->findItems($id, $model->fk_property_id),
             'propertyDetails' => $this->propertyDetails($model->fk_property_id),
         ]);
     }
@@ -155,10 +146,9 @@ class OtherPropertyDetailsController extends Controller
             ->bindValue(':depreciation_schedule', $depreciation_schedule)
             ->queryAll();
     }
-    public function findItems($id, $depreciation_schedule = 1, $property_id = '')
+    public function findItems($id, $property_id = '')
     {
-        if (intval($depreciation_schedule) === 1) {
-            return Yii::$app->db->createCommand('SELECT 
+        return Yii::$app->db->createCommand('SELECT 
             other_property_detail_items.id,
             other_property_detail_items.fk_other_property_details_id,
             other_property_detail_items.book_id,
@@ -169,27 +159,9 @@ class OtherPropertyDetailsController extends Controller
         WHERE 
         other_property_detail_items.fk_other_property_details_id = :id
         AND other_property_detail_items.is_deleted !=1
-
         ')
-                ->bindValue(':id', $id)
-                ->queryAll();
-        } else {
-            return Yii::$app->db->createCommand('SELECT 
-            other_property_detail_items.id,
-            other_property_detail_items.fk_other_property_details_id,
-            other_property_detail_items.book_id,
-            other_property_detail_items.amount,
-            books.name as book_name
-            FROM other_property_details
-            LEFT JOIN other_property_detail_items ON other_property_details.id = other_property_detail_items.fk_other_property_details_id
-            LEFT JOIN books ON other_property_detail_items.book_id = books.id
-            WHERE other_property_details.fk_property_id = :property_id
-            AND other_property_detail_items.is_deleted !=1
-
-        ')
-                ->bindValue(':property_id', $property_id)
-                ->queryAll();
-        }
+            ->bindValue(':id', $id)
+            ->queryAll();
     }
 
     /**
@@ -198,17 +170,17 @@ class OtherPropertyDetailsController extends Controller
      * @return mixed
      */
 
-    public function insertItems($id = '', $items = [], $depreciation_schedule)
+    public function insertItems($id = '', $items = [])
 
     {
 
         if (empty($id)) {
             return ['isSuccess' => false, 'error_message' => 'Parent ID Required'];
         }
-        if (intval($depreciation_schedule) === 1  && empty(array_column($items, 'book')[0])) {
+        if (empty(array_column($items, 'book')[0])) {
             return ['isSuccess' => false, 'error_message' => 'Items Required'];
         }
-        if (!empty(array_column($items, 'book')[0])) {
+        try {
             foreach ($items as $val) {
 
                 if (!empty($val['item_id'])) {
@@ -220,14 +192,17 @@ class OtherPropertyDetailsController extends Controller
                 $item->fk_other_property_details_id = $id;
                 $item->book_id = $val['book'];
                 $item->amount = $val['amount'];
-                if ($item->validate()) {
-                    if ($item->save(false)) {
-                    }
-                } else {
-                    return ['isSuccess' => false, 'error_message' => $item->errors];
+                if (!$item->validate()) {
+                    throw new ErrorException(json_encode($item->errors));
+                }
+                if (!$item->save(false)) {
+                    throw new ErrorException('Item Save Failed');
                 }
             }
+        } catch (ErrorException $e) {
+            return ['isSuccess' => false, 'error_message' => $e->getMessage()];
         }
+
         return ['isSuccess' => true];
     }
     public function createSubAccount($chart_of_account_id = '', $property_number = '')
@@ -273,77 +248,39 @@ class OtherPropertyDetailsController extends Controller
         $model = new OtherPropertyDetails();
 
 
-        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
-            $transaction = Yii::$app->db->beginTransaction();
-            $items = !empty($_POST['items']) ? $_POST['items'] : [];
-
+        if ($model->load(Yii::$app->request->post())) {
+            $items = !empty(Yii::$app->request->post('items')) ? Yii::$app->request->post('items') : [];
             $model->id = Yii::$app->db->createCommand('SELECT UUID_SHORT()')->queryScalar();
-
-            $check_deperection_sched = YIi::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `other_property_details` 
-                    WHERE other_property_details.fk_property_id =:property_id 
-                    AND other_property_details.depreciation_schedule = 1
-                    )")
-                ->bindValue(':property_id', $model->fk_property_id)
-                ->queryScalar();
-            if (intval($check_deperection_sched) === 1 && intval($model->depreciation_schedule) === 1) {
-                return json_encode(['isSuccess' => false, 'error_message' => ' 1st Depreciation Schedule Already Exist']);
-            } else if (intval($check_deperection_sched) === 0 && intval($model->depreciation_schedule) > 1) {
-                return json_encode(['isSuccess' => false, 'error_message' => ' 1st Depreciation Schedule Does not Exist']);
-            }
-            if (intval($model->depreciation_schedule) > 1) {
-
-                $check_deperection_sched_exists = YIi::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `other_property_details` 
-            WHERE other_property_details.fk_property_id =:property_id 
-            AND other_property_details.depreciation_schedule = :depreciation_schedule
-            )")
-                    ->bindValue(':property_id', $model->fk_property_id)
-                    ->bindValue(':depreciation_schedule', $model->depreciation_schedule)
-                    ->queryScalar();
-                if ($check_deperection_sched_exists) {
-                    return json_encode(['isSuccess' => false, 'error_message' => '  Depreciation Schedule Already Exist']);
-                }
-
-                $model->first_month_depreciation = $this->firstMonthDepreciation($model->fk_property_id);
-            }
-
             try {
-                if ($model->validate()) {
-                    // if (intval($model->depreciation_schedule) === 1) {
-                    $property_query = Yii::$app->db->createCommand("SELECT property_number FROM property WHERE property.id = :id")
-                        ->bindValue(':id', $model->fk_property_id)
-                        ->queryOne();
-                    $property_number = !empty($property_query['property_number']) ? $property_query['property_number'] : '';
-                    $createSubAccount = $this->createSubAccount($model->fk_chart_of_account_id, $property_number);
-                    if ($createSubAccount['isSuccess'] === true) {
-                        $model->fk_sub_account1_id = $createSubAccount['id'];
-                    }
-                    $create_depreciation_sub_account = $this->createSubAccount($model->fk_chart_of_account_id, $model->property->property_number);
-                    $decpreciation_account_id = YIi::$app->db->createCommand("SELECT fk_depreciation_id FROM chart_of_accounts WHERE chart_of_accounts.id = :id")
-                        ->bindValue(':id', $model->fk_chart_of_account_id)
-                        ->queryScalar();
-                    $create_depreciation_sub_account = $this->createSubAccount($decpreciation_account_id, $model->property->property_number);
-                    if ($create_depreciation_sub_account['isSuccess'] === true) {
-                        $model->fk_depreciation_sub_account1_id = $create_depreciation_sub_account['id'];
-                    }
-                    // }
-
-                    if ($model->save(false)) {
-                        if (intval($model->depreciation_schedule) === 1) {
-
-                            $insert_item = $this->insertItems($model->id, $items, $model->depreciation_schedule);
-                            if ($insert_item['isSuccess'] === true) {
-                            } else {
-                                $transaction->rollBack();
-                                return json_encode(['isSuccess' => false, 'error_message' => $insert_item['error_message']]);
-                            }
-                        }
-                        $transaction->commit();
-                        return $this->redirect(['view', 'id' => $model->id]);
-                    }
-                } else {
-                    $transaction->rollBack();
-                    return json_encode($model->errors);
+                $transaction = Yii::$app->db->beginTransaction();
+                $property_query = Yii::$app->db->createCommand("SELECT property_number FROM property WHERE property.id = :id")
+                    ->bindValue(':id', $model->fk_property_id)
+                    ->queryOne();
+                $property_number = !empty($property_query['property_number']) ? $property_query['property_number'] : '';
+                $createSubAccount = $this->createSubAccount($model->fk_chart_of_account_id, $property_number);
+                if ($createSubAccount['isSuccess'] === true) {
+                    $model->fk_sub_account1_id = $createSubAccount['id'];
                 }
+                $create_depreciation_sub_account = $this->createSubAccount($model->fk_chart_of_account_id, $model->property->property_number);
+                $decpreciation_account_id = YIi::$app->db->createCommand("SELECT fk_depreciation_id FROM chart_of_accounts WHERE chart_of_accounts.id = :id")
+                    ->bindValue(':id', $model->fk_chart_of_account_id)
+                    ->queryScalar();
+                $create_depreciation_sub_account = $this->createSubAccount($decpreciation_account_id, $model->property->property_number);
+                if ($create_depreciation_sub_account['isSuccess'] === true) {
+                    $model->fk_depreciation_sub_account1_id = $create_depreciation_sub_account['id'];
+                }
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException("Model Save Failed");
+                }
+                $insert_item = $this->insertItems($model->id, $items);
+                if ($insert_item['isSuccess'] !== true) {
+                    throw new ErrorException($insert_item['error_message']);
+                }
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
                 $transaction->rollBack();
                 return json_encode($e->getMessage());
@@ -368,89 +305,39 @@ class OtherPropertyDetailsController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post())) {
-            $transaction = Yii::$app->db->beginTransaction();
-            $items = !empty($_POST['items']) ? $_POST['items'] : [];
-            $check_deperection_sched = YIi::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `other_property_details` 
-                    WHERE other_property_details.fk_property_id =:property_id 
-                    AND other_property_details.depreciation_schedule = 1
-                    AND other_property_details.id != :id
-                    )")
-                ->bindValue(':property_id', $model->fk_property_id)
-                ->bindValue(':id', $model->id)
-                ->queryScalar();
-
-            if (intval($check_deperection_sched) === 1 && intval($model->depreciation_schedule) === 1) {
-                return json_encode(['isSuccess' => false, 'error_message' => ' 1st Depreciation Schedule Already Exist']);
-            } else if (intval($check_deperection_sched) === 0 && intval($model->depreciation_schedule) > 1) {
-                return json_encode(['isSuccess' => false, 'error_message' => ' 1st Depreciation Schedule Does not Exist']);
-            }
-            if (intval($model->depreciation_schedule) > 1) {
-
-                $check_deperection_sched_exists = YIi::$app->db->createCommand("SELECT EXISTS (SELECT * FROM `other_property_details` 
-            WHERE other_property_details.fk_property_id =:property_id 
-            AND other_property_details.depreciation_schedule = :depreciation_schedule
-            AND other_property_details.id != :id
-            )")
-                    ->bindValue(':property_id', $model->fk_property_id)
-                    ->bindValue(':depreciation_schedule', $model->depreciation_schedule)
-                    ->bindValue(':id', $model->id)
-                    ->queryScalar();
-                if ($check_deperection_sched_exists) {
-                    return json_encode(['isSuccess' => false, 'error_message' => '  Depreciation Schedule Already Exist']);
-                }
-                $model->first_month_depreciation = $this->firstMonthDepreciation($model->fk_property_id);
-            }
+            $items = !empty(Yii::$app->request->post('items')) ? Yii::$app->request->post('items') : [];
             try {
-                if ($model->validate()) {
-                    if (intval($model->depreciation_schedule) === 1) {
-                        if ($model->fk_chart_of_account_id !== $old_model->fk_chart_of_account_id || $model->fk_property_id !== $old_model->fk_property_id) {
-                            $property_query = Yii::$app->db->createCommand("SELECT property_number FROM property WHERE property.id = :id")
-                                ->bindValue(':id', $model->fk_property_id)
-                                ->queryOne();
-                            $property_number = !empty($property_query['property_number']) ? $property_query['property_number'] : '';
-                            $createSubAccount = $this->createSubAccount($model->fk_chart_of_account_id, $property_number);
-                            if ($createSubAccount['isSuccess'] === true) {
-                                $model->fk_sub_account1_id = $createSubAccount['id'];
-                            }
-                            $create_depreciation_sub_account = $this->createSubAccount($model->fk_chart_of_account_id, $model->property->property_number);
-                            $decpreciation_account_id = YIi::$app->db->createCommand("SELECT fk_depreciation_id FROM chart_of_accounts WHERE chart_of_accounts.id = :id")
-                                ->bindValue(':id', $model->fk_chart_of_account_id)
-                                ->queryScalar();
-                            $create_depreciation_sub_account = $this->createSubAccount($decpreciation_account_id, $model->property->property_number);
-                            if ($create_depreciation_sub_account['isSuccess'] === true) {
-                                $model->fk_depreciation_sub_account1_id = $create_depreciation_sub_account['id'];
-                            }
-                        }
+                $transaction = Yii::$app->db->beginTransaction();
+                if ($old_model->fk_chart_of_account_id != $model->fk_chart_of_account_id) {
+                    $property_query = Yii::$app->db->createCommand("SELECT property_number FROM property WHERE property.id = :id")
+                        ->bindValue(':id', $model->fk_property_id)
+                        ->queryOne();
+                    $property_number = !empty($property_query['property_number']) ? $property_query['property_number'] : '';
+                    $createSubAccount = $this->createSubAccount($model->fk_chart_of_account_id, $property_number);
+                    if ($createSubAccount['isSuccess'] === true) {
+                        $model->fk_sub_account1_id = $createSubAccount['id'];
                     }
-                    if ($model->save(false)) {
-                        if (!empty(array_column($items, 'item_id'))) {
-                            $params = [];
-                            $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', array_column($items, 'item_id')], $params);
-                            Yii::$app->db->createCommand("UPDATE other_property_detail_items SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE 
-                                $sql AND other_property_detail_items.fk_other_property_details_id = :id", $params)
-                                ->bindValue(':id', $model->id)->query();
-                        } else {
-                            Yii::$app->db->createCommand("UPDATE other_property_detail_items SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE 
-                                 other_property_detail_items.fk_other_property_details_id = :id")
-                                ->bindValue(':id', $model->id)->query();
-                        }
-
-                        // if ($model->depreciation_schedule === 1) {
-                        $insert_item = $this->insertItems($model->id, $items, $model->depreciation_schedule);
-                        if ($insert_item['isSuccess'] === true) {
-                        } else {
-                            return json_encode(['isSuccess' => false, 'error_message' => $insert_item['error_message']]);
-                        }
-                        // }
-
-
-                        $transaction->commit();
-                        return $this->redirect(['view', 'id' => $model->id]);
+                    $create_depreciation_sub_account = $this->createSubAccount($model->fk_chart_of_account_id, $model->property->property_number);
+                    $decpreciation_account_id = YIi::$app->db->createCommand("SELECT fk_depreciation_id FROM chart_of_accounts WHERE chart_of_accounts.id = :id")
+                        ->bindValue(':id', $model->fk_chart_of_account_id)
+                        ->queryScalar();
+                    $create_depreciation_sub_account = $this->createSubAccount($decpreciation_account_id, $model->property->property_number);
+                    if ($create_depreciation_sub_account['isSuccess'] === true) {
+                        $model->fk_depreciation_sub_account1_id = $create_depreciation_sub_account['id'];
                     }
-                } else {
-                    $transaction->rollBack();
-                    return json_encode($model->errors);
                 }
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException("Model Save Failed");
+                }
+                $insert_item = $this->insertItems($model->id, $items);
+                if ($insert_item['isSuccess'] !== true) {
+                    throw new ErrorException($insert_item['error_message']);
+                }
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
                 $transaction->rollBack();
                 return json_encode($e->getMessage());
@@ -594,36 +481,10 @@ class OtherPropertyDetailsController extends Controller
     }
     public function actionItems()
     {
-        if ($_POST) {
-            $new_array = [];
-            $depreciation_schedule = $_POST['depreciation_schedule'];
-            $property_id = $_POST['property_id'];
-            if (intval($depreciation_schedule) === 1) {
-                foreach ($_POST['items'] as $val) {
-                    $book_name = Yii::$app->db->createCommand("SELECT books.`name` FROM books WHERE id = :id")->bindValue(':id', $val['book'])->queryScalar();
-                    $new_array[] = [
-                        'book_name' => $book_name,
-                        'amount' => $val['amount']
-                    ];
-                    // return json_encode($val);
-                }
-            } else {
-
-                $new_array =  YIi::$app->db->createCommand("SELECT 
-                books.`name` as book_name,
-                other_property_detail_items.amount
-                 FROM 
-                other_property_details 
-                LEFT JOIN other_property_detail_items ON other_property_details.id = other_property_detail_items.fk_other_property_details_id
-                LEFT JOIN books ON other_property_detail_items.book_id = books.id
-                WHERE
-                other_property_details.fk_property_id = :property_id
-                AND other_property_detail_items.is_deleted =0
-                ")
-                    ->bindValue(':property_id', $property_id)
-                    ->queryAll();
-            }
-            return json_encode($new_array);
+        if (Yii::$app->request->isPost) {
+            return YIi::$app->db->createCommand("SELECT `date` FROM property WHERE property.id = :id")
+                ->bindValue(':id', Yii::$app->request->post('id'))
+                ->queryScalar();
         }
     }
     public function propertyDetails($property_id)
@@ -632,7 +493,6 @@ class OtherPropertyDetailsController extends Controller
         property.property_number,
         property.article,
         property.model,
-        property.date,
         property.acquisition_amount,
         REPLACE(property.description,'[n]','<br>') as `description`,
         property.serial_number,

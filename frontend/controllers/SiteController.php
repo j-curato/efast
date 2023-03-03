@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use app\models\Event;
 use app\models\Password;
+use common\models\ChangePassword;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\VerifyEmailForm;
 use Yii;
@@ -38,21 +39,18 @@ class SiteController extends Controller
                 'only' => [
                     'logout', 'signup', 'index', 'q',
                     'update-system',
-                    'token'
+                    'token',
+                    'change-password'
                 ],
                 'rules' => [
+
                     [
-                        'actions' => ['signup'],
-                        'allow' => true,
-                        'roles' => ['?'],
-                    ],
-                    [
-                        'actions' => ['logout', 'index', 'q', 'token'],
+                        'actions' => ['logout', 'index', 'q', 'token', 'change-password'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['update-system'],
+                        'actions' => ['update-system', 'signup'],
                         'allow' => true,
                         'roles' => ['super-user'],
                     ],
@@ -112,6 +110,19 @@ class SiteController extends Controller
      *
      * @return mixed
      */
+    public function actionChangePassword()
+    {
+        $model = new ChangePassword();
+        if ($model->load(Yii::$app->request->post()) && $model->updatePassword()) {
+            return $this->goBack();
+
+            // return $this->redirect('');
+        }
+
+        return $this->render('change_password', [
+            'model' => $model,
+        ]);
+    }
     public function actionLogin()
     {
         $this->layout = 'main-login';

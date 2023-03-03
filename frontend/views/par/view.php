@@ -1,14 +1,24 @@
 <?php
 
+use app\components\helpers\MyHelper;
+use app\models\Office;
+use app\models\PropertyArticles;
 use barcode\barcode\BarcodeGenerator;
 use Da\QrCode\QrCode;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\web\JqueryAsset;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Par */
 
+function getEmployee($id)
+{
+    return  Yii::$app->db->createCommand("SELECT employee_name,position FROM employee_search_view WHERE  employee_id = :id")
+        ->bindValue(':id', $id)
+        ->queryOne();
+}
 $this->title = $model->par_number;
 $this->params['breadcrumbs'][] = ['label' => 'Pars', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -17,34 +27,30 @@ $d = new DateTime($model->property->date);
 $dateAquired = $d->format('F d, Y');
 $description = preg_replace('#\[n\]#', "<br>", $model->property->description);
 
-$article = $model->property->article;
+$article = !empty($model->property->fk_property_article_id) ? PropertyArticles::findOne($model->property->fk_property_article_id)->article_name : $model->property->article;
 $book = !empty($model->property->book->name) ? $model->property->book->name : '';
 $par_number = $model->par_number;
-$property_number = $stickerDetails['property_number'];
-$old_par_number = $stickerDetails['old_par_number'];
+$property_number = $model->property->property_number;
+$old_par_number = ''; //$stickerDetails['old_par_number'];
 $par_date = !empty($model->date) ? $model->date : '';
-$location = !empty($model->location) ? $model->location : '';
+$location = !empty($model->locations->location) ? $model->locations->location : '';
 $province = !empty($stickerDetails['province']) ? $stickerDetails['province'] : '';
-$accountable_officer = $stickerDetails['accountable_officer'];
-$actual_user = $stickerDetails['actual_user'];
-$issued_by = $stickerDetails['issued_by'];
-$remarks = $stickerDetails['remarks'];
+
 
 $quantity = intval($model->property->quantity);
 $aquisition_amount = floatval($model->property->acquisition_amount);
 $total_cost = $quantity * $aquisition_amount;
-$recieved_by = '';
-//   strtoupper($model->employee->f_name) . ' ' . strtoupper(substr($model->employee->m_name, 0, 1)) . '. ' . strtoupper($model->employee->l_name);
-$recieved_by_position = '';
-// $model->employee->position;
 
-$property_custodian = !empty($model->property->employee->f_name) ?
-    strtoupper($model->property->employee->f_name) . ' ' . strtoupper(substr($model->property->employee->m_name, 0, 1)) . '. ' .
-    strtoupper($model->property->employee->l_name) : '';
-$property_custodian_position = !empty($model->property->employee->position) ? $model->property->employee->position : '';
-$accountable_officer_position =  !empty($model->employee->position) ? strtoupper($model->employee->position) : '';
+// $received_by = getEmployee($model->fk_received_by);
+$received_by = MyHelper::getEmployee($model->fk_received_by, 'one');
+$actual_user = !empty($model->fk_actual_user) ? MyHelper::getEmployee($model->fk_actual_user, 'one') : '';
+$issued_by = MyHelper::getEmployee($model->fk_issued_by_id, 'one');
+$office = '';
 
 
+if (!empty($model->fk_office_id)) {
+    $office = Office::findOne($model->fk_office_id)->office_name;
+}
 
 $qrcode_filename = Yii::$app->request->baseurl . "/frontend/views/par/qrcodes/$model->par_number.png";
 // GENERATE QR CODE
@@ -74,15 +80,10 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
 
     <div class="container">
         <p class=''>
-            <?= Html::button('<i class="glyphicon glyphicon-pencil"></i> Update', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=par/update&id=' . $model->id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
 
-            <?php
-            if (!empty($model->propertyCard->pc_number)) {
-
-                $t = Yii::$app->request->baseUrl . "/index.php?r=property-card/view&id={$model->propertyCard->id}";
-                echo  Html::a('Property Card Link', $t, ['class' => 'btn btn-link ']);
-            }
-            ?>
+            <?= Html::a('<i class="glyphicon glyphicon-pencil"></i>  Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']) ?>
+            <?= Html::a('Property', ['property/view', 'id' => $model->fk_property_id], ['class' => 'btn btn-link']) ?>
+            <?= Html::a('PC', ['property-card/view', 'id' => $model->pc->id], ['class' => 'btn btn-link']) ?>
             <button id="print_sticker" type="button" class="btn btn-success">Print Sticker</button>
             <button id="print_form" type="button" class="btn btn-warning">Print Form</button>
         </p>
@@ -90,16 +91,12 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
 
             <table id="sticker_table">
                 <tr>
-
                     <td style="text-align: left;" class="no-border">
-
                         <span style="width: 100%;">
                             <?php echo Html::img("@web/frontend/web/dti3.png", ['style' => 'width:50px']) ?>
                         </span>
-
                     </td>
                     <td class="no-border">
-
                         <span>
                             <?php echo Html::img($qrcode_filename, ['class' => 'qr', 'style' => 'float:left']) ?>
                         </span>
@@ -107,11 +104,8 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
                     <td colspan='2' class="no-border" style="text-align: right;">
                         <div id="barcodeTarget" class="barcodeTarget"></div>
                     </td>
-
                 </tr>
-
                 <tr>
-
                     <th>Property No.: </th>
                     <td colspan='2'>
                         <?= $property_number ?>
@@ -138,9 +132,7 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
                 <tr>
                     <th>Office</th>
                     <td colspan='2'>
-                        <?php
-                        echo $province
-                        ?>
+                        <?= $office ?>
                     </td>
                 </tr>
                 <tr>
@@ -158,25 +150,26 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
                 <tr>
                     <th>Received by (Accountable Officer)</th>
                     <td colspan='2'>
-                        <?= $accountable_officer ?>
+                        <?= $received_by['employee_name'] ?>
                     </td>
                 </tr>
                 <tr>
                     <th>Received by (JO/COS) (leave blank if not JO/COS)</th>
                     <td colspan='2'>
-                        <?= $actual_user ?>
+                        <?= !empty($actual_user['employee_name']) ? $actual_user['employee_name'] : '' ?>
                     </td>
                 </tr>
                 <tr>
                     <th>Issued by (Property Officer)</th>
                     <td colspan='2'>
-                        <?= $issued_by ?>
+                        <?= $issued_by['employee_name'] ?>
+
                     </td>
                 </tr>
                 <tr>
                     <th>Serviceable / Unserviceable</th>
                     <td colspan='2'>
-                        <?= $remarks ?>
+                        <?= $model->is_unserviceable ? 'UnServiceable' : 'Serviceable' ?>
                     </td>
                 </tr>
 
@@ -186,7 +179,7 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
 
         if ($model->property->acquisition_amount < 1500) {
         ?>
-            <table class="par_form">
+            <table class="par_form" style="width: 100%;">
                 <tbody>
                     <tr>
                         <th colspan="7" class="center no-border">
@@ -216,16 +209,16 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
                         </th>
                     </tr>
                     <tr>
-                        <th rowspan="2">Quantity</th>
-                        <th rowspan="2">Unit</th>
-                        <th colspan="2">Amount</th>
-                        <th rowspan="2">Description</th>
-                        <th rowspan="2">Inventory Item No.</th>
-                        <th rowspan="2">Estimated Useful Life</th>
+                        <th class="center" rowspan="2">Quantity</th>
+                        <th class="center" rowspan="2">Unit</th>
+                        <th class="center" class="center" colspan="2">Amount</th>
+                        <th class="center" rowspan="2">Description</th>
+                        <th class="center" rowspan="2">Inventory Item No.</th>
+                        <th class="center" rowspan="2">Estimated Useful Life</th>
                     </tr>
                     <tr>
-                        <td>Unit Cost</td>
-                        <td>Total Cost</td>
+                        <th class="center">Unit Cost</th>
+                        <th class="center">Total Cost</th>
                     </tr>
                     <?php
 
@@ -256,15 +249,18 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
                     }
                     ?>
                     <tr>
-                        <td colspan="4">Recieved from:</td>
-                        <td colspan="3">Recieved by:</td>
+                        <th colspan="4">Recieved from:</th>
+                        <th colspan="3">Recieved by:</th>
                     </tr>
                     <tr>
                         <td colspan="4" class="center">
                             <br>
                             <br>
                             <br>
-                            <span style="text-decoration: underline;font-weight:bold;"><?php echo $property_custodian ?></span>
+                            <span style="text-decoration: underline;font-weight:bold;">
+                                <?php
+                                echo $issued_by['employee_name'];
+                                ?></span>
                             <br>
                             <span>Signature Over Printed Name</span>
                             <br>
@@ -284,12 +280,17 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
                             <br>
                             <br>
                             <br>
-                            <span style="text-decoration: underline;font-weight:bold;"><?php echo $accountable_officer ?></span>
+                            <span style="text-decoration: underline;font-weight:bold;">
+                                <?php
+                                echo $received_by['employee_name'];
+                                ?></span>
                             <br>
                             <span>Signature Over Printed Name</span>
                             <br>
                             <br>
-                            <b><?php echo $accountable_officer_position ?></b>
+                            <?php
+                            echo $received_by['position'];
+                            ?>
                             <br>
                             <span>Position/Office</span>
                             <br>
@@ -306,11 +307,11 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
         <?php
         } else {
         ?>
-            <table class="par_form">
+            <table class="par_form" style="width: 100%;">
 
                 <tbody>
                     <tr>
-                        <th colspan="6" style="text-align: center;">
+                        <th colspan="6" class="center">
                             <br>
                             PROPERTY ACKNOWLEDGMENT RECIEPT
                             <br>
@@ -339,12 +340,12 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
                         </th>
                     </tr>
                     <tr>
-                        <th>Quantity</th>
-                        <th>Unit</th>
-                        <th>Description</th>
-                        <th>Property Number</th>
-                        <th>Date Acquired</th>
-                        <th>Amount</th>
+                        <th class="center">Quantity</th>
+                        <th class="center">Unit</th>
+                        <th class="center">Description</th>
+                        <th class="center">Property Number</th>
+                        <th class="center">Date Acquired</th>
+                        <th class="center">Amount</th>
                     </tr>
                     <?php
 
@@ -380,19 +381,16 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
                     <tr>
                         <td class='foot no-border center' colspan="3">
                             <span style="text-decoration:underline">
-                                <b><?php
-                                    echo $accountable_officer;
-                                    ?>
-                                </b>
-
+                                <b><?= $received_by['employee_name'] ?></b>
                             </span>
                             <br>
+
                             <span> Signatue over Printed Name of End User</span>
                         </td>
                         <td class='foot no-border center' colspan="3">
                             <span style="text-decoration:underline">
                                 <b><?php
-                                    echo $property_custodian;
+                                    echo $issued_by['employee_name'];
                                     ?>
                                 </b>
 
@@ -407,9 +405,8 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
                     <tr>
                         <td class='foot no-border center' colspan="3">
                             <span style="text-decoration: underline;">
-                                <?php
-                                echo $accountable_officer_position;
-                                ?></span>
+                                <?= $received_by['position'] ?>
+                            </span>
                             <br>
                             <span>Position</span>
                         </td>
@@ -417,7 +414,7 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
 
                             <span style="text-decoration: underline;">
                                 <?php
-                                echo $property_custodian_position;
+                                echo $issued_by['position'];
                                 ?></span>
                             <br>
                             <span>Position</span>
@@ -439,31 +436,26 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
 
                     </tr>
                     <!-- ACTUAL USER -->
-                    <?php
+                    <?php if (!empty($model->fk_actual_user)) { ?>
 
-                    if (!empty($model->actual_user)) {
-                        $user_name = "{$model->actualUser->f_name} {$model->actualUser->m_name[0]}. {$model->actualUser->l_name} ";
-                        echo "        <tr>
-                    <th class='foot no-border' colspan='3' style='text-align:center;padding-top:5rem;border-bottom: 1px solid black;'>
-                        <span style='text-decoration:underline'>
-                            <span>$user_name </span>
-                           
-                        </span>
-                        <br>
-                        <span> Signatue over Printed Name of Actual User</span>
-                    </th>
-                    <th class='foot no-border' colspan='3' style='text-align:center;padding-top:5rem;border-bottom: 1px solid black;'>
-                
-                    </th>
+                        <tr>
+                            <td class='foot no-border' colspan='3' style='text-align:center;padding-top:5rem;border-bottom: 1px solid black;'>
+                                <span style='text-decoration:underline'>
+                                    <b> <span><?= $actual_user['employee_name'] ?></span></b>
+                                </span>
+                                <br>
+                                <span> Signatue over Printed Name of Actual User</span>
+                                <br>
+                                <br>
+                                <br>
+                            </td>
+                            <th class='foot no-border' colspan='3' style='text-align:center;padding-top:5rem;border-bottom: 1px solid black;'>
 
-
-                </tr>";
-                    }
-                    ?>
+                            </th>
 
 
-
-
+                        </tr>
+                    <?php } ?>
                 </tbody>
             </table>
         <?php } ?>
@@ -473,6 +465,11 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
 <style>
     .container {
         background-color: white;
+        padding: 3rem;
+    }
+
+    .center {
+        text-align: center;
     }
 
     .no-border {
@@ -556,14 +553,15 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
 
     }
 </style>
-
+<?php
+$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => JqueryAsset::class]);
+?>
 
 <script>
     $(document).ready(function() {
 
         $("#print_sticker").click((e) => {
             e.preventDefault()
-
             $(".par_form").hide()
             window.print()
             $(".par_form").show()

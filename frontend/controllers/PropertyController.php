@@ -2,9 +2,11 @@
 
 namespace frontend\controllers;
 
+use app\models\Office;
 use app\models\Par;
 use Yii;
 use app\models\Property;
+use app\models\PropertyArticles;
 use app\models\PropertySearch;
 use barcode\barcode\BarcodeGenerator;
 use DateTime;
@@ -109,21 +111,29 @@ class PropertyController extends Controller
         $model = new Property();
 
         if (!Yii::$app->user->can('super-user')) {
-            $model->province = Yii::$app->user->identity->province;
+            $user_data = Yii::$app->memem->getUserData();
+            $office_id = $user_data->office->id;
+            $model->fk_office_id = $office_id;
         }
         if ($model->load(Yii::$app->request->post())) {
-            $model->property_number = $this->getPropertyNumber($model->date, $model->province);
+            $model->property_number = $this->getPropertyNumber($model->fk_office_id);
             $model->id = Yii::$app->db->createCommand('SELECT UUID_SHORT()')->queryScalar();
-            if ($model->validate()) {
-                if ($model->save(false)) {
+            $model->ppe_year = date('Y');
+            $model->article = !empty($model->fk_property_article_id) ? PropertyArticles::findOne($model->fk_property_article_id)->article_name : '';
+            try {
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
                 }
-            } else {
-                return json_encode($model->errors);
+                if (!$model->save(false)) {
+                    throw new ErrorException('Save Failed');
+                }
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                return json_encode(['isSuccess' => false, 'error' => $e->getMessage()]);
             }
-            return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('create', [
+        return $this->renderAjax('create', [
             'model' => $model,
         ]);
     }
@@ -138,12 +148,34 @@ class PropertyController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $oldModel = $this->findModel($id);
+        if ($model->load(Yii::$app->request->post())) {
+            $model->article = !empty($model->fk_property_article_id) ? PropertyArticles::findOne($model->fk_property_article_id)->article_name : '';
+            try {
+                // var_dump($oldModel->fk_office_id );
+                // var_dump($model->fk_office_id );
+                // die();
+                // return;
+                if ($oldModel->fk_office_id != $model->fk_office_id) {
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+                    $chk_par = Yii::$app->db->createCommand("SELECT * FROM par WHERE par.fk_property_id = :pty_id LIMIT 1")->bindValue(':pty_id', $model->id)->queryScalar();
+                    if (!empty($chk_par)) {
+                        throw new ErrorException("Cannot Update Office, Property has PAR and PC");
+                    }
+                    $model->property_number = $this->getPropertyNumber($model->fk_office_id);
+                }
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Save Failed');
+                }
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                return json_encode(['isSuccess' => false, 'error' => $e->getMessage()]);
+            }
         }
-
-        return $this->render('update', [
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
     }
@@ -177,24 +209,22 @@ class PropertyController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function getPropertyNumber($date = '', $province = '')
+    private function getPropertyNumber($office_id)
     {
 
-        $year = DateTime::createFromFormat('Y-m-d', $date)->format('Y');
+        $year = date('Y');
+        $office_name = Office::findOne($office_id)->office_name;
         $query = Yii::$app->db->createCommand(
-            "SELECT
-        CAST(SUBSTRING_INDEX(property.property_number,'-',-1)AS UNSIGNED) as p_number
-                FROM property
-                WHERE property.property_number LIKE  'PPE%'
-                -- AND property.date LIKE :_year
-                ORDER BY  p_number DESC LIMIT 1"
+            "CALL search_property_number(:office_id,:_year)"
         )
-            // ->bindValue(':province', $province)
-            // ->bindValue(':_year', $year . '%')
-            ->queryScalar();
+            ->bindValue(':office_id', $office_id)
+            ->bindValue(':_year',  $year)
+            ->queryOne();
         $num = 1;
-        if (!empty($query)) {
-            $num = intval($query) + 1;
+        if (!empty($query['vcnt_num'])) {
+            $num = $query['vcnt_num'];
+        } else if (!empty($query['lst_num'])) {
+            $num = $query['lst_num'];
         }
         $zero = '';
         $num_len =  5 - strlen($num);
@@ -202,8 +232,7 @@ class PropertyController extends Controller
             $zero = str_repeat(0, $num_len);
         }
 
-        // $string = strtoupper($province) . '-' . $year . '-' . $zero . $num;
-        $string = 'PPE-' . $zero . $num;
+        $string = strtoupper($office_name) . '-PPE-' . $zero . $num;
         return $string;
     }
     public function actionSearchProperty($q = null, $id = null, $province = null)
