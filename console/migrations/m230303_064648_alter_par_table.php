@@ -14,6 +14,8 @@ class m230303_064648_alter_par_table extends Migration
     {
         $this->alterColumn('par', 'id', $this->bigInteger()->after('par_number'));
         $this->alterColumn('par', 'par_number', $this->string()->after('id'));
+        $this->alterColumn('par', 'fk_received_by', $this->bigInteger());
+        $this->alterColumn('par', 'fk_issued_by_id', $this->bigInteger());
     }
 
     /**
