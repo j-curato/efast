@@ -48,7 +48,7 @@ class DvAucs extends \yii\db\ActiveRecord
                 'reporting_period',
                 'book_id',
                 'recieved_at',
-                // 'fk_dv_transaction_type_id',
+                'fk_dv_transaction_type_id',
             ], 'required'],
             [[
 
