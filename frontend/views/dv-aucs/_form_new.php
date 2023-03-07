@@ -447,7 +447,7 @@ if (!empty($model->object_code)) {
 
                                     echo Select2::widget([
                                         'data' => $province,
-                                        'name' => 'advances[province]',
+                                        'name' => 'advances_province',
                                         'id' => 'province',
                                         'value' => $advances_province,
                                         'pluginOptions' => [
@@ -461,7 +461,7 @@ if (!empty($model->object_code)) {
                                     <label for="advances_parent_reporting_period">Reporting Period</label>
                                     <?php
                                     echo DatePicker::widget([
-                                        'name' => 'advances[reporting_period]',
+                                        'name' => 'advances_parent_reporting_period',
                                         'value' => $advances_parent_reporting_period,
                                         'pluginOptions' => [
                                             'startView' => 'months',
@@ -482,7 +482,7 @@ if (!empty($model->object_code)) {
                                     $bank_accounts = $bank_accounts_query->all();
                                     echo Select2::widget([
                                         'data' => ArrayHelper::map($bank_accounts, 'id', 'account_number'),
-                                        'name' => 'advances[bank_account_id]',
+                                        'name' => 'advances_bank_account_id',
                                         'value' => $bank_account_id,
                                         'pluginOptions' => [
                                             'placeholder' => 'Select Bank Account'
@@ -509,7 +509,7 @@ if (!empty($model->object_code)) {
                                 <div class='row'>
                                     <div class='col-sm-4'>
                                         <label for='advances_reporting_period'>Reporting Period</label>
-                                        <input type='month' name='advances[items][$advances_entries_row][reporting_period]' value='{$val['reporting_period']}' class='advances_reporting_period'  />
+                                        <input type='month' name='advances_reporting_period[$advances_entries_row]' value='{$val['reporting_period']}' class='advances_reporting_period'  />
                                     </div>
                                     <div class='col-sm-4'>
                                         <label for='advances_report_type'>Report Type</label>
@@ -521,7 +521,7 @@ if (!empty($model->object_code)) {
                                     <div class='col-sm-4'>
                                         <label for='advances_fund_source_type'>Fund Source Type</label>
     
-                                        <select name='advances[items][$advances_entries_row][fund_source_type]' class='advances_fund_source_type' style='width: 100%'>
+                                        <select name='advances_fund_source_type[$advances_entries_row]' class='advances_fund_source_type' style='width: 100%'>
                                             <option value='{$val['fund_source_type']}'>{$val['fund_source_type']}</option>
                                         </select>
                                     </div>
@@ -529,18 +529,18 @@ if (!empty($model->object_code)) {
                                 <div class='row'>
                                     <div class='col-sm-4'>
                                         <label for='advances_fund_source'>Fund Source</label>
-                                        <textarea name='advances[items][$advances_entries_row][fund_source]' class='advances_fund_source' cols='10' rows='2'>{$val['fund_source']}</textarea>
+                                        <textarea name='advances_fund_source[$advances_entries_row]' class='advances_fund_source' cols='10' rows='2'>{$val['fund_source']}</textarea>
                                     </div>
                                     <div class='col-sm-4'>
                                         <label for='advances_object-code'>Sub Account</label>
-                                        <select name='advances[items][$advances_entries_row][object_code]' class='chart-of-accounts' style='width: 100%'>
+                                        <select name='advances_object_code[$advances_entries_row]' class='chart-of-accounts' style='width: 100%'>
                                             <option value='{$val['object_code']}'>{$val['object_code']}-{$val['account_title']}</option>
                                         </select>
                                     </div>
                                     <div class='col-sm-4'>
                                         <label for='advances_amount'>Amount</label>
                                         <input type='text' class='form-control mask-amount advances_amount' value='{$maskAmount}'>
-                                        <input type='hidden' name='advances[items][$advances_entries_row][amount]' class='advances_unmask_amount' value='{$amount}'>
+                                       <input type='hidden' name='advances[items][$advances_entries_row][amount]' class='advances_unmask_amount' value='{$amount}'>
                                     </div>
                                 </div>
                             </td>
@@ -562,19 +562,19 @@ if (!empty($model->object_code)) {
                                 <div class="row">
                                     <div class="col-sm-4">
                                         <label for="advances_reporting_period">Reporting Period</label>
-                                        <input type='month' name='advances[items][0][reporting_period]' class="advances_reporting_period" />
+                                        <input type='month' name='advances_reporting_period[0]' class="advances_reporting_period" />
                                     </div>
                                     <div class="col-sm-4">
                                         <label for="advances_report_type">Report Type</label>
 
-                                        <select name="advances[items][0][report_type]" class="advances_report_type" style="width: 100%">
+                                        <select name="advances_report_type[0]" class="advances_report_type" style="width: 100%">
                                             <option></option>
                                         </select>
                                     </div>
                                     <div class="col-sm-4">
                                         <label for="advances_fund_source_type">Fund Source Type</label>
 
-                                        <select name="advances[items][0][fund_source_type]" class="advances_fund_source_type" style="width: 100%">
+                                        <select name="advances_fund_source_type[0]" class="advances_fund_source_type" style="width: 100%">
                                             <option></option>
                                         </select>
                                     </div>
@@ -582,18 +582,18 @@ if (!empty($model->object_code)) {
                                 <div class="row">
                                     <div class="col-sm-4">
                                         <label for="advances_fund_source">Fund Source</label>
-                                        <textarea name="advances[items][0][fund_source]" class="advances_fund_source" cols="10" rows="2"></textarea>
+                                        <textarea name="advances_fund_source[0]" class="advances_fund_source" cols="10" rows="2"></textarea>
                                     </div>
                                     <div class="col-sm-4">
                                         <label for="advances_object-code">Sub Account</label>
-                                        <select name="advances[items][0][object_code]" class="chart-of-accounts" style="width: 100%">
+                                        <select name="advances_object_code[0]" class="chart-of-accounts" style="width: 100%">
                                             <option></option>
                                         </select>
                                     </div>
                                     <div class="col-sm-4">
                                         <label for="advances_amount">Amount</label>
                                         <input type="text" class="form-control mask-amount advances_amount">
-                                        <input type="hidden" name="advances[items][0][amount]" class="advances_unmask_amount">
+                                        <input type="hidden" name="advances_amount[0]" class="advances_unmask_amount">
                                     </div>
                                 </div>
                             </td>
@@ -1143,18 +1143,18 @@ SweetAlertAsset::register($this);
             var clone = source.clone(true);
             clone.find('.advances_unmask_amount').val(0)
             clone.find('.advances_amount').val(0)
-            clone.find('.advances_unmask_amount').attr('name', `advances[items][${advances_table_counter}][amount]`)
+            clone.find('.advances_unmask_amount').attr('name', `advances_amount[${advances_table_counter}]`)
             clone.find('.debit_amount').val(0)
             clone.find('.advances_reporting_period').val(0)
-            clone.find('.advances_reporting_period').attr('name', 'advances[items][' + advances_table_counter + '][reporting_period]')
+            clone.find('.advances_reporting_period').attr('name', 'advances_reporting_period[' + advances_table_counter + ']')
             clone.find('.advances_report_type').val(0)
-            clone.find('.advances_report_type').attr('name', 'advances[items][' + advances_table_counter + '][report_type]')
+            clone.find('.advances_report_type').attr('name', 'advances_report_type[' + advances_table_counter + ']')
             clone.find('.advances_fund_source_type').val('')
-            clone.find('.advances_fund_source_type').attr('name', 'advances[items][' + advances_table_counter + '][fund_source_type]')
+            clone.find('.advances_fund_source_type').attr('name', 'advances_fund_source_type[' + advances_table_counter + ']')
             clone.find('.advances_fund_source').val('')
-            clone.find('.advances_fund_source').attr('name', 'advances[items][' + advances_table_counter + '][fund_source]')
+            clone.find('.advances_fund_source').attr('name', 'advances_fund_source[' + advances_table_counter + ']')
             clone.find('.chart-of-accounts').val('')
-            clone.find('.chart-of-accounts').attr('name', 'advances[items][' + advances_table_counter + '][object_code]')
+            clone.find('.chart-of-accounts').attr('name', 'advances_object_code[' + advances_table_counter + ']')
             $('#advances_table tbody').append(clone);
             var spacer = `<tr><td colspan="2"><hr></td></tr>`;
             $('#advances_table tbody').append(spacer);
