@@ -514,7 +514,7 @@ if (!empty($model->object_code)) {
                                     <div class='col-sm-4'>
                                         <label for='advances_report_type'>Report Type</label>
     
-                                        <select name='advances[items][$advances_entries_row][report_type]' class='advances_report_type' style='width: 100%'>
+                                        <select name='advances_report_type[$advances_entries_row]' class='advances_report_type' style='width: 100%'>
                                             <option value='{$val['report_type']}'>{$val['report_type']}</option>
                                         </select>
                                     </div>
@@ -540,7 +540,7 @@ if (!empty($model->object_code)) {
                                     <div class='col-sm-4'>
                                         <label for='advances_amount'>Amount</label>
                                         <input type='text' class='form-control mask-amount advances_amount' value='{$maskAmount}'>
-                                       <input type='hidden' name='advances[items][$advances_entries_row][amount]' class='advances_unmask_amount' value='{$amount}'>
+                                        <input type='hidden' name='advances_amount[$advances_entries_row]' class='advances_unmask_amount' value='{$amount}'>
                                     </div>
                                 </div>
                             </td>
