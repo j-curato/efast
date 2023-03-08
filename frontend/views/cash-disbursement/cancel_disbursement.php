@@ -92,8 +92,8 @@ use yii\helpers\Html;
                             ->select(["SUM(dv_aucs_entries.amount_disbursed) as total_disbursed"])
                             ->from('dv_aucs')
                             ->join("LEFT JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
-                            ->where("dv_aucs.id =:id", ['id' => $model->dv_aucs_id])
-                            ->where("dv_aucs_entries.is_deleted =0")
+                            ->andWhere("dv_aucs.id =:id", ['id' => $model->dv_aucs_id])
+                            ->andWhere("dv_aucs_entries.is_deleted =0")
                             ->one();
 
                         return $query['total_disbursed'];
