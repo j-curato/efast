@@ -723,6 +723,7 @@ class CashDisbursementController extends Controller
                 if (!$new_model->save(false)) {
                     throw new ErrorException('Model Save Failed');
                 }
+                $this->redirect(['view', 'id' => $new_model->id]);
             } catch (ErrorException $e) {
                 return json_encode(['isSuccess' => false, 'cancelled' => 'cancel', 'error' => $e->getMessage()]);
             }
