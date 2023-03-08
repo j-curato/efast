@@ -31,6 +31,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'remittance_number',
             'reporting_period',
+
+            [
+                'attribute' => 'payee_id',
+                'value' => 'payee.account_name'
+            ],
             [
                 'label' => 'Book',
                 'attribute' => 'book_id',

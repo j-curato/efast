@@ -18,7 +18,7 @@ class RemittanceSearch extends Remittance
     {
         return [
             [['id'], 'integer'],
-            [['reporting_period', 'created_at','book_id','type','remittance_number'], 'safe'],
+            [['reporting_period', 'created_at', 'book_id', 'type', 'remittance_number', 'payee_id'], 'safe'],
         ];
     }
 
@@ -56,6 +56,7 @@ class RemittanceSearch extends Remittance
             return $dataProvider;
         }
         $query->joinWith('book');
+        $query->joinWith('payee');
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
@@ -63,9 +64,10 @@ class RemittanceSearch extends Remittance
         ]);
 
         $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
-        ->andFilterWhere(['like', 'books.name', $this->book_id])
-        ->andFilterWhere(['like', 'remittance_number', $this->remittance_number])
-        ->andFilterWhere(['like', 'type', $this->type]);
+            ->andFilterWhere(['like', 'books.name', $this->book_id])
+            ->andFilterWhere(['like', 'remittance_number', $this->remittance_number])
+            ->andFilterWhere(['like', 'payee.account_name', $this->payee_id])
+            ->andFilterWhere(['like', 'type', $this->type]);
 
         return $dataProvider;
     }
