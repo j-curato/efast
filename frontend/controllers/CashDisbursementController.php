@@ -700,11 +700,11 @@ class CashDisbursementController extends Controller
                 WHERE `parent_disbursement` =  :parent_id  AND is_cancelled = 1)")
                 ->bindValue(':parent_id', $model->id)
                 ->queryScalar();
-            if (intval($query) === 1) {
-                return json_encode(['isSuccess' => false, 'cancelled' => 'cancel', 'error' => 'na cancel na']);
-            }
-            try {
 
+            try {
+                if (intval($query) === 1) {
+                    throw new ErrorException('Check Already Cancelled');
+                }
                 $new_model  = new CashDisbursement();
                 $new_model->book_id = $model->book_id;
                 $new_model->dv_aucs_id = $model->dv_aucs_id;
@@ -715,14 +715,13 @@ class CashDisbursementController extends Controller
                 $new_model->issuance_date = $model->issuance_date;
                 $new_model->ada_number = $model->ada_number;
                 $new_model->parent_disbursement = $model->id;
-
-                if ($new_model->validate()) {
-
-                    if ($new_model->save(false)) {
-                        return json_encode(['isSuccess' => true, 'cancelled' => $new_model->is_cancelled]);
-                    }
-                } else {
-                    return json_encode(['isSuccess' => false, 'cancelled' => $new_model->errors, 'error' => $new_model->errors['reporting_period']]);
+                $new_model->begin_time = $model->begin_time;
+                $new_model->out_time = $model->out_time;
+                if (!$new_model->validate()) {
+                    throw new ErrorException(json_encode($new_model->errors));
+                }
+                if (!$new_model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
                 }
             } catch (ErrorException $e) {
                 return json_encode(['isSuccess' => false, 'cancelled' => 'cancel', 'error' => $e->getMessage()]);
