@@ -29,18 +29,10 @@ class RemittanceItems extends \yii\db\ActiveRecord
     {
         return [
             [['id'], 'required'],
-            [['id', 'fk_remittance_id', 'fk_dv_acounting_entries_id'], 'integer'],
+            [['id', 'fk_remittance_id', 'fk_dv_acounting_entries_id', 'is_removed'], 'integer'],
             [['created_at'], 'safe'],
             [['id'], 'unique'],
-            [[
-                'id',
-                'fk_remittance_id',
-                'fk_dv_acounting_entries_id',
-                'amount',
-                'is_removed',
-                'created_at',
 
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -52,6 +44,7 @@ class RemittanceItems extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'fk_remittance_id' => 'Fk Remittance ID',
+            'is_removed' => 'is Removed',
             'fk_dv_acounting_entries_id' => 'Fk Dv Acounting Entries ID',
             'created_at' => 'Created At',
         ];

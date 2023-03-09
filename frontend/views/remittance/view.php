@@ -50,17 +50,15 @@ AND dv_aucs_entries.is_deleted=0
 ?>
 <div class="remittance-view">
 
-
-
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-
-    </p>
-
-
     <div class="container">
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+
+        </p>
         <h4><?= Html::encode($this->title) ?></h4>
-        <table >
+
+
+        <table>
 
             <thead>
                 <tr class="primary">
@@ -158,10 +156,13 @@ AND dv_aucs_entries.is_deleted=0
     .amount {
         text-align: right;
     }
-    table{
+
+    table {
         width: 100%;
     }
-    th,td{
+
+    th,
+    td {
         padding: .8rem;
         font-size: medium;
     }
@@ -170,12 +171,15 @@ AND dv_aucs_entries.is_deleted=0
         .btn {
             display: none;
         }
-        .main-footer{
+
+        .main-footer {
             display: none;
         }
-        th,td{
-        padding: 4px;
-        font-size:12px;
-    }
+
+        th,
+        td {
+            padding: 4px;
+            font-size: 12px;
+        }
     }
 </style>

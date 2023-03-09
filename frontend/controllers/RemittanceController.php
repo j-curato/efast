@@ -57,7 +57,46 @@ class RemittanceController extends Controller
             ],
         ];
     }
+    private function remittanceItems($id)
+    {
+        return  Yii::$app->db->createCommand("SELECT 
+    payroll.payroll_number,
+    process_ors.serial_number as ors_number,
+    dv_aucs.dv_number,
+    payee.account_name as payee,
+    accounting_codes.object_code,
+    accounting_codes.account_title,
+    remittance_items.amount,
+    dv_accounting_entries.id as dv_accounting_entries_id,
+    remittance_items.id as remittance_items_id,
+    IFNULL(dv_accounting_entries.credit,0) + IFNULL(dv_accounting_entries.debit,0) as to_remit_amount,
+        remitted.remitted_amount,
+        (IFNULL(dv_accounting_entries.credit,0) + IFNULL(dv_accounting_entries.debit,0)) - IFNULL(  remitted.remitted_amount,0) unremited_amount
 
+    
+    FROM `remittance_items`
+    LEFT JOIN dv_accounting_entries ON remittance_items.fk_dv_acounting_entries_id = dv_accounting_entries.id
+    LEFT JOIN payroll ON dv_accounting_entries.payroll_id = payroll.id
+    LEFT JOIN process_ors ON payroll.process_ors_id = process_ors.id
+    LEFT JOIN dv_aucs ON payroll.id = dv_aucs.payroll_id
+    LEFT JOIN remittance_payee ON dv_accounting_entries.remittance_payee_id = remittance_payee.id
+    LEFT JOIN payee ON remittance_payee.payee_id = payee.id
+    LEFT JOIN accounting_codes ON dv_accounting_entries.object_code  = accounting_codes.object_code
+    LEFT JOIN dv_aucs_entries ON dv_accounting_entries.dv_aucs_id = dv_aucs_entries.dv_aucs_id
+    LEFT JOIN (SELECT 
+        remittance_items.fk_dv_acounting_entries_id,
+        SUM(remittance_items.amount) as remitted_amount
+        FROM remittance_items
+        WHERE remittance_items.is_removed=0
+        GROUP BY fk_dv_acounting_entries_id) as remitted ON dv_accounting_entries.id = remitted.fk_dv_acounting_entries_id 
+    WHERE remittance_items.fk_remittance_id=:id
+
+    AND remittance_items.is_removed= 0
+    AND dv_aucs_entries.is_deleted=0
+    ")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
     /**
      * Lists all Remittance models.
      * @return mixed
@@ -91,28 +130,30 @@ class RemittanceController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function insertItems($remittance_id, $dv_accounting_entry_id, $amount = [], $remittance_items_id = [])
+    public function insertItems($remittance_id, $items)
     {
-        if (empty($remittance_id) || empty($dv_accounting_entry_id)) {
-            return false;
-        }
 
-        foreach ($dv_accounting_entry_id as $key => $val) {
-
-            if (!empty($remittance_items_id[$key])) {
-                $remittance_items = RemittanceItems::findOne($remittance_items_id[$key]);
-            } else {
-                $remittance_items = new RemittanceItems();
-                $remittance_items->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+        try {
+            foreach ($items as $key => $val) {
+                if (!empty($val['item_id'])) {
+                    $remittance_items = RemittanceItems::findOne($val['item_id']);
+                } else {
+                    $remittance_items = new RemittanceItems();
+                    $remittance_items->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                }
+                $remittance_items->fk_remittance_id = $remittance_id;
+                $remittance_items->fk_dv_acounting_entries_id = $val['payrol_entry_id'];
+                $remittance_items->amount = !empty($val['amount']) ? $val['amount'] : 0;
+                $remittance_items->is_removed = 0;
+                if (!$remittance_items->validate()) {
+                    throw new ErrorException(json_encode($remittance_items->errors));
+                }
+                if (!$remittance_items->save(false)) {
+                    throw new ErrorException('Remittance Items Save Failed');
+                }
             }
-
-            $remittance_items->fk_remittance_id = $remittance_id;
-            $remittance_items->fk_dv_acounting_entries_id = $val;
-            $remittance_items->amount = !empty($amount[$key]) ? $amount[$key] : 0;
-            if ($remittance_items->save(false)) {
-            } else {
-                return false;
-            }
+        } catch (ErrorException $e) {
+            return $e->getMessage();
         }
         return true;
     }
@@ -125,13 +166,31 @@ class RemittanceController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
             $model->remittance_number = $this->remittanceNumber($model->reporting_period);
-            $dv_accounting_entry_id = $_POST['dv_accounting_entry_id'];
-            $amount = $_POST['amount'];
+            // $dv_accounting_entry_id = $_POST['dv_accounting_entry_id'];
+            // $amount = $_POST['amount']; 
             $model->payee_id = $_POST['remittance_payee'];
+            $items = Yii::$app->request->post('items');
+            try {
+                $transaction = Yii::$app->db->beginTransaction();
+                if (empty($items)) {
+                    throw new ErrorException("Enter Items");
+                }
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
 
-            if ($model->save(false)) {
-                $this->insertItems($model->id, $dv_accounting_entry_id, $amount);
+                if (!$model->save(false)) {
+                    throw new ErrorException("Model Save Failed");
+                }
+                $insItm = $this->insertItems($model->id, $items);
+                if ($insItm !== true) {
+                    throw new ErrorException($insItm);
+                }
+                $transaction->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $transaction->rollBack();
+                return json_encode(['isSuccess' => false, 'error_message' => $e->getMessage()]);
             }
         }
 
@@ -158,43 +217,38 @@ class RemittanceController extends Controller
         $searchModel->payee_id = $model->payee_id;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         if ($model->load(Yii::$app->request->post())) {
-            $dv_accounting_entry_id = !empty($_POST['dv_accounting_entry_id']) ? $_POST['dv_accounting_entry_id'] : [];
-            $amount = !empty($_POST['amount']) ? $_POST['amount'] : [];
-            $remittance_items_id = !empty($_POST['remittance_items_id']) ? $_POST['remittance_items_id'] : [];
             $model->payee_id = $_POST['remittance_payee'];
-            // var_dump($remittance_items_id);
-            // die();
-            if ($model->save(false)) {
-
+            $items = Yii::$app->request->post('items');
+            $item_ids = array_column($items, 'item_id');
+            try {
+                $transaction = Yii::$app->db->beginTransaction();
                 $params = [];
-
                 $and = '';
                 $sql = '';
-
-                if (!empty($remittance_items_id)) {
+                if (!empty($item_ids)) {
                     $and = 'AND';
-                    $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'remittance_items.id', $remittance_items_id], $params);
-                    // var_dump($sql);
-                    // echo "<br>";
-                    // var_dump($params);
+                    $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'remittance_items.id', $item_ids], $params);
                 }
-                try {
-                    Yii::$app->db->createCommand("UPDATE remittance_items SET remittance_items.is_removed = 1
+                Yii::$app->db->createCommand("UPDATE remittance_items SET remittance_items.is_removed = 1
                     WHERE remittance_items.fk_remittance_id =:id
-                    $and $sql
-                   ", $params)
-                        ->bindValue(':id', $model->id)
-                        ->query();
-                    // Yii::$app->db->createCommand()
-                    //     ->update('remittance_items', [' remittance_items.is_removed' => 1], $sql, $params)
-                    //     ->bindValue(':id', $model->id)
-                    //     ->execute();
-                } catch (ErrorException $e) {
-                    var_dump($e->getMessage());
-                    die();
+                    $and $sql", $params)
+                    ->bindValue(':id', $model->id)
+                    ->query();
+
+                if (empty($items)) {
+                    throw new ErrorException("Enter Items");
                 }
-                // die();
-                $this->insertItems($model->id, $dv_accounting_entry_id, $amount, $remittance_items_id);
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+
+                if (!$model->save(false)) {
+                    throw new ErrorException("Model Save Failed");
+                }
+                $insItm = $this->insertItems($model->id, $items);
+                if ($insItm !== true) {
+                    throw new ErrorException('Insert iten' . $insItm);
+                }
                 if (!empty($model->dvAucs->id)) {
                     Yii::$app->db->createCommand("UPDATE `dv_accounting_entries` 
                     LEFT JOIN (SELECT 
@@ -214,22 +268,19 @@ class RemittanceController extends Controller
                         ->bindValue(':dv_id', $model->dvAucs->id)
                         ->bindValue(':remittance_id', $model->id)
                         ->query();
-                    //     Yii::$app->db->createCommand("UPDATE dv_aucs_entries SET dv_aucs_entries.amount_disbursed = (SELECT SUM(remittance_items.amount) as amount
-
-                    //     FROM remittance_items
-                    //    WHERE remittance_items.fk_remittance_id = :remittance_id
-                    //     AND remittance_items.is_removed = 0) WHERE dv_aucs_entries.dv_aucs_id =:dv_id")
-                    //         ->bindValue(':dv_id', $model->dvAucs->id)
-                    //         ->bindValue(':remittance_id', $model->id)
-                    //         ->query();
                 }
+                $transaction->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $transaction->rollBack();
+                return json_encode(['isSuccess' => false, 'error_message' => $e->getMessage()]);
             }
         }
         return $this->render('update', [
             'model' => $model,
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'items' => $this->remittanceItems($id)
         ]);
     }
 
