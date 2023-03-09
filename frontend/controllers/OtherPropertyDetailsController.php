@@ -207,38 +207,39 @@ class OtherPropertyDetailsController extends Controller
     }
     public function createSubAccount($chart_of_account_id = '', $property_number = '')
     {
-
-        if (empty($chart_of_account_id) || empty($property_number)) {
-            return ['isSuccess' => false, 'error_message' => 'q'];
-        }
-
-        $chart_uacs = ChartOfAccounts::find()
-            ->where("id = :id", ['id' => $chart_of_account_id])->one();
-        $last_id = SubAccounts1::find()->orderBy('id DESC')->one()->id + 1;
-        $uacs = $chart_uacs->uacs . '_';
-        for ($i = strlen($last_id); $i <= 4; $i++) {
-            $uacs .= 0;
-        }
-
-        $account_title = $chart_uacs->general_ledger . '-' . $property_number;
-        $check_if_exists = Yii::$app->db->createCommand("SELECT id FROM sub_accounts1 WHERE sub_accounts1.name = :account_title")
-            ->bindValue(':account_title', $account_title)
-            ->queryScalar();
-        if (!empty($check_if_exists)) {
-            return ['isSuccess' => true, 'id' => $check_if_exists];
-        }
-        $model = new SubAccounts1();
-        $model->chart_of_account_id = $chart_of_account_id;
-        $model->object_code = $uacs . $last_id;
-        $model->name = $account_title;
-        $model->is_active = 1;
-        if ($model->validate()) {
-            if ($model->save(false)) {
+        try {
+            if (empty($chart_of_account_id) || empty($property_number)) {
+                throw new ErrorException('Chart of Account and Property Number Cannot be empty');
             }
-        } else {
-            // validation failed: $errors is an array containing error messages
-            $errors = $model->errors;
-            return ['isSuccess' => false, 'error_message' => $errors];
+            $chart_uacs = ChartOfAccounts::find()
+                ->where("id = :id", ['id' => $chart_of_account_id])->one();
+            $last_id = SubAccounts1::find()->orderBy('id DESC')->one()->id + 1;
+            $uacs = $chart_uacs->uacs . '_';
+            for ($i = strlen($last_id); $i <= 4; $i++) {
+                $uacs .= 0;
+            }
+
+            $account_title = $chart_uacs->general_ledger . '-' . $property_number;
+            $check_if_exists = Yii::$app->db->createCommand("SELECT id FROM sub_accounts1 WHERE sub_accounts1.name = :account_title")
+                ->bindValue(':account_title', $account_title)
+                ->queryScalar();
+            if (!empty($check_if_exists)) {
+                throw new ErrorException($check_if_exists);
+            }
+            $model = new SubAccounts1();
+            $model->chart_of_account_id = $chart_of_account_id;
+            $model->object_code = $uacs . $last_id;
+            $model->name = $account_title;
+            $model->is_active = 1;
+            if (!$model->validate()) {
+                throw new ErrorException(json_encode($model->errors));
+            }
+            if (!$model->save(false)) {
+
+                throw new ErrorException("Save Sub Account Failed");
+            }
+        } catch (ErrorException $e) {
+            return ['isSuccess' => false, 'error_message' => $e->getMessage()];
         }
 
         return ['isSuccess' => true, 'id' => $model->id];
@@ -253,6 +254,14 @@ class OtherPropertyDetailsController extends Controller
             $model->id = Yii::$app->db->createCommand('SELECT UUID_SHORT()')->queryScalar();
             try {
                 $transaction = Yii::$app->db->beginTransaction();
+
+                $acq_amt = YIi::$app->db->createCommand("SELECT property.acquisition_amount FROM property WHERE property.id = :id")
+                    ->bindValue(':id', $model->fk_property_id)
+                    ->queryScalar();
+                $itemsSum = array_sum(array_column($items, 'amount'));
+                if (floatval($acq_amt) !== floatval($itemsSum)) {
+                    throw new ErrorException('Property Acquisition Amount is not Equal to the  Total Amount of the Items');
+                }
                 $property_query = Yii::$app->db->createCommand("SELECT property_number FROM property WHERE property.id = :id")
                     ->bindValue(':id', $model->fk_property_id)
                     ->queryOne();
@@ -308,6 +317,14 @@ class OtherPropertyDetailsController extends Controller
             $items = !empty(Yii::$app->request->post('items')) ? Yii::$app->request->post('items') : [];
             try {
                 $transaction = Yii::$app->db->beginTransaction();
+                $acq_amt = YIi::$app->db->createCommand("SELECT property.acquisition_amount FROM property WHERE property.id = :id")
+                    ->bindValue(':id', $model->fk_property_id)
+                    ->queryScalar();
+                $itemsSum = array_sum(array_column($items, 'amount'));
+                if (floatval($acq_amt) !== floatval($itemsSum)) {
+                    throw new ErrorException('Property Acquisition Amount is not Equal to the  Total Amount of the Items');
+                }
+
                 if ($old_model->fk_chart_of_account_id != $model->fk_chart_of_account_id) {
                     $property_query = Yii::$app->db->createCommand("SELECT property_number FROM property WHERE property.id = :id")
                         ->bindValue(':id', $model->fk_property_id)
@@ -340,7 +357,7 @@ class OtherPropertyDetailsController extends Controller
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
                 $transaction->rollBack();
-                return json_encode($e->getMessage());
+                return json_encode(['isSuccess' => false, 'error_message' => $e->getMessage()]);
             }
         }
         return $this->render('update', [

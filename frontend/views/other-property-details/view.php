@@ -125,7 +125,17 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/views/other-prope
 <script>
     $(document).ready(() => {
         const frst_month = <?php echo json_encode($first_month) ?>;
-
+        var startDate = new Date('2020-03-01');
+        var endDate = new Date('2025-03-01');
+        let c = 1
+        while (startDate <= endDate) {
+            var year = startDate.getFullYear(); 
+            var month = startDate.getMonth();
+            console.log(year + '-' + (month )); // Or perform any other action with the year and month
+            startDate.setFullYear(startDate.getFullYear() + 1);
+            console.log(c)
+            c++
+        }
         calculateAndDisplay(
             <?= json_encode($items) ?>,
             <?= $model->salvage_value_prcnt ?>,

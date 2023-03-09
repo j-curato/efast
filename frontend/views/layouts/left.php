@@ -411,6 +411,7 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'PAR', 'icon' => 'circle-o', 'url' => ['/par'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Property Card', 'icon' => 'circle-o', 'url' => ['/property-card'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Other Property Details', 'icon' => 'circle-o', 'url' => ['/other-property-details'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'Depreciation Schedule', 'icon' => 'circle-o', 'url' => ['/depreciation-schedule'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Print PC Stickers', 'icon' => 'circle-o', 'url' => ['/property-card/print-pc'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'PTR', 'icon' => 'circle-o', 'url' => ['/ptr'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Scan QR', 'icon' => 'circle-o', 'url' => ['/property-card/property-details'],] : [],
@@ -536,6 +537,7 @@
                             ],
                         ] : ['label' => ''],
                         Yii::$app->user->can('super-user') ?     ['label' => 'Travel Order', 'icon' => 'circle-o', 'url' => ['/travel-order'],] : [],
+                        Yii::$app->user->can('super-user') ?     ['label' => 'Supervisor Validation Notes', 'icon' => 'circle-o', 'url' => ['/supervisor-validation-notes'],] : [],
 
 
 

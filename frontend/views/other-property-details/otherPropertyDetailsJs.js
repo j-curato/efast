@@ -12,7 +12,7 @@ async function cal(
     startDate = new Date(date.add(1, "months").format("YYYY-MM-DD"));
   }
   let endDateMoment = moment(startDate);
-  endDateMoment.add(useful_life_in_mnths - 1, "months");
+  endDateMoment.add(useful_life_in_mnths, "months");
   const last_month = new Date(endDateMoment.calendar());
   const last_month_depreciation = moment(last_month).format("MMMM, YYYY");
   const second_to_the_last_mnth = moment(

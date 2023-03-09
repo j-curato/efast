@@ -1,0 +1,33 @@
+#data_tbl th,
+#data_tbl td {
+  text-align: center;
+  padding: 10px;
+  font-size: 10px;
+}
+
+.qwe {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+}
+.panel {
+  padding: 2rem;
+}
+
+@media print {
+  .qwe {
+    overflow-x: hidden;
+    overflow-y: hidden;
+    width: 100%;
+  }
+  th,
+  td {
+    padding: 3px;
+    font-size: 8px;
+  }
+
+  .main-footer,
+  .btn {
+    display: none;
+  }
+}
