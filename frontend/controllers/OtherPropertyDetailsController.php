@@ -292,7 +292,7 @@ class OtherPropertyDetailsController extends Controller
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
                 $transaction->rollBack();
-                return json_encode($e->getMessage());
+                return json_encode(['error_message' => $e->getMessage()]);
             }
         }
 
