@@ -5,7 +5,7 @@ namespace frontend\controllers;
 use app\models\Books;
 use app\models\CashFlow;
 use app\models\ChartOfAccounts;
-
+use app\models\DepreciationSchedule;
 use app\models\JevAccountingEntries;
 use Yii;
 use app\models\JevPreparation;
@@ -479,7 +479,7 @@ class JevPreparationController extends Controller
             return false;
         }
     }
-    public function actionCreate()
+    public function actionCreate($depSchedId = null)
     {
         $model = new JevPreparation();
         $model->form_token = Yii::$app->session['jev_form_session'];
@@ -533,11 +533,19 @@ class JevPreparationController extends Controller
                 return json_encode($model->errors);
             }
         }
+        $entries = [];
+        if (!empty($depSchedId)) {
 
+            $depSched = DepreciationSchedule::findOne($depSchedId);
+            $entries = Yii::$app->db->createCommand("CALL depreciationsForjev(:reporting_period,:book)")
+                ->bindValue(':reporting_period', $depSched->reporting_period)
+                ->bindValue(':book', $depSched->fk_book_id)
+                ->queryAll();
+        }
         return $this->render('create', [
             'model' => $model,
             'type' => 'create',
-            'entries' => [],
+            'entries' => $entries,
             'error' => ''
         ]);
         // if (Yii::$app->user->can('create-jev')) {
