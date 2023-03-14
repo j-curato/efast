@@ -220,11 +220,13 @@ class OtherPropertyDetailsController extends Controller
             }
 
             $account_title = $chart_uacs->general_ledger . '-' . $property_number;
+
             $check_if_exists = Yii::$app->db->createCommand("SELECT id FROM sub_accounts1 WHERE sub_accounts1.name = :account_title")
                 ->bindValue(':account_title', $account_title)
                 ->queryScalar();
+            
             if (!empty($check_if_exists)) {
-                throw new ErrorException($check_if_exists);
+                return ['isSuccess' => true, 'id' => $check_if_exists];
             }
             $model = new SubAccounts1();
             $model->chart_of_account_id = $chart_of_account_id;
