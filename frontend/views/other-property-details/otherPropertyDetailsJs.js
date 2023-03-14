@@ -1,3 +1,4 @@
+let property_amt = 0;
 async function cal(
   data,
   salvage_value_percentage,
@@ -129,6 +130,23 @@ $(document).ready(() => {
   });
   $("#calculate").on("click", (e) => {
     e.preventDefault();
+    let ttlAmt = 0;
+
+    $("#items_table .main-amount").each(function (key, val) {
+      ttlAmt += parseFloat(val.value);
+    });
+    console.log(ttlAmt);
+    // if (parseFloat(ttlAmt) != parseFloat(property_amt)) {
+    //   swal({
+    //     icon: "error",
+    //     title: "Property and Items Total are not Equal",
+    //     type: "error",
+    //     timer: 3000,
+    //     closeOnConfirm: false,
+    //     closeOnCancel: false,
+    //   });
+    //   return;
+    // }
     const depreciation_schedule = $(
       "#otherpropertydetails-depreciation_schedule"
     ).val();
@@ -197,6 +215,7 @@ $(document).ready(() => {
       },
       success: function (data) {
         const res = JSON.parse(data);
+        property_amt = res.acquisition_amount;
         $(".property-details").html("");
         const d = `<div>
         <span><b>Property Number:</b></span>

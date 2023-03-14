@@ -82,10 +82,12 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
         <p class=''>
 
             <?= Html::a('<i class="glyphicon glyphicon-pencil"></i>  Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']) ?>
+            <?= Html::button('<i class="fa fa-print"></i> Print Sticker', ['id' => 'print_sticker', 'class' => 'btn btn-success']) ?>
+            <?= Html::button('<i class="fa fa-print"></i> Print Form', ['id' => 'print_form', 'class' => 'btn btn-warning']) ?>
             <?= Html::a('Property', ['property/view', 'id' => $model->fk_property_id], ['class' => 'btn btn-link']) ?>
             <?= Html::a('PC', ['property-card/view', 'id' => $model->pc->id], ['class' => 'btn btn-link']) ?>
-            <button id="print_sticker" type="button" class="btn btn-success">Print Sticker</button>
-            <button id="print_form" type="button" class="btn btn-warning">Print Form</button>
+            <?= !empty($model->fk_ptr_id) ? Html::a('PTR', ['ptr/view', 'id' => $model->fk_ptr_id], ['class' => 'btn btn-link']) : '' ?>
+
         </p>
         <div class="cut_line sticker_table">
 
@@ -313,7 +315,7 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
                     <tr>
                         <th colspan="6" class="center">
                             <br>
-                            PROPERTY ACKNOWLEDGMENT RECIEPT
+                            PROPERTY ACKNOWLEDGMENT RECEIPT
                             <br>
                         </th>
                     </tr>
@@ -482,6 +484,7 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
         padding: 1px;
         border: 1px solid black;
         float: left;
+        margin-bottom: 15px;
     }
 
     .center {

@@ -50,7 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
     );
     BarcodeGenerator::widget($optionsArray);
     ?>
-    <div class="cut_line">
+    <div class="cut_line" id='sticker_table'>
         <table id="sticker_tbl">
             <tr>
                 <td style="text-align: center;" class="no-border">

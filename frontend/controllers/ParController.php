@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\components\helpers\MyHelper;
 use Yii;
 use app\models\Par;
 use app\models\ParIndexSearch;
@@ -77,7 +78,7 @@ class ParController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new ParSearch();
+        $searchModel = new ParIndexSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -154,8 +155,9 @@ class ParController extends Controller
                 WHERE property.id = :id")
                 ->bindValue(':id', $model->fk_property_id)
                 ->queryScalar();
-            $model->par_number = $this->getParNumber($office_name);
+            $model->par_number =     MyHelper::getParNumber($model->fk_office_id);;
             $model->_year = date('Y');
+            $model->is_current_user = 1;
             try {
                 $transaction = Yii::$app->db->beginTransaction();
                 if (!$model->validate()) {
@@ -164,10 +166,10 @@ class ParController extends Controller
                 if (!$model->save(false)) {
                     throw new ErrorException('Model Save Failed');
                 }
-
+                MyHelper::UdpateParCurUser($model->id, $model->fk_property_id);
                 $pc = new PropertyCard();
                 $pc->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-                $pc->serial_number = $this->getPcNumber($office_name);
+                $pc->serial_number =    MyHelper::getPcNumber($model->fk_office_id);;
                 $pc->fk_par_id = $model->id;
                 $this->generateQr($pc->serial_number);
                 if (!$pc->validate()) {
@@ -176,6 +178,7 @@ class ParController extends Controller
                 if (!$pc->save(false)) {
                     throw new ErrorException('Save Failed');
                 }
+
                 $transaction->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {

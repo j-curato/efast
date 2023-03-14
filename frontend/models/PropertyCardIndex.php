@@ -5,9 +5,10 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "par_index".
+ * This is the model class for table "property_card_index".
  *
  * @property int $id
+ * @property string|null $pc_number
  * @property string|null $par_number
  * @property string|null $par_date
  * @property string|null $rcv_by
@@ -24,14 +25,14 @@ use Yii;
  * @property string $is_unserviceable
  * @property string|null $office_name
  */
-class ParIndex extends \yii\db\ActiveRecord
+class PropertyCardIndex extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'par_index';
+        return 'property_card_index';
     }
 
     /**
@@ -45,7 +46,7 @@ class ParIndex extends \yii\db\ActiveRecord
             [['rcv_by', 'act_usr', 'isd_by', 'description', 'article'], 'string'],
             [['acquisition_date'], 'safe'],
             [['acquisition_amount'], 'number'],
-            [['par_number', 'par_date', 'location', 'property_number', 'serial_number', 'unit_of_measure', 'office_name'], 'string', 'max' => 255],
+            [['pc_number', 'par_number', 'par_date', 'location', 'property_number', 'serial_number', 'unit_of_measure', 'office_name'], 'string', 'max' => 255],
             [['is_unserviceable'], 'string', 'max' => 13],
         ];
     }
@@ -57,20 +58,21 @@ class ParIndex extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'par_number' => 'Par Number',
-            'par_date' => 'Par Date',
-            'rcv_by' => 'Rcv By',
-            'act_usr' => 'Act Usr',
-            'isd_by' => 'Isd By',
-            'location' => 'Location',
+            'pc_number' => 'PC Number',
+            'par_number' => 'PAR Number',
             'property_number' => 'Property Number',
+            'par_date' => 'Par Date',
+            'rcv_by' => 'Receive By',
+            'act_usr' => 'Actual User',
+            'isd_by' => 'Issued By',
+            'location' => 'Location',
             'acquisition_date' => 'Acquisition Date',
             'acquisition_amount' => 'Acquisition Amount',
             'description' => 'Description',
             'serial_number' => 'Serial Number',
             'unit_of_measure' => 'Unit Of Measure',
             'article' => 'Article',
-            'is_unserviceable' => 'Is Unserviceable',
+            'is_unserviceable' => 'Serviceable/UnServiceable',
             'office_name' => 'Office Name',
         ];
     }

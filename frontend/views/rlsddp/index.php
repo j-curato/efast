@@ -1,22 +1,19 @@
 <?php
 
 use app\components\helpers\MyHelper;
-use kartik\grid\GridView;
 use yii\helpers\Html;
-use yii\web\JqueryAsset;
+use kartik\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\PtrSearch */
+/* @var $searchModel app\models\RlsddpSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'PTRs';
+$this->title = 'RLSDDPs';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="ptr-index">
-
-
+<div class="rlsddp-index">
     <p>
-        <?= Html::a('Create Ptr', ['create'], ['class' => 'btn btn-success lrgModal']) ?>
+        <?= Html::a('Create RLSDDP', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
@@ -26,24 +23,31 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'panel' => [
-            'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'PTRs'
+            'type' => 'primary',
+            'heading' => 'RLSDDPs'
         ],
         'columns' => [
-
-            'ptr_number',
+            'office_name',
+            'serial_number',
             'date',
+            'status',
+            'accountable_officer',
+            'supervisor',
+            'circumstances',
+            'blottered',
+            'police_station',
+            'blotter_date',
+
+
             [
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return MyHelper::gridDefaultAction($model->id, 'lrgModal');
+                    return MyHelper::gridDefaultAction($model->id, 'none');
                 }
-            ]
-
+            ],
         ],
     ]); ?>
 
 
 </div>
-<?php $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => JqueryAsset::class]) ?>

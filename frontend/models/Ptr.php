@@ -17,6 +17,9 @@ use Yii;
  */
 class Ptr extends \yii\db\ActiveRecord
 {
+
+    public $fk_location_id;
+    public $is_unserviceable;
     /**
      * {@inheritdoc}
      */
@@ -39,18 +42,23 @@ class Ptr extends \yii\db\ActiveRecord
                 'fk_approved_by',
                 'fk_transfer_type_id',
                 'fk_to_agency_id',
+                'fk_office_id'
+
             ], 'integer'],
             [['date'], 'safe'],
 
             [[
                 'fk_property_id',
                 'fk_issued_by',
-                'fk_actual_user',
                 'fk_received_by',
                 'fk_approved_by',
                 'fk_transfer_type_id',
                 'fk_to_agency_id',
                 'date',
+                'fk_office_id',
+                'is_unserviceable',
+                'fk_location_id'
+
             ], 'required'],
             [['ptr_number'], 'string', 'max' => 255],
 
@@ -74,7 +82,18 @@ class Ptr extends \yii\db\ActiveRecord
             'agency_from_id' => 'Agency From',
             'fk_to_agency_id' => 'Agency To',
             'created_at' => 'Created At',
+            'fk_location_id' => 'Location',
+            'is_unserviceable' => 'Seviceable/UnServiceable',
+            'fk_office_id' => 'Office'
 
         ];
+    }
+    public function getTransferType()
+    {
+        return $this->hasOne(TransferType::class, ['id' => 'fk_transfer_type_id']);
+    }
+    public function getPar()
+    {
+        return $this->hasOne(Par::class, ['fk_ptr_id' => 'id']);
     }
 }

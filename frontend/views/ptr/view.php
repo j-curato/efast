@@ -1,6 +1,8 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
+use yii\web\JqueryAsset;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -10,59 +12,82 @@ $this->title = $model->ptr_number;
 $this->params['breadcrumbs'][] = ['label' => 'Ptrs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+
+
+
+$received_by = MyHelper::getEmployee($model->fk_received_by, 'one');
+$actual_user = !empty($model->fk_actual_user) ? MyHelper::getEmployee($model->fk_actual_user, 'one') : '';
+$issued_by = MyHelper::getEmployee($model->fk_issued_by, 'one');
+$approved_by = MyHelper::getEmployee($model->fk_approved_by, 'one');
 ?>
 <div class="ptr-view">
 
 
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->ptr_number], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->ptr_number], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-    <div class="con">
 
+    <div class="container">
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']) ?>
+            <?= Html::a('PAR', ['par/view', 'id' => $model->par->id], ['class' => 'btn btn-link ']) ?>
+
+        </p>
         <table>
             <thead>
                 <tr>
-                    <th colspan="3">
+                    <th colspan="6" class="center no-bdr">
+                        <h4>PROPERTY TRANSFER REPORT</h4>
+                    </th>
+                </tr>
+                <tr>
+                    <th colspan="2" class="">
                         <span>Entity Name : </span>
-                        <span>_________________</span>
                     </th>
-                    <th colspan="3">
+                    <th colspan="" class="center">
+                        <span>Department of Trade and Industry</span>
+                    </th>
+                    <th colspan="" class="">
                         <span>Fund Cluster :</span>
-                        <span>_________________</span>
                     </th>
+                    <td class="">
+                        <span></span>
+                    </td>
                 </tr>
                 <tr>
-                    <th colspan="3">
+                    <th colspan="2" class="">
                         <span>Fom Accountable Officer/Agency/Fund Cluster:</span>
-                        <span>_______________________</span>
-                        <br>
-                        <span>To Accountable Officer/Agency/Fund CLuster:</span>
-                        <span>________________________</span>
                     </th>
-                    <th colspan="3">
+                    <th colspan="" class="center">
+                        <span><?= !empty($propertyDetails['from_officer']) ? $propertyDetails['from_officer'] : '' ?></span>
+                        <br>
+                    </th>
+                    <th colspan="" class="">
                         <span>PTR No. :</span>
-                        <span>____________________</span>
-                        <br>
-                        <span>Date: </span>
-                        <span>____________________</span>
                     </th>
+                    <td class="">
+                        <span><?= $model->ptr_number ?></span>
+                        <br>
+                    </td>
                 </tr>
                 <tr>
-                    <th style="border: 0;" colspan="2"></th>
-                    <th colspan="1" style="border: 0;">
+                    <th colspan="2">
+                        <span>To Accountable Officer/Agency/Fund CLuster:</span>
 
+                    </th>
+                    <th colspan="" class="center">
+                        <span><?= $received_by['employee_name'] ?></span>
+                    </th>
+                    <th colspan="">
+                        <span>Date: </span>
 
+                    </th>
+                    <td>
+                        <span><?= DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y') ?></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="no-bdr" colspan=""></td>
+                    <th colspan="1" class="no-bdr">
                         <span style="width:100px;margin-right: auto;">
                             <span class="chk_box">
-
-
                                 <?php
                                 $transfer_type = strtolower($model->transferType->type);
                                 if ($transfer_type === 'donation') {
@@ -70,7 +95,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 } else {
                                     echo "<span class='q'>...</span>";
                                 }
-
                                 ?>
                             </span>
                             Donation
@@ -93,7 +117,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </span>
 
                     </th>
-                    <th colspan="3" style="border: 0;">
+                    <th colspan="" class='no-bdr'>
                         <span>
                             <span class="chk_box">
 
@@ -118,7 +142,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </tr>
                 <tr>
-                    <th colspan="2">Date Acquired</th>
+                    <th colspan="">Date Acquired</th>
                     <th>Property No.</th>
                     <th>Description</th>
                     <th>Amount </th>
@@ -127,7 +151,34 @@ $this->params['breadcrumbs'][] = $this->title;
 
             </thead>
             <tbody>
+                <?php
+                // 
 
+                // 
+                // 
+                // serial_number
+                // unit_of_measure
+                // article
+                echo "<tr>
+                    <td colspan=''>{$propertyDetails['acquisition_date']}</td>
+                    <td>{$propertyDetails['property_number']}</td>
+                    <td><b>{$propertyDetails['article']}</b><br>{$propertyDetails['description']}</td>
+                    <td>";
+                echo number_format($propertyDetails['acquisition_amount'], 2);
+                echo "</td><td>";
+                echo $propertyDetails['is_unserviceable'] ? 'UnSeviceable' : 'Serviceable';
+                echo "</td></tr>";
+                for ($i = 0; $i < 3; $i++) {
+                    echo "<tr>
+                        <td colspan=''></td>
+                        <td ><br></td>
+                        <td ><br></td>
+                        <td ><br></td>
+                        <td ><br></td>
+                     
+                    </tr>";
+                }
+                ?>
             </tbody>
             <tfoot>
                 <tr>
@@ -136,40 +187,36 @@ $this->params['breadcrumbs'][] = $this->title;
                     </th>
                 </tr>
                 <tr>
-                    <td></td>
-                    <th>Aprroved By:</th>
-                    <th>Released/Issued By:</th>
-                    <th>Recieved By:</th>
-                    <td></td>
-                    <td></td>
+                    <th colspan="2" class="no-bdr">Aprroved By:</th>
+                    <th colspan="" class="no-bdr">Released/Issued By:</th>
+                    <th colspan="2" class="no-bdr">Received By:</th>
+
                 </tr>
-                <tr>
+                <!-- <tr>
                     <th>Signature:</th>
-                    <td>______________________</td>
-                    <td>______________________</td>
-                    <td>______________________</td>
-                    <td colspan="2"></td>
+                    <td colspan="2" class="center no-bdr"><br><br>______________________</td>
+                    <td colspan="" class="center no-bdr"><br><br>______________________</td>
+                    <td class="center no-bdr" colspan="2"><br><br>______________________</td>
+                </tr> -->
+                <tr>
+                    <!-- <th>Printed Name:</th> -->
+                    <th class="center no-bdr underlined" colspan="2"><br><br><br><?= $approved_by['employee_name'] ?></th>
+                    <th class="center no-bdr underlined" colspan="" style="min-width: 250px;"><br><br><br><?= $issued_by['employee_name'] ?></th>
+                    <th class="center no-bdr underlined" colspan="2" style="min-width: 250px;"><br><br><br><?= $received_by['employee_name'] ?></th>
                 </tr>
                 <tr>
-                    <th>Printed Name:</th>
-                    <td>______________________</td>
-                    <td>______________________</td>
-                    <td>______________________</td>
-                    <td colspan="2"></td>
+                    <!-- <th>Designation:</th> -->
+                    <td class="center no-bdr " colspan="2"><span class='underlined'><?= $approved_by['position'] ?> </span><br><span>Designation</span></td>
+                    <td class="center no-bdr " colspan=""><span class='underlined'><?= $issued_by['position'] ?> </span><br><span>Designation</span></td>
+                    <td class="center no-bdr " colspan="2"><span class='underlined'><?= $received_by['position'] ?> </span><br><span>Designation</span></td>
                 </tr>
                 <tr>
-                    <th>Designation:</th>
-                    <td>______________________</td>
-                    <td>______________________</td>
-                    <td>______________________</td>
-                    <td colspan="2"></td>
-                </tr>
-                <tr>
-                    <th>Date:</th>
-                    <td>______________________</td>
-                    <td>______________________</td>
-                    <td>______________________</td>
-                    <td colspan="2"></td>
+                    <!-- <th>Date:</th> -->
+                    <td colspan='2' class="center no-bdr">______________________
+                        <br><span>Date</span>
+                    </td>
+                    <td colspan='' class="center no-bdr">______________________ <br><span>Date</span></td>
+                    <td class="center no-bdr" colspan="2">______________________ <br><span>Date</span></td>
                 </tr>
             </tfoot>
         </table>
@@ -177,14 +224,28 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 <style>
-    .con {
+    .container {
         background-color: white;
         padding: 20px;
     }
 
+    .underlined {
+        text-decoration: underline;
+    }
+
+    .no-bdr {
+        border: 0;
+    }
+
+    /* 
     tfoot>tr>td,
     tfoot>tr>th {
-        border: 0;
+        border: 1px solid black;
+
+    } */
+
+    .center {
+        text-align: center;
     }
 
 
@@ -213,17 +274,24 @@ $this->params['breadcrumbs'][] = $this->title;
             margin: 0;
         }
 
+        .main-footer,
+        .btn {
+            display: none;
+        }
+
+        table,
+        th,
+        td {
+            padding: 5px;
+            font-size: 10px;
+        }
+
+        /* 
         .chk_box {
             color: currentColor !important;
         }
 
-        .main-footer {
-            display: none;
-        }
-
-        .btn {
-            display: none;
-        }
+ 
 
         .con {
             padding: 0;
@@ -234,13 +302,7 @@ $this->params['breadcrumbs'][] = $this->title;
             margin-right: 0;
         }
 
-        table,
-        th,
-        td {
-            padding: 5px;
-            font-size: 10px;
-            width: 100%;
-        }
+
 
         .main-header {
             display: none;
@@ -248,9 +310,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
         .q {
             visibility: hidden;
-        }
+        } */
     }
 </style>
+<?php
+$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
+?>
 <script>
     $('.editable').focusout(() => {
         console.log('qweqwe')

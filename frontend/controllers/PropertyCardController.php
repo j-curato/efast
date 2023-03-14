@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use Yii;
 use app\models\PropertyCard;
+use app\models\PropertyCardIndexSearch;
 use app\models\PropertyCardSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -101,7 +102,7 @@ class PropertyCardController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new PropertyCardSearch();
+        $searchModel = new PropertyCardIndexSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -295,7 +296,6 @@ class PropertyCardController extends Controller
           ")
                 ->bindValue(':reporting_period', $reporting_period . '%')
                 ->queryAll();
-
         }
         return $this->render('stickers', ['items' => $items]);
     }

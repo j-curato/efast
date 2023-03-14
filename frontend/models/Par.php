@@ -44,7 +44,9 @@ class Par extends \yii\db\ActiveRecord
                 'fk_location_id',
                 'is_unserviceable',
                 'fk_office_id',
-                'fk_actual_user'
+                'fk_actual_user',
+                'fk_ptr_id',
+                'is_current_user'
             ], 'integer'],
             [['date'], 'safe'],
             [[
@@ -71,6 +73,8 @@ class Par extends \yii\db\ActiveRecord
             'remarks' => 'remarks',
             'fk_location_id' => 'Location',
             'fk_office_id' => 'Office',
+            'fk_ptr_id' => 'PTR',
+            'is_current_user' => 'Current User',
             'is_unserviceable' => 'Serviceable/Unserviceable'
         ];
     }
@@ -107,6 +111,6 @@ class Par extends \yii\db\ActiveRecord
     }
     public function getPc()
     {
-        return $this->hasOne(PropertyCard::class, ['fk_par_id'=> 'id']);
+        return $this->hasOne(PropertyCard::class, ['fk_par_id' => 'id']);
     }
 }

@@ -438,7 +438,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                 }
 
                 $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(amount)
-                $("#table tbody").find(`td:nth-child(${key_pos+1})`).eq(row_number).append(ttl)
+                $("#table tbody").find(`td:nth-child(${key_pos+1})`).eq(row_number).append(thousands_separators(ttl))
 
             })
             $("#table tbody ").find(`td:last-child`).eq(row_number).text(lowest)
@@ -488,7 +488,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
             pos = parseInt(val.key_pos)
             if (ttlAmtPerPayee[val.key_pos + 1]) {
                 // console.log(ttlAmtPerPayee[val.key_pos + 1])
-                $("#table tbody ").find(`td:nth-child(${pos+1})`).eq(row_number).text(ttlAmtPerPayee[val.key_pos + 1])
+                $("#table tbody ").find(`td:nth-child(${pos+1})`).eq(row_number).text(thousands_separators(ttlAmtPerPayee[val.key_pos + 1]))
             }
 
 

@@ -254,7 +254,12 @@ class OtherPropertyDetailsController extends Controller
             $model->id = Yii::$app->db->createCommand('SELECT UUID_SHORT()')->queryScalar();
             try {
                 $transaction = Yii::$app->db->beginTransaction();
-
+                $ptyIsExists = Yii::$app->db->createCommand("SELECT EXISTS(SELECT id FROM other_property_details WHERE other_property_details.fk_property_id = :id)")
+                    ->bindValue(':id', $model->fk_property_id)
+                    ->queryScalar();
+                if (!empty($ptyIsExists)) {
+                    throw new ErrorException("naa nay other propperty details");
+                }
                 $acq_amt = YIi::$app->db->createCommand("SELECT property.acquisition_amount FROM property WHERE property.id = :id")
                     ->bindValue(':id', $model->fk_property_id)
                     ->queryScalar();
@@ -317,6 +322,16 @@ class OtherPropertyDetailsController extends Controller
             $items = !empty(Yii::$app->request->post('items')) ? Yii::$app->request->post('items') : [];
             try {
                 $transaction = Yii::$app->db->beginTransaction();
+                $ptyIsExists = Yii::$app->db->createCommand("SELECT EXISTS(SELECT id 
+                FROM other_property_details 
+                WHERE other_property_details.fk_property_id = :property_id
+                AND other_property_details.id !=:id)")
+                    ->bindValue(':id', $model->id)
+                    ->bindValue(':property_id', $model->fk_property_id)
+                    ->queryScalar();
+                if (!empty($ptyIsExists)) {
+                    throw new ErrorException("naa nay other propperty details ang property number " . $model->property->property_number);
+                }
                 $acq_amt = YIi::$app->db->createCommand("SELECT property.acquisition_amount FROM property WHERE property.id = :id")
                     ->bindValue(':id', $model->fk_property_id)
                     ->queryScalar();

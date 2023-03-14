@@ -14,9 +14,24 @@ use yii\web\JqueryAsset;
 $this->title = 'PAR';
 $this->params['breadcrumbs'][] = $this->title;
 $columns = [
-
+    'office_name',
     'par_number',
-
+    'property_number',
+    'par_date',
+    'acquisition_date',
+    'article',
+    'description',
+    'serial_number',
+    'location',
+    'unit_of_measure',
+    'rcv_by',
+    'act_usr',
+    'isd_by',
+    'is_unserviceable',
+    [
+        'attribute' => 'acquisition_amount',
+        'format' => ['decimal', 2]
+    ],
     [
         'label' => 'Action',
         'format' => 'raw',
