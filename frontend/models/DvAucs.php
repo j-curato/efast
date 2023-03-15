@@ -37,11 +37,22 @@ class DvAucs extends \yii\db\ActiveRecord
 
 
         return [
-            [['tracking_sheet_id', 'is_payable'], 'number'],
-            [['fk_dv_transaction_type_id'], 'integer'],
-            [['dv_number', 'object_code'], 'string', 'max' => 255],
+            [['tracking_sheet_id'], 'number'],
+            [[
+                'fk_dv_transaction_type_id',
+                'payroll_id',
+                'fk_remittance_id',
+                'payee_id',
+                'is_payable',
+                'mrd_classification_id',
+                'fk_dv_transaction_type_id',
+                'book_id',
+            ], 'integer'],
+            [['dv_number', 'object_code', 'in_timestamp'], 'string', 'max' => 255],
 
             [['reporting_period'], 'string', 'max' => 50],
+            [['particular'], 'string'],
+            [['recieved_at'], 'safe'],
             [[
                 'particular',
                 'payee_id',
@@ -54,8 +65,7 @@ class DvAucs extends \yii\db\ActiveRecord
 
                 'reporting_period',
                 'particular',
-                'transaction_type',
-                'dv_link',
+                'transaction_type',               'dv_link',
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
 
 
@@ -84,6 +94,7 @@ class DvAucs extends \yii\db\ActiveRecord
             'payroll_id' => 'Payroll Number',
             'fk_remittance_id' => 'Remittance Number',
             'book_id' => 'Book',
+            'recieved_at' => 'Receive at',
         ];
     }
 
@@ -102,10 +113,7 @@ class DvAucs extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getRaoud()
-    {
-        return $this->hasOne(Raouds::class, ['id' => 'raoud_id']);
-    }
+
     public function getDvAucsEntries()
     {
         return $this->hasMany(DvAucsEntries::class, ['dv_aucs_id' => 'id']);
