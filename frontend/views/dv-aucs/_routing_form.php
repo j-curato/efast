@@ -28,12 +28,13 @@ if (!empty($model->fk_remittance_id)) {
 if (!empty($model->payee_id)) {
     $payee = ArrayHelper::map(Payee::find()->where('id = :id', ['id' => $model->payee_id])->asArray()->all(), 'id', 'account_name');
 }
+$dvType = !empty($model->dvTransactionType->name) ? strtolower($model->dvTransactionType->name) : '';
 $payroll_display  = 'style="display:none;"';
-if (strtolower($model->transaction_type) === 'payroll' || strtolower($model->dvTransactionType->name) === 'payroll') {
+if (strtolower($model->transaction_type) === 'payroll' || $dvType === 'payroll') {
     $payroll_display  = '';
 }
 $remittance_display  = 'style="display:none;"';
-if (strtolower($model->transaction_type) === 'remittance' || strtolower($model->dvTransactionType->name) === 'remittance') {
+if (strtolower($model->transaction_type) === 'remittance' || $dvType === 'remittance') {
     $remittance_display = '';
 }
 
