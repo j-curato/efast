@@ -45,7 +45,6 @@ class DvAucs extends \yii\db\ActiveRecord
                 'payee_id',
                 'is_payable',
                 'mrd_classification_id',
-                'fk_dv_transaction_type_id',
                 'book_id',
             ], 'integer'],
             [['dv_number', 'object_code', 'in_timestamp'], 'string', 'max' => 255],
@@ -63,9 +62,9 @@ class DvAucs extends \yii\db\ActiveRecord
             ], 'required'],
             [[
 
-                'reporting_period',
                 'particular',
-                'transaction_type',               'dv_link',
+                'transaction_type',
+                'dv_link',
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
 
 
@@ -145,5 +144,9 @@ class DvAucs extends \yii\db\ActiveRecord
     public function getDvAucsFile()
     {
         return $this->hasOne(DvAucsFile::class, ['fk_dv_aucs_id' => 'id']);
+    }
+    public function getDvTransactionType()
+    {
+        return $this->hasOne(DvTransactionType::class, ['id' => 'fk_dv_transaction_type_id']);
     }
 }

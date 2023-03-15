@@ -3,6 +3,7 @@
 use app\models\Books;
 use app\models\DvTransactionType;
 use app\models\Payee;
+use app\models\Payroll;
 use app\models\Remittance;
 use kartik\date\DatePicker;
 use aryelds\sweetalert\SweetAlertAsset;
@@ -27,6 +28,16 @@ if (!empty($model->fk_remittance_id)) {
 if (!empty($model->payee_id)) {
     $payee = ArrayHelper::map(Payee::find()->where('id = :id', ['id' => $model->payee_id])->asArray()->all(), 'id', 'account_name');
 }
+$payroll_display  = 'style="display:none;"';
+if (strtolower($model->transaction_type) === 'payroll' || strtolower($model->dvTransactionType->name) === 'payroll') {
+    $payroll_display  = '';
+}
+$remittance_display  = 'style="display:none;"';
+if (strtolower($model->transaction_type) === 'remittance' || strtolower($model->dvTransactionType->name) === 'remittance') {
+    $remittance_display = '';
+}
+
+
 ?>
 <div class="test panel-panel-default" style="background-color: white;padding:2rem">
 
@@ -122,8 +133,11 @@ if (!empty($model->payee_id)) {
 
                 ?>
             </div>
-            <div class="col-sm-3" id="payroll_display" style="display: none;">
+            <div class="col-sm-3" id="payroll_display" <?= $payroll_display ?>>
+
+
                 <?= $form->field($model, 'payroll_id')->widget(Select2::class, [
+                    'data' => ArrayHelper::map(Payroll::find()->where('id = :id', ['id' => $model->payroll_id])->asArray()->all(), 'id', 'payroll_number'),
                     'pluginOptions' => [
                         'allowClear' => true,
                         'minimumInputLength' => 1,
@@ -146,7 +160,7 @@ if (!empty($model->payee_id)) {
 
                 ?>
             </div>
-            <div class="col-sm-3" id="remittance_display" style="display: none;">
+            <div class="col-sm-3" id="remittance_display" <?= $remittance_display ?>>
                 <?= $form->field($model, 'fk_remittance_id')->widget(Select2::class, [
                     'data' => $remittance,
                     'pluginOptions' => [
