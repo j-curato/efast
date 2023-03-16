@@ -33,6 +33,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'ptr_number',
             'date',
+            'office_name',
+            'property_number',
+            'par_number',
+            'description',
+            'receive_by',
+            'article',
             [
                 'label' => 'Actions',
                 'format' => 'raw',

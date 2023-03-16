@@ -4,6 +4,7 @@ use app\components\helpers\MyHelper;
 use app\models\EmployeeSearchView;
 use app\models\Office;
 use app\models\PropertyStatus;
+use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
@@ -21,7 +22,9 @@ $itemRow = 0;
 
 <div class="rlsddp-form panel  panel-default">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+        'id' => $model->formName()
+    ]); ?>
 
     <div class="row">
         <div class="col-sm-3">
@@ -33,12 +36,13 @@ $itemRow = 0;
             ]) ?>
         </div>
         <div class="col-sm-3">
-            <?= $form->field($model, 'fk_property_status_id')->widget(Select2::class, [
-                'data' => ArrayHelper::map(
-                    PropertyStatus::find()->asArray()->all(),
-                    'id',
-                    'status'
-                ),
+            <?= $form->field($model, 'status')->widget(Select2::class, [
+                'data' => [
+                    '1' => 'Lost',
+                    '2' => 'Stolen',
+                    '3' => 'Damaged',
+                    '4' => 'Destroyed',
+                ],
                 'pluginOptions' => [
                     'placeholder' => 'Select Property Status'
                 ]
@@ -246,3 +250,35 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends', [Jq
         })
     })
 </script>
+
+<?php
+SweetAlertAsset::register($this);
+$js = <<< JS
+$("#Rlsddp").on("beforeSubmit", function (event) {
+    event.preventDefault();
+    var form = $(this);
+    $.ajax({
+        url: form.attr("action"),
+        type: form.attr("method"),
+        data: form.serialize(),
+        success: function (data) {
+            let res = JSON.parse(data)
+            console.log(res)
+            swal({
+                icon: 'error',
+                title: res.error_message,
+                type: "error",
+                timer: 3000,
+                closeOnConfirm: false,
+                closeOnCancel: false
+            })
+        },
+        error: function (data) {
+     
+        }
+    });
+    return false;
+});
+JS;
+$this->registerJs($js);
+?>

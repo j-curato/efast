@@ -23,7 +23,7 @@ class m230307_065345_create_depreciations_procedure extends Migration
                     END IF;
                     SET @finalQuery = CONCAT("SELECT 
                     property.property_number,
-                    IFNULL(property_articles.article_name,'') as article_name,
+                    IFNULL(property_articles.article_name,property.article) as article_name,
                     property.description,
                     property.serial_number,
                     property.date as date_acquired,
@@ -43,6 +43,7 @@ class m230307_065345_create_depreciations_procedure extends Migration
                     @slvg_val := ROUND((other_property_details.salvage_value_prcnt/100)*other_property_detail_items.amount,2) as salage_value,
                     ROUND(other_property_detail_items.amount - @slvg_val,2) as depreciable_amount,
                     ROUND((other_property_detail_items.amount - @slvg_val)/other_property_details.useful_life)as mnthly_depreciation
+
                     FROM other_property_details
                     LEFT JOIN other_property_detail_items ON other_property_details.id = other_property_detail_items.fk_other_property_details_id
                     LEFT JOIN sub_accounts1 ON other_property_details.fk_sub_account1_id = sub_accounts1.id
@@ -55,13 +56,13 @@ class m230307_065345_create_depreciations_procedure extends Migration
                     (CASE
                     WHEN DAY(property.date) > 15 THEN DATE_FORMAT(  DATE_ADD( property.date,INTERVAL 1 MONTH), '%Y-%m')
                     ELSE DATE_FORMAT(property.date, '%Y-%m')
-                    END ) <= ",reporting_period,
+                    END ) <= '",reporting_period,
                     
-                    " AND 
+                    "' AND 
                     (CASE
-                    WHEN DAY(property.date) > 15 THEN DATE_FORMAT(  DATE_ADD( property.date,INTERVAL other_property_details.useful_life MONTH), '%Y-%m')
-                    ELSE DATE_FORMAT(property.date, '%Y-%m')
-                    END ) >= ",reporting_period
+                    WHEN DAY(property.date) > 15 THEN DATE_FORMAT(  DATE_ADD( property.date,INTERVAL other_property_details.useful_life+1 MONTH), '%Y-%m')
+                    ELSE DATE_FORMAT(  DATE_ADD( property.date,INTERVAL other_property_details.useful_life MONTH), '%Y-%m')
+                    END ) >= '",reporting_period,"' "
                     ,@is_notAll);
 
                     PREPARE stmt FROM @finalQuery;

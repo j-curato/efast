@@ -33,9 +33,6 @@ class PropertyCardController extends Controller
                     'delete',
                     'property-details',
                     'print-pc',
-
-
-
                 ],
                 'rules' => [
                     [

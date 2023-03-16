@@ -82,17 +82,21 @@ $spvr =   MyHelper::getEmployee($model->fk_supvr, 'one');
             <td class="no-bdr">
 
             </td>
+            <!--    '1' => 'Lost',
+                    '2' => 'Stolen',
+                    '3' => 'Damaged',
+                    '4' => 'Destroyed', -->
             <td class="no-bdr">
-                <span class='chk_box'><?= strtolower($model->propertyStatus->status) === 'lost' ? '&#10003;' : '' ?> </span> <span>Lost</span>
+                <span class='chk_box'><?= intval($model->status) ===  1 ? '&#10003;' : '' ?> </span> <span>Lost</span>
                 <br>
                 <br>
-                <span class='chk_box'><?= strtolower($model->propertyStatus->status) === 'stolen' ? '&#10003;' : '' ?> </span> <span>Stolen</span>
+                <span class='chk_box'><?= intval($model->status) ===  2 ? '&#10003;' : '' ?> </span> <span>Stolen</span>
             </td>
             <td class="no-bdr">
-                <span class='chk_box'><?= strtolower($model->propertyStatus->status) === 'damage' ? '&#10003;' : '' ?> </span> <span>Damage</span>
+                <span class='chk_box'><?= intval($model->status) === 3 ? '&#10003;' : '' ?> </span> <span>Damage</span>
                 <br>
                 <br>
-                <span class='chk_box'><?= strtolower($model->propertyStatus->status) === 'destroyed' ? '&#10003;' : '' ?> </span> <span>Destroyed</span>
+                <span class='chk_box'><?= intval($model->status) ===  4 ? '&#10003;' : '' ?> </span> <span>Destroyed</span>
             </td>
             <td class="no-bdr"></td>
         </tr>

@@ -30,18 +30,14 @@ $this->params['breadcrumbs'][] = $this->title;
             'heading' => 'Other Property Details'
         ],
         'columns' => [
-
-            [
-                'attribute' => 'fk_property_id',
-                'value' => 'property.property_number'
-            ],
-            [
-                'attribute' => 'fk_chart_of_account_id',
-                'value' => function ($model) {
-                    return !empty($model->fk_chart_of_account_id) ? $model->chartOfAccount->uacs . '-' . $model->chartOfAccount->general_ledger : '';
-                }
-            ],
-
+            'office_name',
+            'property_number',
+            'article',
+            'description',
+            'uacs',
+            'general_ledger',
+            'salvage_value_prcnt',
+            'useful_life',
             [
                 'label' => 'Actions',
                 'format' => 'raw',

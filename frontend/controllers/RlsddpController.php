@@ -28,10 +28,24 @@ class RlsddpController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => [],
+                'only' => [
+                    'index',
+                    'view',
+                    'create',
+                    'update',
+                    'delete',
+                    'get-pars',
+                ],
                 'rules' => [
                     [
-                        'actions' => [],
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'delete',
+                            'get-pars',
+                        ],
                         'allow' => true,
                         'roles' => ['@']
                     ]
@@ -279,7 +293,6 @@ class RlsddpController extends Controller
                      WHEN par.is_unserviceable =1 THEN 'UnServiceable'
                      ELSE 'Serviceable' 
                      END ) as is_unserviceable
-                     
          
          FROM par 
          JOIN property ON par.fk_property_id = property.id

@@ -6,6 +6,7 @@ use app\models\ChartOfAccounts;
 use app\models\OtherPropertyDetailItems;
 use Yii;
 use app\models\OtherPropertyDetails;
+use app\models\OtherPropertyDetailsIndexSearch;
 use app\models\OtherPropertyDetailsSearch;
 use app\models\SubAccounts1;
 use Behat\Gherkin\Filter\RoleFilter;
@@ -36,6 +37,10 @@ class OtherPropertyDetailsController extends Controller
                     'update',
                     'delete',
                     'create',
+                    'search-chart-of-accounts',
+                    'items',
+                    'property-details',
+                    'get-frt-mth-dep',
                 ],
                 'rules' => [
                     [
@@ -45,6 +50,10 @@ class OtherPropertyDetailsController extends Controller
                             'update',
                             'delete',
                             'create',
+                            'search-chart-of-accounts',
+                            'items',
+                            'property-details',
+                            'get-frt-mth-dep',
                         ],
                         'allow' => true,
                         'roles' => ['@']
@@ -74,7 +83,7 @@ class OtherPropertyDetailsController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new OtherPropertyDetailsSearch();
+        $searchModel = new OtherPropertyDetailsIndexSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -224,7 +233,7 @@ class OtherPropertyDetailsController extends Controller
             $check_if_exists = Yii::$app->db->createCommand("SELECT id FROM sub_accounts1 WHERE sub_accounts1.name = :account_title")
                 ->bindValue(':account_title', $account_title)
                 ->queryScalar();
-            
+
             if (!empty($check_if_exists)) {
                 return ['isSuccess' => true, 'id' => $check_if_exists];
             }

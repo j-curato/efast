@@ -42,12 +42,12 @@ class Property extends \yii\db\ActiveRecord
                 'unit_of_measure_id',
                 'acquisition_amount',
                 'serial_number',
-                'description',
+                // 'description',
                 // 'fk_ssf_sp_num_id',
                 'fk_office_id',
                 'is_ssf',
                 'employee_id',
-                'fk_property_article_id'
+                // 'fk_property_article_id'
             ], 'required'],
             [['date'], 'string'],
             [[

@@ -41,6 +41,7 @@ class ParController extends Controller
                     'search-par',
                     'par-details',
                     'get-par',
+                    'blank-sticker'
                 ],
                 'rules' => [
                     [
@@ -54,6 +55,7 @@ class ParController extends Controller
                             'search-par',
                             'par-details',
                             'get-par',
+                            'blank-sticker'
 
                         ],
                         'allow' => true,

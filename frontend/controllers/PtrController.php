@@ -8,6 +8,7 @@ use app\models\Par;
 use app\models\PropertyCard;
 use Yii;
 use app\models\Ptr;
+use app\models\PtrIndexSearch;
 use app\models\PtrSearch;
 use app\models\TransferType;
 use ErrorException;
@@ -70,7 +71,7 @@ class PtrController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new PtrSearch();
+        $searchModel = new PtrIndexSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [

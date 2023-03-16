@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Rlsddp;
+use app\models\Iirup;
 
 /**
- * RlsddpSearch represents the model behind the search form of `app\models\Rlsddp`.
+ * IirupSearch represents the model behind the search form of `app\models\Iirup`.
  */
-class RlsddpSearch extends Rlsddp
+class IirupSearch extends Iirup
 {
     /**
      * {@inheritdoc}
@@ -17,8 +17,8 @@ class RlsddpSearch extends Rlsddp
     public function rules()
     {
         return [
-            [['id', 'fk_acctbl_offr', 'is_blottered', 'status', 'fk_supvr'], 'integer'],
-            [['serial_number', 'date', 'police_station', 'circumstances', 'created_at'], 'safe'],
+            [['id', 'fk_acctbl_ofr', 'fk_approved_by'], 'integer'],
+            [['serial_number', 'created_at'], 'safe'],
         ];
     }
 
@@ -40,7 +40,7 @@ class RlsddpSearch extends Rlsddp
      */
     public function search($params)
     {
-        $query = Rlsddp::find();
+        $query = Iirup::find();
 
         // add conditions that should always apply here
 
@@ -59,17 +59,12 @@ class RlsddpSearch extends Rlsddp
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'date' => $this->date,
-            'fk_acctbl_offr' => $this->fk_acctbl_offr,
-            'is_blottered' => $this->is_blottered,
-            'status' => $this->status,
-            'fk_supvr' => $this->fk_supvr,
+            'fk_acctbl_ofr' => $this->fk_acctbl_ofr,
+            'fk_approved_by' => $this->fk_approved_by,
             'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['like', 'serial_number', $this->serial_number])
-            ->andFilterWhere(['like', 'police_station', $this->police_station])
-            ->andFilterWhere(['like', 'circumstances', $this->circumstances]);
+        $query->andFilterWhere(['like', 'serial_number', $this->serial_number]);
 
         return $dataProvider;
     }

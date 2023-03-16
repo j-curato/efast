@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\PropertyCardIndex;
+use Yii;
 
 /**
  * PropertyCardIndexSearch represents the model behind the search form of `app\models\PropertyCardIndex`.
@@ -60,7 +61,10 @@ class PropertyCardIndexSearch extends PropertyCardIndex
         $query = PropertyCardIndex::find();
 
         // add conditions that should always apply here
-
+        if (!Yii::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $query->andWhere('office_name = :office_name', ['office_name' => 'ads']);
+        }
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);

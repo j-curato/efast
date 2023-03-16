@@ -38,6 +38,9 @@ class PropertyController extends Controller
                     'delete',
                     'search-property',
                     'get-property',
+                    'import',
+                    'blank-sticker',
+                    'search-ssf-category',
                 ],
                 'rules' => [
                     [
@@ -49,7 +52,9 @@ class PropertyController extends Controller
                             'delete',
                             'search-property',
                             'get-property',
-
+                            'import',
+                            'blank-sticker',
+                            'search-ssf-category',
                         ],
                         'allow' => true,
                         'roles' => ['@']

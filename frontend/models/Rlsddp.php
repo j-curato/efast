@@ -13,7 +13,7 @@ use Yii;
  * @property int $fk_acctbl_offr
  * @property int $is_blottered
  * @property string|null $police_station
- * @property int $fk_property_status_id
+ * @property int $status
  * @property int $fk_supvr
  * @property string|null $circumstances
  * @property string $created_at
@@ -38,15 +38,14 @@ class Rlsddp extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'serial_number', 'date', 'fk_acctbl_offr', 'fk_property_status_id', 'fk_supvr', 'is_blottered', 'fk_office_id'], 'required'],
-            [['id', 'fk_acctbl_offr', 'is_blottered', 'fk_property_status_id', 'fk_supvr', 'fk_office_id'], 'integer'],
+            [['id', 'serial_number', 'date', 'fk_acctbl_offr', 'status', 'fk_supvr', 'is_blottered', 'fk_office_id'], 'required'],
+            [['id', 'fk_acctbl_offr', 'is_blottered', 'status', 'fk_supvr', 'fk_office_id'], 'integer'],
             [['date', 'created_at', 'blotter_date'], 'safe'],
             [['circumstances'], 'string'],
             [['serial_number', 'police_station'], 'string', 'max' => 255],
             [['serial_number'], 'unique'],
             [['id'], 'unique'],
             [['fk_acctbl_offr'], 'exist', 'skipOnError' => true, 'targetClass' => Employee::class, 'targetAttribute' => ['fk_acctbl_offr' => 'employee_id']],
-            [['fk_property_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => PropertyStatus::class, 'targetAttribute' => ['fk_property_status_id' => 'id']],
             [['fk_supvr'], 'exist', 'skipOnError' => true, 'targetClass' => Employee::class, 'targetAttribute' => ['fk_supvr' => 'employee_id']],
         ];
     }
@@ -63,7 +62,7 @@ class Rlsddp extends \yii\db\ActiveRecord
             'fk_acctbl_offr' => 'Accountable Officer',
             'is_blottered' => 'Is Blottered',
             'police_station' => 'Police Station',
-            'fk_property_status_id' => ' Property Status ',
+            'status' => ' Property Status ',
             'fk_supvr' => 'Direct Suppervisor',
             'circumstances' => 'Circumstances',
             'fk_office_id' => 'Office',
@@ -87,10 +86,7 @@ class Rlsddp extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getPropertyStatus()
-    {
-        return $this->hasOne(PropertyStatus::class, ['id' => 'fk_property_status_id']);
-    }
+
 
     /**
      * Gets query for [[FkSupvr]].
