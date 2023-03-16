@@ -67,47 +67,104 @@ $cse_type_data = [
                 'id' => 'lgModalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
             ]); ?> -->
     <?= Html::beginForm([$action, 'id' => $model->id], 'post', ['id' => 'SupplementalPpmp']); ?>
-    <div class="row">
-        <div class="col-sm-2">
-            <label for="budget_year">Budget Year</label>
-            <?= DatePicker::widget([
-                'name' => 'budget_year',
-                'id' => 'budget_year',
-                'value' => $model->budget_year,
-                'readonly' => true,
-                'pluginOptions' => [
-                    'autoclose' => true,
-                    'minViewMode' => 'years',
-                    'format' => 'yyyy',
+    <div class="panel panel-default">
 
-                ]
-            ]) ?>
-
-        </div>
-        <div class="col-sm-2">
-            <label for="cse_type">CSE/NON-CSE</label>
-            <?= Select2::widget([
-                'name' => 'cse_type',
-                'id' => 'cse_type',
-                'value' => $model->cse_type,
-                'pluginOptions' => [
-                    'placeholder' => 'Select CSE Type'
-                ],
-                'data' => $cse_type_data
-            ]) ?>
-        </div>
-        <?php
-        if (Yii::$app->user->can('super-user')) {
-
-        ?>
+        <div class="row ">
             <div class="col-sm-2">
+                <label for="budget_year">Budget Year</label>
+                <?= DatePicker::widget([
+                    'name' => 'budget_year',
+                    'id' => 'budget_year',
+                    'value' => $model->budget_year,
+                    'readonly' => true,
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'minViewMode' => 'years',
+                        'format' => 'yyyy',
 
-                <label for="fk_office_id">Office</label>
+                    ]
+                ]) ?>
+
+            </div>
+            <div class="col-sm-2">
+                <label for="cse_type">CSE/NON-CSE</label>
                 <?= Select2::widget([
-                    'name' => 'fk_office_id',
-                    'value' => $model->fk_office_id,
-                    'data' => $offices,
-                    'options' => ['placeholder' => 'Select Office'],
+                    'name' => 'cse_type',
+                    'id' => 'cse_type',
+                    'value' => $model->cse_type,
+                    'pluginOptions' => [
+                        'placeholder' => 'Select CSE Type'
+                    ],
+                    'data' => $cse_type_data
+                ]) ?>
+            </div>
+            <?php
+            if (Yii::$app->user->can('super-user')) {
+
+            ?>
+                <div class="col-sm-2">
+
+                    <label for="fk_office_id">Office</label>
+                    <?= Select2::widget([
+                        'name' => 'fk_office_id',
+                        'value' => $model->fk_office_id,
+                        'data' => $offices,
+                        'options' => ['placeholder' => 'Select Office'],
+                        // 'pluginOptions' => [
+                        //     'allowClear' => true,
+                        //     'minimumInputLength' => 1,
+                        //     'language' => [
+                        //         'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        //     ],
+                        //     'ajax' => [
+                        //         'url' => Yii::$app->request->baseUrl . '?r=office/search-office',
+                        //         'dataType' => 'json',
+                        //         'delay' => 250,
+                        //         'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                        //         'cache' => true
+                        //     ],
+                        //     'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        //     'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        //     'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        // ],
+
+                    ]) ?>
+                </div>
+                <div class="col-sm-2">
+                    <label for="fk_division_id">Division</label>
+                    <?= Select2::widget([
+                        'name' => 'fk_division_id',
+                        'value' => $model->fk_division_id,
+                        'data' => $divisions,
+                        'options' => ['placeholder' => 'Select Division'],
+                        // 'pluginOptions' => [
+                        //     'allowClear' => true,
+                        //     'minimumInputLength' => 1,
+                        //     'language' => [
+                        //         'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        //     ],
+                        //     'ajax' => [
+                        //         'url' => Yii::$app->request->baseUrl . '?r=office/search-office',
+                        //         'dataType' => 'json',
+                        //         'delay' => 250,
+                        //         'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                        //         'cache' => true
+                        //     ],
+                        //     'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        //     'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        //     'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        // ],
+
+                    ]) ?>
+                </div>
+            <?php } ?>
+            <div class="col-sm-2">
+                <label for="fk_division_program_unit_id">Division/Program/Unit</label>
+                <?= Select2::widget([
+                    'name' => 'fk_division_program_unit_id',
+                    'value' => $model->fk_division_program_unit_id,
+                    'data' => $division_program_unit,
+                    'options' => ['placeholder' => 'Select Division/Program/Unit'],
                     // 'pluginOptions' => [
                     //     'allowClear' => true,
                     //     'minimumInputLength' => 1,
@@ -128,178 +185,124 @@ $cse_type_data = [
 
                 ]) ?>
             </div>
-            <div class="col-sm-2">
-                <label for="fk_division_id">Division</label>
+
+
+
+        </div>
+        <div class="row ">
+            <div class="col-sm-3">
+                <label for="fk_prepared_by">Prepared By</label>
                 <?= Select2::widget([
-                    'name' => 'fk_division_id',
-                    'value' => $model->fk_division_id,
-                    'data' => $divisions,
-                    'options' => ['placeholder' => 'Select Division'],
-                    // 'pluginOptions' => [
-                    //     'allowClear' => true,
-                    //     'minimumInputLength' => 1,
-                    //     'language' => [
-                    //         'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                    //     ],
-                    //     'ajax' => [
-                    //         'url' => Yii::$app->request->baseUrl . '?r=office/search-office',
-                    //         'dataType' => 'json',
-                    //         'delay' => 250,
-                    //         'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                    //         'cache' => true
-                    //     ],
-                    //     'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                    //     'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                    //     'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    // ],
+                    'name' => 'fk_prepared_by',
+                    'value' => $model->fk_prepared_by,
+                    'data' => $prepared_by,
+                    'options' => ['placeholder' => 'Search for a Employee ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
 
                 ]) ?>
             </div>
-        <?php } ?>
-        <div class="col-sm-2">
-            <label for="fk_division_program_unit_id">Division/Program/Unit</label>
-            <?= Select2::widget([
-                'name' => 'fk_division_program_unit_id',
-                'value' => $model->fk_division_program_unit_id,
-                'data' => $division_program_unit,
-                'options' => ['placeholder' => 'Select Division/Program/Unit'],
-                // 'pluginOptions' => [
-                //     'allowClear' => true,
-                //     'minimumInputLength' => 1,
-                //     'language' => [
-                //         'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                //     ],
-                //     'ajax' => [
-                //         'url' => Yii::$app->request->baseUrl . '?r=office/search-office',
-                //         'dataType' => 'json',
-                //         'delay' => 250,
-                //         'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                //         'cache' => true
-                //     ],
-                //     'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                //     'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                //     'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                // ],
+            <div class="col-sm-3">
 
-            ]) ?>
+                <label for="reviewed_by">Reviewed By</label>
+                <?= Select2::widget([
+                    'name' => 'fk_reviewed_by',
+                    'value' => $model->fk_reviewed_by,
+                    'data' => $reviewed_by,
+                    'options' => ['placeholder' => 'Search for a Employee ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
+
+                ]) ?>
+            </div>
+            <div class="col-sm-3">
+                <label for="fk_approved_by">Approved By</label>
+                <?= Select2::widget([
+                    'name' => 'fk_approved_by',
+                    'value' => $model->fk_approved_by,
+                    'data' => $approved_by,
+                    'options' => ['placeholder' => 'Search for a Employee ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
+
+                ]) ?>
+            </div>
+            <div class="col-sm-3">
+
+                <label for="fk_certified_funds_available_by">Certified Funds Available By</label>
+                <?= Select2::widget([
+                    'name' => 'fk_certified_funds_available_by',
+                    'value' => $model->fk_certified_funds_available_by,
+                    'data' => $certified_funds_available_by,
+                    'options' => ['placeholder' => 'Search for a Employee ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
+
+                ]) ?>
+            </div>
         </div>
-
-
 
     </div>
-    <div class="row">
-        <div class="col-sm-3">
-            <label for="fk_prepared_by">Prepared By</label>
-            <?= Select2::widget([
-                'name' => 'fk_prepared_by',
-                'value' => $model->fk_prepared_by,
-                'data' => $prepared_by,
-                'options' => ['placeholder' => 'Search for a Employee ...'],
-                'pluginOptions' => [
-                    'allowClear' => true,
-                    'minimumInputLength' => 1,
-                    'language' => [
-                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                    ],
-                    'ajax' => [
-                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                        'dataType' => 'json',
-                        'delay' => 250,
-                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                        'cache' => true
-                    ],
-                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                ],
-
-            ]) ?>
-        </div>
-        <div class="col-sm-3">
-
-            <label for="reviewed_by">Reviewed By</label>
-            <?= Select2::widget([
-                'name' => 'fk_reviewed_by',
-                'value' => $model->fk_reviewed_by,
-                'data' => $reviewed_by,
-                'options' => ['placeholder' => 'Search for a Employee ...'],
-                'pluginOptions' => [
-                    'allowClear' => true,
-                    'minimumInputLength' => 1,
-                    'language' => [
-                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                    ],
-                    'ajax' => [
-                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                        'dataType' => 'json',
-                        'delay' => 250,
-                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                        'cache' => true
-                    ],
-                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                ],
-
-            ]) ?>
-        </div>
-        <div class="col-sm-3">
-            <label for="fk_approved_by">Approved By</label>
-            <?= Select2::widget([
-                'name' => 'fk_approved_by',
-                'value' => $model->fk_approved_by,
-                'data' => $approved_by,
-                'options' => ['placeholder' => 'Search for a Employee ...'],
-                'pluginOptions' => [
-                    'allowClear' => true,
-                    'minimumInputLength' => 1,
-                    'language' => [
-                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                    ],
-                    'ajax' => [
-                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                        'dataType' => 'json',
-                        'delay' => 250,
-                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                        'cache' => true
-                    ],
-                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                ],
-
-            ]) ?>
-        </div>
-        <div class="col-sm-3">
-
-            <label for="fk_certified_funds_available_by">Certified Funds Available By</label>
-            <?= Select2::widget([
-                'name' => 'fk_certified_funds_available_by',
-                'value' => $model->fk_certified_funds_available_by,
-                'data' => $certified_funds_available_by,
-                'options' => ['placeholder' => 'Search for a Employee ...'],
-                'pluginOptions' => [
-                    'allowClear' => true,
-                    'minimumInputLength' => 1,
-                    'language' => [
-                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                    ],
-                    'ajax' => [
-                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                        'dataType' => 'json',
-                        'delay' => 250,
-                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                        'cache' => true
-                    ],
-                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                ],
-
-            ]) ?>
-        </div>
-    </div>
-
     <table class="table" id="entry_table">
 
 
@@ -531,6 +534,9 @@ $cse_type_data = [
 
 </div>
 <style>
+    .panel{
+        padding: 2rem;
+    }
     textarea {
         max-width: 100%;
     }
