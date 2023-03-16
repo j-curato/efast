@@ -1,6 +1,7 @@
 <?php
 
 use app\components\helpers\MyHelper;
+use app\models\Office;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\select2\Select2;
@@ -30,6 +31,14 @@ $itemRow = 0;
                     'format' => 'yyyy-mm',
                     'minViewMode' => 'months',
                     'autoclose' => true
+                ]
+            ]) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
+                'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
+                'pluginOptions' => [
+                    'placeholder' => 'Select Office'
                 ]
             ]) ?>
         </div>
@@ -84,14 +93,40 @@ $itemRow = 0;
     </div>
     <table class="table" id="items_tbl">
         <thead>
+            <th> Book</th>
             <th> Property No.</th>
             <th> Date Acquired</th>
             <th> Particulars/Articles</th>
             <th> Unit Cost</th>
             <th>PAR No.</th>
             <th>Accumulated Depreciation</th>
+            <th>Carrying Amount</th>
         </thead>
-        <tbody></tbody>
+        <tbody>
+            <?php
+
+            foreach ($items as $itm) {
+
+                echo "<tr>
+               
+                <td style='display:none'>
+                <input type='hidden' value='{$itm['item_id']}' name='items[$itemRow][item_id]'>
+                <input type='hidden' value='{$itm['other_property_detail_item_id']}' name='items[$itemRow][other_property_detail_item_id]'>
+                </td>
+               <td>{$itm['book_name']}</td>
+               <td>{$itm['property_number']}</td>
+               <td>{$itm['date_acquired']}</td>
+               <td>{$itm['article_name']} - {$itm['description']}</td>
+               <td>{$itm['acquisition_amount']}</td>
+               <td>{$itm['par_number']}</td>
+               <td>{$itm['mnthly_depreciation']}</td>
+               <td>{$itm['amount']}</td>
+               <td><a class='remove btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a></td>
+           </tr>";
+                $itemRow++;
+            }
+            ?>
+        </tbody>
     </table>
 
 
@@ -119,13 +154,15 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
         $('#items_tbl tbody').html('')
         $.each(data, (key, val) => {
             const r = `<tr>
-                 <td style='display:none'><input type='hidden' value='${val.par_id}' name='items[${itemRow}][par_id]'></td>
+                 <td style='display:none'><input type='hidden' value='${val.other_property_detail_item_id}' name='items[${itemRow}][other_property_detail_item_id]'></td>
+                <td>${val.book_name}</td>
                 <td>${val.property_number}</td>
                 <td>${val.date_acquired}</td>
                 <td>${val.article_name} - ${val.description}</td>
                 <td>${thousands_separators(val.acquisition_amount)}</td>
                 <td>${val.par_number}</td>
-                <td>${thousands_separators(val.ttlDep)}</td>
+                <td>${thousands_separators(val.mnthly_depreciation)}</td>
+                <td>${thousands_separators(val.amount)}</td>
                 <td><a class='remove btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a></td>
             </tr>`
             $('#items_tbl tbody').append(r)

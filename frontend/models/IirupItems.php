@@ -9,7 +9,7 @@ use Yii;
  *
  * @property int $id
  * @property int $fk_iirup_id
- * @property int $fk_par_id
+ * @property int $fk_other_property_detail_item_id
  * @property int|null $is_deleted
  * @property string $created_at
  *
@@ -32,11 +32,10 @@ class IirupItems extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fk_iirup_id', 'fk_par_id'], 'required'],
-            [['fk_iirup_id', 'fk_par_id', 'is_deleted'], 'integer'],
+            [['fk_iirup_id', 'fk_other_property_detail_item_id'], 'required'],
+            [['fk_iirup_id', 'fk_other_property_detail_item_id', 'is_deleted'], 'integer'],
             [['created_at'], 'safe'],
-            [['fk_iirup_id'], 'exist', 'skipOnError' => true, 'targetClass' => Iirup::className(), 'targetAttribute' => ['fk_iirup_id' => 'id']],
-            [['fk_par_id'], 'exist', 'skipOnError' => true, 'targetClass' => Par::className(), 'targetAttribute' => ['fk_par_id' => 'id']],
+            [['fk_iirup_id'], 'exist', 'skipOnError' => true, 'targetClass' => Iirup::class, 'targetAttribute' => ['fk_iirup_id' => 'id']],
         ];
     }
 
@@ -48,7 +47,7 @@ class IirupItems extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'fk_iirup_id' => 'Fk Iirup ID',
-            'fk_par_id' => 'Fk Par ID',
+            'fk_other_property_detail_item_id' => 'Fk Par ID',
             'is_deleted' => 'Is Deleted',
             'created_at' => 'Created At',
         ];
@@ -61,16 +60,6 @@ class IirupItems extends \yii\db\ActiveRecord
      */
     public function getFkIirup()
     {
-        return $this->hasOne(Iirup::className(), ['id' => 'fk_iirup_id']);
-    }
-
-    /**
-     * Gets query for [[FkPar]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getFkPar()
-    {
-        return $this->hasOne(Par::className(), ['id' => 'fk_par_id']);
+        return $this->hasOne(Iirup::class, ['id' => 'fk_iirup_id']);
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 
@@ -30,10 +31,17 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
 
             'serial_number',
-            'fk_acctbl_ofr',
-            'fk_approved_by',
+            'office_name',
+            'approved_by',
+            'accountable_officer',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id, 'none');
+                }
+            ],
         ],
     ]); ?>
 

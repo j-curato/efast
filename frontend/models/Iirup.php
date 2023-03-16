@@ -33,8 +33,8 @@ class Iirup extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'serial_number', 'fk_acctbl_ofr', 'fk_approved_by', 'reporting_period'], 'required'],
-            [['id', 'fk_acctbl_ofr', 'fk_approved_by'], 'integer'],
+            [['id', 'serial_number', 'fk_acctbl_ofr', 'fk_approved_by', 'reporting_period', 'fk_office_id'], 'required'],
+            [['id', 'fk_acctbl_ofr', 'fk_approved_by', 'fk_office_id'], 'integer'],
             [['created_at'], 'safe'],
             [['serial_number', 'reporting_period'], 'string', 'max' => 255],
             [['serial_number'], 'unique'],
@@ -56,6 +56,7 @@ class Iirup extends \yii\db\ActiveRecord
             'fk_approved_by' => ' Approved By',
             'created_at' => 'Created At',
             'reporting_period' => 'Reporting Period',
+            'fk_office_id' => 'Office',
         ];
     }
 
@@ -64,7 +65,7 @@ class Iirup extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getFkAcctblOfr()
+    public function getAcctblOfr()
     {
         return $this->hasOne(Employee::class, ['employee_id' => 'fk_acctbl_ofr']);
     }
@@ -74,7 +75,7 @@ class Iirup extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getFkApprovedBy()
+    public function getApprovedBy()
     {
         return $this->hasOne(Employee::class, ['employee_id' => 'fk_approved_by']);
     }
@@ -87,5 +88,9 @@ class Iirup extends \yii\db\ActiveRecord
     public function getIirupItems()
     {
         return $this->hasMany(IirupItems::class, ['fk_iirup_id' => 'id']);
+    }
+    public function getOffice()
+    {
+        return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
     }
 }
