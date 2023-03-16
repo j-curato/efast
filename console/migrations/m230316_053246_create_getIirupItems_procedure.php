@@ -14,7 +14,6 @@ class m230316_053246_create_getIirupItems_procedure extends Migration
     {
         $sql = <<<SQL
             DROP PROCEDURE IF EXISTS getIirupItems;
-            DELIMITER //
             CREATE PROCEDURE getIirupItems(IN iirup_id BIGINT )
             BEGIN
             SELECT 
@@ -53,8 +52,7 @@ class m230316_053246_create_getIirupItems_procedure extends Migration
             WHERE 
             iirup_items.fk_iirup_id = iirup_id
             AND iirup_items.is_deleted = 0;
-            END //
-            DELIMITER ;
+            END 
         SQL;
         $this->execute($sql);
     }
