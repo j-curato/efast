@@ -992,6 +992,7 @@ class PrPurchaseRequestController extends Controller
 									pr_purchase_request_item.fk_ppmp_non_cse_item_id
 									 ) as item_in_pr_total ON supplemental_ppmp_non_cse_items.id = item_in_pr_total.fk_ppmp_non_cse_item_id
                 WHERE supplemental_ppmp_non_cse.id =  :id
+                AND supplemental_ppmp_non_cse_items.is_deleted  !=1
                 $sql
                 
                 ", $params)
