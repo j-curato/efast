@@ -82,7 +82,7 @@ class RemittanceController extends Controller
     LEFT JOIN remittance_payee ON dv_accounting_entries.remittance_payee_id = remittance_payee.id
     LEFT JOIN payee ON remittance_payee.payee_id = payee.id
     LEFT JOIN accounting_codes ON dv_accounting_entries.object_code  = accounting_codes.object_code
-    LEFT JOIN dv_aucs_entries ON dv_accounting_entries.dv_aucs_id = dv_aucs_entries.dv_aucs_id
+    LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
     LEFT JOIN (SELECT 
         remittance_items.fk_dv_acounting_entries_id,
         SUM(remittance_items.amount) as remitted_amount
