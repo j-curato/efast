@@ -406,16 +406,33 @@
                                         Yii::$app->user->can('super-user') ?     ['label' => 'Property Articles', 'icon' => 'circle-o', 'url' => ['/property-articles'],] : [],
                                     ],
                                 ],
+                                [
+                                    'label' => 'Transactions',
+                                    'icon' => 'circle-o',
+                                    'url' => '#',
+                                    'items' => [
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Property', 'icon' => 'circle-o', 'url' => ['/property'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'PTR', 'icon' => 'circle-o', 'url' => ['/ptr'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'PAR', 'icon' => 'circle-o', 'url' => ['/par'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Property Card', 'icon' => 'circle-o', 'url' => ['/property-card'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Other Property Details', 'icon' => 'circle-o', 'url' => ['/other-property-details'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Depreciation Schedule', 'icon' => 'circle-o', 'url' => ['/depreciation-schedule'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'RLSDDP', 'icon' => 'circle-o', 'url' => ['/rlsddp'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'IIRUP', 'icon' => 'circle-o', 'url' => ['/iirup'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Derecognition', 'icon' => 'circle-o', 'url' => ['/derecognition'],] : [],
+                                    ],
+                                ],
+                                [
+                                    'label' => 'Reports',
+                                    'icon' => 'circle-o',
+                                    'url' => '#',
+                                    'items' => [
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Print PC Stickers', 'icon' => 'circle-o', 'url' => ['/property-card/print-pc'],] : [],
+                                    ],
+                                ],
 
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Property', 'icon' => 'circle-o', 'url' => ['/property'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'PTR', 'icon' => 'circle-o', 'url' => ['/ptr'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'PAR', 'icon' => 'circle-o', 'url' => ['/par'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Property Card', 'icon' => 'circle-o', 'url' => ['/property-card'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Other Property Details', 'icon' => 'circle-o', 'url' => ['/other-property-details'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Depreciation Schedule', 'icon' => 'circle-o', 'url' => ['/depreciation-schedule'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'RLSDDP', 'icon' => 'circle-o', 'url' => ['/rlsddp'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'IIRUP', 'icon' => 'circle-o', 'url' => ['/iirup'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Print PC Stickers', 'icon' => 'circle-o', 'url' => ['/property-card/print-pc'],] : [],
+
+
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Scan QR', 'icon' => 'circle-o', 'url' => ['/property-card/property-details'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'RPCPPE', 'icon' => 'circle-o', 'url' => ['/rpcppe'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Inventory', 'icon' => 'circle-o', 'url' => ['/inventory-report'],] : [],
