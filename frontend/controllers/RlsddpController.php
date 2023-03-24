@@ -10,6 +10,7 @@ use app\models\RlsddpIndexSearch;
 use app\models\RlsddpItems;
 use app\models\RlsddpSearch;
 use ErrorException;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -90,6 +91,41 @@ class RlsddpController extends Controller
             ->bindValue(':id', $id)
             ->queryAll();
     }
+    private function checkIfHasRlsddp($par_id, $item_id = null)
+    {
+        $params = [];
+        $sql = '';
+        if (!empty($item_id)) {
+            $sql = 'AND ';
+            $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['!=', 'rlsddp_items.id', $item_id], $params);
+        }
+
+        $qry = YIi::$app->db->createCommand("SELECT EXISTS (SELECT 
+        property.id
+        FROM property
+        JOIN par ON property.id = par.fk_property_id
+        JOIN rlsddp_items ON par.id = rlsddp_items.fk_par_id
+        WHERE 
+        EXISTS
+        
+        
+         (SELECT 
+         par.id 
+         FROM 
+         par
+        join property as pty ON par.fk_property_id = pty.id
+        join rlsddp_items on par.id = rlsddp_items.fk_par_id
+        WHERE 
+        rlsddp_items.is_deleted = 0
+        AND par.id = :par_id
+        $sql
+        )
+        AND rlsddp_items.is_deleted = 0
+        )", $params)
+            ->bindValue(':par_id', $par_id)
+            ->queryScalar();
+        return $qry;
+    }
     private function insertItems($rlsddp_id, $items = [], $type = '')
     {
         try {
@@ -106,11 +142,19 @@ class RlsddpController extends Controller
                     ->bindValue(':id', $rlsddp_id)
                     ->execute();
             }
-            foreach ($items as $itm) {
+            foreach ($items as $key => $itm) {
+                $itm_id = null;
                 if (!empty($itm['item_id'])) {
                     $rlsddp_item  = RlsddpItems::findOne($itm['item_id']);
+                    $itm_id = $itm['item_id'];
                 } else {
                     $rlsddp_item = new RlsddpItems();
+                }
+
+                $row = $key + 1;
+                $qry = $this->checkIfHasRlsddp($itm['par_id'], $itm_id);
+                if (intval($qry) === 1) {
+                    throw new ErrorException("Row $row already has an RLSDDP");
                 }
                 $rlsddp_item->fk_rlsddp_id = $rlsddp_id;
                 $rlsddp_item->fk_par_id = $itm['par_id'];
@@ -307,7 +351,7 @@ class RlsddpController extends Controller
             return json_encode($qry);
         }
     }
-    public static function getSerialNo($office_id)
+    private  function getSerialNo($office_id)
     {
         $office_name = Office::findOne($office_id)->office_name;
         $query = Yii::$app->db->createCommand("call getRlsddpNo(:office_id)")
@@ -322,5 +366,33 @@ class RlsddpController extends Controller
         $new_num = substr(str_repeat(0, 5) . $num, -5);
         $string = strtoupper($office_name) . '-RLSDDP-' . $new_num;
         return $string;
+    }
+    public function actionSearchRlsddp($q = null, $id = null, $page = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+            $query->select('rlsddp.id, rlsddp.serial_number AS text')
+                ->from('rlsddp')
+                ->where(['like', 'rlsddp.serial_number', $q]);
+            if (!empty($page)) {
+
+                $query->offset($offset)
+                    ->limit($limit);
+            }
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+            if (!empty($page)) {
+                $out['pagination'] = ['more' => !empty($data) ? true : false];
+            }
+        }
+        // elseif ($id > 0) {
+        //     $out['results'] = ['id' => $id, 'text' => ChartOfAccounts::find($id)->uacs];
+        // }
+        return $out;
     }
 }

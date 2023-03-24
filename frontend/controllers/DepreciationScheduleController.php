@@ -6,6 +6,7 @@ use Yii;
 use app\models\DepreciationSchedule;
 use app\models\DepreciationScheduleSearch;
 use PHPUnit\Util\Log\JSON;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -22,6 +23,31 @@ class DepreciationScheduleController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'create',
+                    'update',
+                    'delete',
+                    'generate',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'delete',
+                            'generate',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -144,5 +170,4 @@ class DepreciationScheduleController extends Controller
             return json_encode($this->getDepreciations($reporting_period, $book));
         }
     }
-
 }

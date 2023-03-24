@@ -56,6 +56,10 @@ $this->registerCssFile("@web/frontend/views/depreciation-schedule/styles.css", [
                 <th>
                     Account Title
                 </th>
+                <th>
+                    Derecognition Period
+                </th>
+
 
             </thead>
             <tbody>

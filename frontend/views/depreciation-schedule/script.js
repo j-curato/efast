@@ -20,7 +20,12 @@ function display(data) {
         <td rowspan=''>${thousands_separators(val.mnthly_depreciation)}</td>
         <td rowspan=''>${val.lst_mth}</td>
         <td rowspan=''></td>
-        <td rowspan=''>${val.depreciation_object_code}-${val.depreciation_account_title}</td>`;
+        <td rowspan=''>${val.depreciation_object_code}-${
+      val.depreciation_account_title
+    }</td>
+    <td rowspan=''>${val.derecognition_period}</td>
+
+        `;
 
     let startDate = new Date(val.strt_mnth + "-01");
     let endDate = new Date(val.lst_mth + "-01");
@@ -44,7 +49,7 @@ function display(data) {
     }
     r += `</tr>`;
     from_to_mnt += `</tr>`;
-    $("#data_tbl tbody").append(`<tr><td colspan='16' rowspan='3'></td></tr>`);
+    $("#data_tbl tbody").append(`<tr><td colspan='17' rowspan='3'></td></tr>`);
     $("#data_tbl tbody").append(yrHead);
     $("#data_tbl tbody").append(from_to_mnt);
     $("#data_tbl tbody").append(r);

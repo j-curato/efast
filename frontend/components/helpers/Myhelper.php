@@ -2,7 +2,9 @@
 
 namespace app\components\helpers;
 
+use app\models\ChartOfAccounts;
 use app\models\Office;
+use app\models\SubAccounts1;
 use Da\QrCode\QrCode;
 use ErrorException;
 use Yii;
@@ -141,5 +143,46 @@ class MyHelper extends BaseObject
         header('Content-Type: ' . $qrCode->getContentType());
         $base_path =  \Yii::getAlias('@webroot');
         $qrCode->writeFile($base_path . "/qr_codes/$text.png");
+    }
+    public static function createPropertySubAccount($chart_of_account_id = '', $property_number = '')
+    {
+        try {
+            if (empty($chart_of_account_id) || empty($property_number)) {
+                throw new ErrorException('Chart of Account and Property Number Cannot be empty');
+            }
+            $chart_uacs = ChartOfAccounts::find()
+                ->where("id = :id", ['id' => $chart_of_account_id])->one();
+            $last_id = SubAccounts1::find()->orderBy('id DESC')->one()->id + 1;
+            $uacs = $chart_uacs->uacs . '_';
+            for ($i = strlen($last_id); $i <= 4; $i++) {
+                $uacs .= 0;
+            }
+
+            $account_title = $chart_uacs->general_ledger . '-' . $property_number;
+
+            $check_if_exists = Yii::$app->db->createCommand("SELECT id FROM sub_accounts1 WHERE sub_accounts1.name = :account_title")
+                ->bindValue(':account_title', $account_title)
+                ->queryScalar();
+
+            if (!empty($check_if_exists)) {
+                return ['isSuccess' => true, 'id' => $check_if_exists];
+            }
+            $model = new SubAccounts1();
+            $model->chart_of_account_id = $chart_of_account_id;
+            $model->object_code = $uacs . $last_id;
+            $model->name = $account_title;
+            $model->is_active = 1;
+            if (!$model->validate()) {
+                throw new ErrorException(json_encode($model->errors));
+            }
+            if (!$model->save(false)) {
+
+                throw new ErrorException("Save Sub Account Failed");
+            }
+        } catch (ErrorException $e) {
+            return ['isSuccess' => false, 'error_message' => $e->getMessage()];
+        }
+
+        return ['isSuccess' => true, 'id' => $model->id];
     }
 }

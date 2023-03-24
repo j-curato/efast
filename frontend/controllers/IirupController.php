@@ -10,6 +10,7 @@ use app\models\IirupItems;
 use app\models\IirupSearch;
 use app\models\Office;
 use ErrorException;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -64,8 +65,6 @@ class IirupController extends Controller
         try {
             if ($isUpdate === true) {
                 $item_ids = array_column($items, 'item_id');
-
-
                 $params = [];
                 $sql = '';
                 if (!empty($item_ids)) {
@@ -77,11 +76,25 @@ class IirupController extends Controller
                     ->bindValue(':id', $model_id)
                     ->query();
             }
-            foreach ($items as $itm) {
+            foreach ($items as $key => $itm) {
+                $qry =  new Query();
+                $qry->select('id')
+                    ->from('iirup_items')
+                    ->andWhere('iirup_items.is_deleted = 0')
+                    ->andWhere('iirup_items.fk_other_property_detail_item_id = :opd_id', ['opd_id' => $itm['other_property_detail_item_id']]);
+
+
+
                 if (!empty($itm['item_id'])) {
+                    $qry->andWhere('iirup_items.id !=:item_id', ['item_id' => $itm['item_id']]);
                     $iirupItem = IirupItems::findOne($itm['item_id']);
                 } else {
                     $iirupItem = new IirupItems();
+                }
+                $f_qry = $qry->all();
+                $row = $key + 1;
+                if (!empty($f_qry)) {
+                    throw new ErrorException("Row " . $row . " already has an IIRUP.");
                 }
                 $iirupItem->fk_iirup_id = $model_id;
                 $iirupItem->fk_other_property_detail_item_id = $itm['other_property_detail_item_id'];
@@ -377,5 +390,29 @@ class IirupController extends Controller
         $new_num = substr(str_repeat(0, 5) . $num, -5);
         $string = strtoupper($office_name) . "-IIRUP-$reporting_period-" . $new_num;
         return $string;
+    }
+    public function actionSearchIirup($page = 1, $q = null, $id = null)
+    {
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $user_province = strtolower(Yii::$app->user->identity->province);
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if ($id > 0) {
+        } else if (!is_null($q)) {
+            $query = new Query();
+            $query->select('iirup.id, iirup.serial_number AS text')
+                ->from('iirup')
+                ->where(['like', 'iirup.serial_number', $q]);
+            $query->offset($offset)
+                ->limit($limit);
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+            $out['pagination'] = ['more' => !empty($data) ? true : false];
+        }
+        return $out;
     }
 }

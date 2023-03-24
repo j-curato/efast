@@ -240,21 +240,31 @@ class PropertyController extends Controller
         $string = strtoupper($office_name) . '-PPE-' . $zero . $num;
         return $string;
     }
-    public function actionSearchProperty($q = null, $id = null, $province = null)
+    public function actionSearchProperty($q = null, $id = null, $page = null, $withOPD = false)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-
-
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
             $query = new Query();
             $query->select('property.id as id, property.property_number AS text')
-                ->from('property')
-                ->where(['like', 'property.property_number', $q]);
+                ->from('property');
+            if ($withOPD) {
+                $query->join("JOIN", 'other_property_details', 'property.id = other_property_details.fk_property_id');
+            }
+            $query->where(['like', 'property.property_number', $q]);
 
+            if (!empty($page)) {
+                $query->offset($offset)
+                    ->limit($limit);
+            }
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
+            if (!empty($page)) {
+                $out['pagination'] = ['more' => !empty($data) ? true : false];
+            }
         }
         // elseif ($id > 0) {
         //     $out['results'] = ['id' => $id, 'text' => ChartOfAccounts::find($id)->uacs];

@@ -548,7 +548,6 @@ class OtherPropertyDetailsController extends Controller
     }
     public function actionPropertyDetails()
     {
-
         if (Yii::$app->request->isPost) {
             $id = $_POST['property_id'];
             return json_encode($this->propertyDetails($id));
