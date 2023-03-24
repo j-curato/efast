@@ -75,14 +75,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td><b>{$itm['article_name']}</b><br><i>{$itm['description']}</i></td>
                         <td>{$itm['property_number']}</td>
                         <td>1</td>
-                        <td>{$itm['acquisition_amount']}</td>
-                        <td>{$itm['acquisition_amount']}</td>
-                        <td>{$itm['mnthly_depreciation']}</td>
-                        <td>{$itm['book_amt']}</td>
+                        <td>" . number_format($itm['acquisition_amount'], 2) . "</td>
+                        <td>" . number_format($itm['acquisition_amount'], 2) . "</td>
+                        <td>" . number_format($itm['mnthly_depreciation'], 2) . "</td>
+                        <td>" . number_format($itm['book_amt'], 2) . "</td>
                         <td>{$itm['strt_mnth']}</td>
                         <td>{$itm['lst_mth']}</td>
                         <td>{$itm['new_last_month']}</td>
-                        <td>{$itm['mnthly_depreciation']}</td>
+                        <td>" . number_format($itm['mnthly_depreciation'], 2) . "</td>
                     </tr>";
             }
 
@@ -93,6 +93,11 @@ $this->params['breadcrumbs'][] = $this->title;
 <style>
     .panel {
         padding: 2rem;
+    }
+
+    th,
+    td {
+        text-align: center;
     }
 </style>
 <script>

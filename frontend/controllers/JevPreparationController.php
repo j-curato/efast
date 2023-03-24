@@ -515,14 +515,34 @@ class JevPreparationController extends Controller
                 ->bindValue(':property_id', $drcgtn->fk_property_id)
                 ->bindValue(':book_id', $bookId)
                 ->queryAll();
-            $entries = ArrayHelper::getColumn($qry, function ($element) {
-                $arr = [];
-                $arr['object_code'] =  $element['depreciation_object_code'];
-                $arr['account_title'] =  $element['depreciation_account_title'];
-                $arr['credit'] =  $element['mnthly_depreciation'];
-                $arr['debit'] =  0;
-                return $arr;
+            $credits = ArrayHelper::getColumn($qry, function ($element) {
+                $q =
+                    [
+
+                        'object_code' =>  $element['depreciation_object_code'],
+                        'account_title' =>  $element['depreciation_account_title'],
+                        'credit' =>  $element['mnthly_depreciation'],
+                        'debit' =>  0,
+                    ];
+
+                return $q;
             });
+
+            $debits = ArrayHelper::getColumn($qry, function ($element) {
+                $q =
+                    [
+
+                        'object_code' =>  $element['subAcc1ObjCde'],
+                        'account_title' =>  $element['subAcc1AccTle'],
+                        'credit' =>  0,
+                        'debit' =>  $element['mnthly_depreciation'],
+                    ];
+                return $q;
+            });
+            $entries = array_merge($credits, $debits);
+            $d = DateTime::createFromFormat('Y-m-d', $drcgtn->date);
+            $model->reporting_period = $d->format('Y-m');
+            $model->date = $d->format('Y-m-') . $d->format('t');
             $model->fk_derecognition_id = $derecognitionId;
             $model->book_id = $bookId;
             $b = !empty($model->book_id) ? $model->books->name : '';

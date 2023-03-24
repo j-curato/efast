@@ -32,6 +32,8 @@ class m230322_030512_create_derecognitionProperty_procedure extends Migration
             books.`name` as book_name,
             depreciation_sub_account.`name` as depreciation_account_title,
             depreciation_sub_account.`object_code` as depreciation_object_code,
+            sub_accounts1.`name`  as subAcc1AccTle,
+            sub_accounts1.object_code as subAcc1ObjCde,
             other_property_detail_items.amount as book_amt,
             property.date,
             @start_month :=(CASE
