@@ -106,9 +106,14 @@ use yii\widgets\ActiveForm;
 
         </tbody>
     </table>
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="row" style="padding-top: 2rem;">
+        <div class="col-sm-3 col-sm-offset-5">
+            <div class="form-group">
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:60%']) ?>
+            </div>
+        </div>
     </div>
+
 
     <?php ActiveForm::end(); ?>
 
