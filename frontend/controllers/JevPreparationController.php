@@ -6,6 +6,7 @@ use app\models\Books;
 use app\models\CashFlow;
 use app\models\ChartOfAccounts;
 use app\models\DepreciationSchedule;
+use app\models\Derecognition;
 use app\models\JevAccountingEntries;
 use Yii;
 use app\models\JevPreparation;
@@ -479,12 +480,64 @@ class JevPreparationController extends Controller
             return false;
         }
     }
-    public function actionCreate($depSchedId = null)
+    public function actionCreate($depSchedId = null, $derecognitionId = null, $bookId = null)
     {
         $model = new JevPreparation();
         $model->form_token = Yii::$app->session['jev_form_session'];
+        $entries = [];
+        if (!empty($depSchedId)) {
+
+            $depSched = DepreciationSchedule::findOne($depSchedId);
+            $qry = Yii::$app->db->createCommand("CALL depreciations(:reporting_period,:book)")
+                ->bindValue(':reporting_period', $depSched->reporting_period)
+                ->bindValue(':book', $depSched->fk_book_id)
+                ->queryAll();
+            $entries = ArrayHelper::getColumn($qry, function ($element) {
+                $arr = [];
+                $arr['object_code'] =  $element['depreciation_object_code'];
+                $arr['account_title'] =  $element['depreciation_account_title'];
+                $arr['credit'] =  $element['mnthly_depreciation'];
+                $arr['debit'] =  0;
+                return $arr;
+            });
+            $model->book_id = $depSched->fk_book_id;
+            $b = !empty($depSched->fk_book_id) ? $depSched->book->name : '';
+            $model->reporting_period = $depSched->reporting_period;
+            $model->explaination = "To record Depreciation Expense for the month of "
+                . DateTime::createFromFormat('Y-m', $depSched->reporting_period)->format('F, Y') .
+                " under " . $b;
+        }
+        if (!empty($derecognitionId)) {
+
+            $drcgtn = Derecognition::findOne($derecognitionId);
+            $qry = Yii::$app->db->createCommand("CALL derecognitionProperty(:drctn_date,:property_id,:book_id)")
+                ->bindValue(':drctn_date', $drcgtn->date)
+                ->bindValue(':property_id', $drcgtn->fk_property_id)
+                ->bindValue(':book_id', $bookId)
+                ->queryAll();
+            $entries = ArrayHelper::getColumn($qry, function ($element) {
+                $arr = [];
+                $arr['object_code'] =  $element['depreciation_object_code'];
+                $arr['account_title'] =  $element['depreciation_account_title'];
+                $arr['credit'] =  $element['mnthly_depreciation'];
+                $arr['debit'] =  0;
+                return $arr;
+            });
+            $model->fk_derecognition_id = $derecognitionId;
+            $model->book_id = $bookId;
+            $b = !empty($model->book_id) ? $model->books->name : '';
+            $model->explaination = "To record Depreciation Expense for the month of "
+                . DateTime::createFromFormat('Y-m-d', $drcgtn->date)->format('F, Y') .
+                " under " . $b;
+        }
+        if (!empty($depSchedId) || !empty($derecognitionId)) {
+            $model->responsibility_center_id = YIi::$app->db->createCommand("SELECT id FROM responsibility_center WHERE `name`='fad'")->queryScalar();
+            $model->entry_type = 'Non-Closing';
+            $model->ref_number = 'GJ';
+        }
         // $modelJevItems = [new JevAccountingEntries()];
         if ($model->load(Yii::$app->request->post())) {
+
             $debits = $_POST['debit'];
             $credits = $_POST['credit'];
             $object_code = $_POST['object_code'];
@@ -533,15 +586,7 @@ class JevPreparationController extends Controller
                 return json_encode($model->errors);
             }
         }
-        $entries = [];
-        if (!empty($depSchedId)) {
 
-            $depSched = DepreciationSchedule::findOne($depSchedId);
-            $entries = Yii::$app->db->createCommand("CALL depreciationsForjev(:reporting_period,:book)")
-                ->bindValue(':reporting_period', $depSched->reporting_period)
-                ->bindValue(':book', $depSched->fk_book_id)
-                ->queryAll();
-        }
         return $this->render('create', [
             'model' => $model,
             'type' => 'create',
