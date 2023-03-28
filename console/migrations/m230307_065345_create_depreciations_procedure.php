@@ -68,7 +68,7 @@ class m230307_065345_create_depreciations_procedure extends Migration
                     PREPARE stmt FROM @finalQuery;
                     EXECUTE stmt;
                     DEALLOCATE PREPARE stmt;
-                END ;
+                END 
 
         SQL;
         $this->execute($sql);
