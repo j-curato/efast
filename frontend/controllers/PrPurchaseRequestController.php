@@ -371,7 +371,7 @@ class PrPurchaseRequestController extends Controller
                     $item['unit_cost'],
                     $item['quantity'],
                     $cse_or_non_cse_id,
-                    !empty($item['item_id']) ? $item['item_id'] : '',
+                    !empty($item['item_id']) ? $item['item_id'] : ''
                 );
                 if ($validate !== true) {
                     throw new ErrorException($validate . ' in Specification table item ' . $c);
