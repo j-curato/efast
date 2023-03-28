@@ -9,11 +9,10 @@ use Da\QrCode\QrCode;
 use ErrorException;
 use Yii;
 use yii\base\BaseObject;
-use yii\base\Component;
 use yii\db\Query;
 use yii\helpers\Html;
 
-class MyHelper extends Component
+class MyHelper extends BaseObject
 {
     public static function post($name)
     {

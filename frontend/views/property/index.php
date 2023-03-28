@@ -2,6 +2,7 @@
 
 use app\components\helpers\MyHelper;
 use app\models\PropertyArticles;
+use frontend\components\MyComponent;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
 use kartik\grid\GridView;
@@ -87,7 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return MyHelper::gridDefaultAction($model->id, 'lrgModal');
+                    return MyComponent::gridDefaultAction($model->id, 'lrgModal');
                 }
             ],
         ],

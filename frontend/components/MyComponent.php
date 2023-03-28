@@ -18,6 +18,11 @@ class MyComponent extends Component
     // {
     //     return $q;
     // }
+    public static function gridDefaultAction($id, $class = 'modalButtonUpdate')
+    {
+        return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $id])
+            . ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $id], ['class' => $class]);
+    }
     public static function getQq()
     {
         return 'component';
