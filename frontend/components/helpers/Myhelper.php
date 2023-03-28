@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\components\helpers;
+namespace app\components\helpers;
 
 use app\models\ChartOfAccounts;
 use app\models\Office;
