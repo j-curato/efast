@@ -31,9 +31,9 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
 
+            'office_name',
             'ptr_number',
             'date',
-            'office_name',
             'property_number',
             'par_number',
             'description',

@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use app\models\Books;
 use app\models\Employee;
 use app\models\Office;
@@ -10,6 +11,8 @@ use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\money\MaskMoney;
 use kartik\select2\Select2;
+use Mpdf\Tag\Select;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JsExpression;
@@ -24,15 +27,24 @@ if (!empty($model->fk_ssf_sp_num_id)) {
     $ssf_sp = ArrayHelper::map(SsfSpNum::find()->where('id = :id', ['id' => $model->fk_ssf_sp_num_id])->asArray()->all(), 'id', 'serial_number');
 }
 
-$property_custodian_query = Yii::$app->db->createCommand("SELECT 
-employee_id ,
-CONCAT(f_name,' ',LEFT(m_name,1),'. ' , l_name) as `text`
-FROM 
-employee
-WHERE employee.property_custodian  = 1
-")
-    ->queryAll();
-$property_custodians = ArrayHelper::map($property_custodian_query, 'employee_id', 'text');
+$property_custodian_query = new Query();
+$property_custodian_query->select(['employee_id', 'UPPER(employee_name) as employee_name'])
+    ->from('employee_search_view')
+    ->andWhere('property_custodian  = 1');
+if (!Yii::$app->user->can('super-user')) {
+    $user_data = Yii::$app->memem->getUserData();
+    $property_custodian_query->andWhere('office_name =:office_name', ['office_name' => $user_data->office->office_name]);
+}
+$f_property_custodian_query = $property_custodian_query->all();
+// Yii::$app->db->createCommand("SELECT 
+// employee_id ,
+// CONCAT(f_name,' ',LEFT(m_name,1),'. ' , l_name) as `text`
+// FROM 
+// employee
+// WHERE employee.property_custodian  = 1
+// ")
+//     ->queryAll();
+$property_custodians = ArrayHelper::map(MyHelper::getPropertyCustodians(), 'employee_id', 'employee_name');
 $article = [];
 if (!empty($model->fk_property_article_id)) {
 

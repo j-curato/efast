@@ -26,7 +26,7 @@ $spvr =   MyHelper::getEmployee($model->fk_supvr, 'one');
 
         <tr>
             <th colspan="6" class="ctr no-bdr">
-                <h4>REPORT OF LOST, STOLEN, DAMAGED OR DESTROYED PROPERTY</h4>
+                <h4><b>REPORT OF LOST, STOLEN, DAMAGED OR DESTROYED PROPERTY</b></h4>
             </th>
         </tr>
         <tr>

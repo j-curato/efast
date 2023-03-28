@@ -28,15 +28,8 @@ $rcv_by = [];
 $actual_user = [];
 $isd_by = [];
 $apv_by = [];
-$property_custodian_query = Yii::$app->db->createCommand("SELECT 
-employee_id ,
-CONCAT(f_name,' ',LEFT(m_name,1),'. ' , l_name) as `text`
-FROM 
-employee
-WHERE employee.property_custodian  = 1
-")
-    ->queryAll();
-$property_custodians = ArrayHelper::map($property_custodian_query, 'employee_id', 'text');
+
+$property_custodians = ArrayHelper::map(MyHelper::getPropertyCustodians(), 'employee_id', 'employee_name');
 if (!empty($model->fk_property_id)) {
     $property = ArrayHelper::map(Property::find()->where('id = :id', ['id' => $model->fk_property_id])->asArray()->all(), 'id', 'property_number');
 }
@@ -114,15 +107,23 @@ if (!empty($model->fk_approved_by)) {
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-3">
-            <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
+        <?php
+        $x = 6;
+
+        if (Yii::$app->user->can('super-user')) {
+            echo '<div class="col-sm-3">';
+            echo $form->field($model, 'fk_office_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
                 'pluginOptions' => [
                     'placeholder' => 'Select Office'
                 ]
-            ]) ?>
-        </div>
-        <div class="col-sm-3">
+            ]);
+            echo "</div>";
+            $x = 3;
+        }
+        ?>
+
+        <div class="col-sm-<?= $x; ?>">
             <?= $form->field($model, 'is_unserviceable')->widget(Select2::class, [
                 'data' => $ppe_status,
                 'pluginOptions' => [

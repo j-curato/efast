@@ -16,15 +16,8 @@ use yii\widgets\ActiveForm;
 /* @var $model app\models\Par */
 /* @var $form yii\widgets\ActiveForm */
 
-$property_custodian_query = Yii::$app->db->createCommand("SELECT 
-employee_id ,
-CONCAT(f_name,' ',LEFT(m_name,1),'. ' , l_name) as `text`
-FROM 
-employee
-WHERE employee.property_custodian  = 1
-")
-    ->queryAll();
-$property_custodians = ArrayHelper::map($property_custodian_query, 'employee_id', 'text');
+
+$property_custodians = ArrayHelper::map(MyHelper::getPropertyCustodians(), 'employee_id', 'employee_name');
 ?>
 
 <div class="par-form">
@@ -63,23 +56,29 @@ $property_custodians = ArrayHelper::map($property_custodian_query, 'employee_id'
                 ]
             ]) ?>
         </div>
-        <div class="col-sm-6">
-            <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
+
+        <?php
+
+        if (YIi::$app->user->can('super-user')) {
+            echo '<div class="col-sm-6">';
+            echo  $form->field($model, 'fk_office_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
                 'pluginOptions' => [
                     'placeholder' => 'Select Office'
                 ]
-            ]) ?>
-        </div>
-    </div>
-    <div class="row">
+            ]);
+            echo '</div>';
+        } ?>
+
+
         <div class="col-sm-6">
             <?= $form->field($model, 'is_unserviceable')->widget(Select2::class, [
                 'data' => $ppe_status,
                 'pluginOptions' => [
                     'placeholder' => 'Select Serviceable/Unserviceable'
                 ]
-            ]) ?></div>
+            ]) ?>
+        </div>
         <div class="col-sm-6">
             <?= $form->field($model, 'fk_location_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map(Location::find()->where('id = :id', ['id' => $model->fk_location_id])->all(), 'id', 'location'),
@@ -104,9 +103,7 @@ $property_custodians = ArrayHelper::map($property_custodian_query, 'employee_id'
 
             ]) ?>
         </div>
-    </div>
 
-    <div class="row">
 
         <div class="col-sm-6">
             <?= $form->field($model, 'fk_property_id')->widget(Select2::class, [
@@ -141,9 +138,7 @@ $property_custodians = ArrayHelper::map($property_custodian_query, 'employee_id'
 
             ]) ?>
         </div>
-    </div>
 
-    <div class="row">
         <div class="col-sm-6">
             <?= $form->field($model, 'fk_received_by')->widget(Select2::class, [
                 'data' => $rcv_by,

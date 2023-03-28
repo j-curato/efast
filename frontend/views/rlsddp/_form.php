@@ -27,7 +27,21 @@ $itemRow = 0;
     ]); ?>
 
     <div class="row">
-        <div class="col-sm-3">
+
+        <?php
+
+        if (Yii::$app->user->can('super-user')) {
+            echo ' <div class="col-sm-2">';
+            echo     $form->field($model, 'fk_office_id')->widget(Select2::class, [
+                'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
+                'pluginOptions' => [
+                    'placeholder' => ''
+                ]
+            ]);
+            echo '</div>';
+        }
+        ?>
+        <div class="col-sm-2">
             <?= $form->field($model, 'date')->widget(DatePicker::class, [
                 'pluginOptions' => [
                     'format' => 'yyyy-mm-dd',
@@ -35,7 +49,7 @@ $itemRow = 0;
                 ]
             ]) ?>
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-2">
             <?= $form->field($model, 'status')->widget(Select2::class, [
                 'data' => [
                     '1' => 'Lost',
@@ -49,28 +63,10 @@ $itemRow = 0;
             ]) ?>
         </div>
 
-        <div class="col-sm-3">
 
-            <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
-                'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
-                'pluginOptions' => [
-                    'placeholder' => ''
-                ]
-            ]) ?>
-        </div>
-        <div class="col-sm-2">
 
-            <?= $form->field($model, 'is_blottered')->widget(Select2::class, [
-                'data' => ['1' => 'Yes', '0' => 'No'],
-                'pluginOptions' => [
-                    'placeholder' => ''
-                ]
-            ]) ?>
-        </div>
 
-    </div>
 
-    <div class="row">
         <div class="col-sm-3">
             <?= $form->field($model, 'fk_acctbl_offr')->widget(Select2::class, [
                 'data' => ArrayHelper::map(MyHelper::getEmployee($model->fk_acctbl_offr), 'employee_id', 'employee_name'),
@@ -126,9 +122,16 @@ $itemRow = 0;
             ]) ?>
 
         </div>
-        <div class="col-sm-3">
-            <?= $form->field($model, 'police_station')->textInput() ?>
+        <div class="col-sm-2">
+
+            <?= $form->field($model, 'is_blottered')->widget(Select2::class, [
+                'data' => ['1' => 'Yes', '0' => 'No'],
+                'pluginOptions' => [
+                    'placeholder' => ''
+                ]
+            ]) ?>
         </div>
+
         <div class="col-sm-3">
             <?= $form->field($model, 'blotter_date')->widget(DatePicker::class, [
                 'pluginOptions' => [
@@ -136,6 +139,9 @@ $itemRow = 0;
                     'autoclose' => true
                 ]
             ]) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'police_station')->textInput() ?>
         </div>
     </div>
     <?= $form->field($model, 'circumstances')->textarea(['rows' => 4]) ?>

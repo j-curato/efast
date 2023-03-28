@@ -31,7 +31,15 @@ class Employee extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['property_custodian', 'employee_id'], 'integer'],
+            [['property_custodian', 'employee_id', 'fk_office_id'], 'integer'],
+            [[
+                'property_custodian',
+                'employee_id',
+                'fk_office_id',
+                'f_name',
+                'l_name',
+                'm_name',
+            ], 'required'],
             [['employee_number', 'f_name', 'l_name', 'm_name', 'status', 'position', 'suffix', 'province'], 'string', 'max' => 255],
             [[
                 'employee_id',
@@ -68,6 +76,7 @@ class Employee extends \yii\db\ActiveRecord
             'employee_number' => 'Employee Number',
             'suffix' => 'Suffix',
             'province' => 'Province',
+            'fk_office_id' => 'Office/Province',
         ];
     }
 }

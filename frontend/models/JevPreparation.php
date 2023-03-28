@@ -39,7 +39,7 @@ class JevPreparation extends \yii\db\ActiveRecord
     {
         return [
             [['book_id', 'reporting_period', 'date', 'jev_number', 'explaination', 'check_ada_date', 'entry_type'], 'required'],
-            [['responsibility_center_id', 'fund_cluster_code_id', 'cash_flow_id', 'payee_id', 'book_id', 'cash_disbursement_id'], 'integer'],
+            [['responsibility_center_id', 'fund_cluster_code_id', 'cash_flow_id', 'payee_id', 'book_id', 'cash_disbursement_id', 'fk_derecognition_id'], 'integer'],
             [['date', 'check_ada_date', 'check_ada_number'], 'safe'],
             [['reporting_period', 'entry_type'], 'string', 'max' => 50],
             [['jev_number', 'dv_number', 'lddap_number', 'ref_number'], 'string', 'max' => 100],
@@ -103,6 +103,7 @@ class JevPreparation extends \yii\db\ActiveRecord
             'entry_type' => 'Entry Type',
             'check_ada_date' => 'Check/ADA Date',
             'cash_disbursement_id' => 'DV Number',
+            'fk_derecognition_id' => 'fk_derecognition_id',
 
         ];
     }

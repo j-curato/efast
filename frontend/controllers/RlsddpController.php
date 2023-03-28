@@ -154,7 +154,7 @@ class RlsddpController extends Controller
                 $row = $key + 1;
                 $qry = $this->checkIfHasRlsddp($itm['par_id'], $itm_id);
                 if (intval($qry) === 1) {
-                    throw new ErrorException("Row $row already has an RLSDDP");
+                    throw new ErrorException("There is already an RLSDDP created for Row $row");
                 }
                 $rlsddp_item->fk_rlsddp_id = $rlsddp_id;
                 $rlsddp_item->fk_par_id = $itm['par_id'];
@@ -208,7 +208,11 @@ class RlsddpController extends Controller
     public function actionCreate()
     {
         $model = new Rlsddp();
-
+        if (!Yii::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $office_id = $user_data->office->id;
+            $model->fk_office_id = $office_id;
+        }
         if ($model->load(Yii::$app->request->post())) {
             $model->id = MyHelper::getUuid();
             $model->serial_number =  $this->getSerialNo($model->fk_office_id);

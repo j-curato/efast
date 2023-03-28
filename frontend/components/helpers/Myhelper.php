@@ -185,4 +185,17 @@ class MyHelper extends BaseObject
 
         return ['isSuccess' => true, 'id' => $model->id];
     }
+    public static function getPropertyCustodians()
+    {
+        $property_custodian_query = new Query();
+        $property_custodian_query->select(['employee_id', 'UPPER(employee_name) as employee_name'])
+            ->from('employee_search_view')
+            ->andWhere('property_custodian  = 1');
+        if (!Yii::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $property_custodian_query->andWhere('office_name =:office_name', ['office_name' => $user_data->office->office_name]);
+        }
+        $f_property_custodian_query = $property_custodian_query->all();
+        return $f_property_custodian_query;
+    }
 }

@@ -47,9 +47,10 @@ class PropertySearch extends Property
     public function search($params)
     {
         $query = Property::find();
-
+        $query->joinWith('office');
         if (!Yii::$app->user->can('super-user')) {
-            $query->where("property.province =:province", ['province' => Yii::$app->user->identity->province]);
+            $user_data = Yii::$app->memem->getUserData();
+            $query->andWhere('office.office_name = :office_name', ['office_name' => $user_data->office->office_name]);
         }
         // add conditions that should always apply here
 
@@ -67,7 +68,7 @@ class PropertySearch extends Property
         $query->joinWith('book');
         $query->joinWith('employee');
         $query->joinWith('unitOfMeasure');
-        $query->joinWith('office');
+
 
 
         // grid filtering conditions

@@ -34,14 +34,21 @@ $itemRow = 0;
                 ]
             ]) ?>
         </div>
-        <div class="col-sm-3">
-            <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
+
+        <?php
+
+        if (Yii::$app->user->can('super-user')) {
+            echo '   <div class="col-sm-3">';
+            echo   $form->field($model, 'fk_office_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
                 'pluginOptions' => [
                     'placeholder' => 'Select Office'
                 ]
-            ]) ?>
-        </div>
+            ]);
+            echo ' </div>';
+        }
+        ?>
+
         <div class="col-sm-3">
             <?= $form->field($model, 'fk_acctbl_ofr')->widget(Select2::class, [
                 'data' => ArrayHelper::map(MyHelper::getEmployee($model->fk_acctbl_ofr), 'employee_id', 'employee_name'),

@@ -253,7 +253,13 @@ class PropertyController extends Controller
             if ($withOPD) {
                 $query->join("JOIN", 'other_property_details', 'property.id = other_property_details.fk_property_id');
             }
-            $query->where(['like', 'property.property_number', $q]);
+            if (!Yii::$app->user->can('super-user')) {
+                $user_data = Yii::$app->memem->getUserData();
+                $query->andWhere('property.fk_office_id = :id', ['id' => $user_data->office->id]);
+            }
+            $query->andWhere(['like', 'property.property_number', $q]);
+
+
 
             if (!empty($page)) {
                 $query->offset($offset)

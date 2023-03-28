@@ -1,6 +1,8 @@
 <?php
 
+use app\models\Office;
 use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -13,6 +15,9 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
+    <?= $form->field($model, 'fk_office_id')->widget(Select2::class, ['data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'), 'pluginOptions' => [
+        'placeholder' => 'Select Office/Province'
+    ]]) ?>
     <?= $form->field($model, 'employee_number')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'f_name')->textInput(['maxlength' => true]) ?>
@@ -26,7 +31,6 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'property_custodian')->widget(Select2::class, [
         'data' => [0 => 'False', 1 => 'True'],
-   
     ]) ?>
 
     <?= $form->field($model, 'position')->textInput(['maxlength' => true]) ?>

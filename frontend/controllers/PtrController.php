@@ -103,7 +103,11 @@ class PtrController extends Controller
     public function actionCreate()
     {
         $model = new Ptr();
-
+        if (!Yii::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $office_id = $user_data->office->id;
+            $model->fk_office_id = $office_id;
+        }
         if ($model->load(Yii::$app->request->post())) {
 
 

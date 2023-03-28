@@ -12,11 +12,11 @@ use kartik\grid\GridView;
 $this->title = 'Property Cards';
 $this->params['breadcrumbs'][] = $this->title;
 $columns = [
+    'office_name',
     'pc_number',
     'par_number',
     'property_number',
     'par_date',
-    'office_name',
     'is_unserviceable',
     'description',
     'acquisition_date',

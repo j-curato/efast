@@ -94,7 +94,7 @@ class IirupController extends Controller
                 $f_qry = $qry->all();
                 $row = $key + 1;
                 if (!empty($f_qry)) {
-                    throw new ErrorException("Row " . $row . " already has an IIRUP.");
+                    throw new ErrorException("There is already an IIRUP created for Row  " . $row);
                 }
                 $iirupItem->fk_iirup_id = $model_id;
                 $iirupItem->fk_other_property_detail_item_id = $itm['other_property_detail_item_id'];
@@ -154,7 +154,11 @@ class IirupController extends Controller
     public function actionCreate()
     {
         $model = new Iirup();
-
+        if (!Yii::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $office_id = $user_data->office->id;
+            $model->fk_office_id = $office_id;
+        }
         if ($model->load(Yii::$app->request->post())) {
             $model->id = MyHelper::getUuid();
             $model->serial_number = $this->getSerialNumber($model->fk_office_id, $model->reporting_period);

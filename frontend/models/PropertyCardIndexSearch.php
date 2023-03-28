@@ -63,7 +63,7 @@ class PropertyCardIndexSearch extends PropertyCardIndex
         // add conditions that should always apply here
         if (!Yii::$app->user->can('super-user')) {
             $user_data = Yii::$app->memem->getUserData();
-            $query->andWhere('office_name = :office_name', ['office_name' => 'ads']);
+            $query->andWhere('office_name = :office_name', ['office_name' => $user_data->office->office_name]);
         }
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

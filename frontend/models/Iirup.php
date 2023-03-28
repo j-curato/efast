@@ -52,7 +52,7 @@ class Iirup extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'serial_number' => 'Serial Number',
-            'fk_acctbl_ofr' => ' Acctable Officer',
+            'fk_acctbl_ofr' => ' Accountable Officer',
             'fk_approved_by' => ' Approved By',
             'created_at' => 'Created At',
             'reporting_period' => 'Reporting Period',
