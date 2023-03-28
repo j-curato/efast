@@ -550,7 +550,7 @@ class PrPurchaseRequestController extends Controller
                 if ($model->save(false)) {
                     $insert_items = $this->insertPrItems(
                         $model->id,
-                        $pr_items,
+                        $pr_items
                         // $cse_or_non_cse_id,
                         // $cse_type
                     );
