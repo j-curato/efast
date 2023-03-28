@@ -224,7 +224,7 @@ class EmployeeController extends Controller
             $query->select('employee_id as id, UPPER(employee_name) AS text,employee_search_view.position ')
                 ->from('employee_search_view')
                 ->andWhere(['like', 'employee_name', $q]);
-            if (!Yii::$app->user->can('super-user')) {
+            if (!Yii::$app->user->can('super-user') && Yii::$app->user->can('province')) {
                 $user_data = Yii::$app->memem->getUserData();
                 $query->andWhere('employee_search_view.office_name = :office_name', ['office_name' => $user_data->office->office_name]);
             }
