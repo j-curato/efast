@@ -1,6 +1,6 @@
 <?php
 
-namespace app\components\helpers;
+namespace app\components;
 
 use app\models\ChartOfAccounts;
 use app\models\Office;
@@ -197,6 +197,5 @@ class MyHelper extends BaseObject
         }
         $f_property_custodian_query = $property_custodian_query->all();
         return $f_property_custodian_query;
-        
     }
 }

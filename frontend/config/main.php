@@ -118,7 +118,7 @@ return [
             'class' => 'frontend\components\MyComponent',
         ],
         'Myhelper' => [
-            'class' => 'frontend\components\helpers\MyHelper',
+            'class' => 'frontend\components\MyHelper',
         ],
         'mailer' => [
             'class' => \yii\symfonymailer\Mailer::class,
