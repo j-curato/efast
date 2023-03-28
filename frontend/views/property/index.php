@@ -87,7 +87,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return MyHelper::gridDefaultAction($model->id, 'lrgModal');
+                    return Yii::$app->Myhelper->gridDefaultAction($model->id, 'lrgModal');
                 }
             ],
         ],
