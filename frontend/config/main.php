@@ -117,9 +117,7 @@ return [
         'memem' => [
             'class' => 'frontend\components\MyComponent',
         ],
-        'Myhelper' => [
-            'class' => 'app\components\helpers\MyHelper',
-        ],
+
         'mailer' => [
             'class' => \yii\symfonymailer\Mailer::class,
             'transport' => [
