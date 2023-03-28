@@ -33,7 +33,7 @@ $columns = [
         'label' => 'Actions',
         'format' => 'raw',
         'value' => function ($model) {
-            return  Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id],);
+            return  Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]);
         }
     ],
 ];
