@@ -18,6 +18,10 @@ class MyComponent extends Component
     // {
     //     return $q;
     // }
+    public static function getQq()
+    {
+        return 'component';
+    }
     public $d;
     public function getUserData()
     {
