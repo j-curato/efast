@@ -1,6 +1,6 @@
 <?php
 
-use app\components\MyHelper;
+use app\components\helpers\MyHelper;
 use app\models\PropertyArticles;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;

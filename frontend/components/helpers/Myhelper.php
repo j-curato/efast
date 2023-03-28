@@ -1,6 +1,6 @@
 <?php
 
-namespace app\components;
+namespace app\components\helpers;
 
 use app\models\ChartOfAccounts;
 use app\models\Office;
@@ -9,10 +9,11 @@ use Da\QrCode\QrCode;
 use ErrorException;
 use Yii;
 use yii\base\BaseObject;
+use yii\base\Component;
 use yii\db\Query;
 use yii\helpers\Html;
 
-class MyHelper extends BaseObject
+class MyHelper extends Component
 {
     public static function post($name)
     {
