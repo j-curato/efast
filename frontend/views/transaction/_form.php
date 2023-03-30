@@ -239,7 +239,7 @@ if ($model->type == 'single' || $model->type == 'multiple') {
     <table class="table" id="entry_table">
         <thead>
             <tr class="info">
-                <td colspan="10" class="center">
+                <td colspan="12" class="center">
                     <h4>Allotment</h4>
                 </td>
             </tr>
