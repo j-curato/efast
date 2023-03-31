@@ -219,6 +219,7 @@ class PropertyController extends Controller
 
         $year = date('Y');
         $office_name = Office::findOne($office_id)->office_name;
+
         $query = Yii::$app->db->createCommand(
             "CALL search_property_number(:office_id,:_year)"
         )
