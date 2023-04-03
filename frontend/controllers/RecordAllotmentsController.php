@@ -169,10 +169,10 @@ class RecordAllotmentsController extends Controller
                     AND :fund_classification_code <= `fund_category_and_classification_code`.`to` LIMIT 1 ")
                     ->bindValue(':fund_classification_code', $model->fund_classification)
                     ->queryScalar();
-                if (empty($fund_category_and_classification_code_id)){
+                if (empty($fund_category_and_classification_code_id)) {
                     throw new ErrorException("No Fund Classification for {$model->fund_classification}");
                 }
-                $model->serial_number =  Yii::$app->memem->getRaoudSerialNumber($model->reporting_period, $model->book_id, '');
+                $model->serial_number =  Yii::$app->memem->getAllotmentNumber($model->reporting_period, $model->book_id);
                 $model->fund_category_and_classification_code_id = $fund_category_and_classification_code_id;
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
