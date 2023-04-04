@@ -210,6 +210,61 @@ $date_inspected = !empty($GLOBALS['date_inspected']) ? $GLOBALS['date_inspected'
         </table>
     </div>
 
+    <?php if (Yii::$app->user->can('super-user')) { ?>
+        <div class="container document_trace">
+            <table id="tracking">
+                <thead>
+                    <tr>
+                        <td colspan="8">
+                            <span>*Note</span>
+                            <ul>
+                                <li>- Click the blue or red text to redirect to its view </li>
+                                <li>- Red Texts means it is cancelled</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <th>Transaction No.</th>
+                    <th>ORS No.</th>
+                    <th>DV No.</th>
+                    <th>Cash Link</th>
+                    <th>Check No.</th>
+                    <th>ADA No.</th>
+                    <th>Check Issuance Date</th>
+                    <th>Check Cancelled Period</th>
+                </thead>
+                <tbody>
+                    <?php
+                    // transaction_id
+                    // txn_num
+                    // ors_id
+                    // ors_num
+                    // ors_is_cancelled
+                    // dv_id
+                    // dv_num
+                    // dv_is_cancelled
+                    // check_or_ada_no
+                    // ada_number
+                    // issuance_date
+                    // cancelled_period
+                    // cash_cancelled
+                    foreach ($paymentTracking as $itm) {
+
+                        echo "<tr>";
+                        echo " <td>" . Html::a($itm['txn_num'], ['transaction/view', 'id' => $itm['transaction_id']], ['class' => 'btn btn-link']) . "</td>";
+                        echo " <td>" . Html::a($itm['ors_num'], ['process-ors/view', 'id' => $itm['ors_id']], ['style' => $itm['ors_is_cancelled'] == '1' ? 'color:red' : '', 'class' => 'btn btn-link']) . "</td>";
+                        echo " <td>" . Html::a($itm['dv_num'], ['dv-aucs/view', 'id' => $itm['dv_id']], ['style' => $itm['dv_is_cancelled'] == '1' ? 'color:red' : '', 'class' => 'btn btn-link']) . "</td>";
+                        echo " <td>" . Html::a('cash', ['cash-disbursement/view', 'id' => $itm['cash_id']], ['style' => $itm['cash_cancelled'] == '1' ? 'color:red' : '', 'class' => 'btn btn-link']) . "</td>";
+                        echo "<td>" . $itm['check_or_ada_no'] . "</td>";
+                        echo "<td>" . $itm['ada_number'] . "</td>";
+                        echo "<td>" . $itm['issuance_date'] . "</td>";
+                        echo "<td>" . $itm['cancelled_period'] . "</td>";
+                        echo "</tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    <?php } ?>
 </div>
 <?php
 // $this->registerCssFile(Yii::$app->request->baseUrl . '/css/customCss.css');
@@ -219,6 +274,11 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
     .container {
         background-color: white;
         padding: 1rem;
+    }
+
+    #tracking {
+        width: 100%;
+        padding: 12px;
     }
 
 
@@ -236,7 +296,8 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
 
     @media print {
 
-        .main-footer {
+        .main-footer,
+        .document_trace {
             display: none;
         }
 

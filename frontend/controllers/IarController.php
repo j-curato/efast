@@ -48,6 +48,56 @@ class IarController extends Controller
             ],
         ];
     }
+    private function paymentTracking($id)
+
+    {
+        return YIi::$app->db->createCommand("SELECT 
+        iar.iar_number,
+        `transaction`.id as transaction_id,
+        `transaction`.tracking_number as txn_num,
+        process_ors.id as ors_id,
+        process_ors.serial_number as ors_num,
+        process_ors.is_cancelled as ors_is_cancelled,
+        dv_aucs.id  as dv_id,
+        dv_aucs.dv_number as dv_num,
+        dv_aucs.is_cancelled as dv_is_cancelled,
+        cash_disbursement.id as cash_id,
+        cash_disbursement.check_or_ada_no,
+        cash_disbursement.ada_number,
+        cash_disbursement.issuance_date,
+        cancelled_cash.created_at as cancelled_at,
+        cancelled_cash.reporting_period as cancelled_period,
+        cancelled_cash.is_cancelled as cash_cancelled
+        
+         FROM 
+        iar
+        LEFT JOIN transaction_iars ON iar.id   = transaction_iars.fk_iar_id
+        LEFT JOIN `transaction` ON transaction_iars.fk_transaction_id  = `transaction`.id
+        LEFT JOIN process_ors ON `transaction`.id = process_ors.transaction_id
+        LEFT JOIN (SELECT 
+        dv_aucs_entries.process_ors_id,
+        dv_aucs_entries.dv_aucs_id
+        FROM 
+        dv_aucs_entries
+        WHERE 
+        dv_aucs_entries.is_deleted = 0
+        
+        GROUP BY 
+        dv_aucs_entries.process_ors_id,
+        dv_aucs_entries.dv_aucs_id) as dv_entry ON process_ors.id = dv_entry.process_ors_id
+        
+        LEFT JOIN dv_aucs ON dv_entry.dv_aucs_id = dv_aucs.id
+        LEFT JOIN cash_disbursement ON dv_aucs.id = cash_disbursement.dv_aucs_id
+        LEFT JOIN cash_disbursement as cancelled_cash ON cash_disbursement.id = cancelled_cash.parent_disbursement
+        WHERE 
+        transaction_iars.is_deleted = 0
+        
+        AND iar.id = :id
+        AND cash_disbursement.is_cancelled = 0
+        ORDER BY iar.iar_number ")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
     public function signatories($id)
     {
 
@@ -220,7 +270,8 @@ class IarController extends Controller
             'items' => $this->items($id),
             'signatories' => $this->signatories($id),
             'noPOItems' => $this->noPOItems($id),
-            'noPOsignatories' => $this->noPOsignatories($id)
+            'noPOsignatories' => $this->noPOsignatories($id),
+            'paymentTracking' => $this->paymentTracking($id)
 
 
 
