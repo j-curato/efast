@@ -29,7 +29,8 @@ $transaction_type = [
     'without_po - Plane Ticket' => 'without PO - Plane Ticket',
     'without_po - DBM PS APR' => 'without PO - DBM PS APR',
     'without_po - Fuel' => 'without PO - Fuel',
-    'without_po - agency-to agency' => 'without PO - agency-to agency'
+    'without_po - agency-to agency' => 'without PO - agency-to agency',
+    'without_po - petty cash' => 'without PO - Petty Cash'
 ];
 $entry_row = 1;
 $no_po_item_row = 1;
