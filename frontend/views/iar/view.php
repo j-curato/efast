@@ -218,8 +218,8 @@ $date_inspected = !empty($GLOBALS['date_inspected']) ? $GLOBALS['date_inspected'
                         <td colspan="8">
                             <span>*Note</span>
                             <ul>
-                                <li>- Click the blue or red text to redirect to its view </li>
-                                <li>- Red Texts means it is cancelled</li>
+                                <li> Click the blue or red text to redirect to its view </li>
+                                <li>Red Texts means it is cancelled</li>
                             </ul>
                         </td>
                     </tr>
