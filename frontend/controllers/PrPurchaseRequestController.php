@@ -82,6 +82,29 @@ class PrPurchaseRequestController extends Controller
             ],
         ];
     }
+    private function txnLinks($id)
+    {
+        return Yii::$app->db->createCommand("SELECT 
+        transaction_pr_items.fk_pr_allotment_id,
+        transaction_pr_items.fk_transaction_id as txn_id,
+        `transaction`.tracking_number as txn_num
+        
+        
+        FROM
+        pr_purchase_request_allotments
+        JOIN  transaction_pr_items ON pr_purchase_request_allotments.id = transaction_pr_items.fk_pr_allotment_id
+        JOIN `transaction` ON transaction_pr_items.fk_transaction_id = `transaction`.id 
+        WHERE 
+        pr_purchase_request_allotments.is_deleted = 0
+        AND transaction_pr_items.is_deleted = 0
+        AND pr_purchase_request_allotments.fk_purchase_request_id = :id
+        GROUP BY
+        transaction_pr_items.fk_pr_allotment_id,
+        transaction_pr_items.fk_transaction_id,
+        `transaction`.tracking_number")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
     private function getPrItems($id)
     {
         return Yii::$app->db->createCommand("CALL GetPrItems(:id)")
@@ -315,7 +338,9 @@ class PrPurchaseRequestController extends Controller
             'model' => $model,
             'items' => $this->getPrItems($id),
             'allotment_items' => $this->getPrAllotments($id),
-            'office_division_unit_purpose' => $office_division_unit_purpose
+            'office_division_unit_purpose' => $office_division_unit_purpose,
+            'transaction_links' => $this->txnLinks($id),
+
 
         ]);
     }
@@ -1028,7 +1053,12 @@ class PrPurchaseRequestController extends Controller
 									pr_purchase_request_item.fk_ppmp_non_cse_item_id
 									 ) as item_in_pr_total ON supplemental_ppmp_non_cse_items.id = item_in_pr_total.fk_ppmp_non_cse_item_id
                 WHERE supplemental_ppmp_non_cse.type =  'fixed expenses'
-                AND supplemental_ppmp.fk_office_id = :office_id AND supplemental_ppmp.fk_division_id = :division_id")
+                AND supplemental_ppmp.fk_office_id = :office_id 
+                AND supplemental_ppmp.fk_division_id = :division_id
+                AND supplemental_ppmp_non_cse_items.is_deleted = 0
+                AND supplemental_ppmp_non_cse.is_deleted = 0
+                
+                ")
                     ->bindValue(':office_id', $office_id)
                     ->bindValue(':division_id', $division_id)
                     ->queryAll();

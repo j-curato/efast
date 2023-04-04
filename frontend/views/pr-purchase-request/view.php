@@ -313,6 +313,21 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
             </tbody>
         </table>
+
+
+        <table class="table">
+            <tr class="warning">
+                <th>Transaction Links</th>
+            </tr>
+            <?php
+            foreach ($transaction_links as $txn) {
+
+                echo "<tr>";
+                echo "<td>" . Html::a($txn['txn_num'], ['transaction/view', 'id' => $txn['txn_id']], ['class' => 'btn btn-link']) . "</td>";
+                echo "</tr>";
+            }
+            ?>
+        </table>
         <?php
 
         $rfqs = Yii::$app->db->createCommand("SELECT id, rfq_number FROM pr_rfq WHERE pr_purchase_request_id = :id")
