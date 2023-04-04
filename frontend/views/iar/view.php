@@ -217,7 +217,7 @@ $date_inspected = !empty($GLOBALS['date_inspected']) ? $GLOBALS['date_inspected'
                     <tr>
                         <td colspan="8">
                             <span>*Note</span>
-                            <ul>
+                            <ul class="notes">
                                 <li> Click the blue or red text to redirect to its view </li>
                                 <li>Red Texts means it is cancelled</li>
                             </ul>
@@ -281,6 +281,9 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
         padding: 12px;
     }
 
+    .notes li {
+        color: red;
+    }
 
 
 
