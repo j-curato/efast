@@ -17,8 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="derecognition-view panel">
-
-
+    <button id="export" type='button' class="btn btn-success" style="margin:1rem;"><i class="glyphicon glyphicon-export"></i>Export</button>
     <p>
     <div class="row">
         <div class="col-sm-1">
@@ -104,6 +103,34 @@ $this->params['breadcrumbs'][] = $this->title;
     $(document).ready(() => {
         $("#book").change(() => {
             $('#tojev').attr('href', $('#tojev').attr('href') + '&bookId=' + $("#book").val())
+        })
+
+        $('#export').click(function(e) {
+            e.preventDefault();
+            $.ajax({
+                container: "#employee",
+                type: 'POST',
+                url: window.location.pathname + '?r=report/export-property-database',
+                data: {
+                    id: 1,
+
+                },
+                success: function(data) {
+                    var res = JSON.parse(data)
+                    window.open(res)
+                    $.ajax({
+                        type: 'POST',
+                        url: window.location.pathname + '?r=site/clear-exports',
+                        success: function(response) {
+                            console.log(response)
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.log('Error deleting file: ' + errorThrown);
+                        }
+                    });
+                }
+
+            })
         })
     })
 </script>
