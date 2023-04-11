@@ -78,6 +78,7 @@
                                 Yii::$app->user->can('property_card') ?     ['label' => 'Property Card', 'icon' => 'circle-o', 'url' => ['/property-card'],] : [],
                                 Yii::$app->user->can('rlsddp') ?     ['label' => 'RLSDDP', 'icon' => 'circle-o', 'url' => ['/rlsddp'],] : [],
                                 Yii::$app->user->can('iirup') ?     ['label' => 'IIRUP', 'icon' => 'circle-o', 'url' => ['/iirup'],] : [],
+                                Yii::$app->user->can('po-property') ?     ['label' => 'Property Database', 'icon' => 'circle-o', 'url' => ['/property/property-database'],] : [],
                             ],
                         ],
                     ],
@@ -411,6 +412,7 @@
                                         Yii::$app->user->can('super-user') ?     ['label' => 'RLSDDP', 'icon' => 'circle-o', 'url' => ['/rlsddp'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'IIRUP', 'icon' => 'circle-o', 'url' => ['/iirup'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'Derecognition', 'icon' => 'circle-o', 'url' => ['/derecognition'],] : [],
+                                        ['label' => 'Property Database', 'icon' => 'circle-o', 'url' => ['/property/property-database'],]
                                     ],
                                 ],
                                 [
