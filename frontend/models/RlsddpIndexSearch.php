@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\RlsddpIndex;
+use Yii;
 
 /**
  * RlsddpIndexSearch represents the model behind the search form of `app\models\RlsddpIndex`.
@@ -44,7 +45,10 @@ class RlsddpIndexSearch extends RlsddpIndex
     public function search($params)
     {
         $query = RlsddpIndex::find();
-
+        if (!Yii::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $query->andWhere('office_name = :office_name', ['office_name' => $user_data->office->office_name]);
+        }
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
