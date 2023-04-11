@@ -1152,7 +1152,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                             </div>
                             <div class="col-sm-2">
                                 <label for="amount">Unit Cost</label>
-                                <input type="text" class="amount form-control" value='${unit_cost}' onkeyup='updateMainAmount(this)'>
+                                <input type="text" class="amount form-control" value='${thousands_separators(unit_cost)}' onkeyup='updateMainAmount(this)'>
                                 <input type="hidden" name="pr_items[${row_number}][unit_cost]" class="unit_cost main-amount" value='${unit_cost}'>
                             </div>
                             <div class="col-sm-1">
