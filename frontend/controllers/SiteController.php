@@ -21,6 +21,8 @@ use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use yii\helpers\FileHelper;
+use yii\helpers\Url;
 
 /**
  * Site controller
@@ -40,12 +42,14 @@ class SiteController extends Controller
                     'logout', 'signup', 'index', 'q',
                     'update-system',
                     'token',
-                    'change-password'
+                    'change-password',
+                    'clear-exports',
+                    'profile'
                 ],
                 'rules' => [
 
                     [
-                        'actions' => ['logout', 'index', 'q', 'token', 'change-password'],
+                        'actions' => ['logout', 'index', 'q', 'token', 'change-password', 'clear-exports', 'profile'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -113,7 +117,10 @@ class SiteController extends Controller
     public function actionChangePassword()
     {
         $model = new ChangePassword();
-        if ($model->load(Yii::$app->request->post()) && $model->updatePassword()) {
+        if ($model->load(Yii::$app->request->post())) {
+            if (!$model->updatePassword()) {
+                return $model->errors;
+            }
             return $this->goBack();
 
             // return $this->redirect('');
@@ -121,6 +128,42 @@ class SiteController extends Controller
 
         return $this->render('change_password', [
             'model' => $model,
+        ]);
+    }
+    public function actionProfile()
+    {
+        $changePassModel = new ChangePassword();
+        if ($changePassModel->load(Yii::$app->request->post()) && $changePassModel->updatePassword()) {
+            // if (!$changePassModel->updatePassword()) {
+            //     return json_encode(['errors' => $changePassModel->errors]);
+            // }
+            // Yii::$app->session->setFlash('success', 'Form submitted successfully!');
+            // return $this->refresh();
+
+            // return $this->goBack();
+
+            // return $this->redirect('');
+        }
+        $createAcc = new SignupForm();
+        if (Yii::$app->user->can('super-user')) {
+
+            if ($createAcc->load(Yii::$app->request->post())) {
+                if (!$createAcc->validate()) {
+                    return json_encode($createAcc->errors);
+                }
+                if ($createAcc->signup()) {
+                }
+                // Yii::$app->session->setFlash(
+                //     'success',
+                //     'Thank you for registration. Please check your inbox for verification email.'
+                // );
+                return $this->goHome();
+            }
+        }
+
+        return $this->render('profile', [
+            'changePassModel' => $changePassModel,
+            'createAcc' => $createAcc,
         ]);
     }
     public function actionLogin()
@@ -195,24 +238,28 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    // public function actionSignup()
-    // {
-    //     $this->layout = 'register';
-    //     $model = new SignupForm();
-    //     if ($model->load(Yii::$app->request->post())) {
-    //         if ($model->signup()) {
-    //         }
-    //         Yii::$app->session->setFlash(
-    //             'success',
-    //             'Thank you for registration. Please check your inbox for verification email.'
-    //         );
-    //         return $this->goHome();
-    //     }
+    public function actionSignup()
+    {
+        // $this->layout = 'register';
+        $model = new SignupForm();
+        if ($model->load(Yii::$app->request->post())) {
 
-    //     return $this->render('signup', [
-    //         'model' => $model,
-    //     ]);
-    // }
+            if (!$model->validate()) {
+                return json_encode($model->errors);
+            }
+            if ($model->signup()) {
+            }
+            // Yii::$app->session->setFlash(
+            //     'success',
+            //     'Thank you for registration. Please check your inbox for verification email.'
+            // );
+            return $this->goHome();
+        }
+
+        return $this->render('signup', [
+            'model' => $model,
+        ]);
+    }
 
     /**
      * Requests password reset.
@@ -461,5 +508,28 @@ class SiteController extends Controller
             $token = 'C0ocZR073FC8lOWDXi1uoNxCwIBuPLKN';
             return json_encode(['token' => $token]);
         }
+    }
+    public function actionClearExports()
+    {
+
+        if (YIi::$app->request->isPost) {
+
+            $folderPath = Url::base() . '/exports';
+            // return $folderPath;
+            // $files = FileHelper::findFiles($folderPath);
+            $appDir = Yii::getAlias('@webroot');
+            $folder_path = $appDir . '\exports';
+
+
+            $file_list = FileHelper::findFiles($folder_path);
+            // return json_encode($file_list);
+            foreach ($file_list as $file) {
+                if (is_file($file)) {
+                    unlink($file);
+                }
+            }
+            return 'succ';
+        }
+        return 'wala';
     }
 }

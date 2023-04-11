@@ -57,11 +57,11 @@ class ParIndex extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'par_number' => 'Par Number',
-            'par_date' => 'Par Date',
-            'rcv_by' => 'Rcv By',
-            'act_usr' => 'Act Usr',
-            'isd_by' => 'Isd By',
+            'par_number' => 'PAR Number',
+            'par_date' => 'PAR Date',
+            'rcv_by' => 'Received By',
+            'act_usr' => 'Actual User',
+            'isd_by' => 'Isued By',
             'location' => 'Location',
             'property_number' => 'Property Number',
             'acquisition_date' => 'Acquisition Date',
@@ -70,8 +70,8 @@ class ParIndex extends \yii\db\ActiveRecord
             'serial_number' => 'Serial Number',
             'unit_of_measure' => 'Unit Of Measure',
             'article' => 'Article',
-            'is_unserviceable' => 'Is Unserviceable',
-            'office_name' => 'Office Name',
+            'is_unserviceable' => 'Serviceable/UnServiceable',
+            'office_name' => 'Office',
         ];
     }
 }

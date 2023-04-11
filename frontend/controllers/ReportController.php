@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\components\helpers\MyHelper;
 use app\models\AdvancesLiquidationSearch;
 use app\models\Books;
 use app\models\Cdr;
@@ -10,8 +11,14 @@ use app\models\ChartOfAccounts;
 use app\models\DetailedDvAucsSearch;
 use app\models\DvAucs;
 use app\models\Liquidation;
+use app\models\Office;
+use app\models\OtherPropertyDetailItems;
+use app\models\OtherPropertyDetails;
+use app\models\Par;
 use app\models\PoTransmittalsPendingSearch;
 use app\models\ProcurementSummarySearch;
+use app\models\Property;
+use app\models\PropertyCard;
 use app\models\PrSummarySearch;
 use app\models\RaoSearch;
 use app\models\TransactionArchiveSearch;
@@ -23,6 +30,8 @@ use common\models\UploadForm;
 use Da\QrCode\QrCode;
 use DateTime;
 use ErrorException;
+use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Date;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -32,6 +41,7 @@ use yii\helpers\FileHelper;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
 use yii\symfonymailer\Message;
+use yii\web\Response;
 
 class ReportController extends \yii\web\Controller
 {
@@ -4200,35 +4210,47 @@ class ReportController extends \yii\web\Controller
                 $cash_in = $val['cash_in'];
                 $cash_out = $val['cash_out'];
 
-                $sheet->setCellValueByColumnAndRow(
-                    1,
-                    $row,
+                $sheet->setCellValue(
+                    [
+                        1,
+                        $row
+                    ],
                     $payee
                 );
 
-                $sheet->setCellValueByColumnAndRow(
-                    2,
-                    $row,
+                $sheet->setCellValue(
+                    [
+                        2,
+                        $row
+                    ],
                     $dv_number
                 );
-                $sheet->setCellValueByColumnAndRow(
-                    3,
-                    $row,
+                $sheet->setCellValue(
+                    [
+                        3,
+                        $row
+                    ],
                     $accounting_in
                 );
-                $sheet->setCellValueByColumnAndRow(
-                    4,
-                    $row,
+                $sheet->setCellValue(
+                    [
+                        4,
+                        $row
+                    ],
                     $accounting_out
                 );
-                $sheet->setCellValueByColumnAndRow(
-                    5,
-                    $row,
+                $sheet->setCellValue(
+                    [
+                        5,
+                        $row
+                    ],
                     $issuance_date . ' ' . $cash_in
                 );
-                $sheet->setCellValueByColumnAndRow(
-                    6,
-                    $row,
+                $sheet->setCellValue(
+                    [
+                        6,
+                        $row
+                    ],
                     $issuance_date . ' ' . $cash_out
                 );
 
@@ -4955,6 +4977,541 @@ class ReportController extends \yii\web\Controller
         return $this->render('proc_summary');
     }
 
+    public function actionExportPropertyDatabase()
+    {
+        // return YIi::$app->memem->getWorkdays('2022-06-17', '2022-06-20');
+        if (Yii::$app->request->post()) {
+            $query = Yii::$app->db->createCommand("WITH par_details as (
+                    SELECT 
+                    par.par_number,
+                    par.date as par_date,
+                    received_by.employee_name as rcv_by,
+                    actual_user.employee_name as act_usr,
+                    issued_by.employee_name as isd_by,
+                    location.location,
+                    par.fk_property_id,
+                    property_card.serial_number as pc_num,
+                    office.office_name,
+                    divisions.division,
+                    par.is_current_user,
+                    (CASE WHEN par.is_current_user =1 THEN 'Current User'
+                    ELSE 'Not Current User'
+                    END
+                    ) as isCrntUsr,
+                    (CASE WHEN par.is_unserviceable =1 THEN 'UnServiceable'
+                    ELSE 'Serviceable'
+                    END
+                    ) as isUnserviceable
+                    
+                    FROM 
+                    par
+                    LEFT JOIN employee_search_view as received_by ON par.fk_received_by = received_by.employee_id
+                    LEFT JOIN employee_search_view as actual_user ON par.fk_actual_user = actual_user.employee_id
+                    LEFT JOIN employee_search_view as issued_by ON par.fk_issued_by_id = issued_by.employee_id
+                    LEFT JOIN location ON par.fk_location_id = location.id
+                    LEFT JOIN property_card ON par.id = property_card.fk_par_id
+                    LEFT JOIN office ON location.fk_office_id = office.id
+                    LEFT JOIN divisions ON location.fk_division_id = divisions.id
+                )
+                
+                
+                SELECT 
+                 par_details.pc_num,
+                ptr.ptr_number,
+                ptr.date as ptr_date,
+                transfer_type.`type`,
+                derecognition.serial_number as derecognition_num,
+                derecognition.date as derecognition_date,
+                property.property_number,
+                property.date as date_acquired,
+                property.serial_number,
+                IFNULL(property_articles.article_name,property.article) as article,
+                property.description,
+                property.acquisition_amount,
+                unit_of_measure.unit_of_measure,
+                other_property_details.useful_life,
+                (CASE
+                    WHEN DAY(property.date) > 15 THEN DATE_FORMAT(  DATE_ADD( property.date,INTERVAL 1 MONTH), '%Y-%m')
+                    ELSE DATE_FORMAT(property.date, '%Y-%m')
+                END ) as strt_mnth,
+                DATE_FORMAT(
+                    DATE_ADD(
+                        (CASE
+                            WHEN DAY(property.date) > 15 THEN DATE_FORMAT(  DATE_ADD( property.date,INTERVAL 1 MONTH), '%Y-%m-01')
+                            ELSE DATE_FORMAT(property.date, '%Y-%m-01')
+                        END),INTERVAL other_property_details.useful_life-1 MONTH
+                    ), '%Y-%m'
+                ) as lst_mth,
+                (CASE
+					WHEN derecognition.date IS NOT NULL THEN DATE_FORMAT(derecognition.date,'%Y-%m') 
+					ELSE
+									DATE_FORMAT(
+									DATE_ADD(
+									(CASE
+										WHEN DAY(property.date) > 15 THEN DATE_FORMAT(  DATE_ADD( property.date,INTERVAL 1 MONTH), '%Y-%m-01')
+										ELSE DATE_FORMAT(property.date, '%Y-%m-01')
+										END),INTERVAL other_property_details.useful_life -1 MONTH
+										), '%Y-%m'
+										)
+									END) as new_last_month,
+                
+                                    DATE_FORMAT(
+                    DATE_ADD(
+                        (CASE
+                            WHEN DAY(property.date) > 15 THEN DATE_FORMAT(  DATE_ADD( property.date,INTERVAL 1 MONTH), '%Y-%m-01')
+                            ELSE DATE_FORMAT(property.date, '%Y-%m-01')
+                        END),INTERVAL other_property_details.useful_life -2 MONTH
+                    ), '%Y-%m'
+                ) as sec_lst_mth,
+                par_details.par_number,
+                par_details.par_date ,
+                par_details.rcv_by,
+                par_details.act_usr,
+                par_details.isd_by,
+                par_details.office_name,
+                par_details.division,
+                par_details.location,
+                par_details.isCrntUsr,
+                par_details.isUnserviceable,
+                par_details.is_current_user,
+                chart_of_accounts.uacs,
+                chart_of_accounts.general_ledger,
+                depreciation_sub_account.`name` as depreciation_account_title,
+                depreciation_sub_account.`object_code` as depreciation_object_code
+                
+                FROM property
+                LEFT JOIN ptr ON property.id = ptr.fk_property_id
+                LEFT JOIN unit_of_measure ON property.unit_of_measure_id = unit_of_measure.id
+                LEFT JOIN property_articles ON property.fk_property_article_id = property_articles.id
+                LEFT JOIN other_property_details ON property.id = other_property_details.fk_property_id
+                LEFT JOIN par_details ON property.id = par_details.fk_property_id
+                LEFT JOIN sub_accounts1 ON other_property_details.fk_sub_account1_id = sub_accounts1.id
+                LEFT JOIN sub_accounts1 as depreciation_sub_account ON other_property_details.fk_depreciation_sub_account1_id = depreciation_sub_account.id
+                LEFT JOIN derecognition ON property.id = derecognition.fk_property_id
+                LEFT JOIN transfer_type ON ptr.fk_transfer_type_id = transfer_type.id
+                LEFT JOIN chart_of_accounts ON other_property_details.fk_chart_of_account_id  = chart_of_accounts.id
+
+                ORDER BY property.property_number DESC")->queryAll();
+            $items  = Yii::$app->db->createCommand("SELECT 
+            property.property_number,
+            LOWER(books.`name`) as book_name,
+            other_property_detail_items.amount as book_val,
+            ROUND((other_property_details.salvage_value_prcnt/100)*other_property_detail_items.amount) as salvage_value,
+            ROUND(other_property_detail_items.amount - ROUND((other_property_details.salvage_value_prcnt/100)*other_property_detail_items.amount)) as depreciable_amount,
+            ROUND((other_property_detail_items.amount - ROUND((other_property_details.salvage_value_prcnt/100)*other_property_detail_items.amount,2))/other_property_details.useful_life) as mnthly_depreciation,
+            ROUND(ROUND(other_property_detail_items.amount -
+            ROUND((other_property_details.salvage_value_prcnt/100)*other_property_detail_items.amount,2),2)-
+            ( ROUND((other_property_detail_items.amount - ROUND((other_property_details.salvage_value_prcnt/100)*other_property_detail_items.amount,2))
+            /other_property_details.useful_life)* (other_property_details.useful_life-1))) as lstmnthdep,
+            
+            (CASE 
+            WHEN TIMESTAMPDIFF(MONTH, STR_TO_DATE(DATE_FORMAT(property.date,'%Y-%m-30'), '%Y-%m-%d'), DATE_FORMAT(CURRENT_DATE(),'%Y-%m-30'))>=other_property_details.useful_life THEN other_property_details.useful_life
+            ELSE TIMESTAMPDIFF(MONTH, STR_TO_DATE(DATE_FORMAT(property.date,'%Y-%m-30'), '%Y-%m-%d'), DATE_FORMAT(CURRENT_DATE(),'%Y-%m-30')) -1
+            END) as mnt_dep,
+            
+            (CASE 
+            WHEN TIMESTAMPDIFF(MONTH, STR_TO_DATE(DATE_FORMAT(property.date,'%Y-%m-30'), '%Y-%m-%d'), DATE_FORMAT(CURRENT_DATE(),'%Y-%m-30'))>=other_property_details.useful_life-1 THEN other_property_details.useful_life
+            ELSE TIMESTAMPDIFF(MONTH, STR_TO_DATE(DATE_FORMAT(property.date,'%Y-%m-30'), '%Y-%m-%d'), DATE_FORMAT(CURRENT_DATE(),'%Y-%m-30')) -1
+            END) 
+            * ROUND((other_property_detail_items.amount - ROUND((other_property_details.salvage_value_prcnt/100)*other_property_detail_items.amount,2))/other_property_details.useful_life) as accu_depreciation
+            FROM property
+            LEFT JOIN other_property_details ON property.id = other_property_details.fk_property_id
+            LEFT JOIN other_property_detail_items ON other_property_details.id = other_property_detail_items.fk_other_property_details_id
+            LEFT JOIN derecognition ON property.id = derecognition.fk_property_id
+            LEFT JOIN books ON other_property_detail_items.book_id = books.id
+            WHERE 
+            other_property_detail_items.is_deleted = 0
+           ")
+                ->queryAll();
+            // $result = ArrayHelper::index($items,  'book_name', [function ($element) {
+            //     return $element['property_number'];
+            // },]);
+            $books = YIi::$app->db->createCommand("SELECT books.`name`as book_name  FROM books ORDER BY id ")->queryAll();
+            $result = ArrayHelper::index($items, 'book_name', 'property_number');
+
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+
+            // // header
+            $headers = [
+                "Property Card No.",
+                "PTR No.",
+                "PTR Date",
+                "Transfer Type",
+                "Reason for Transfer",
+                "Derecognition No.",
+                "Derecognition Date",
+                "IIRUP No.",
+                "RLSDDP No.",
+                "Last Month of Depreciation (from derecognition)",
+                "JEV No.",
+                "Property No.",
+                "SSF/Non-SSF",
+                "SSF SP No.",
+                "Date Acquired",
+                "Article",
+                "Description",
+                "Property Serial No.",
+                "Quantity",
+                "Unit of Measure",
+                "Total Acquisition",
+                "Accumulated Depreciation",
+                "Book Value",
+                "PAR No.",
+                "Office",
+                "Location",
+                "Received by",
+                "Actual User",
+                "Issued By",
+                "Current/Not Current User",
+                "Serviceable/Unserviceable",
+                "GL Asset Account",
+                "GL Asset Account Title",
+                "Contra Asset Sub Account",
+                "Contra Asset Sub Account Title",
+                "Contra Asset Sub Account Title",
+                "Depreciation Sub Account ",
+                "Depreciation Sub Account Title",
+
+            ];
+            foreach ($headers as $key => $head) {
+                $sheet->setCellValue([$key + 1, 2], $head);
+            }
+            // $sheet->setCellValue('A2', "Property Card No.");
+            // $sheet->setCellValue('B2', "PTR No.");
+            // $sheet->setCellValue('C2', "PTR Date");
+            // $sheet->setCellValue('D2', "Transfer Type");
+            // $sheet->setCellValue('E2', "Reason for Transfer");
+            // $sheet->setCellValue('F2', "Derecognition No.");
+            // $sheet->setCellValue('G2', "Derecognition Date");
+            // $sheet->setCellValue('H2', "IIRUP No.");
+            // $sheet->setCellValue('I2', "RLSDDP No.");
+            // $sheet->setCellValue('J2', "Last Month of Depreciation (from derecognition)");
+            // $sheet->setCellValue('K2', "JEV No.");
+            // $sheet->setCellValue('L2', "Property No.");
+            // $sheet->setCellValue('M2', "SSF/Non-SSF");
+            // $sheet->setCellValue('N2', "SSF SP No.");
+            // $sheet->setCellValue('O2', "Date Acquired");
+            // $sheet->setCellValue('P2', "Article");
+            // $sheet->setCellValue('Q2', "Description");
+            // $sheet->setCellValue('R2', "Property Serial No.");
+            // $sheet->setCellValue('S2', "Quantity");
+            // $sheet->setCellValue('T2', "Unit of Measure");
+            // $sheet->setCellValue('U2', "Total Acquisition");
+            // $sheet->setCellValue('V2', "Accumulated Depreciation");
+            // $sheet->setCellValue('W2', "Book Value");
+            // $sheet->setCellValue('X2', "PAR No.");
+            // $sheet->setCellValue('Y2', "Office");
+            // $sheet->setCellValue('Z2', "Location");
+            // $sheet->setCellValue('AA2', "Received by");
+            // $sheet->setCellValue('AB2', "Actual User");
+            // $sheet->setCellValue('AC2', "Issued By");
+            // $sheet->setCellValue('AD2', "Current/Not Current User");
+            // $sheet->setCellValue('AE2', "Serviceable/Unserviceable");
+            // $sheet->setCellValue('AF2', "GL Asset Account");
+            // $sheet->setCellValue('AG2', "GL Asset Account Title");
+            // $sheet->setCellValue('AH2', "Contra Asset Sub Account");
+            // $sheet->setCellValue('AI2', "Contra Asset Sub Account Title");
+            // $sheet->setCellValue('AJ2', "Contra Asset Sub Account Title");
+            // $sheet->setCellValue('AK2', "Depreciation Sub Account ");
+            // $sheet->setCellValue('AL2', "Depreciation Sub Account Title");
+            // $sheet->setCellValue('AM2', "Fund 01");
+            // $sheet->setCellValue('AN2', "RAPID SGA");
+            // $sheet->setCellValue('AO2', "RAPID LP");
+            // $sheet->setCellValue('AP2', "Fund 158");
+            // $sheet->setCellValue('AQ2', "RAPID GOP");
+            $bookCol = 39;
+            // Book Value/Salvage Value/Months Depreciated
+            for ($x = 0; $x < 3; $x++) {
+                if ($x === 0) {
+                    $sheet->setCellValue([$bookCol, 1], 'Book Value');
+                } else if ($x === 1) {
+
+                    $sheet->setCellValue([$bookCol, 1], 'Salvage Value');
+                }
+                if ($x === 2) {
+
+                    $sheet->setCellValue([$bookCol, 1], 'DEPRECIABLE AMOUNT');
+                }
+                foreach ($books as $book) {
+                    $sheet->setCellValue([$bookCol, 2], $book['book_name']);
+                    $bookCol++;
+                }
+            }
+            $sheet->setCellValue([$bookCol, 2], 'Estimated Useful Life in months');
+            $bookCol++;
+
+
+            $sheet->setCellValue([$bookCol, 2], '1st month of Depreciation');
+            $bookCol++;
+
+            $sheet->setCellValue([$bookCol, 2], '2nd to the last month of Depreciation');
+            $bookCol++;
+
+            $sheet->setCellValue([$bookCol, 1], 'Amount of Monthly Depreciation for 1st to 2nd to the last month');
+            foreach ($books as $book) {
+                $sheet->setCellValue([$bookCol, 2], $book['book_name']);
+                $bookCol++;
+            }
+            $sheet->setCellValue([$bookCol, 2], 'Last Month of Depreciation');
+            $bookCol++;
+            $sheet->setCellValue([$bookCol, 1], 'Amount of Monthly Depreciation for the last mon');
+            foreach ($books as $book) {
+                $sheet->setCellValue([$bookCol, 2], $book['book_name']);
+                $bookCol++;
+            }
+            $sheet->setCellValue([$bookCol, 1], 'Months Depreciated');
+            $bookCol++;
+            $sheet->setCellValue([$bookCol, 1], 'Accumulated Depreciation');
+            foreach ($books as $book) {
+                $sheet->setCellValue([$bookCol, 2], $book['book_name']);
+                $bookCol++;
+            }
+
+            $sheet->setAutoFilter('A2:AZ2');
+
+
+            $x = 7;
+            $styleArray = array(
+                'borders' => array(
+                    'allBorders' => array(
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                        'color' => array('argb' => 'FFFF0000'),
+                    ),
+                ),
+            );
+
+
+            $row = 3;
+            foreach ($query as $val) {
+
+                // echo json_encode(
+                //     $result[$val['property_number']]['Rapid LP']['book_val']
+                // );
+                // // echo json_encode($result);
+                // die();
+                $sheet->setCellValue(
+                    [1, $row],
+                    $val['pc_num']
+                );
+                $sheet->setCellValue(
+                    [2, $row],
+                    $val['ptr_number']
+                );
+                $sheet->setCellValue(
+                    [3, $row],
+                    $val['ptr_date']
+                );
+                $sheet->setCellValue(
+                    [4, $row],
+                    ''
+                );
+                $sheet->setCellValue(
+                    [5, $row],
+                    ''
+                );
+                $sheet->setCellValue(
+                    [6, $row],
+                    $val['derecognition_num']
+                );
+                $sheet->setCellValue(
+                    [7, $row],
+                    $val['derecognition_date']
+                );
+                $sheet->setCellValue(
+                    [12, $row],
+                    $val['property_number']
+                );
+                $sheet->setCellValue(
+                    [15, $row],
+                    $val['date_acquired']
+                );
+                $sheet->setCellValue(
+                    [16, $row],
+                    $val['article']
+                );
+                $sheet->setCellValue(
+                    [17, $row],
+                    $val['description']
+                );
+                $sheet->setCellValue(
+                    [18, $row],
+                    $val['serial_number']
+                );
+                $sheet->setCellValue(
+                    [19, $row],
+                    1
+                );
+
+
+                $sheet->setCellValue(
+                    [20, $row],
+                    $val['unit_of_measure']
+                );
+                $sheet->setCellValue(
+                    [21, $row],
+                    $val['acquisition_amount']
+                );
+                $sheet->setCellValue(
+                    [23, $row],
+                    $val['acquisition_amount']
+                );
+                $sheet->setCellValue(
+                    [24, $row],
+                    $val['par_number']
+                );
+                $sheet->setCellValue(
+                    [25, $row],
+                    $val['office_name']
+                );
+                $sheet->setCellValue(
+                    [26, $row],
+                    $val['location']
+                );
+                $sheet->setCellValue(
+                    [27, $row],
+                    $val['rcv_by']
+                );
+                $sheet->setCellValue(
+                    [28, $row],
+                    $val['act_usr']
+                );
+                $sheet->setCellValue(
+                    [29, $row],
+                    $val['isd_by']
+                );
+                $sheet->setCellValue(
+                    [30, $row],
+                    $val['isCrntUsr']
+                );
+                $sheet->setCellValue(
+                    [31, $row],
+                    $val['isUnserviceable']
+                );
+                if (strtolower($val['isCrntUsr']) === 'current user') {
+                    $bookValCol = 39;
+                    $property_num = $val['property_number'];
+                    foreach ($books as $book) {
+                        $book_name = strtolower($book['book_name']);
+                        $sheet->setCellValue(
+                            [$bookValCol, $row],
+                            !empty($result[$property_num][$book_name]['book_val']) ? $result[$property_num][$book_name]['book_val'] : ''
+                        );
+                        $bookValCol++;
+                    }
+                    foreach ($books as $book) {
+                        $book_name = strtolower($book['book_name']);
+
+                        $sheet->setCellValue(
+                            [$bookValCol, $row],
+                            !empty($result[$property_num][$book_name]['salvage_value']) ? $result[$property_num][$book_name]['salvage_value'] : ''
+                        );
+                        $bookValCol++;
+                    }
+                    foreach ($books as $book) {
+                        $book_name = strtolower($book['book_name']);
+
+                        $sheet->setCellValue(
+                            [$bookValCol, $row],
+                            !empty($result[$property_num][$book_name]['depreciable_amount']) ? $result[$property_num][$book_name]['depreciable_amount'] : ''
+                        );
+                        $bookValCol++;
+                    }
+                    $sheet->setCellValue(
+                        [$bookValCol, $row],
+                        !empty($val['useful_life']) ? $val['useful_life'] : ''
+                    );
+                    $bookValCol++;
+                    $sheet->setCellValue(
+                        [$bookValCol, $row],
+                        !empty($val['strt_mnth']) ? $val['strt_mnth'] : ''
+                    );
+                    $bookValCol++;
+                    $sheet->setCellValue(
+                        [$bookValCol, $row],
+                        !empty($val['sec_lst_mth']) ? $val['sec_lst_mth'] : ''
+                    );
+                    $bookValCol++;
+                    foreach ($books as $book) {
+                        $book_name = strtolower($book['book_name']);
+
+                        $sheet->setCellValue(
+                            [$bookValCol, $row],
+                            !empty($result[$property_num][$book_name]['mnthly_depreciation']) ? $result[$property_num][$book_name]['mnthly_depreciation'] : ''
+                        );
+
+                        $bookValCol++;
+                    }
+
+                    $sheet->setCellValue(
+                        [$bookValCol, $row],
+                        !empty($val['lst_mth']) ? $val['lst_mth'] : ''
+                    );
+                    $bookValCol++;
+                    foreach ($books as $book) {
+                        $book_name = strtolower($book['book_name']);
+
+                        $sheet->setCellValue(
+                            [$bookValCol, $row],
+                            !empty($result[$property_num][$book_name]['lstmnthdep']) ? $result[$property_num][$book_name]['lstmnthdep'] : ''
+                        );
+                        $bookValCol++;
+                    }
+
+                    $date2 = new DateTime($val['strt_mnth'] . -'30');
+                    $date1 = new DateTime(date('Y-m-30'));
+                    $interval = $date1->diff($date2);
+                    $months = ($interval->y * 12) + $interval->m;
+                    $sheet->setCellValue(
+                        [$bookValCol, $row],
+                        // !empty($val['useful_life']) ? $val['useful_life'] : ''
+                        $months >= $val['useful_life'] ? $val['useful_life'] : $months - 2
+                    );
+                    $bookValCol++;
+
+
+                    // accu_depreciation
+                    foreach ($books as $book) {
+                        $book_name = strtolower($book['book_name']);
+
+                        $sheet->setCellValue(
+                            [$bookValCol, $row],
+                            !empty($result[$property_num][$book_name]['accu_depreciation']) ? $result[$property_num][$book_name]['accu_depreciation'] : ''
+                        );
+                        $bookValCol++;
+                    }
+                }
+
+                $row++;
+            }
+
+            date_default_timezone_set('Asia/Manila');
+            // return date('l jS \of F Y h:i:s A');
+            $date = date('Y-m-d h-s A');
+            $file_name = "property_database_$date.xlsx";
+
+
+
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+            $fileSaveLoc =  "exports\\" . $file_name;
+            // $fileDwnldLoc = Url::base() . '/' . "exports//" . $file_name;
+
+            $writer->save($fileSaveLoc);
+            // return ob_get_clean();
+            header('Content-Type: application/vnd.ms-excel');
+            header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
+            header('Content-Transfer-Encoding: binary');
+            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+            header('Pragma: public'); // HTTP/1.0
+            echo  json_encode($fileSaveLoc);
+            // unlink($fileSaveLoc)
+            // echo "<script>window.open('$fileDwnldLoc','_self')</script>";
+            exit();
+        }
+    }
+
+
     // yii2 upload
     public function actionFile()
     {
@@ -5076,14 +5633,39 @@ class ReportController extends \yii\web\Controller
     public function actionMail()
     {
 
+        // $filePath = Yii::getAlias('@app');
+        // return $filePath;
+        // $webrootPath = Yii::getAlias('@webroot');
+        // $filePath = str_replace($webrootPath, '', __FILE__);
+        // return $filePath;
         // C:\xampp\htdocs\q\frontend\web\css
         $appDir = Yii::getAlias('@app');
-         $folderPath = $appDir . '\web\css';
-        $fileLinks = FileHelper::findFiles($folderPath);
+        $folder_path = $appDir . '\views\books';
 
-        foreach ($fileLinks as $link) {
-            echo $link . "<br>";
+        // Get a list of all the files in the folder
+        // Get a list of all the files in the folder
+        $file_list = FileHelper::findFiles($folder_path);
+
+        // Create a zip file to store the files
+        $zip_file = tempnam(sys_get_temp_dir(), 'zip');
+        $zip = new \ZipArchive();
+        $zip->open($zip_file, \ZipArchive::CREATE);
+        // Loop through the list of files and add them to the zip archive
+        foreach ($file_list as $file) {
+            $zip->addFile($file, basename($file));
         }
+        // Close the zip archive
+        $zip->close();
+        // Set the headers to force a download of the zip file
+        header('Content-Type: application/zip');
+        header("Content-disposition: attachment; filename=qwe.zip");
+        header('Content-Transfer-Encoding: binary');
+        header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+        header('Pragma: public'); // HTTP/1.0
+        // Read the contents of the zip file and output them to the browser
+        readfile($zip_file);
+        // Delete the zip file from the server
+        unlink($zip_file);
         return var_dump(trim('SDS    '));
 
         $message = new Message();
@@ -5102,83 +5684,280 @@ class ReportController extends \yii\web\Controller
         // send the message
         Yii::$app->mailer->send($message);
     }
-    // public function actionQ()
-    // {
-    //     // ob_clean();
-    //     // \Yii::$app->response->sendFile('E:\doc1.pdf')->send();
-    //     // FileHelper::unlink('@frontend/scanned-dv/Fund 01-2022-07-1555A/Fund_01-2022-07-1555A');
-    //     // unlink('C:\xampp\htdocs\q\frontend\scanned-dv\Fund 01-2022-07-1555A');
-    //     if ($_POST) {
-    //         $url  = $_POST['url'];
-    //         \Yii::$app->response->sendFile($url)->send();
-    //         return json_encode($url);
-    //     }
-    //     // $directory = Yii::getAlias('@app') . '\scanned-dv\Fund 01-2022-07-1555A';
-    //     // echo $directory;
-    //     // // die();
-    //     // FileHelper::removeDirectory($directory);
-    // }
+    public function actionUploadProperty()
+    {
 
-    //     public function actionTransaction()
-    //     {
+        $model = new UploadForm();
+        if (Yii::$app->request->isPost) {
+            if (!empty($_POST)) {
+                $name = $_FILES["file"]["name"];
+                $id = uniqid();
+                $file = "jev/{$id}_{$name}";;
+                if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
+                } else {
+                    return "ERROR 2: MOVING FILES FAILED.";
+                    die();
+                }
 
-    //         $db = Yii::$app->test_db;
-    //         $source_transaction = $db->createCommand("SELECT 
-    //         id,
-    // payee_id,
-    // responsibility_center_id,
-    // check_date,
-    // check_number,
-    // dv_number,
-    // particular,
-    // reporting_period,
-    // is_cancelled,
-    // po_transaction_id,
-    // check_range_id,
-    // is_locked,
-    // `status`,
-    // province,
-    // payee,
-    // is_final,
-    // document_link,
-    // cancel_reporting_period,
-    // exclude_in_raaf,
-    // bank_account_id
+                $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+                $excel = $reader->load($file);
+                $excel->setActiveSheetIndexByName('Sheet1');
+                $worksheet = $excel->getActiveSheet();
+                $reader->setReadDataOnly(FALSE);
 
-    //         FROM `liquidation`")->queryAll();
-    //         $target_transaction =  Yii::$app->restore_db->createCommand("SELECT 
-    //         id,
-    // payee_id,
-    // responsibility_center_id,
-    // check_date,
-    // check_number,
-    // dv_number,
-    // particular,
-    // reporting_period,
-    // is_cancelled,
-    // po_transaction_id,
-    // check_range_id,
-    // is_locked,
-    // `status`,
-    // province,
-    // payee,
-    // is_final,
-    // document_link,
-    // cancel_reporting_period,
-    // exclude_in_raaf,
-    // bank_account_id FROM `liquidation`")->queryAll();
-    //         $source_transaction_difference = array_map(
-    //             'unserialize',
-    //             array_diff(array_map('serialize', $source_transaction), array_map('serialize', $target_transaction))
+                try {
+                    $transaction = Yii::$app->db->beginTransaction();
+                    foreach ($worksheet->getRowIterator(6) as $key => $row) {
+                        $cellIterator = $row->getCellIterator();
+                        $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                        $cells = [];
+                        $y = 0;
+                        $q = 0;
+                        foreach ($cellIterator as $x => $cell) {
 
-    //         );
-    //         $q = array_map(
-    //             'unserialize',
-    //             array_diff(array_map('serialize',  $target_transaction), array_map('serialize', $source_transaction))
+                            if ($q == 4) {
+                                $cells[] = $cell->getFormattedValue();
+                            } else {
+                                $cells[] = $cell->getValue();
+                            }
+                            $q++;
+                        }
+                        $pc_num = $cells[0];
+                        $property_num = $cells[1];
+                        $is_ssf = strtolower(trim($cells[2])) == 'non-ssf' ? 0 : 1;
+                        $date_acq = !empty($cells[4]) ? DateTime::createFromFormat('m/d/Y', $cells[4])->format('Y-m-d') : null;
+                        $article = $cells[5];
+                        $description = $cells[6];
+                        $serial_num = $cells[7];
+                        $unit_of_measure = $cells[9];
+                        $amount = $cells[10];
+                        $par_num = $cells[11];
+                        $office = $cells[12];
+                        $location = $cells[13];
+                        $rcv_by = $cells[15];
+                        $act_user = $cells[17];
+                        $isd_by = $cells[18];
+                        $object_code = $cells[22];
+                        $fund01 = $cells[26];
+                        $rapidSga = $cells[27];
+                        $rapidLp = $cells[28];
+                        $fund158 = $cells[29];
+                        $rapidGop = $cells[30];
+                        $is_unserviceable = strtolower(trim($cells[21])) == 'unserviceable' ? 1 : 0;
+                        $office_id = null;
+                        $unit_of_measure_id = null;
+                        $issued_by_id = null;
+                        $rcv_by_id = null;
+                        $act_user_id = null;
+                        $location_id = null;
+                        if (!empty($office)) {
+                            $office_id = YIi::$app->db->createCommand("SELECT id 
+                            FROM office
+                            WHERE office.office_name = :office")
+                                ->bindValue(':office', $office)
+                                ->queryScalar();
+                            if (empty($office_id)) {
+                                throw new ErrorException("Office  $office does not exists on line $key");
+                            }
+                        }
+                        if (!empty($unit_of_measure)) {
+                            $unit_of_measure_id = YIi::$app->db->createCommand("SELECT id 
+                            FROM unit_of_measure
+                            WHERE unit_of_measure.unit_of_measure = :unit_of_measure")
+                                ->bindValue(':unit_of_measure', $unit_of_measure)
+                                ->queryScalar();
+                            if (empty($unit_of_measure_id)) {
+                                throw new ErrorException("unit_of_measure  $unit_of_measure does not exists on line $key");
+                            }
+                        }
+                        if (!empty($isd_by)) {
+                            $issued_by_id = YIi::$app->db->createCommand("SELECT employee_id 
+                            FROM employee_search_view
+                            WHERE employee_search_view.employee_name LIKE :isd_by")
+                                ->bindValue(':isd_by', '%' . $isd_by . '%')
+                                ->queryScalar();
+                            if (empty($issued_by_id)) {
+                                throw new ErrorException("isd_by  $isd_by does not exists on line $key");
+                            }
+                        }
+                        if (!empty($rcv_by)) {
+                            $rcv_by_id = YIi::$app->db->createCommand("SELECT employee_id 
+                            FROM employee_search_view
+                            WHERE employee_search_view.employee_name LIKE :rcv_by")
+                                ->bindValue(':rcv_by', '%' . $rcv_by . '%')
+                                ->queryScalar();
+                            if (empty($rcv_by_id)) {
+                                throw new ErrorException("rcv_by  $rcv_by does not exists on line $key");
+                            }
+                        }
+                        if (!empty($act_user)) {
+                            $act_user_id = YIi::$app->db->createCommand("SELECT employee_id 
+                            FROM employee_search_view
+                            WHERE employee_search_view.employee_name LIKE :act_user")
+                                ->bindValue(':act_user', '%' . $act_user . '%')
+                                ->queryScalar();
+                            if (empty($act_user_id)) {
+                                throw new ErrorException("act_user  $act_user does not exists on line $key");
+                            }
+                        }
+                        if (!empty($location)) {
+                            $location_id = YIi::$app->db->createCommand("SELECT id 
+                            FROM `location`
+                            WHERE `location`.`location` = :_location")
+                                ->bindValue(':_location', $location)
+                                ->queryScalar();
+                            if (empty($location_id)) {
+                                throw new ErrorException("location  $location does not exists on line $key");
+                            }
+                        }
 
-    //         );
-    //         return json_encode($q);
-    //     }
+                        $property  = new Property();
+                        $property->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                        $property->property_number = $property_num;
+                        $property->fk_office_id = $office_id;
+                        $property->date = $date_acq;
+                        $property->unit_of_measure_id = $unit_of_measure_id;
+                        $property->serial_number = !empty($serial_num) ? $serial_num : 'N/A';
+                        $property->employee_id = $issued_by_id;
+                        $property->article = $article;
+                        $property->description = $description;
+                        $property->acquisition_amount = $amount;
+                        $property->is_ssf = $is_ssf;
+                        $property->fk_ssf_sp_num_id = null;
+                        $property->fk_property_article_id = null;
+                        if (!$property->validate()) {
+                            throw new ErrorException(json_encode($property->errors));
+                        }
+                        if (!$property->save(false)) {
+                            throw new ErrorException("property save failed");
+                        }
+
+                        $otherPropertyDetailId = $this->createOtherPropertyDetails($property->id, $object_code,   $property->property_number);
+                        if (!empty($fund01)) {
+                            $this->createOtherPropertyDetailsItems($otherPropertyDetailId, 5, $fund01);
+                        }
+                        if (!empty($rapidSga)) {
+                            $this->createOtherPropertyDetailsItems($otherPropertyDetailId, 9, $rapidSga);
+                        }
+                        if (!empty($rapidLp)) {
+                            $this->createOtherPropertyDetailsItems($otherPropertyDetailId, 8, $rapidLp);
+                        }
+                        if (!empty($fund158)) {
+                            $this->createOtherPropertyDetailsItems($otherPropertyDetailId, 6, $fund158);
+                        }
+                        if (!empty($rapidGop)) {
+                            $this->createOtherPropertyDetailsItems($otherPropertyDetailId, 13, $rapidGop);
+                        }
+
+
+
+
+
+                        $par = new Par();
+                        $par->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                        $par->par_number = $par_num;
+                        $par->fk_office_id  = $office_id;
+                        $par->date  = date('Y-m-d');
+                        $par->fk_received_by  = $rcv_by_id;
+                        $par->fk_actual_user  = $act_user_id;
+                        $par->fk_property_id  = $property->id;
+                        $par->fk_issued_by_id  = $issued_by_id;
+                        $par->fk_location_id  = $location_id;
+                        $par->is_unserviceable  = $is_unserviceable;
+                        $par->_year  = 2022;
+                        if (!$par->validate()) {
+                            throw new ErrorException(json_encode($par->errors));
+                        }
+                        if (!$par->save(false)) {
+                            throw new ErrorException('par save failed');
+                        }
+                        $pc = new PropertyCard();
+                        $pc->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                        $pc->serial_number = $pc_num;
+                        $pc->fk_par_id = $par->id;
+                        if (!$pc->validate()) {
+                            throw new ErrorException(json_encode($pc->errors));
+                        }
+                        if (!$pc->save(false)) {
+                            throw new ErrorException('PC save failed');
+                        }
+                    }
+                    $transaction->commit();
+                } catch (ErrorException $e) {
+                    $transaction->rollBack();
+                    return $e->getMessage();
+                }
+
+
+                echo '<pre>';
+                var_dump("Success");
+                echo '</pre>';
+            }
+        }
+        return $this->render('file_upload', ['model' => $model]);
+    }
+    private function createOtherPropertyDetails($property_id, $object_code, $property_number)
+    {
+
+        try {
+            $chart_id = YIi::$app->db->createCommand("SELECT id FROM chart_of_accounts WHERE uacs = :object_code")
+                ->bindValue(':object_code', $object_code)
+                ->queryScalar();
+            $model  = new OtherPropertyDetails();
+            $model->id = MyHelper::getUuid();
+            $model->fk_property_id = $property_id;
+            $model->fk_chart_of_account_id = $chart_id;
+            $model->salvage_value_prcnt = 5;
+            $model->useful_life = 60;
+            $createSubAccount = MyHelper::createPropertySubAccount($model->fk_chart_of_account_id, $property_number);
+            if ($createSubAccount['isSuccess'] === true) {
+                $model->fk_sub_account1_id = $createSubAccount['id'];
+            }
+            // $create_depreciation_sub_account = MyHelper::createPropertySubAccount($model->fk_chart_of_account_id, $model->property->property_number);
+            $decpreciation_account_id = YIi::$app->db->createCommand("SELECT fk_depreciation_id FROM chart_of_accounts WHERE chart_of_accounts.id = :id")
+                ->bindValue(':id', $chart_id)
+                ->queryScalar();
+            // echo $decpreciation_account_id;
+            // die();
+            $create_depreciation_sub_account = MyHelper::createPropertySubAccount($decpreciation_account_id, $model->property->property_number);
+            if ($create_depreciation_sub_account['isSuccess'] === true) {
+                $model->fk_depreciation_sub_account1_id = $create_depreciation_sub_account['id'];
+            }
+            if (!$model->validate()) {
+                throw new ErrorException(json_encode($model->errors));
+            }
+            if (!$model->save(false)) {
+                throw new ErrorException("Model Save Failed");
+            }
+            return $model->id;
+        } catch (ErrorException $e) {
+            return json_encode(['error_message' => $e->getMessage()]);
+        }
+    }
+    private  function createOtherPropertyDetailsItems($modelid, $bookId, $amt)
+    {
+
+        $item = new OtherPropertyDetailItems();
+        $item->fk_other_property_details_id = $modelid;
+        $item->book_id = $bookId;
+        $item->amount =  $amt;
+        if (!$item->validate()) {
+            throw new ErrorException($amt . 'yawa');
+        }
+        if (!$item->save(false)) {
+            throw new ErrorException('Item Save Failed');
+        }
+    }
+    public function actionGeneratePassword()
+    {
+        $chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        $password = '';
+        for ($i = 0; $i < 8; $i++) {
+            $password .= $chars[rand(0, strlen($chars) - 1)];
+        }
+        return $password;
+    }
 }
 
 // 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
