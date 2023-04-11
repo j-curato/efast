@@ -8,7 +8,11 @@
                 <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="img-circle" alt="User Image" />
             </div>
             <div class="pull-left info">
-                <p><?php echo !empty(Yii::$app->user->identity->username) ? Yii::$app->user->identity->username : '' ?></p>
+                <p><?php
+
+                    use dmstr\widgets\Menu;
+
+                    echo !empty(Yii::$app->user->identity->username) ? Yii::$app->user->identity->username : '' ?></p>
                 <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
         </div>
@@ -31,91 +35,92 @@
             }
         </style>
         <?php
-
-        ?>
-        <?php
-        $province = !empty(Yii::$app->user->identity->province) ? strtolower(Yii::$app->user->identity->province) : '';
-        $division = !empty(Yii::$app->user->identity->division) ? strtolower(Yii::$app->user->identity->division) : '';
-        if (!Yii::$app->user->can('super-user') && Yii::$app->user->can('province')) {
-            echo dmstr\widgets\Menu::widget(
-                [
-                    'options' => ['class' => 'sidebar-menu tree text-truncate', 'data-widget' => 'tree', 'style' => 'width: inherit'],
+        // po-master-records
+        // po-query
+        // po-reports
+        // po-transactions
+        $po_modules = [
+            'options' => ['class' => 'sidebar-menu tree text-truncate', 'data-widget' => 'tree', 'style' => 'width: inherit'],
+            'items' => [
+                Yii::$app->user->can('po-master-records') ?   [
+                    'label' => 'Master Records',
+                    'url' => '#',
                     'items' => [
-                        [
-                            'label' => 'Master Records',
-                            'url' => '#',
-                            'items' => [
-                                Yii::$app->user->can('province') ?  ['label' => 'Bank Account', 'icon' => 'circle-o', 'url' => ['/bank-account'],] : [],
-                                Yii::$app->user->can('po_check_range') ?  ['label' => 'Check Range', 'icon' => 'circle-o', 'url' => ['/check-range'],] : [],
-                                Yii::$app->user->can('po_asignatory') ?     ['label' => 'PO Asignatory', 'icon' => 'circle-o', 'url' => ['/po-assignatory'],] : [],
-                                Yii::$app->user->can('po_responsibility_center') ?     ['label' => 'PO Responsibility Center', 'icon' => 'circle-o', 'url' => ['/po-responsibility-center'],] : [],
-                            ],
-                        ],
+                        Yii::$app->user->can('province') ?  ['label' => 'Bank Account', 'icon' => 'circle-o', 'url' => ['/bank-account'],] : [],
+                        Yii::$app->user->can('po_check_range') ?  ['label' => 'Check Range', 'icon' => 'circle-o', 'url' => ['/check-range'],] : [],
+                        Yii::$app->user->can('po_asignatory') ?     ['label' => 'PO Asignatory', 'icon' => 'circle-o', 'url' => ['/po-assignatory'],] : [],
+                        Yii::$app->user->can('po_responsibility_center') ?     ['label' => 'PO Responsibility Center', 'icon' => 'circle-o', 'url' => ['/po-responsibility-center'],] : [],
+                    ],
+                ] : [],
+                Yii::$app->user->can('po-transactions') ?   [
+                    'label' => 'Transaction',
+                    'url' => '#',
+                    'items' => [
+                        Yii::$app->user->can('advances') ?     ['label' => 'Advances', 'icon' => 'circle-o', 'url' => ['/advances'],] : [],
+                        Yii::$app->user->can('po_transaction') ?     ['label' => 'PO Transaction', 'icon' => 'circle-o', 'url' => ['/po-transaction'],] : [],
+                        Yii::$app->user->can('liquidation') ?     ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ['/liquidation'],] : [],
+                        Yii::$app->user->can('liquidation') ?     ['label' => 'Cancelled Check', 'icon' => 'circle-o', 'url' => ['/liquidation/cancelled-check-index'],] : [],
+                        Yii::$app->user->can('po_transmittal') ? ['label' => 'DV Transmittal', 'icon' => 'circle-o', 'url' => ['/po-transmittal'],] : [],
+
+                    ],
+                ] : [],
+                Yii::$app->user->can('property') ?    [
+                    'label' => 'Property',
+                    'url' => '#',
+                    'items' => [
                         [
                             'label' => 'Transaction',
                             'url' => '#',
                             'items' => [
-                                Yii::$app->user->can('advances') ?     ['label' => 'Advances', 'icon' => 'circle-o', 'url' => ['/advances'],] : [],
-                                Yii::$app->user->can('po_transaction') ?     ['label' => 'PO Transaction', 'icon' => 'circle-o', 'url' => ['/po-transaction'],] : [],
-                                Yii::$app->user->can('liquidation') ?     ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ['/liquidation'],] : [],
-                                Yii::$app->user->can('liquidation') ?     ['label' => 'Cancelled Check', 'icon' => 'circle-o', 'url' => ['/liquidation/cancelled-check-index'],] : [],
-                                Yii::$app->user->can('po_transmittal') ? ['label' => 'DV Transmittal', 'icon' => 'circle-o', 'url' => ['/po-transmittal'],] : [],
-
+                                Yii::$app->user->can('input_property') ?     ['label' => 'Property', 'icon' => 'circle-o', 'url' => ['/property'],] : [],
+                                Yii::$app->user->can('ptr') ?     ['label' => 'PTR', 'icon' => 'circle-o', 'url' => ['/ptr'],] : [],
+                                Yii::$app->user->can('par') ?     ['label' => 'PAR', 'icon' => 'circle-o', 'url' => ['/par'],] : [],
+                                Yii::$app->user->can('property_card') ?     ['label' => 'Property Card', 'icon' => 'circle-o', 'url' => ['/property-card'],] : [],
+                                Yii::$app->user->can('rlsddp') ?     ['label' => 'RLSDDP', 'icon' => 'circle-o', 'url' => ['/rlsddp'],] : [],
+                                Yii::$app->user->can('iirup') ?     ['label' => 'IIRUP', 'icon' => 'circle-o', 'url' => ['/iirup'],] : [],
                             ],
                         ],
-                        Yii::$app->user->can('property') ?    [
-                            'label' => 'Property',
-                            'url' => '#',
-                            'items' => [
-                                [
-                                    'label' => 'Transaction',
-                                    'url' => '#',
-                                    'items' => [
-                                        Yii::$app->user->can('input_property') ?     ['label' => 'Property', 'icon' => 'circle-o', 'url' => ['/property'],] : [],
-                                        Yii::$app->user->can('ptr') ?     ['label' => 'PTR', 'icon' => 'circle-o', 'url' => ['/ptr'],] : [],
-                                        Yii::$app->user->can('par') ?     ['label' => 'PAR', 'icon' => 'circle-o', 'url' => ['/par'],] : [],
-                                        Yii::$app->user->can('property_card') ?     ['label' => 'Property Card', 'icon' => 'circle-o', 'url' => ['/property-card'],] : [],
-                                        Yii::$app->user->can('rlsddp') ?     ['label' => 'RLSDDP', 'icon' => 'circle-o', 'url' => ['/rlsddp'],] : [],
-                                        Yii::$app->user->can('iirup') ?     ['label' => 'IIRUP', 'icon' => 'circle-o', 'url' => ['/iirup'],] : [],
-                                    ],
-                                ],
-                            ],
-                        ] : [],
-                        [
-                            'label' => 'Reports',
-                            'url' => '#',
-                            'items' => [
-                                Yii::$app->user->can('province') ?     ['label' => 'Alphalist', 'icon' => 'circle-o', 'url' => ['/alphalist'],] : [],
-                                Yii::$app->user->can('po_cibr') ?     ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/cibr'],] : [],
-                                Yii::$app->user->can('po_cdr') ?     ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/cdr'],] : [],
-                                Yii::$app->user->can('province') ?     ['label' => 'FUR', 'icon' => 'circle-o', 'url' => ['/fur'],] : [],
-                                Yii::$app->user->can('rod') ?     ['label' => 'ROD', 'icon' => 'circle-o', 'url' => ['/rod'],] : [],
-                                Yii::$app->user->can('po_transmittal') ? ['label' => 'Returned DV`s', 'icon' => 'circle-o', 'url' => ['/po-transmittal/returned-liquidation'],] : [],
-                                Yii::$app->user->can('advances_liquidation') ?     ['label' => 'Advances/Liquidation', 'icon' => 'circle-o', 'url' => ['/report/advances-liquidation'],] : [],
-
-                            ],
-                        ],
-                        [
-                            'label' => 'Query',
-                            'url' => '#',
-                            'items' => [
-                                Yii::$app->user->can('province') ?     ['label' => 'Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/fund-source-fur'],] : [],
-                                Yii::$app->user->can('summary_fund_source_fur') ?     ['label' => 'Summary Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/summary-fund-source-fur'],] : [],
-                                Yii::$app->user->can('summary_fund_source_fur') ?     ['label' => 'Summary Budget Year FUR', 'icon' => 'circle-o', 'url' => ['/report/budget-year-fur'],] : [],
-                                Yii::$app->user->can('province') ?     ['label' => 'ROD', 'icon' => 'circle-o', 'url' => ['/rod'],] : [],
-                                Yii::$app->user->can('province') ?     ['label' => 'Adequacy of Resource', 'icon' => 'circle-o', 'url' => ['/report/province-adequacy'],] : [],
-
-                            ],
-                        ],
-
-                        ['label' => 'PPMP Non-CSE', 'icon' => 'circle-o', 'url' => ['/ppmp-non-cse'],],
+                    ],
+                ] : [],
+                Yii::$app->user->can('po-reports') ?  [
+                    'label' => 'Reports',
+                    'url' => '#',
+                    'items' => [
+                        Yii::$app->user->can('province') ?     ['label' => 'Alphalist', 'icon' => 'circle-o', 'url' => ['/alphalist'],] : [],
+                        Yii::$app->user->can('po_cibr') ?     ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/cibr'],] : [],
+                        Yii::$app->user->can('po_cdr') ?     ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/cdr'],] : [],
+                        Yii::$app->user->can('province') ?     ['label' => 'FUR', 'icon' => 'circle-o', 'url' => ['/fur'],] : [],
+                        Yii::$app->user->can('rod') ?     ['label' => 'ROD', 'icon' => 'circle-o', 'url' => ['/rod'],] : [],
+                        Yii::$app->user->can('po_transmittal') ? ['label' => 'Returned DV`s', 'icon' => 'circle-o', 'url' => ['/po-transmittal/returned-liquidation'],] : [],
+                        Yii::$app->user->can('advances_liquidation') ?     ['label' => 'Advances/Liquidation', 'icon' => 'circle-o', 'url' => ['/report/advances-liquidation'],] : [],
 
                     ],
+                ] : [],
+                Yii::$app->user->can('po-query') ?  [
+                    'label' => 'Query',
+                    'url' => '#',
+                    'items' => [
+                        Yii::$app->user->can('province') ?     ['label' => 'Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/fund-source-fur'],] : [],
+                        Yii::$app->user->can('summary_fund_source_fur') ?     ['label' => 'Summary Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/summary-fund-source-fur'],] : [],
+                        Yii::$app->user->can('summary_fund_source_fur') ?     ['label' => 'Summary Budget Year FUR', 'icon' => 'circle-o', 'url' => ['/report/budget-year-fur'],] : [],
+                        Yii::$app->user->can('province') ?     ['label' => 'ROD', 'icon' => 'circle-o', 'url' => ['/rod'],] : [],
+                        Yii::$app->user->can('province') ?     ['label' => 'Adequacy of Resource', 'icon' => 'circle-o', 'url' => ['/report/province-adequacy'],] : [],
+
+                    ],
+                ] : [],
+
+
+            ],
 
 
 
-                ]
-            );
+        ];
+        ?>
+        <?php
+        $province = !empty(Yii::$app->user->identity->province) ? strtolower(Yii::$app->user->identity->province) : '';
+        $division = !empty(Yii::$app->user->identity->division) ? strtolower(Yii::$app->user->identity->division) : '';
+        if (!Yii::$app->user->can('super-user') && Yii::$app->user->can('provincial-office')) {
+            echo Menu::widget($po_modules);
         } else if (
             $province === 'ro' &&
             $division === 'idd' ||
