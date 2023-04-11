@@ -45,7 +45,8 @@
     "razonyang/yii2-rate-limiter": "^1.0",
     "kartik-v/yii2-icons": "@dev",
     "yiisoft/yii2-symfonymailer": "~3.0.0",
-    "kartik-v/yii2-password": "@dev"
+    "kartik-v/yii2-password": "@dev",
+    "lavrentiev/yii2-toastr": "^2.0"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "~2.1.0",
