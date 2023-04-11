@@ -4981,148 +4981,28 @@ class ReportController extends \yii\web\Controller
     {
         // return YIi::$app->memem->getWorkdays('2022-06-17', '2022-06-20');
         if (Yii::$app->request->post()) {
-            $query = Yii::$app->db->createCommand("WITH par_details as (
-                    SELECT 
-                    par.par_number,
-                    par.date as par_date,
-                    received_by.employee_name as rcv_by,
-                    actual_user.employee_name as act_usr,
-                    issued_by.employee_name as isd_by,
-                    location.location,
-                    par.fk_property_id,
-                    property_card.serial_number as pc_num,
-                    office.office_name,
-                    divisions.division,
-                    par.is_current_user,
-                    (CASE WHEN par.is_current_user =1 THEN 'Current User'
-                    ELSE 'Not Current User'
-                    END
-                    ) as isCrntUsr,
-                    (CASE WHEN par.is_unserviceable =1 THEN 'UnServiceable'
-                    ELSE 'Serviceable'
-                    END
-                    ) as isUnserviceable
-                    
-                    FROM 
-                    par
-                    LEFT JOIN employee_search_view as received_by ON par.fk_received_by = received_by.employee_id
-                    LEFT JOIN employee_search_view as actual_user ON par.fk_actual_user = actual_user.employee_id
-                    LEFT JOIN employee_search_view as issued_by ON par.fk_issued_by_id = issued_by.employee_id
-                    LEFT JOIN location ON par.fk_location_id = location.id
-                    LEFT JOIN property_card ON par.id = property_card.fk_par_id
-                    LEFT JOIN office ON location.fk_office_id = office.id
-                    LEFT JOIN divisions ON location.fk_division_id = divisions.id
-                )
-                
-                
-                SELECT 
-                 par_details.pc_num,
-                ptr.ptr_number,
-                ptr.date as ptr_date,
-                transfer_type.`type`,
-                derecognition.serial_number as derecognition_num,
-                derecognition.date as derecognition_date,
-                property.property_number,
-                property.date as date_acquired,
-                property.serial_number,
-                IFNULL(property_articles.article_name,property.article) as article,
-                property.description,
-                property.acquisition_amount,
-                unit_of_measure.unit_of_measure,
-                other_property_details.useful_life,
-                (CASE
-                    WHEN DAY(property.date) > 15 THEN DATE_FORMAT(  DATE_ADD( property.date,INTERVAL 1 MONTH), '%Y-%m')
-                    ELSE DATE_FORMAT(property.date, '%Y-%m')
-                END ) as strt_mnth,
-                DATE_FORMAT(
-                    DATE_ADD(
-                        (CASE
-                            WHEN DAY(property.date) > 15 THEN DATE_FORMAT(  DATE_ADD( property.date,INTERVAL 1 MONTH), '%Y-%m-01')
-                            ELSE DATE_FORMAT(property.date, '%Y-%m-01')
-                        END),INTERVAL other_property_details.useful_life-1 MONTH
-                    ), '%Y-%m'
-                ) as lst_mth,
-                (CASE
-					WHEN derecognition.date IS NOT NULL THEN DATE_FORMAT(derecognition.date,'%Y-%m') 
-					ELSE
-									DATE_FORMAT(
-									DATE_ADD(
-									(CASE
-										WHEN DAY(property.date) > 15 THEN DATE_FORMAT(  DATE_ADD( property.date,INTERVAL 1 MONTH), '%Y-%m-01')
-										ELSE DATE_FORMAT(property.date, '%Y-%m-01')
-										END),INTERVAL other_property_details.useful_life -1 MONTH
-										), '%Y-%m'
-										)
-									END) as new_last_month,
-                
-                                    DATE_FORMAT(
-                    DATE_ADD(
-                        (CASE
-                            WHEN DAY(property.date) > 15 THEN DATE_FORMAT(  DATE_ADD( property.date,INTERVAL 1 MONTH), '%Y-%m-01')
-                            ELSE DATE_FORMAT(property.date, '%Y-%m-01')
-                        END),INTERVAL other_property_details.useful_life -2 MONTH
-                    ), '%Y-%m'
-                ) as sec_lst_mth,
-                par_details.par_number,
-                par_details.par_date ,
-                par_details.rcv_by,
-                par_details.act_usr,
-                par_details.isd_by,
-                par_details.office_name,
-                par_details.division,
-                par_details.location,
-                par_details.isCrntUsr,
-                par_details.isUnserviceable,
-                par_details.is_current_user,
-                chart_of_accounts.uacs,
-                chart_of_accounts.general_ledger,
-                depreciation_sub_account.`name` as depreciation_account_title,
-                depreciation_sub_account.`object_code` as depreciation_object_code
-                
-                FROM property
-                LEFT JOIN ptr ON property.id = ptr.fk_property_id
-                LEFT JOIN unit_of_measure ON property.unit_of_measure_id = unit_of_measure.id
-                LEFT JOIN property_articles ON property.fk_property_article_id = property_articles.id
-                LEFT JOIN other_property_details ON property.id = other_property_details.fk_property_id
-                LEFT JOIN par_details ON property.id = par_details.fk_property_id
-                LEFT JOIN sub_accounts1 ON other_property_details.fk_sub_account1_id = sub_accounts1.id
-                LEFT JOIN sub_accounts1 as depreciation_sub_account ON other_property_details.fk_depreciation_sub_account1_id = depreciation_sub_account.id
-                LEFT JOIN derecognition ON property.id = derecognition.fk_property_id
-                LEFT JOIN transfer_type ON ptr.fk_transfer_type_id = transfer_type.id
-                LEFT JOIN chart_of_accounts ON other_property_details.fk_chart_of_account_id  = chart_of_accounts.id
 
-                ORDER BY property.property_number DESC")->queryAll();
-            $items  = Yii::$app->db->createCommand("SELECT 
-            property.property_number,
-            LOWER(books.`name`) as book_name,
-            other_property_detail_items.amount as book_val,
-            ROUND((other_property_details.salvage_value_prcnt/100)*other_property_detail_items.amount) as salvage_value,
-            ROUND(other_property_detail_items.amount - ROUND((other_property_details.salvage_value_prcnt/100)*other_property_detail_items.amount)) as depreciable_amount,
-            ROUND((other_property_detail_items.amount - ROUND((other_property_details.salvage_value_prcnt/100)*other_property_detail_items.amount,2))/other_property_details.useful_life) as mnthly_depreciation,
-            ROUND(ROUND(other_property_detail_items.amount -
-            ROUND((other_property_details.salvage_value_prcnt/100)*other_property_detail_items.amount,2),2)-
-            ( ROUND((other_property_detail_items.amount - ROUND((other_property_details.salvage_value_prcnt/100)*other_property_detail_items.amount,2))
-            /other_property_details.useful_life)* (other_property_details.useful_life-1))) as lstmnthdep,
-            
-            (CASE 
-            WHEN TIMESTAMPDIFF(MONTH, STR_TO_DATE(DATE_FORMAT(property.date,'%Y-%m-30'), '%Y-%m-%d'), DATE_FORMAT(CURRENT_DATE(),'%Y-%m-30'))>=other_property_details.useful_life THEN other_property_details.useful_life
-            ELSE TIMESTAMPDIFF(MONTH, STR_TO_DATE(DATE_FORMAT(property.date,'%Y-%m-30'), '%Y-%m-%d'), DATE_FORMAT(CURRENT_DATE(),'%Y-%m-30')) -1
-            END) as mnt_dep,
-            
-            (CASE 
-            WHEN TIMESTAMPDIFF(MONTH, STR_TO_DATE(DATE_FORMAT(property.date,'%Y-%m-30'), '%Y-%m-%d'), DATE_FORMAT(CURRENT_DATE(),'%Y-%m-30'))>=other_property_details.useful_life-1 THEN other_property_details.useful_life
-            ELSE TIMESTAMPDIFF(MONTH, STR_TO_DATE(DATE_FORMAT(property.date,'%Y-%m-30'), '%Y-%m-%d'), DATE_FORMAT(CURRENT_DATE(),'%Y-%m-30')) -1
-            END) 
-            * ROUND((other_property_detail_items.amount - ROUND((other_property_details.salvage_value_prcnt/100)*other_property_detail_items.amount,2))/other_property_details.useful_life) as accu_depreciation
-            FROM property
-            LEFT JOIN other_property_details ON property.id = other_property_details.fk_property_id
-            LEFT JOIN other_property_detail_items ON other_property_details.id = other_property_detail_items.fk_other_property_details_id
-            LEFT JOIN derecognition ON property.id = derecognition.fk_property_id
-            LEFT JOIN books ON other_property_detail_items.book_id = books.id
-            WHERE 
-            other_property_detail_items.is_deleted = 0
-           ")
-                ->queryAll();
+            if (!Yii::$app->user->can('super-user')) {
+                $user_data = Yii::$app->memem->getUserData();
+                $office =   $user_data->office->office_name;
+            }
+            // $query = Yii::$app->db->createCommand("SELECT * FROM detailed_property_database")->queryAll();
+
+            $q  = new Query();
+            $q->select("*")
+                ->from('detailed_property_database');
+            if (!Yii::$app->user->can('super-user')) {
+                $q->andWhere('office_name = :office_name', ['office_name' => $user_data->office->office_name]);
+            }
+            $query = $q->all();
+            // $items  = Yii::$app->db->createCommand("SELECT * FROM detailed_other_property_details")->queryAll();
+            $i  = new Query();
+            $i->select("*")
+                ->from('detailed_other_property_details');
+            if (!Yii::$app->user->can('super-user')) {
+                $i->andWhere('fk_office_id = :office_id', ['office_id' => $user_data->office->id]);
+            }
+            $items = $i->all();
             // $result = ArrayHelper::index($items,  'book_name', [function ($element) {
             //     return $element['property_number'];
             // },]);
@@ -5264,6 +5144,11 @@ class ReportController extends \yii\web\Controller
             $sheet->setCellValue([$bookCol, 1], 'Months Depreciated');
             $bookCol++;
             $sheet->setCellValue([$bookCol, 1], 'Accumulated Depreciation');
+            foreach ($books as $book) {
+                $sheet->setCellValue([$bookCol, 2], $book['book_name']);
+                $bookCol++;
+            }
+            $sheet->setCellValue([$bookCol, 1], 'Book Value Balance');
             foreach ($books as $book) {
                 $sheet->setCellValue([$bookCol, 2], $book['book_name']);
                 $bookCol++;
@@ -5466,7 +5351,7 @@ class ReportController extends \yii\web\Controller
                     $sheet->setCellValue(
                         [$bookValCol, $row],
                         // !empty($val['useful_life']) ? $val['useful_life'] : ''
-                        $months >= $val['useful_life'] ? $val['useful_life'] : $months - 2
+                        $months >= $val['useful_life'] ? $val['useful_life'] : $months
                     );
                     $bookValCol++;
 
@@ -5478,6 +5363,14 @@ class ReportController extends \yii\web\Controller
                         $sheet->setCellValue(
                             [$bookValCol, $row],
                             !empty($result[$property_num][$book_name]['accu_depreciation']) ? $result[$property_num][$book_name]['accu_depreciation'] : ''
+                        );
+                        $bookValCol++;
+                    }
+                    foreach ($books as $book) {
+                        $book_name = strtolower($book['book_name']);
+                        $sheet->setCellValue(
+                            [$bookValCol, $row],
+                            !empty($result[$property_num][$book_name]['book_val_bal']) ? $result[$property_num][$book_name]['book_val_bal'] : ''
                         );
                         $bookValCol++;
                     }

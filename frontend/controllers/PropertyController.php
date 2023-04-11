@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\models\DetailedPropertyDatabaseSearch;
 use app\models\Office;
 use app\models\Par;
 use Yii;
@@ -554,4 +555,13 @@ class PropertyController extends Controller
     //     }
     //     return 'success';
     // }
+    public function actionPropertyDatabase()
+    {
+        $searchModel = new DetailedPropertyDatabaseSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        return $this->render('property_database_index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
 }
