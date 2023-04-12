@@ -2,13 +2,18 @@
 
 namespace frontend\controllers;
 
+use app\components\helpers\MyHelper;
+use app\models\Office;
 use Yii;
 use app\models\Rpcppe;
 use app\models\RpcppeSearch;
+use yii\db\Expression;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 
 /**
  * RpcppeController implements the CRUD actions for Rpcppe model.
@@ -29,7 +34,7 @@ class RpcppeController extends Controller
                     'create',
                     'update',
                     'delete',
-
+                    'generate'
                 ],
                 'rules' => [
                     [
@@ -39,6 +44,7 @@ class RpcppeController extends Controller
                             'create',
                             'update',
                             'delete',
+                            'generate'
 
                         ],
                         'allow' => true,
@@ -80,8 +86,10 @@ class RpcppeController extends Controller
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id);
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'res' => $this->query($model->fk_chart_of_account_id, $model->fk_actbl_ofr, $model->fk_book_id, $model->fk_office_id)
         ]);
     }
 
@@ -93,45 +101,23 @@ class RpcppeController extends Controller
     public function actionCreate()
     {
         $model = new Rpcppe();
+        if (!Yii::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $model->fk_office_id = $user_data->office->id;
+        }
+        if ($model->load(Yii::$app->request->post())) {
 
+            $model->id = MyHelper::getUuid();
+            if ($model->save(false)) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+        }
 
         return $this->render('create', [
             'model' => $model,
         ]);
     }
-    public function actionInsert()
-    {
 
-        if ($_POST) {
-            $reporting_period = $_POST['reporting_period'];
-            $book_id = $_POST['book_id'];
-            $ppe_condition = $_POST['ppe_condition'];
-
-
-            $certified_by = $_POST['certified_by'];
-            $aprroved_by = $_POST['aprroved_by'];
-            $verified_by = $_POST['verified_by'];
-            $verified_by_pos = null;
-            if (!empty($_POST['rpcppe_id'])) {
-                $model = Rpcppe::findOne($_POST['rpcppe_id']);
-            } else {
-
-                $model = new Rpcppe();
-            }
-
-            $model->rpcppe_number = $this->getRpcppeNumber();
-            $model->reporting_period = $reporting_period;
-            $model->book_id = $book_id;
-            $model->certified_by = $certified_by;
-            $model->approved_by = $aprroved_by;
-            $model->verified_by = $verified_by;
-            $model->verified_pos = $verified_by_pos;
-            if ($model->save()) {
-
-                return $this->redirect(['view', 'id' => $model->rpcppe_number]);
-            }
-        }
-    }
 
     /**
      * Updates an existing Rpcppe model.
@@ -144,8 +130,11 @@ class RpcppeController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->rpcppe_number]);
+        if ($model->load(Yii::$app->request->post())) {
+
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->render('update', [
@@ -193,29 +182,61 @@ class RpcppeController extends Controller
         $string = substr(str_repeat(0, 5) . $num, -5);
         return 'DTI XIII-' . $string;
     }
+
+    private function query($uacs_id, $emp_id = null, $book_id, $office_id = null)
+    {
+        $uacs  = Yii::$app->db->createCommand("SELECT uacs FROM chart_of_accounts WHERE id = :id")->bindValue(':id', $uacs_id)->queryScalar();
+        $book_name  = Yii::$app->db->createCommand("SELECT `name` FROM books WHERE id = :id")->bindValue(':id', $book_id)->queryScalar();
+
+        if (!Yii::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $office_id = $user_data->office->id;
+        }
+        $qry = new Query();
+        $qry->select([
+            'detailed_property_database.rcv_by',
+            'detailed_property_database.article',
+            'detailed_property_database.description',
+            'detailed_property_database.property_number',
+            'detailed_property_database.unit_of_measure',
+            'detailed_other_property_details.book_val',
+            'detailed_property_database.rcv_by_pos',
+            new Expression('1 as qty'),
+            'detailed_property_database.uacs',
+            'detailed_property_database.general_ledger',
+            new Expression('IFNULL(detailed_property_database.act_usr,"") as act_usr'),
+
+        ])
+            ->from('detailed_property_database')
+            ->join('JOIN', 'detailed_other_property_details', 'detailed_property_database.property_id = detailed_other_property_details.property_id')
+            ->andWhere(" detailed_property_database.isUnserviceable = 'serviceable'")
+            ->andWhere("detailed_property_database.is_current_user = 1")
+            ->andWhere("detailed_property_database.derecognition_num IS NULL")
+            ->andWhere("detailed_property_database.uacs = :uacs", ['uacs' => $uacs])
+            ->andWhere("detailed_other_property_details.book_name = :book_name", ['book_name' => $book_name]);
+        if (!empty($emp_id)) {
+            $qry->andWhere("detailed_property_database.rcv_by_id = :emp_id", ['emp_id' => $emp_id]);
+        }
+        if (!empty($office_id)) {
+            $offce_name = Office::findOne($office_id)->office_name;
+            $qry->andWhere("detailed_property_database.office_name = :offce_name", ['offce_name' => $offce_name]);
+        }
+
+
+        $qry->orderBy('detailed_property_database.rcv_by,detailed_property_database.article');
+        $res  = $qry->all();
+        $result = ArrayHelper::index($res, null, 'rcv_by');
+        return $result;
+    }
     public function actionGenerate()
     {
-        if ($_POST) {
-            $book = $_POST['book_id'];
-            $ppe_condition = $_POST['ppe_condition'];
-
-            $query = Yii::$app->db->createCommand("SELECT 
-            UPPER(employee_search_view.employee_name) as employee_name,
-            property.*,
-            
-            IFNULL(ptr.ptr_number,'') as ptr_number,
-            IFNULL(transfer_type.type,'') as transfer_type
-            
-            FROM property
-            INNER JOIN par ON property.property_number = par.property_number
-            LEFT JOIN employee_search_view ON par.employee_id = employee_search_view.employee_id
-            LEFT JOIN ptr ON par.par_number = ptr.par_number
-            LEFT JOIN transfer_type ON ptr.transfer_type_id = transfer_type.id
-            WHERE property.book_id = :book_id
-            ORDER BY employee_search_view.employee_id")
-                ->bindValue(':book_id', $book)
-                ->queryAll();
-            return json_encode($query);
+        if (Yii::$app->request->post()) {
+            $uacs_id = Yii::$app->request->post('uacs_id');
+            $book_id = Yii::$app->request->post('book_id');
+            $emp_id = !empty(Yii::$app->request->post('emp_id')) ? Yii::$app->request->post('emp_id') : null;
+            $office_id = !empty(Yii::$app->request->post('office_id')) ? Yii::$app->request->post('office_id') : null;
+            $qry = $this->query($uacs_id, $emp_id, $book_id, $office_id);
+            return json_encode($qry);
         }
     }
 }

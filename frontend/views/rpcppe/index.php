@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
 use kartik\grid\GridView;
@@ -23,19 +24,33 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-        'panel'=>[
-            'type'=>Gridview::TYPE_PRIMARY,
-            'heading'=>'RPCPPE'
+        'panel' => [
+            'type' => Gridview::TYPE_PRIMARY,
+            'heading' => 'RPCPPE'
         ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-            'rpcppe_number',
+            [
+                'attribute' => 'fk_office_id',
+                'value' => 'office.office_name'
+            ],
             'reporting_period',
-            'book_id',
-            'certified_by',
-            'approved_by',
-            'verified_by',
-            //'verified_pos',
+            [
+                'attribute' => 'fk_book_id',
+                'value' => 'book.name'
+            ],
+            [
+                'attribute' => 'fk_chart_of_account_id',
+                'value' => 'chartOfAccount.general_ledger'
+            ],
+            [
+                'attribute' => 'fk_actbl_ofr',
+                'value' => function ($model) {
+                    $name  = !empty($model->fk_actbl_ofr) ? MyHelper::getEmployee($model->fk_actbl_ofr, 'one')['employee_name'] : '';
+                    return $name;
+                }
+            ],
+
+
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

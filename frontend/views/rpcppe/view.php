@@ -1,23 +1,26 @@
 <?php
 
 use yii\helpers\Html;
+use yii\web\JqueryAsset;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Rpcppe */
 
-$this->title = $model->rpcppe_number;
+$this->title = $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Rpcppes', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+$uacs =  $model->chartOfAccount->uacs . '-' . $model->chartOfAccount->general_ledger;
+$period  = DateTime::createFromFormat('Y-m', $model->reporting_period)->format('F, Y');
+$book_name = $model->book->name;
 ?>
 <div class="rpcppe-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->rpcppe_number], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->rpcppe_number], [
+        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
@@ -25,70 +28,70 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
     </p>
-<div class="con">
+    <div id="con">
 
-    <table>
 
-        <thead>
-            <tr>
-                <th colspan="11" style="text-align: center;">
-                    <span>REPORT ON THE PHYSIICAL COUNT OF PROPERTY, PLANT AND EQUPMENT</span>
-                    <br>
-                    <span>__________________</span>
-                    <br>
-                    <span>(Type of Property, Plant and Equipment)</span>
-                    <br>
-                    <span>As at ________________</span>
-                </th>
-            </tr>
-            <tr>
-                <th colspan="11">
-                    <span>Fund Cluster: </span>
-                    <span>_________________________</span>
-                </th>
-            </tr>
-            <tr>
-                <th>
-                    <span>For which</span>
-                </th>
-            </tr>
-            <tr>
-                <th rowspan="2">ARTICLE</th>
-                <th rowspan="2">DESCRIPTION</th>
-                <th rowspan="2">PROPERTY NUMBER</th>
-                <th rowspan="2">UNIT OF MEASURE</th>
-                <th rowspan="2">UNIT VALUE</th>
-                <th rowspan="2">QUANTITY per PROPERTY CARD</th>
-                <th rowspan="2">QUANTITY PER PHYSICAL COUNT</th>
-                <th rowspan="" colspan="2">SHORTAGE / OVERAGE</th>
-                <th rowspan="2">REMARKS</th>
-            </tr>
-            <tr>
-                <th>Quantity</th>
-                <th>Value</th>
-            </tr>
-        </thead>
-        <tbody>
-
-        </tbody>
-        <tfoot>
-            
-        </tfoot>
-    </table>
     </div>
 
 </div>
 <style>
-    .con{
-        width: 100%;
+    #con {
         background-color: white;
     }
-    table{
-        width: 100%;
+
+    .rpcppe-foot-wrp {
+        overflow: hidden;
+        /* clearfix */
     }
+
+    .rpcppe-foot-col {
+        width: 33.33%;
+        float: left;
+    }
+
+    .ctr {
+        text-align: center;
+    }
+
+    .rpcppe {
+        background-color: white;
+        padding: 20px;
+    }
+
+    table {
+        width: 100%;
+        padding: 2rem;
+    }
+
     th,
     td {
         border: 1px solid black;
         padding: 10px;
     }
+
+    @media print {
+
+        .main-footer,
+        .btn,
+        #Rpcppe {
+            display: none;
+        }
+
+        th,
+        td {
+            padding: 3px;
+            font-size: x-small;
+        }
+    }
 </style>
+<?php
+$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
+$this->registerJsFile("@web/js/moment.min.js", ['depends' => [JqueryAsset::class]]);
+$this->registerCssFile("@web/frontend/web/css/site.css");
+$this->registerJsFile("@web/frontend/views/rpcppe/rpcppeScript.js", ['depends' => [JqueryAsset::class]]);
+?>
+<script>
+    $(document).ready(() => {
+        display(<?= json_encode($res); ?>, '<?= $uacs; ?>', '<?= $period; ?>', '<?=$book_name?>')
+    })
+</script>

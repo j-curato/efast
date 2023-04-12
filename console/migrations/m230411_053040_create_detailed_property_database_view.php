@@ -18,7 +18,9 @@ WITH par_details as (
                     SELECT 
                     par.par_number,
                     par.date as par_date,
+                    received_by.employee_id as rcv_by_id,
                     received_by.employee_name as rcv_by,
+                    received_by.position as rcv_by_pos,
                     actual_user.employee_name as act_usr,
                     issued_by.employee_name as isd_by,
                     location.location,
@@ -108,6 +110,8 @@ WITH par_details as (
                 par_details.isCrntUsr,
                 par_details.isUnserviceable,
                 par_details.is_current_user,
+                par_details.rcv_by_id,
+                par_details.rcv_by_pos,
                 chart_of_accounts.uacs,
                 chart_of_accounts.general_ledger,
                 depreciation_sub_account.`name` as depreciation_account_title,
