@@ -74,8 +74,16 @@ if ($model->type == 'single' || $model->type == 'multiple') {
 
 
     <?= Html::beginForm([$action, 'id' => $model->id], 'post', ['id' => 'rfi_form']); ?>
+    <div class="note">
 
+        <h5>Notes</h5>
+        <ul>
+            <li>If the Transaction/DV has a Purchase Request, please select the corresponding PR# below to ensure accuracy in our Allotment/Fund Tracker</li>
+            <li>The Amount in the Purchase Request table should be positive. </li>
+        </ul>
+    </div>
     <div class="row">
+
 
         <div class="col-sm-3">
             <label for="type">Type</label>
@@ -536,6 +544,10 @@ if ($model->type == 'single' || $model->type == 'multiple') {
 
     .center {
         text-align: center;
+    }
+
+    .note {
+        color: red;
     }
 </style>
 <?php
