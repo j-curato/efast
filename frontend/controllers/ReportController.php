@@ -33,6 +33,7 @@ use ErrorException;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Date;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Yii;
+use yii\db\Expression;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -89,8 +90,10 @@ class ReportController extends \yii\web\Controller
                     'dv-time-monitoring-export',
                     'dv-transmittal-summary',
                     'po-transmittal-summary',
-                    'province-adequacy'
-
+                    'province-adequacy',
+                    'upload-property',
+                    'rpcppe',
+                    'ppelc',
                 ],
                 'rules' => [
                     [
@@ -149,6 +152,7 @@ class ReportController extends \yii\web\Controller
                             'annex3',
                             'annex-A',
                             'raaf',
+                            'ppelc'
 
                         ],
                         'allow' => true,
@@ -2744,25 +2748,7 @@ class ReportController extends \yii\web\Controller
         return $this->render('annex_a');
     }
 
-    public function actionX()
-    {
-        $text = "Name: Jhon Doe";
-        $text .= "'\n'Adress: Butuan";
-        $text .= "'\n'Work: Programmer";
-        $path = 'images';
 
-
-        $qrCode = (new QrCode($text))
-            ->setSize(100);
-        header('Content-Type: ' . $qrCode->getContentType());
-        $base_path =  \Yii::getAlias('@webroot');
-        $qrCode->writeFile($base_path . '/images/code2.png');
-        // writer defaults to PNG when none is specified
-
-        // display directly to the browser 
-        // echo '<img src="' . $qrCode->writeDataUri() . '">';
-        echo $qrCode->writeString();
-    }
     public function actionRaaf()
     {
 
@@ -3705,58 +3691,7 @@ class ReportController extends \yii\web\Controller
 
         return $this->render('trial_balance');
     }
-    public function actionQq()
-    {
 
-        $year = '2022';
-        $province = 'sds';
-
-
-
-
-        $q = Yii::$app->db->createCommand("SELECT CAST( substring_index(substring(dv_number, instr(dv_number, '-')+1), '-', -1) as UNSIGNED) as q 
-        from liquidation
-        WHERE liquidation.province = :province
-        AND liquidation.reporting_period >= '2021-09'
-        AND liquidation.reporting_period LIKE :_year
-        ORDER BY q DESC  LIMIT 1")
-            ->bindValue(':province', $province)
-            ->bindValue(':_year', $year . '%')
-            ->queryScalar();
-
-
-
-        $num = 0;
-
-        if (!empty($q)) {
-            $num = $q + 1;
-        } else {
-            $num = 1;
-        }
-        $liq = Yii::$app->db->createCommand(" SELECT CAST( substring_index(substring(dv_number, instr(dv_number, '-')+1), '-', -1) as UNSIGNED) as num
-        from liquidation
-        WHERE liquidation.province = :province
-        AND liquidation.reporting_period >= '2021-09'
-        AND liquidation.reporting_period LIKE :_year
-        ORDER BY num
-        ")
-            ->bindValue(':province', $province)
-            ->bindValue(':_year', $year . '%')
-            ->queryAll();
-        if (!empty($liq)) {
-            $number_sequnce = [];
-            foreach (range(1, max($liq)['num']) as $val) {
-                $number_sequnce[] = $val;
-            }
-
-            $diff = array_diff($number_sequnce, array_column($liq, 'num'));
-            // return json_encode(min(array_keys($diff)));
-            if (!empty($diff)) {
-                $num = $diff[min(array_keys($diff))];
-            }
-        }
-        return $num;
-    }
     public function actionDetailedFinancialPosition()
     {
         if ($_POST) {
@@ -3949,21 +3884,8 @@ class ReportController extends \yii\web\Controller
 
         return $randomString;
     }
-    // public function actionQ()
-    // {
-    //     return var_dump($_SERVER['REMOTE_ADDR']);
-    // }
-    public function actionServer()
-    {
-        echo   $_SERVER['REMOTE_ADDR'];
 
-        $host = gethostname();
-        echo '<br>';
-        $ip = gethostbyname($host);
-        echo $host;
-        echo '<br>';
-        echo $ip;
-    }
+
     public function actionDvTimeMonitoring()
     {
         if (Yii::$app->request->isPost) {
@@ -4479,75 +4401,7 @@ class ReportController extends \yii\web\Controller
         return $this->render('province_adequacy');
     }
 
-    // public function actionUpdateLiquidation()
-    // {
-    //     if (!empty($_POST)) {
-    //         // $chart_id = $_POST['chart_id'];
-    //         $name = $_FILES["file"]["name"];
-    //         // var_dump($_FILES['file']);
-    //         // die();
-    //         $id = uniqid();
-    //         $file = "transaction/{$id}_{$name}";
-    //         if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
-    //         } else {
-    //             return "ERROR 2: MOVING FILES FAILED.";
-    //             die();
-    //         }
-    //         $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
-    //         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
-    //         $excel = $reader->load($file);
-    //         $excel->setActiveSheetIndexByName('Indicate Correct Date');
-    //         $worksheet = $excel->getActiveSheet();
 
-
-
-    //         $transaction = Yii::$app->db->beginTransaction();
-    //         foreach ($worksheet->getRowIterator(3) as $key => $row) {
-    //             $cellIterator = $row->getCellIterator();
-    //             $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
-    //             $cells = [];
-    //             $y = 0;
-    //             foreach ($cellIterator as $x => $cell) {
-    //                 $q = '';
-    //                 if ($y === 2) {
-    //                     $cells[] = $cell->getFormattedValue();
-    //                 } else {
-    //                     $cells[] =   $cell->getValue();
-    //                 }
-    //                 $y++;
-    //             }
-    //             if (!empty($cells)) {
-
-    //                 $check_number = $cells[0];
-    //                 $check_date = new DateTime($cells[2]);
-    //                 // if ($key == 5) {
-    //                 //     echo $check_date->format('Y-m-d');
-    //                 //     die();
-    //                 // }
-    //                 Yii::$app->cloud_db->createCommand("UPDATE liquidation SET liquidation.check_date = :check_date WHERE liquidation.check_number = :check_number AND liquidation.province = 'sds'")
-    //                     ->bindValue(':check_number', $check_number)
-    //                     ->bindValue(':check_date', $check_date->format('Y-m-d'))
-    //                     ->execute();
-    //                 // $liq  = Liquidation::find()->where('liquidation.check_number = :check_number', ['check_number' => $check_number])->one();
-
-    //                 // $liq->check_date = $check_date->format('Y-m-d'); 
-
-    //                 //     echo $liq->check_date;
-    //                 //     die();
-    //                 // }
-    //             }
-    //         }
-
-
-    //         $transaction->commit();
-    //         ob_clean();
-    //         echo "<pre>";
-    //         var_dump('success');
-    //         echo "</pre>";
-    //         return ob_get_clean();
-    //     }
-    //     return $this->render('update_liquidation');
-    // }
     public function actionLiquidationReportAnnex()
     {
 
@@ -4613,50 +4467,8 @@ class ReportController extends \yii\web\Controller
             'dataProvider' => $dataProvider,
         ]);
     }
-    // public function actionQ()
-    // {
-    //     $cookies = Yii::$app->response->cookies;
 
-    //     // add a new cookie to the response to be sent
 
-    //     // $query = Yii::$app->db->createCommand("SELECT * FROM `dv_aucs` WHERE id = :id")->bindValue(':id', $id)->getRawSql();
-    //     // return json_encode($query);
-    //     // echo  Yii::$app->getSecurity()->decryptByPassword('MIOBSffkc1yR3VZM658Ef7ndQp0DdMzi', '$13$SkF5x6EUe/Qs95K3Hl5UZuRGfhZ6f9t1iCttNzw2P2fBvVEYEPLpu');
-    // }
-    // public function actionGetData()
-    // {
-    //     if (Yii::$app->request->isPost) {
-    //         $reporting_period = Yii::$app->getRequest()->getBodyParams()['reporting_period'];
-    //         if (empty($reporting_period)) {
-
-    //             $query = Yii::$app->db->createCommand("SELECT 
-    //                     dv_aucs.reporting_period,
-    //                     COUNT(dv_aucs.id) as dv
-    //                     FROM 
-    //                     dv_aucs
-    //                     LEFT JOIN cash_disbursement ON dv_aucs.id = cash_disbursement.dv_aucs_id
-    //                     WHERE
-    //                     dv_aucs.is_cancelled !=1
-    //                     GROUP BY dv_aucs.reporting_period
-    //                     ")->queryAll();
-    //         } else {
-    //             $query = Yii::$app->db->createCommand("SELECT 
-    //             dv_aucs.reporting_period,
-    //             COUNT(dv_aucs.id) as dv
-    //             FROM 
-    //             dv_aucs
-    //             LEFT JOIN cash_disbursement ON dv_aucs.id = cash_disbursement.dv_aucs_id
-    //             WHERE
-    //             dv_aucs.is_cancelled !=1
-    //             AND dv_aucs.reporting_period = :reporting_period
-    //             GROUP BY dv_aucs.reporting_period
-    //             ")
-    //                 ->bindValue(':reporting_period', $reporting_period)
-    //                 ->queryAll();
-    //         }
-    //         return json_encode($query);
-    //     }
-    // }
     public function actionDvTransmittalSummary()
     {
         if (Yii::$app->request->isPost) {
@@ -4722,23 +4534,8 @@ class ReportController extends \yii\web\Controller
             return json_encode($query);
         }
     }
-    // public function actionSetCookie()
-    // {
-    //     $cookies = Yii::$app->response->cookies;
 
-    //     // add a new cookie to the response to be sent
-    //     $cookies->add(new \yii\web\Cookie([
-    //         'name' => 'test',
-    //         'value' => 'zh-CN',
-    //     ]));
-    // }
-    public function actionQqq()
-    {
-        return 'aaaa';
-        if (Yii::$app->getRequest()->getCookies()->has('test')) {
-            print_r(Yii::$app->getRequest()->getCookies()->getValue('test'));
-        }
-    }
+
     public function actionDetailedTransmittalSummary($reporting_period = '')
     {
 
@@ -4982,6 +4779,7 @@ class ReportController extends \yii\web\Controller
         // return YIi::$app->memem->getWorkdays('2022-06-17', '2022-06-20');
         if (Yii::$app->request->post()) {
 
+            $reporting_period = Yii::$app->request->post('reporting_period');
             if (!Yii::$app->user->can('super-user')) {
                 $user_data = Yii::$app->memem->getUserData();
                 $office =   $user_data->office->office_name;
@@ -4990,7 +4788,9 @@ class ReportController extends \yii\web\Controller
 
             $q  = new Query();
             $q->select("*")
-                ->from('detailed_property_database');
+                ->from('detailed_property_database')
+                ->andWhere("DATE_FORMAT(detailed_property_database.date_acquired,'%Y-%m') <=:reporting_period", ['reporting_period' => $reporting_period]);
+
             if (!Yii::$app->user->can('super-user')) {
                 $q->andWhere('office_name = :office_name', ['office_name' => $user_data->office->office_name]);
             }
@@ -5345,13 +5145,13 @@ class ReportController extends \yii\web\Controller
                     }
 
                     $date2 = new DateTime($val['strt_mnth'] . -'30');
-                    $date1 = new DateTime(date('Y-m-30'));
+                    $date1 = new DateTime($reporting_period . '-30');
                     $interval = $date1->diff($date2);
-                    $months = ($interval->y * 12) + $interval->m;
+                    $months_diff = ($interval->y * 12) + $interval->m;
+                    $months_depreciated = $months_diff >= $val['useful_life'] ? $val['useful_life'] : $months_diff;
                     $sheet->setCellValue(
                         [$bookValCol, $row],
-                        // !empty($val['useful_life']) ? $val['useful_life'] : ''
-                        $months >= $val['useful_life'] ? $val['useful_life'] : $months
+                        $months_depreciated
                     );
                     $bookValCol++;
 
@@ -5362,15 +5162,18 @@ class ReportController extends \yii\web\Controller
 
                         $sheet->setCellValue(
                             [$bookValCol, $row],
-                            !empty($result[$property_num][$book_name]['accu_depreciation']) ? $result[$property_num][$book_name]['accu_depreciation'] : ''
+                            // !empty($result[$property_num][$book_name]['accu_depreciation']) ? $result[$property_num][$book_name]['accu_depreciation'] : ''
+                            !empty($result[$property_num][$book_name]['mnthly_depreciation']) ? $months_depreciated * $result[$property_num][$book_name]['mnthly_depreciation'] : ''
                         );
                         $bookValCol++;
                     }
                     foreach ($books as $book) {
                         $book_name = strtolower($book['book_name']);
+                        $depreiated_amt = !empty($result[$property_num][$book_name]['mnthly_depreciation']) ? $months_depreciated * $result[$property_num][$book_name]['mnthly_depreciation'] : 0;
+                        $book_val = !empty($result[$property_num][$book_name]['book_val']) ? $result[$property_num][$book_name]['book_val'] : 0;
                         $sheet->setCellValue(
                             [$bookValCol, $row],
-                            !empty($result[$property_num][$book_name]['book_val_bal']) ? $result[$property_num][$book_name]['book_val_bal'] : ''
+                            $book_val - $depreiated_amt
                         );
                         $bookValCol++;
                     }
@@ -5382,7 +5185,7 @@ class ReportController extends \yii\web\Controller
             date_default_timezone_set('Asia/Manila');
             // return date('l jS \of F Y h:i:s A');
             $date = date('Y-m-d h-s A');
-            $file_name = "property_database_$date.xlsx";
+            $file_name = "property_database_$reporting_period.xlsx";
 
 
 
@@ -5842,14 +5645,133 @@ class ReportController extends \yii\web\Controller
             throw new ErrorException('Item Save Failed');
         }
     }
-    public function actionGeneratePassword()
+    private function query($uacs, $emp_id = null)
     {
-        $chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-        $password = '';
-        for ($i = 0; $i < 8; $i++) {
-            $password .= $chars[rand(0, strlen($chars) - 1)];
+
+        $qry = new Query();
+        $qry->select([
+            'detailed_property_database.rcv_by',
+            'detailed_property_database.article',
+            'detailed_property_database.description',
+            'detailed_property_database.property_number',
+            'detailed_property_database.unit_of_measure',
+            'detailed_property_database.acquisition_amount',
+            '1 as qty',
+            'detailed_property_database.uacs',
+            'detailed_property_database.general_ledger'
+
+        ])
+            ->from('detailed_property_database')
+            ->andWhere(" detailed_property_database.isUnserviceable = 'serviceable'")
+            ->andWhere("detailed_property_database.is_current_user = 1")
+            ->andWhere("detailed_property_database.derecognition_num IS NULL")
+            ->andWhere("detailed_property_database.uacs = :uacs", ['uacs' => $uacs]);
+        if (!empty($emp_id)) {
+            $qry->andWhere("detailed_property_database.rcv_by_id = :emp_id", ['emp_id' => $emp_id]);
         }
-        return $password;
+        $res  = $qry->all();
+        return $res;
+    }
+    public function actionRpcppe()
+    {
+        if (Yii::$app->request->post()) {
+            $uacs = Yii::$app->request->post('uacs');
+            $emp_id = !empty(Yii::$app->request->post('emp_id')) ? Yii::$app->request->post('emp_id') : null;
+
+            $qry = $this->query($uacs, $emp_id);
+            return json_encode($qry);
+        }
+        return $this->render('rpcppe');
+    }
+    public function actionPpelc()
+    {
+        if (Yii::$app->request->post()) {
+            $book_id = !empty(Yii::$app->request->post('book_id')) ? Yii::$app->request->post('book_id') : null;
+            $employee_id = !empty(Yii::$app->request->post('employee_id')) ? Yii::$app->request->post('employee_id') : null;
+            $office_id = !empty(Yii::$app->request->post('office_id')) ? Yii::$app->request->post('office_id') : null;
+            $reporting_period = !empty(Yii::$app->request->post('reporting_period')) ? Yii::$app->request->post('reporting_period') : null;
+            $uacs_id = !empty(Yii::$app->request->post('uacs')) ? Yii::$app->request->post('uacs') : null;
+
+
+
+            return json_encode($this->ppelcQuery(
+                $book_id,
+                $employee_id,
+                $office_id,
+                $reporting_period,
+                $uacs_id
+            ));
+        }
+        return $this->render('ppelc');
+    }
+    private function ppelcQuery(
+        $book_id,
+        $employee_id = null,
+        $office_id = null,
+        $reporting_period,
+        $uacs_id
+    ) {
+        $uacs  = Yii::$app->db->createCommand("SELECT uacs FROM chart_of_accounts WHERE id = :id")->bindValue(':id', $uacs_id)->queryScalar();
+        $book_name = Books::findOne($book_id)->name;
+        $qry = new Query();
+        $qry->select([
+            'detailed_property_database.pc_num',
+            'detailed_property_database.uacs',
+            'detailed_property_database.general_ledger',
+            'detailed_other_property_details.book_name',
+            'detailed_property_database.date_acquired',
+            'detailed_property_database.acquisition_amount',
+            'detailed_other_property_details.book_val',
+            'detailed_other_property_details.mnthly_depreciation',
+            'detailed_property_database.useful_life',
+            'detailed_property_database.strt_mnth',
+            new Expression(':reporting_period as reporting_period', ['reporting_period' => $reporting_period]),
+            new Expression('(CASE 
+            WHEN TIMESTAMPDIFF(MONTH,CONCAT(detailed_property_database.strt_mnth,"-01"),:r_period) > detailed_property_database.useful_life THEN  detailed_property_database.useful_life
+            ELSE TIMESTAMPDIFF(MONTH,CONCAT(detailed_property_database.strt_mnth,"-01"),:r_period)
+            END) as diff', ['r_period' => "$reporting_period-01"]),
+            new Expression(
+                '(CASE 
+            WHEN TIMESTAMPDIFF(MONTH,CONCAT(detailed_property_database.strt_mnth,"-01"),:r_period) > detailed_property_database.useful_life THEN  detailed_property_database.useful_life
+            ELSE TIMESTAMPDIFF(MONTH,CONCAT(detailed_property_database.strt_mnth,"-01"),:r_period)
+            END) * detailed_other_property_details.mnthly_depreciation as depreciated_amt',
+
+
+                ['r_period' => "$reporting_period-01"]
+            ),
+            new Expression('detailed_other_property_details.book_val-
+            (CASE 
+            WHEN TIMESTAMPDIFF(MONTH,CONCAT(detailed_property_database.strt_mnth,"-01"),:r_period) > detailed_property_database.useful_life THEN  detailed_property_database.useful_life
+            ELSE TIMESTAMPDIFF(MONTH,CONCAT(detailed_property_database.strt_mnth,"-01"),:r_period)
+            END) * detailed_other_property_details.mnthly_depreciation
+            as book_bal', ['r_period' => "$reporting_period-01"]),
+
+        ])
+            ->from('detailed_property_database')
+            ->join('JOIN', 'detailed_other_property_details', 'detailed_property_database.property_id = detailed_other_property_details.property_id')
+            ->andWhere("detailed_property_database.is_current_user = 1")
+            ->andWhere("detailed_property_database.isUnserviceable = 'serviceable'")
+            ->andWhere("detailed_property_database.strt_mnth <=:reporting_period", ['reporting_period' => $reporting_period])
+            ->andWhere("detailed_property_database.uacs =:uacs", ['uacs' => $uacs])
+            ->andWhere("detailed_other_property_details.book_name =:book_name", ['book_name' => $book_name])
+            ->andWhere("DATE_FORMAT(detailed_property_database.derecognition_date,'%Y-%m') >= :reporting_period 
+        OR detailed_property_database.derecognition_num IS NULL", ['reporting_period' => $reporting_period]);
+
+        if (!Yii::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $office_id = $user_data->office->id;
+        }
+        if (!empty($office_id)) {
+            $offce_name = Office::findOne($office_id)->office_name;
+            $qry->andWhere("detailed_property_database.office_name = :offce_name", ['offce_name' => $offce_name]);
+        }
+        if (!empty($employee_id)) {
+            $qry->andWhere("detailed_property_database.rcv_by_id = :emp_id", ['emp_id' => $employee_id]);
+        }
+        $qry->orderBy("detailed_property_database.date_acquired");
+        // echo $qry->createCommand()->getRawSql();
+        // die();
+        return $qry->all();
     }
 }
 

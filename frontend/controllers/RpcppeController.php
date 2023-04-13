@@ -89,7 +89,7 @@ class RpcppeController extends Controller
         $model = $this->findModel($id);
         return $this->render('view', [
             'model' => $model,
-            'res' => $this->query($model->fk_chart_of_account_id, $model->fk_actbl_ofr, $model->fk_book_id, $model->fk_office_id)
+            'res' => $this->query($model->fk_chart_of_account_id, $model->fk_actbl_ofr, $model->fk_book_id, $model->fk_office_id, $model->reporting_period)
         ]);
     }
 
@@ -183,7 +183,7 @@ class RpcppeController extends Controller
         return 'DTI XIII-' . $string;
     }
 
-    private function query($uacs_id, $emp_id = null, $book_id, $office_id = null)
+    private function query($uacs_id, $emp_id = null, $book_id, $office_id = null, $reporting_period)
     {
         $uacs  = Yii::$app->db->createCommand("SELECT uacs FROM chart_of_accounts WHERE id = :id")->bindValue(':id', $uacs_id)->queryScalar();
         $book_name  = Yii::$app->db->createCommand("SELECT `name` FROM books WHERE id = :id")->bindValue(':id', $book_id)->queryScalar();
@@ -211,9 +211,10 @@ class RpcppeController extends Controller
             ->join('JOIN', 'detailed_other_property_details', 'detailed_property_database.property_id = detailed_other_property_details.property_id')
             ->andWhere(" detailed_property_database.isUnserviceable = 'serviceable'")
             ->andWhere("detailed_property_database.is_current_user = 1")
-            ->andWhere("detailed_property_database.derecognition_num IS NULL")
             ->andWhere("detailed_property_database.uacs = :uacs", ['uacs' => $uacs])
-            ->andWhere("detailed_other_property_details.book_name = :book_name", ['book_name' => $book_name]);
+            ->andWhere("detailed_other_property_details.book_name = :book_name", ['book_name' => $book_name])
+            ->andWhere("detailed_property_database.strt_mnth <=:reporting_period", ['reporting_period' => $reporting_period])
+            ->andWhere("DATE_FORMAT(detailed_property_database.derecognition_date,'%Y-%m') >= :reporting_period OR detailed_property_database.derecognition_num IS NULL", ['reporting_period' => $reporting_period]);
         if (!empty($emp_id)) {
             $qry->andWhere("detailed_property_database.rcv_by_id = :emp_id", ['emp_id' => $emp_id]);
         }
@@ -222,7 +223,8 @@ class RpcppeController extends Controller
             $qry->andWhere("detailed_property_database.office_name = :offce_name", ['offce_name' => $offce_name]);
         }
 
-
+        // echo $qry->createCommand()->getRawSql();
+        // die();
         $qry->orderBy('detailed_property_database.rcv_by,detailed_property_database.article');
         $res  = $qry->all();
         $result = ArrayHelper::index($res, null, 'rcv_by');
@@ -233,9 +235,10 @@ class RpcppeController extends Controller
         if (Yii::$app->request->post()) {
             $uacs_id = Yii::$app->request->post('uacs_id');
             $book_id = Yii::$app->request->post('book_id');
+            $reporting_period = Yii::$app->request->post('reporting_period');
             $emp_id = !empty(Yii::$app->request->post('emp_id')) ? Yii::$app->request->post('emp_id') : null;
             $office_id = !empty(Yii::$app->request->post('office_id')) ? Yii::$app->request->post('office_id') : null;
-            $qry = $this->query($uacs_id, $emp_id, $book_id, $office_id);
+            $qry = $this->query($uacs_id, $emp_id, $book_id, $office_id, $reporting_period);
             return json_encode($qry);
         }
     }

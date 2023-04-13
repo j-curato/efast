@@ -215,7 +215,8 @@ $this->registerJsFile("@web/frontend/views/rpcppe/rpcppeScript.js", ['depends' =
                     book_id: $('#rpcppe-fk_book_id').val(),
                     emp_id: $('#rpcppe-fk_actbl_ofr').val(),
                     uacs_id: $('#rpcppe-fk_chart_of_account_id').val(),
-                    office_id: $('#rpcppe-fk_office_id').val()
+                    office_id: $('#rpcppe-fk_office_id').val(),
+                    reporting_period: $('#rpcppe-reporting_period').val()
                 },
                 success: function(data) {
                     var res = JSON.parse(data)
