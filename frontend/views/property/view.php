@@ -40,7 +40,7 @@ BarcodeGenerator::widget($optionsArray);
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']) ?>
 
         </p>
-        <div class="cut_line">
+        <!-- <div class="cut_line">
 
             <table id="qr_table">
                 <tbody>
@@ -109,7 +109,7 @@ BarcodeGenerator::widget($optionsArray);
 
                 </tbody>
             </table>
-        </div>
+        </div> -->
 
         <?= DetailView::widget([
             'model' => $model,
@@ -135,10 +135,12 @@ BarcodeGenerator::widget($optionsArray);
                         return     preg_replace('#\[n\]#', "\n", $model->description);
                     }
                 ],
-
-
                 'serial_number',
-                'quantity',
+
+                [
+                    'label' => 'Quantity',
+                    'value' => '1'
+                ],
                 [
                     'attribute' => 'acquisition_amount',
                     'format' => ['decimal', 2]

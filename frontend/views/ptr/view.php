@@ -152,13 +152,6 @@ $approved_by = MyHelper::getEmployee($model->fk_approved_by, 'one');
             </thead>
             <tbody>
                 <?php
-                // 
-
-                // 
-                // 
-                // serial_number
-                // unit_of_measure
-                // article
                 echo "<tr>
                     <td colspan=''>{$propertyDetails['acquisition_date']}</td>
                     <td>{$propertyDetails['property_number']}</td>
@@ -183,7 +176,8 @@ $approved_by = MyHelper::getEmployee($model->fk_approved_by, 'one');
             <tfoot>
                 <tr>
                     <th colspan="6">
-                        <span>Reason for Transfer:</span>
+                        <span>Reason for Transfer: <?= !empty($model->transfer_reason) ? $model->transfer_reason : '' ?></span>
+
                     </th>
                 </tr>
                 <tr>

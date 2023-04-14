@@ -103,7 +103,7 @@ class Par extends \yii\db\ActiveRecord
     }
     public function getPtr()
     {
-        return $this->hasOne(Ptr::class, ['par_number' => 'par_number']);
+        return $this->hasOne(Ptr::class, ['id' => 'fk_ptr_id']);
     }
     public function getLocations()
     {

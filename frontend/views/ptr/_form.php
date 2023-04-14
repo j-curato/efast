@@ -248,7 +248,12 @@ if (!empty($model->fk_approved_by)) {
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-sm-12">
 
+            <?= $form->field($model, 'transfer_reason')->textarea(['rows' => 4, 'style' => 'max-width:100%']) ?>
+        </div>
+    </div>
 
     <table id="property_details" class="table">
 

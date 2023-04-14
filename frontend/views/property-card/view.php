@@ -218,7 +218,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 <span>Description: </span>
                 <span>
                     <?php
-                    echo $model->par->property->model;
+
+
+                    echo $sticker_details['article'] . ',';
+                    echo $sticker_details['description'];
                     echo ',';
                     echo $model->par->property->serial_number;
                     ?>
@@ -227,19 +230,20 @@ $this->params['breadcrumbs'][] = $this->title;
             <th colspan="2"></th>
         </tr>
         <tr>
-            <th rowspan="2">Date</th>
-            <th rowspan="2">Reference/ PAR No.</th>
-            <th>Receipt</th>
-            <th colspan="3">Issue/Transfer/ Disposal</th>
-            <th rowspan="2">Amount</th>
-            <th rowspan="2">Remarks</th>
+            <th rowspan="2" class='ctr'>Date</th>
+            <th rowspan="2" class='ctr'>Reference/ PAR No.</th>
+            <th class='ctr'>Receipt</th>
+            <th colspan="2" class="ctr">Issue/Transfer/ Disposal</th>
+            <th class="ctr">Balance</th>
+            <th rowspan="2" class="ctr">Amount</th>
+            <th rowspan="2" class="ctr">Remarks</th>
 
         </tr>
         <tr>
-            <th>Qty.</th>
-            <th>Qty.</th>
-            <th>Office/Officer</th>
-            <th>Qty.</th>
+            <th class='ctr'>Qty.</th>
+            <th class='ctr'>Qty.</th>
+            <th class='ctr'>Office/Officer</th>
+            <th class='ctr'>Qty.</th>
         </tr>
         <tbody>
             <?php
@@ -250,10 +254,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 $balance -= 1;
             }
             $date = new DateTime($model->par->date);
-            $remark = '';
-            if (!empty($model->par->ptr)) {
-                $remark = $model->par->ptr->transfer_type_id;
-            }
+            $remark = !empty($model->par->ptr->transferType->type) ? $model->par->ptr->transferType->type : '';
             echo "<tr>
                     <td>" . $date->format('F d, Y') . "</td>
                     <td>{$model->par->par_number}</td>
@@ -287,6 +288,10 @@ $this->params['breadcrumbs'][] = $this->title;
     .container {
         background-color: white;
         padding: 2rem;
+    }
+
+    .ctr {
+        text-align: center;
     }
 
     .cut_line {

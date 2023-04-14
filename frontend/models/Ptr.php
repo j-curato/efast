@@ -46,6 +46,7 @@ class Ptr extends \yii\db\ActiveRecord
 
             ], 'integer'],
             [['date'], 'safe'],
+            [['transfer_reason'], 'string'],
 
             [[
                 'fk_property_id',
@@ -57,7 +58,8 @@ class Ptr extends \yii\db\ActiveRecord
                 'date',
                 'fk_office_id',
                 'is_unserviceable',
-                'fk_location_id'
+                'fk_location_id',
+                'transfer_reason',
 
             ], 'required'],
             [['ptr_number'], 'string', 'max' => 255],
@@ -84,7 +86,8 @@ class Ptr extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'fk_location_id' => 'Location',
             'is_unserviceable' => 'Seviceable/UnServiceable',
-            'fk_office_id' => 'Office'
+            'fk_office_id' => 'Office',
+            'transfer_reason' => 'Transfer Reason'
 
         ];
     }
