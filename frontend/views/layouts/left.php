@@ -78,7 +78,6 @@
                                 Yii::$app->user->can('property_card') ?     ['label' => 'Property Card', 'icon' => 'circle-o', 'url' => ['/property-card'],] : [],
                                 Yii::$app->user->can('rlsddp') ?     ['label' => 'RLSDDP', 'icon' => 'circle-o', 'url' => ['/rlsddp'],] : [],
                                 Yii::$app->user->can('iirup') ?     ['label' => 'IIRUP', 'icon' => 'circle-o', 'url' => ['/iirup'],] : [],
-                                Yii::$app->user->can('po-property') ?     ['label' => 'Property Database', 'icon' => 'circle-o', 'url' => ['/property/property-database'],] : [],
                             ],
                         ],
                         [
