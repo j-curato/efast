@@ -121,7 +121,14 @@ BarcodeGenerator::widget($optionsArray);
                     'label' => 'Unit of Measure',
                     'attribute' => 'unitOfMeasure.unit_of_measure'
                 ],
-                'article',
+                [
+                    'label' => 'Article',
+                    'value' => function ($model) {
+
+                        $article = !empty($model->fk_property_article_id) ? $model->propertyArticle->article_name : $model->article;
+                        return $article;
+                    }
+                ],
                 [
                     'label' => 'Description',
                     'value' => function ($model) {
@@ -129,10 +136,9 @@ BarcodeGenerator::widget($optionsArray);
                     }
                 ],
 
-                'model',
+
                 'serial_number',
                 'quantity',
-                'acquisition_amount',
                 [
                     'attribute' => 'acquisition_amount',
                     'format' => ['decimal', 2]

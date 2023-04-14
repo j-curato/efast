@@ -9,6 +9,7 @@ use kartik\date\DatePicker;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\web\JqueryAsset;
 use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 
@@ -221,17 +222,16 @@ $property_custodians = ArrayHelper::map(MyHelper::getPropertyCustodians(), 'empl
             </tr>
             <tr>
                 <th>
-                    <span>Model</span>
+                    <span>Article</span>
                 </th>
                 <td>
-                    <span id="model"></span>
+                    <span id="article"></span>
                 </td>
-                <th>
-                    <span>Book</span>
+                <th rowspan="2">
+                    <span>Description</span>
                 </th>
-                <td>
-                    <span id="book"></span>
-
+                <td rowspan="2">
+                    <span id="description"></span>
                 </td>
 
             </tr>
@@ -240,7 +240,21 @@ $property_custodians = ArrayHelper::map(MyHelper::getPropertyCustodians(), 'empl
                     <span>Quantity</span>
                 </th>
                 <td>
-                    <span id="quantity"></span>
+                    <span id="quantity">1</span>
+                </td>
+
+
+            </tr>
+            <tr>
+
+            </tr>
+            <tr>
+
+                <th>
+                    <span>Property Custodian</span>
+                </th>
+                <td>
+                    <span id="disbursing_officer"></span>
                 </td>
                 <th>
                     <span>Unit</span>
@@ -248,21 +262,6 @@ $property_custodians = ArrayHelper::map(MyHelper::getPropertyCustodians(), 'empl
                 <td>
                     <span id="unit"></span>
 
-                </td>
-
-            </tr>
-            <tr>
-                <th>
-                    <span>Description</span>
-                </th>
-                <td>
-                    <span id="description"></span>
-                </td>
-                <th>
-                    <span>Disbursing Officer</span>
-                </th>
-                <td>
-                    <span id="disbursing_officer"></span>
                 </td>
             </tr>
 
@@ -315,6 +314,9 @@ $property_custodians = ArrayHelper::map(MyHelper::getPropertyCustodians(), 'empl
         width: 100%;
     }
 </style>
+<?php
+$this->registerJsfile('@web/frontend/web/js/globalFunctions.js', ['depeneds' => [JqueryAsset::class]]);
+?>
 <script>
 
 </script>
@@ -339,14 +341,13 @@ $js = <<<JS
                 var res = JSON.parse(data)
                 console.log(res)
                 $('#property_number').text(res.property_number)
-                $('#quantity').text(res.quantity)
                 $('#book').text(res.book)
                 $('#unit').text(res.unit_of_measure)
-                $('#description').text(res.article)
+                $('#description').text(res.description)
                 $('#date').text(res.date)
-                $('#amount').text(res.acquisition_amount)
+                $('#amount').text(thousands_separators(res.acquisition_amount))
                 $('#serial_number').text(res.serial_number)
-                $('#model').text(res.model)
+                $('#article').text(res.article)
                 $('#disbursing_officer').text(res.disbursing_officer.toUpperCase())
                 $('#iar_number').text(res.iar_number)
                 $("#property_details").show()

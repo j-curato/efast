@@ -66,7 +66,7 @@ class Par extends \yii\db\ActiveRecord
         return [
             'par_number' => 'Par Number',
             'date' => 'Date',
-            'fk_received_by' => 'Recieved By',
+            'fk_received_by' => 'Received By',
             'fk_actual_user' => 'Actual User',
             'fk_property_id' => 'Property Number',
             'fk_issued_by_id' => 'Issued By',

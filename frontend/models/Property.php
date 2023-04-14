@@ -156,4 +156,8 @@ class Property extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
     }
+    public function getPropertyArticle()
+    {
+        return $this->hasOne(PropertyArticles::class, ['id' => 'fk_property_article_id']);
+    }
 }

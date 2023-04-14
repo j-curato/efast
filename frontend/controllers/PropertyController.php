@@ -297,19 +297,20 @@ class PropertyController extends Controller
             CONCAT(employee.f_name,' ',employee.l_name) as disbursing_officer,
            
             DATE_FORMAT( property.date, '%M %d, %Y')  as `date`,
-            REPLACE(property.article,'[n]','\n') as article,
+            property.description,
             property.iar_number,
             property.acquisition_amount,
-            property.model,
             property.property_number,
             property.quantity,
             property.serial_number,
             books.`name` as book,
-            unit_of_measure.unit_of_measure
+            unit_of_measure.unit_of_measure,
+            IFNULL(property_articles.article_name,property.article) as article
             FROM property
             LEFT JOIN books ON property.book_id = books.id
             LEFT JOIN unit_of_measure ON property.unit_of_measure_id = unit_of_measure.id
             LEFT JOIN employee ON property.employee_id = employee.employee_id
+            LEFT JOIN property_articles ON property.fk_property_article_id = property_articles.id
             WHERE property.id = :id")
                 ->bindValue(':id', $_POST['id'])
                 ->queryOne();
