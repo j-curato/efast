@@ -40,8 +40,17 @@ class PropertyController extends Controller
                     'search-property',
                     'get-property',
                     'import',
+                    'create-blank',
+                    'property-database',
                     'blank-sticker',
                     'search-ssf-category',
+
+
+
+
+
+
+
                 ],
                 'rules' => [
                     [
@@ -56,6 +65,8 @@ class PropertyController extends Controller
                             'import',
                             'blank-sticker',
                             'search-ssf-category',
+                            'create-blank',
+                            'property-database',
                         ],
                         'allow' => true,
                         'roles' => ['@']
