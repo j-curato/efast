@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'pluginOptions' => [
                             'format' => 'yyyy-mm',
                             'autoclose' => true,
-                            'minViewMode'=>'months'
+                            'minViewMode' => 'months'
                         ]
                     ])
                     . "</div>
@@ -118,16 +118,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 success: function(data) {
                     var res = JSON.parse(data)
                     window.open(res)
-                    $.ajax({
-                        type: 'POST',
-                        url: window.location.pathname + '?r=site/clear-exports',
-                        success: function(response) {
-                            console.log(response)
-                        },
-                        error: function(jqXHR, textStatus, errorThrown) {
-                            console.log('Error deleting file: ' + errorThrown);
-                        }
-                    });
+                    // $.ajax({
+                    //     type: 'POST',
+                    //     url: window.location.pathname + '?r=site/clear-exports',
+                    //     success: function(response) {
+                    //         console.log(response)
+                    //     },
+                    //     error: function(jqXHR, textStatus, errorThrown) {
+                    //         console.log('Error deleting file: ' + errorThrown);
+                    //     }
+                    // });
                 }
 
             })
