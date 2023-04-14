@@ -5192,8 +5192,9 @@ class ReportController extends \yii\web\Controller
             $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
             $fileSaveLoc =  "exports\\" . $file_name;
             // $fileDwnldLoc = Url::base() . '/' . "exports//" . $file_name;
-
-            $writer->save($fileSaveLoc);
+            $path = Yii::getAlias('@webroot') . '/exports';
+            $file = $path . "/$file_name";
+            $writer->save($file);
             // return ob_get_clean();
             header('Content-Type: application/vnd.ms-excel');
             header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
