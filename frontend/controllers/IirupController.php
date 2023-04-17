@@ -359,20 +359,13 @@ class IirupController extends Controller
             LEFT JOIN property_articles ON property.fk_property_article_id = property_articles.id
              JOIN par ON property.id = par.fk_property_id
            WHERE 
-           (CASE
-           WHEN DAY(property.date) > 15 THEN DATE_FORMAT(  DATE_ADD( property.date,INTERVAL 1 MONTH), '%Y-%m')
-           ELSE DATE_FORMAT(property.date, '%Y-%m')
-           END ) <= :reporting_period
-            AND 
-            (CASE
-           WHEN DAY(property.date) > 15 THEN DATE_FORMAT(  DATE_ADD( property.date,INTERVAL other_property_details.useful_life+1 MONTH), '%Y-%m')
-           ELSE DATE_FORMAT(  DATE_ADD( property.date,INTERVAL other_property_details.useful_life MONTH), '%Y-%m')
-           END ) >= :reporting_period
+           DATE_FORMAT( property.date, '%Y-%m') <=:reporting_period
            AND par.is_current_user = 1
             AND par.fk_received_by = :emp_id ")
                 ->bindValue(':reporting_period', $reporting_period)
                 ->bindValue(':emp_id', $employee_id)
                 ->queryAll();
+
             return json_encode($query);
         }
     }
