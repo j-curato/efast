@@ -286,7 +286,7 @@ if (!empty($model->id)) {
         <div class="row">
             <div class="col-sm-5"></div>
             <div class="col-sm-2">
-                <button type="submit" class="btn btn-success" style="width:100%">Save</button>
+                <button type="submit" class="btn btn-success" style="width:100%" id="save_btn"> Save</button>
 
             </div>
             <div class="col-sm-5"></div>
@@ -824,6 +824,7 @@ SweetAlertAsset::register($this);
         $('#liquidation_form').on('submit', function(event) {
             event.stopPropagation()
             event.preventDefault()
+            $('#save_btn').attr('disabled', true)
             $('.error-block').html('')
             $.ajax({
                 type: 'POST',
@@ -831,15 +832,16 @@ SweetAlertAsset::register($this);
                 data: $('#liquidation_form').serialize(),
                 success: function(data) {
                     var res = JSON.parse(data)
-                    console.log(jQuery.isEmptyObject(res.form_error))
-                    if (!jQuery.isEmptyObject(res.form_error)) {
 
+                    if (!jQuery.isEmptyObject(res.form_error)) {
+                        $('#save_btn').attr('disabled', false)
                         $.each(res.form_error, function(key, val) {
                             $('.' + key + '_error').text(val[0])
                             console.log('#' + key + '_error')
                         })
                     }
                     if (!jQuery.isEmptyObject(res.check_error)) {
+                        $('#save_btn').attr('disabled', false)
                         swal({
                             icon: 'error',
                             title: res.check_error,

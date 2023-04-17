@@ -79,4 +79,8 @@ class Employee extends \yii\db\ActiveRecord
             'fk_office_id' => 'Office/Province',
         ];
     }
+    public function getOffice()
+    {
+        return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
+    }
 }

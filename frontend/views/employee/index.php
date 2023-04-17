@@ -46,6 +46,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'm_name',
             'status',
             'position',
+            [
+                'attribute' => 'fk_office_id',
+                'value' => 'office.office_name'
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

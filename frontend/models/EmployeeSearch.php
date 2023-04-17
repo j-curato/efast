@@ -18,7 +18,7 @@ class EmployeeSearch extends Employee
     public function rules()
     {
         return [
-            [['employee_id', 'f_name', 'l_name', 'm_name', 'status', 'position'], 'safe'],
+            [['employee_id', 'f_name', 'l_name', 'm_name', 'status', 'position','fk_office_id'], 'safe'],
             [['property_custodian'], 'integer'],
         ];
     }
@@ -58,13 +58,14 @@ class EmployeeSearch extends Employee
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->joinWith('office');
         // grid filtering conditions
         $query->andFilterWhere([
             'property_custodian' => $this->property_custodian,
         ]);
 
         $query->andFilterWhere(['like', 'employee_id', $this->employee_id])
+            ->andFilterWhere(['like', 'office.office_name', $this->fk_office_id])
             ->andFilterWhere(['like', 'f_name', $this->f_name])
             ->andFilterWhere(['like', 'l_name', $this->l_name])
             ->andFilterWhere(['like', 'm_name', $this->m_name])
