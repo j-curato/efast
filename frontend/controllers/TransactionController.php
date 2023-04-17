@@ -400,12 +400,13 @@ class TransactionController extends Controller
             $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id,  $model->transaction_date);
             try {
                 $transaction = Yii::$app->db->beginTransaction();
-                if ($model->type != 'no-iar'  && empty($prItems)) {
-                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => 'Please Select a Purchase Request Below')));
-                }
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => json_encode($model->errors))));
                 }
+                if ($model->type != 'no-iar'  && empty($prItems)) {
+                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => 'Please Select a Purchase Request Below')));
+                }
+
                 if (!$model->save(false)) {
                     throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => 'Error saving model')));
                 }
@@ -498,12 +499,13 @@ class TransactionController extends Controller
             }
             try {
                 $transaction = Yii::$app->db->beginTransaction();
-                if ($model->type != 'no-iar'  && empty($prItems)) {
-                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => 'Please Select a Purchase Request Below')));
-                }
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $model->errors)));
                 }
+                if ($model->type != 'no-iar'  && empty($prItems)) {
+                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => 'Please Select a Purchase Request Below')));
+                }
+
                 if (!$model->save(false)) {
                     throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => 'Error saving model')));
                 }
