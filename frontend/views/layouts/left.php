@@ -87,6 +87,7 @@
                                 Yii::$app->user->can('property') ?  ['label' => 'Property Database', 'icon' => 'circle-o', 'url' => ['/property/property-database'],] : [],
                                 Yii::$app->user->can('rpcppe') ?     ['label' => 'RPCPPE', 'icon' => 'circle-o', 'url' => ['/rpcppe'],] : [],
                                 Yii::$app->user->can('property') ?     ['label' => 'PPELC', 'icon' => 'circle-o', 'url' => ['/report/ppelc'],] : [],
+                                Yii::$app->user->can('property') ?     ['label' => 'User Clearance', 'icon' => 'circle-o', 'url' => ['/report/user-properties'],] : [],
                             ],
                         ],
                     ],
@@ -432,6 +433,7 @@
                                         ['label' => 'Property Database', 'icon' => 'circle-o', 'url' => ['/property/property-database'],],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'RPCPPE', 'icon' => 'circle-o', 'url' => ['/rpcppe'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'PPELC', 'icon' => 'circle-o', 'url' => ['/report/ppelc'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'User Clearance', 'icon' => 'circle-o', 'url' => ['/report/user-properties'],] : [],
                                     ],
                                 ],
 

@@ -361,7 +361,8 @@ class IirupController extends Controller
            WHERE 
            DATE_FORMAT( property.date, '%Y-%m') <=:reporting_period
            AND par.is_current_user = 1
-            AND par.fk_received_by = :emp_id ")
+            AND par.fk_received_by = :emp_id 
+            ")
                 ->bindValue(':reporting_period', $reporting_period)
                 ->bindValue(':emp_id', $employee_id)
                 ->queryAll();
