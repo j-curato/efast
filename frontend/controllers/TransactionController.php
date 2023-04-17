@@ -182,8 +182,9 @@ class TransactionController extends Controller
                 if ($validate !== true) {
                     return $validate;
                 }
+                $x = $key + 1;
                 if (floatVal($amt) == 0) {
-                    throw new ErrorException('PR allotment amount must be more than 0 in PR table row no.' .  $x = $key + 1);
+                    throw new ErrorException('PR allotment amount must be more than 0 in PR table row no.' . $x);
                 }
                 $pr->fk_transaction_id  = $id;
                 $pr->amount  = $amt;
