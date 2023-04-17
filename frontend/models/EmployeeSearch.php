@@ -18,7 +18,7 @@ class EmployeeSearch extends Employee
     public function rules()
     {
         return [
-            [['employee_id', 'f_name', 'l_name', 'm_name', 'status', 'position','fk_office_id'], 'safe'],
+            [['employee_id', 'f_name', 'l_name', 'm_name', 'status', 'position', 'fk_office_id'], 'safe'],
             [['property_custodian'], 'integer'],
         ];
     }

@@ -49,7 +49,6 @@ class Employee extends \yii\db\ActiveRecord
                 'status',
                 'property_custodian',
                 'position',
-                'office',
                 'created_at',
                 'employee_number',
                 'suffix',
