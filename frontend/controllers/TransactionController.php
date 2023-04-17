@@ -169,7 +169,7 @@ class TransactionController extends Controller
                     ->execute();
             }
             $itemId = '';
-            foreach ($items as $item) {
+            foreach ($items as $key => $item) {
                 $amt = floatval($item['amount']) < 0 ? $item['amount'] * -1 : $item['amount'];
                 if (!empty($item['item_id'])) {
                     $itemId = $item['item_id'];
@@ -181,6 +181,9 @@ class TransactionController extends Controller
                 $validate = $this->validatePrAllotment($item['prAllotmentId'], $amt, $itemId);
                 if ($validate !== true) {
                     return $validate;
+                }
+                if (floatVal($amt) == 0) {
+                    throw new ErrorException('PR allotment amount must be more than 0 in PR table row no.' .  $x = $key + 1);
                 }
                 $pr->fk_transaction_id  = $id;
                 $pr->amount  = $amt;
