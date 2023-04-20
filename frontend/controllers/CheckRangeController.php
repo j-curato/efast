@@ -41,7 +41,7 @@ class CheckRangeController extends Controller
                             'delete'
                         ],
                         'allow' => true,
-                        'roles' => ['province_admin_1']
+                        'roles' => ['check-range']
                     ],
                     [
                         'actions' => [
