@@ -150,6 +150,7 @@
                             'url' => '#',
                             'items' => [
                                 Yii::$app->user->can('regional_transaction') ? ['label' => 'Transactions', 'icon' => 'circle-o', 'url' => ['/transaction'],] : [],
+                                Yii::$app->user->can('department-offices') ?     ['label' => 'RLSDDP', 'icon' => 'circle-o', 'url' => ['/rlsddp'],] : [],
                             ],
                         ],
                         [
@@ -165,6 +166,8 @@
                                 Yii::$app->user->can('saob') ?     ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/report/saobs'],] : [],
                                 Yii::$app->user->can('fur-mfo') ?     ['label' => 'FUR per MFO/PAP', 'icon' => 'circle-o', 'url' => ['/report/fur-mfo'],] : [],
                                 Yii::$app->user->can('department-offices') ?     ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/saob'],] : [],
+                                Yii::$app->user->can('department-offices') ?     ['label' => 'User Clearance', 'icon' => 'circle-o', 'url' => ['/report/user-properties'],] : [],
+
                             ],
                         ],
                         [
