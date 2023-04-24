@@ -150,7 +150,7 @@
                             'url' => '#',
                             'items' => [
                                 Yii::$app->user->can('regional_transaction') ? ['label' => 'Transactions', 'icon' => 'circle-o', 'url' => ['/transaction'],] : [],
-                                Yii::$app->user->can('department-offices') ?     ['label' => 'RLSDDP', 'icon' => 'circle-o', 'url' => ['/rlsddp'],] : [],
+
                             ],
                         ],
                         [
@@ -166,7 +166,7 @@
                                 Yii::$app->user->can('saob') ?     ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/report/saobs'],] : [],
                                 Yii::$app->user->can('fur-mfo') ?     ['label' => 'FUR per MFO/PAP', 'icon' => 'circle-o', 'url' => ['/report/fur-mfo'],] : [],
                                 Yii::$app->user->can('department-offices') ?     ['label' => 'SAOB', 'icon' => 'circle-o', 'url' => ['/saob'],] : [],
-                                Yii::$app->user->can('department-offices') ?     ['label' => 'User Clearance', 'icon' => 'circle-o', 'url' => ['/report/user-properties'],] : [],
+
 
                             ],
                         ],
@@ -189,6 +189,14 @@
                                 Yii::$app->user->can('department-offices') ?     ['label' => 'Request for Inspection', 'icon' => 'circle-o', 'url' => ['/request-for-inspection'],] : [],
                                 Yii::$app->user->can('department-offices') ?     ['label' => 'Inspection Report', 'icon' => 'circle-o', 'url' => ['/inspection-report'],] : [],
                                 Yii::$app->user->can('department-offices') ?     ['label' => 'IAR', 'icon' => 'circle-o', 'url' => ['/iar'],] : [],
+                            ],
+                        ] : [],
+                        Yii::$app->user->can('department-offices') ?    [
+                            'label' => 'Property',
+                            'url' => '#',
+                            'items' => [
+                                Yii::$app->user->can('department-offices') ?     ['label' => 'RLSDDP', 'icon' => 'circle-o', 'url' => ['/rlsddp'],] : [],
+                                Yii::$app->user->can('department-offices') ?     ['label' => 'User Clearance', 'icon' => 'circle-o', 'url' => ['/report/user-properties'],] : [],
                             ],
                         ] : [],
                         Yii::$app->user->can('super-user') ?     ['label' => 'Travel Order', 'icon' => 'circle-o', 'url' => ['/travel-order'],] : [],
