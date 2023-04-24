@@ -26,7 +26,7 @@ IFNULL(dv_accounting_entries.credit,0) + IFNULL(dv_accounting_entries.debit,0) a
 LEFT JOIN dv_accounting_entries ON remittance_items.fk_dv_acounting_entries_id = dv_accounting_entries.id
 LEFT JOIN payroll ON dv_accounting_entries.payroll_id = payroll.id
 LEFT JOIN process_ors ON payroll.process_ors_id = process_ors.id
-LEFT JOIN dv_aucs ON dv_accounting_entries.dv_aucs_id = dv_aucs.id
+LEFT JOIN dv_aucs ON payroll.id = dv_aucs.payroll_id
 LEFT JOIN remittance_payee ON dv_accounting_entries.remittance_payee_id = remittance_payee.id
 LEFT JOIN payee ON remittance_payee.payee_id = payee.id
 LEFT JOIN accounting_codes ON dv_accounting_entries.object_code  = accounting_codes.object_code
