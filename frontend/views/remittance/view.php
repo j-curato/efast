@@ -43,6 +43,7 @@ AND remittance_items.is_removed = 0
 WHERE remittance_items.fk_remittance_id = :id
 AND remittance_items.is_removed = 0
 AND dv_aucs_entries.is_deleted=0
+AND dv_aucs.is_cancelled = 0 
 ")
     ->bindValue(':id', $model->id)
     ->bindValue(':create_at', $model->created_at)
