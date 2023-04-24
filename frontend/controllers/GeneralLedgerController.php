@@ -31,7 +31,8 @@ class GeneralLedgerController extends Controller
                     'update',
                     'delete',
                     'create',
-                    'generate-general-ledger'
+                    'generate-general-ledger',
+                    'export'
                 ],
                 'rules' => [
                     [
@@ -41,10 +42,11 @@ class GeneralLedgerController extends Controller
                             'update',
                             'delete',
                             'create',
-                            'generate-general-ledger'
+                            'generate-general-ledger',
+                            'export'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

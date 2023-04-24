@@ -42,7 +42,17 @@ class InspectionReportController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['inspection-report']
-                    ]
+                    ],
+                    [
+                        'actions' => [
+                            'view',
+                            'index',
+                            'update',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['ro-common-user']
+                    ],
                 ]
             ],
             'verbs' => [

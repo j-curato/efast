@@ -47,6 +47,8 @@ class RequestForInspectionController extends Controller
                     'create',
                     'update',
                     'final',
+                    'search-rfi'
+
                 ],
                 'rules' => [
                     [
@@ -58,7 +60,18 @@ class RequestForInspectionController extends Controller
                             'final',
                         ],
                         'allow' => true,
-                        'roles' => ['request-for-inspection']
+                        'roles' => ['request-for-inspection', 'super-user', 'ro-admin']
+                    ],
+                    [
+                        'actions' => [
+                            'view',
+                            'index',
+                            'create',
+                            'update',
+                            'final',
+                        ],
+                        'allow' => true,
+                        'roles' => ['ro-common-user']
                     ]
                 ]
             ],
@@ -92,11 +105,10 @@ class RequestForInspectionController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function irLinks($id)
+    private function irLinks($id)
     {
 
         return  YIi::$app->db->createCommand("SELECT 
-                      
                     inspection_report.id,
                     inspection_report.ir_number,
                     iar.iar_number,
@@ -154,7 +166,7 @@ class RequestForInspectionController extends Controller
             'ir_links' => $this->irLinks($id)
         ]);
     }
-    public function poDetails($id)
+    private function poDetails($id)
     {
 
         $purchase_orders = Yii::$app->db->createCommand("SELECT
@@ -212,7 +224,7 @@ class RequestForInspectionController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function insertItems($rfi_id, $po_ids = [], $item_ids = [], $quantity = [], $date_from = [], $date_to = [])
+    private function insertItems($rfi_id, $po_ids = [], $item_ids = [], $quantity = [], $date_from = [], $date_to = [])
     {
         if (!empty($po_ids)) {
             try {
@@ -311,7 +323,7 @@ class RequestForInspectionController extends Controller
         }
         return ['isSuccess' => true];
     }
-    public function withPoInsertInspectionReport($rfi_id)
+    private function withPoInsertInspectionReport($rfi_id)
     {
         $query = Yii::$app->db->createCommand("SELECT 
         request_for_inspection_items.id as rfi_item_id,
@@ -368,7 +380,7 @@ class RequestForInspectionController extends Controller
 
         return ['isSuccess' => true];
     }
-    public function noPoInsertInspectionReport($rfi_id)
+    private function noPoInsertInspectionReport($rfi_id)
     {
         $items = Yii::$app->db->createCommand("SELECT 
         rfi_without_po_items.id,
@@ -431,7 +443,7 @@ class RequestForInspectionController extends Controller
 
         return ['isSuccess' => true];
     }
-    public function validateNoPoItems(
+    private function validateNoPoItems(
         $project_name = '',
         $stock_name = '',
         $specification = '',
@@ -473,7 +485,7 @@ class RequestForInspectionController extends Controller
 
         return true;
     }
-    public function insertNoPoItems(
+    private function insertNoPoItems(
         $rfi_id,
         $project_name = [],
         $stock_name = [],
@@ -537,7 +549,7 @@ class RequestForInspectionController extends Controller
         }
         return ['isSuccess' => true];
     }
-    public function noPo_items($rfi_id = '')
+    private function noPo_items($rfi_id = '')
     {
 
         return Yii::$app->db->createCommand("SELECT  
@@ -568,9 +580,7 @@ class RequestForInspectionController extends Controller
             ->bindValue(':id', $rfi_id)
             ->queryAll();
     }
-    public function checkInputs()
-    {
-    }
+
     public function actionCreate()
     {
         $model = new RequestForInspection();
@@ -913,7 +923,7 @@ class RequestForInspectionController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function rfiNumber()
+    private function rfiNumber()
     {
 
         $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(rfi_number,'-',-1)  AS UNSIGNED) as last_number

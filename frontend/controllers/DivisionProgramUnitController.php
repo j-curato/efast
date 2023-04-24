@@ -28,12 +28,18 @@ class DivisionProgramUnitController extends Controller
                     'view',
                     'create',
                     'update',
-                    'delete,'
+                    'delete'
                 ],
                 'rules' => [
 
                     [
-                        'actions' => [],
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'delete'
+                        ],
                         'allow' => true,
                         'roles' => ['super-user']
                     ]

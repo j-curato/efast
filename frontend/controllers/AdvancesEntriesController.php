@@ -40,7 +40,7 @@ class AdvancesEntriesController extends Controller
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
 
                     ]
                 ]

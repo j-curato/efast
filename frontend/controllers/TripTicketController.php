@@ -54,7 +54,7 @@ class TripTicketController extends Controller
             ],
         ];
     }
-    public function serialNumber($car_type)
+    private function serialNumber($car_type)
     {
 
         $year = date('Y');
@@ -75,7 +75,7 @@ class TripTicketController extends Controller
         }
         return strtoupper($car_type) . '-' . $year . '-' . $zero . $num;
     }
-    public function items($id)
+    private function items($id)
     {
         return  Yii::$app->db->createCommand("SELECT
         id,
@@ -132,7 +132,7 @@ class TripTicketController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function insertItems($trip_ticket_id, $items = [])
+    private function insertItems($trip_ticket_id, $items = [])
     {
 
 

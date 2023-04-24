@@ -32,6 +32,7 @@ class DepreciationScheduleController extends Controller
                     'update',
                     'delete',
                     'generate',
+
                 ],
                 'rules' => [
                     [
@@ -44,7 +45,7 @@ class DepreciationScheduleController extends Controller
                             'generate',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

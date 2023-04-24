@@ -46,7 +46,6 @@ class ChartOfAccountsController extends Controller
                     'search-chart-of-accounts',
                     'search-accounting-code',
                     'get-chart-info',
-
                 ],
                 'rules' => [
                     [

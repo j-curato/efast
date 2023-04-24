@@ -36,6 +36,8 @@ class IirupController extends Controller
                     'create',
                     'update',
                     'delete',
+                    'get-properties',
+                    'search-iirup'
                 ],
                 'rules' => [
                     [
@@ -47,7 +49,7 @@ class IirupController extends Controller
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user', 'ro-common-user']
                     ]
                 ]
             ],
@@ -389,28 +391,28 @@ class IirupController extends Controller
         $string = strtoupper($office_name) . "-IIRUP-$reporting_period-" . $new_num;
         return $string;
     }
-    public function actionSearchIirup($page = 1, $q = null, $id = null)
-    {
-        $limit = 5;
-        $offset = ($page - 1) * $limit;
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+    // public function actionSearchIirup($page = 1, $q = null, $id = null)
+    // {
+    //     $limit = 5;
+    //     $offset = ($page - 1) * $limit;
+    //     \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        $user_province = strtolower(Yii::$app->user->identity->province);
+    //     $user_province = strtolower(Yii::$app->user->identity->province);
 
-        $out = ['results' => ['id' => '', 'text' => '']];
-        if ($id > 0) {
-        } else if (!is_null($q)) {
-            $query = new Query();
-            $query->select('iirup.id, iirup.serial_number AS text')
-                ->from('iirup')
-                ->where(['like', 'iirup.serial_number', $q]);
-            $query->offset($offset)
-                ->limit($limit);
-            $command = $query->createCommand();
-            $data = $command->queryAll();
-            $out['results'] = array_values($data);
-            $out['pagination'] = ['more' => !empty($data) ? true : false];
-        }
-        return $out;
-    }
+    //     $out = ['results' => ['id' => '', 'text' => '']];
+    //     if ($id > 0) {
+    //     } else if (!is_null($q)) {
+    //         $query = new Query();
+    //         $query->select('iirup.id, iirup.serial_number AS text')
+    //             ->from('iirup')
+    //             ->where(['like', 'iirup.serial_number', $q]);
+    //         $query->offset($offset)
+    //             ->limit($limit);
+    //         $command = $query->createCommand();
+    //         $data = $command->queryAll();
+    //         $out['results'] = array_values($data);
+    //         $out['pagination'] = ['more' => !empty($data) ? true : false];
+    //     }
+    //     return $out;
+    // }
 }

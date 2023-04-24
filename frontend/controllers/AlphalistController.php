@@ -31,6 +31,8 @@ class AlphalistController extends Controller
                     'create',
                     'update',
                     'delete',
+                    'generate',
+                    'final'
                 ],
                 'rules' => [
                     [
@@ -40,6 +42,8 @@ class AlphalistController extends Controller
                             'create',
                             'update',
                             'delete',
+                            'generate',
+                            'final'
                         ],
                         'allow' => true,
                         'roles' => ['@']

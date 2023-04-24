@@ -36,12 +36,13 @@ class AdvancesController extends Controller
                     'index',
                     'create',
                     'update',
-
                     'add-data',
                     'insert-advances',
                     'get-all-advances',
                     'import',
                     'disable',
+                    'view',
+                    'update-advances',
                 ],
                 'rules' => [
                     [
@@ -68,7 +69,7 @@ class AdvancesController extends Controller
                             'view',
                         ],
                         'allow' => true,
-                        'roles' => ['province', 'super-user']
+                        'roles' => ['province', 'super-user', 'po-admin']
                     ],
 
 

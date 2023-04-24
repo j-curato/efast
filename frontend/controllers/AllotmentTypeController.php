@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\AllotmentType;
 use app\models\AllotmentTypeSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -20,8 +21,31 @@ class AllotmentTypeController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'create',
+                    'update',
+                    'delete'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'delete'
+                        ],
+                        'allow' => true,
+                        'roles' => ['super-user']
+                    ]
+                ]
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],

@@ -23,19 +23,19 @@ class EventController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['create', 'delete'],
+                'only' => [
+                    'create',
+                    'delete',
+                    'index',
+                    'view',
+                    'update'
+                ],
                 'rules' => [
 
                     [
-                        'actions' => ['create', 'delete'],
+                        'actions' => ['create', 'delete', 'update'],
                         'allow' => true,
-                        'roles' => ['super-user'],
-                    ],
-
-                    [
-                        'actions' => ['update'],
-                        'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['super-user', '@'],
                     ],
 
                 ],

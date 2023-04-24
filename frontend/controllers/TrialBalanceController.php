@@ -32,7 +32,8 @@ class TrialBalanceController extends Controller
                     'view',
                     'index',
                     'delete',
-                    'generate-trial-balance'
+                    'generate-trial-balance',
+                    'export'
                 ],
                 'rules' => [
                     [
@@ -42,11 +43,12 @@ class TrialBalanceController extends Controller
                             'view',
                             'index',
                             'delete',
-                            'generate-trial-balance'
+                            'generate-trial-balance',
+                            'export'
                         ],
 
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],
@@ -154,7 +156,7 @@ class TrialBalanceController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function query($to_reporting_period, $book_id, $entry_type)
+    private function query($to_reporting_period, $book_id, $entry_type)
     {
         $r_period_date = DateTime::createFromFormat('Y-m', $to_reporting_period);
 

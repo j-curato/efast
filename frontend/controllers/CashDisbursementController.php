@@ -45,6 +45,13 @@ class CashDisbursementController extends Controller
                     'cancel-disbursement',
                     'cancel-disbursement-index',
                     'search-dv',
+                    'dv-details',
+                    'get-dv',
+
+
+
+
+
 
                 ],
 
@@ -64,6 +71,8 @@ class CashDisbursementController extends Controller
                             'cancel-disbursement',
                             'cancel-disbursement-index',
                             'search-dv',
+                            'dv-details',
+                            'get-dv',
                         ],
                         'allow' => true,
                         'roles' => ['super-user']

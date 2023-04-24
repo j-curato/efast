@@ -33,6 +33,7 @@ class GeneralJournalController extends Controller
                     'update',
                     'delete',
                     'generate',
+                    'export'
                 ],
                 'rules' => [
                     [
@@ -43,9 +44,10 @@ class GeneralJournalController extends Controller
                             'update',
                             'create',
                             'generate',
+                            'export'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

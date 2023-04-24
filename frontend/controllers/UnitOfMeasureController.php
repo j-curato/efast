@@ -30,7 +30,8 @@ class UnitOfMeasureController extends Controller
                     'create',
                     'update',
                     'delete',
-
+                    'get-all-measure',
+                    'search-unit-of-measure'
                 ],
                 'rules' => [
                     [
@@ -40,6 +41,15 @@ class UnitOfMeasureController extends Controller
                             'create',
                             'update',
                             'delete',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'get-all-measure',
+                            'search-unit-of-measure'
 
                         ],
                         'allow' => true,

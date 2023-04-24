@@ -32,7 +32,8 @@ class FundSourceTypeController extends Controller
                     'view',
                     'index',
                     'create',
-                    'all-fund-source-type'
+                    'all-fund-source-type',
+                    'search'
                 ],
                 'rules' => [
                     [
@@ -45,8 +46,15 @@ class FundSourceTypeController extends Controller
                             'all-fund-source-type'
                         ],
                         'allow' => true,
+                        'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'search'
+                        ],
+                        'allow' => true,
                         'roles' => ['@']
-                    ]
+                    ],
                 ]
             ],
             'verbs' => [

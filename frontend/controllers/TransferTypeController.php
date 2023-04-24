@@ -29,7 +29,6 @@ class TransferTypeController extends Controller
                     'create',
                     'update',
                     'delete',
-                    'insert-ptr'
                 ],
                 'rules' => [
                     [
@@ -39,10 +38,9 @@ class TransferTypeController extends Controller
                             'create',
                             'update',
                             'delete',
-                            'insert-ptr'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ],
 
 

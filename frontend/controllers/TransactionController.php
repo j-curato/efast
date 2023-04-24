@@ -64,20 +64,28 @@ class TransactionController extends Controller
                             'import-transaction',
                             'sample',
                             'get-transaction',
+                            'search-transaction',
+                            'iar-details',
+                            'get-pr-allotments',
                         ],
                         'allow' => true,
                         'roles' => ['department-offices', 'super-user', 'ro_transaction'],
                     ],
                     [
                         'actions' => [
+                            'index',
+                            'update',
+                            'view',
+                            'create',
+                            'ors-form',
+                            'voucher',
                             'search-transaction',
                             'iar-details',
                             'get-pr-allotments',
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['ro-common-user'],
                     ],
-
 
                 ],
 

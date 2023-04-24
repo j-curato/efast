@@ -36,6 +36,7 @@ class RlsddpController extends Controller
                     'update',
                     'delete',
                     'get-pars',
+                    'search-rlsddp',
                 ],
                 'rules' => [
                     [
@@ -48,7 +49,7 @@ class RlsddpController extends Controller
                             'get-pars',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user', 'ro-common-user']
                     ]
                 ]
             ],
@@ -371,32 +372,32 @@ class RlsddpController extends Controller
         $string = strtoupper($office_name) . '-RLSDDP-' . $new_num;
         return $string;
     }
-    public function actionSearchRlsddp($q = null, $id = null, $page = null)
-    {
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $limit = 5;
-        $offset = ($page - 1) * $limit;
-        $out = ['results' => ['id' => '', 'text' => '']];
-        if (!is_null($q)) {
-            $query = new Query();
-            $query->select('rlsddp.id, rlsddp.serial_number AS text')
-                ->from('rlsddp')
-                ->where(['like', 'rlsddp.serial_number', $q]);
-            if (!empty($page)) {
+    // public function actionSearchRlsddp($q = null, $id = null, $page = null)
+    // {
+    //     \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+    //     $limit = 5;
+    //     $offset = ($page - 1) * $limit;
+    //     $out = ['results' => ['id' => '', 'text' => '']];
+    //     if (!is_null($q)) {
+    //         $query = new Query();
+    //         $query->select('rlsddp.id, rlsddp.serial_number AS text')
+    //             ->from('rlsddp')
+    //             ->where(['like', 'rlsddp.serial_number', $q]);
+    //         if (!empty($page)) {
 
-                $query->offset($offset)
-                    ->limit($limit);
-            }
-            $command = $query->createCommand();
-            $data = $command->queryAll();
-            $out['results'] = array_values($data);
-            if (!empty($page)) {
-                $out['pagination'] = ['more' => !empty($data) ? true : false];
-            }
-        }
-        // elseif ($id > 0) {
-        //     $out['results'] = ['id' => $id, 'text' => ChartOfAccounts::find($id)->uacs];
-        // }
-        return $out;
-    }
+    //             $query->offset($offset)
+    //                 ->limit($limit);
+    //         }
+    //         $command = $query->createCommand();
+    //         $data = $command->queryAll();
+    //         $out['results'] = array_values($data);
+    //         if (!empty($page)) {
+    //             $out['pagination'] = ['more' => !empty($data) ? true : false];
+    //         }
+    //     }
+    //     // elseif ($id > 0) {
+    //     //     $out['results'] = ['id' => $id, 'text' => ChartOfAccounts::find($id)->uacs];
+    //     // }
+    //     return $out;
+    // }
 }

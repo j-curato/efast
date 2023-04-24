@@ -41,6 +41,7 @@ class PrPurchaseRequestController extends Controller
                     'delete',
                     'search-pr',
                     'get-items',
+                    'final'
                 ],
                 'rules' => [
                     [
@@ -66,10 +67,25 @@ class PrPurchaseRequestController extends Controller
                             'delete',
                             'search-pr',
                             'get-items',
+                            'final'
                         ],
                         'allow' => true,
                         'roles' => [
                             'super-user',
+                        ]
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'search-pr',
+                            'get-items',
+                        ],
+                        'allow' => true,
+                        'roles' => [
+                            'ro-common-user',
                         ]
                     ]
                 ]
@@ -111,13 +127,13 @@ class PrPurchaseRequestController extends Controller
             ->bindValue(':id', $id)
             ->queryAll();
     }
-    public function getPrAllotments($id)
+    private function getPrAllotments($id)
     {
         return Yii::$app->db->createCommand("CALL GetPrAllotments(:id)")
             ->bindValue(':id', $id)
             ->queryAll();
     }
-    public function validatePpmp(
+    private function validatePpmp(
         $cse_type,
         $amount = 0,
         $qty = 0,
@@ -246,7 +262,7 @@ class PrPurchaseRequestController extends Controller
     //     return true;
     // }
     // CALCULATE PR ITEMS VS PR ALLOTMENTS TOTAL
-    public function calculateItemsTotal($pr_items, $pr_allotments_amt)
+    private function calculateItemsTotal($pr_items, $pr_allotments_amt)
     {
         $pr_grnd_ttl = 0;
         $pr_allotment_grnd_ttl = floatval(array_sum($pr_allotments_amt));
@@ -290,46 +306,46 @@ class PrPurchaseRequestController extends Controller
         $model = $this->findModel($id);
         if (!empty($model->fk_supplemental_ppmp_noncse_id)) {
             $office_division_unit_purpose = Yii::$app->db->createCommand("SELECT 
-    office.office_name,
-    divisions.division,
-    division_program_unit.`name` as division_program_unit,
-    supplemental_ppmp_non_cse.activity_name as purpose,
-    supplemental_ppmp.is_supplemental
-     FROM pr_purchase_request
-    INNER JOIN supplemental_ppmp_non_cse ON pr_purchase_request.fk_supplemental_ppmp_noncse_id = supplemental_ppmp_non_cse.id
-    LEFT JOIN supplemental_ppmp ON supplemental_ppmp_non_cse.fk_supplemental_ppmp_id = supplemental_ppmp.id
-    LEFT JOIN office ON supplemental_ppmp.fk_office_id = office.id
-    LEFT JOIN divisions ON supplemental_ppmp.fk_division_id = divisions.id
-    LEFT JOIN division_program_unit ON supplemental_ppmp.fk_division_program_unit_id = division_program_unit.id
-    WHERE pr_purchase_request.id = :id")
+                office.office_name,
+                divisions.division,
+                division_program_unit.`name` as division_program_unit,
+                supplemental_ppmp_non_cse.activity_name as purpose,
+                supplemental_ppmp.is_supplemental
+                FROM pr_purchase_request
+                INNER JOIN supplemental_ppmp_non_cse ON pr_purchase_request.fk_supplemental_ppmp_noncse_id = supplemental_ppmp_non_cse.id
+                LEFT JOIN supplemental_ppmp ON supplemental_ppmp_non_cse.fk_supplemental_ppmp_id = supplemental_ppmp.id
+                LEFT JOIN office ON supplemental_ppmp.fk_office_id = office.id
+                LEFT JOIN divisions ON supplemental_ppmp.fk_division_id = divisions.id
+                LEFT JOIN division_program_unit ON supplemental_ppmp.fk_division_program_unit_id = division_program_unit.id
+                WHERE pr_purchase_request.id = :id")
                 ->bindValue(':id', $model->id)
                 ->queryOne();
         } else if (!empty($model->fk_supplemental_ppmp_cse_id)) {
             $office_division_unit_purpose = Yii::$app->db->createCommand("SELECT 
-    office.office_name,
-    divisions.division,
-    division_program_unit.`name` as division_program_unit,
-    pr_stock.stock_title as purpose,
-    supplemental_ppmp.is_supplemental
-     FROM pr_purchase_request
-    INNER JOIN supplemental_ppmp_cse ON pr_purchase_request.fk_supplemental_ppmp_cse_id = supplemental_ppmp_cse.id
-    LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = supplemental_ppmp.id
-    LEFT JOIN office ON supplemental_ppmp.fk_office_id = office.id
-    LEFT JOIN divisions ON supplemental_ppmp.fk_division_id = divisions.id
-    LEFT JOIN division_program_unit ON supplemental_ppmp.fk_division_program_unit_id = division_program_unit.id
-    LEFT JOIN pr_stock ON supplemental_ppmp_cse.fk_pr_stock_id = pr_stock.id
-    WHERE pr_purchase_request.id = :id")
+                office.office_name,
+                divisions.division,
+                division_program_unit.`name` as division_program_unit,
+                pr_stock.stock_title as purpose,
+                supplemental_ppmp.is_supplemental
+                FROM pr_purchase_request
+                INNER JOIN supplemental_ppmp_cse ON pr_purchase_request.fk_supplemental_ppmp_cse_id = supplemental_ppmp_cse.id
+                LEFT JOIN supplemental_ppmp ON supplemental_ppmp_cse.fk_supplemental_ppmp_id = supplemental_ppmp.id
+                LEFT JOIN office ON supplemental_ppmp.fk_office_id = office.id
+                LEFT JOIN divisions ON supplemental_ppmp.fk_division_id = divisions.id
+                LEFT JOIN division_program_unit ON supplemental_ppmp.fk_division_program_unit_id = division_program_unit.id
+                LEFT JOIN pr_stock ON supplemental_ppmp_cse.fk_pr_stock_id = pr_stock.id
+                WHERE pr_purchase_request.id = :id")
                 ->bindValue(':id', $model->id)
                 ->queryOne();
         } else {
             $office_division_unit_purpose = Yii::$app->db->createCommand("SELECT 
-    office.office_name,
-      divisions.division
-  FROM `pr_purchase_request`
-  LEFT JOIN office ON pr_purchase_request.fk_office_id = office.id
-  LEFT JOIN divisions ON pr_purchase_request.fk_division_id = divisions.id
-  WHERE 
-  pr_purchase_request.id = :id")
+                    office.office_name,
+                    divisions.division
+                FROM `pr_purchase_request`
+                LEFT JOIN office ON pr_purchase_request.fk_office_id = office.id
+                LEFT JOIN divisions ON pr_purchase_request.fk_division_id = divisions.id
+                WHERE 
+                pr_purchase_request.id = :id")
                 ->bindValue(':id', $model->id)
                 ->queryOne();
         }
@@ -350,7 +366,7 @@ class PrPurchaseRequestController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function insertPrItems($model_id, $items = [], $isUpdate = false)
+    private function insertPrItems($model_id, $items = [], $isUpdate = false)
     {
         if (empty($items)) {
             return 'PR Cannot be Empty';
@@ -433,7 +449,7 @@ class PrPurchaseRequestController extends Controller
         }
         return true;
     }
-    public function insertPrAllotments($model_id, $allotment_items = [])
+    private function insertPrAllotments($model_id, $allotment_items = [])
     {
         $i = 1;
 
@@ -488,7 +504,7 @@ class PrPurchaseRequestController extends Controller
         }
         return true;
     }
-    public function employeeData($employee_id = '')
+    private function employeeData($employee_id = '')
     {
         if (empty($employee_id)) {
             return [];
@@ -754,7 +770,7 @@ class PrPurchaseRequestController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function getPrNumber($d, $office_id, $division_id)
+    private function getPrNumber($d, $office_id, $division_id)
     {
         $office = Yii::$app->db->createCommand("SELECT office_name FROM office WHERE office.id = :id")->bindValue(':id', $office_id)->queryScalar();
         $division = Yii::$app->db->createCommand("SELECT division FROM divisions WHERE divisions.id = :id")->bindValue(':id', $division_id)->queryScalar();

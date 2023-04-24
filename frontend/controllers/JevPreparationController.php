@@ -61,14 +61,18 @@ class JevPreparationController extends Controller
                     'consolidated-financial-position',
                     'get-subsidiary-ledger',
                     'detailed-financial-performance',
-                    'consolidated-financial-erformance',
-                    // 'update-jev',
+                    'consolidated-financial-performance',
+                    'update-jev',
                     'detailed-cashflow',
                     'consolidated-cashflow',
                     'changes-netasset-equity',
                     'export-jev',
                     'cdr-jev',
-                    'dv-to-jev'
+                    'dv-to-jev',
+                    'generate-subsidiary-ledger',
+                    'generate-general-ledger',
+                    'sub-trial-balance',
+                    'liquidation-report-to-jev',
 
                 ],
                 'rules' => [
@@ -102,7 +106,7 @@ class JevPreparationController extends Controller
                             'dv-to-jev'
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['super-user'],
                     ],
                     // [
                     //     'actions' => ['create'],
@@ -1552,13 +1556,6 @@ class JevPreparationController extends Controller
 
 
 
-    // public function actionGetA()
-    // {
-    //     // echo "<pre>";
-    //     // var_dump($_POST['name']);
-    //     // echo "</pre>";
-    //     return json_encode($_POST['x']);
-    // }
 
     public function actionInsertJev()
     {

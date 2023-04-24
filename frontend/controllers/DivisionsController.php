@@ -30,6 +30,7 @@ class DivisionsController extends Controller
                     'create',
                     'delete',
                     'update',
+                    'search-division'
                 ],
                 'rules' => [
                     [
@@ -39,9 +40,17 @@ class DivisionsController extends Controller
                             'create',
                             'delete',
                             'update',
+                            'search-division'
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'search-division'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
                     ]
                 ]
             ],

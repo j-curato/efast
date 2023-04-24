@@ -33,6 +33,7 @@ class TravelOrderController extends Controller
                     'delete',
                     'create',
                     'index',
+
                 ],
                 'rules' => [
                     [
@@ -44,7 +45,7 @@ class TravelOrderController extends Controller
                             'index',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user', 'ro-common-user']
                     ]
                 ]
             ],
@@ -56,7 +57,7 @@ class TravelOrderController extends Controller
             ],
         ];
     }
-    public function toNumber($date)
+    private function toNumber($date)
     {
         $year =  DateTime::createFromFormat('Y-m-d', $date)->format('Y');
         $last_num = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(travel_order.to_number,'-',-1) AS UNSIGNED)as last_num 
@@ -115,7 +116,7 @@ class TravelOrderController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function insertItems($tavel_order_id = '', $items = [])
+    private function insertItems($tavel_order_id = '', $items = [])
     {
 
 
@@ -139,7 +140,7 @@ class TravelOrderController extends Controller
         }
         return ['isSuccess' => true];
     }
-    public function items($id)
+    private function items($id)
     {
         return Yii::$app->db->createCommand("SELECT travel_order_items.id,
         travel_order_items.from_date,

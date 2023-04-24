@@ -36,7 +36,7 @@ class IarController extends Controller
                             'index'
                         ],
                         'allow' => true,
-                        'roles' => ['iar']
+                        'roles' => ['iar', 'ro-common-user']
                     ]
                 ]
             ],

@@ -49,13 +49,13 @@ class PayeeController extends Controller
                             'search-payee',
                         ],
                         'allow' => true,
-                        'roles' => ['accounting']
+                        'roles' => ['accounting', 'super-user']
                     ],
                     [
 
                         'actions' => [
-
                             'get-payee',
+                            'search-payee',
                         ],
                         'allow' => true,
                         'roles' => ['@']

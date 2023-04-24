@@ -33,6 +33,7 @@ class SubTrialBalanceController extends Controller
                     'index',
                     'create',
                     'generate-sub-trial-balance',
+                    'export'
                 ],
                 'rules' => [
                     [
@@ -43,9 +44,10 @@ class SubTrialBalanceController extends Controller
                             'index',
                             'create',
                             'generate-sub-trial-balance',
+                            'export'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

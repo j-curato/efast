@@ -31,6 +31,7 @@ class FundSourceController extends Controller
                     'create',
                     'view',
                     'delete',
+                    'get-fund-sources'
                 ],
                 'rules' => [
                     [
@@ -40,6 +41,7 @@ class FundSourceController extends Controller
                             'create',
                             'view',
                             'delete',
+                            'get-fund-sources'
                         ],
                         'allow' => true,
                         'roles' => ['super-user']

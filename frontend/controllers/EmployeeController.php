@@ -37,6 +37,7 @@ class EmployeeController extends Controller
                     'delete',
                     'search-employee',
                     'import'
+
                 ],
                 'rules' => [
                     [
@@ -54,25 +55,10 @@ class EmployeeController extends Controller
                             'super-user',
                         ]
                     ],
+
                     [
                         'actions' => [
-                            'index',
-                            'view',
-                            'create',
-                            'update',
-
-                        ],
-                        'allow' => true,
-                        'roles' => [
-                            'province_admin_1',
-
-                        ]
-                    ],
-                    [
-                        'actions' => [
-
                             'search-employee',
-
                         ],
                         'allow' => true,
                         'roles' => ['@']
