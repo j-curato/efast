@@ -87,7 +87,7 @@
                                 Yii::$app->user->can('property') ?  ['label' => 'Property Database', 'icon' => 'circle-o', 'url' => ['/property/property-database'],] : [],
                                 Yii::$app->user->can('rpcppe') ?     ['label' => 'RPCPPE', 'icon' => 'circle-o', 'url' => ['/rpcppe'],] : [],
                                 Yii::$app->user->can('property') ?     ['label' => 'PPELC', 'icon' => 'circle-o', 'url' => ['/report/ppelc'],] : [],
-                                Yii::$app->user->can('property') ?     ['label' => 'User Clearance', 'icon' => 'circle-o', 'url' => ['/report/user-properties'],] : [],
+                                Yii::$app->user->can('property') ?     ['label' => 'Accountabilities', 'icon' => 'circle-o', 'url' => ['/report/user-properties'],] : [],
                             ],
                         ],
                     ],
@@ -177,8 +177,6 @@
                                 // Yii::$app->user->can('department-offices') ?     ['label' => 'Stock/Property', 'icon' => 'circle-o', 'url' => ['/pr-stock'],] : [],
                                 // Yii::$app->user->can('project_procurement') ?     ['label' => 'Activity/Project Procurement', 'icon' => 'circle-o', 'url' => ['/pr-project-procurement'],] : [],
                                 ['label' => 'Supplemental PPMP', 'icon' => 'circle-o', 'url' => ['/supplemental-ppmp'],],
-
-
                                 Yii::$app->user->can('purchase_request') ?     ['label' => 'Purchase Request', 'icon' => 'circle-o', 'url' => ['/pr-purchase-request'],] : [],
                             ],
                         ],
@@ -196,7 +194,8 @@
                             'url' => '#',
                             'items' => [
                                 Yii::$app->user->can('department-offices') ?     ['label' => 'RLSDDP', 'icon' => 'circle-o', 'url' => ['/rlsddp'],] : [],
-                                Yii::$app->user->can('department-offices') ?     ['label' => 'User Clearance', 'icon' => 'circle-o', 'url' => ['/report/user-properties'],] : [],
+                                Yii::$app->user->can('department-offices') ?     ['label' => 'IIRUP', 'icon' => 'circle-o', 'url' => ['/iirup'],] : [],
+                                Yii::$app->user->can('department-offices') ?     ['label' => 'Accountabilities', 'icon' => 'circle-o', 'url' => ['/report/user-properties'],] : [],
                             ],
                         ] : [],
                         Yii::$app->user->can('super-user') ?     ['label' => 'Travel Order', 'icon' => 'circle-o', 'url' => ['/travel-order'],] : [],
@@ -444,7 +443,7 @@
                                         ['label' => 'Property Database', 'icon' => 'circle-o', 'url' => ['/property/property-database'],],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'RPCPPE', 'icon' => 'circle-o', 'url' => ['/rpcppe'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'PPELC', 'icon' => 'circle-o', 'url' => ['/report/ppelc'],] : [],
-                                        Yii::$app->user->can('super-user') ?     ['label' => 'User Clearance', 'icon' => 'circle-o', 'url' => ['/report/user-properties'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Accountabilities', 'icon' => 'circle-o', 'url' => ['/report/user-properties'],] : [],
                                     ],
                                 ],
 
