@@ -181,7 +181,7 @@ $approved_by = MyHelper::getEmployee($model->fk_approved_by, 'one');
                     </th>
                 </tr>
                 <tr>
-                    <th colspan="2" class="no-bdr">Aprroved By:</th>
+                    <th colspan="2" class="no-bdr">Approved By:</th>
                     <th colspan="" class="no-bdr">Released/Issued By:</th>
                     <th colspan="2" class="no-bdr">Received By:</th>
 

@@ -291,13 +291,22 @@ class PtrController extends Controller
         unit_of_measure.unit_of_measure,
         IFNULL(property_articles.article_name,property.article) as article,
         par.is_unserviceable,
-        received_by.employee_name as from_officer
+        prev_user.from_officer
         FROM 
          property
         LEFT JOIN unit_of_measure ON property.unit_of_measure_id = unit_of_measure.id
         LEFT JOIN property_articles ON property.fk_property_article_id = property_articles.id
         LEFT JOIN par ON property.id = par.fk_property_id
         LEFT JOIN employee_search_view as received_by ON par.fk_received_by = received_by.employee_id
+        LEFT JOIN (SELECT 
+  property.id,
+  received_by.employee_name as from_officer
+  FROM 
+   property
+  LEFT JOIN par ON property.id = par.fk_property_id
+  LEFT JOIN employee_search_view as received_by ON par.fk_received_by = received_by.employee_id
+  WHERE  par.is_current_user = 0
+ORDER BY par.created_at DESC LIMIT 1) as prev_user ON property.id = prev_user.id
         WHERE property.id = :id
         AND par.is_current_user = 1
         ")
