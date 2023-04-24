@@ -36,6 +36,8 @@ class PrStockController extends Controller
                     'stock-info',
                     'import',
                     'get-part',
+                    'search-paginated-stock',
+                    'final'
                 ],
                 'rules' => [
                     [
@@ -49,10 +51,22 @@ class PrStockController extends Controller
                             'stock-info',
                             'import',
                             'get-part',
+                            'search-paginated-stock',
+                            'final'
+                        ],
+                        'allow' => true,
+                        'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'search-stock',
+                            'stock-info',
+                            'get-part',
+                            'search-paginated-stock',
                         ],
                         'allow' => true,
                         'roles' => ['@']
-                    ]
+                    ],
                 ]
             ],
             'verbs' => [

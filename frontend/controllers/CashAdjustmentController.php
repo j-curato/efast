@@ -42,7 +42,7 @@ class CashAdjustmentController extends Controller
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

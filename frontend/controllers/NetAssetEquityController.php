@@ -42,6 +42,14 @@ class NetAssetEquityController extends Controller
                             'delete'
                         ],
                         'allow' => true,
+                        'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'get-all-netasset',
+
+                        ],
+                        'allow' => true,
                         'roles' => ['@']
                     ]
                 ]

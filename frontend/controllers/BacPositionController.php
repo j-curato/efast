@@ -44,7 +44,7 @@ class BacPositionController extends Controller
                             'get-position',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

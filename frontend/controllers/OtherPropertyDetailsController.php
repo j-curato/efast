@@ -56,7 +56,7 @@ class OtherPropertyDetailsController extends Controller
                             'get-frt-mth-dep',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],
@@ -68,7 +68,7 @@ class OtherPropertyDetailsController extends Controller
             ],
         ];
     }
-    public function firstMonthDepreciation($property_id)
+    private function firstMonthDepreciation($property_id)
     {
         return YIi::$app->db->createCommand("SELECT first_month_depreciation FROM `other_property_details` 
         WHERE other_property_details.fk_property_id =:property_id 

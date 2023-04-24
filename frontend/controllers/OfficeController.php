@@ -30,6 +30,8 @@ class OfficeController extends Controller
                     'update',
                     'delete',
                     'create',
+                    'search-office'
+
                 ],
                 'rules' => [
                     [
@@ -39,10 +41,18 @@ class OfficeController extends Controller
                             'update',
                             'delete',
                             'create',
+                            'search-office'
+                        ],
+                        'allow' => true,
+                        'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'search-office'
                         ],
                         'allow' => true,
                         'roles' => ['@']
-                    ]
+                    ],
                 ]
             ],
             'verbs' => [

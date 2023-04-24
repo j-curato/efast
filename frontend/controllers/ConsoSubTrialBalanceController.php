@@ -30,10 +30,14 @@ class ConsoSubTrialBalanceController extends Controller
                     'view',
                     'delete',
                     'update',
+                    'generate',
+                    'export'
                 ],
                 'rules' => [
                     [
                         'actions' => [
+                            'generate',
+                            'export',
                             'index',
                             'create',
                             'view',
@@ -42,7 +46,7 @@ class ConsoSubTrialBalanceController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

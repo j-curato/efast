@@ -44,12 +44,12 @@ class DocumentTrackerController extends Controller
                             'create'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -179,25 +179,17 @@ class DocumentTrackerController extends Controller
             try {
                 if (!empty($update_id)) {
                     $documentTracker = DocumentTracker::findOne($update_id);
-                    foreach($documentTracker->documentTrackerComplinceLinks as $val)
-                    {
+                    foreach ($documentTracker->documentTrackerComplinceLinks as $val) {
                         $val->delete();
                     }
-                    foreach($documentTracker->documentTrackerLinks as $val)
-                    {
+                    foreach ($documentTracker->documentTrackerLinks as $val) {
                         $val->delete();
                     }
-                    foreach($documentTracker->documentTrackerOffice as $val)
-                    {
+                    foreach ($documentTracker->documentTrackerOffice as $val) {
                         $val->delete();
                     }
-                    
-
-                }
-                else
-                {
+                } else {
                     $documentTracker = new DocumentTracker();
-
                 }
 
                 $documentTracker->date_recieved = $date_recieve;
@@ -215,10 +207,10 @@ class DocumentTrackerController extends Controller
                             if ($doc_link->validate()) {
                                 if ($doc_link->save(false)) {
                                 } else {
-                                    return json_encode(['success'=>false,'error' => 'wala na save sa doc links']);
+                                    return json_encode(['success' => false, 'error' => 'wala na save sa doc links']);
                                 }
                             } else {
-                                return json_encode(['success'=>false,'error' => $doc_link->errors]);
+                                return json_encode(['success' => false, 'error' => $doc_link->errors]);
                             }
                         }
                         foreach ($compliance as $i => $val) {
@@ -228,10 +220,10 @@ class DocumentTrackerController extends Controller
                             if ($doc_compliance->validate()) {
                                 if ($doc_compliance->save(false)) {
                                 } else {
-                                    return json_encode(['success'=>false,'error' => 'wala na save sa doc compliance']);
+                                    return json_encode(['success' => false, 'error' => 'wala na save sa doc compliance']);
                                 }
                             } else {
-                                return json_encode(['success'=>false,'error' => $doc_compliance->errors]);
+                                return json_encode(['success' => false, 'error' => $doc_compliance->errors]);
                             }
                         }
                         foreach ($office as $i => $val) {
@@ -241,19 +233,19 @@ class DocumentTrackerController extends Controller
                             if ($office->validate()) {
                                 if ($office->save(false)) {
                                 } else {
-                                    return json_encode(['success'=>false,'error' => 'wala na save sa doc office']);
+                                    return json_encode(['success' => false, 'error' => 'wala na save sa doc office']);
                                 }
                             } else {
-                                return json_encode(['success'=>false,'error' => $office->errors]);
+                                return json_encode(['success' => false, 'error' => $office->errors]);
                             }
                         }
                     }
                     if ($flag) {
                         $transaction->commit();
-                        return json_encode(['success' => true,'id'=>$documentTracker->id]);
+                        return json_encode(['success' => true, 'id' => $documentTracker->id]);
                     }
                 } else {
-                    return json_encode(['success'=>false,'error' => $documentTracker->errors]);
+                    return json_encode(['success' => false, 'error' => $documentTracker->errors]);
                 }
             } catch (ErrorException $e) {
                 $transaction->rollBack();

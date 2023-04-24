@@ -45,7 +45,7 @@ class SaobController extends Controller
                             'generate'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

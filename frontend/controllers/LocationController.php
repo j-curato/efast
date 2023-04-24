@@ -30,7 +30,7 @@ class LocationController extends Controller
                     'delete',
                     'update',
                     'view',
-
+                    'search-location'
                 ],
                 'rules' => [
                     [
@@ -41,8 +41,16 @@ class LocationController extends Controller
                             'delete',
                             'update',
                             'view',
+                            'search-location'
+                        ],
+                        'allow' => true,
+                        'roles' => ['super-user']
+                    ],
+                    [
 
-                            'search-payee',
+                        'actions' => [
+
+                            'search-location'
                         ],
                         'allow' => true,
                         'roles' => ['@']

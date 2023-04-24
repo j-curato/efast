@@ -30,6 +30,8 @@ class ConsoTrialBalanceController extends Controller
                     'delete',
                     'view',
                     'index',
+                    'generate-conso-trial-balance',
+                    'export'
                 ],
                 'rules' => [
                     [
@@ -39,9 +41,11 @@ class ConsoTrialBalanceController extends Controller
                             'delete',
                             'index',
                             'create',
+                            'generate-conso-trial-balance',
+                            'export'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],

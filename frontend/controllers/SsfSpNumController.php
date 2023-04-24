@@ -31,6 +31,7 @@ class SsfSpNumController extends Controller
                     'view',
                     'create',
                     'delete',
+                    'search-SsfSp'
                 ],
                 'rules' => [
                     [
@@ -40,10 +41,18 @@ class SsfSpNumController extends Controller
                             'view',
                             'create',
                             'delete',
+                            'search-SsfSp'
+                        ],
+                        'allow' => true,
+                        'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'search-SsfSp'
                         ],
                         'allow' => true,
                         'roles' => ['@']
-                    ]
+                    ],
                 ]
             ],
             'verbs' => [
