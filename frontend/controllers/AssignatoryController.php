@@ -43,7 +43,15 @@ class AssignatoryController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
-                    ]
+                    ],
+                    [
+                        'actions' => [
+
+                            'get-all-assignatory'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
                 ]
             ],
             'verbs' => [
