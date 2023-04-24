@@ -17,7 +17,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="derecognition-view panel">
-    <button id="export" type='button' class="btn btn-success" style="margin:1rem;"><i class="glyphicon glyphicon-export"></i>Export</button>
     <p>
     <div class="row">
         <div class="col-sm-1">
