@@ -194,9 +194,9 @@ $approved_by = MyHelper::getEmployee($model->fk_approved_by, 'one');
                 </tr> -->
                 <tr>
                     <!-- <th>Printed Name:</th> -->
-                    <th class="center no-bdr underlined" colspan="2"><br><br><br><?= $approved_by['employee_name'] ?></th>
-                    <th class="center no-bdr underlined" colspan="" style="min-width: 250px;"><br><br><br><?= $issued_by['employee_name'] ?></th>
-                    <th class="center no-bdr underlined" colspan="2" style="min-width: 250px;"><br><br><br><?= $received_by['employee_name'] ?></th>
+                    <th class="center no-bdr underlined" colspan="2"><br><br><br><?= strtoupper($approved_by['employee_name']) ?></th>
+                    <th class="center no-bdr underlined" colspan="" style="min-width: 250px;"><br><br><br><?= strtoupper($issued_by['employee_name']) ?></th>
+                    <th class="center no-bdr underlined" colspan="2" style="min-width: 250px;"><br><br><br><?= strtoupper($received_by['employee_name']) ?></th>
                 </tr>
                 <tr>
                     <!-- <th>Designation:</th> -->
