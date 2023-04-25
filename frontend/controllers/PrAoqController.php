@@ -116,7 +116,7 @@ class PrAoqController extends Controller
             $aoq->amount = !empty($unit_costs[$i]) ? $unit_costs[$i] : '';
             $aoq->remark = !empty($remarks[$i]) ? $remarks[$i] : '';
             $aoq->pr_rfq_item_id = !empty($pr_rfq_items[$i]) ? $pr_rfq_items[$i] : '';
-            $aoq->is_lowest = !empty($is_lowest[$i]) && $is_lowest[$i]=='on' ? 1 : 0;
+            $aoq->is_lowest = !empty($is_lowest[$i]) && $is_lowest[$i] == 'on' ? 1 : 0;
             // var_dump($remarks[$i]);
             // die();
             // var_dump([
@@ -141,7 +141,7 @@ class PrAoqController extends Controller
         $model = new PrAoq();
 
         if ($model->load(Yii::$app->request->post())) {
-            $model->aoq_number = $this->aoqNumberGenerator($model->pr_date);
+            $model->aoq_number = $this->aoqNumberGenerator($model->rfq->deadline);
             $payee_ids = $_POST['payee_id'];
             $unit_costs  = $_POST['unit_cost'];
             $pr_rfq_items = $_POST['pr_rfq_item'];
@@ -257,7 +257,7 @@ class PrAoqController extends Controller
 
         return $this->render('update', [
             'model' => $model,
-            'aoq_entries' => $result = ArrayHelper::index($this->aoqEntriesData($id), null,'rfq_item_id')
+            'aoq_entries' => $result = ArrayHelper::index($this->aoqEntriesData($id), null, 'rfq_item_id')
         ]);
     }
 
