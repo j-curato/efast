@@ -156,10 +156,11 @@ class PreRepairInspectionController extends Controller
     {
 
 
-        $last_num = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(serial_number,'-',-1)AS UNSIGNED) AS last_number FROM pre_repair_inspection ORDER BY last_number DESC LIMIT 1")->queryScalar();
+        $last_num = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(serial_number,'-',-1)AS UNSIGNED) AS last_number 
+        FROM pre_repair_inspection ORDER BY last_number DESC LIMIT 1")->queryScalar();
 
         if (!empty($last_num)) {
-            $alst_num = intval($last_num) + 1;
+            $last_num = intval($last_num) + 1;
         } else {
             $last_num = 1;
         }
