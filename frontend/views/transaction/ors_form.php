@@ -709,32 +709,35 @@ $this->params['breadcrumbs'][] = $title;
 
             <table class="table " id='ors_links'>
                 <tr class="info">
-                    <th colspan="2">
+                    <th colspan="3">
                         <h4>Obligation Links</h4>
                     </th>
                 </tr>
                 <tr>
                     <th>ORS Number</th>
+                    <th>Good/Cancelled</th>
                     <th>Link</th>
                 </tr>
                 <tbody>
 
                     <?php
-                    if (!empty($model->processOrs)) {
-                        foreach ($model->processOrs as $val) {
-                            if (!empty($val->id)) {
-
-                                // $q = Raouds::find()
-                                //     ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' => $val->id])
-                                //     ->one();
-                                $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$val->id";
-                                // echo  Html::a('ORS Link', $t, ['class' => 'btn btn-success ']);
-                            }
-                            echo "<tr>
-                            <td>$val->serial_number</td>
-                            <td>" . Html::a('ORS Link', $t, ['class' => 'btn btn-success ']) . "</td>
+                    $ors = YIi::$app->db->createCommand("SELECT 
+                        process_ors.serial_number,
+                        process_ors.id,
+                        process_ors.is_cancelled
+                        FROM 
+                        process_ors
+                        WHERE
+                        process_ors.transaction_id = :id")
+                        ->bindValue(':id', $model->id)
+                        ->queryAll();
+                    foreach ($ors as $val) {
+                        $is_cancelled = $val['is_cancelled'] ? 'Cancelled' : 'Good';
+                        echo "<tr>
+                            <td>{$val['serial_number']}</td>
+                            <td>$is_cancelled</td>
+                            <td>" . Html::a('ORS Link', ['process-ors/view', 'id' => $val['id']], ['class' => 'btn btn-link ']) . "</td>
                         </tr>";
-                        }
                     }
 
 
