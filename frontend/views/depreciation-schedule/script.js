@@ -1,9 +1,10 @@
 function display(data) {
   $("#data_tbl tbody").html("");
-
+  let ttlDep = 0;
   $.each(data, (key, val) => {
     let yrHead = `<tr>`;
     let from_to_mnt = `<tr>`;
+    ttlDep += parseFloat(val.mnthly_depreciation);
     let r = `<tr>
         <td rowspan=''>${val.property_number}</td>
         <td rowspan=''>${val.article_name}</td>
@@ -24,6 +25,7 @@ function display(data) {
       val.depreciation_account_title
     }</td>
     <td rowspan=''>${val.derecognition_period}</td>
+    <td rowspan=''>${thousands_separators(val.mnthly_depreciation)}</td>
 
         `;
 
@@ -49,9 +51,12 @@ function display(data) {
     }
     r += `</tr>`;
     from_to_mnt += `</tr>`;
-    $("#data_tbl tbody").append(`<tr><td colspan='17' rowspan='3'></td></tr>`);
+    $("#data_tbl tbody").append(`<tr><td colspan='18' rowspan='3'></td></tr>`);
     $("#data_tbl tbody").append(yrHead);
     $("#data_tbl tbody").append(from_to_mnt);
     $("#data_tbl tbody").append(r);
   });
+  $("#data_tbl tbody").append(
+    `<tr><th colspan='17'>Total</th><th>${thousands_separators(ttlDep)}</th></tr>`
+  );
 }

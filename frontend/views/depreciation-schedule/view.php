@@ -59,6 +59,11 @@ $this->registerCssFile("@web/frontend/views/depreciation-schedule/styles.css", [
                 <th>
                     Derecognition Period
                 </th>
+                <th>
+                    Reporting Period <?= $model->reporting_period; ?> Depreciated Amount
+                </th>
+
+
 
 
             </thead>
