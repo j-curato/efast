@@ -42,10 +42,12 @@ function display(data) {
       let date2 = moment(`${year}-${l_month}-01`);
       let diffmnts = date2.diff(date1, "months") + 1;
       let ttlDep = parseFloat(val.mnthly_depreciation) * diffmnts;
-      r += `<td colspan='2'>${thousands_separators(ttlDep)}</td>`;
-      yrHead += `<th colspan='2'>${year}</th>`;
-      from_to_mnt += `<th style='min-width:80px'>${year}-${f_month}</th>`;
-      from_to_mnt += `<th style='min-width:80px'>${year}-${l_month}</th>`;
+      r += `<td colspan='2' class='prt-hdn'>${thousands_separators(
+        ttlDep
+      )}</td>`;
+      yrHead += `<th colspan='2' class='prt-hdn'>${year}</th>`;
+      from_to_mnt += `<th style='min-width:80px' class='prt-hdn'>${year}-${f_month}</th>`;
+      from_to_mnt += `<th style='min-width:80px' class='prt-hdn'>${year}-${l_month}</th>`;
       startDate.setFullYear(startDate.getFullYear() + 1);
       c++;
     }
@@ -57,6 +59,8 @@ function display(data) {
     $("#data_tbl tbody").append(r);
   });
   $("#data_tbl tbody").append(
-    `<tr><th colspan='17'>Total</th><th>${thousands_separators(ttlDep)}</th></tr>`
+    `<tr><th colspan='17'>Total</th><th>${thousands_separators(
+      ttlDep
+    )}</th></tr>`
   );
 }

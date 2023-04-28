@@ -73,6 +73,20 @@ $this->registerCssFile("@web/frontend/views/depreciation-schedule/styles.css", [
         </table>
     </div>
 </div>
+<style>
+    @media print {
+
+        .btn,
+        .main-footer,
+        .prt-hdn {
+            display: none;
+        }
+        td,th{
+            font-size: smaller;
+            padding: 2px;
+        }
+    }
+</style>
 <?php
 $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
 $this->registerJsFile("@web/js/moment.min.js", ['depends' => [JqueryAsset::class]]);
