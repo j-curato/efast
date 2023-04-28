@@ -19,7 +19,7 @@ class m230307_065345_create_depreciations_procedure extends Migration
                     DECLARE is_notAll VARCHAR(1024) DEFAULT NULL;
                     SET  @is_notAll =  '';
                     IF book_id IS NOT NULL THEN
-                        SET  @is_notAll =  CONCAT(' AND books.id != ',book_id);
+                        SET  @is_notAll =  CONCAT(' AND books.id = ',book_id);
                     END IF;
                     SET @finalQuery = CONCAT("SELECT 
                     property.property_number,
