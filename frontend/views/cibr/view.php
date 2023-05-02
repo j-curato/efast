@@ -365,7 +365,8 @@ $this->params['breadcrumbs'][] = $this->title;
             display: none;
         }
 
-        .main-footer {
+        .main-footer,
+        .btn {
             display: none;
         }
     }
