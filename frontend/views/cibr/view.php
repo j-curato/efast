@@ -235,6 +235,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
                 $total_deposit = 0;
                 $total_withdrawals = 0;
+                $total_vat = 0;
+                $total_exp_tax = 0;
+                $total_liq_dmg = 0;
                 $balance = !empty($beginning_balance) ? $beginning_balance : 0;
                 $x = 0;
                 if (!empty($dataProvider)) {
@@ -282,6 +285,10 @@ $this->params['breadcrumbs'][] = $this->title;
                          </tr>";
                         $total_deposit += floatval((float)$data['amount']);
                         $total_withdrawals += floatval((float)$data['withdrawals']);
+                        $total_vat += floatval((float)$data['vat_nonvat']);
+                        $total_exp_tax += floatval((float)$data['expanded_tax']);
+                        $total_liq_dmg += floatval((float)$data['liquidation_damage']);
+
                         // }
                     }
 
@@ -290,6 +297,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td colspan='2' style='text-align:center;font-weight:bold'>Total</td>
                 <td style='text-align:right;font-weight:bold'>" . number_format($total_deposit, 2) . "</td>
                 <td style='text-align:right;font-weight:bold'>" . number_format($total_withdrawals, 2) . "</td>
+                <td style='text-align:right;font-weight:bold'>" . number_format($total_vat, 2) . "</td>
+                <td style='text-align:right;font-weight:bold'>" . number_format($total_exp_tax, 2) . "</td>
+                <td style='text-align:right;font-weight:bold'>" . number_format($total_liq_dmg, 2) . "</td>
                 <td style='text-align:right;font-weight:bold'>" . number_format($balance, 2) . "</td>
                 <td></td>
                 <td></td>
