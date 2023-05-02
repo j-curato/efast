@@ -103,7 +103,11 @@ class JevPreparationController extends Controller
                             'changes-netasset-equity',
                             'export-jev',
                             'cdr-jev',
-                            'dv-to-jev'
+                            'dv-to-jev',
+                            'generate-subsidiary-ledger',
+                            'generate-general-ledger',
+                            'sub-trial-balance',
+                            'liquidation-report-to-jev',
                         ],
                         'allow' => true,
                         'roles' => ['super-user'],
