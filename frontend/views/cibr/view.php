@@ -205,6 +205,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <th class='head' rowspan="3">Deposits</th>
                     <th class='head' rowspan="3">Withdrawals</th>
+                    <th class='head' rowspan="3">Vat/Non-Vat</th>
+                    <th class='head' rowspan="3">Expanded Tax</th>
+                    <th class='head' rowspan="3">Liquidation Damage</th>
                     <th class='head' rowspan="3"> Balances</th>
                 </tr>
                 <tr>
