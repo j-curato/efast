@@ -218,7 +218,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th class='head' rowspan="6">Date</th>
                     <th class='head' rowspan="6">Check No.</th>
                     <th class='head' rowspan="6">Particular</th>
-                    <th class='head' rowspan="3" colspan="3">CASH IN BANK</th>
+                    <th class='head' rowspan="3" colspan="6">CASH IN BANK</th>
                 </tr>
 
                 <tr>
@@ -234,6 +234,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <th class='head' rowspan="3">Deposits</th>
                     <th class='head' rowspan="3">Withdrawals</th>
+                    <th class='head' rowspan="3">Vat/Non-Vat</th>
+                    <th class='head' rowspan="3">Expanded Tax</th>
+                    <th class='head' rowspan="3">Liquidation Damage</th>
                     <th class='head' rowspan="3"> Balances</th>
                 </tr>
                 <tr>
@@ -275,6 +278,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td style='text-align:center'>Beginning Balance</td>
                             <td ></td>
                             <td ></td>
+                            <td ></td>
+                            <td ></td>
+                            <td ></td>
                             <td style='text-align:right'>" . number_format($balance - (float)$data['amount'] + (float)$data['withdrawals'], 2) . "</td>
                             <td></td>
                             <td></td>
@@ -292,6 +298,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td >" . $data['particular'] . "</td>
                             <td style='text-align:right'>" . number_format((float)$data['amount'], 2) . "</td>
                             <td style='text-align:right'>" . number_format((float)$data['withdrawals'], 2) . "</td>
+                            <td style='text-align:right'>" . number_format((float)$data['vat_nonvat'], 2) . "</td>
+                            <td style='text-align:right'>" . number_format((float)$data['expanded_tax'], 2) . "</td>
+                            <td style='text-align:right'>" . number_format((float)$data['liquidation_damage'], 2) . "</td>
                             <td>" . number_format($balance, 2) . "</td>
                             <td></td>
                             <td></td>
