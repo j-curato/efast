@@ -117,10 +117,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <thead>
                 <tr>
-                    <th colspan="12" style="text-align: center;border:1px solid white">CASH IN BANK REGISTER</th>
+                    <th colspan="15" style="text-align: center;border:1px solid white">CASH IN BANK REGISTER</th>
                 </tr>
                 <tr>
-                    <th colspan="12" style="text-align: center;border:1px solid white">
+                    <th colspan="15" style="text-align: center;border:1px solid white">
 
                         <span>
                             For the month of <?php
@@ -132,7 +132,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </th>
                 </tr>
                 <tr>
-                    <th colspan="9" class="header">
+                    <th colspan="12" class="header">
                         <span> Entity Name:Department of Trade and Industry</span>
                     </th>
                     <th colspan="3" class="header">
@@ -142,7 +142,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </th>
                 </tr>
                 <tr>
-                    <th colspan="9" class="header">
+                    <th colspan="12" class="header">
                         <span> Sub-Office/District/Division: Provincial Office</span>
                     </th>
                     <th colspan="3" class="header">
@@ -162,7 +162,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </th>
                 </tr>
                 <tr>
-                    <th colspan="9" class="header">
+                    <th colspan="12" class="header">
                         <span> Municipality/City/Province: <?php
 
                                                             if (!empty($province)) {
@@ -186,7 +186,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </th>
                 </tr>
                 <tr>
-                    <th colspan="9" rowspan="2" style="border-left:1px solid white;border-right:1px solid white;">
+                    <th colspan="12" rowspan="2" style="border-left:1px solid white;border-right:1px solid white;">
                         <span> Fund Cluster : <?php
                                                 if (!empty($book)) {
 
