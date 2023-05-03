@@ -829,7 +829,7 @@ class JevPreparationController extends Controller
 
                         // $cells[] =   $cell->getValue()->getCalculatedValue();
                         $qwe = 0;
-                        if ($y === 5 || $y === 5) {
+                        if ($y === 4 || $y === 5) {
                             $cells[] =   $cell->getFormattedValue();
                             // echo '<pre>';y
                             // var_dump('qwe');
@@ -937,7 +937,7 @@ class JevPreparationController extends Controller
                             // echo '</pre>';
                             if ($s === false) {
                                 $jv = $this->getJevNumber($book->id, $reporting_period, $cells[7], 1);
-                                $jev_number = $cells[7] . '-' . $jv;
+                                $jev_number =  $jv;
                                 $i++;
 
                                 $temp_data[] = [
