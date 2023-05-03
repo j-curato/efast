@@ -919,8 +919,8 @@ class JevPreparationController extends Controller
                         }
 
 
-
-                        $reporting_period = $cells[4];
+                        $r = new DateTime($cells[4]);
+                        $reporting_period = $r->format('Y-m');
                         // return $reporting_period;
                         $date = $cells[4] ? date("Y-m-d", strtotime($cells[5])) : '';
                         // echo '<pre>';
