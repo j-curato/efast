@@ -362,7 +362,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
         let remark_arr = []
         let remark_arr_index = 0
         let row_number_index = 1
-        $.each(q, function(key, val) {
+        $.each(q, function(x, val) {
             let min_key = ''
             $.each(val, function(key, val2) {
                 min_key = key
@@ -399,9 +399,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
             $.each(val, function(key, val2) {
                 let key_pos = '';
 
-                $.each(payee_position, function(key, payee) {
+                $.each(payee_position, function(payee_pos_key, payee) {
                     if (payee == val2.payee) {
-                        key_pos = parseInt(key)
+                        key_pos = parseInt(payee_pos_key)
                         return false
                     }
                 })
@@ -432,7 +432,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                 const remark = `<span>${val2.remark}</span>`
                 const ttl = parseFloat(val2.amount) * parseInt(val2.quantity);
                 if (ttlAmtPerPayee[key_pos + 1]) {
-                    ttlAmtPerPayee[key_pos + 1] = parseFloat(ttlAmtPerPayee[key_pos + 1]) + parseFloat(ttl)
+                    let ttlPerItm = ttl ? parseFloat(ttl) : 0
+                    ttlAmtPerPayee[key_pos + 1] = parseFloat(ttlAmtPerPayee[key_pos + 1]) + ttlPerItm
                 } else {
                     ttlAmtPerPayee[key_pos + 1] = parseFloat(ttl)
                 }
