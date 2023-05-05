@@ -438,7 +438,7 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
 
                     </tr>
                     <!-- ACTUAL USER -->
-                    <?php if (!empty($model->fk_actual_user)) { ?>
+                    <?php if (!empty($actual_user['employee_name'])) { ?>
 
                         <tr>
                             <td class='foot no-border' colspan='3' style='text-align:center;padding-top:5rem;border-bottom: 1px solid black;'>
