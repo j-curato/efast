@@ -4,84 +4,23 @@
 /* @var $this yii\web\View */
 
 use aryelds\sweetalert\SweetAlertAsset;
-use dosamigos\chartjs\ChartJs;
 use dosamigos\chartjs\ChartJsAsset;
 use kartik\date\DatePicker;
-use kartik\widgets\DatePicker as WidgetsDatePicker;
-use yii\filters\Cors;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
-use yii\helpers\HtmlPurifier;
 use yii\helpers\Url;
 
 $this->title = 'Dashboard';
-// echo Url::base(); 
-
 ?>
-
-<div class="site-index">
-
-    <?php
-
-    $query = (new \yii\db\Query())
-        ->select([
-            'SUM(raoud_entries.amount) as total_obligated',
-            '(SELECT SUM(record_allotment_entries.amount) as total_allotment from record_allotment_entries) as total_allotment'
-        ])
-        ->from('raouds')
-        ->join('LEFT JOIN', 'raoud_entries', 'raouds.id = raoud_entries.raoud_id')
-        ->join('LEFT JOIN', 'record_allotment_entries', 'raouds.record_allotment_entries_id = record_allotment_entries.id')
-        ->where("raouds.process_ors_id IS NOT NULL ")
-        // ->andWhere("raouds.reporting_period LIKE :reporting_period", ['reporting_period' => '2021%'])
-        ->one();
-
-    $ors = Yii::$app->db->createCommand("SELECT SUM(raoud_entries.amount) as total_obligated,
-                        (SELECT SUM(dv_aucs_entries.amount_disbursed) as total_disbursed
-                        FROM cash_disbursement,dv_aucs,dv_aucs_entries
-                        WHERE cash_disbursement.dv_aucs_id = dv_aucs.id
-                        AND dv_aucs.id = dv_aucs_entries.dv_aucs_id
-                        AND cash_disbursement.is_cancelled =0
-                        ) as total_disbursed
-                FROM process_ors,raouds,raoud_entries
-                WHERE process_ors.id = raouds.process_ors_id
-                AND raouds.id = raoud_entries.raoud_id
-                AND process_ors.is_cancelled =0
-            ")
-        ->queryOne();
-    $query3 = Yii::$app->db->createCommand("SELECT SUM(dv_aucs_entries.vat_nonvat) as total_vat_nonvat,
-                SUM(dv_aucs_entries.ewt_goods_services) as total_ewt,
-                SUM(dv_aucs_entries.compensation) as total_compensation
-                FROM dv_aucs_entries
-            ")->queryOne();
-
-    $total_cash_disbursed = Yii::$app->db->createCommand("SELECT books.`name`,
-                         cash_disbursement.book_id,
-                        SUM(dv_aucs_entries.amount_disbursed)as total_disbursed 
-                        FROM cash_disbursement,dv_aucs,dv_aucs_entries,books
-                        WHERE cash_disbursement.dv_aucs_id = dv_aucs.id
-                        AND dv_aucs.id = dv_aucs_entries.dv_aucs_id
-                        AND cash_disbursement.book_id = books.id
-                        AND cash_disbursement.is_cancelled = 0
-                        GROUP BY cash_disbursement.book_id,books.`name`")->queryAll();
-    $payable = Yii::$app->db->createCommand("SELECT SUM(dv_aucs_entries.amount_disbursed) as total_payable
-                FROM `dv_aucs`,dv_aucs_entries,mrd_classification 
-                where dv_aucs.mrd_classification_id = mrd_classification.id
-                AND dv_aucs.id = dv_aucs_entries.dv_aucs_id
-                AND mrd_classification.`name` LIKE 'Prior Year Accounts Payable'
-                AND dv_aucs.is_cancelled =0
-                ")->queryOne();
-
-
-    ?>
+<?= \yii\helpers\Html::csrfMetaTags() ?>
+<div class="site-index panel panel-default">
     <div class="body-content container-fluid">
 
         <div class="row gap-0">
 
             <?php
-            if (Yii::$app->user->can('super-user')) {
-                echo "  <div class='col-sm-1' style='padding-left:0'><button class='btn btn-success' id='update_payee'>Update Cloud</button></div>";
-                echo "  <div class='col-sm-1' style='padding-left:0'><button class='btn btn-warning' id='update_lan'>Update LAN</button></div>";
-            }
+            // if (Yii::$app->user->can('super-user')) {
+            //     echo "  <div class='col-sm-1' style='padding-left:0'><button class='btn btn-success' id='update_payee'>Update Cloud</button></div>";
+            //     echo "  <div class='col-sm-1' style='padding-left:0'><button class='btn btn-warning' id='update_lan'>Update LAN</button></div>";
+            // }
             // echo "  <div class='col-sm-1'><button class='btn btn-success' id='update_cloud' style='margin-bottom:12px'>Update Cloud</button> </div>";
             ?>
 
@@ -123,406 +62,6 @@ $this->title = 'Dashboard';
             <?php } ?>
         </div>
 
-        <div class="row justify-content-around">
-
-
-            <!-- Obligations and Disbursements -->
-            <div class="panel panel-default col-sm-5">
-                <div class="panel-heading " style="background-color:white;width:100%">
-                    <h4>
-                        Obligations and Disbursements
-                    </h4>
-                </div>
-                <div class="panel-content">
-                    <table class="table">
-
-                        <tr>
-                            <td>
-
-                                <span style="white-space: pre;">Total Amount Obligated</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span style=" margin-left: auto;">
-                                    <?php
-                                    echo number_format($ors['total_obligated'], 2);
-                                    ?>
-                                </span>
-
-                            </td>
-
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Less: Total Disbursement</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span>
-                                    <?php
-                                    $total_disbursed = $ors['total_disbursed'] - $payable['total_payable'];
-                                    echo number_format($total_disbursed, 2);
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Less: Total Tax Remittance</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span>
-                                    <?php
-                                    // echo  number_format($query['total_allotment'] - $query['total_obligated'], 2);
-
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Unpaid Obligations</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span>
-                                    <?php
-                                    echo  number_format($ors['total_obligated'] - $total_disbursed, 2);
-
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Total Prior Year Accounts Payable</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span>
-                                    <?php
-
-                                    echo  number_format($payable['total_payable'], 2);
-
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            <!--END  Obligations and Disbursements -->
-            <!-- Cash Received and Disbursed -->
-            <div class="panel panel-default  col-sm-5">
-                <div class="panel-heading" style="background-color:white;width:100%">
-
-                    <h4>
-                        Cash Received and Disbursed
-                    </h4>
-                </div>
-                <div class="panel-content">
-
-                    <table class="table">
-                        <thead>
-
-                            <th></th>
-                            <th style="text-align: right;">Fund 01</th>
-                            <th style="text-align: right;">Rapid LP </th>
-                        </thead>
-                        <tr>
-                            <td>
-
-                                <span style="white-space: pre;">Cash Received</span>
-                            </td>
-                            <td style="text-align: right;">
-                                <span style=" margin-left: auto;">
-                                    <?php
-                                    $cash_recieved = Yii::$app->db->createCommand("SELECT SUM(cash_recieved.amount) as total_cash_recieved from cash_recieved,books
-                                     where cash_recieved.book_id = books.id
-                                    AND books.name ='Fund 01'")->queryOne();
-
-                                    echo number_format($cash_recieved['total_cash_recieved'], 2);
-                                    ?>
-                                </span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span style=" margin-left: auto;">
-                                    <?php
-                                    $cash_recieved2 = Yii::$app->db->createCommand("SELECT SUM(cash_recieved.amount) as total_cash_recieved from cash_recieved,books
-                                     where cash_recieved.book_id = books.id
-                                    AND books.name NOT LIKE 'Fund 01'")->queryOne();
-
-                                    echo number_format($cash_recieved2['total_cash_recieved'], 2);
-                                    ?>
-                                </span>
-
-                            </td>
-
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Cash Dibursements</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span>
-                                    <?php
-                                    $result = ArrayHelper::index($total_cash_disbursed, null, 'name');
-
-                                    // ob_clean();
-                                    // echo "<pre>";
-                                    // var_dump($result['Fund 01'][0]['total_disbursed']);
-                                    // echo "</pre>";
-                                    ?>
-                                </span>
-                            </td>
-                            <?php
-                            // foreach ($total_cash_disbursed as $val) {
-                            // }
-                            ?>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Cash Balance</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span id="total_cash_disbursed">
-                                    <?php
-                                    // echo  number_format($cash_recieved['total_cash_recieved'] - $result['Fund 01'][0]['total_disbursed'], 2);
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Pending DV's for Disbursement</span>
-
-                            </td>
-                            <td style="text-align: center;" colspan="2">
-                                <span id="total_amount_pending">
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Cash Balance per Accounting</span>
-
-                            </td>
-                            <td style="text-align: center;" colspan="2">
-                                <span id="cash_balance_per_accounting">
-                                </span>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-
-            </div>
-            <!-- END Cash Received and Disbursed -->
-
-
-        </div>
-        <div class="row">
-
-
-            <!-- Allotment/Appropriations and Obligations -->
-            <div class="panel panel-default col-sm-5">
-                <div class="panel-heading" style="background-color:white;width:100%">
-
-                    <h4>
-                        Allotment/Appropriations and Obligations
-
-                    </h4>
-                </div>
-
-                <div class="panel-content">
-                    <table class="table">
-
-                        <tr>
-                            <td>
-
-                                <span style="white-space: pre;">Total Allotments and Appropriations Received</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span style=" margin-left: auto;">
-                                    <?php
-                                    echo number_format($query['total_allotment'], 2);
-                                    ?>
-                                </span>
-
-                            </td>
-
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Total Obligations</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span>
-                                    <?php
-                                    echo number_format($query['total_obligated'], 2);
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Unobligated Balance</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span>
-                                    <?php
-                                    echo  number_format($query['total_allotment'] - $query['total_obligated'], 2);
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div>
-
-                </div>
-
-
-            </div>
-            <!-- END Allotment/Appropriations and Obligations -->
-
-
-            <!-- Taxes Withheld and Remitted -->
-
-            <div class="panel panel-default  col-sm-5">
-                <div class="panel-heading" style="background-color:white;width:100%">
-                    <h4>
-                        Taxes Withheld and Remitted
-                    </h4>
-                </div>
-                <div class="panel-content">
-
-                    <table class="table">
-
-                        <tr>
-                            <td>
-
-                                <span style="white-space: pre;">Total Taxes Withheld</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span style=" margin-left: auto;">
-                                    <?php
-                                    $total_withheld = $query3['total_vat_nonvat'] + $query3['total_ewt'] + $query3['total_compensation'];
-                                    echo number_format($total_withheld, 2);
-                                    ?>
-                                </span>
-
-                            </td>
-
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Less: Total Tax Remittance</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span>
-                                    <?php
-                                    // echo number_format($query['total_obligated'], 2);
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Balance for Remittance</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span>
-                                    <?php
-                                    echo number_format($total_withheld, 2);
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            <!--END Taxes Withheld and Remitted -->
-
-        </div>
-        <!-- DV -->
-        <div class="row">
-            <?php
-
-            $pending_dv = Yii::$app->db->createCommand(
-                "SELECT COUNT(dv_aucs.id) as total_pending from dv_aucs where dv_aucs.id   NOT IN (SELECT cash_disbursement.dv_aucs_id from cash_disbursement WHERE cash_disbursement.dv_aucs_id IS NOT NULL)"
-            )->queryOne();
-            ?>
-
-            <div class="panel panel-default  col-sm-5">
-                <div class="panel-heading" style="background-color:white;width:100%">
-                    <h4>
-                        DV's
-                    </h4>
-                </div>
-                <div class="panel-content">
-                    <?php
-                    $total_dv = Yii::$app->db->createCommand("SELECT DISTINCT COUNT(cash_disbursement.id) ro_dv,
-                (SELECT DISTINCT count(transmittal_entries.cash_disbursement_id) as coa_dv from transmittal_entries) as coa_dv
-                
-                FROM cash_disbursement 
-                WHERE cash_disbursement.id NOT IN (SELECT DISTINCT transmittal_entries.cash_disbursement_id FROM transmittal_entries)")->queryOne();
-
-                    ?>
-                    <table class="table">
-                        <tr>
-                            <td>
-                                <span style="white-space: pre;">Total DV's in Regional Office</span>
-                            </td>
-                            <td style="text-align: right;">
-                                <span style=" margin-left: auto;">
-                                    <?php
-                                    echo number_format($total_dv['ro_dv']);
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Total DV's in COA</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span>
-                                    <?php
-                                    echo number_format($total_dv['coa_dv']);
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span>Pending DV's</span>
-
-                            </td>
-                            <td style="text-align: right;">
-                                <span>
-                                    <?php
-                                    echo number_format($pending_dv['total_pending']);
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-
-                    </table>
-                </div>
-            </div>
-        </div>
 
 
     </div>
@@ -581,16 +120,17 @@ $this->title = 'Dashboard';
 </style>
 <?php
 $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
-$this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/js/dataSync.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/dataSync.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/updateCloud.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile("@web/js/fullcalendar/main.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerCssFile("@web/js/fullcalendar/main.min.css");
 SweetAlertAsset::register($this);
 ChartJsAsset::register($this);
 $csrfToken = Yii::$app->request->csrfToken;
 $csrfName = Yii::$app->request->csrfParam;
 
 ?>
-<script src='<?php echo yii::$app->request->baseUrl ?>/js/fullcalendar/main.min.js'></script>
-<link href='<?php echo yii::$app->request->baseUrl ?>/js/fullcalendar/main.min.css' rel='stylesheet' />
+
 <script>
     let x = undefined;
     $('#update_lan').click((e) => {
@@ -1220,17 +760,14 @@ $csrfName = Yii::$app->request->csrfParam;
 
     function allowDrop(ev) {
         ev.preventDefault();
-        console.log('qwe')
     }
 
     function drag(ev) {
-        console.log('qwe')
         ev.dataTransfer.setData("text", ev.target.id);
     }
 
     function drop(ev) {
         ev.preventDefault();
-        console.log('qwe')
         var data = ev.dataTransfer.getData("text");
         ev.target.appendChild(document.getElementById(data));
     }
@@ -1239,7 +776,7 @@ $csrfName = Yii::$app->request->csrfParam;
 
 $url = Url::toRoute(['report/detailed-transmittal-summary', 'reporting_period' => '']);
 $script = <<<JS
-    
+     const csrfToken = $('meta[name="csrf-token"]').attr("content");
     async function BarChart(year =''){
         const data = await getData(year)
      
@@ -1308,6 +845,7 @@ $script = <<<JS
         };
    
     }
+   
      async function getData(year=''){
         const reporting_period = []
         const dv_at_ro = []
@@ -1316,7 +854,7 @@ $script = <<<JS
        await $.ajax({
             type:'POST',
             url:window.location.pathname + '?r=report/dv-transmittal-summary',
-            data:{year:year},
+            data:{year:year, _csrf : csrfToken},
            success:function(data){
             const res = JSON.parse(data)
             $.each(res,function(key,val){
@@ -1329,15 +867,6 @@ $script = <<<JS
         })
         return {reporting_period,dv_at_ro,dv_at_coa,total_dv}
     }
-    
-  
-      function thousands_separators(num) {
-
-            var number = Number(Math.round(num + 'e2') + 'e-2')
-            var num_parts = number.toString().split(".");
-            num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            return num_parts.join(".");
-        }
 
     $(document).ready(function(){
        
@@ -1370,17 +899,7 @@ $script = <<<JS
       
             BarChart($(this).val())
         })
-        // CASH RECIEVED AND DISBURSEMENT
-        $.ajax({
-            type:'POST',
-            url:window.location.pathname + '?r=report/get-cash',
-            success:function(data){
-                var res = JSON.parse(data)
-                $('#total_cash_disbursed').text(thousands_separators(res['cash_balance']))
-                $('#total_amount_pending').text(thousands_separators(res['total_amount_pending']))
-                $('#cash_balance_per_accounting').text(thousands_separators(res['cash_balance_per_accounting']))
-            }
-        })
+
     })
         $(document).on('click','.fc-daygrid-day-number',function(){
             var date = $(this).closest('td').attr('data-date');
