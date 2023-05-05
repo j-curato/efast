@@ -207,6 +207,9 @@ class ReportController extends \yii\web\Controller
         if ($action->id == 'get-cdr') {
             $this->enableCsrfValidation = false;
         }
+        if ($action->id == 'dv-transmittal-summary') {
+            $this->enableCsrfValidation = false;
+        }
 
         return parent::beforeAction($action);
     }
