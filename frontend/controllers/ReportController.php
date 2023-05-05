@@ -2,47 +2,45 @@
 
 namespace frontend\controllers;
 
-use app\components\helpers\MyHelper;
-use app\models\AdvancesLiquidationSearch;
-use app\models\Books;
-use app\models\Cdr;
-use app\models\ChartOfAccounts;
-
-use app\models\DetailedDvAucsSearch;
-use app\models\DvAucs;
-use app\models\Liquidation;
-use app\models\Office;
-use app\models\OtherPropertyDetailItems;
-use app\models\OtherPropertyDetails;
-use app\models\Par;
-use app\models\PoTransmittalsPendingSearch;
-use app\models\ProcurementSummarySearch;
-use app\models\Property;
-use app\models\PropertyCard;
-use app\models\PrSummarySearch;
-use app\models\RaoSearch;
-use app\models\TransactionArchiveSearch;
-use app\models\TransactionTracking;
-use app\models\TransactionTrackingSearch;
-use app\models\UnpaidObligationSearch;
-use app\models\WithholdingAndRemittanceSummarySearch;
-use common\models\UploadForm;
-use Da\QrCode\QrCode;
-use DateTime;
-use ErrorException;
-use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Date;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Yii;
-use yii\db\Expression;
+use DateTime;
 use yii\db\Query;
-use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
-use yii\helpers\ArrayHelper;
-use yii\helpers\FileHelper;
+use app\models\Cdr;
+use app\models\Par;
+use ErrorException;
 use yii\helpers\Url;
-use yii\web\UploadedFile;
-use yii\symfonymailer\Message;
-use yii\web\Response;
+use app\models\Books;
+use app\models\DvAucs;
+use app\models\Office;
+use yii\db\Expression;
+use app\models\Property;
+use app\models\RaoSearch;
+use yii\filters\VerbFilter;
+use yii\helpers\FileHelper;
+use app\models\PropertyCard;
+use yii\helpers\ArrayHelper;
+use common\models\UploadForm;
+use yii\filters\AccessControl;
+use app\components\EmailSender;
+use app\models\ChartOfAccounts;
+use app\models\PrSummarySearch;
+use Symfony\Component\Mime\Email;
+use app\models\TransactionTracking;
+use Symfony\Component\Mime\Address;
+use app\components\helpers\MyHelper;
+use app\models\DetailedDvAucsSearch;
+use app\models\OtherPropertyDetails;
+use app\models\UnpaidObligationSearch;
+use app\models\OtherPropertyDetailItems;
+use app\models\ProcurementSummarySearch;
+use app\models\TransactionArchiveSearch;
+use app\models\AdvancesLiquidationSearch;
+use app\models\TransactionTrackingSearch;
+use app\models\PoTransmittalsPendingSearch;
+use yii\symfonymailer\MessageWrapperInterface;
+use app\models\WithholdingAndRemittanceSummarySearch;
+use Symfony\Component\Mailer\Exception\TransportException;
+use Symfony\Component\Mailer\Transport\Smtp\SmtpTransport;
 
 class ReportController extends \yii\web\Controller
 {
@@ -52,7 +50,6 @@ class ReportController extends \yii\web\Controller
             'access' => [
                 'class' => AccessControl::class,
                 'only' => [
-                    'index',
                     'pending-ors',
                     'unobligated-transaction',
                     'pending-dv',
@@ -5331,57 +5328,34 @@ class ReportController extends \yii\web\Controller
     }
     public function actionMail()
     {
+        // try {
+        //     Yii::$app->mailer->compose()
+        //         ->setFrom(['norman.notorious@gmail.com' => 'norman'])
+        //         ->setTo('normanbutalon@gmail.com')
+        //         ->setSubject('subject')
+        //         ->setTextBody('yes na send ra jud')
+        //         ->send();
 
-        // $filePath = Yii::getAlias('@app');
-        // return $filePath;
-        // $webrootPath = Yii::getAlias('@webroot');
-        // $filePath = str_replace($webrootPath, '', __FILE__);
-        // return $filePath;
-        // C:\xampp\htdocs\q\frontend\web\css
-        $appDir = Yii::getAlias('@app');
-        $folder_path = $appDir . '\views\books';
+        //     echo 'Email sent successfully!';
+        // } catch (ErrorException $e) {
+        //     echo 'Error sending email: ' . $e->getMessage();
+        // }
+        $host = 'localhost';
+        $username = 'root';
+        $password = '';
+        $dbname = 'afms';
 
-        // Get a list of all the files in the folder
-        // Get a list of all the files in the folder
-        $file_list = FileHelper::findFiles($folder_path);
+        // Define your SQL query
+        $query = "SELECT * FROM books";
 
-        // Create a zip file to store the files
-        $zip_file = tempnam(sys_get_temp_dir(), 'zip');
-        $zip = new \ZipArchive();
-        $zip->open($zip_file, \ZipArchive::CREATE);
-        // Loop through the list of files and add them to the zip archive
-        foreach ($file_list as $file) {
-            $zip->addFile($file, basename($file));
-        }
-        // Close the zip archive
-        $zip->close();
-        // Set the headers to force a download of the zip file
-        header('Content-Type: application/zip');
-        header("Content-disposition: attachment; filename=qwe.zip");
-        header('Content-Transfer-Encoding: binary');
-        header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-        header('Pragma: public'); // HTTP/1.0
-        // Read the contents of the zip file and output them to the browser
-        readfile($zip_file);
-        // Delete the zip file from the server
-        unlink($zip_file);
-        return var_dump(trim('SDS    '));
+        // Define the filename for the CSV file
+        $filename = 'data.csv';
 
-        $message = new Message();
-        $message->email = 'normanbutalon@gmail.com';
-        // qwe
-        // set the message sender and recipient
-        $message->setFrom('normanbutalon@gmailcom.com')
-            ->setTo('norman.notorious@gmail.com');
-
-        // set the message subject
-        $message->setSubject('Test message');
-
-        // set the text body
-        $message->setTextBody('This is a test message.');
-
-        // send the message
-        Yii::$app->mailer->send($message);
+        // Construct the command to execute
+        $command = "mysql -h $host -u $username -p $password -D $dbname -e \"$query\" | tr '\\t' ',' > $filename";
+        echo $command;
+        // Execute the command
+        exec($command);
     }
     public function actionUploadProperty()
     {
@@ -5821,6 +5795,41 @@ class ReportController extends \yii\web\Controller
             return json_encode($qry->all());
         }
         return $this->render('user_properties');
+    }
+    public function actionGeneratePar()
+    {
+        if (Yii::$app->request->post()) {
+            $office_id = MyHelper::post('office_id');
+            $qry  = Yii::$app->db->createCommand("SELECT 
+                office.office_name,
+                par.par_number,
+                IFNULL(property_articles.article_name,property.article) as article,
+                property.description,
+                property.property_number,
+                property.date,
+                property.acquisition_amount,
+                rcv_by.employee_name as rcv_by_nme,
+                rcv_by.position as rcv_by_pos,
+                isd_by.employee_name as isd_by_nme,
+                isd_by.position as isd_by_pos,
+                act_usr.employee_name as act_usr_nme,
+                act_usr.position as act_usr_pos,
+                unit_of_measure.unit_of_measure
+                FROM par
+                JOIN property ON par.fk_property_id = property.id
+                LEFT JOIN employee_search_view as rcv_by ON par.fk_received_by = rcv_by.employee_id
+                LEFT JOIN employee_search_view as isd_by ON par.fk_issued_by_id = isd_by.employee_id
+                LEFT JOIN employee_search_view as act_usr ON par.fk_actual_user  = act_usr.employee_id
+                LEFT JOIN property_articles ON property.fk_property_article_id = property_articles.id
+                LEFT JOIN office ON par.fk_office_id = office.id
+                LEFT JOIN unit_of_measure ON property.unit_of_measure_id = unit_of_measure.id
+                
+                WHERE office.id = :office_id")
+                ->bindValue(':office_id', $office_id)
+                ->queryAll();
+            return json_encode($qry);
+        }
+        return $this->render('generate_par');
     }
 }
 

@@ -1,7 +1,9 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
-use yii\grid\GridView;
+use kartik\grid\GridView;
+use yii\web\JqueryAsset;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\PropertyStatusrSearch */
@@ -12,26 +14,37 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="property-status-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Property Status', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Property Status', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel' => [
+            'type' => 'primary',
+            'heading' => 'Statuses'
+        ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'status',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id);
+                }
+            ],
         ],
     ]); ?>
 
 
 </div>
+<?php
+$this->registerJsfile('@web/frontend/web/js/globalFunctions.js', ['depends' => JqueryAsset::class]);
+?>
