@@ -28,11 +28,8 @@ return [
             },
         ],
         'request' => [
-            'csrfParam' => '_csrf-frontend',
-            // 'csrfCookie' => [
-            //     'httpOnly' => true,
-            //     'path' => 'site/login',
-            // ],
+            'csrfParam' => '_csrf',
+
 
             'csrfCookie' => [
                 'httpOnly' => true,
@@ -43,33 +40,7 @@ return [
                 'application/json' => JsonParser::class
             ]
         ],
-        // 'user' => [
-        //     'identityClass' => 'common\models\User',
-        //     'enableAutoLogin' => false,
-        //     'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
-        // ],
-        // 'session' => [
-        //     // this is the name of the session cookie used for login on the frontend
-        //     // 'name' => 'advanced-frontend',
-        //     'name' => 'PHPFRONTSESSID',
-        //     'savePath' => sys_get_temp_dir(),
-        // ],
-        'session' => [
-            'class' => 'yii\web\Session',
-            'httpOnly' => true,
-            'secure' => true
-            // 'setCookieParams' => [
-            //     'httpOnly' => true,
-            //     'secure' => true,
-            // ],
-
-        ],
-        'cookies' => [
-            'class' => 'yii\web\Cookie',
-            'httpOnly' => true,
-            'secure' => true,
-
-        ],
+ 
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => false,
@@ -118,18 +89,7 @@ return [
             'class' => 'frontend\components\MyComponent',
         ],
 
-        'mailer' => [
-            'class' => \yii\symfonymailer\Mailer::class,
-            'transport' => [
-                'scheme' => 'smtps',
-                'host' => 'smtp.gmail.com',
-                'username' => 'normanbutalon@gmail.com',
-                'password' => 'doT^2Lalvi]OS/\k1y0',
-                'port' => 587,
-            ],
-            'viewPath' => '@common/mail',
-            'useFileTransport' => false,
-        ],
+
     ],
     // 'as beforeRequest' => [
     //     'class' => 'frontend\components\CheckIfLogin',
