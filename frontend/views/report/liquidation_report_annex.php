@@ -182,7 +182,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         'adn': 'Rosie R. Vellesco',
         'ads': 'Maria Prescylin C. Lademora',
         'sdn': 'Ferdinand R. Inres',
-        'sds': 'Fritzie N. Usares',
+        'sds': 'Fritzie U. Bacor',
         'pdi': 'Venus A. Custodio',
         'ro': 'RO',
     }
@@ -203,14 +203,16 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 $('#dots5').hide()
                 $('#annex_table').show()
                 // console.log(province_data['adn'])
-                // $('#r_period').text(target_date)
+                $('#r_period').text($('#reporting_period').val())
             }
         })
     })
 
     function display(data) {
         $('#annex_table tbody').html('')
-
+        let grand_total_disbursed = 0
+        let grand_liquidated_amount = 0
+        let grand_balance = 0
         $.each(data, function(key, val) {
             const ada_number = val.ada_number
             const balance = parseFloat(val.balance)
@@ -245,6 +247,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 d = d % 30
                 over_year = thousands_separators(balance)
             }
+            grand_total_disbursed += total_disbursed
+            grand_liquidated_amount += liquidated_amount
+            grand_balance += balance
             let row = `<tr class='data_row'>
                     <td  >` + payee + `</td>
                     <td  >` + issuance_date + `</td>
@@ -262,6 +267,19 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             $('#annex_table tbody').append(row)
 
         })
+        let row = `<tr class='data_row'>
+                    <td  colspan='4' style='text-align:center;'>Total</td>
+                    
+                    <td class='amount' >` + thousands_separators(grand_total_disbursed) + `</td>
+                    <td class='amount' >` + thousands_separators(grand_liquidated_amount) + `</td>
+                    <td class='amount' >` + thousands_separators(grand_balance) + `</td>
+                    <td  ></td>
+                    <td></td>
+                    <td class='amount' ></td>
+                    <td class='amount' ></td>
+            
+                    </tr>`
+            $('#annex_table tbody').append(row)
     }
 
     function displaData(data) {
