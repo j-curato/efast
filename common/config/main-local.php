@@ -1,4 +1,9 @@
 <?php
+
+use yii\symfonymailer\Mailer;
+
+
+
 return [
     'components' => [
         'db' => [
@@ -22,13 +27,38 @@ return [
             'password' => 'password',
             'charset' => 'utf8',
         ],
-        'mailer' => [
-            'class' => 'yii\swiftmailer\Mailer',
-            'viewPath' => '@common/mail',
-            // send all mails to a file by default. You have to set
-            // 'useFileTransport' to false and configure a transport
-            // for the mailer to send real emails.
-            'useFileTransport' => true,
+        'afms_dev' => [
+            'class' => 'yii\db\Connection',
+            'dsn' => 'mysql:host=localhost;dbname=afms_dev',
+            'username' => 'root',
+            'password' => '',
+            'charset' => 'utf8',
         ],
+        'restore_db' => [
+            'class' => 'yii\db\Connection',
+            'dsn' => 'mysql:host=localhost;dbname=restore',
+            'username' => 'root',
+            'password' => '',
+            'charset' => 'utf8',
+        ],
+        'mailer' => [
+            'class' => Mailer::class,
+            'transport' => [
+                // 'class' => 'Swift_SmtpTransport',
+                'scheme' => 'smtps',
+                'host' => 'smtp.gmail.com',
+                'username' => 'norman.notorious@gmail.com',
+                'password' => 'nkifgkkrewukufhd',
+                'port' => 465,
+                // 'dsn' => 'native://default',
+                'encryption' => 'tls'
+            ],
+            'viewPath' => '@frontend/mail',
+            // send all mails to a file by default. You have to set
+            // 'useFileTransport' to false and configure transport
+            // for the mailer to send real emails.
+            'useFileTransport' => false,
+        ],
+
     ],
 ];
