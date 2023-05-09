@@ -3,6 +3,8 @@
 use app\models\Raouds;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
+use kartik\select2\Select2;
+use kartik\select2\Select2Asset;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
@@ -265,6 +267,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         margin-top:3rem;
                         margin-bottom:2rem;
                         font-size:10pt">
+                          
                             <select name="" id="assignatory_5" class="assignatory" style="width: 300px;padding:0;" onchange="setPosition(this,5)">
                                 <option value=""></option>
                             </select>
@@ -465,51 +468,9 @@ $this->params['breadcrumbs'][] = $this->title;
             </table>
         </div> -->
 
-        <script>
-            var assignatory = []
-            var positions = []
 
-            function setPosition(q, pos) {
-                $("#position_" + pos).text(q.value)
-            }
-            $(document).ready(function() {
-                // reference = ["GAY A. TIDALGO"]
-                // $('.assignatory').select2({
-                //     data: reference,
-                //     placeholder: "Select ",
-
-                // })
-                positions = ['Head', 'Budget', 'Division', 'Unit', 'Authorized Representative']
-                $('.position').select2({
-                    data: positions,
-                    placeholder: "Select Position",
-
-                })
-                $.getJSON(window.location.pathname + '/frontend/web/index.php?r=assignatory/get-all-assignatory')
-
-                    .then(function(data) {
-
-                        var array = []
-                        $.each(data, function(key, val) {
-                            array.push({
-                                id: val.position,
-                                text: val.name
-                            })
-                        })
-                        assignatory = array
-                        $('.assignatory').select2({
-                            data: assignatory,
-                            placeholder: "Select ",
-
-                        })
-
-                    })
-            })
-        </script>
     </div>
-    <?php
-    $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-    ?>
+
 
     <style>
         .square-icon {
@@ -676,7 +637,50 @@ $this->params['breadcrumbs'][] = $this->title;
     </style>
 
 </div>
+<?php
+$this->registerJsFile("@web/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+Select2Asset::register($this);
+?>
+<script>
+    var assignatory = []
+    var positions = []
 
+    function setPosition(q, pos) {
+        $("#position_" + pos).text(q.value)
+    }
+    $(document).ready(function() {
+        // reference = ["GAY A. TIDALGO"]
+        // $('.assignatory').select2({
+        //     data: reference,
+        //     placeholder: "Select ",
+
+        // })
+        positions = ['Head', 'Budget', 'Division', 'Unit', 'Authorized Representative']
+        $('.position').select2({
+            data: positions,
+            placeholder: "Select Position",
+
+        })
+        $.getJSON(window.location.pathname + '/frontend/web/index.php?r=assignatory/get-all-assignatory')
+            .then(function(data) {
+
+                var array = []
+                $.each(data, function(key, val) {
+                    array.push({
+                        id: val.position,
+                        text: val.name
+                    })
+                })
+                assignatory = array
+                $('.assignatory').select2({
+                    data: assignatory,
+                    placeholder: "Select ",
+
+                })
+
+            })
+    })
+</script>
 
 <?php
 SweetAlertAsset::register($this);
