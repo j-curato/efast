@@ -91,7 +91,8 @@ class ReportController extends \yii\web\Controller
                     'upload-property',
                     'rpcppe',
                     'ppelc',
-                    'user-properties'
+                    'user-properties',
+                    'rao'
                 ],
                 'rules' => [
                     [
@@ -124,8 +125,7 @@ class ReportController extends \yii\web\Controller
                             'po-transmittal-summary',
                             'pr-summary',
                             'roc-summary',
-
-
+                            'rao'
 
                         ],
                         'allow' => true,
@@ -334,16 +334,7 @@ class ReportController extends \yii\web\Controller
             'dataProvider' => $dataProvider,
         ]);
     }
-    public function actionRao()
-    {
-        // $searchModel = new RaoSearch();
-        // $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        // return $this->render('rao_index', [
-        //     'searchModel' => $searchModel,
-        //     'dataProvider' => $dataProvider,
-        // ]);
-    }
     // public function actionSaob()
     // {
     //     if ($_POST) {
@@ -5331,34 +5322,34 @@ class ReportController extends \yii\web\Controller
     }
     public function actionMail()
     {
-        // try {
-        //     Yii::$app->mailer->compose()
-        //         ->setFrom(['norman.notorious@gmail.com' => 'norman'])
-        //         ->setTo('normanbutalon@gmail.com')
-        //         ->setSubject('subject')
-        //         ->setTextBody('yes na send ra jud')
-        //         ->send();
+        try {
+            Yii::$app->mailer->compose()
+                ->setFrom(['norman.notorious@gmail.com' => 'norman'])
+                ->setTo('normanbutalon@gmail.com')
+                ->setSubject('subject')
+                ->setTextBody('yes na send ra jud')
+                ->send();
 
-        //     echo 'Email sent successfully!';
-        // } catch (ErrorException $e) {
-        //     echo 'Error sending email: ' . $e->getMessage();
-        // }
-        $host = 'localhost';
-        $username = 'root';
-        $password = '';
-        $dbname = 'afms';
+            echo 'Email sent successfully!';
+        } catch (ErrorException $e) {
+            echo 'Error sending email: ' . $e->getMessage();
+        }
+        // $host = 'localhost';
+        // $username = 'root';
+        // $password = '';
+        // $dbname = 'afms';
 
-        // Define your SQL query
-        $query = "SELECT * FROM books";
+        // // Define your SQL query
+        // $query = "SELECT * FROM books";
 
-        // Define the filename for the CSV file
-        $filename = 'data.csv';
+        // // Define the filename for the CSV file
+        // $filename = 'data.csv';
 
-        // Construct the command to execute
-        $command = "mysql -h $host -u $username -p $password -D $dbname -e \"$query\" | tr '\\t' ',' > $filename";
-        echo $command;
-        // Execute the command
-        exec($command);
+        // // Construct the command to execute
+        // $command = "mysql -h $host -u $username -p $password -D $dbname -e \"$query\" | tr '\\t' ',' > $filename";
+        // echo $command;
+        // // Execute the command
+        // exec($command);
     }
     public function actionUploadProperty()
     {
@@ -5652,17 +5643,6 @@ class ReportController extends \yii\web\Controller
         $res  = $qry->all();
         return $res;
     }
-    public function actionRpcppe()
-    {
-        if (Yii::$app->request->post()) {
-            $uacs = Yii::$app->request->post('uacs');
-            $emp_id = !empty(Yii::$app->request->post('emp_id')) ? Yii::$app->request->post('emp_id') : null;
-
-            $qry = $this->query($uacs, $emp_id);
-            return json_encode($qry);
-        }
-        return $this->render('rpcppe');
-    }
     public function actionPpelc()
     {
         if (Yii::$app->request->post()) {
@@ -5833,6 +5813,119 @@ class ReportController extends \yii\web\Controller
             return json_encode($qry);
         }
         return $this->render('generate_par');
+    }
+    public function actionRao()
+    {
+        if (Yii::$app->request->post()) {
+
+            $year = Yii::$app->request->post('year');
+
+
+            $qry  = Yii::$app->db->createCommand("CALL rao(:yr)")->bindValue(':yr', $year)->queryAll();
+
+
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+
+            // // header
+            $headers = [
+                "Budget Year",
+                "Office Name",
+                "Division",
+                "Allotment No.",
+                "MFO/PAP",
+                "Fund Source",
+                "Book",
+                "Object Code",
+                "Account Title",
+                "PR No.",
+                "PR Date",
+                "PR Purpose",
+                "Transaction Tracking No.",
+                "Transaction Date",
+                "Transaction Particular",
+                "Payee",
+                "ORS No.",
+                "Allotment Amount",
+                "PR Amount",
+                "Transaction Amount",
+                "ORS Amount",
+
+
+            ];
+            $cellVal = [
+                'budget_year',
+                'office_name',
+                'division',
+                'allotmentNumber',
+                'mfo_name',
+                'fund_source_name',
+                'book_name',
+                'uacs',
+                'account_title',
+                'pr_number',
+                'prDate',
+                'prPurpose',
+                'transaction_num',
+                'txnDate',
+                'txnParticular',
+                'txnPayee',
+                'orsNum',
+                'allotAmt',
+                'prAmt',
+                'txnAmt',
+                'orsAmt',
+
+            ];
+            foreach ($headers as $key => $head) {
+                $sheet->setCellValue([$key + 1, 2], $head);
+            }
+
+
+
+
+            $x = 7;
+            $styleArray = array(
+                'borders' => array(
+                    'allBorders' => array(
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                        'color' => array('argb' => 'FFFF0000'),
+                    ),
+                ),
+            );
+
+
+            $row = 3;
+            foreach ($qry as $itm) {
+                foreach ($cellVal as $col => $cell) {
+                    $sheet->setCellValue(
+                        [$col + 1, $row],
+                        $itm[$cell] ?? ''
+                    );
+                }
+                $row++;
+            }
+
+            date_default_timezone_set('Asia/Manila');
+            $date = date('Y-m-d h-s A');
+            $file_name = "property_database_$year.xlsx";
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+            $fileSaveLoc =  "exports\\" . $file_name;
+            $path = Yii::getAlias('@webroot') . '/exports';
+            $file = $path . "/$file_name";
+            $writer->save($file);
+            header('Content-Type: application/vnd.ms-excel');
+            header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
+            header('Content-Transfer-Encoding: binary');
+            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+            header('Pragma: public'); // HTTP/1.0
+            echo  json_encode($fileSaveLoc);
+            // unlink($fileSaveLoc)
+            // echo "<script>window.open('$fileDwnldLoc','_self')</script>";
+            exit();
+        }
+        return $this->render('rao');
     }
 }
 
