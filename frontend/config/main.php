@@ -40,7 +40,7 @@ return [
                 'application/json' => JsonParser::class
             ]
         ],
- 
+
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => false,

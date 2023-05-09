@@ -3,7 +3,7 @@ function query(csrfToken, book_id, reporting_period) {
     type: "POST",
     url: window.location.pathname + "?r=general-journal/generate",
     data: {
-      "_csrf-frontend": csrfToken,
+      _csrf: csrfToken,
       book_id: book_id,
       reporting_period: reporting_period,
     },
@@ -72,5 +72,5 @@ function displayData(data) {
                
                   </td>
                 </tr>`;
-                $("#data-table tbody").append(footer);
+  $("#data-table tbody").append(footer);
 }

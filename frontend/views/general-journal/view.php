@@ -333,7 +333,7 @@ $csrfToken = Yii::$app->request->csrfToken;
                 url: window.location.pathname + '?r=general-journal/export',
                 data: {
                     reporting_period: reporting_period,
-                    book_id: book_id
+                    book_id: book_id,
                 },
                 success: function(data) {
                     var res = JSON.parse(data)
