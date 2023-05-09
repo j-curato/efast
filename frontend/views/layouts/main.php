@@ -38,11 +38,13 @@ if (Yii::$app->user->isGuest) {
         <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
          <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
         <!-- <script src='<?php echo yii::$app->request->baseUrl ?>/js/maskMoney.js'></script>
-        <script src='<?php echo yii::$app->request->baseUrl ?>/js/select2.min.js'></script>
-        <link href="<?php echo yii::$app->request->baseUrl ?>/css/select2.min.css" rel="stylesheet" /> -->
+        <script src='<?php echo yii::$app->request->baseUrl ?>/js/select2.min.js'></script> -->
+        <!-- <link href="<?php echo yii::$app->request->baseUrl ?>/js/select2.min.js" /> -->
+        <!-- <link href="<?php echo yii::$app->request->baseUrl ?>/css/select2.min.css" rel="stylesheet" />
 
-
-        <!-- <script src='<?php echo yii::$app->request->baseUrl ?>/js/instascan.js'></script> -->
+        <link href='<?php echo yii::$app->request->baseUrl ?>/js/fullcalendar/main.css' rel='stylesheet' />
+        <script src='<?php echo yii::$app->request->baseUrl ?>/js/fullcalendar/main.js'></script>
+        <script src='<?php echo yii::$app->request->baseUrl ?>/js/instascan.js'></script> -->
 
         <?= Html::csrfMetaTags() ?>
         <title><?= Html::encode($this->title) ?></title>
