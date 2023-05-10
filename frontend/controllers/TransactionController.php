@@ -169,10 +169,16 @@ class TransactionController extends Controller
                 $sql = '';
                 if (!empty($item_ids)) {
                     $sql = 'AND ';
-                    $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $item_ids], $params);
+                    $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'transaction_pr_items.id', $item_ids], $params);
                 }
-                Yii::$app->db->createCommand("UPDATE transaction_pr_items SET is_deleted = 1 WHERE 
-                     transaction_pr_items.fk_transaction_id = :id  $sql", $params)
+                Yii::$app->db->createCommand("UPDATE   transaction_pr_items 
+                LEFT JOIN (SELECT * FROM process_ors_txn_items  WHERE  process_ors_txn_items.is_deleted = 0) as ors_txn ON transaction_pr_items.id = ors_txn.fk_transaction_item_id SET transaction_pr_items.is_deleted = 1 
+                    WHERE 
+                     transaction_pr_items.fk_transaction_id = :id 
+                     AND transaction_pr_items.is_deleted  = 0
+                     AND ors_txn.id IS NULL
+
+                      $sql", $params)
                     ->bindValue(':id', $id)
                     ->execute();
             }
@@ -455,7 +461,6 @@ class TransactionController extends Controller
      */
     public function actionUpdate($id)
     {
-
         $model = $this->findModel($id);
         $items = $this->getItems($model->id);
         if ((Yii::$app->request->isPost)) {
