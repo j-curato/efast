@@ -12,7 +12,6 @@ use Yii;
  * @property string $serial_number
  * @property int $budget_year
  * @property string $cse_type
- * @property int|null $fk_pr_stock_type_id
  * @property int $fk_office_id
  * @property int $fk_division_id
  * @property int $fk_division_program_unit_id
@@ -56,7 +55,7 @@ class SupplementalPpmp extends \yii\db\ActiveRecord
 
             ], 'required'],
             [[
-                'id', 'budget_year', 'fk_pr_stock_type_id', 'fk_office_id', 'fk_division_id', 'fk_division_program_unit_id', 'fk_prepared_by',
+                'id', 'budget_year', 'fk_office_id', 'fk_division_id', 'fk_division_program_unit_id', 'fk_prepared_by',
                 'fk_reviewed_by', 'fk_approved_by', 'fk_certified_funds_available_by',
                 'is_final', 'is_supplemental'
             ], 'integer'],
@@ -79,7 +78,6 @@ class SupplementalPpmp extends \yii\db\ActiveRecord
             'serial_number' => 'Serial Number',
             'budget_year' => 'Budget Year',
             'cse_type' => 'Cse Type',
-            'fk_pr_stock_type_id' => ' Pr Stock Type ',
             'fk_office_id' => ' Office ',
             'fk_division_id' => ' Division ',
             'fk_division_program_unit_id' => ' Division Program Unit ',
