@@ -202,7 +202,7 @@ $csrfToken = Yii::$app->request->csrfToken;
                     };
                 },
             },
-            placeholder:'Select Payee'
+            placeholder: 'Select Payee'
         });
     }
 
@@ -223,11 +223,11 @@ $csrfToken = Yii::$app->request->csrfToken;
     let aoq_items = ''
     let transaction_row = 1;
     $(document).ready(function() {
-        aoq_items =<?= json_encode($aoq_entries) ?>;
+        aoq_items = <?= json_encode($aoq_entries) ?>;
         payeeSelect()
         maskAmount()
 
-      
+
         transaction_row = <?= $row ?>;
 
 
@@ -328,7 +328,7 @@ $csrfToken = Yii::$app->request->csrfToken;
                 url: window.location.pathname + '?r=pr-aoq/get-rfq-info',
                 data: {
                     id: $(this).val(),
-                    "_csrf-frontend": "<?= $csrfToken ?>",
+                    "_csrf": "<?= $csrfToken ?>",
                 },
                 success: function(data) {
                     var res = JSON.parse(data)
