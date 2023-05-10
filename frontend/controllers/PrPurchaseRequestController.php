@@ -634,6 +634,7 @@ class PrPurchaseRequestController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $oldModel = $this->findModel($id);
 
         if ($model->is_final && !Yii::$app->user->can('super-user')) {
             return $this->goHome();
@@ -669,25 +670,20 @@ class PrPurchaseRequestController extends Controller
             $model->fk_office_id = $office_id;
             $model->fk_division_id = $division_id;
             $model->fk_division_program_unit_id = $division_program_unit_id;
-            $date_now = new DateTime();
+            // $date_now = new DateTime();
             // $model->date = $date_now->format('Y-m-d');
             $model->book_id = $book_id;
             $model->pr_project_procurement_id = '';
             $model->purpose = $purpose;
             $model->requested_by_id = $requested_by_id;
             $model->approved_by_id = $approved_by_id;
-            // $id_arr = explode('-', $ppmp_id);
-            // $cse_or_non_cse_id = $id_arr[0];
-            // $cse_type = $id_arr[1];
-            // if ($cse_type === 'cse') {
-            //     $model->fk_supplemental_ppmp_noncse_id = null;
-            //     $model->fk_supplemental_ppmp_cse_id  = $cse_or_non_cse_id;
-            // } else if ($cse_type === 'non_cse') {
 
-            //     $model->fk_supplemental_ppmp_noncse_id = $cse_or_non_cse_id;
-            //     $model->fk_supplemental_ppmp_cse_id  = null;
+            // if (
+            //     $oldModel->fk_office_id != $model->fk_office_id
+            //     || $oldModel->fk_division_id != $model->fk_division_id
+            // ) {
+            //     $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
             // }
-
 
             $transaction = Yii::$app->db->beginTransaction();
             $allotment_items_ttl = array_column($allotment_items, 'gross_amount');

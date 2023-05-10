@@ -80,7 +80,7 @@ class m230509_045813_create_rao_procedure extends Migration
             0 as orsAmt
             FROM transaction_items
             JOIN `transaction` ON transaction_items.fk_transaction_id = `transaction`.id
-            JOIN (SELECT process_ors.id ,process_ors.transaction_id FROM process_ors WHERE  process_ors.is_cancelled = 0) as ors ON `transaction`.id = ors.transaction_id
+            LEFT JOIN (SELECT process_ors.id ,process_ors.transaction_id FROM process_ors WHERE  process_ors.is_cancelled = 0) as ors ON `transaction`.id = ors.transaction_id
             WHERE
             transaction_items.is_deleted = 0
             ),

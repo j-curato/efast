@@ -26,15 +26,31 @@ class Books extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'type'], 'required'],
-            [['name', 'account_number', 'type'], 'string', 'max' => 255],
             [[
-                'id',
+                'name',
+                'type',
+                'account_name',
+                'fk_bank_id',
+                'funding_source_code',
+                'lapsing'
+            ], 'required'],
+            [[
                 'name',
                 'account_number',
                 'type',
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+                'account_name',
+                'lapsing',
+                'remarks'
+            ], 'string', 'max' => 255],
+            [[
+                'name',
+                'account_number',
+                'type',
+                'account_name',
+                'lapsing',
+                'remarks'
 
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
 
         ];
     }
@@ -48,7 +64,12 @@ class Books extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Name',
             'account_number' => 'Account Number',
-            'type' => 'Book Type',
+            'type' => 'Account Type',
+            'account_name' => 'Account Name',
+            'fk_bank_id' => 'Bank',
+            'funding_source_code' => 'Fund Source Code',
+            'lapsing' => 'Lapsing',
+            'remarks' => 'Remarks',
         ];
     }
     public function getJevPreparation()
