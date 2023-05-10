@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\components\helpers\MyHelper;
 use Yii;
 use app\models\PrRfq;
 use app\models\PrRfqItem;
@@ -96,24 +97,25 @@ class PrRfqController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    function insertItems($model_id, $pr_purchase_request_item_id)
+    private function insertItems($model_id, $items)
     {
 
-        foreach ($pr_purchase_request_item_id as $val) {
+        foreach ($items as $itm) {
+
             // CHECK IF THE PURCHASE REQUEST ID ALREADY EXISTS IN PR_RFQ_ITEM_TABLE WITH THE SAME RFQ_ID
             $check = Yii::$app->db->createCommand("SELECT EXISTS(SELECT 1 FROM pr_rfq_item WHERE pr_rfq_id = :rfq_id AND pr_purchase_request_item_id  = :pr_item_id)")
                 ->bindValue(':rfq_id', $model_id)
-                ->bindValue(':pr_item_id', $val)
+                ->bindValue(':pr_item_id', $itm['pr_id'])
                 ->queryScalar();
             if ($check != 1) {
-
                 $rfq_item = new PrRfqItem();
                 $rfq_item->pr_rfq_id = $model_id;
-                $rfq_item->pr_purchase_request_item_id = $val;
-                if ($rfq_item->save(false)) {
-                } else {
-                    var_dump($pr_purchase_request_item_id->error);
-                    return false;
+                $rfq_item->pr_purchase_request_item_id = $itm['pr_id'];
+                if (!$rfq_item->validate()) {
+                    return $rfq_item->errors;
+                }
+                if (!$rfq_item->save(false)) {
+                    return 'RFQ Item save failed';
                 }
             }
         }
@@ -123,83 +125,49 @@ class PrRfqController extends Controller
     public function actionCreate()
     {
 
-
         $model = new PrRfq();
-
         if ($model->load(Yii::$app->request->post())) {
-            $pr_purchase_request_item_id = [];
-            $province  = 'RO';
-            if (!empty($_POST['pr_purchase_request_item_id'])) {
-                $pr_purchase_request_item_id = $_POST['pr_purchase_request_item_id'];
-            }
-            $pr_items = [];
-            $transaction = Yii::$app->db->beginTransaction();
-            $pr_date  = Yii::$app->db->createCommand("SELECT `date`  FROM pr_purchase_request  WHERE id = :id")
-                ->bindValue(':id', $model->pr_purchase_request_id)
-                ->queryOne();
-            foreach ($pr_purchase_request_item_id as $val) {
-                $pr_items[] = ['id' => $val];
-            }
-            if (strtotime($model->_date) < strtotime($pr_date['date'])) {
-
-                return $this->render('create', [
-                    'model' => $model,
-                    'error' => 'RFQ Deadline Should not be less than PR Date',
-                    'pr_items' => $pr_items
-
-                ]);
-            } else   if (strtotime($model->deadline) < strtotime($pr_date['date'])) {
-
-                return $this->render('create', [
-                    'model' => $model,
-                    'error' => 'RFQ Date Should not be less than PR Date',
-                    'pr_items' => $pr_items
-
-                ]);
-            }
-
-
-            $rbac_id = Yii::$app->db->createCommand("SELECT id FROM 
-            bac_composition
-            WHERE
-            :_date  >= bac_composition.effectivity_date 
-            AND 
-            :_date<= bac_composition.expiration_date ")
-                ->bindValue(':_date', $model->_date)
-                ->queryOne();
-            if (empty($rbac_id)) {
-                return $this->render('create', [
-                    'model' => $model,
-                    'error' => 'No RBAC Composition For Selected Date',
-                    'pr_items' => $pr_items
-
-                ]);
-            }
-            $model->bac_composition_id = $rbac_id['id'];
-
-            $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            $model->province = $province;
-            $model->rfq_number = $this->getRfqNumber($model->_date);
-
+            $items = Yii::$app->request->post('items');
             try {
-                if ($flag = $model->save(false)) {
-
-                    $flag  = $this->insertItems($model->id, $pr_purchase_request_item_id);
-                } else {
-                    return var_dump($model->errors);
+                $transaction = Yii::$app->db->beginTransaction();
+                $province  = 'RO';
+                $pr_date  = Yii::$app->db->createCommand("SELECT `date`  FROM pr_purchase_request  WHERE id = :id")
+                    ->bindValue(':id', $model->pr_purchase_request_id)
+                    ->queryOne();
+                if (
+                    strtotime($model->_date) < strtotime($pr_date['date'])
+                    || strtotime($model->deadline) < strtotime($pr_date['date'])
+                ) {
+                    throw new ErrorException('RFQ and Deadline date should not be before the PR Date.');
                 }
-                if ($flag) {
-
-                    $transaction->commit();
-                    return $this->redirect(['view', 'id' => $model->id]);
-                } else {
-                    $transaction->rollBack();
-                    return "error";
+                if (strtotime($model->deadline) < strtotime($model->_date)) {
+                    throw new ErrorException('Deadline  must be greater than the RFQ date.');
                 }
+                $rbac_id = Yii::$app->db->createCommand("SELECT id FROM bac_composition WHERE :_date  >= bac_composition.effectivity_date AND :_date<= bac_composition.expiration_date ")
+                    ->bindValue(':_date', $model->_date)
+                    ->queryOne();
+                if (empty($rbac_id)) {
+                    throw new ErrorException('No RBAC for selected Date');
+                }
+                $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $model->bac_composition_id = $rbac_id['id'];
+                $model->province = $province;
+                $model->rfq_number = $this->getRfqNumber($model->_date);
+
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Save Failed');
+                }
+                if (!$ins = $this->insertItems($model->id, $items)) {
+                    throw new ErrorException($ins);
+                }
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
-
                 $transaction->rollBack();
-                return json_encode($e->getMessage());
+                return json_encode(['errors' => $e->getMessage()]);
             }
         }
 
@@ -218,96 +186,53 @@ class PrRfqController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $oldmodel = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post())) {
-            $transaction = Yii::$app->db->beginTransaction();
+            $items = Yii::$app->request->post('items');
 
-            $pr_purchase_request_item_id = [];
-            $rfq_items_id = !empty($_POST['rfq_items_id']) ? $_POST['rfq_items_id'] : [];
-            if (!empty($_POST['pr_purchase_request_item_id'])) {
-                $pr_purchase_request_item_id = $_POST['pr_purchase_request_item_id'];
-            }
-
-            $pr_date  = Yii::$app->db->createCommand("SELECT `date`  FROM pr_purchase_request  WHERE id = :id")
-                ->bindValue(':id', $model->pr_purchase_request_id)
-                ->queryOne();
-            foreach ($pr_purchase_request_item_id as $val) {
-                $pr_items[] = ['id' => $val];
-            }
-            if (strtotime($model->_date) < strtotime($pr_date['date'])) {
-
-                return $this->render('update', [
-                    'model' => $model,
-                    'error' => 'RFQ Deadline Should not be less than PR Date',
-
-                ]);
-            } else   if (strtotime($model->deadline) < strtotime($pr_date['date'])) {
-
-                return $this->render('update', [
-                    'model' => $model,
-                    'error' => 'RFQ Date Should not be less than PR Date',
-
-                ]);
-            }
-
-
-            $rbac_id = Yii::$app->db->createCommand("SELECT id FROM 
-            bac_composition
-            WHERE
-            :_date  >= bac_composition.effectivity_date 
-            AND 
-            :_date<= bac_composition.expiration_date ")
-                ->bindValue(':_date', $model->_date)
-                ->queryOne();
-            if (empty($rbac_id)) {
-                return $this->render('update', [
-                    'model' => $model,
-                    'error' => 'No RBAC Composition For Selected Date',
-                ]);
-            }
-            // return json_encode(is_array($pr_purchase_request_item_id));
-            $params = [];
-            $and = '';
-            if (count($pr_purchase_request_item_id) > 1) {
-                $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'pr_rfq_item.pr_purchase_request_item_id', $pr_purchase_request_item_id], $params);
-                $and = 'AND';
-            } else if (count($pr_purchase_request_item_id) === 1) {
-                $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['!=', 'pr_rfq_item.pr_purchase_request_item_id', $pr_purchase_request_item_id[0]], $params);
-                $and = 'AND';
-            } else {
-                $sql = '';
-            }
-            $q = Yii::$app->db->createCommand("DELETE pr_rfq_item FROM pr_rfq_item 
-            LEFT JOIN pr_aoq_entries  ON pr_rfq_item.id = pr_aoq_entries.pr_rfq_item_id
-            WHERE pr_rfq_item.pr_rfq_id = :id AND pr_aoq_entries.id IS NULL $and $sql", $params)
-                ->bindValue(':id', $model->id)
-                ->execute();;
-
-            // $q =  \Yii::$app
-            //     ->db
-            //     ->createCommand()
-            //     ->delete('pr_rfq_item', ['pr_rfq_id' => $model->id, 'pr_purchase_r  NOT IN' => $pr_purchase_request_item_id], $params);
-            // return json_encode($sql);
-            // return json_encode($q->getRawSql());
             try {
-                if ($flag = $model->save(false)) {
+                $transaction = Yii::$app->db->beginTransaction();
+                $province  = 'RO';
+                $pr_date  = Yii::$app->db->createCommand("SELECT `date`  FROM pr_purchase_request  WHERE id = :id")
+                    ->bindValue(':id', $model->pr_purchase_request_id)
+                    ->queryOne();
 
-                    $flag  = $this->insertItems($model->id, $pr_purchase_request_item_id);
-                } else {
-                    return var_dump($model->errors);
+                if (
+                    strtotime($model->_date) < strtotime($pr_date['date'])
+                    || strtotime($model->deadline) < strtotime($pr_date['date'])
+                ) {
+                    throw new ErrorException('RFQ and Deadline date should not be before the PR Date.');
                 }
-                if ($flag) {
 
-                    $transaction->commit();
-                    return $this->redirect(['view', 'id' => $model->id]);
-                } else {
-                    $transaction->rollBack();
-                    return "error";
+                $rbac_id = Yii::$app->db->createCommand("SELECT id FROM bac_composition WHERE :_date  >= bac_composition.effectivity_date AND :_date<= bac_composition.expiration_date ")
+                    ->bindValue(':_date', $model->_date)
+                    ->queryOne();
+                if (empty($rbac_id)) {
+                    throw new ErrorException('No RBAC for selected Date');
                 }
+                if (!$oldmodel->_date != $model->_date) {
+                    $model->rfq_number = $this->getRfqNumber($model->_date);
+                }
+                $model->bac_composition_id = $rbac_id['id'];
+                $model->province = $province;
+
+
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Save Failed');
+                }
+                if (!$ins = $this->insertItems($model->id, $items)) {
+                    throw new ErrorException($ins);
+                }
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
 
                 $transaction->rollBack();
-                return json_encode($e->getMessage());
+                return json_encode(['errors' => $e->getMessage()]);
             }
         }
         return $this->render('update', [
@@ -344,7 +269,7 @@ class PrRfqController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function getRfqNumber($date)
+    private function getRfqNumber($date)
     {
         // RO-2022-01-29-001 
         // $date = '2022-01-05';
@@ -383,10 +308,5 @@ class PrRfqController extends Controller
         }
 
         return $out;
-    }
-    public function actionBlankView()
-    {
-
-        return $this->render('blank_view');
     }
 }

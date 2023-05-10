@@ -218,7 +218,7 @@ class EmployeeController extends Controller
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
-        } elseif ($id > 0) {
+        } elseif (!empty($id)) {
             // return $id;
             $emp = EmployeeSearchView::find()->where('employee_id = :id', ['id' => $id])->one();
             $out['results'] = ['id' => $id, 'text' => $emp->employee_name, 'position' => $emp->position];

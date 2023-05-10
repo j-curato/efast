@@ -1,10 +1,12 @@
 <?php
 
 use aryelds\sweetalert\SweetAlert;
+use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\web\JqueryAsset;
 use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 
@@ -58,10 +60,19 @@ if (!empty($model->pr_purchase_request_id)) {
 
     <div class="panel panel-primary">
 
+        <ul>
+            <li>Note</li>
+            <li>The RFQ number is updated every time the date changes.</li>
+        </ul>
+
 
         <div class="panel-body">
 
-            <?php $form = ActiveForm::begin(); ?>
+            <?php $form = ActiveForm::begin(
+                [
+                    'id' => $model->formName()
+                ]
+            ); ?>
 
             <div class="row">
 
@@ -239,14 +250,53 @@ if (!empty($model->pr_purchase_request_id)) {
     .pr_data_header {
         font-weight: bold;
     }
+
+    li {
+        color: red;
+    }
 </style>
+<?php
+$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
+?>
 <script>
     var csrfToken = $('meta[name="csrf-token"]').attr("content");
-    $('#w0').on('submit', function(e) {
-        console.log($('#w0').serialize())
-    })
 
-    function prItems() {
+    function displayPrItems(data) {
+        $.each(data, (key, val) => {
+            var myStr = val.specification
+            var row = `<tr>
+                            <td>
+                                <input type='checkbox' class='form-check-input' value='${val.item_id}' name='items[${key}][pr_id]' >
+                            </td>
+                            <td>
+                                ${val.bac_code}
+                            </td>
+                            <td>
+                                ${val.stock_title}
+                            </td>
+                            <td>
+                                ${val.unit_of_measure}
+                            </td>
+                            <td>
+                                ${val.specification}
+                            </td>
+                            <td>
+                                ${thousands_separators(val.unit_cost)}
+                            </td> 
+                            <td>
+                                ${val.quantity}
+                            </td>
+                            <td>
+                                ${thousands_separators(val.total_cost)}
+                            </td>
+                        </tr>`
+            $('#data-table tbody').append(row)
+
+        })
+
+    }
+
+    function getPrItems() {
         $.ajax({
             type: 'POST',
             url: window.location.pathname + '?r=pr-purchase-request/get-items',
@@ -257,7 +307,6 @@ if (!empty($model->pr_purchase_request_id)) {
             success: function(data) {
                 $('#data-table tbody').html('')
                 var res = JSON.parse(data)
-                console.log(res.pr_data)
                 $('#date_propose').text(res.pr_data['date_propose'])
                 $('#pr_number').text(res.pr_data['pr_number'])
                 $('#book').text(res.pr_data['book_name'])
@@ -269,43 +318,7 @@ if (!empty($model->pr_purchase_request_id)) {
                 $('#prepared_by').text(res.pr_data['prepared_by'])
                 $('#requested_by').text(res.pr_data['requested_by'])
                 $('#approved_by').text(res.pr_data['approved_by'])
-
-
-                for (var i = 0; i < res.pr_items_data.length; i++) {
-                    var myStr = res.pr_items_data[i]['specification']
-                    var row = `
-                        <tr>
-                            <td>
-                                <input type='checkbox' class='form-check-input' value='${res.pr_items_data[i]['item_id']}' name='pr_purchase_request_item_id[]' data-value = '${res.pr_items_data[i]['pr_item_id']}'>
-                            </td>
-                            <td>
-                                ${res.pr_items_data[i]['bac_code']}
-                            </td>
-                            <td>
-                                ${res.pr_items_data[i]['stock_title']}
-                            </td>
-                            <td>
-                                ${res.pr_items_data[i]['unit_of_measure']}
-                            </td>
-                            <td>
-                                ${res.pr_items_data[i]['specification']}
-                            </td>
-                            <td>
-                                ${res.pr_items_data[i]['unit_cost']}
-                            </td> 
-                            <td>
-                                ${res.pr_items_data[i]['quantity']}
-                            </td>
-                            <td>
-                                ${res.pr_items_data[i]['total_cost']}
-                            </td>
-                        </tr>
-                        
-                        `
-                    $('#data-table tbody').append(row)
-
-                }
-
+                displayPrItems(res.pr_items_data)
 
 
                 var itms = <?php echo $items ?>;
@@ -332,38 +345,49 @@ if (!empty($model->pr_purchase_request_id)) {
 
     }
     $(document).ready(function(e) {
-
-
+        getPrItems()
         $('#prrfq-pr_purchase_request_id').on('change', function(e) {
             e.preventDefault()
-
-            prItems()
-
-
+            getPrItems()
         })
-        // 
 
-        // if ($("#prrfq-pr_purchase_request_id").val() != '') {
-        //     console.log($("#prrfq-pr_purchase_request_id").val())
-        //     prItems()
-        // }
     })
 </script>
-
 <?php
-$script = <<<JS
-    
-    $(document).ready(function(e) {
-        if ($("#prrfq-pr_purchase_request_id").val() != '') {
-           
-            var pr_items = $items
-            var item_id = ''
-            if ( prItems()){
-                var rowCount = $('#data-table tr').length
-            }
-
+SweetAlertAsset::register($this);
+$js = <<<JS
+$(document)
+$('#PrRfq').on('beforeSubmit', function(e) {
+    var \$form = $(this);
+    // if (\$form.yiiActiveForm('validate')) {
+    //     console.log('true')
+    //     return true;
+    // } else {
+    //     console.log('false')
+    //     return false;
+    // }
+    $.ajax({
+        url: \$form.attr("action"),
+        type: \$form.attr("method"),
+        data: \$form.serialize(),
+        success: function (data) {
+            let res = JSON.parse(data)
+            swal({
+                icon: 'error',
+                title: res.error,
+                type: "error",
+                timer: 3000,
+                closeOnConfirm: false,
+                closeOnCancel: false
+            })
+        },
+        error: function (data) {
+     
         }
-    })
+    });
+    return false;
+});
 JS;
-$this->registerJs($script)
+
+$this->registerJs($js);
 ?>

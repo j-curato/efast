@@ -12,6 +12,16 @@ $this->title = $model->rfq_number;
 $this->params['breadcrumbs'][] = ['label' => 'Pr Rfqs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+$rbac = Yii::$app->db->createCommand("SELECT 
+employee_search_view.employee_name,
+CONCAT(bac_position.position,'_', employee_search_view.employee_name) as pos
+ FROM bac_composition
+LEFT JOIN bac_composition_member ON bac_composition.id = bac_composition_member.bac_composition_id
+LEFT JOIN bac_position ON bac_composition_member.bac_position_id = bac_position.id
+LEFT JOIN employee_search_view ON bac_composition_member.employee_id = employee_search_view.employee_id
+WHERE bac_composition.id = :id")
+    ->bindValue(':id', $model->bac_composition_id)
+    ->queryAll();
 ?>
 <div class="pr-rfq-view">
 
@@ -120,14 +130,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan="6" class=" bdr-none">
                         <br>
                         <span>
-
                             &emsp;&emsp; Please quote your lowest price on the item/s listed below, subject to the General Conditions
                         </span>
                         <br>
                         stated herein. Submit your quotation duly signed by you or your representative not later than 3:00 PM on
                         <br>
                         <span style="text-align: left;">
-
                             <?= DateTime::createFromFormat('Y-m-d', $model->deadline)->format('F d, Y') ?> in a sealed envelope. Late submission will not be accepted.
                         </span>
                     </td>
@@ -139,17 +147,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <?php
 
-                        $bac = Yii::$app->db->createCommand("SELECT 
-                        UPPER(employee_name)  as employee_name
-                        FROM 
-                        bac_composition_member 
-                        LEFT JOIN bac_position ON bac_composition_member.bac_position_id  = bac_position.id
-                        LEFT JOIN employee_search_view ON bac_composition_member.employee_id = employee_search_view.employee_id
-                        WHERE
-                        bac_composition_member.bac_composition_id = :bac_composition_id
-                        AND bac_position.position = 'chairperson'
-                         ")->bindValue(':bac_composition_id', $model->bac_composition_id)
-                            ->queryOne();
+                        // $bac = Yii::$app->db->createCommand("SELECT 
+                        // UPPER(employee_name)  as employee_name
+                        // FROM 
+                        // bac_composition_member 
+                        // LEFT JOIN bac_position ON bac_composition_member.bac_position_id  = bac_position.id
+                        // LEFT JOIN employee_search_view ON bac_composition_member.employee_id = employee_search_view.employee_id
+                        // WHERE
+                        // bac_composition_member.bac_composition_id = :bac_composition_id
+                        // AND bac_position.position = 'chairperson'
+                        //  ")->bindValue(':bac_composition_id', $model->bac_composition_id)
+                        //     ->queryOne();
 
                         ?>
 
@@ -157,19 +165,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <br>
                         <br>
                         <span style="text-decoration: underline;">
-                            <?php
-                            $rbac = Yii::$app->db->createCommand("SELECT 
-                            employee_search_view.employee_name,
-                            CONCAT(bac_position.position,'_', employee_search_view.employee_name) as pos
-                             FROM bac_composition
-                            LEFT JOIN bac_composition_member ON bac_composition.id = bac_composition_member.bac_composition_id
-                            LEFT JOIN bac_position ON bac_composition_member.bac_position_id = bac_position.id
-                            LEFT JOIN employee_search_view ON bac_composition_member.employee_id = employee_search_view.employee_id
-                            WHERE bac_composition.id = :id")
-                                ->bindValue(':id', $model->bac_composition_id)
-                                ->queryAll();
-
-                            echo Select2::widget([
+                            <?= Select2::widget([
                                 'data' => ArrayHelper::map($rbac, 'pos', 'employee_name'),
                                 'name' => 'rbac',
                                 'id' => 'rbac',

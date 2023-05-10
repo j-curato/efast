@@ -5,6 +5,7 @@ use app\models\JevReportingPeriod;
 use app\models\SubAccounts1;
 use app\models\SubAccounts2;
 use aryelds\sweetalert\SweetAlertAsset;
+use kartik\select2\Select2Asset;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\helpers\Html;
@@ -18,6 +19,7 @@ $this->title = $model->jev_number;
 $this->params['breadcrumbs'][] = ['label' => 'Jev Preparations', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+Select2Asset::register($this);
 ?>
 <div class="jev-preparation-view" style="box-shadow: none;border:none">
 
@@ -535,11 +537,12 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
             $.ajax({
                 url: window.location.pathname + "?r=employee/search-employee",
                 data: {
-                    q: id
+                    id: id
                 },
                 success: function(data) {
-                    position = data.results[0].position
-                    this_pos.text(data.results[0].position)
+                    position = data.results.position
+                    console.log(position)
+                    this_pos.text(position)
                 }
             })
 

@@ -819,26 +819,7 @@ class PrPurchaseRequestController extends Controller
     public function actionGetItems()
     {
 
-        if ($_POST) {
-
-            // $pr_items_data = Yii::$app->db->createCommand("SELECT 
-            //     pr_purchase_request_item.id as pr_item_id,
-            //     pr_stock.bac_code,
-            // pr_stock.stock_title,
-            // unit_of_measure.unit_of_measure,
-            // IFNULL(REPLACE( pr_purchase_request_item.specification, '[n]', '<br>'),'') as specification,
-            // pr_purchase_request_item.unit_cost,
-            // pr_purchase_request_item.quantity,
-            // pr_purchase_request_item.unit_cost * pr_purchase_request_item.quantity as total_cost
-            // FROM pr_purchase_request_item 
-            // LEFT JOIN pr_stock  ON pr_purchase_request_item.pr_stock_id = pr_stock.id
-            // LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
-            // WHERE pr_purchase_request_item.pr_purchase_request_id =:id
-            // AND pr_purchase_request_item.is_deleted = 0
-            // ")
-            //     ->bindValue(':id', $_POST['id'])
-            //     ->queryAll();
-
+        if (Yii::$app->request->post()) {
             $pr_items_data = $this->getPrItems($_POST['id']);
             $pr_data = Yii::$app->db->createCommand("SELECT 
                     pr_purchase_request.pr_number,
