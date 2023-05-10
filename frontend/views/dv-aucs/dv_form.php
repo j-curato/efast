@@ -267,7 +267,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         margin-top:3rem;
                         margin-bottom:2rem;
                         font-size:10pt">
-                          
+
                             <select name="" id="assignatory_5" class="assignatory" style="width: 300px;padding:0;" onchange="setPosition(this,5)">
                                 <option value=""></option>
                             </select>
