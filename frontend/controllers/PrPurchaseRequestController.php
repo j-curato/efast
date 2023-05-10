@@ -670,7 +670,7 @@ class PrPurchaseRequestController extends Controller
             $model->fk_division_id = $division_id;
             $model->fk_division_program_unit_id = $division_program_unit_id;
             $date_now = new DateTime();
-            $model->date = $date_now->format('Y-m-d');
+            // $model->date = $date_now->format('Y-m-d');
             $model->book_id = $book_id;
             $model->pr_project_procurement_id = '';
             $model->purpose = $purpose;
