@@ -600,8 +600,8 @@ $this->registerJsFile("@web/js/validate.min.js", ['depends' => [\yii\web\JqueryA
             const row = `<tr>
                 <td style='display:none'><input type='hidden' name='prItems[${prItemRow}][prAllotmentId]' value='${val.prAllotmentId}'></td>
                 <td>${val.pr_number}</td>
-                <td>${val.purpose}</td>
                 <td>${val.allotment_number}</td>
+                <td>${val.purpose}</td>
                 <td>${val.mfo_name}</td>
                 <td>${val.fund_source_name}</td>
                 <td>${amount}</td>
