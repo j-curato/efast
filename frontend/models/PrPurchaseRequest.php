@@ -33,7 +33,7 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['date', 'created_at'], 'safe'],
+            [['date', 'created_at', 'cancelled_at'], 'safe'],
             [[
                 'book_id',
 
@@ -45,7 +45,8 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
                 'budget_year',
                 'fk_office_id',
                 'fk_division_id',
-                'fk_division_program_unit_id', 'is_fixed_expense'
+                'fk_division_program_unit_id', 'is_fixed_expense',
+                'is_cancelled'
             ], 'integer'],
             [['purpose'], 'string'],
             [['pr_number'], 'string', 'max' => 255],
@@ -61,20 +62,10 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
                 'fk_office_id',
                 'fk_division_id',
 
+
             ], 'required'],
             [[
-                'id',
-                'pr_number',
-                'date',
-                'book_id',
-
                 'purpose',
-                'requested_by_id',
-                'approved_by_id',
-                'created_at',
-                'is_final',
-                'is_cloud',
-
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
 
         ];
@@ -103,6 +94,8 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
             'fk_division_id' => 'Division',
             'fk_division_program_unit_id' => 'Division/Program/Unit',
             'is_fixed_expense' => 'Fixed Expense',
+            'cancelled_at' => 'Cancelled At',
+            'is_cancelled' => 'is Cancelled',
         ];
     }
     public function getRequestedBy()

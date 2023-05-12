@@ -42,6 +42,34 @@ $this->params['breadcrumbs'][] = $this->title;
             'deleteOptions' => ['hidden' => true]
         ];
     }
+    $cols =
+        [
+            'pr_number',
+            'office_name',
+            'division',
+            'division_program_unit',
+            'requested_by',
+            'approved_by',
+            'book_name',
+            'purpose',
+            'date',
+            [
+                'label' => 'Total Cost',
+                'attribute' => 'ttlCost',
+                'format' => ['decimal', 2]
+            ],
+            [
+                'attribute' => 'is_cancelled',
+                'visible' =>  Yii::$app->user->can('super-user') ? true : false
+            ],
+            [
+                'label' => 'Action',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id);
+                }
+            ]
+        ];
     ?>
 
     <?= GridView::widget([
@@ -52,30 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'heading' => 'Purchase Requests'
         ],
         'pjax' => true,
-        'columns' => [
-            'pr_number',
-            'office_name',
-            'division',
-            'division_program_unit',
-            'requested_by',
-            'approved_by',
-            'book_name',
-            'purpose',
-            'date',
-
-            [
-                'label' => 'Total Cost',
-                'attribute' => 'ttlCost',
-                'format' => ['decimal', 2]
-            ],
-            [
-                'label' => 'Action',
-                'format' => 'raw',
-                'value' => function ($model) {
-                    return MyHelper::gridDefaultAction($model->id);
-                }
-            ]
-        ],
+        'columns' => $cols,
     ]); ?>
 
 

@@ -9,6 +9,7 @@ use app\models\PrPurchaseOrderItem;
 use app\models\PrPurchaseOrderItemsAoqItems;
 use app\models\PrPurchaseOrderSearch;
 use DateTime;
+use ErrorException;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -39,6 +40,7 @@ class PrPurchaseOrderController extends Controller
                     'search-purchase-order',
                     'search-purchase-order-for-rfi',
                     'po-details',
+                    'cancel',
                 ],
                 'rules' => [
                     [
@@ -52,6 +54,7 @@ class PrPurchaseOrderController extends Controller
                             'search-purchase-order',
                             'search-purchase-order-for-rfi',
                             'po-details',
+                            'cancel',
                         ],
                         'allow' => true,
                         'roles' => ['@']
@@ -512,6 +515,22 @@ class PrPurchaseOrderController extends Controller
                 ->bindValue(':id', $id)
                 ->queryOne();
             return json_encode($query);
+        }
+    }
+    public function actionCancel($id)
+    {
+        if (Yii::$app->request->post()) {
+            try {
+                $model = $this->findModel($id);
+                $model->is_cancelled =  $model->is_cancelled ? 0 : 1;
+                $model->cancelled_at = date('Y-m-d H:i:s');
+                if (!$model->save(false)) {
+                    throw new ErrorException('Save Failed');
+                }
+                return json_encode(['error' => false, 'message' => 'Successfuly Save']);
+            } catch (ErrorException $e) {
+                return json_encode(['error' => true, 'message' => $e->getMessage()]);
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use aryelds\sweetalert\SweetAlertAsset;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -12,6 +13,7 @@ $this->title = $model->rfq_number;
 $this->params['breadcrumbs'][] = ['label' => 'Pr Rfqs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+SweetAlertAsset::register($this);
 $rbac = Yii::$app->db->createCommand("SELECT 
 employee_search_view.employee_name,
 CONCAT(bac_position.position,'_', employee_search_view.employee_name) as pos
@@ -33,9 +35,16 @@ WHERE bac_composition.id = :id")
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <?php
+            if (Yii::$app->user->can('super-user')) {
+                $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
+                $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
+                echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
+                    'class' => $btn_color,
+                    'id' => 'cancel'
 
-            $link = yii::$app->request->baseUrl . "/index.php?r=pr-purchase-request/view&id={$model->pr_purchase_request_id}";
-            echo   Html::a('Purchase Request Link ', $link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px'])
+                ]);
+            }
+            echo   Html::a('Purchase Request Link ', ['pr-purchase-request/view', 'id' => $model->pr_purchase_request_id], ['class' => 'btn btn-warning ', 'style' => 'margin:3px'])
             ?>
         </p>
         <table>
@@ -337,28 +346,26 @@ WHERE bac_composition.id = :id")
 
         <?php
 
-        $rfqs = Yii::$app->db->createCommand("SELECT id, aoq_number  FROM pr_aoq WHERE pr_rfq_id = :id")
-            ->bindValue(':id', $model->id)
-            ->queryAll();
-
         if (Yii::$app->user->can('super-user')) {
-
+            $aoqs = Yii::$app->db->createCommand("SELECT id, aoq_number,pr_aoq.is_cancelled  FROM pr_aoq WHERE pr_rfq_id = :id")
+                ->bindValue(':id', $model->id)
+                ->queryAll();
         ?>
             <table id="link_table" class="table table-striped" style="margin-top:3rem">
 
                 <tbody>
                     <tr class="danger">
-                        <th colspan="2" style="text-align: center;border:none">AOQ LINKS</th>
+                        <th colspan="3" style="text-align: center;border:none">AOQ LINKS</th>
                     </tr>
 
                     <?php
 
-                    foreach ($rfqs as $val) {
-                        $link = yii::$app->request->baseUrl . "/index.php?r=pr-aoq/view&id={$val['id']}";
-
+                    foreach ($aoqs as $val) {
+                        $isCancelled = $val['is_cancelled'] ? 'Cancelled' : '';
                         echo "<tr>
                             <td style='border:none;'>{$val['aoq_number']}</td>
-                            <td style='border:none;'>" . Html::a('AOQ Link ', $link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px']) . "</td>
+                            <td style='border:none;'>" . Html::a('AOQ Link ', ['pr-aoq/view', 'id' => $val['id']], ['class' => 'btn btn-warning ', 'style' => 'margin:3px']) . "</td>
+                            <td style='border:none;'>$isCancelled</td>
                             </tr>";
                     }
                     ?>
@@ -494,5 +501,57 @@ WHERE bac_composition.id = :id")
             const nameCapitalized = name.charAt(0).toUpperCase() + name.slice(1)
             $('#rbac_position').text(nameCapitalized)
         })
+        $("#cancel").click((e) => {
+            e.preventDefault();
+            let ths = $(e.target)
+            let link = ths.attr('href');
+            swal({
+                title: "Are you sure you want to " + ths.text() + " this RFQ?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: '#DD6B55',
+                confirmButtonText: 'Confirm',
+                cancelButtonText: "Cancel",
+                closeOnConfirm: false,
+                closeOnCancel: true,
+                width: "500px",
+                height: "500px",
+            }, function(isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        url: link,
+                        method: 'POST',
+                        data: {
+                            _csrf: "<?= Yii::$app->request->getCsrfToken() ?>"
+                        },
+                        success: function(response) {
+                            const res = JSON.parse(response)
+                            if (!res.error) {
+                                swal({
+                                    title: 'Success',
+                                    type: 'success',
+                                    button: false,
+                                    timer: 3000,
+                                }, function() {
+                                    location.reload(true)
+                                })
+                            } else {
+                                swal({
+                                    title: 'Error',
+                                    type: 'error',
+                                    text: res.message,
+                                    button: false,
+                                    timer: 5000,
+                                })
+                            }
+                        },
+                        error: function(error) {
+                            console.error('Cancel failed:', error);
+                        }
+                    });
+                }
+            })
+
+        });
     })
 </script>

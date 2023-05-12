@@ -1,5 +1,6 @@
 <?php
 
+use aryelds\sweetalert\SweetAlertAsset;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -10,7 +11,7 @@ $this->title = $model->pr_number;
 $this->params['breadcrumbs'][] = ['label' => 'Pr Purchase Requests', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
-
+SweetAlertAsset::register($this);
 
 
 ?>
@@ -30,26 +31,21 @@ $this->params['breadcrumbs'][] = $this->title;
                     echo     Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
                 }
             }
-
             ?>
             <button type="button" class="print btn btn-warning">Print</button>
             <?php
 
             if (Yii::$app->user->can('super-user')) {
-
-
-                $btn_color = 'btn btn-danger';
-                if ($model->is_final) {
-                    $btn_color = 'btn btn-success';
-                }
                 echo     Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) . ' ';
-                echo  Html::a('Final', ['final', 'id' => $model->id], [
-                    'class' => $btn_color,
-                    'data' => [
-                        'confirm' => 'Are you sure you want to Final this item?',
-                        'method' => 'post',
-                    ],
-                ]);
+                $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
+                $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
+                if (!$model->is_cancelled) {
+                    echo Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
+                        'class' => $btn_color,
+                        'id' => 'cancel'
+
+                    ]);
+                }
             }
             ?>
         </p>
@@ -329,29 +325,26 @@ $this->params['breadcrumbs'][] = $this->title;
             ?>
         </table>
         <?php
-
-        $rfqs = Yii::$app->db->createCommand("SELECT id, rfq_number FROM pr_rfq WHERE pr_purchase_request_id = :id")
-            ->bindValue(':id', $model->id)
-            ->queryAll();
-
         if (Yii::$app->user->can('super-user')) {
-
+            $rfqs = Yii::$app->db->createCommand("SELECT id, rfq_number,pr_rfq.is_cancelled FROM pr_rfq WHERE pr_purchase_request_id = :id")
+                ->bindValue(':id', $model->id)
+                ->queryAll();
         ?>
             <table id="link_table" class="table table-striped" style="margin-top:3rem">
 
                 <tbody>
                     <tr class="danger">
-                        <th colspan="2" style="text-align: center;">RFQ LINKS</th>
+                        <th colspan="3" style="text-align: center;">RFQ LINKS</th>
                     </tr>
 
                     <?php
 
                     foreach ($rfqs as $val) {
-                        $link = yii::$app->request->baseUrl . "/index.php?r=pr-rfq/view&id={$val['id']}";
-
+                        $isCancelled = $val['is_cancelled'] == 1 ? 'Cancelled' : '';
                         echo "<tr>
                     <td>{$val['rfq_number']}</td>
-                    <td>" . Html::a('RFQ Link ', $link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px']) . "</td>
+                    <td>" . Html::a('RFQ Link ', ['pr-rfq/view', 'id' => $val['id']], ['class' => 'btn btn-warning ', 'style' => 'margin:3px']) . "</td>
+                    <td>$isCancelled</td>
                     </tr>";
                     }
                     ?>
@@ -448,5 +441,57 @@ $this->params['breadcrumbs'][] = $this->title;
         $('.print').click(function() {
             window.print()
         })
+        $("#cancel").click((e) => {
+            e.preventDefault();
+            let ths = $(e.target)
+            let link = ths.attr('href');
+            swal({
+                title: "Are you sure you want to " + ths.text() + " this PR?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: '#DD6B55',
+                confirmButtonText: 'Confirm',
+                cancelButtonText: "Cancel",
+                closeOnConfirm: false,
+                closeOnCancel: true,
+                width: "500px",
+                height: "500px",
+            }, function(isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        url: link,
+                        method: 'POST',
+                        data: {
+                            _csrf: "<?= Yii::$app->request->getCsrfToken() ?>"
+                        },
+                        success: function(response) {
+                            const res = JSON.parse(response)
+                            if (!res.error) {
+                                swal({
+                                    title: 'Success',
+                                    type: 'success',
+                                    button: false,
+                                    timer: 3000,
+                                }, function() {
+                                    location.reload(true)
+                                })
+                            } else {
+                                swal({
+                                    title: 'Error',
+                                    type: 'error',
+                                    text: res.message,
+                                    button: false,
+                                    timer: 5000,
+                                })
+                            }
+                        },
+                        error: function(error) {
+                            console.error('Cancel failed:', error);
+                        }
+                    });
+                }
+            })
+
+        });
     })
 </script>

@@ -3,9 +3,9 @@
 use yii\db\Migration;
 
 /**
- * Class m230203_062212_create_record_allotment_detailed_view
+ * Class m230512_011746_update_record_allotment_dentailed_view
  */
-class m230203_062212_create_record_allotment_detailed_view extends Migration
+class m230512_011746_update_record_allotment_dentailed_view extends Migration
 {
     /**
      * {@inheritdoc}
@@ -21,8 +21,9 @@ class m230203_062212_create_record_allotment_detailed_view extends Migration
                 pr_purchase_request_allotments.amount as prAmt,
                 0 as trAmt
             FROM  pr_purchase_request_allotments 
+            JOIN pr_purchase_request ON pr_purchase_request_allotments.fk_purchase_request_id = pr_purchase_request.id
             WHERE pr_purchase_request_allotments.is_deleted = 0
-        
+            AND pr_purchase_request.is_cancelled = 0
         UNION ALL 
         
             SELECT 
@@ -135,8 +136,7 @@ class m230203_062212_create_record_allotment_detailed_view extends Migration
         LEFT JOIN major_accounts ON chart_of_accounts.major_account_id = major_accounts.id 
         LEFT JOIN allotment_type ON record_allotments.allotment_type_id  = allotment_type.id 
         WHERE record_allotment_entries.is_deleted = 0 
-        ")
-            ->execute();
+        ")->execute();
     }
 
     /**
@@ -155,7 +155,7 @@ class m230203_062212_create_record_allotment_detailed_view extends Migration
 
     public function down()
     {
-        echo "m230203_062212_create_record_allotment_detailed_view cannot be reverted.\n";
+        echo "m230512_011746_update_record_allotment_dentailed_view cannot be reverted.\n";
 
         return false;
     }

@@ -36,22 +36,15 @@ class PrRfq extends \yii\db\ActiveRecord
                 '_date',
                 'deadline',
             ], 'required'],
-            [['id', 'pr_purchase_request_id', 'bac_composition_id'], 'integer'],
-            [['_date', 'created_at', 'deadline', 'project_location'], 'safe'],
+            [['id', 'pr_purchase_request_id', 'bac_composition_id', 'is_cancelled'], 'integer'],
+            [['_date', 'created_at', 'deadline', 'project_location', 'cancelled_at'], 'safe'],
             [['rfq_number', 'employee_id', 'province'], 'string', 'max' => 255],
             [['rfq_number'], 'unique'],
             [['id'], 'unique'],
             [[
-                'id',
                 'rfq_number',
-                'pr_purchase_request_id',
-                '_date',
                 'deadline',
-                'bac_composition_id',
-                'employee_id',
-                'province',
                 'project_location',
-                'created_at',
 
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
@@ -73,6 +66,8 @@ class PrRfq extends \yii\db\ActiveRecord
             'deadline' => 'Deadline',
             'province' => 'Province',
             'project_location' => 'Location of Project',
+            'cancelled_at' => 'Cancelled_at',
+            'is_cancelled' => 'is Cancelled'
 
         ];
     }

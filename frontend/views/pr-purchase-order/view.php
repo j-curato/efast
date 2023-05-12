@@ -1,5 +1,7 @@
 <?php
 
+use aryelds\sweetalert\SweetAlertAsset;
+use kartik\grid\GridViewAsset;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -10,6 +12,8 @@ $this->title = $model->po_number;
 $this->params['breadcrumbs'][] = ['label' => 'Pr Purchase Orders', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+SweetAlertAsset::register($this);
+
 $purpose =  $model->aoq->rfq->purchaseRequest->purpose;
 $auth_personel = strtoupper($model->authorizedOfficial->f_name . ' ' . $model->authorizedOfficial->m_name[0] . '. ' . $model->authorizedOfficial->l_name);
 $auth_personel_position =  $model->authorizedOfficial->position;
@@ -17,7 +21,6 @@ $accountant = strtoupper($model->accountingUnit->f_name . ' ' . $model->accounti
 $accountant_position = $model->accountingUnit->position;
 $requested_by = '';
 $requested_by_position = '';
-
 $inspected_by = '';
 $inspected_by_position = '';
 
@@ -56,8 +59,16 @@ if (!empty($model->date_completed)) {
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <?php
 
-            $link = yii::$app->request->baseUrl . "/index.php?r=pr-aoq/view&id={$model->fk_pr_aoq_id}";
-            echo   Html::a('AOQ Link ', $link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px'])
+            if (Yii::$app->user->can('super-user')) {
+                $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
+                $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
+                echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
+                    'class' => $btn_color,
+                    'id' => 'cancel'
+
+                ]);
+            }
+            echo   Html::a('AOQ Link ', ['pr-aoq/view', 'id' => $model->fk_pr_aoq_id], ['class' => 'btn btn-warning ', 'style' => 'margin:3px'])
             ?>
         </p>
         <?php
@@ -68,20 +79,10 @@ if (!empty($model->date_completed)) {
 
             <?php
             $po_number = $index;
-            // $alphabet = range('A', 'Z');
-
-            // if (count($aoq_lowest) > 1) {
-            //     $po_number = $model->po_number . $alphabet[$row_number];
-            //     $row_number++;
-            // } else {
-            //     $po_number = $model->po_number;
-            // }
             $payee =  $val[0]['payee'];
             $payee_address =   !empty($val[0]['address']) ? $val[0]['address'] : '';
             $payee_tin_number =   !empty($val[0]['tin_number']) ? $val[0]['tin_number'] : '';
-
             $total_amount = intval($val[0]['quantity']) * floatval($val[0]['unit_cost']);
-            // $total_amount = 0;
             $unit_of_measure = $val[0]['unit_of_measure'];
             $description = $val[0]['description'];
             $specification = $val[0]['specification'];
@@ -669,7 +670,52 @@ if (!empty($model->date_completed)) {
 </style>
 <script>
     $(document).ready(function() {
+        $("#cancel").click((e) => {
+            e.preventDefault();
+            let ths = $(e.target)
+            let link = ths.attr('href');
+            swal({
+                title: "Are you sure you want to " + ths.text() + " this item?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: '#DD6B55',
+                confirmButtonText: 'Confirm',
+                cancelButtonText: "Cancel",
+                closeOnConfirm: false,
+                closeOnCancel: true,
+                width: "500px",
+                height: "500px",
+            }, function(isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        url: link,
+                        method: 'POST',
+                        data: {
+                            _csrf: "<?= Yii::$app->request->getCsrfToken() ?>"
+                        },
+                        success: function(response) {
+                            const res = JSON.parse(response)
+                            if (!res.error) {
+                                swal({
+                                    title: 'Success',
+                                    type: 'success',
+                                    button: false,
+                                    timer: 3000,
+                                }, function() {
+                                    location.reload(true)
+                                })
+                            } else {
+                                console.log(res)
+                            }
+                        },
+                        error: function(error) {
+                            console.error('Cancel failed:', error);
+                        }
+                    });
+                }
+            })
 
-        console.log(<?= json_encode($po_items) ?>)
+        });
+
     })
 </script>

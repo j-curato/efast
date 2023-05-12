@@ -187,7 +187,9 @@ class PrPurchaseRequestController extends Controller
             SUM(pr_purchase_request_item.quantity *pr_purchase_request_item.unit_cost) as ttlPr,
             SUM(pr_purchase_request_item.quantity) as ttlPrQty
             FROM pr_purchase_request_item
+            JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id  = pr_purchase_request.id
             WHERE pr_purchase_request_item.is_deleted = 0
+            AND pr_purchase_request.is_cancelled = 0
             $sql
             GROUP BY pr_purchase_request_item.fk_ppmp_cse_item_id
             ) as ttlInPr ON supplemental_ppmp_cse.id = ttlInPr.fk_ppmp_cse_item_id
@@ -217,8 +219,10 @@ class PrPurchaseRequestController extends Controller
                 pr_purchase_request_item.fk_ppmp_non_cse_item_id,
                 SUM(pr_purchase_request_item.unit_cost * pr_purchase_request_item.quantity) as total_pr_amt
                 FROM pr_purchase_request_item
+                JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
                 WHERE 
                 pr_purchase_request_item.is_deleted =0
+                AND pr_purchase_request.is_cancelled = 0
                 $sql
                 GROUP BY
                 pr_purchase_request_item.fk_ppmp_non_cse_item_id
@@ -271,7 +275,8 @@ class PrPurchaseRequestController extends Controller
             $pr_grnd_ttl = $pr_grnd_ttl + floatval($ttl);
         }
 
-        if (floatval($pr_allotment_grnd_ttl) !== floatval($pr_grnd_ttl)) {
+
+        if (floatval(number_format($pr_allotment_grnd_ttl, 2)) !== floatval(number_format($pr_grnd_ttl, 2))) {
             return false;
         }
 
@@ -472,7 +477,6 @@ class PrPurchaseRequestController extends Controller
                 throw new ErrorException('Allotment  Cannot be Blank');
             }
             try {
-
                 if (!empty($item['pr_allotment_item_id'])) {
                     $ai = PrPurchaseRequestAllotments::findOne($item['pr_allotment_item_id']);
                 } else {
@@ -530,7 +534,6 @@ class PrPurchaseRequestController extends Controller
                 $office_id = $user_data->office->id;
                 $division_id = $user_data->divisionName->id;
             }
-            // $ppmp_id = !empty($_POST['ppmp_id']) ? $_POST['ppmp_id'] : '';
 
             $book_id = !empty($_POST['book_id']) ? $_POST['book_id'] : '';
             $purpose = !empty($_POST['purpose']) ? $_POST['purpose'] : '';
@@ -541,10 +544,7 @@ class PrPurchaseRequestController extends Controller
             $budget_year = !empty($_POST['budget_year']) ? $_POST['budget_year'] : [];
             $date_now = new DateTime();
             $model->date = $date_now->format('Y-m-d');
-            // return var_dump($_POST['segment']);
             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-
-
             $model->book_id = $book_id;
             $model->pr_project_procurement_id = '';
             $model->purpose = $purpose;
@@ -554,61 +554,43 @@ class PrPurchaseRequestController extends Controller
             $model->fk_office_id = $office_id;
             $model->fk_division_id = $division_id;
             $model->fk_division_program_unit_id = $division_program_unit_id;
-            // $id_arr = explode('-', $ppmp_id);
-            // $cse_or_non_cse_id = $id_arr[0];
-            // $cse_type = $id_arr[1];
-            // if ($cse_type === 'cse') {
-
-            //     $model->fk_supplemental_ppmp_noncse_id = null;
-            //     $model->fk_supplemental_ppmp_cse_id  = $cse_or_non_cse_id;
-            // } else if ($cse_type === 'non_cse') {
-
-            //     $model->fk_supplemental_ppmp_noncse_id = $cse_or_non_cse_id;
-            //     $model->fk_supplemental_ppmp_cse_id  = null;
-            // } else {
-            //     $model->fk_supplemental_ppmp_noncse_id = null;
-            //     $model->fk_supplemental_ppmp_cse_id  = null;
-            //     $model->is_fixed_expense  = 1;
-            // }
             $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
 
 
 
-            $transaction = Yii::$app->db->beginTransaction();
 
-            $allotment_items_ttl = array_column($allotment_items, 'gross_amount');
-            $validate_ttl = $this->calculateItemsTotal($pr_items, $allotment_items_ttl);
-
-            if ($validate_ttl !== true) {
-                return json_encode(['isSuccess' => false, 'error_message' => 'The sum of the allotments does not match the sum of the specifications.']);
-            }
 
             try {
+                $transaction = Yii::$app->db->beginTransaction();
+
+                $allotment_items_ttl = array_column($allotment_items, 'gross_amount');
+                $validate_ttl = $this->calculateItemsTotal($pr_items, $allotment_items_ttl);
+                if ($validate_ttl !== true) {
+                    throw new ErrorException(json_encode('The sum of the allotments does not match the sum of the specifications.'));
+                }
                 if (!$model->validate()) {
-                    $transaction->rollBack();
-                    return json_encode(['isSuccess' => false, 'error_message' => $model->errors]);
+                    return json_encode(false);
                 }
-                if ($model->save(false)) {
-                    $insert_items = $this->insertPrItems(
-                        $model->id,
-                        $pr_items
-                        // $cse_or_non_cse_id,
-                        // $cse_type
-                    );
-                    if ($insert_items !== true) {
-                        $transaction->rollBack();
-                        return json_encode(['isSuccess' => false, 'error_message' => $insert_items]);
-                    }
-                    $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items);
-                    if ($insert_allotments !== true) {
-                        $transaction->rollBack();
-                        return json_encode(['isSuccess' => false, 'error_message' => $insert_allotments]);
-                    }
-                    $transaction->commit();
-                    return $this->redirect(['view', 'id' => $model->id]);
+                if (!$model->save(false)) {
+                    throw new ErrorException('PR save failed');
                 }
+                $insert_items = $this->insertPrItems(
+                    $model->id,
+                    $pr_items,
+                    true
+                );
+                if ($insert_items !== true) {
+                    throw new ErrorException($insert_items);
+                }
+                $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items);
+                if ($insert_allotments !== true) {
+                    throw new ErrorException($insert_allotments);
+                }
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
                 $transaction->rollBack();
+                return json_encode(['isSuccess' => false, 'error_message' => $e->getMessage()]);
             }
         }
 
@@ -639,14 +621,10 @@ class PrPurchaseRequestController extends Controller
         if ($model->is_final && !Yii::$app->user->can('super-user')) {
             return $this->goHome();
         }
-        $check_rfqs = YIi::$app->db->createCommand("SELECT id FROM pr_rfq WHERE pr_purchase_request_id = :id")
-            ->bindValue(':id', $model->id)
-            ->queryAll();
-        if (!empty($check_rfqs)  && !Yii::$app->user->can('super-user')) {
-            return $this->goBack();
-        }
 
-        if (Yii::$app->request->isPost) {
+
+        if (Yii::$app->request->post()) {
+
             $old = $this->findModel($id);
 
             // $old_date =  $old->date;
@@ -684,39 +662,47 @@ class PrPurchaseRequestController extends Controller
             // ) {
             //     $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
             // }
-
-            $transaction = Yii::$app->db->beginTransaction();
-            $allotment_items_ttl = array_column($allotment_items, 'gross_amount');
-            $validate_ttl = $this->calculateItemsTotal($pr_items, $allotment_items_ttl);
-
-            if ($validate_ttl !== true) {
-                return json_encode(['isSuccess' => false, 'error_message' => 'The sum of the allotments does not match the sum of the specifications.']);
-            }
-
             try {
-                if (!$model->validate()) {
-                    $transaction->rollBack();
-                    return json_encode(['isSuccess' => false, 'error_message' => $model->errors]);
-                }
-                if ($model->save(false)) {
+                $transaction = Yii::$app->db->beginTransaction();
+                $check_rfqs = YIi::$app->db->createCommand("SELECT 
+                GROUP_CONCAT(pr_rfq.rfq_number) as rfq_nums
+                FROM pr_rfq
+                WHERE  pr_rfq.is_cancelled = 0
+                AND  pr_rfq.pr_purchase_request_id = :id
+                GROUP BY 
+                pr_rfq.pr_purchase_request_id")
+                    ->bindValue(':id', $model->id)
+                    ->queryAll();
 
-                    $insert_items = $this->insertPrItems(
-                        $model->id,
-                        $pr_items,
-                        true
-                    );
-                    if ($insert_items !== true) {
-                        $transaction->rollBack();
-                        return json_encode(['isSuccess' => false, 'error_message' => $insert_items]);
-                    }
-                    $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items);
-                    if ($insert_allotments !== true) {
-                        $transaction->rollBack();
-                        return json_encode(['isSuccess' => false, 'error_message' => $insert_allotments]);
-                    }
-                    $transaction->commit();
-                    return $this->redirect(['view', 'id' => $model->id]);
+                if (!empty($check_rfqs)) {
+                    throw new ErrorException('Unable to Update PR No. has RFQ"s.');
                 }
+                $allotment_items_ttl = array_column($allotment_items, 'gross_amount');
+                $validate_ttl = $this->calculateItemsTotal($pr_items, $allotment_items_ttl);
+
+                if ($validate_ttl !== true) {
+                    throw new ErrorException('The sum of the allotments does not match the sum of the specifications.');
+                }
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('PR save failed');
+                }
+                $insert_items = $this->insertPrItems(
+                    $model->id,
+                    $pr_items,
+                    true
+                );
+                if ($insert_items !== true) {
+                    throw new ErrorException($insert_items);
+                }
+                $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items);
+                if ($insert_allotments !== true) {
+                    throw new ErrorException($insert_allotments);
+                }
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
                 $transaction->rollBack();
                 return json_encode(['isSuccess' => false, 'error_message' => $e->getMessage()]);
@@ -854,19 +840,36 @@ class PrPurchaseRequestController extends Controller
             ]);
         }
     }
-    public function actionFinal($id)
+    public function actionCancel($id)
     {
-        $model = $this->findModel($id);
+        if (Yii::$app->request->post()) {
+            try {
+                $model = $this->findModel($id);
+                $model->is_cancelled =  $model->is_cancelled ? 0 : 1;
+                $model->cancelled_at = date('Y-m-d H:i:s');
+                if ($model->is_cancelled === 1) {
+                    $qry = Yii::$app->db->createCommand("SELECT 
+                    GROUP_CONCAT(pr_rfq.rfq_number) as rfq_nums
+                    FROM pr_rfq
+                    WHERE  pr_rfq.is_cancelled = 0
+                    AND  pr_rfq.pr_purchase_request_id = :id
+                    GROUP BY 
+                    pr_rfq.pr_purchase_request_id")
+                        ->bindValue(':id', $model->id)
+                        ->queryScalar();
 
-        if ($model->is_final) {
-            $model->is_final = 0;
-        } else {
-            $model->is_final = 1;
+                    if (!empty($qry)) {
+                        throw new ErrorException("Unable to cancel PR,RFQ No./s $qry is/are not Cancelled.");
+                    }
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Save Failed');
+                }
+                return json_encode(['error' => false, 'message' => 'Successfuly Save']);
+            } catch (ErrorException $e) {
+                return json_encode(['error' => true, 'message' => $e->getMessage()]);
+            }
         }
-        if ($model->save(false))
-            return $this->render('view', [
-                'model' => $model,
-            ]);
     }
     public function actionSearchPpmp($page = 1, $q = null, $id = null, $budget_year = '', $office_id = '', $division_id = '')
     {

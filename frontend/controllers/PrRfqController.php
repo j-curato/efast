@@ -39,6 +39,7 @@ class PrRfqController extends Controller
                     'update',
                     'delete',
                     'search-rfq',
+                    'cancel',
                 ],
                 'rules' => [
                     [
@@ -49,9 +50,10 @@ class PrRfqController extends Controller
                             'update',
                             'delete',
                             'search-rfq',
+                            'cancel',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['super-user']
                     ]
                 ]
             ],
@@ -308,5 +310,36 @@ class PrRfqController extends Controller
         }
 
         return $out;
+    }
+    public function actionCancel($id)
+    {
+        if (Yii::$app->request->post()) {
+            try {
+                $model = $this->findModel($id);
+                $model->is_cancelled =  $model->is_cancelled ? 0 : 1;
+                $model->cancelled_at = date('Y-m-d H:i:s');
+                if ($model->is_cancelled === 1) {
+                    $qry = Yii::$app->db->createCommand("SELECT 
+                    GROUP_CONCAT(pr_aoq.aoq_number) as pr_nums
+                    FROM pr_aoq
+                    WHERE  pr_aoq.is_cancelled = 0
+                    AND pr_aoq.pr_rfq_id = :id
+                    GROUP BY 
+                    pr_aoq.pr_rfq_id")
+                        ->bindValue(':id', $model->id)
+                        ->queryScalar();
+
+                    if (!empty($qry)) {
+                        throw new ErrorException("Unable to cancel RFQ,AOQ No./s $qry is/are not Cancelled.");
+                    }
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Save Failed');
+                }
+                return json_encode(['error' => false, 'message' => 'Successfuly Save']);
+            } catch (ErrorException $e) {
+                return json_encode(['error' => true, 'message' => $e->getMessage()]);
+            }
+        }
     }
 }

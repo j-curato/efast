@@ -37,46 +37,42 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
     {
         return [
             [[
-                'id', 'po_number', 'fk_contract_type_id', 'fk_mode_of_procurement_id', 'fk_pr_aoq_id', 'delivery_term',
+                'id', 'po_number',
+                'fk_contract_type_id',
+                'fk_mode_of_procurement_id',
+                'fk_pr_aoq_id', 'delivery_term',
                 'fk_auth_official',
                 'fk_accounting_unit',
                 'po_date'
             ], 'required'],
             [[
-                'id', 'fk_contract_type_id', 'fk_mode_of_procurement_id', 'fk_pr_aoq_id',
-                'fk_auth_official', 'fk_accounting_unit', 'fk_bac_composition_id'
+                'id', 'fk_contract_type_id',
+                'fk_mode_of_procurement_id',
+                'fk_pr_aoq_id',
+                'fk_auth_official',
+                'fk_accounting_unit',
+                'fk_bac_composition_id',
+                'is_cancelled'
             ], 'integer'],
             [['place_of_delivery'], 'string'],
             [[
-                'delivery_date', 'bac_date', 'fk_requested_by', 'fk_inspected_by',
+                'delivery_date',
+                'bac_date',
+                'fk_requested_by',
+                'fk_inspected_by',
                 'date_work_begun',
-                'date_completed'
+                'date_completed',
+                'cancelled_at'
 
             ], 'safe'],
             [['po_number', 'payment_term', 'delivery_term', 'po_date'], 'string', 'max' => 255],
             [['po_number'], 'unique'],
             [['id'], 'unique'],
             [[
-                'id',
-                'po_number',
-                'fk_contract_type_id',
-                'fk_mode_of_procurement_id',
-                'fk_pr_aoq_id',
                 'place_of_delivery',
                 'delivery_date',
                 'delivery_term',
                 'payment_term',
-                'fk_auth_official',
-                'fk_accounting_unit',
-                'created_at',
-                'fk_bac_composition_id',
-                'bac_date',
-                'po_date',
-                'fk_requested_by',
-                'fk_inspected_by',
-                'date_work_begun',
-                'date_completed',
-
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
@@ -105,6 +101,8 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
             'fk_inspected_by' => 'Inspected By',
             'date_work_begun' => 'Date Work Begun',
             'date_completed' => 'Date Completed',
+            'is_cancelled' => 'Is Cancelled',
+            'cancelled_at' => 'Cancelled At',
 
 
 

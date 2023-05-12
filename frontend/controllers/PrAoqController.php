@@ -34,8 +34,22 @@ class PrAoqController extends Controller
                     'update',
                     'delete',
                     'get-rqf-info',
+                    'cancel',
                 ],
                 'rules' => [
+                    [
+                        'actions' => [
+                            'cancel',
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'delete',
+                            'get-rqf-info',
+                        ],
+                        'allow' => true,
+                        'roles' => ['super-user']
+                    ],
                     [
                         'actions' => [
                             'index',
@@ -406,5 +420,36 @@ class PrAoqController extends Controller
         }
 
         return $out;
+    }
+    public function actionCancel($id)
+    {
+        if (Yii::$app->request->post()) {
+            try {
+                $model = $this->findModel($id);
+                $model->is_cancelled =  $model->is_cancelled ? 0 : 1;
+                $model->cancelled_at = date('Y-m-d H:i:s');
+                if ($model->is_cancelled === 1) {
+                    $qry = Yii::$app->db->createCommand("SELECT 
+                            GROUP_CONCAT(pr_purchase_order.po_number) as pr_nums
+                            FROM pr_purchase_order
+                            WHERE pr_purchase_order.fk_pr_aoq_id = :id
+                            AND pr_purchase_order.is_cancelled = 0
+                            GROUP BY 
+                            pr_purchase_order.fk_pr_aoq_id")
+                        ->bindValue(':id', $model->id)
+                        ->queryScalar();
+
+                    if (!empty($qry)) {
+                        throw new ErrorException("Unable to cancel AOQ,PR No./s $qry is/are not Cancelled.");
+                    }
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Save Failed');
+                }
+                return json_encode(['error' => false, 'message' => 'Successfuly Save']);
+            } catch (ErrorException $e) {
+                return json_encode(['error' => true, 'message' => $e->getMessage()]);
+            }
+        }
     }
 }

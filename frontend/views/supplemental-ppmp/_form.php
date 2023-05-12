@@ -109,7 +109,10 @@ $cse_type_data = [
                         'name' => 'fk_office_id',
                         'value' => $model->fk_office_id,
                         'data' => $offices,
-                        'options' => ['placeholder' => 'Select Office'],
+                        'options' => [
+                            'placeholder' => 'Select Office',
+                            'class' => 'fk_office_id'
+                        ],
                         // 'pluginOptions' => [
                         //     'allowClear' => true,
                         //     'minimumInputLength' => 1,
@@ -436,19 +439,19 @@ $cse_type_data = [
                         <div class='row'>
                       
                             <div class='col-sm-3'>
-                                <label for='stock'>Stock</label>
+                                <label for='stock-paginated'>Stock</label>
                                 <select name='cse_items[$cse_row_cnt][stock_id]' class='form-control stock-paginated' onchange='getStockAmount(this)'>
                                 <option value='$stock_id'>$stock_title</option>
                                 </select>
                             </div>
                             <div class='col-sm-3'>
-                                <label for='unit_of_measure'>Unit of Measure</label>
+                                <label for=' unit-of-measure'>Unit of Measure</label>
                                 <select name='cse_items[$cse_row_cnt][unit_of_measure_id]' class='form-control unit-of-measure' >
                                     <option value='$unit_of_measure_id'>$unit_of_measure</option>
                                 </select>
                             </div>
                             <div class='col-sm-3'>
-                                <label for='amount'>Amount</label>
+                                <label for='amt'>Amount</label>
                                 <input type='text' class='form-control mask-amount amt' placeholder='Amount' onkeyup='updateMainAmount(this)' value='$amount'>
                                 <input type='hidden' class='form-control main-amount amt ' name='cse_items[$cse_row_cnt][amount]' placeholder='Amount' value='$amount'>
                             </div>
@@ -534,9 +537,10 @@ $cse_type_data = [
 
 </div>
 <style>
-    .panel{
+    .panel {
         padding: 2rem;
     }
+
     textarea {
         max-width: 100%;
     }
@@ -649,7 +653,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                             <tr>
                       
                                 <td  style='max-width:120px'>
-                                    <label for="stock">Stock</label>
+                                    <label for="stock-paginated">Stock</label>
                                     <select name="ppmp_non_cse[${non_cse_rw_cnt}][items][1][stock_id]" class='form-control stock-paginated'  style='width: 100%;' onchange='getStockAmount(this)' required></select>
                                 </td>
                                 <td style='max-width:40px'>
@@ -657,11 +661,11 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                                     <input required name="ppmp_non_cse[${non_cse_rw_cnt}][items][1][qty]" class='form-control qty' type="number" >
                                 </td>
                                 <td  style='max-width:120px'>
-                                    <label for="unit_of_measure">Unit of Measure</label>
+                                    <label for="unit-of-measure">Unit of Measure</label>
                                     <select name="ppmp_non_cse[${non_cse_rw_cnt}][items][1][unit_of_measure_id]" class='form-control  unit-of-measure'  style='width: 100%;' required></select>
                                 </td>
                                 <td style='max-width:50px'>
-                                    <label for='amount'>Gross Amount</label>
+                                    <label for='amt'>Gross Amount</label>
                                     <input type='text' required class='form-control mask-amount amt' placeholder='Amount' onkeyup='updateMainAmount(this)'>
                                     <input type='hidden' required class='form-control main-amount amt ' name='ppmp_non_cse[${non_cse_rw_cnt}][items][1][amount]' placeholder='Amount'>
                                 </td>
@@ -1130,7 +1134,7 @@ $js = <<<JS
                                 icon: 'error',
                                 title: res.error_message,
                                 type: "error",
-                                timer: 3000,
+                                timer: 5000,
                                 closeOnConfirm: false,
                                 closeOnCancel: false
                             })

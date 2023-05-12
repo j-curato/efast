@@ -1122,7 +1122,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             const unit_of_measure = val.unit_of_measure
             const unit_of_measure_id = val.unit_of_measure_id
             const specification = val.description
-
+            let itmGrs = parseInt(bal_qty) * parseFloat(val.unit_cost)
             let item_id = val.item_id
             let cse_type = val.cse_type
             let row = `
@@ -1161,7 +1161,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                             </div>
                             <div class='col-sm-2'>
                                 <label for='total'>Total</label>
-                                <h5 class='item_total'></h5>
+                                <h5 class='item_total'>${thousands_separators(itmGrs)}</h5>
                             </div>
                         </div>
                         <div class="row">
@@ -1173,10 +1173,12 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                         </div>
                     </div>
                 </li>`;
+
             itemList.append(row)
             row_number++
             unitOfMeasureSelect()
             maskAmount()
+            GetSpecificationsTotal()
         })
     }
 </script>

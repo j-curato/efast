@@ -38,6 +38,7 @@ class PurchaseRequestIndexSearch extends PurchaseRequestIndex
                 'purpose',
                 'date',
                 'bookFilter',
+                'is_cancelled',
             ], 'safe'],
         ];
     }
@@ -68,6 +69,7 @@ class PurchaseRequestIndexSearch extends PurchaseRequestIndex
             $user_data = Yii::$app->memem->getUserData();
             $query->andWhere('office_name = :office_name', ['office_name' => $user_data->office->office_name]);
             $query->andWhere('division = :division', ['division' => $user_data->divisionName->division]);
+            $query->andWhere('is_cancelled = "Good"');
         }
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -96,6 +98,7 @@ class PurchaseRequestIndexSearch extends PurchaseRequestIndex
             ->andFilterWhere(['like', 'approved_by', $this->approved_by])
             ->andFilterWhere(['like', 'book_name', $this->book_name])
             ->andFilterWhere(['like', 'purpose', $this->purpose])
+            ->andFilterWhere(['like', 'is_cancelled', $this->is_cancelled])
             ->andFilterWhere(['like', 'date', $this->date]);
 
         if (!empty($this->module === 'transaction')) {

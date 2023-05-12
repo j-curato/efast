@@ -1,5 +1,6 @@
 <?php
 
+use aryelds\sweetalert\SweetAlertAsset;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
@@ -7,6 +8,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\PrAoq */
 
+SweetAlertAsset::register($this);
 $this->title = $model->aoq_number;
 $this->params['breadcrumbs'][] = ['label' => 'Pr Aoqs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -18,10 +20,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-            <?php
 
-            $link = yii::$app->request->baseUrl . "/index.php?r=pr-rfq/view&id={$model->pr_rfq_id}";
-            echo   Html::a('RFQ Link ', $link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px'])
+            <?php
+            if (Yii::$app->user->can('super-user')) {
+                $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
+                $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
+                echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
+                    'class' => $btn_color,
+                    'id' => 'cancel'
+
+                ]);
+            }
+            echo   Html::a('RFQ Link ', ['pr-rfq/view', 'id' => $model->pr_rfq_id], ['class' => 'btn btn-warning ', 'style' => 'margin:3px'])
             ?>
         </p>
         <?php
@@ -223,27 +233,25 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
             </tfoot>
         </table>
-
-
         <table class="links_table table table-stripe">
 
             <tbody>
 
-                <tr>
-                    <th>PO Links</th>
+                <tr class="danger">
+                    <th colspan="3" style="text-align: center;">PO Links</th>
                 </tr>
 
                 <?php
-                $po = YIi::$app->db->createCommand("SELECT id,po_number FROM pr_purchase_order WHERE fk_pr_aoq_id= :id")
+                $po = YIi::$app->db->createCommand("SELECT id,po_number,pr_purchase_order.is_cancelled FROM pr_purchase_order WHERE fk_pr_aoq_id= :id")
                     ->bindValue(':id', $model->id)
                     ->queryAll();
                 foreach ($po as $val) {
-                    $link = yii::$app->request->baseUrl . "/index.php?r=pr-purchase-order/view&id={$val['id']}";
-
+                    $isCancelled = $val['is_cancelled'] ? 'Cancelled' : '';
                     echo "<tr>
-                <td>{$val['po_number']}</td>
-                <td>" . Html::a('PO Link ', $link, ['class' => 'btn btn-warning ', 'style' => 'margin:3px']) . "</td>
-                </tr>";
+                        <td>{$val['po_number']}</td>
+                        <td>" . Html::a('PO Link ', ['pr-purchase-request-order/view', 'id' => $val['id']], ['class' => 'btn btn-warning ', 'style' => 'margin:3px']) . "</td>
+                        <td>$isCancelled</td>
+                   </tr>";
                 }
                 ?>
             </tbody>
@@ -353,7 +361,58 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
 ?>
 <script>
     $(document).ready(function() {
+        $("#cancel").click((e) => {
+            e.preventDefault();
+            let ths = $(e.target)
+            let link = ths.attr('href');
+            swal({
+                title: "Are you sure you want to " + ths.text() + " this AOQ?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: '#DD6B55',
+                confirmButtonText: 'Confirm',
+                cancelButtonText: "Cancel",
+                closeOnConfirm: false,
+                closeOnCancel: true,
+                width: "500px",
+                height: "500px",
+            }, function(isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        url: link,
+                        method: 'POST',
+                        data: {
+                            _csrf: "<?= Yii::$app->request->getCsrfToken() ?>"
+                        },
+                        success: function(response) {
+                            const res = JSON.parse(response)
+                            if (!res.error) {
+                                swal({
+                                    title: 'Success',
+                                    type: 'success',
+                                    button: false,
+                                    timer: 3000,
+                                }, function() {
+                                    location.reload(true)
+                                })
+                            } else {
+                                swal({
+                                    title: 'Error',
+                                    type: 'error',
+                                    text: res.message,
+                                    button: false,
+                                    timer: 5000,
+                                })
+                            }
+                        },
+                        error: function(error) {
+                            console.error('Cancel failed:', error);
+                        }
+                    });
+                }
+            })
 
+        });
         const q = <?php echo json_encode($for_print) ?>;
         const payee_position = JSON.parse(`<?php echo json_encode($payee_position) ?>`);
         let ttlAmtPerPayee = []
