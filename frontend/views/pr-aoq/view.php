@@ -249,7 +249,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $isCancelled = $val['is_cancelled'] ? 'Cancelled' : '';
                     echo "<tr>
                         <td>{$val['po_number']}</td>
-                        <td>" . Html::a('PO Link ', ['pr-purchase-request-order/view', 'id' => $val['id']], ['class' => 'btn btn-warning ', 'style' => 'margin:3px']) . "</td>
+                        <td>" . Html::a('PO Link ', ['pr-purchase-order/view', 'id' => $val['id']], ['class' => 'btn btn-warning ', 'style' => 'margin:3px']) . "</td>
                         <td>$isCancelled</td>
                    </tr>";
                 }
