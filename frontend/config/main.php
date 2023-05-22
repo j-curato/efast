@@ -54,7 +54,6 @@ return [
             'class' => 'yii\web\Cookie',
             'httpOnly' => true,
             'secure' => true,
-
         ],
         'user' => [
             'identityClass' => 'common\models\User',
