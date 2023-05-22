@@ -665,7 +665,7 @@ class ChartOfAccountsController extends Controller
                 ->bindValue(':object_code', $id)
                 ->queryOne();
 
-            return $query;
+            return json_encode($query);
         }
         return $out;
     }
