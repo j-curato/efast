@@ -46,6 +46,7 @@ class ChartOfAccountsController extends Controller
                     'search-chart-of-accounts',
                     'search-accounting-code',
                     'get-chart-info',
+                    'search-liquidation-accounting-code'
                 ],
                 'rules' => [
                     [
@@ -77,6 +78,7 @@ class ChartOfAccountsController extends Controller
                             'search-chart-of-accounts',
                             'search-accounting-code',
                             'get-chart-info',
+                            'search-liquidation-accounting-code'
 
                         ],
                         'allow' => true,
@@ -627,11 +629,12 @@ class ChartOfAccountsController extends Controller
 
         return $out;
     }
-    public function actionSearchLiquidationAccountingCode($q = null, $id = null, $province = null)
+    public function actionSearchLiquidationAccountingCode($q = null, $id = null, $province = null, $page = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
             $query = new Query();
@@ -640,10 +643,14 @@ class ChartOfAccountsController extends Controller
                 ->from('accounting_codes')
                 ->where(['or', ['like', 'account_title', $q], ['like', 'object_code', $q]])
                 ->andWhere('is_active =1 AND coa_is_active = 1 AND sub_account_is_active = 1 AND is_province_visible = 1');
-
+            if (!empty($page)) {
+                $query->offset($offset)
+                    ->limit($limit);
+            }
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
+            $out['pagination'] = ['more' => !empty($data) ? true : false];
         } elseif (!empty($id)) {
 
             $query = Yii::$app->db->createCommand("SELECT object_code , CONCAT (object_code ,'-',account_title) as account_title 
@@ -722,6 +729,45 @@ class ChartOfAccountsController extends Controller
                 ->from('sub_accounts_view')
                 ->where(['like', 'account_title', $q])
                 ->orWhere(['like', 'object_code', $q]);
+
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        //  elseif ($id > 0) {
+        //     $out['results'] = ['id' => $id, 'text' => AdvancesEntries::find($id)->fund_source];
+        // }
+        return $out;
+    }
+    public function actionSearchCashChartOfAccount($q = null, $id = null, $province = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+
+            $query->select(["chart_of_accounts.id, CONCAT (chart_of_accounts.uacs ,'-',chart_of_accounts.general_ledger) as text"])
+                ->from('chart_of_accounts')
+
+                ->andWhere(
+                    [
+                        'or',
+                        ['=', 'uacs', '5010000000'],
+                        ['=', 'uacs', '5020000000'],
+                        ['=', 'uacs', '5060000000'],
+                    ]
+
+                )
+                ->andWhere(
+                    [
+                        'or',
+                        ['like', 'uacs', $q],
+                        ['like', 'general_ledger', $q]
+                    ]
+
+                );
 
             $command = $query->createCommand();
             $data = $command->queryAll();
