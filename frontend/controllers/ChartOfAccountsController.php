@@ -62,7 +62,12 @@ class ChartOfAccountsController extends Controller
                             'sample-index',
                             'get-general-ledger',
                             'chart-of-accounts',
-
+                            'search-liquidation-accounting-code',
+                            'search-accounting-code',
+                            'accounting-codes',
+                            'accounting-codes-dv',
+                            'search-chart-of-accounts',
+                            'get-chart-info',
 
                         ],
                         'allow' => true,
@@ -650,7 +655,9 @@ class ChartOfAccountsController extends Controller
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
-            $out['pagination'] = ['more' => !empty($data) ? true : false];
+            if (!empty($page)) {
+                $out['pagination'] = ['more' => !empty($data) ? true : false];
+            }
         } elseif (!empty($id)) {
 
             $query = Yii::$app->db->createCommand("SELECT object_code , CONCAT (object_code ,'-',account_title) as account_title 
@@ -658,10 +665,11 @@ class ChartOfAccountsController extends Controller
                 ->bindValue(':object_code', $id)
                 ->queryOne();
 
-            return json_encode($query);
+            return $query;
         }
         return $out;
     }
+
     public function actionSearchAccountingCode($q = null, $id = null, $base_uacs = null, $page = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
