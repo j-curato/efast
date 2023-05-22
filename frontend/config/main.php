@@ -40,7 +40,22 @@ return [
                 'application/json' => JsonParser::class
             ]
         ],
+        'session' => [
+            'class' => 'yii\web\Session',
+            'httpOnly' => true,
+            'secure' => true
+            // 'setCookieParams' => [
+            //     'httpOnly' => true,
+            //     'secure' => true,
+            // ],
 
+        ],
+        'cookies' => [
+            'class' => 'yii\web\Cookie',
+            'httpOnly' => true,
+            'secure' => true,
+
+        ],
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => false,
