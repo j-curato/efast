@@ -1,5 +1,6 @@
 <?php
 
+use kartik\select2\Select2Asset;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
@@ -11,6 +12,7 @@ $this->title = $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Po Transactions', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+Select2Asset::register($this);
 ?>
 <div class="po-transaction-view">
 
