@@ -83,10 +83,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td>{$val['date']}</td>
                         <td>{$val['total_dv']}</td>
                         <td style='text-align:right'>" . number_format($val['total_withdrawals'], 2) . "</td>
-         
-           
                     </tr>";
-                    $total += $val['total_withdrawals'];
+                    $total += floatval($val['total_withdrawals']);
                 }
                 ?>
                 <tr>
