@@ -87,6 +87,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
         'account_name',
+        'account_num',
         'registered_name',
         'contact_person',
         'registered_address',

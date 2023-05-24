@@ -18,7 +18,7 @@ class PayeeSearch extends Payee
     {
         return [
             [['id'], 'integer'],
-            [['account_name', 'registered_name', 'contact_person', 'registered_address', 'contact', 'remark', 'tin_number'], 'safe'],
+            [['account_name', 'registered_name', 'contact_person', 'registered_address', 'contact', 'remark', 'tin_number', 'account_num'], 'safe'],
         ];
     }
 
@@ -67,6 +67,7 @@ class PayeeSearch extends Payee
             ->andFilterWhere(['like', 'registered_address', $this->registered_address])
             ->andFilterWhere(['like', 'contact', $this->contact])
             ->andFilterWhere(['like', 'remark', $this->remark])
+            ->andFilterWhere(['like', 'account_num', $this->account_num])
             ->andFilterWhere(['like', 'tin_number', $this->tin_number]);
 
         return $dataProvider;
