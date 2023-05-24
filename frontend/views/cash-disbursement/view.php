@@ -62,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </tr>
             <tr>
                 <th>Mode of Payment:</th>
-                <th><?= $model->modeOfPayment->name ?></th>
+                <th><?= $model->modeOfPayment->name ?? '' ?></th>
                 <th>Check No.:</th>
                 <th><?= $model->check_or_ada_no ?></th>
             </tr>

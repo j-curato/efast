@@ -203,6 +203,9 @@ class CashDisbursementController extends Controller
             ORDER BY ser_num DESC LIMIT 1")
             ->bindValue(':yr', $yr)
             ->queryScalar();
+        if (empty($qry)) {
+            $qry = 1;
+        }
         $num = '';
         if (strlen($qry) < 5) {
             $num .= str_repeat(0, 5 - strlen($qry));
@@ -221,6 +224,9 @@ class CashDisbursementController extends Controller
             ORDER BY ser_num DESC LIMIT 1")
             ->bindValue(':yr', $yr)
             ->queryScalar();
+        if (empty($qry)) {
+            $qry = 1;
+        }
         $num = '';
         if (strlen($qry) < 5) {
             $num .= str_repeat(0, 5 - strlen($qry));
