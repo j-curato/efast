@@ -47,9 +47,7 @@ class MyHelper extends BaseObject
                 ->bindValue(':txnPrItmId', $txnPrItmId)
                 ->bindValue(':orsItmId', $orsItmId)
                 ->bindValue(':orsTxnItmId', $orsTxnItmId)
-                ->getRawSql();
-            echo $balance;
-            die();
+                ->queryScalar();
             $cur_balance = floatval($balance) - floatval($amount);
 
             if ($cur_balance < 0) {
