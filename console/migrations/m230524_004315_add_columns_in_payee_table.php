@@ -13,7 +13,7 @@ class m230524_004315_add_columns_in_payee_table extends Migration
     public function safeUp()
     {
         $this->addColumn('payee', 'fk_bank_id', $this->integer());
-        $this->addColumn('payee', 'account_num', $this->integer());
+        $this->addColumn('payee', 'account_num', $this->string());
         $this->createIndex('idx-pye-fk_bank_id', 'payee', 'fk_bank_id');
         $this->addForeignKey('fk-pye-fk_bank_id', 'payee', 'fk_bank_id', 'banks', 'id', 'RESTRICT');
     }
@@ -25,8 +25,8 @@ class m230524_004315_add_columns_in_payee_table extends Migration
     {
         $this->dropForeignKey('fk-pye-fk_bank_id', 'payee');
         $this->dropIndex('idx-pye-fk_bank_id', 'payee');
-        $this->addColumn('payee', 'fk_bank_id', $this->integer());
-        $this->addColumn('payee', 'account_num', $this->integer());
+        $this->dropColumn('payee', 'fk_bank_id');
+        $this->dropColumn('payee', 'account_num');
     }
 
     /*
