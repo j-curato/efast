@@ -40,7 +40,8 @@ class PayeeSearch extends Payee
      */
     public function search($params)
     {
-        $query = Payee::find();
+        $query = Payee::find()
+            ->andWhere('isEnable = 1');
 
         // add conditions that should always apply here
 
