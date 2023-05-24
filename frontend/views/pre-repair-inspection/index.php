@@ -40,9 +40,9 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' =>    'fk_requested_by',
                 'value' => function ($model) {
-                    $f_name =  $model->requestedBy->f_name;
-                    $m_name =  $model->requestedBy->m_name[0];
-                    $l_name =  $model->requestedBy->l_name;
+                    $f_name =  $model->requestedBy->f_name ?? '';
+                    $m_name =  $model->requestedBy->m_name[0] ?? '';
+                    $l_name =  $model->requestedBy->l_name ?? '';
 
 
 
