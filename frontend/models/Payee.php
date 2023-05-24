@@ -34,14 +34,18 @@ class Payee extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['account_name',], 'required'],
+            [[
+                'account_name',
+                'fk_bank_id',
+                'account_num',
+            ], 'required'],
             [['account_name'], 'unique'],
             [['account_name', 'registered_name', 'contact_person', 'registered_address', 'remark'], 'string', 'max' => 255],
             [['contact'], 'string', 'max' => 20],
             [['tin_number'], 'string', 'max' => 30],
-            [['isEnable'], 'integer',],
+            [['account_num'], 'string', 'max' => 255],
+            [['isEnable',   'fk_bank_id',], 'integer',],
             [[
-                'id',
                 'account_name',
                 'registered_name',
                 'contact_person',
@@ -49,7 +53,6 @@ class Payee extends \yii\db\ActiveRecord
                 'contact',
                 'remark',
                 'tin_number',
-                'isEnable',
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
 
 
@@ -71,6 +74,8 @@ class Payee extends \yii\db\ActiveRecord
             'remark' => 'Remark',
             'tin_number' => 'Tin Number',
             'isEnable' => 'Enabled',
+            'fk_bank_id' => 'Bank',
+            'account_num' => 'Account Number',
         ];
     }
 
@@ -81,10 +86,10 @@ class Payee extends \yii\db\ActiveRecord
      */
     public function getTransactions()
     {
-        return $this->hasMany(Transaction::className(), ['payee_id' => 'id']);
+        return $this->hasMany(Transaction::class, ['payee_id' => 'id']);
     }
     public function getPayee()
     {
-        return $this->hasMany(JevPreparation::className(), ['payee_id' => 'id']);
+        return $this->hasMany(JevPreparation::class, ['payee_id' => 'id']);
     }
 }
