@@ -52,9 +52,9 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' =>    'fk_accountable_person',
                 'value' => function ($model) {
-                    $f_name =  $model->accountablePerson->f_name;
-                    $m_name =  $model->accountablePerson->m_name[0];
-                    $l_name =  $model->accountablePerson->l_name;
+                    $f_name =  $model->accountablePerson->f_name ?? '';
+                    $m_name =  $model->accountablePerson->m_name[0] ?? '';
+                    $l_name =  $model->accountablePerson->l_name ?? '';
 
 
 
