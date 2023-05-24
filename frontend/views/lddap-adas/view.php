@@ -62,7 +62,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
 
                 <?php
-
+                $ttlGrs = 0;
+                $ttlNet = 0;
                 foreach ($cashDetails as $itm) {
                     echo "<tr>
                         <td>{$itm['payee']}</td>
@@ -74,6 +75,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td class='amt'>" . number_format($itm['grossAmt'], 2) . "</td>
                         <td></td>
                     </tr>";
+                    $ttlGrs += floatval($itm['grossAmt']);
+                    $ttlNet += floatval($itm['grossAmt']);
                 }
                 ?>
                 <tr>
@@ -81,19 +84,20 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th></th>
                     <th></th>
                     <th></th>
+                    <th class="amt"><?= number_format($ttlGrs, 2) ?></th>
                     <th></th>
-                    <th></th>
-                    <th></th>
+                    <th class="amt"><?= number_format($ttlNet, 2) ?></th>
                     <th></th>
                 </tr>
                 <tr>
-                    <td colspan="8">Prior Years A/Ps</td>
+                    <td colspan="8">II: Prior Years A/Ps</td>
                 </tr>
                 <tr>
                     <th>Sub-total</th>
                     <th></th>
                     <th></th>
                     <th></th>
+
                     <th></th>
                     <th></th>
                     <th></th>
@@ -104,13 +108,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th></th>
                     <th></th>
                     <th></th>
+                    <th class="amt"><?= number_format($ttlGrs, 2) ?></th>
                     <th></th>
-                    <th></th>
-                    <th></th>
+                    <th class="amt"><?= number_format($ttlNet, 2) ?></th>
                     <th></th>
                 </tr>
                 <tr>
-                    <td colspan="8">
+                    <td colspan="8" class="no-bdr">
                         <div style="width: 50%;float:left;max-height:100%;"> <span>I hereby warrant that the above List of Due and Demandable </span><br>
                             <span>A/Ps was prepared in accordance with existing budgeting,</span><br>
                             <span>accounting and auditing rules and regulations.</span><br>
@@ -129,7 +133,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </tr>
                 <tr>
-                    <td colspan="8">
+                    <td colspan="8" class="no-bdr">
                         <div class="signatory">
                             <u><b>CHARLIE C. DECHOS, CPA</b></u><br>
                             <span>Regional Accountant </span>
@@ -143,10 +147,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                 </tr>
                 <tr>
-                    <th colspan="8">II. ADVICE TO DEBIT ACCOUNT (ADA) </th>
+                    <th colspan="8" class="ctr">II. ADVICE TO DEBIT ACCOUNT (ADA) </th>
                 </tr>
                 <tr>
-                    <td colspan="8">
+                    <td colspan="8" class="no-bdr">
                         <span> To MDS-GSB of the Agencys </span><br>
                         <span>Please debit MDS Sub-Account Number: 2036-90014-1 </span><br>
                         <span>Please credit the account of the above listed creditors to cover payment of accounts payable (A/Ps) </span>
@@ -154,13 +158,24 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                 </tr>
                 <tr>
-                    <th colspan="8">TOTAL AMOUNT:</th>
+                    <th colspan="8" class="no-bdr">TOTAL AMOUNT:
+
+                        <span><?php echo Yii::$app->memem->convertNumberToWords($ttlGrs) . ' Pesos';
+                                $dcl = round(fmod($ttlGrs, 1) * 100);
+                                if ($dcl > 0) {
+                                    echo ' And ';
+                                    echo Yii::$app->memem->convertNumberToWords($dcl);
+                                    echo ' Centavos';
+                                }
+
+                                ?></span>
+                    </th>
                 </tr>
                 <tr>
-                    <th colspan="8">Agency Authorized Signatories</th>
+                    <th colspan="8" class="" style="border-bottom: 0;">Agency Authorized Signatories</th>
                 </tr>
                 <tr>
-                    <td colspan="8">
+                    <td colspan="8" class="no-bdr">
 
                         <div class='signatory'>
                             <u><b>MARRY ANN L. PASCUAL </b></u><br>
@@ -174,12 +189,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </tr>
                 <tr>
-                    <th>FOR MDS-GSB USE ONLY:</th>
-                    <th colspan="7">We have debited/ credited above accounts as instructed.</th>
+                    <th colspan="8" style="border-bottom: 0;"> FOR MDS-GSB USE ONLY: <span style="margin-left: 5rem;">We have debited/ credited above accounts as instructed.</span> </th>
                 </tr>
                 <tr>
 
-                    <th colspan="8">
+                    <th colspan="8" style="border-top: 0;">
+                        <br>
                         <div class='blnk-sgnatory'>
                             <span>Signature verified by:</span>
                         </div>
@@ -196,23 +211,29 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </tr>
                 <tr>
-                    <td colspan="4"></td>
-                    <td colspan="2">
-                        <span>LDDAP-ADA No.</span><br>
-                        <span>Date of Issue</span><br>
-                        <span>NCA No. / NCA Date</span><br>
-                        <span>CHECK#</span><br>
-                        <span>ACIC #</span>
-
-                    </td>
-                    <td colspan="2">
-                        <span><?= $model->cashDisbursement->check_or_ada_no ?></span><br>
-                        <span></span><br>
-                        <span></span><br>
-                        <span></span><br>
-                        <span></span>
-
-                    </td>
+                    <td colspan="4" class="no-bdr" style="padding: 0;"></td>
+                    <td colspan="2" class="no-bdr" style="padding: 0;"> <span>LDDAP-ADA No.</span></td>
+                    <td colspan="2" class="no-bdr" style="padding: 0;"> <span>:<?= $model->serial_number ?></span></td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="no-bdr" style="padding: 0;"></td>
+                    <td colspan="2" class="no-bdr" style="padding: 0;"> <span>Date of Issue</span><br></td>
+                    <td colspan="2" class="no-bdr" style="padding: 0;"> <span>:<?= DateTime::createFromFormat('Y-m-d', $model->cashDisbursement->issuance_date)->format('F d, Y') ?></span></td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="no-bdr" style="padding: 0;"></td>
+                    <td colspan="2" class="no-bdr" style="padding: 0;"> <span>NCA No. / NCA Date</span><br></td>
+                    <td colspan="2" class="no-bdr" style="padding: 0;"></td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="no-bdr" style="padding: 0;"></td>
+                    <td colspan="2" class="no-bdr" style="padding: 0;"><span>CHECK#</span><br></td>
+                    <td colspan="2" class="no-bdr" style="padding: 0;"><span>:<?= $model->cashDisbursement->check_or_ada_no ?></span></td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="no-bdr" style="padding: 0;"></td>
+                    <td colspan="2" class="no-bdr" style="padding: 0;"> <span>ACIC #</span><br></td>
+                    <td colspan="2" class="no-bdr" style="padding: 0;"></td>
                 </tr>
             </tbody>
         </table>
@@ -226,6 +247,10 @@ $this->params['breadcrumbs'][] = $this->title;
     table {
         padding: 1rem;
         border: 1px solid black;
+    }
+
+    .no-bdr {
+        border: 0;
     }
 
     .signatory {
@@ -261,6 +286,10 @@ $this->params['breadcrumbs'][] = $this->title;
         td {
             font-size: 10px;
             padding: 4px;
+        }
+
+        .main-footer {
+            display: none;
         }
     }
 </style>
