@@ -92,4 +92,8 @@ class Payee extends \yii\db\ActiveRecord
     {
         return $this->hasMany(JevPreparation::class, ['payee_id' => 'id']);
     }
+    public function getBank()
+    {
+        return $this->hasOne(Banks::class, ['id' => 'fk_bank_id']);
+    }
 }

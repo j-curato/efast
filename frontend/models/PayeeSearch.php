@@ -18,7 +18,7 @@ class PayeeSearch extends Payee
     {
         return [
             [['id'], 'integer'],
-            [['account_name', 'registered_name', 'contact_person', 'registered_address', 'contact', 'remark', 'tin_number', 'account_num'], 'safe'],
+            [['account_name', 'registered_name', 'contact_person', 'registered_address', 'contact', 'remark', 'tin_number', 'account_num', 'fk_bank_id'], 'safe'],
         ];
     }
 
@@ -56,6 +56,7 @@ class PayeeSearch extends Payee
             // $query->where('0=1');
             return $dataProvider;
         }
+        $query->joinWith('bank');
 
         // grid filtering conditions
         $query->andFilterWhere([
@@ -69,6 +70,7 @@ class PayeeSearch extends Payee
             ->andFilterWhere(['like', 'contact', $this->contact])
             ->andFilterWhere(['like', 'remark', $this->remark])
             ->andFilterWhere(['like', 'account_num', $this->account_num])
+            ->andFilterWhere(['like', 'banks.name', $this->fk_bank_id])
             ->andFilterWhere(['like', 'tin_number', $this->tin_number]);
 
         return $dataProvider;

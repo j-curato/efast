@@ -85,7 +85,12 @@ $this->params['breadcrumbs'][] = $this->title;
     ],
     'columns' => [
 
-
+        [
+            'attribute' => 'fk_bank_id',
+            'value' => function ($model) {
+                return $model->bank->name ?? '';
+            }
+        ],
         'account_name',
         'account_num',
         'registered_name',
