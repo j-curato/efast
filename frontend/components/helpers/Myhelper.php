@@ -21,8 +21,6 @@ class MyHelper extends BaseObject
     public static function uuid()
     {
         return Yii::$app->db->createCommand('SELECT UUID_SHORT()')->queryScalar();
-
-        
     }
     public static function checkAllotmentBalance(
         $allotment_id,
@@ -49,7 +47,9 @@ class MyHelper extends BaseObject
                 ->bindValue(':txnPrItmId', $txnPrItmId)
                 ->bindValue(':orsItmId', $orsItmId)
                 ->bindValue(':orsTxnItmId', $orsTxnItmId)
-                ->queryScalar();
+                ->getRawSql();
+            echo $balance;
+            die();
             $cur_balance = floatval($balance) - floatval($amount);
 
             if ($cur_balance < 0) {

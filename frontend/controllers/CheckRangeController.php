@@ -142,7 +142,7 @@ class CheckRangeController extends Controller
                 //     ->bindvalue(':province', $province)
                 //     ->queryAll();
                 if (!empty($query)) {
-                    return json_encode(['success' => false, 'error' => 'Check Exist where From or To are in between']);
+                    return json_encode(['success' => false, 'error' => 'Check Range exists a case where either the `From` or `To` values are in between other Check Range']);
                 }
             }
             $check->province = $province;

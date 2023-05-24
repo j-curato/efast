@@ -1,10 +1,12 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use app\models\DvAucsEntriesSearch;
 use kartik\export\ExportMenu;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
 use kartik\grid\GridView;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
@@ -199,57 +201,24 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     $cols =  [
-        // ['class' => 'yii\grid\SerialColumn'],
-
-        // 'id',
-        // 'process_ors_id',
-        // 'raoud_id',
         'dv_number',
         'reporting_period',
         'particular',
+        'natureOfTxn',
+        'mrdName',
+        'payee',
+        'ttlAmtDisbursed',
+        'ttlTax',
+        'grossAmt',
+        'orsNums',
+        'txnType',
 
-        // foreach($model->dvAucsEntries as $val){
-
-        // },
         [
-            'label' => "Payee",
-            'attribute' => 'payee_id',
-            'value' => "payee.account_name"
-        ],
-        [
-            'label' => "MRD Classification",
-            'attribute' => 'mrd_classification_id',
-            'value' => "mrdClassification.name"
-        ],
-        [
-            'label' => "Nature of Transaction",
-            'attribute' => 'nature_of_transaction_id',
-            'value' => "natureOfTransaction.name"
-        ],
-        [
-            'label' => "Amount Disbursed",
+            'label' => 'Actions',
+            'format' => 'raw',
             'value' => function ($model) {
-                $query = (new \yii\db\Query())
-                    ->select("SUM(amount_disbursed) as total_disbursed")
-                    ->from("dv_aucs_entries")
-                    ->where('dv_aucs_entries.dv_aucs_id = :dv_aucs_id', ['dv_aucs_id' => $model->id])
-                    ->andWhere('dv_aucs_entries.is_deleted = 0')
-                    ->one();
-                return $query['total_disbursed'];
-            },
-            'format' => ['decimal', 2],
-            'hAlign' => 'right',
-        ],
-
-        //'other_trust_liability_withheld',
-        'created_at',
-        // [
-        //     'label'=>
-        // ],
-
-        [
-            'class' => '\kartik\grid\ActionColumn',
-            'deleteOptions' => ['label' => '<i class="glyphicon glyphicon-remove"></i>', 'style' => "display:none"],
+                return MyHelper::gridDefaultAction($model->id);
+            }
         ],
     ];
     ?>

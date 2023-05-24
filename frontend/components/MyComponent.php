@@ -396,6 +396,69 @@ class MyComponent extends Component
         }
         return implode(' ', $words);
     }
+    function convertNumberToWords($number)
+    {
+        $ones = array(
+            0 => 'Zero',
+            1 => 'One',
+            2 => 'Two',
+            3 => 'Three',
+            4 => 'Four',
+            5 => 'Five',
+            6 => 'Six',
+            7 => 'Seven',
+            8 => 'Eight',
+            9 => 'Nine'
+        );
+
+        $tens = array(
+            10 => 'Ten',
+            11 => 'Eleven',
+            12 => 'Twelve',
+            13 => 'Thirteen',
+            14 => 'Fourteen',
+            15 => 'Fifteen',
+            16 => 'Sixteen',
+            17 => 'Seventeen',
+            18 => 'Eighteen',
+            19 => 'Nineteen',
+            20 => 'Twenty',
+            30 => 'Thirty',
+            40 => 'Forty',
+            50 => 'Fifty',
+            60 => 'Sixty',
+            70 => 'Seventy',
+            80 => 'Eighty',
+            90 => 'Ninety'
+        );
+
+        $number = intval($number);
+
+        if ($number < 10) {
+            return $ones[$number];
+        } elseif ($number < 20) {
+            return $tens[$number];
+        } elseif ($number < 100) {
+            $unit = $number % 10;
+            return $tens[$number - $unit] . ' ' . $ones[$unit];
+        } elseif ($number < 1000) {
+            $hundreds = intval($number / 100);
+            $remainder = $number % 100;
+            return $ones[$hundreds] . ' Hundred ' . $this->convertNumberToWords($remainder);
+        } elseif ($number < 1000000) {
+            $thousands = intval($number / 1000);
+            $remainder = $number % 1000;
+            return $this->convertNumberToWords($thousands) . ' Thousand ' . $this->convertNumberToWords($remainder);
+        } elseif ($number < 1000000000) {
+            $millions = intval($number / 1000000);
+            $remainder = $number % 1000000;
+            return $this->convertNumberToWords($millions) . ' Million ' . $this->convertNumberToWords($remainder);
+        } else {
+            $billions = intval($number / 1000000000);
+            $remainder = $number % 1000000000;
+            return $this->convertNumberToWords($billions) . ' Billion ' . $this->convertNumberToWords($remainder);
+        }
+    }
     function getWorkdays($date1, $date2, $workSat = FALSE, $patron = NULL)
     {
         if (!defined('SATURDAY')) define('SATURDAY', 6);

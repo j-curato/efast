@@ -351,7 +351,11 @@
                                     'label' => 'Master Records',
                                     'icon' => 'circle-o',
                                     'url' => '#',
-                                    'items' => [],
+                                    'items' => [
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Check Ranges', 'icon' => 'circle-o', 'url' => ['/ro-check-ranges'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Mode of Payments', 'icon' => 'circle-o', 'url' => ['/mode-of-payments'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Banks', 'icon' => 'circle-o', 'url' => ['/banks'],] : [],
+                                    ],
                                 ],
                                 [
                                     'label' => 'Transaction',

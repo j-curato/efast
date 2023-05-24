@@ -3,17 +3,17 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\RoCheckRange;
-use app\models\RoCheckRangeSearch;
+use app\models\ModeOfPayments;
+use app\models\ModeOfPaymentsSearch;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * RoCheckRangeController implements the CRUD actions for RoCheckRange model.
+ * ModeOfPaymentsController implements the CRUD actions for ModeOfPayments model.
  */
-class RoCheckRangeController extends Controller
+class ModeOfPaymentsController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -24,20 +24,21 @@ class RoCheckRangeController extends Controller
             'access' => [
                 'class' => AccessControl::class,
                 'only' => [
-                    'view',
                     'index',
+                    'view',
                     'create',
-                    'delete',
                     'update',
+                    'delete',
                 ],
+
                 'rules' => [
                     [
                         'actions' => [
-                            'view',
                             'index',
+                            'view',
                             'create',
-                            'delete',
                             'update',
+                            'delete',
                         ],
                         'allow' => true,
                         'roles' => ['@']
@@ -54,12 +55,12 @@ class RoCheckRangeController extends Controller
     }
 
     /**
-     * Lists all RoCheckRange models.
+     * Lists all ModeOfPayments models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new RoCheckRangeSearch();
+        $searchModel = new ModeOfPaymentsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -69,7 +70,7 @@ class RoCheckRangeController extends Controller
     }
 
     /**
-     * Displays a single RoCheckRange model.
+     * Displays a single ModeOfPayments model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -82,13 +83,14 @@ class RoCheckRangeController extends Controller
     }
 
     /**
-     * Creates a new RoCheckRange model.
+     * Creates a new ModeOfPayments model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new RoCheckRange();
+        // Check Type 1 for LBP check 0 form eCheck
+        $model = new ModeOfPayments();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -100,7 +102,7 @@ class RoCheckRangeController extends Controller
     }
 
     /**
-     * Updates an existing RoCheckRange model.
+     * Updates an existing ModeOfPayments model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -120,7 +122,7 @@ class RoCheckRangeController extends Controller
     }
 
     /**
-     * Deletes an existing RoCheckRange model.
+     * Deletes an existing ModeOfPayments model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -134,15 +136,15 @@ class RoCheckRangeController extends Controller
     }
 
     /**
-     * Finds the RoCheckRange model based on its primary key value.
+     * Finds the ModeOfPayments model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return RoCheckRange the loaded model
+     * @return ModeOfPayments the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = RoCheckRange::findOne($id)) !== null) {
+        if (($model = ModeOfPayments::findOne($id)) !== null) {
             return $model;
         }
 

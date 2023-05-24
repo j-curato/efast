@@ -456,14 +456,8 @@ $user_data = Yii::$app->memem->getUserData();
                 </tr>
                 <tr>
                     <th>Budget Year</th>
-
-                    <?php
-
-                    if (Yii::$app->user->can('super-user')) {
-                        echo "<th>Office</th>";
-                        echo "<th>Division</th>";
-                    }
-                    ?>
+                    <th>Office</th>
+                    <th>Division</th>
                     <th>Allotment Number</th>
                     <th>Mfo Name</th>
                     <th>Fund Source</th>

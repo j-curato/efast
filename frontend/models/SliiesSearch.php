@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\RoCheckRange;
+use app\models\Sliies;
 
 /**
- * RoCheckRangeSearch represents the model behind the search form of `app\models\RoCheckRange`.
+ * SliiesSearch represents the model behind the search form of `app\models\Sliies`.
  */
-class RoCheckRangeSearch extends RoCheckRange
+class SliiesSearch extends Sliies
 {
     /**
      * {@inheritdoc}
@@ -17,8 +17,8 @@ class RoCheckRangeSearch extends RoCheckRange
     public function rules()
     {
         return [
-            [['id', 'fk_book_id', 'from', 'to'], 'integer'],
-            [['created_at'], 'safe'],
+            [['id', 'fk_cash_disbursement_id'], 'integer'],
+            [['serial_number', 'created_at'], 'safe'],
         ];
     }
 
@@ -40,7 +40,7 @@ class RoCheckRangeSearch extends RoCheckRange
      */
     public function search($params)
     {
-        $query = RoCheckRange::find();
+        $query = Sliies::find();
 
         // add conditions that should always apply here
 
@@ -55,15 +55,15 @@ class RoCheckRangeSearch extends RoCheckRange
             // $query->where('0=1');
             return $dataProvider;
         }
-        $query->joinWith('book');
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'from' => $this->from,
-            'to' => $this->to,
+            'fk_cash_disbursement_id' => $this->fk_cash_disbursement_id,
             'created_at' => $this->created_at,
         ]);
-        $query->andFilterWhere(['like', 'books.name', $this->fk_book_id]);
+
+        $query->andFilterWhere(['like', 'serial_number', $this->serial_number]);
 
         return $dataProvider;
     }

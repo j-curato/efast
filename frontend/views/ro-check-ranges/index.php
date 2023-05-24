@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\web\JqueryAsset;
@@ -37,9 +38,15 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'from',
             'to',
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id);
+                }
+            ]
         ],
-        'pjax'=>true
+        'pjax' => true
     ]); ?>
 
 

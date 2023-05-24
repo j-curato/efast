@@ -6,17 +6,25 @@ use app\models\CancelledDisbursements;
 use app\models\CancelledDisbursementsSearch;
 use Yii;
 use app\models\CashDisbursement;
+use app\models\CashDisbursementItems;
 use app\models\CashDisbursementSearch;
 use app\models\DvAccountingEntries;
 use app\models\DvAucs;
 use app\models\DvAucsEntries;
+use app\models\DvAucsIndexSearch;
+use app\models\LddapAdas;
+use app\models\Sliies;
+use app\models\VwUndisbursedDvsSearch;
 use DateTime;
+use Error;
 use ErrorException;
+use yii\db\Expression;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 
 /**
  * CashDisbursementController implements the CRUD actions for CashDisbursement model.
@@ -122,7 +130,158 @@ class CashDisbursementController extends Controller
             ->queryOne();
         return $query;
     }
+    private function getCheckNumber($fk_ro_check_range_id)
+    {
+        $qry = Yii::$app->db->createCommand("SELECT ro_check_ranges.to,ro_check_ranges.from FROM ro_check_ranges WHERE id =:id")
+            ->bindValue(':id', $fk_ro_check_range_id)
+            ->queryOne();
+        $checks  = [];
+        $x = 0;
+        for ($i = $qry['from']; $i <= $qry['to']; $i++) {
+            $checks[':qp' . $x][] = $i;
+            $x++;
+        }
 
+        Yii::$app->db->createCommand("DROP TABLE IF EXISTS tmp_tbl_checks;
+        CREATE TABLE tmp_tbl_checks (check_num BIGINT)")
+            ->execute();
+        Yii::$app->db->createCommand()->batchInsert('tmp_tbl_checks', ['check_num'], $checks)->execute();
+        $model_check_num = Yii::$app->db->createCommand("SELECT tmp_tbl_checks.check_num FROM tmp_tbl_checks
+        LEFT JOIN cash_disbursement ON tmp_tbl_checks.check_num = cash_disbursement.check_or_ada_no
+        WHERE cash_disbursement.id IS NULL ORDER BY tmp_tbl_checks.check_num LIMIT 1")
+            ->queryScalar();
+        return $model_check_num;
+    }
+    private function getItems($model_id)
+    {
+        $qry = Yii::$app->db->createCommand("SELECT
+        cash_disbursement_items.id as itemId,
+         cash_disbursement_items.fk_chart_of_account_id,
+        cash_disbursement_items.fk_dv_aucs_id,
+       dv_aucs_index.book_name,
+       dv_aucs_index.dv_number,
+       dv_aucs_index.particular,
+       dv_aucs_index.ttlAmtDisbursed,
+       dv_aucs_index.ttlTax,
+       dv_aucs_index.grossAmt,
+       dv_aucs_index.orsNums,
+       dv_aucs_index.payee,
+       CONCAT(chart_of_accounts.uacs,'-',chart_of_accounts.general_ledger) as chart_of_acc
+       FROM cash_disbursement_items
+       LEFT JOIN dv_aucs_index ON cash_disbursement_items.fk_dv_aucs_id = dv_aucs_index.id
+       LEFT JOIN chart_of_accounts ON cash_disbursement_items.fk_chart_of_account_id = chart_of_accounts.id 
+       WHERE cash_disbursement_items.fk_cash_disbursement_id = :id
+       AND cash_disbursement_items.is_deleted = 0
+       ")
+            ->bindValue(':id', $model_id)
+            ->queryAll();
+        return $qry;
+    }
+    private function getAdaNumber($issuance_date)
+    {
+        $d = DateTime::createFromFormat('Y-m-d', $issuance_date);
+
+        $ada_number = Yii::$app->db->createCommand("CALL GetAdaNum(:yr)")
+            ->bindValue(':yr', $d->format('Y'))
+            ->queryScalar();
+        $new_num = '';
+        if (strlen($ada_number) < 5) {
+
+            $new_num = str_repeat(0, 5 - strlen($ada_number));
+        }
+        $new_num .= $ada_number;
+        return $d->format('Y-m') . '-' . $new_num;
+    }
+    private function sliieSerialNum($period)
+    {
+        $yr = DateTime::createFromFormat('Y-m', $period)->format('Y');
+        $qry  = Yii::$app->db->createCommand("SELECT 
+            CAST(SUBSTRING_INDEX(sliies.serial_number,'-',-1)AS UNSIGNED) +1 as ser_num
+            FROM sliies  
+            WHERE 
+            sliies.serial_number LIKE '2023%'
+            ORDER BY ser_num DESC LIMIT 1")
+            ->bindValue(':yr', $yr)
+            ->queryScalar();
+        $num = '';
+        if (strlen($qry) < 5) {
+            $num .= str_repeat(0, 5 - strlen($qry));
+        }
+        $num .= $qry;
+        return $period . '-' . $num;
+    }
+    private function lddapAdaSerialNum($period)
+    {
+        $yr = DateTime::createFromFormat('Y-m', $period)->format('Y');
+        $qry  = Yii::$app->db->createCommand("SELECT 
+            CAST(SUBSTRING_INDEX(lddap_adas.serial_number,'-',-1)AS UNSIGNED) +1 as ser_num
+            FROM lddap_adas  
+            WHERE 
+            lddap_adas.serial_number LIKE '2023%'
+            ORDER BY ser_num DESC LIMIT 1")
+            ->bindValue(':yr', $yr)
+            ->queryScalar();
+        $num = '';
+        if (strlen($qry) < 5) {
+            $num .= str_repeat(0, 5 - strlen($qry));
+        }
+        $num .= $qry;
+        return $period . '-' . $num;
+    }
+    private function createSliie($model_id, $period)
+    {
+        try {
+
+            $sliieModel = new Sliies();
+            $sliieModel->fk_cash_disbursement_id = $model_id;
+            $sliieModel->serial_number = $this->sliieSerialNum($period);
+            if (!$sliieModel->validate()) {
+                throw new ErrorException(json_encode($sliieModel->errors));
+            }
+            if (!$sliieModel->save(false)) {
+                throw new ErrorException('SLIIE Model Save Failed');
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+    }
+    private function createLddapAda($model_id, $period)
+    {
+        try {
+
+            $lddapAdaModel = new LddapAdas();
+            $lddapAdaModel->fk_cash_disbursement_id = $model_id;
+            $lddapAdaModel->serial_number = $this->lddapAdaSerialNum($period);
+            if (!$lddapAdaModel->validate()) {
+                throw new ErrorException(json_encode($lddapAdaModel->errors));
+            }
+            if (!$lddapAdaModel->save(false)) {
+                throw new ErrorException('LDDAP-ADA  Model Save Failed');
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+    }
+    private function getSummary($model_id)
+    {
+        $qry = Yii::$app->db->createCommand("SELECT 
+        chart_of_accounts.uacs,
+        chart_of_accounts.general_ledger,
+        SUM(dv_aucs_index.ttlAmtDisbursed) as total
+         FROM 
+        cash_disbursement_items
+        JOIN dv_aucs_index ON cash_disbursement_items.fk_dv_aucs_id = dv_aucs_index.id
+        LEFT JOIN chart_of_accounts ON cash_disbursement_items.fk_chart_of_account_id = chart_of_accounts.id
+         WHERE cash_disbursement_items.fk_cash_disbursement_id = :id
+        AND cash_disbursement_items.is_deleted = 0
+        GROUP BY chart_of_accounts.uacs,
+        chart_of_accounts.general_ledger")
+            ->bindValue(':id', $model_id)
+            ->queryAll();
+        return $qry;
+    }
     /**
      * Lists all CashDisbursement models.
      * @return mixed
@@ -149,9 +308,50 @@ class CashDisbursementController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'items' => $this->getItems($id),
+            'summary' => $this->getSummary($id)
         ]);
     }
 
+    private function insertItems($model_id, $items, $isUpdate = false)
+    {
+
+        try {
+            if ($isUpdate === true && !empty(array_column($items, 'item_id'))) {
+                $itemIds = array_column($items, 'item_id');
+                $params = [];
+                $sql = ' AND ';
+                $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $itemIds], $params);
+                echo Yii::$app->db->createCommand("UPDATE cash_disbursement_items SET is_deleted = 1 
+                WHERE 
+                cash_disbursement_items.is_deleted = 0
+                AND cash_disbursement_items.fk_cash_disbursement_id = :id
+                $sql", $params)
+                    ->bindValue(':id', $model_id)
+                    ->execute();
+            }
+            foreach ($items as $itm) {
+                if (!empty($itm['item_id'])) {
+                    $itmModel = CashDisbursementItems::findOne($itm['item_id']);
+                } else {
+                    $itmModel = new CashDisbursementItems();
+                }
+                $itmModel->fk_cash_disbursement_id = $model_id;
+                $itmModel->fk_dv_aucs_id = $itm['dv_id'];
+                $itmModel->fk_chart_of_account_id = $itm['chart_of_acc_id'];
+                $itmModel->is_deleted = 0;
+                if (!$itmModel->validate()) {
+                    throw new ErrorException(json_encode($itmModel->errors));
+                }
+                if (!$itmModel->save(false)) {
+                    throw new ErrorException('itemModel Save Failed');
+                }
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+    }
     /**
      * Creates a new CashDisbursement model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -160,25 +360,52 @@ class CashDisbursementController extends Controller
     public function actionCreate()
     {
         $model = new CashDisbursement();
-
+        $dvSearchModel = new VwUndisbursedDvsSearch();
+        $dvSearchModel->is_cancelled = 0;
+        $dvDataProvider = $dvSearchModel->search(Yii::$app->request->queryParams);
+        $dvDataProvider->pagination = ['pageSize' => 10];
         if ($model->load(Yii::$app->request->post())) {
+            $items = Yii::$app->request->post('items') ?? [];
 
             try {
-                $model->is_cancelled = 0;
-                $checkExist = YIi::$app->db->createCommand("SELECT EXISTS(SELECT *
-                 FROM cash_disbursement WHERE cash_disbursement.is_cancelled = 0 AND cash_disbursement.dv_aucs_id = :dv_id)")
-                    ->bindValue(':dv_id', $model->dv_aucs_id)
-                    ->queryScalar();
-                if ($checkExist) {
-                    throw new ErrorException("DV Already Disbursed");
+                $txn = Yii::$app->db->beginTransaction();
+                if (empty($items)) {
+                    throw new ErrorException('Items is Required');
                 }
+                $model_check_num =  $this->getCheckNumber($model->fk_ro_check_range_id);
+                if (empty($model_check_num)) {
+                    throw new ErrorException("No Available Check Number for the selected check range");
+                }
+                $mode_of_payment_name = strtolower(trim($model->modeOfPayment->name));
+                if ($mode_of_payment_name == 'lbp check w/o ada' || $mode_of_payment_name == 'echeck w/o ada') {
+                    if (count(array_unique(array_column($items, 'dv_id'))) > 1) {
+                        throw new ErrorException('Items Cannot be more than one');
+                    }
+                }
+                if ($mode_of_payment_name == 'lbp check w/ ada' || $mode_of_payment_name == 'echeck w/ ada') {
+                    $model->ada_number = $this->getAdaNumber($model->issuance_date);
+                }
+
+                $model->check_or_ada_no = $model_check_num;
+                $model->is_cancelled = 0;
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
                 if (!$model->save(false)) {
                     throw new ErrorException("Model Save Failed");
                 }
-
+                $insItms = $this->insertItems($model->id, $items);
+                if ($insItms !== true) {
+                    throw new ErrorException($insItms);
+                }
+                $insSliie = $this->createSliie($model->id, DateTime::createFromFormat('Y-m-d', $model->issuance_date)->format('Y-m'));
+                if ($insSliie !== true) {
+                    throw new ErrorException($insSliie);
+                }
+                $insLddapAda = $this->createLddapAda($model->id, DateTime::createFromFormat('Y-m-d', $model->issuance_date)->format('Y-m'));
+                if ($insLddapAda !== true) {
+                    throw new ErrorException($insLddapAda);
+                }
                 Yii::$app->db->createCommand("UPDATE advances_entries 
                     LEFT JOIN advances ON advances_entries.advances_id  = advances.id
                     SET advances_entries.is_deleted = 0,
@@ -190,15 +417,20 @@ class CashDisbursementController extends Controller
                     ->bindValue(':dv_id', $model->dv_aucs_id)
                     ->bindValue(':cash_id', $model->id)
                     ->query();
+                $txn->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
+                $txn->rollBack();
                 return json_encode(['error' => true, 'error_message' => $e->getMessage()]);
             }
-            return $this->redirect(['view', 'id' => $model->id]);
         }
+
 
         return $this->render('create', [
             'model' => $model,
-            'type' => 'create'
+            'dvSearchModel' => $dvSearchModel,
+            'dvDataProvider' => $dvDataProvider,
+            'items' => []
         ]);
     }
 
@@ -212,22 +444,51 @@ class CashDisbursementController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
+        $oldModel = $this->findModel($id);
+        $dvSearchModel = new VwUndisbursedDvsSearch();
+        $dvSearchModel->is_cancelled = 0;
+        $dvSearchModel->bookFilter = !empty($model->book->name) ? $model->book->name : '';
+        $dvDataProvider = $dvSearchModel->search(Yii::$app->request->queryParams);
+        $dvDataProvider->pagination = ['pageSize' => 10];
         if ($model->load(Yii::$app->request->post())) {
+            $items = Yii::$app->request->post('items') ?? [];
+
             try {
-                $checkExist = YIi::$app->db->createCommand("SELECT EXISTS(SELECT *
-                 FROM cash_disbursement WHERE cash_disbursement.is_cancelled = 0 AND cash_disbursement.dv_aucs_id = :dv_id AND cash_disbursement.id != :cash_id)")
-                    ->bindValue(':dv_id', $model->dv_aucs_id)
-                    ->bindValue(':cash_id', $model->id)
-                    ->queryScalar();
-                if ($checkExist) {
-                    throw new ErrorException("DV Already Disbursed");
+                $txn = Yii::$app->db->beginTransaction();
+                if (empty($items)) {
+                    throw new ErrorException('Items is Required');
+                }
+                if (intval($model->fk_ro_check_range_id) !== intval($oldModel->fk_ro_check_range_id)) {
+
+                    $model_check_num =  $this->getCheckNumber($model->fk_ro_check_range_id);
+                    if (empty($model_check_num)) {
+                        throw new ErrorException("No Available Check Number for the selected check range");
+                    }
+                    $model->check_or_ada_no = $model_check_num;
+                }
+
+                $mode_of_payment_name = strtolower(trim($model->modeOfPayment->name));
+                if ($mode_of_payment_name == 'lbp check w/o ada' || $mode_of_payment_name == 'echeck w/o ada') {
+                    if (count(array_unique(array_column($items, 'dv_id'))) > 1) {
+                        throw new ErrorException('Items Cannot be more than one');
+                    }
+                    $model->ada_number = null;
+                }
+                $old_mode_of_payment_name = strtolower(trim($oldModel->modeOfPayment->name));
+                if ($old_mode_of_payment_name == 'lbp check w/o ada' || $old_mode_of_payment_name == 'echeck w/o ada') {
+                    if ($mode_of_payment_name == 'lbp check w/ ada' || $mode_of_payment_name == 'echeck w/ ada') {
+                        $model->ada_number = $this->getAdaNumber($model->issuance_date);
+                    }
                 }
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
                 if (!$model->save(false)) {
                     throw new ErrorException("Model Save Failed");
+                }
+                $insItms = $this->insertItems($model->id, $items, true);
+                if ($insItms !== true) {
+                    throw new ErrorException($insItms);
                 }
 
                 Yii::$app->db->createCommand("UPDATE advances_entries 
@@ -241,15 +502,18 @@ class CashDisbursementController extends Controller
                     ->bindValue(':dv_id', $model->dv_aucs_id)
                     ->bindValue(':cash_id', $model->id)
                     ->query();
+                $txn->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
+                $txn->rollBack();
                 return json_encode(['error' => true, 'error_message' => $e->getMessage()]);
             }
-            return $this->redirect(['view', 'id' => $model->id]);
         }
         return $this->render('update', [
             'model' => $model,
-            'type' => 'update',
-            'dv_details' => $this->getDvDetails($model->dv_aucs_id)
+            'dvSearchModel' => $dvSearchModel,
+            'dvDataProvider' => $dvDataProvider,
+            'items' => $this->getItems($id)
         ]);
     }
 
@@ -726,6 +990,8 @@ class CashDisbursementController extends Controller
                 $new_model->parent_disbursement = $model->id;
                 $new_model->begin_time = $model->begin_time;
                 $new_model->out_time = $model->out_time;
+                $new_model->fk_mode_of_payment_id = $model->fk_mode_of_payment_id;
+                $new_model->fk_ro_check_range_id = $model->fk_ro_check_range_id;
                 if (!$new_model->validate()) {
                     throw new ErrorException(json_encode($new_model->errors));
                 }
@@ -779,6 +1045,28 @@ class CashDisbursementController extends Controller
     {
         if (YIi::$app->request->isPost) {
             return json_encode($this->getDvDetails(YIi::$app->request->post('id')));
+        }
+    }
+    public function actionCashChartOfAccounts()
+    {
+
+        if (YIi::$app->request->get()) {
+            $query = new Query();
+            $query->select(["chart_of_accounts.id, CONCAT (chart_of_accounts.uacs ,'-',chart_of_accounts.general_ledger) as text"])
+                ->from('chart_of_accounts')
+
+                ->andWhere(
+                    [
+                        'or',
+                        ['=', 'uacs', '5010000000'],
+                        ['=', 'uacs', '5020000000'],
+                        ['=', 'uacs', '5060000000'],
+                    ]
+
+                );
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            return json_encode($data);
         }
     }
 }

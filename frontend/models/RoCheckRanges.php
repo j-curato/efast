@@ -15,14 +15,14 @@ use Yii;
  *
  * @property Books $fkBook
  */
-class RoCheckRange extends \yii\db\ActiveRecord
+class RoCheckRanges extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'ro_check_range';
+        return 'ro_check_ranges';
     }
 
     /**
@@ -31,10 +31,9 @@ class RoCheckRange extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fk_book_id', 'from', 'to'], 'required'],
-            [['fk_book_id', 'from', 'to'], 'integer'],
+            [['fk_book_id', 'from', 'to', 'check_type'], 'required'],
+            [['fk_book_id', 'from', 'to', 'check_type'], 'integer'],
             [['created_at'], 'safe'],
-            [['to'], 'ValidateTo'],
             [['fk_book_id'], 'exist', 'skipOnError' => true, 'targetClass' => Books::class, 'targetAttribute' => ['fk_book_id' => 'id']],
         ];
     }
@@ -53,8 +52,9 @@ class RoCheckRange extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'fk_book_id' => 'Book ',
-            'from' => 'From',
-            'to' => 'To',
+            'from' => 'From Check No.',
+            'to' => 'To Check No.',
+            'check_type' => 'Check Type',
             'created_at' => 'Created At',
         ];
     }

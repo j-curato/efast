@@ -14,8 +14,10 @@ $this->params['breadcrumbs'][] = 'Update';
 
 
     <?= $this->render('_form', [
+        'dvSearchModel' => $dvSearchModel,
+        'dvDataProvider' => $dvDataProvider,
         'model' => $model,
-        'dv_details' => $dv_details,
+        'items' => $items,
     ]) ?>
 
 </div>

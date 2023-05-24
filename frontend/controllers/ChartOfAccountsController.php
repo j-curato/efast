@@ -634,7 +634,7 @@ class ChartOfAccountsController extends Controller
 
         return $out;
     }
-    public function actionSearchLiquidationAccountingCode($q = null, $id = null, $province = null, $page = null)
+    public function actionSearchLiquidationAccountingCode($q = null, $id = null, $page = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 

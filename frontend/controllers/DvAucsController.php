@@ -23,6 +23,7 @@ use app\models\ProcessOrsEntries;
 use yii\web\NotFoundHttpException;
 use app\models\DvAccountingEntries;
 use app\models\DvAucsFile;
+use app\models\DvAucsIndexSearch;
 use app\models\DvTransactionType;
 use app\models\TrackingSheetIndexSearch;
 use common\models\UploadForm;
@@ -134,7 +135,7 @@ class DvAucsController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new DvAucsSearch();
+        $searchModel = new DvAucsIndexSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $dataProvider->sort = ['defaultOrder' => ['id' => SORT_DESC]];
 

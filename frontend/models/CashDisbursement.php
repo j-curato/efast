@@ -40,37 +40,31 @@ class CashDisbursement extends \yii\db\ActiveRecord
 
             [[
                 'book_id',
-                'dv_aucs_id',
                 'reporting_period',
-                'mode_of_payment',
                 'issuance_date',
                 'check_or_ada_no',
                 'begin_time',
                 'out_time',
+                'fk_ro_check_range_id',
+                'fk_mode_of_payment_id'
             ], 'required'],
-            [['book_id', 'dv_aucs_id', 'is_cancelled'], 'integer'],
             [[
-                'reporting_period', 'mode_of_payment', 'issuance_date', 'begin_time',
+                'book_id',
+                'dv_aucs_id',
+                'is_cancelled',
+                'fk_ro_check_range_id',
+                'fk_mode_of_payment_id'
+            ], 'integer'],
+            [[
+                'reporting_period',
+                'mode_of_payment',
+                'issuance_date',
+                'begin_time',
                 'out_time',
             ], 'string', 'max' => 50],
             [['ada_number'], 'string', 'max' => 40],
             [['check_or_ada_no'], 'string', 'max' => 100],
             [['is_cancelled'], 'default', 'value' => 0],
-            [[
-                'id',
-                'book_id',
-                'dv_aucs_id',
-                'reporting_period',
-                'mode_of_payment',
-                'check_or_ada_no',
-                'is_cancelled',
-                'issuance_date',
-                'ada_number',
-                'begin_time',
-                'out_time',
-                'parent_disbursement',
-
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
             [['book_id'], 'exist', 'skipOnError' => true, 'targetClass' => Books::class, 'targetAttribute' => ['book_id' => 'id']],
         ];
     }
@@ -92,6 +86,8 @@ class CashDisbursement extends \yii\db\ActiveRecord
             'ada_number' => 'Ada Number',
             'begin_time' => 'Begin Time',
             'out_time' => 'Out Time',
+            'fk_ro_check_range_id' => 'Check Range',
+            'fk_mode_of_payment_id' => 'Mode of Payment'
         ];
     }
 
@@ -122,5 +118,17 @@ class CashDisbursement extends \yii\db\ActiveRecord
     public function getTransmittal()
     {
         return $this->hasOne(TransmittalEntries::class, ['cash_disbursement_id' => 'id']);
+    }
+    public function getModeOfPayment()
+    {
+        return $this->hasOne(ModeOfPayments::class, ['id' => 'fk_mode_of_payment_id']);
+    }
+    public function getSliie()
+    {
+        return $this->hasOne(Sliies::class, ['fk_cash_disbursement_id' => 'id']);
+    }
+    public function getLddapAda()
+    {
+        return $this->hasOne(LddapAdas::class, ['fk_cash_disbursement_id' => 'id']);
     }
 }

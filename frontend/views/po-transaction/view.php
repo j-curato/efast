@@ -545,7 +545,7 @@ Select2Asset::register($this);
             placeholder: "Select Position",
 
         })
-        $.getJSON('/afms/frontend/web/index.php?r=po-assignatory/get-all-assignatory')
+        $.getJSON(window.location.pathname + '?r=po-assignatory/get-all-assignatory')
 
             .then(function(data) {
 
