@@ -65,8 +65,8 @@ class PreRepairInspection extends \yii\db\ActiveRecord
             'date' => 'Date',
             'findings' => 'Findings',
             'recommendation' => 'Recommendation',
-            'fk_requested_by' => 'Fk Requested By',
-            'fk_accountable_person' => 'Fk Accountabler Person',
+            'fk_requested_by' => ' Requested By',
+            'fk_accountable_person' => ' Accountabler Person',
             'created_at' => 'Created At',
         ];
     }
