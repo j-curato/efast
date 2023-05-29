@@ -66,6 +66,7 @@ function liquidationAccountingCodesSelect() {
     ajax: {
       url: base_url + "?r=chart-of-accounts/search-liquidation-accounting-code",
       dataType: "json",
+      delay: 250,
       data: function (params) {
         return {
           q: params.term,
@@ -79,7 +80,9 @@ function liquidationAccountingCodesSelect() {
           pagination: data.pagination,
         };
       },
+      cache: true,
     },
+    minimumInputLength: 3,
   });
 }
 let books = [];
