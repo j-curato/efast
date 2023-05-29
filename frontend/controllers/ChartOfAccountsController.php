@@ -44,7 +44,7 @@ class ChartOfAccountsController extends Controller
                     'accounting-codes',
                     'accounting-codes-dv',
                     'search-chart-of-accounts',
-
+                    'search-accounting-code',
                     'get-chart-info',
                     'search-liquidation-accounting-code'
                 ],
@@ -63,7 +63,7 @@ class ChartOfAccountsController extends Controller
                             'get-general-ledger',
                             'chart-of-accounts',
                             'search-liquidation-accounting-code',
-
+                            'search-accounting-code',
                             'accounting-codes',
                             'accounting-codes-dv',
                             'search-chart-of-accounts',
@@ -81,7 +81,7 @@ class ChartOfAccountsController extends Controller
                             'accounting-codes',
                             'accounting-codes-dv',
                             'search-chart-of-accounts',
-
+                            'search-accounting-code',
                             'get-chart-info',
                             'search-liquidation-accounting-code'
 
@@ -642,17 +642,52 @@ class ChartOfAccountsController extends Controller
         $offset = ($page - 1) * $limit;
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
-            $query = new Query();
+            // $query = new Query();
 
-            $query->select(["object_code as id, CONCAT (object_code ,'-',account_title) as text"])
-                ->from('accounting_codes')
-                ->where(['or', ['like', 'account_title', $q], ['like', 'object_code', $q]])
-                ->andWhere('is_active =1 AND coa_is_active = 1 AND sub_account_is_active = 1 AND is_province_visible = 1');
-            if (!empty($page)) {
-                $query->offset($offset)
-                    ->limit($limit);
-            }
-            $command = $query->createCommand();
+            // $query->select(["object_code as id, CONCAT (object_code ,'-',account_title) as text"])
+            //     ->from('accounting_codes')
+            //     ->where(['or', ['like', 'account_title', $q], ['like', 'object_code', $q]])
+            //     ->andWhere('is_active =1 AND coa_is_active = 1 AND sub_account_is_active = 1 AND is_province_visible = 1');
+            // if (!empty($page)) {
+            //     $query->offset($offset)
+            //         ->limit($limit);
+            // }
+            // $command = $query->createCommand();
+            $command = Yii::$app->db->createCommand("SELECT * FROM (SELECT 
+            chart_of_accounts.uacs as id,
+            chart_of_accounts.general_ledger as 'text' 
+            FROM chart_of_accounts
+            WHERE 
+                chart_of_accounts.is_active =1
+                AND chart_of_accounts.is_active =1
+                AND chart_of_accounts.is_province_visible = 1
+                AND (chart_of_accounts.uacs LIKE :q OR chart_of_accounts.general_ledger LIKE :q)
+            UNION 
+            SELECT sub_accounts1.object_code,
+            sub_accounts1.`name`as account_title 
+            FROM sub_accounts1
+            LEFT JOIN chart_of_accounts ON sub_accounts1.chart_of_account_id = chart_of_accounts.id
+            WHERE 
+                chart_of_accounts.is_active =1
+                AND chart_of_accounts.is_active =1
+                AND chart_of_accounts.is_province_visible = 1
+                AND (sub_accounts1.object_code LIKE :q OR sub_accounts1.`name` LIKE :q)
+            UNION 
+            SELECT sub_accounts2.object_code,
+            sub_accounts2.`name`as account_title
+            FROM sub_accounts2
+            LEFT JOIN sub_accounts1 ON sub_accounts2.sub_accounts1_id = sub_accounts1.id
+            LEFT JOIN chart_of_accounts ON sub_accounts1.chart_of_account_id = chart_of_accounts.id 
+            WHERE 
+            chart_of_accounts.is_active =1
+            AND chart_of_accounts.is_active =1
+            AND chart_of_accounts.is_province_visible = 1
+            AND (sub_accounts2.object_code LIKE :q OR sub_accounts2.`name` LIKE :q)
+            ) as qry
+            LIMIT :lmt  OFFSET :ofst ")
+                ->bindValue(':q', '%' . $q . '%')
+                ->bindValue(':lmt',  $limit)
+                ->bindValue(':ofst',  $offset);
             $data = $command->queryAll();
             $out['results'] = array_values($data);
             if (!empty($page)) {
@@ -785,5 +820,18 @@ class ChartOfAccountsController extends Controller
         //     $out['results'] = ['id' => $id, 'text' => AdvancesEntries::find($id)->fund_source];
         // }
         return $out;
+    }
+    public function actionGetAllPvncChrt()
+    {
+        if (YIi::$app->request->get()) {
+
+            $qry  = Yii::$app->db->createCommand("SELECT accounting_codes.object_code as id, CONCAT (object_code ,'-',account_title) as 'text'
+            FROM accounting_codes
+            WHERE 
+            is_active =1 AND coa_is_active = 1 AND sub_account_is_active = 1 AND is_province_visible = 1
+            ")
+                ->queryAll();
+            return json_encode($qry);
+        }
     }
 }
