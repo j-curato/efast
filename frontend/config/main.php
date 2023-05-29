@@ -25,6 +25,7 @@ return [
                 $event->sender->headers->add('x-frame-options', 'DENY');
                 $event->sender->headers->add('x-frame-options', 'nosniff');
                 $event->sender->headers->add('strict-transport-security', 'max-age=31536000; preload');
+                $event->sender->headers->add(' Server-Timing', 'miss, db;dur=53, app;dur=47.2d');
             },
         ],
         'request' => [
@@ -40,21 +41,21 @@ return [
                 'application/json' => JsonParser::class
             ]
         ],
-        'session' => [
-            'class' => 'yii\web\Session',
-            'httpOnly' => true,
-            'secure' => true
-            // 'setCookieParams' => [
-            //     'httpOnly' => true,
-            //     'secure' => true,
-            // ],
+        // 'session' => [
+        //     'class' => 'yii\web\Session',
+        //     'httpOnly' => true,
+        //     'secure' => true
+        //     // 'setCookieParams' => [
+        //     //     'httpOnly' => true,
+        //     //     'secure' => true,
+        //     // ],
 
-        ],
-        'cookies' => [
-            'class' => 'yii\web\Cookie',
-            'httpOnly' => true,
-            'secure' => true,
-        ],
+        // ],
+        // 'cookies' => [
+        //     'class' => 'yii\web\Cookie',
+        //     'httpOnly' => true,
+        //     'secure' => true,
+        // ],
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => false,
