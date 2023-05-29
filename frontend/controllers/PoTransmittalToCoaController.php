@@ -112,8 +112,7 @@ class PoTransmittalToCoaController extends Controller
             WHERE po_transmittal_to_coa_entries.po_transmittal_to_coa_number = :transmittal_number
             ")
             ->bindValue(':transmittal_number', $id)
-            ->getRawSql();
-        return $query;
+            ->queryAll();
         return $this->render('view', [
             'dataProvider' => $query,
             'model' => $this->findModel($id)
