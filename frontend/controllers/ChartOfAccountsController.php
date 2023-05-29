@@ -44,7 +44,7 @@ class ChartOfAccountsController extends Controller
                     'accounting-codes',
                     'accounting-codes-dv',
                     'search-chart-of-accounts',
-                    'search-accounting-code',
+
                     'get-chart-info',
                     'search-liquidation-accounting-code'
                 ],
@@ -63,7 +63,7 @@ class ChartOfAccountsController extends Controller
                             'get-general-ledger',
                             'chart-of-accounts',
                             'search-liquidation-accounting-code',
-                            'search-accounting-code',
+
                             'accounting-codes',
                             'accounting-codes-dv',
                             'search-chart-of-accounts',
@@ -81,7 +81,7 @@ class ChartOfAccountsController extends Controller
                             'accounting-codes',
                             'accounting-codes-dv',
                             'search-chart-of-accounts',
-                            'search-accounting-code',
+
                             'get-chart-info',
                             'search-liquidation-accounting-code'
 
