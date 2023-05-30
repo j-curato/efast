@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\CashRecieved;
+use app\models\CashReceived;
 
 /**
- * CashRecievedSearch represents the model behind the search form of `app\models\CashRecieved`.
+ * CashReceivedSearch represents the model behind the search form of `app\models\CashReceived`.
  */
-class CashRecievedSearch extends CashRecieved
+class CashReceivedSearch extends CashReceived
 {
     /**
      * {@inheritdoc}
@@ -18,7 +18,11 @@ class CashRecievedSearch extends CashRecieved
     {
         return [
             [['id', 'document_recieved_id', 'book_id', 'mfo_pap_code_id'], 'integer'],
-            [['date', 'reporting_period', 'nca_no', 'nta_no', 'nft_no', 'purpose'], 'safe'],
+            [[
+                'date', 'reporting_period', 'nca_no', 'nta_no', 'nft_no', 'purpose',
+                'valid_from',
+                'valid_to',
+            ], 'safe'],
             [['amount'], 'number'],
         ];
     }
@@ -41,7 +45,7 @@ class CashRecievedSearch extends CashRecieved
      */
     public function search($params)
     {
-        $query = CashRecieved::find();
+        $query = CashReceived::find();
 
         // add conditions that should always apply here
 
@@ -71,6 +75,8 @@ class CashRecievedSearch extends CashRecieved
             ->andFilterWhere(['like', 'nca_no', $this->nca_no])
             ->andFilterWhere(['like', 'nta_no', $this->nta_no])
             ->andFilterWhere(['like', 'nft_no', $this->nft_no])
+            ->andFilterWhere(['like', 'valid_from', $this->valid_from])
+            ->andFilterWhere(['like', 'valid_to', $this->valid_to])
             ->andFilterWhere(['like', 'purpose', $this->purpose]);
 
         return $dataProvider;

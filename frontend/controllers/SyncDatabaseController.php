@@ -81,8 +81,8 @@ class SyncDatabaseController extends \yii\web\Controller
     //         $cash_adjustment = $db->createCommand('SELECT * FROM cash_adjustment')->queryAll();
     //         // cash_flow
     //         $cash_flow = $db->createCommand('SELECT * FROM cash_flow')->queryAll();
-    //         // cash_recieved
-    //         $cash_recieved = $db->createCommand('SELECT * FROM cash_recieved')->queryAll();
+    //         // cash_received
+    //         $cash_received = $db->createCommand('SELECT * FROM cash_received')->queryAll();
     //         // chart_of_accounts
     //         $chart_of_accounts = $db->createCommand('SELECT * FROM chart_of_accounts')->queryAll();
     //         // document_recieve
@@ -186,7 +186,7 @@ class SyncDatabaseController extends \yii\web\Controller
     //             // 'advances_entries' => $advances_entries,
     //             'authorization_code' => $authorization_code,
     //             // 'cash_adjustment' => $cash_adjustment,
-    //             // 'cash_recieved' => $cash_recieved,
+    //             // 'cash_received' => $cash_received,
     //             // 'dv_accounting_entries' => $dv_accounting_entries,
     //             // 'dv_aucs' => $dv_aucs,
     //             // 'event' => $event,
@@ -475,13 +475,13 @@ class SyncDatabaseController extends \yii\web\Controller
     {
         if ($_POST) {
             $db = Yii::$app->db;
-            $source_cash_recieve = $db->createCommand("SELECT * FROM cash_recieved")->queryAll();
-            $target_cash_recieve = Yii::$app->cloud_db->createCommand("SELECT * FROM cash_recieved")->queryAll();
-            $source_cash_recieve_diff = array_map(
+            $source_cash_receive = $db->createCommand("SELECT * FROM cash_received")->queryAll();
+            $target_cash_receive = Yii::$app->cloud_db->createCommand("SELECT * FROM cash_received")->queryAll();
+            $source_cash_receive_diff = array_map(
                 'unserialize',
-                array_diff(array_map('serialize', $source_cash_recieve), array_map('serialize', $target_cash_recieve))
+                array_diff(array_map('serialize', $source_cash_receive), array_map('serialize', $target_cash_receive))
             );
-            return json_encode($source_cash_recieve_diff);
+            return json_encode($source_cash_receive_diff);
         }
     }
     public function actionChartOfAccounts()

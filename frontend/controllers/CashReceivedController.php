@@ -3,8 +3,8 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\CashRecieved;
-use app\models\CashRecievedSearch;
+use app\models\CashReceived;
+use app\models\CashReceivedSearch;
 use app\models\DocumentRecieve;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -12,9 +12,9 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * CashRecievedController implements the CRUD actions for CashRecieved model.
+ * CashReceivedController implements the CRUD actions for CashReceived model.
  */
-class CashRecievedController extends Controller
+class CashReceivedController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -55,12 +55,12 @@ class CashRecievedController extends Controller
     }
 
     /**
-     * Lists all CashRecieved models.
+     * Lists all CashReceived models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new CashRecievedSearch();
+        $searchModel = new CashReceivedSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -70,7 +70,7 @@ class CashRecievedController extends Controller
     }
 
     /**
-     * Displays a single CashRecieved model.
+     * Displays a single CashReceived model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -83,13 +83,13 @@ class CashRecievedController extends Controller
     }
 
     /**
-     * Creates a new CashRecieved model.
+     * Creates a new CashReceived model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new CashRecieved();
+        $model = new CashReceived();
 
         if ($model->load(Yii::$app->request->post())) {
             $document = DocumentRecieve::findOne($model->document_recieved_id);
@@ -110,7 +110,7 @@ class CashRecievedController extends Controller
     }
 
     /**
-     * Updates an existing CashRecieved model.
+     * Updates an existing CashReceived model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -149,7 +149,7 @@ class CashRecievedController extends Controller
     }
 
     /**
-     * Deletes an existing CashRecieved model.
+     * Deletes an existing CashReceived model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -163,15 +163,15 @@ class CashRecievedController extends Controller
     }
 
     /**
-     * Finds the CashRecieved model based on its primary key value.
+     * Finds the CashReceived model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return CashRecieved the loaded model
+     * @return CashReceived the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = CashRecieved::findOne($id)) !== null) {
+        if (($model = CashReceived::findOne($id)) !== null) {
             return $model;
         }
 

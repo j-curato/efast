@@ -1,11 +1,11 @@
 <?php
 
-namespace common\models;
+namespace app\models;
 
 use Yii;
 
 /**
- * This is the model class for table "{{%cash_recieved}}".
+ * This is the model class for table "cash_received".
  *
  * @property int $id
  * @property int|null $document_recieved_id
@@ -18,20 +18,19 @@ use Yii;
  * @property string|null $nft_no
  * @property string|null $purpose
  * @property float|null $amount
- * @property string|null $account_number
  *
  * @property Books $book
  * @property DocumentRecieve $documentRecieved
  * @property MfoPapCode $mfoPapCode
  */
-class CashRecieved extends \yii\db\ActiveRecord
+class CashReceived extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return '{{%cash_recieved}}';
+        return 'cash_received';
     }
 
     /**
@@ -41,26 +40,30 @@ class CashRecieved extends \yii\db\ActiveRecord
     {
         return [
             [['document_recieved_id', 'book_id', 'mfo_pap_code_id'], 'integer'],
+            [['document_recieved_id', 'book_id', 'date', 'reporting_period', 'nca_no', 'purpose', 'amount'], 'required'],
             [['amount'], 'number'],
-            [['date'], 'string', 'max' => 50],
+            [[
+                'date',
+                'valid_from',
+                'valid_to',
+            ], 'string', 'max' => 50],
             [['reporting_period'], 'string', 'max' => 40],
             [['nca_no', 'nta_no', 'nft_no', 'account_number'], 'string', 'max' => 100],
             [['purpose'], 'string', 'max' => 255],
-            [['book_id'], 'exist', 'skipOnError' => true, 'targetClass' => Books::class, 'targetAttribute' => ['book_id' => 'id']],
             [[
-                'id',
-                'document_recieved_id',
-                'book_id',
-                'mfo_pap_code_id',
-                'date',
-                'reporting_period',
+
                 'nca_no',
                 'nta_no',
                 'nft_no',
                 'purpose',
-                'amount',
                 'account_number',
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process']
+            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+
+
+            [['book_id'], 'exist', 'skipOnError' => true, 'targetClass' => Books::class, 'targetAttribute' => ['book_id' => 'id']],
+            [['document_recieved_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentRecieve::class, 'targetAttribute' => ['document_recieved_id' => 'id']],
+            [['mfo_pap_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => MfoPapCode::class, 'targetAttribute' => ['mfo_pap_code_id' => 'id']],
         ];
     }
 
@@ -71,9 +74,9 @@ class CashRecieved extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'document_recieved_id' => 'Document Recieved ID',
-            'book_id' => 'Book ID',
-            'mfo_pap_code_id' => 'Mfo Pap Code ID',
+            'document_recieved_id' => 'Document Received ',
+            'book_id' => 'Book ',
+            'mfo_pap_code_id' => 'Mfo Pap Code ',
             'date' => 'Date',
             'reporting_period' => 'Reporting Period',
             'nca_no' => 'Nca No',
@@ -82,13 +85,15 @@ class CashRecieved extends \yii\db\ActiveRecord
             'purpose' => 'Purpose',
             'amount' => 'Amount',
             'account_number' => 'Account Number',
+            'valid_from' => 'Valid From',
+            'valid_to' => 'Valid To',
         ];
     }
 
     /**
      * Gets query for [[Book]].
      *
-     * @return \yii\db\ActiveQuery|\common\models\query\BooksQuery
+     * @return \yii\db\ActiveQuery
      */
     public function getBook()
     {
@@ -98,7 +103,7 @@ class CashRecieved extends \yii\db\ActiveRecord
     /**
      * Gets query for [[DocumentRecieved]].
      *
-     * @return \yii\db\ActiveQuery|\common\models\query\DocumentRecieveQuery
+     * @return \yii\db\ActiveQuery
      */
     public function getDocumentRecieved()
     {
@@ -108,19 +113,10 @@ class CashRecieved extends \yii\db\ActiveRecord
     /**
      * Gets query for [[MfoPapCode]].
      *
-     * @return \yii\db\ActiveQuery|\common\models\query\MfoPapCodeQuery
+     * @return \yii\db\ActiveQuery
      */
     public function getMfoPapCode()
     {
         return $this->hasOne(MfoPapCode::class, ['id' => 'mfo_pap_code_id']);
-    }
-
-    /**
-     * {@inheritdoc}
-     * @return \common\models\query\CashRecievedQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new \common\models\query\CashRecievedQuery(get_called_class());
     }
 }

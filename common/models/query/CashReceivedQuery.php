@@ -3,11 +3,11 @@
 namespace common\models\query;
 
 /**
- * This is the ActiveQuery class for [[\common\models\CashRecieved]].
+ * This is the ActiveQuery class for [[\common\models\CashReceived]].
  *
- * @see \common\models\CashRecieved
+ * @see \common\models\CashReceived
  */
-class CashRecievedQuery extends \yii\db\ActiveQuery
+class CashReceivedQuery extends \yii\db\ActiveQuery
 {
     /*public function active()
     {
@@ -16,7 +16,7 @@ class CashRecievedQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return \common\models\CashRecieved[]|array
+     * @return \common\models\CashReceived[]|array
      */
     public function all($db = null)
     {
@@ -25,7 +25,7 @@ class CashRecievedQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return \common\models\CashRecieved|array|null
+     * @return \common\models\CashReceived|array|null
      */
     public function one($db = null)
     {

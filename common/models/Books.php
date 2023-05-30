@@ -12,7 +12,7 @@ use Yii;
  * @property string|null $account_number
  *
  * @property CashDisbursement[] $cashDisbursements
- * @property CashRecieved[] $cashRecieveds
+ * @property CashReceived[] $cashReceiveds
  */
 class Books extends \yii\db\ActiveRecord
 {
@@ -66,13 +66,13 @@ class Books extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[CashRecieveds]].
+     * Gets query for [[CashReceiveds]].
      *
-     * @return \yii\db\ActiveQuery|\common\models\query\CashRecievedQuery
+     * @return \yii\db\ActiveQuery|\common\models\query\CashReceivedQuery
      */
-    public function getCashRecieveds()
+    public function getCashReceiveds()
     {
-        return $this->hasMany(CashRecieved::class, ['book_id' => 'id']);
+        return $this->hasMany(CashReceived::class, ['book_id' => 'id']);
     }
 
     /**

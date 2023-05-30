@@ -7,7 +7,7 @@ use yii\helpers\Url;
 use yii\web\JqueryAsset;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\CashRecievedSearch */
+/* @var $searchModel app\models\CashReceivedSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Cash Receive';

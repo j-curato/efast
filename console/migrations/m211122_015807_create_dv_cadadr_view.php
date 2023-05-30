@@ -50,29 +50,29 @@ class m211122_015807_create_dv_cadadr_view extends Migration
             UNION ALL
             SELECT
                 '' as mode_of_payment,
-                cash_recieved.reporting_period,
+                cash_received.reporting_period,
                 ''dv_number,
                 '' as dv_date,
             '' as check_or_ada_no,
                 '' as ada_number,
-                cash_recieved.date as q, 
+                cash_received.date as q, 
                             '' as issuance_date,
 
             (
             CASE 
-                WHEN cash_recieved.nca_no IS NOT NULL OR  cash_recieved.nca_no !='' THEN cash_recieved.nca_no
-                WHEN cash_recieved.nft_no IS NOT NULL OR  cash_recieved.nft_no !='' THEN cash_recieved.nft_no
-                        WHEN cash_recieved.nta_no IS NOT NULL OR  cash_recieved.nta_no !='' THEN cash_recieved.nta_no
+                WHEN cash_received.nca_no IS NOT NULL OR  cash_received.nca_no !='' THEN cash_received.nca_no
+                WHEN cash_received.nft_no IS NOT NULL OR  cash_received.nft_no !='' THEN cash_received.nft_no
+                        WHEN cash_received.nta_no IS NOT NULL OR  cash_received.nta_no !='' THEN cash_received.nta_no
             END) as particular,
             books.`name` as  book_name,
-            cash_recieved.amount nca_recieve,
+            cash_received.amount nca_recieve,
             0 as check_issued,
                 0 as ada_issued,
             0 as dv_amount
 
             FROM
-            cash_recieved 
-            LEFT JOIN books ON cash_recieved.book_id = books.id 
+            cash_received 
+            LEFT JOIN books ON cash_received.book_id = books.id 
         SQL;
         $this->execute($sql);
     }

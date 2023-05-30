@@ -11,7 +11,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\CashRecieved */
+/* @var $model app\models\CashReceived */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
@@ -20,19 +20,15 @@ use yii\widgets\ActiveForm;
     <?php $form = ActiveForm::begin();
     $val = '';
     if (!empty($model->id)) {
-          $type=  strtolower(trim(explode('-', $model->documentRecieved->name)[0]));
+        $type =  strtolower(trim(explode('-', $model->documentRecieved->name)[0]));
 
-          if ($type === 'nca'){
+        if ($type === 'nca') {
             $val = $model->nca_no;
-          }
-          else if ($type === 'nta'){
+        } else if ($type === 'nta') {
             $val = $model->nta_no;
-          }
-          else if ($type === 'nft'){
+        } else if ($type === 'nft') {
             $val = $model->nft_no;
-          }
-
-
+        }
     }
     ?>
     <div class="row">
@@ -53,6 +49,26 @@ use yii\widgets\ActiveForm;
                     'format' => "yyyy-mm",
                     'minViewMode' => "months",
                     'startView' => 'year'
+                ]
+            ]) ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <?= $form->field($model, 'valid_from')->widget(DatePicker::class, [
+                'name' => 'date',
+                'pluginOptions' => [
+                    'autoclose' => true,
+                    'format' => "yyyy-mm-dd"
+                ]
+            ]) ?>
+        </div>
+        <div class="col-sm-6">
+            <?= $form->field($model, 'valid_to')->widget(DatePicker::class, [
+                'name' => "reporting_period",
+                'pluginOptions' => [
+                    'autoclose' => true,
+                    'format' => "yyyy-mm-dd",
                 ]
             ]) ?>
         </div>
@@ -116,8 +132,8 @@ use yii\widgets\ActiveForm;
 
 <?php
 $script = <<< JS
-    $('#cashrecieved-document_recieved_id').change(function(){
-        var document_id=$('#cashrecieved-document_recieved_id').val()
+    $('#cashreceived-document_recieved_id').change(function(){
+        var document_id=$('#cashreceived-document_recieved_id').val()
         $.ajax({
             type:"POST",
             url:window.location.pathname +"?r=document-recieve/find-document",
@@ -127,8 +143,8 @@ $script = <<< JS
                 console.log(res.result)
 
                 if ( res.result === 'nta' ||res.result === 'nca' ||res.result === 'nft'){
-                    $("label[for=cashrecieved-nca_no]").text(res.result.toUpperCase() + " No.")
-                    $("label[for=cashrecieved-nca_no]").prop('disabled', true);
+                    $("label[for=cashreceived-nca_no]").text(res.result.toUpperCase() + " No.")
+                    $("label[for=cashreceived-nca_no]").prop('disabled', true);
                 }
             }
         })

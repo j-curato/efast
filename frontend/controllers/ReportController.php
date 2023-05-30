@@ -428,13 +428,13 @@ class ReportController extends \yii\web\Controller
         AND dv_aucs.id = dv_aucs_entries.dv_aucs_id
         AND cash_disbursement.book_id = books.id
         GROUP BY cash_disbursement.book_id")->queryAll();
-        // $cash_recieved = Yii::$app->db->createCommand("SELECT SUM(cash_recieved.amount) as total_cash_recieved from cash_recieved")->queryOne();
+        // $cash_received = Yii::$app->db->createCommand("SELECT SUM(cash_received.amount) as total_cash_received from cash_received")->queryOne();
         $date = '2021-01-05';
         $query = (new \yii\db\Query())
             ->select([
                 'SUM(dv_aucs_entries.amount_disbursed) as total_disbursed',
-                "(SELECT SUM(cash_recieved.amount) as total_cash_recieved from cash_recieved) as total_cash_recieved",
-                "( (SELECT SUM(cash_recieved.amount) as total_cash_recieved from cash_recieved) - SUM(dv_aucs_entries.amount_disbursed)) as cash_balance"
+                "(SELECT SUM(cash_received.amount) as total_cash_received from cash_received) as total_cash_received",
+                "( (SELECT SUM(cash_received.amount) as total_cash_received from cash_received) - SUM(dv_aucs_entries.amount_disbursed)) as cash_balance"
             ])
             ->from('cash_disbursement')
             ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id = dv_aucs.id')
