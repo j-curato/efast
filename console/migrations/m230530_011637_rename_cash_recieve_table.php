@@ -12,7 +12,7 @@ class m230530_011637_rename_cash_recieve_table extends Migration
      */
     public function safeUp()
     {
-        $this->renameTable('cash_received', 'cash_received');
+        $this->renameTable('cash_recieved', 'cash_received');
     }
 
     /**
@@ -20,7 +20,7 @@ class m230530_011637_rename_cash_recieve_table extends Migration
      */
     public function safeDown()
     {
-        $this->renameTable('cash_received', 'cash_received');
+        $this->renameTable('cash_received', 'cash_recieved');
     }
 
     /*
