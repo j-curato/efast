@@ -84,7 +84,7 @@ class Advances extends \yii\db\ActiveRecord
      */
     public function getAdvancesEntries()
     {
-        // return $this->hasMany(AdvancesEntries::className(), ['advances_id' => 'id']);
+        // return $this->hasMany(AdvancesEntries::class, ['advances_id' => 'id']);
     }
 
     /**

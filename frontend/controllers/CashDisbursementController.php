@@ -14,6 +14,7 @@ use app\models\DvAucsEntries;
 use app\models\DvAucsIndexSearch;
 use app\models\LddapAdas;
 use app\models\Sliies;
+use app\models\VwGoodCashDisbursementsSearch;
 use app\models\VwUndisbursedDvsSearch;
 use DateTime;
 use Error;
@@ -166,7 +167,10 @@ class CashDisbursementController extends Controller
        dv_aucs_index.grossAmt,
        dv_aucs_index.orsNums,
        dv_aucs_index.payee,
-       CONCAT(chart_of_accounts.uacs,'-',chart_of_accounts.general_ledger) as chart_of_acc
+       IFNULL(dv_aucs_index.bank_name,'') as bank_name,
+       IFNULL(dv_aucs_index.account_num,'') as account_num,
+       CONCAT(chart_of_accounts.uacs,'-',chart_of_accounts.general_ledger) as chart_of_acc,
+       dv_aucs_index.id as dv_id
        FROM cash_disbursement_items
        LEFT JOIN dv_aucs_index ON cash_disbursement_items.fk_dv_aucs_id = dv_aucs_index.id
        LEFT JOIN chart_of_accounts ON cash_disbursement_items.fk_chart_of_account_id = chart_of_accounts.id 
@@ -199,9 +203,9 @@ class CashDisbursementController extends Controller
             CAST(SUBSTRING_INDEX(sliies.serial_number,'-',-1)AS UNSIGNED) +1 as ser_num
             FROM sliies  
             WHERE 
-            sliies.serial_number LIKE '2023%'
+            sliies.serial_number LIKE :yr
             ORDER BY ser_num DESC LIMIT 1")
-            ->bindValue(':yr', $yr)
+            ->bindValue(':yr', $yr . '%')
             ->queryScalar();
         if (empty($qry)) {
             $qry = 1;
@@ -220,9 +224,9 @@ class CashDisbursementController extends Controller
             CAST(SUBSTRING_INDEX(lddap_adas.serial_number,'-',-1)AS UNSIGNED) +1 as ser_num
             FROM lddap_adas  
             WHERE 
-            lddap_adas.serial_number LIKE '2023%'
+            lddap_adas.serial_number LIKE  :yr
             ORDER BY ser_num DESC LIMIT 1")
-            ->bindValue(':yr', $yr)
+            ->bindValue(':yr', $yr . '%')
             ->queryScalar();
         if (empty($qry)) {
             $qry = 1;
@@ -456,11 +460,16 @@ class CashDisbursementController extends Controller
         $dvSearchModel->bookFilter = !empty($model->book->name) ? $model->book->name : '';
         $dvDataProvider = $dvSearchModel->search(Yii::$app->request->queryParams);
         $dvDataProvider->pagination = ['pageSize' => 10];
+
         if ($model->load(Yii::$app->request->post())) {
+
             $items = Yii::$app->request->post('items') ?? [];
 
             try {
                 $txn = Yii::$app->db->beginTransaction();
+                if ($model->is_cancelled == true) {
+                    throw new ErrorException('Cancelled Check Cannot be Updated');
+                }
                 if (empty($items)) {
                     throw new ErrorException('Items is Required');
                 }
@@ -515,6 +524,7 @@ class CashDisbursementController extends Controller
                 return json_encode(['error' => true, 'error_message' => $e->getMessage()]);
             }
         }
+
         return $this->render('update', [
             'model' => $model,
             'dvSearchModel' => $dvSearchModel,
@@ -950,27 +960,16 @@ class CashDisbursementController extends Controller
         return json_encode('qwe');
     }
 
-    public function actionCancel()
-    {
-        if ($_POST) {
-            $id = $_POST['id'];
-            $model = CashDisbursement::findOne($id);
-            $model->is_cancelled ? $model->is_cancelled = false : $model->is_cancelled = true;
-            if ($model->save(false)) {
-                return json_encode(['isSuccess' => true, 'cancelled' => $model->is_cancelled]);
-            }
-        }
-    }
     public function actionCancelDisbursement()
     {
-        $searchModel = new CashDisbursementSearch();
-        $searchModel->is_cancelled = 0;
+        $searchModel = new VwGoodCashDisbursementsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $dataProvider->sort = ['defaultOrder' => ['id' => SORT_DESC]];
+        $dataProvider->pagination = ['pageSize' => 10];
 
-        if ($_POST) {
-            $reporting_period = $_POST['reporting_period'];
-            $selected = $_POST['selection'];
+        if (Yii::$app->request->post()) {
+            $reporting_period = YIi::$app->request->post('reporting_period');
+            $selected = YIi::$app->request->post('selection');
             $model = CashDisbursement::findOne($selected[0]);
 
             $query = Yii::$app->db->createCommand("SELECT EXISTS(
@@ -981,6 +980,7 @@ class CashDisbursementController extends Controller
                 ->queryScalar();
 
             try {
+                $txn = Yii::$app->db->beginTransaction();
                 if (intval($query) === 1) {
                     throw new ErrorException('Check Already Cancelled');
                 }
@@ -1004,8 +1004,34 @@ class CashDisbursementController extends Controller
                 if (!$new_model->save(false)) {
                     throw new ErrorException('Model Save Failed');
                 }
+                Yii::$app->db->createCommand("INSERT INTO cash_disbursement_items (fk_cash_disbursement_id,
+                fk_chart_of_account_id,
+                fk_dv_aucs_id
+                )
+                SELECT 
+                   :new_id,
+                    cash_disbursement_items.fk_chart_of_account_id,
+                    cash_disbursement_items.fk_dv_aucs_id
+                    FROM cash_disbursement_items
+                    WHERE 
+                    cash_disbursement_items.fk_cash_disbursement_id = :id
+                    AND cash_disbursement_items.is_deleted = 0
+                ")
+                    ->bindValue(':id', $model->id)
+                    ->bindValue(':new_id', $new_model->id)
+                    ->execute();
+                $insSliie = $this->createSliie($new_model->id, DateTime::createFromFormat('Y-m-d', $new_model->issuance_date)->format('Y-m'));
+                if ($insSliie !== true) {
+                    throw new ErrorException($insSliie);
+                }
+                $insLddapAda = $this->createLddapAda($new_model->id, DateTime::createFromFormat('Y-m-d', $new_model->issuance_date)->format('Y-m'));
+                if ($insLddapAda !== true) {
+                    throw new ErrorException($insLddapAda);
+                }
+                $txn->commit();
                 $this->redirect(['view', 'id' => $new_model->id]);
             } catch (ErrorException $e) {
+                $txn->rollBack();
                 return json_encode(['isSuccess' => false, 'cancelled' => 'cancel', 'error' => $e->getMessage()]);
             }
         }

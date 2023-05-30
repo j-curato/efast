@@ -363,6 +363,9 @@
                                     'url' => '#',
                                     'items' => [
                                         ['label' => 'Cash Disbursement', 'icon' => 'circle-o', 'url' => ['/cash-disbursement'],],
+                                        ['label' => 'SLIIE`s', 'icon' => 'circle-o', 'url' => ['/sliies'],],
+                                        ['label' => 'LDDAP-ADA`s', 'icon' => 'circle-o', 'url' => ['/lddap-adas'],],
+                                        ['label' => 'ACIC`s', 'icon' => 'circle-o', 'url' => ['/'],],
                                         ['label' => 'Cash Recieved', 'icon' => 'circle-o', 'url' => ['/cash-recieved'],],
                                         ['label' => 'Laps Amounts', 'icon' => 'circle-o', 'url' => ['/cash-adjustment'],],
                                         ['label' => 'Cancel Disbursement', 'icon' => 'circle-o', 'url' => ['/cash-disbursement/cancel-disbursement-index'],],

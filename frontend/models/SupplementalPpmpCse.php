@@ -88,6 +88,6 @@ class SupplementalPpmpCse extends \yii\db\ActiveRecord
      */
     public function getFkSupplementalPpmp()
     {
-        return $this->hasOne(SupplementalPpmp::className(), ['id' => 'fk_supplemental_ppmp_id']);
+        return $this->hasOne(SupplementalPpmp::class, ['id' => 'fk_supplemental_ppmp_id']);
     }
 }

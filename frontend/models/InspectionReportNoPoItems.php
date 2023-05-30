@@ -34,7 +34,7 @@ class InspectionReportNoPoItems extends \yii\db\ActiveRecord
             [['id', 'fk_inspection_report_id', 'fk_rfi_without_po_item_id'], 'integer'],
             [['created_at'], 'safe'],
             [['id'], 'unique'],
-            [['fk_inspection_report_id'], 'exist', 'skipOnError' => true, 'targetClass' => InspectionReport::className(), 'targetAttribute' => ['fk_inspection_report_id' => 'id']],
+            [['fk_inspection_report_id'], 'exist', 'skipOnError' => true, 'targetClass' => InspectionReport::class, 'targetAttribute' => ['fk_inspection_report_id' => 'id']],
         ];
     }
 
@@ -58,6 +58,6 @@ class InspectionReportNoPoItems extends \yii\db\ActiveRecord
      */
     public function getFkInspectionReport()
     {
-        return $this->hasOne(InspectionReport::className(), ['id' => 'fk_inspection_report_id']);
+        return $this->hasOne(InspectionReport::class, ['id' => 'fk_inspection_report_id']);
     }
 }

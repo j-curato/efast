@@ -31,7 +31,7 @@ class DocumentTrackerLinks extends \yii\db\ActiveRecord
         return [
             [['document_tracker_id'], 'integer'],
             [['link'], 'safe'],
-            [['document_tracker_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentTracker::className(), 'targetAttribute' => ['document_tracker_id' => 'id']],
+            [['document_tracker_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentTracker::class, 'targetAttribute' => ['document_tracker_id' => 'id']],
         ];
     }
 
@@ -54,6 +54,6 @@ class DocumentTrackerLinks extends \yii\db\ActiveRecord
      */
     public function getDocumentTracker()
     {
-        return $this->hasOne(DocumentTracker::className(), ['id' => 'document_tracker_id']);
+        return $this->hasOne(DocumentTracker::class, ['id' => 'document_tracker_id']);
     }
 }

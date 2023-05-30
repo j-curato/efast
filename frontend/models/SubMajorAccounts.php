@@ -60,6 +60,6 @@ class SubMajorAccounts extends \yii\db\ActiveRecord
      */
     public function getChartOfAccounts()
     {
-        return $this->hasMany(ChartOfAccounts::className(), ['sub_major_account' => 'id']);
+        return $this->hasMany(ChartOfAccounts::class, ['sub_major_account' => 'id']);
     }
 }

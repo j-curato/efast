@@ -224,7 +224,7 @@ if (!empty($model->dv_aucs_id)) {
             'label' => 'Actions',
             'format' => 'raw',
             'value' => function ($model) {
-                return  Html::button(Icon::show('plus', ['framework' => Icon::FA]), ['class' => 'btn-xs btn-primary  add-action', 'onClick' => 'AddOrsItem(this)']);
+                return  Html::button(Icon::show('plus', ['framework' => Icon::FA]), ['class' => 'btn-xs btn-primary  add-action', 'onClick' => 'AddItem(this)']);
             },
         ],
 
@@ -295,7 +295,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
     let rowNum = <?= $rowNum ?>;
     let cash_chart_of_accounts = []
 
-    function AddOrsItem(ths) {
+    function AddItem(ths) {
         const clone = $(ths).closest('tr').clone()
         clone.find('.dv_id').attr('name', `items[${rowNum}][dv_id]`)
         clone.find('.add-action').parent().remove()

@@ -74,7 +74,7 @@ class RoLiquidationReport extends \yii\db\ActiveRecord
      */
     public function getRoLiquidationReportItems()
     {
-        return $this->hasMany(RoLiquidationReportItems::className(), ['fk_ro_liquidation_report_id' => 'id']);
+        return $this->hasMany(RoLiquidationReportItems::class, ['fk_ro_liquidation_report_id' => 'id']);
     }
 
     /**
@@ -84,6 +84,6 @@ class RoLiquidationReport extends \yii\db\ActiveRecord
      */
     public function getRoLiquidationReportRefunds()
     {
-        return $this->hasMany(RoLiquidationReportRefunds::className(), ['fk_ro_liquidation_report_id' => 'id']);
+        return $this->hasMany(RoLiquidationReportRefunds::class, ['fk_ro_liquidation_report_id' => 'id']);
     }
 }

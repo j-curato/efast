@@ -15,19 +15,14 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="cash-disbursement-view">
 
-    <div class=" panel panel-default">
+    <div class=" " style="background-color: white;padding:2rem">
 
         <p>
             <?= Html::a('Create Cash Disbursement', ['create'], ['class' => 'btn btn-success']) ?>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-
-
             <?php
-            // if ($model->is_cancelled) {
-            //     echo "<button class='btn btn-success' id='cancel' style='margin:5px'>Activate</button>";
-            // } else {
-            //     echo "<button class='btn btn-danger' id='cancel' style='margin:5px'>Cancel</button>";
-            // }
+            if ($model->is_cancelled != true) {
+                echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+            }
             echo "<input type='text' id='cancel_id' value='$model->id' style='display:none;'/>";
             $t = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/view&id=$model->dv_aucs_id";
             // echo  Html::a('DV Link', $t, ['class' => 'btn btn-info ', 'style' => 'margin:3px']);
@@ -103,7 +98,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <thead>
                 <tr class="success">
-                    <th colspan="9" class="ctr">
+                    <th colspan="11" class="ctr">
                         <h3>
                             DV'S
 
@@ -114,13 +109,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>DV No.</th>
                 <th>Particular</th>
                 <th>Payee</th>
+                <th>Bank & Account No.</th>
                 <th>ORS</th>
                 <th>UACS</th>
                 <th>Amount Disbursed</th>
                 <th>Withholding Tax</th>
                 <th>Gross Amount</th>
+                <th class="hdn">Link</th>
             </thead>
             <tbody>
+
 
                 <?php
                 $grndTtlAmtDisbursed = 0;
@@ -135,22 +133,27 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td>{$itm['dv_number']}</td>
                         <td>{$itm['particular']}</td>
                         <td>{$itm['payee']}</td>
+                        <td>{$itm['bank_name']} :#{$itm['account_num']}</td>
                         <td>{$itm['orsNums']}</td>
                         <td >
-                        {$itm['chart_of_acc']}
-                    </td>
+                            {$itm['chart_of_acc']}
+                        </td>
+         
                         <td>" . number_format($itm['ttlAmtDisbursed'], 2) . "</td>
                         <td>" . number_format($itm['ttlTax'], 2) . "</td>
                         <td>" . number_format($itm['grossAmt'], 2) . "</td>
+                        <td>" . Html::a('link', ['dv-aucs/view', 'id' => $itm['dv_id']], ['class' => 'btn btn-link']) . "</td>
                     
                     </tr>";
                 }
                 echo "<tr class='warning'>
                 
-                <th colspan='6' style='text-align:center'>Total</th>
+                <th colspan='7' style='text-align:center'>Total</th>
                 <th>" . number_format($grndTtlAmtDisbursed, 2) . "</th>
                 <th>" . number_format($grndTtlTax, 2) . "</th>
                 <th>" . number_format($grndGrossAmt, 2) . "</th>
+                <td></td>
+
                 </tr>";
                 ?>
             </tbody>
@@ -185,6 +188,21 @@ $this->params['breadcrumbs'][] = $this->title;
     #check_details_tbl th {
         padding: 1rem;
         border: 1px solid black;
+    }
+
+    @media print {
+
+        .hdn,
+        .main-footer,
+        .btn {
+            display: none;
+        }
+
+        th,
+        td {
+            padding: 4px;
+            font-size: 10px;
+        }
     }
 </style>
 <?php

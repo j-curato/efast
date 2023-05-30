@@ -70,7 +70,7 @@ class PpmpNonCseItems extends \yii\db\ActiveRecord
      */
     public function getPpmpNonCseItemCategories()
     {
-        return $this->hasMany(PpmpNonCseItemCategories::className(), ['ppmp_non_cse_item_id' => 'id']);
+        return $this->hasMany(PpmpNonCseItemCategories::class, ['ppmp_non_cse_item_id' => 'id']);
     }
 
     /**
@@ -80,6 +80,6 @@ class PpmpNonCseItems extends \yii\db\ActiveRecord
      */
     public function getFkPpmpNonCse()
     {
-        return $this->hasOne(PpmpNonCse::className(), ['id' => 'fk_ppmp_non_cse_id']);
+        return $this->hasOne(PpmpNonCse::class, ['id' => 'fk_ppmp_non_cse_id']);
     }
 }

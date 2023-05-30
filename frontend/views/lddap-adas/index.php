@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+use kartik\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\LddapAdasSearch */
@@ -12,26 +12,28 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="lddap-adas-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Create Lddap Adas', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel' => [
+            'type' => 'primary',
+            'heading' => 'LDDAP-ADA`s'
+        ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            'fk_cash_disbursement_id',
             'serial_number',
-            'created_at',
-
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id], ['class' => 'btn']);
+                }
+            ],
         ],
     ]); ?>
 

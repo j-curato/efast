@@ -16,7 +16,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="cash-disbursement-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Create Cash Disbursement', ['create'], ['class' => 'btn btn-success']) ?>

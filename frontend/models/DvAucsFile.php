@@ -33,7 +33,7 @@ class DvAucsFile extends \yii\db\ActiveRecord
             [['fk_dv_aucs_id'], 'integer'],
             [['file_name'], 'string'],
             [['created_at'], 'safe'],
-            [['fk_dv_aucs_id'], 'exist', 'skipOnError' => true, 'targetClass' => DvAucs::className(), 'targetAttribute' => ['fk_dv_aucs_id' => 'id']],
+            [['fk_dv_aucs_id'], 'exist', 'skipOnError' => true, 'targetClass' => DvAucs::class, 'targetAttribute' => ['fk_dv_aucs_id' => 'id']],
         ];
     }
 
@@ -57,6 +57,6 @@ class DvAucsFile extends \yii\db\ActiveRecord
      */
     public function getFkDvAucs()
     {
-        return $this->hasOne(DvAucs::className(), ['id' => 'fk_dv_aucs_id']);
+        return $this->hasOne(DvAucs::class, ['id' => 'fk_dv_aucs_id']);
     }
 }

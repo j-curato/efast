@@ -37,7 +37,7 @@ class TripTicketItems extends \yii\db\ActiveRecord
             [['fk_trip_ticket_id', 'passenger_id'], 'integer'],
             [['departure_place', 'arrival_place'], 'string'],
             [['departure_time', 'arrival_time'], 'string', 'max' => 255],
-            [['fk_trip_ticket_id'], 'exist', 'skipOnError' => true, 'targetClass' => TripTicket::className(), 'targetAttribute' => ['fk_trip_ticket_id' => 'id']],
+            [['fk_trip_ticket_id'], 'exist', 'skipOnError' => true, 'targetClass' => TripTicket::class, 'targetAttribute' => ['fk_trip_ticket_id' => 'id']],
         ];
     }
 
@@ -64,6 +64,6 @@ class TripTicketItems extends \yii\db\ActiveRecord
      */
     public function getFkTripTicket()
     {
-        return $this->hasOne(TripTicket::className(), ['id' => 'fk_trip_ticket_id']);
+        return $this->hasOne(TripTicket::class, ['id' => 'fk_trip_ticket_id']);
     }
 }

@@ -59,6 +59,6 @@ class MajorAccounts extends \yii\db\ActiveRecord
      */
     public function getChartOfAccounts()
     {
-        return $this->hasMany(ChartOfAccounts::className(), ['major_account_id' => 'id']);
+        return $this->hasMany(ChartOfAccounts::class, ['major_account_id' => 'id']);
     }
 }

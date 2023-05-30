@@ -34,7 +34,7 @@ class IarTransmittalItems extends \yii\db\ActiveRecord
             [['fk_iar_transmittal_id', 'fk_iar_id'], 'required'],
             [['fk_iar_transmittal_id', 'fk_iar_id', 'is_deleted'], 'integer'],
             [['created_at'], 'safe'],
-            [['fk_iar_transmittal_id'], 'exist', 'skipOnError' => true, 'targetClass' => IarTransmittal::className(), 'targetAttribute' => ['fk_iar_transmittal_id' => 'id']],
+            [['fk_iar_transmittal_id'], 'exist', 'skipOnError' => true, 'targetClass' => IarTransmittal::class, 'targetAttribute' => ['fk_iar_transmittal_id' => 'id']],
         ];
     }
 
@@ -59,6 +59,6 @@ class IarTransmittalItems extends \yii\db\ActiveRecord
      */
     public function getFkIarTransmittal()
     {
-        return $this->hasOne(IarTransmittal::className(), ['id' => 'fk_iar_transmittal_id']);
+        return $this->hasOne(IarTransmittal::class, ['id' => 'fk_iar_transmittal_id']);
     }
 }

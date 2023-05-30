@@ -31,7 +31,7 @@ class PurchaseOrderTransmittalItems extends \yii\db\ActiveRecord
         return [
             [['fk_purchase_order_transmittal_id', 'fk_purchase_order_id'], 'required'],
             [['fk_purchase_order_transmittal_id', 'fk_purchase_order_id'], 'integer'],
-            [['fk_purchase_order_transmittal_id'], 'exist', 'skipOnError' => true, 'targetClass' => PurchaseOrderTransmittal::className(), 'targetAttribute' => ['fk_purchase_order_transmittal_id' => 'id']],
+            [['fk_purchase_order_transmittal_id'], 'exist', 'skipOnError' => true, 'targetClass' => PurchaseOrderTransmittal::class, 'targetAttribute' => ['fk_purchase_order_transmittal_id' => 'id']],
         ];
     }
 
@@ -54,6 +54,6 @@ class PurchaseOrderTransmittalItems extends \yii\db\ActiveRecord
      */
     public function getFkPurchaseOrderTransmittal()
     {
-        return $this->hasOne(PurchaseOrderTransmittal::className(), ['id' => 'fk_purchase_order_transmittal_id']);
+        return $this->hasOne(PurchaseOrderTransmittal::class, ['id' => 'fk_purchase_order_transmittal_id']);
     }
 }

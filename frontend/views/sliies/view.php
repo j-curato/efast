@@ -9,7 +9,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Sliies */
 
-$this->title = $model->id;
+$this->title = $model->serial_number;
 $this->params['breadcrumbs'][] = ['label' => 'Sliies', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -72,8 +72,8 @@ $blnk = "                <tr>
 
 
 
-    <div class="container " style="background-color: white; padding:1rem">
-
+    <div class="container ">
+        <?= Html::a('Cash Disbursement', ['cash-disbursement/view', 'id' => $model->fk_cash_disbursement_id], ['class' => 'btn btn-link']) ?>
         <table>
 
             <thead>
@@ -265,6 +265,11 @@ $blnk = "                <tr>
 
 </div>
 <style>
+    .container {
+        background-color: white;
+        padding: 2rem;
+    }
+
     th,
     td,
     table {

@@ -43,7 +43,7 @@ class AuthItem extends \yii\db\ActiveRecord
             [['description', 'data'], 'string'],
             [['name', 'rule_name'], 'string', 'max' => 64],
             [['name'], 'unique'],
-            [['rule_name'], 'exist', 'skipOnError' => true, 'targetClass' => AuthRule::className(), 'targetAttribute' => ['rule_name' => 'name']],
+            [['rule_name'], 'exist', 'skipOnError' => true, 'targetClass' => AuthRule::class, 'targetAttribute' => ['rule_name' => 'name']],
         ];
     }
 
@@ -70,7 +70,7 @@ class AuthItem extends \yii\db\ActiveRecord
      */
     public function getAuthAssignments()
     {
-        return $this->hasMany(AuthAssignment::className(), ['item_name' => 'name']);
+        return $this->hasMany(AuthAssignment::class, ['item_name' => 'name']);
     }
 
     /**
@@ -80,7 +80,7 @@ class AuthItem extends \yii\db\ActiveRecord
      */
     public function getRuleName()
     {
-        return $this->hasOne(AuthRule::className(), ['name' => 'rule_name']);
+        return $this->hasOne(AuthRule::class, ['name' => 'rule_name']);
     }
 
     /**
@@ -90,7 +90,7 @@ class AuthItem extends \yii\db\ActiveRecord
      */
     public function getAuthItemChildren()
     {
-        return $this->hasMany(AuthItemChild::className(), ['parent' => 'name']);
+        return $this->hasMany(AuthItemChild::class, ['parent' => 'name']);
     }
 
     /**
@@ -100,7 +100,7 @@ class AuthItem extends \yii\db\ActiveRecord
      */
     public function getAuthItemChildren0()
     {
-        return $this->hasMany(AuthItemChild::className(), ['child' => 'name']);
+        return $this->hasMany(AuthItemChild::class, ['child' => 'name']);
     }
 
     /**
@@ -110,7 +110,7 @@ class AuthItem extends \yii\db\ActiveRecord
      */
     public function getChildren()
     {
-        return $this->hasMany(AuthItem::className(), ['name' => 'child'])->viaTable('auth_item_child', ['parent' => 'name']);
+        return $this->hasMany(AuthItem::class, ['name' => 'child'])->viaTable('auth_item_child', ['parent' => 'name']);
     }
 
     /**
@@ -120,6 +120,6 @@ class AuthItem extends \yii\db\ActiveRecord
      */
     public function getParents()
     {
-        return $this->hasMany(AuthItem::className(), ['name' => 'parent'])->viaTable('auth_item_child', ['child' => 'name']);
+        return $this->hasMany(AuthItem::class, ['name' => 'parent'])->viaTable('auth_item_child', ['child' => 'name']);
     }
 }

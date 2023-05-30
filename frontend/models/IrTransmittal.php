@@ -57,6 +57,6 @@ class IrTransmittal extends \yii\db\ActiveRecord
      */
     public function getIrTransmittalItems()
     {
-        return $this->hasMany(IrTransmittalItems::className(), ['fk_ir_transmittal_id' => 'id']);
+        return $this->hasMany(IrTransmittalItems::class, ['fk_ir_transmittal_id' => 'id']);
     }
 }

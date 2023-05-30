@@ -6,13 +6,14 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\LddapAdas */
 
-$this->title = $model->id;
+$this->title = $model->serial_number;
 $this->params['breadcrumbs'][] = ['label' => 'Lddap Adas', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="lddap-adas-view" style="background-color: white;">
+<div class="lddap-adas-view">
     <div class="container">
+        <?= Html::a('Cash Disbursement', ['cash-disbursement/view', 'id' => $model->fk_cash_disbursement_id], ['class' => 'btn btn-link']) ?>
         <table>
 
             <tbody>
@@ -196,16 +197,16 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th colspan="8" style="border-top: 0;">
                         <br>
                         <div class='blnk-sgnatory'>
-                            <span>Signature verified by:</span>
+                            <span>Signature verified by</span>
                         </div>
                         <div class='blnk-sgnatory'>
-                            <span>Posted by:</span>
+                            <span>Posted by</span>
                         </div>
                         <div class='blnk-sgnatory'>
-                            <span>Checked by:</span>
+                            <span>Checked by</span>
                         </div>
                         <div class='blnk-sgnatory'>
-                            <span>Approved by:</span>
+                            <span>Approved by</span>
                         </div>
                     </th>
 
@@ -242,6 +243,11 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <style>
+    .container {
+        padding: 2rem;
+        background-color: white;
+    }
+
     th,
     td,
     table {

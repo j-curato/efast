@@ -36,8 +36,8 @@ class ProcessOrsTxnItems extends \yii\db\ActiveRecord
             [['fk_process_ors_id', 'fk_transaction_item_id', 'is_deleted'], 'integer'],
             [['amount'], 'number'],
             [['created_at'], 'safe'],
-            [['fk_process_ors_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProcessOrs::className(), 'targetAttribute' => ['fk_process_ors_id' => 'id']],
-            [['fk_transaction_item_id'], 'exist', 'skipOnError' => true, 'targetClass' => TransactionItems::className(), 'targetAttribute' => ['fk_transaction_item_id' => 'id']],
+            [['fk_process_ors_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProcessOrs::class, 'targetAttribute' => ['fk_process_ors_id' => 'id']],
+            [['fk_transaction_item_id'], 'exist', 'skipOnError' => true, 'targetClass' => TransactionItems::class, 'targetAttribute' => ['fk_transaction_item_id' => 'id']],
         ];
     }
 
@@ -63,7 +63,7 @@ class ProcessOrsTxnItems extends \yii\db\ActiveRecord
      */
     public function getFkProcessOrs()
     {
-        return $this->hasOne(ProcessOrs::className(), ['id' => 'fk_process_ors_id']);
+        return $this->hasOne(ProcessOrs::class, ['id' => 'fk_process_ors_id']);
     }
 
     /**
@@ -73,6 +73,6 @@ class ProcessOrsTxnItems extends \yii\db\ActiveRecord
      */
     public function getFkTransactionItem()
     {
-        return $this->hasOne(TransactionItems::className(), ['id' => 'fk_transaction_item_id']);
+        return $this->hasOne(TransactionItems::class, ['id' => 'fk_transaction_item_id']);
     }
 }

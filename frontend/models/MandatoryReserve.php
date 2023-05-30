@@ -56,6 +56,6 @@ class MandatoryReserve extends \yii\db\ActiveRecord
      */
     public function getRaouds()
     {
-        return $this->hasMany(Raouds::className(), ['mandatory_reserve_id' => 'id']);
+        return $this->hasMany(Raouds::class, ['mandatory_reserve_id' => 'id']);
     }
 }

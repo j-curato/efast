@@ -62,7 +62,7 @@ class Books extends \yii\db\ActiveRecord
      */
     public function getCashDisbursements()
     {
-        return $this->hasMany(CashDisbursement::className(), ['book_id' => 'id']);
+        return $this->hasMany(CashDisbursement::class, ['book_id' => 'id']);
     }
 
     /**
@@ -72,7 +72,7 @@ class Books extends \yii\db\ActiveRecord
      */
     public function getCashRecieveds()
     {
-        return $this->hasMany(CashRecieved::className(), ['book_id' => 'id']);
+        return $this->hasMany(CashRecieved::class, ['book_id' => 'id']);
     }
 
     /**

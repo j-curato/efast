@@ -101,7 +101,7 @@ class AdvancesEntries extends \yii\db\ActiveRecord
      */
     public function getAdvances()
     {
-        return $this->hasOne(Advances::className(), ['id' => 'advances_id']);
+        return $this->hasOne(Advances::class, ['id' => 'advances_id']);
     }
 
     /**
@@ -111,7 +111,7 @@ class AdvancesEntries extends \yii\db\ActiveRecord
      */
     public function getCashDisbursement()
     {
-        return $this->hasOne(CashDisbursement::className(), ['id' => 'cash_disbursement_id']);
+        return $this->hasOne(CashDisbursement::class, ['id' => 'cash_disbursement_id']);
     }
 
     /**
@@ -121,7 +121,7 @@ class AdvancesEntries extends \yii\db\ActiveRecord
      */
     public function getSubAccount1()
     {
-        return $this->hasOne(SubAccounts1::className(), ['id' => 'sub_account1_id']);
+        return $this->hasOne(SubAccounts1::class, ['id' => 'sub_account1_id']);
     }
 
     /**
@@ -131,7 +131,7 @@ class AdvancesEntries extends \yii\db\ActiveRecord
      */
     // public function getLiquidationEntries()
     // {
-    //     return $this->hasMany(LiquidationEntries::className(), ['advances_entries_id' => 'id']);
+    //     return $this->hasMany(LiquidationEntries::class, ['advances_entries_id' => 'id']);
     // }
 
     /**

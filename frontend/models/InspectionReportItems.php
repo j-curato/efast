@@ -33,7 +33,7 @@ class InspectionReportItems extends \yii\db\ActiveRecord
             [['id'], 'required'],
             [['id', 'fk_inspection_report_id', 'fk_request_for_inspection_item_id', 'is_deleted'], 'integer'],
             [['id'], 'unique'],
-            [['fk_inspection_report_id'], 'exist', 'skipOnError' => true, 'targetClass' => InspectionReport::className(), 'targetAttribute' => ['fk_inspection_report_id' => 'id']],
+            [['fk_inspection_report_id'], 'exist', 'skipOnError' => true, 'targetClass' => InspectionReport::class, 'targetAttribute' => ['fk_inspection_report_id' => 'id']],
         ];
     }
 

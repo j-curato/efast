@@ -35,7 +35,7 @@ class TravelOrderItems extends \yii\db\ActiveRecord
             [['fk_travel_order_id', 'fk_employee_id'], 'required'],
             [['fk_travel_order_id', 'fk_employee_id'], 'integer'],
             [['from_date', 'to_date', 'created_at'], 'safe'],
-            [['fk_travel_order_id'], 'exist', 'skipOnError' => true, 'targetClass' => TravelOrder::className(), 'targetAttribute' => ['fk_travel_order_id' => 'id']],
+            [['fk_travel_order_id'], 'exist', 'skipOnError' => true, 'targetClass' => TravelOrder::class, 'targetAttribute' => ['fk_travel_order_id' => 'id']],
         ];
     }
 
@@ -61,6 +61,6 @@ class TravelOrderItems extends \yii\db\ActiveRecord
      */
     public function getFkTravelOrder()
     {
-        return $this->hasOne(TravelOrder::className(), ['id' => 'fk_travel_order_id']);
+        return $this->hasOne(TravelOrder::class, ['id' => 'fk_travel_order_id']);
     }
 }
