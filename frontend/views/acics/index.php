@@ -31,7 +31,12 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
 
             'serial_number',
-            'fk_book_id',
+            [
+                'attribute' => 'fk_book_id',
+                'value' => function ($model) {
+                    return $model->book->name;
+                }
+            ],
             'date_issued',
             'created_at',
 

@@ -1035,7 +1035,7 @@ class CashDisbursementController extends Controller
                 return json_encode(['isSuccess' => false, 'cancelled' => 'cancel', 'error' => $e->getMessage()]);
             }
         }
-        return $this->render('cancel_disbursement', [
+        return $this->render('_cancel_disbursement_form', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);

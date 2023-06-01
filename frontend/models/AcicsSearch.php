@@ -18,8 +18,8 @@ class AcicsSearch extends Acics
     public function rules()
     {
         return [
-            [['id', 'fk_book_id'], 'integer'],
-            [['serial_number', 'date_issued', 'created_at'], 'safe'],
+            [['id'], 'integer'],
+            [['serial_number', 'date_issued', 'created_at', 'fk_book_id'], 'safe'],
         ];
     }
 
@@ -64,16 +64,16 @@ class AcicsSearch extends Acics
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->joinWith('book');
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'fk_book_id' => $this->fk_book_id,
             'date_issued' => $this->date_issued,
             'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['like', 'serial_number', $this->serial_number]);
+        $query->andFilterWhere(['like', 'serial_number', $this->serial_number])
+            ->andFilterWhere(['like', 'books.name', $this->fk_book_id]);
 
         return $dataProvider;
     }

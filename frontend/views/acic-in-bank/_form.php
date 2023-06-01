@@ -54,8 +54,14 @@ $itemRow = 0;
 
         </tbody>
     </table>
+    <div class="row">
+
+        <div class="col-sm-1 col-sm-offset-5">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success','style'=>'width:10rem']) ?>
+        </div>
+    </div>
     <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+
     </div>
     <?php ActiveForm::end(); ?>
 
