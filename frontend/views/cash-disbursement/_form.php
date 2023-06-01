@@ -49,9 +49,10 @@ if (!empty($model->dv_aucs_id)) {
 <div class="cash-disbursement-form ">
 
     <div class="panel panel-default " style="padding:2rem;height:100%">
-        <ul>
+        <ul class="notes">
             <li>Notes</li>
             <li>Select Book And Mode of Payment first before selecting Check Range</li>
+            <li>Check Range is automatically generated according to the check range selected</li>
         </ul>
         <?php $form = ActiveForm::begin([
             'id' => $model->formName(),
@@ -117,7 +118,7 @@ if (!empty($model->dv_aucs_id)) {
                 <?= $form->field($model, 'fk_ro_check_range_id')->widget(Select2::class, [
                     'data' => $check_ranges,
                     'options' => [
-                        'placeholder' => 'Select Mode of Payment',
+                        'placeholder' => 'Select Check Range',
                     ],
                     'pluginOptions' => [
                         'allowClear' => true,
@@ -285,6 +286,16 @@ if (!empty($model->dv_aucs_id)) {
 
     .danger {
         color: red;
+    }
+
+    .notes>li {
+        color: red;
+    }
+
+    .grid-view td {
+        white-space: normal;
+        width: 5rem;
+        padding: 0;
     }
 </style>
 <?php

@@ -22,6 +22,7 @@ class m230526_015133_create_acics_table extends Migration
             'date_issued' => $this->date()->notNull(),
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
+        $this->alterColumn('acics', 'id', $this->bigInteger());
 
         // creates index for column `fk_book_id`
         $this->createIndex(

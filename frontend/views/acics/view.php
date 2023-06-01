@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -43,8 +44,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     <br>
                 </td>
                 <td colspan="2" class="no-bdr">
-                    <span> Bank Account No.______________________</span> <br>
-                    <span>Date________________________</span>
+                    <span> Bank Account No.: ______________________</span> <br>
+                    <span>Date: <b> <u>&emsp;&emsp;<?= DateTime::createFromFormat('Y-m-d', $model->date_issued)->format('F d, Y') ?>&emsp;&emsp;</u></b></span>
                     <br>
                     <br>
                 </td>
@@ -77,10 +78,21 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td class="ctr">REMARKS</td>
             </tr>
             <?php
-
-            foreach ($items as $itm) {
+            $checkCnt = YIi::$app->db->createCommand("SELECT COUNT(acics_cash_items.fk_acic_id) as cnt FROM acics_cash_items WHERE acics_cash_items.fk_acic_id = :id AND acics_cash_items.is_deleted = 0")
+                ->bindValue(':id', $model->id)
+                ->queryScalar();
+            $cashItemsTtlAmt = 0;
+            $checkNumCnt = count(array_unique(array_column($cashItems, 'check_or_ada_no')));
+            foreach ($cashItems as $itm) {
+                $cashItemsTtlAmt += floatval($itm['grossAmt']);
                 echo "<tr>
-                <td>{$itm['check_num']}</td>
+                <td>{$itm['check_or_ada_no']}</td>
+                <td>{$itm['issuance_date']}</td>
+                <td>{$itm['payee']}</td>
+                <td class='amt'>" . number_format($itm['grossAmt'], 2) . "</td>
+                <td>{$itm['uacs']}-{$itm['general_ledger']}</td>
+                <td></td>
+                <td></td>
             </tr>";
             }
             ?>
@@ -88,14 +100,27 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th></th>
                 <th></th>
                 <th>Total ACIC Amount</th>
-                <th></th>
+                <th class="amt"><?= number_format($cashItemsTtlAmt, 2) ?></th>
                 <th></th>
                 <th></th>
                 <th></th>
             </tr>
             <tr>
                 <td colspan="7">
-                    Total number of checks: _______________ Amount in Words_______________________________________
+                    Total number of checks: <b><u>&emsp;&emsp;<?= $checkCnt ?>&emsp;&emsp;</u></b> Amount in Words:
+                    <b><u>&emsp;
+                            <?php
+                            echo Yii::$app->memem->convertNumberToWords($cashItemsTtlAmt);
+                            echo ' Pesos ';
+                            $dcl = round(fmod($cashItemsTtlAmt, 1) * 100);
+                            if ($dcl > 0) {
+                                echo ' And ';
+                                echo Yii::$app->memem->convertNumberToWords($dcl);
+                                echo ' Centavos';
+                            }
+                            ?>&emsp;
+                        </u></b>
+
                 </td>
             </tr>
         </table>
@@ -187,6 +212,10 @@ $this->params['breadcrumbs'][] = $this->title;
 <style>
     .asig {
         width: 26%;
+    }
+
+    .amt {
+        text-align: right;
     }
 
     .flt-lft {

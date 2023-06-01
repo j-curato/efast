@@ -15,10 +15,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="cash-recieved-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Cash Recieved', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
+        <?= Html::a('Create Cash Received', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
 
     </p>
 
@@ -30,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'Cash Recieves'
+            'heading' => 'Cash Receives'
         ],
         'export' => false,
         'columns' => [

@@ -17,7 +17,7 @@ class m230526_015642_create_acics_cash_items_table extends Migration
     {
         $this->createTable('{{%acics_cash_items}}', [
             'id' => $this->primaryKey(),
-            'fk_acic_id' => $this->integer()->notNull(),
+            'fk_acic_id' => $this->bigInteger()->notNull(),
             'fk_cash_disbursement_id' => $this->integer()->notNull(),
             'is_deleted' => $this->boolean()->defaultValue(false),
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')

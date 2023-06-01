@@ -4,22 +4,21 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Acics;
+use app\models\AcicInBank;
 
 /**
- * AcicsSearch represents the model behind the search form of `app\models\Acics`.
+ * AcicInBankSearch represents the model behind the search form of `app\models\AcicInBank`.
  */
-class AcicsSearch extends Acics
+class AcicInBankSearch extends AcicInBank
 {
-    public $notInBank = false;
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['id', 'fk_book_id'], 'integer'],
-            [['serial_number', 'date_issued', 'created_at'], 'safe'],
+            [['id'], 'integer'],
+            [['serial_number', 'date', 'created_at'], 'safe'],
         ];
     }
 
@@ -41,18 +40,10 @@ class AcicsSearch extends Acics
      */
     public function search($params)
     {
-        $query = Acics::find();
+        $query = AcicInBank::find();
 
         // add conditions that should always apply here
-        if ($this->notInBank === true) {
-            $query->andWhere("NOT EXISTS (SELECT 
-            acic_in_bank_items.fk_acic_id
-            FROM acic_in_bank_items 
-            WHERE 
-            acic_in_bank_items.is_deleted   = 0
-            AND acic_in_bank_items.fk_acic_id = acics.id
-            )");
-        }
+
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -68,8 +59,7 @@ class AcicsSearch extends Acics
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'fk_book_id' => $this->fk_book_id,
-            'date_issued' => $this->date_issued,
+            'date' => $this->date,
             'created_at' => $this->created_at,
         ]);
 

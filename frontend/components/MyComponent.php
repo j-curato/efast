@@ -399,7 +399,7 @@ class MyComponent extends Component
     function convertNumberToWords($number)
     {
         $ones = array(
-            0 => 'Zero',
+            0 => '',
             1 => 'One',
             2 => 'Two',
             3 => 'Three',
