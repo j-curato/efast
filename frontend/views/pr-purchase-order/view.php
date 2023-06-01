@@ -36,7 +36,7 @@ if (!empty($model->inspectedBy->f_name)) {
 $po_date = '';
 if (!empty($model->created_at)) {
 
-    $po_date =  DateTime::createFromFormat('Y-m-d ', $model->created_at)->format('F d, Y');
+    $po_date =  DateTime::createFromFormat('Y-m-d H:i:s', $model->created_at)->format('F d, Y');
 }
 
 $date_begun = '';
