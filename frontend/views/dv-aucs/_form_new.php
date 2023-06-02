@@ -862,7 +862,9 @@ SweetAlertAsset::register($this);
         $.ajax({
             type: 'POST',
             url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code&id=' + object_code,
-            data: {},
+            data: {
+                _csrf: "<? Yii::$app->request->csrfToken; ?>"
+            },
             success: function(data) {
                 const res = JSON.parse(data)
                 return_data = data
