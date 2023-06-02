@@ -201,18 +201,23 @@ if (!empty($model->fk_property_article_id)) {
     ]) ?>
     <?= $form->field($model, 'description')->textarea(['maxlength' => true, 'style' => 'display:none;']) ?>
     <textarea id="description" cols="30" rows="5" style="max-width:100%;width:100%"><?php echo $description; ?></textarea>
-    <?= $form->field($model, 'acquisition_amount')->widget(
-        MaskMoney::class,
-        [
-            'options' => [
-                'class' => 'amounts',
-            ],
-            'pluginOptions' => [
-                'prefix' => '₱ ',
-                'allowNegative' => false
-            ],
-        ]
-    ) ?>
+    <?php
+
+    if (empty($model->id)) {
+        echo  $form->field($model, 'acquisition_amount')->widget(
+            MaskMoney::class,
+            [
+                'options' => [
+                    'class' => 'amounts',
+                ],
+                'pluginOptions' => [
+                    'prefix' => '₱ ',
+                    'allowNegative' => false
+                ],
+            ]
+        );
+    }
+    ?>
 
     <div class="row" style="margin: 3rem;">
 

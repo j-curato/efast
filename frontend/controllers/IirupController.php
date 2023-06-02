@@ -49,7 +49,7 @@ class IirupController extends Controller
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user', 'ro-common-user']
+                        'roles' => ['super-user', 'ro-common-user', '@']
                     ]
                 ]
             ],

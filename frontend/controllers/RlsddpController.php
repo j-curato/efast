@@ -49,7 +49,7 @@ class RlsddpController extends Controller
                             'get-pars',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user', 'ro-common-user']
+                        'roles' => ['super-user', 'ro-common-user', '@']
                     ]
                 ]
             ],
