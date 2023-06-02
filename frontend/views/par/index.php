@@ -37,7 +37,8 @@ $columns = [
         'format' => 'raw',
         'hiddenFromExport' => true,
         'value' => function ($model) {
-            return MyHelper::gridDefaultAction($model->id, 'lrgModal');
+            // return MyHelper::gridDefaultAction($model->id, 'lrgModal');
+            return Html::a('<i class="fa fa-eye"></i>',['view','id'=>$model->id],['class'=>'btn']);
         }
     ],
 

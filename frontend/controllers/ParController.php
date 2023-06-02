@@ -59,6 +59,21 @@ class ParController extends Controller
 
                         ],
                         'allow' => true,
+                        'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'search-employee',
+                            'search-par',
+                            'par-details',
+                            'get-par',
+                            'blank-sticker'
+
+                        ],
+                        'allow' => true,
                         'roles' => ['@']
                     ],
 

@@ -81,7 +81,7 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
     <div class="container">
         <p class=''>
 
-            <?= Html::a('<i class="glyphicon glyphicon-pencil"></i>  Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']) ?>
+            <?= Yii::$app->user->can('super-user') ? Html::a('<i class="glyphicon glyphicon-pencil"></i>  Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']) : '' ?>
 
             <?= Html::button('<i class="fa fa-print"></i> Print Form', ['id' => 'print_form', 'class' => 'btn btn-warning']) ?>
             <?= Html::a('Property', ['property/view', 'id' => $model->fk_property_id], ['class' => 'btn btn-link']) ?>
