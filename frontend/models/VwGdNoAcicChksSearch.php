@@ -54,7 +54,7 @@ class VwGdNoAcicChksSearch extends VwGdNoAcicChks
         $query = VwGdNoAcicChks::find();
 
         // add conditions that should always apply here
-        $query->andWhere('reporting_period >="2023-04"');
+        $query->andWhere('reporting_period >="2023-06"');
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
