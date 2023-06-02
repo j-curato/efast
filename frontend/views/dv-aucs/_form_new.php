@@ -161,12 +161,12 @@ if (!empty($model->object_code)) {
                         'id' => 'transaction_type',
                         'name' => 'transaction_type',
                         'data' => [
-                            "Single"  => "Single",
-                            "Multiple" => "Multiple",
-                            "Accounts Payable"  => "Accounts Payable",
-                            "Replacement to Stale Checks" =>  "Replacement to Stale Checks",
-                            'Replacement of Check Issued' =>  'Replacement of Check Issued',
-                            'Payroll' =>  'Payroll',
+                            "single"  => "Single",
+                            "multiple" => "Multiple",
+                            "accounts payable"  => "Accounts Payable",
+                            "replacement to stale shecks" =>  "Replacement to Stale Checks",
+                            'replacement of check issued' =>  'Replacement of Check Issued',
+                            'payroll' =>  'Payroll',
                         ],
                         'value' => $transaction_type,
                         'pluginOptions' => [
